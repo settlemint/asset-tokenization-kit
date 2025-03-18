@@ -1,30 +1,24 @@
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
+import type { BlockUserInput } from "@/lib/mutations/block-user/block-user-schema";
 import { useTranslations } from "next-intl";
-import type { Address } from "viem";
+import { useFormContext } from "react-hook-form";
 
-interface SummaryProps {
-  address: Address;
-  isCurrentlyPaused: boolean;
-}
-
-export function Summary({ address, isCurrentlyPaused }: SummaryProps) {
+export function Summary() {
   const t = useTranslations("private.assets.details.forms.summary");
+  const { getValues } = useFormContext<BlockUserInput>();
+  const { userAddress, address } = getValues();
 
   return (
-    <FormStep title={t("title.pause")} description={t("description.pause")}>
+    <FormStep title={t("title.block")} description={t("description.block")}>
       <FormSummaryDetailItem
         label={t("asset-label")}
         value={<EvmAddress address={address} />}
       />
       <FormSummaryDetailItem
-        label={t("current-state-label")}
-        value={isCurrentlyPaused ? t("paused-label") : t("active-label")}
-      />
-      <FormSummaryDetailItem
-        label={t("target-state-label")}
-        value={isCurrentlyPaused ? t("active-label") : t("paused-label")}
+        label={t("account-label.default")}
+        value={<EvmAddress address={userAddress} />}
       />
     </FormStep>
   );

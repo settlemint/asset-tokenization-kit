@@ -23,7 +23,7 @@ export function MatureForm({
   open,
   onOpenChange,
 }: MatureFormProps) {
-  const t = useTranslations("private.assets.details.forms.mature");
+  const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -34,9 +34,11 @@ export function MatureForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      triggerLabel={
+        isExternallyControlled ? undefined : t("trigger-label.mature")
+      }
+      title={t("title.mature")}
+      description={t("description.mature")}
       asButton={asButton}
     >
       <Form
@@ -46,7 +48,7 @@ export function MatureForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t("button-label"),
+          label: t("trigger-label.mature"),
         }}
         defaultValues={{
           address,

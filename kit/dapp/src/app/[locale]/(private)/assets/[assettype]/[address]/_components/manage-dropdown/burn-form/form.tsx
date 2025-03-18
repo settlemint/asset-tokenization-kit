@@ -7,7 +7,7 @@ import { BurnSchema } from "@/lib/mutations/burn/burn-schema";
 import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
@@ -16,7 +16,6 @@ interface BurnFormProps {
   address: Address;
   assettype: AssetType;
   maxLimit?: number;
-  maxLimitDescription?: string | ReactNode;
   disabled?: boolean;
   asButton?: boolean;
   open?: boolean;
@@ -27,13 +26,12 @@ export function BurnForm({
   address,
   assettype,
   maxLimit,
-  maxLimitDescription,
   disabled = false,
   asButton = false,
   open,
   onOpenChange,
 }: BurnFormProps) {
-  const t = useTranslations("private.assets.details.forms.burn");
+  const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -44,9 +42,11 @@ export function BurnForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      triggerLabel={
+        isExternallyControlled ? undefined : t("trigger-label.burn")
+      }
+      title={t("title.burn")}
+      description={t("description.burn")}
       asButton={asButton}
       disabled={disabled}
     >
@@ -57,14 +57,14 @@ export function BurnForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t("button-label"),
+          label: t("trigger-label.burn"),
         }}
         defaultValues={{
           address,
           assettype,
         }}
       >
-        <Amount maxLimit={maxLimit} maxLimitDescription={maxLimitDescription} />
+        <Amount maxLimit={maxLimit} />
         <Summary address={address} />
       </Form>
     </FormSheet>

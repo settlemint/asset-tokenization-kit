@@ -12,20 +12,23 @@ import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { getAddress } from "viem";
-import { BlockForm } from "./actions/block-form/form";
+import { blockUserEnabled } from "../../_components/block-form/enabled";
+import { BlockForm } from "../../_components/block-form/form";
+import { MintForm } from "../../_components/mint-form/form";
+import { freezeUserAssetsEnabled } from "./actions/freeze-form/enabled";
 import { FreezeForm } from "./actions/freeze-form/form";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
 
-export function columns() {
+export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("private.assets.details.holders");
+  const t = useTranslations("private.assets.details");
 
   return [
     columnHelper.accessor("account.id", {
-      header: t("fields.wallet-header"),
+      header: t("holders.fields.wallet-header"),
       cell: ({ getValue }) => {
         const wallet = getAddress(getValue());
         return (
@@ -37,7 +40,7 @@ export function columns() {
       enableColumnFilter: false,
     }),
     columnHelper.accessor("value", {
-      header: t("fields.balance-header"),
+      header: t("holders.fields.balance-header"),
       cell: ({ getValue, row }) =>
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
@@ -46,14 +49,14 @@ export function columns() {
       },
     }),
     columnHelper.accessor("asset", {
-      id: t("holder-type-header"),
-      header: t("holder-type-header"),
+      id: t("holders.holder-type-header"),
+      header: t("holders.holder-type-header"),
       cell: ({ row }) => {
         return <ColumnHolderType assetBalance={row.original} />;
       },
     }),
     columnHelper.accessor("frozen", {
-      header: t("frozen-header"),
+      header: t("holders.frozen-header"),
       cell: ({ getValue, row }) =>
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
@@ -62,14 +65,14 @@ export function columns() {
       },
     }),
     columnHelper.accessor((row) => <ColumnAssetStatus assetOrBalance={row} />, {
-      id: t("status-header"),
-      header: t("status-header"),
+      id: t("holders.status-header"),
+      header: t("holders.status-header"),
       cell: ({ row }) => {
         return <AssetStatusPill assetBalance={row.original} />;
       },
     }),
     columnHelper.accessor("lastActivity", {
-      header: t("last-activity-header"),
+      header: t("holders.last-activity-header"),
       cell: ({ getValue }) => {
         const lastActivity = getValue();
         return lastActivity
@@ -80,39 +83,53 @@ export function columns() {
     }),
     columnHelper.display({
       id: "actions",
-      header: t("actions-header"),
+      header: t("holders.actions-header"),
       cell: ({ row }) => {
         return (
           <DataTableRowActions
             actions={[
               {
                 id: "block-form",
-                label: row.original.blocked
-                  ? t("forms.block.unblock-trigger-label")
-                  : t("forms.block.block-trigger-label"),
+                label: t("forms.form.trigger-label.block"),
                 component: ({ open, onOpenChange }) => (
                   <BlockForm
                     address={row.original.asset.id}
                     assettype={row.original.asset.type}
-                    account={row.original.account.id}
-                    isBlocked={row.original.blocked}
+                    userAddress={row.original.account.id}
                     open={open}
                     onOpenChange={onOpenChange}
                   />
                 ),
+                hidden: !blockUserEnabled(row.original.asset.type),
               },
               {
                 id: "freeze-form",
-                label: t("forms.freeze.trigger-label"),
+                label: t("forms.form.trigger-label.freeze"),
                 component: ({ open, onOpenChange }) => (
                   <FreezeForm
                     address={row.original.asset.id}
                     userAddress={row.original.account.id}
                     balance={row.original.value}
-                    frozen={row.original.frozen}
                     symbol={row.original.asset.symbol}
+                    assettype={row.original.asset.type}
+                    decimals={row.original.asset.decimals}
                     open={open}
                     onOpenChange={onOpenChange}
+                  />
+                ),
+                hidden: !freezeUserAssetsEnabled(row.original.asset.type),
+              },
+              {
+                id: "mint-form",
+                label: t("forms.form.trigger-label.mint"),
+                component: ({ open, onOpenChange }) => (
+                  <MintForm
+                    address={row.original.asset.id}
+                    recipient={row.original.account.id}
+                    assettype={row.original.asset.type}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                    maxLimit={mintMaxLimit}
                   />
                 ),
               },

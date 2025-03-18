@@ -4,7 +4,7 @@ import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { MintForm } from "../../../_components/manage-dropdown/mint-form/form";
+import { MintForm } from "../../../_components/mint-form/form";
 
 interface CryptocurrenciesRelatedProps {
   address: Address;
@@ -28,8 +28,8 @@ export async function CryptocurrenciesRelated({
   return (
     <RelatedGrid title={t("title")}>
       <RelatedGridItem
-        title={t("cryptocurrencies.increase-supply.title")}
-        description={t("cryptocurrencies.increase-supply.description")}
+        title={t("increase-supply.title.cryptocurrencies")}
+        description={t("increase-supply.description.cryptocurrencies")}
       >
         <MintForm
           address={address}

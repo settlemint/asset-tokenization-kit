@@ -3,12 +3,11 @@ import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-i
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
-import { formatNumber } from "@/lib/utils/number";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
-import { MintForm } from "../../../_components/manage-dropdown/mint-form/form";
 import { UpdateCollateralForm } from "../../../_components/manage-dropdown/update-collateral-form/form";
+import { MintForm } from "../../../_components/mint-form/form";
 
 interface StablecoinsRelatedProps {
   address: Address;
@@ -34,15 +33,12 @@ export async function StablecoinsRelated({
   >;
   const freeCollateral = stablecoin.freeCollateral;
   const mintMaxLimit = freeCollateral;
-  const mintMaxLimitDescription = t("max-mint-amount", {
-    limit: formatNumber(freeCollateral),
-  });
 
   return (
     <RelatedGrid title={t("title")}>
       <RelatedGridItem
-        title={t("stablecoins.update-collateral.title")}
-        description={t("stablecoins.update-collateral.description")}
+        title={t("update-collateral.title")}
+        description={t("update-collateral.description.stablecoins")}
       >
         <UpdateCollateralForm
           address={address}
@@ -52,8 +48,8 @@ export async function StablecoinsRelated({
         />
       </RelatedGridItem>
       <RelatedGridItem
-        title={t("stablecoins.increase-supply.title")}
-        description={t("stablecoins.increase-supply.description")}
+        title={t("increase-supply.title.stablecoins")}
+        description={t("increase-supply.description.stablecoins")}
       >
         <MintForm
           address={address}
@@ -61,19 +57,15 @@ export async function StablecoinsRelated({
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
           maxLimit={mintMaxLimit}
-          maxLimitDescription={mintMaxLimitDescription}
         />
       </RelatedGridItem>
       <RelatedGridItem
-        title={t("stablecoins.decrease-supply.title")}
-        description={t("stablecoins.decrease-supply.description")}
+        title={t("decrease-supply.title.stablecoins")}
+        description={t("decrease-supply.description.stablecoins")}
       >
         <BurnForm
           address={address}
           maxLimit={userBalance?.available}
-          maxLimitDescription={t("available-balance", {
-            maxLimit: formatNumber(userBalance?.available ?? 0),
-          })}
           assettype="stablecoin"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}

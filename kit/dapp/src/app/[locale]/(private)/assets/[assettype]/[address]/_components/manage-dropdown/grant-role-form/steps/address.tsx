@@ -9,24 +9,25 @@ import { useFormContext } from "react-hook-form";
 export function AdminAddress() {
   const { control } = useFormContext<GrantRoleInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
-  const t = useTranslations("private.assets.details.forms.grant-role.address");
+  const t = useTranslations("private.assets.details.forms.account");
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
+    <FormStep
+      title={t("title.grant-role")}
+      description={t("description.grant-role")}
+    >
       <div className="space-y-1">
         {isManualEntry ? (
           <FormInput
             control={control}
             name="userAddress"
-            label={t("address-label")}
-            placeholder={t("manual-placeholder")}
+            placeholder={t("enter-wallet-address-placeholder")}
           />
         ) : (
           <FormUsers
             control={control}
             name="userAddress"
-            label={t("address-label")}
-            placeholder={t("search-placeholder")}
+            placeholder={t("search-user-placeholder")}
           />
         )}
         <div className="flex justify-end">
@@ -35,7 +36,9 @@ export function AdminAddress() {
             onClick={() => setIsManualEntry(!isManualEntry)}
             className="text-muted-foreground text-xs transition-colors hover:text-foreground"
           >
-            {isManualEntry ? t("search-toggle") : t("manual-toggle")}
+            {isManualEntry
+              ? t("search-user-instead")
+              : t("enter-user-address-manually")}
           </button>
         </div>
       </div>

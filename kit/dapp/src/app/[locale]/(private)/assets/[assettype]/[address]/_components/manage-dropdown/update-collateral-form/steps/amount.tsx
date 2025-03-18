@@ -6,22 +6,20 @@ import { useFormContext } from "react-hook-form";
 
 export function Amount() {
   const { control } = useFormContext<UpdateCollateralInput>();
-  const t = useTranslations(
-    "private.assets.details.forms.update-collateral.amount"
-  );
+  const t = useTranslations("private.assets.details.forms.amount");
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
-      <div className="grid grid-cols-1 gap-6">
-        <FormInput
-          control={control}
-          name="amount"
-          label={t("amount-label")}
-          type="number"
-          min={1}
-          required
-        />
-      </div>
+    <FormStep
+      title={t("title")}
+      description={t("description.update-collateral")}
+    >
+      <FormInput
+        control={control}
+        name="amount"
+        type="number"
+        min={1}
+        required
+      />
     </FormStep>
   );
 }

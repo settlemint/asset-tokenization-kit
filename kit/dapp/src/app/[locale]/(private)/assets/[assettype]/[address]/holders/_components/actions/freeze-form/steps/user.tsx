@@ -1,35 +1,28 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
-import type { MintInput } from "@/lib/mutations/mint/mint-schema";
+import type { BlockUserInput } from "@/lib/mutations/block-user/block-user-schema";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-export function Recipients() {
-  const { control } = useFormContext<MintInput>();
+export function User() {
+  const { control } = useFormContext<BlockUserInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
-
-  const t = useTranslations("private.assets.details.forms.mint.recipients");
+  const t = useTranslations("private.assets.details.forms.account");
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
+    <FormStep title={t("title.freeze")} description={t("description.freeze")}>
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-1">
           {isManualEntry ? (
             <FormInput
               control={control}
-              name="to"
-              label="Wallet Address"
-              placeholder="0x0000000000000000000000000000000000000000"
+              name="userAddress"
+              placeholder={t("search-user-placeholder")}
             />
           ) : (
-            <FormUsers
-              control={control}
-              name="to"
-              label="Wallet Address"
-              placeholder="Search for a user"
-            />
+            <FormUsers control={control} name="userAddress" />
           )}
           <div className="flex justify-end">
             <button
@@ -38,8 +31,8 @@ export function Recipients() {
               className="text-muted-foreground text-xs transition-colors hover:text-foreground"
             >
               {isManualEntry
-                ? "Search for a user instead..."
-                : "Enter address manually..."}
+                ? t("search-user-instead")
+                : t("enter-user-address-manually")}
             </button>
           </div>
         </div>
@@ -48,4 +41,4 @@ export function Recipients() {
   );
 }
 
-Recipients.validatedFields = ["to"] as const;
+User.validatedFields = ["user"] as const;

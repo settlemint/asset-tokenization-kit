@@ -26,7 +26,7 @@ export function TopUpForm({
   open,
   onOpenChange,
 }: TopUpFormProps) {
-  const t = useTranslations("private.assets.details.forms.top-up");
+  const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -37,9 +37,11 @@ export function TopUpForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      triggerLabel={
+        isExternallyControlled ? undefined : t("trigger-label.top-up")
+      }
+      title={t("title.top-up")}
+      description={t("description.top-up")}
       asButton={asButton}
     >
       <Form
@@ -49,7 +51,7 @@ export function TopUpForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t("button-label"),
+          label: t("trigger-label.top-up"),
         }}
         defaultValues={{
           address,

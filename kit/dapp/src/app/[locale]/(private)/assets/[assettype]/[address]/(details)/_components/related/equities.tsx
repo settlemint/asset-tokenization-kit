@@ -2,11 +2,10 @@ import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import { formatNumber } from "@/lib/utils/number";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
-import { MintForm } from "../../../_components/manage-dropdown/mint-form/form";
+import { MintForm } from "../../../_components/mint-form/form";
 
 interface EquitiesRelatedProps {
   address: Address;
@@ -30,8 +29,8 @@ export async function EquitiesRelated({
   return (
     <RelatedGrid title={t("title")}>
       <RelatedGridItem
-        title={t("equities.increase-supply.title")}
-        description={t("equities.increase-supply.description")}
+        title={t("increase-supply.title.equities")}
+        description={t("increase-supply.description.equities")}
       >
         <MintForm
           address={address}
@@ -41,15 +40,12 @@ export async function EquitiesRelated({
         />
       </RelatedGridItem>
       <RelatedGridItem
-        title={t("equities.decrease-supply.title")}
-        description={t("equities.decrease-supply.description")}
+        title={t("decrease-supply.title.equities")}
+        description={t("decrease-supply.description.equities")}
       >
         <BurnForm
           address={address}
           maxLimit={userBalance?.available}
-          maxLimitDescription={t("available-balance", {
-            maxLimit: formatNumber(userBalance?.available ?? 0),
-          })}
           assettype="equity"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}

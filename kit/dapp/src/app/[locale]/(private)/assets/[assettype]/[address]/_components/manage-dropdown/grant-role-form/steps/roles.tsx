@@ -7,10 +7,10 @@ import { useFormContext } from "react-hook-form";
 
 export function AdminRoles() {
   const { control } = useFormContext<GrantRoleInput>();
-  const t = useTranslations("private.assets.details.forms.grant-role.roles");
+  const t = useTranslations("private.assets.details.forms");
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
+    <FormStep title={t("roles.title")} description={t("roles.description")}>
       <div className="space-y-3">
         {(Object.entries(ROLES) as [RoleKey, (typeof ROLES)[RoleKey]][]).map(
           ([key, role]) => (

@@ -27,7 +27,7 @@ export function WithdrawForm({
   open,
   onOpenChange,
 }: WithdrawFormProps) {
-  const t = useTranslations("private.assets.details.forms.withdraw");
+  const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -38,9 +38,11 @@ export function WithdrawForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      triggerLabel={
+        isExternallyControlled ? undefined : t("trigger-label.withdraw")
+      }
+      title={t("title.withdraw")}
+      description={t("description.withdraw")}
       asButton={asButton}
     >
       <Form
@@ -50,7 +52,7 @@ export function WithdrawForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t("button-label"),
+          label: t("trigger-label.withdraw"),
         }}
         defaultValues={{
           address,

@@ -8,21 +8,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePathname, useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/routing";
 import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
-import { formatNumber } from "@/lib/utils/number";
 import type { AssetType } from "@/lib/utils/zod";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
+import { blockUserEnabled } from "../block-form/enabled";
+import { BlockForm } from "../block-form/form";
+import { MintForm } from "../mint-form/form";
 import { BurnForm } from "./burn-form/form";
 import { GrantRoleForm } from "./grant-role-form/form";
 import { MatureForm } from "./mature-form/form";
-import { MintForm } from "./mint-form/form";
 import { PauseForm } from "./pause-form/form";
 import { TopUpForm } from "./top-up-form/form";
 import { UpdateCollateralForm } from "./update-collateral-form/form";
@@ -42,9 +43,6 @@ export function ManageDropdown({
   userBalance,
 }: ManageDropdownProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const isInPortfolio = pathname.includes("portfolio");
-
   const t = useTranslations("private.assets.detail.forms");
   const [openMenuItem, setOpenMenuItem] = useState<
     | (
@@ -75,16 +73,12 @@ export function ManageDropdown({
   }
 
   let mintMaxLimit: number | undefined = undefined;
-  let mintMaxLimitDescription: string | undefined = undefined;
   if (assettype === "stablecoin" || assettype === "tokenizeddeposit") {
     const tokenizedDeposit = assetDetails as Awaited<
       ReturnType<typeof getTokenizedDepositDetail>
     >;
     const freeCollateral = tokenizedDeposit.freeCollateral;
     mintMaxLimit = freeCollateral;
-    mintMaxLimitDescription = t("max-mint-amount", {
-      limit: formatNumber(freeCollateral),
-    });
   }
 
   const isBlocked = userBalance?.blocked ?? false;
@@ -114,7 +108,6 @@ export function ManageDropdown({
           open={openMenuItem === "mint"}
           onOpenChange={onFormOpenChange}
           maxLimit={mintMaxLimit}
-          maxLimitDescription={mintMaxLimitDescription}
         />
       ),
     },
@@ -129,9 +122,6 @@ export function ManageDropdown({
           address={address}
           assettype={assettype}
           maxLimit={userBalance?.available}
-          maxLimitDescription={t("available-balance", {
-            maxLimit: formatNumber(userBalance?.available ?? 0),
-          })}
           open={openMenuItem === "burn"}
           onOpenChange={onFormOpenChange}
         />
@@ -226,16 +216,31 @@ export function ManageDropdown({
     },
   ] as const;
 
+  const canPerformUserActions = !isBlocked && !isPaused && userIsUserManager;
   const userActions = [
     {
       id: "grant-role",
       label: t("actions.grant-role"),
-      hidden: isBlocked || isPaused || !userIsUserManager,
+      hidden: !canPerformUserActions,
       form: (
         <GrantRoleForm
           key="grant-role"
           address={address}
           open={openMenuItem === "grant-role"}
+          onOpenChange={onFormOpenChange}
+          assettype={assettype}
+        />
+      ),
+    },
+    {
+      id: "block-user",
+      label: t("actions.block-user"),
+      hidden: !blockUserEnabled(assettype) || !canPerformUserActions,
+      form: (
+        <BlockForm
+          key="block-user"
+          address={address}
+          open={openMenuItem === "block-user"}
           onOpenChange={onFormOpenChange}
           assettype={assettype}
         />
@@ -253,6 +258,11 @@ export function ManageDropdown({
     },
   ] as const;
 
+  const availableContractActions = contractActions.filter(
+    (item) => !item.hidden
+  );
+  const availableUserActions = userActions.filter((item) => !item.hidden);
+
   return (
     <>
       <DropdownMenu>
@@ -266,39 +276,32 @@ export function ManageDropdown({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown">
-          {contractActions
-            .filter((item) => !item.hidden)
-            .map((item) => (
-              <DropdownMenuItem
-                key={item.id}
-                onSelect={() => setOpenMenuItem(item.id)}
-                disabled={item.disabled}
-              >
-                {item.label}
-              </DropdownMenuItem>
-            ))}
-          {!isInPortfolio && (
-            <>
-              <DropdownMenuSeparator />
-              {userActions
-                .filter((item) => !item.hidden)
-                .map((item) => (
-                  <DropdownMenuItem key={item.id}>
-                    {item.label}
-                  </DropdownMenuItem>
-                ))}
-            </>
-          )}
-          {!isInPortfolio && (
-            <>
-              <DropdownMenuSeparator />
-              {events.map((item) => (
-                <DropdownMenuItem key={item.id} onSelect={item.onClick}>
-                  {item.label}
-                </DropdownMenuItem>
-              ))}
-            </>
-          )}
+          {availableContractActions.map((item) => (
+            <DropdownMenuItem
+              key={item.id}
+              onSelect={() => setOpenMenuItem(item.id)}
+              disabled={item.disabled}
+            >
+              {item.label}
+            </DropdownMenuItem>
+          ))}
+
+          <DropdownMenuSeparator hidden={availableUserActions.length === 0} />
+          {availableUserActions.map((item) => (
+            <DropdownMenuItem
+              key={item.id}
+              onSelect={() => setOpenMenuItem(item.id)}
+            >
+              {item.label}
+            </DropdownMenuItem>
+          ))}
+
+          <DropdownMenuSeparator />
+          {events.map((item) => (
+            <DropdownMenuItem key={item.id} onSelect={item.onClick}>
+              {item.label}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
       {[...contractActions, ...userActions]
