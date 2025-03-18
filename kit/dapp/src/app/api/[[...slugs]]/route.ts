@@ -36,22 +36,6 @@ const app = new Elysia({ prefix: "/api" })
             },
           },
         },
-        tags: [
-          { name: "Auth", description: "Authentication endpoints" },
-          { name: "Bonds", description: "Bond endpoints" },
-          {
-            name: "Cryptocurrencies",
-            description: "CryptoCurrency endpoints",
-          },
-          { name: "Equities", description: "Equity endpoints" },
-          { name: "Funds", description: "Fund endpoints" },
-          { name: "Stablecoins", description: "Stablecoin endpoints" },
-          {
-            name: "Tokenized Deposits",
-            description: "Tokenized Deposit endpoints",
-          },
-          { name: "Providers", description: "Provider endpoints" },
-        ],
       },
     })
   )
@@ -74,3 +58,4 @@ const app = new Elysia({ prefix: "/api" })
 export const GET = app.handle;
 export const POST = app.handle;
 export const PATCH = app.handle;
+export const DELETE = app.handle;
