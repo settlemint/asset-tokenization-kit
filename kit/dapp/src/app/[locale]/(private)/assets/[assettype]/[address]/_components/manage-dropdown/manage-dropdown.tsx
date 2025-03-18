@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
+import { ROLES, type Role } from "@/lib/config/roles";
 import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
@@ -34,6 +35,7 @@ interface ManageDropdownProps {
   assettype: AssetType;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
+  userRoles: Role[];
 }
 
 export function ManageDropdown({
@@ -41,6 +43,7 @@ export function ManageDropdown({
   assettype,
   assetDetails,
   userBalance,
+  userRoles,
 }: ManageDropdownProps) {
   const router = useRouter();
   const t = useTranslations("private.assets.detail.forms");
@@ -83,16 +86,13 @@ export function ManageDropdown({
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
-
-  const userIsSupplyManager = userBalance?.asset.supplyManagers.some(
-    (manager) => manager.id === userBalance?.account.id
+  const userIsSupplyManager = userRoles.includes(
+    ROLES.SUPPLY_MANAGEMENT_ROLE.contractRole
   );
-  const userIsUserManager = userBalance?.asset.userManagers.some(
-    (manager) => manager.id === userBalance?.account.id
+  const userIsUserManager = userRoles.includes(
+    ROLES.USER_MANAGEMENT_ROLE.contractRole
   );
-  const userIsAdmin = userBalance?.asset.admins.some(
-    (admin) => admin.id === userBalance?.account.id
-  );
+  const userIsAdmin = userRoles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole);
 
   const contractActions = [
     {

@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Link } from "@/i18n/routing";
-import type { Asset } from "@/lib/queries/asset/asset-fragment";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
+import type { AssetUsers } from "@/lib/queries/asset/asset-users-fragment";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { cn } from "@/lib/utils";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
@@ -21,7 +21,7 @@ import { EvmAddress } from "../evm-address/evm-address";
 
 // Client-side hooks to fetch search results
 function useClientAssetSearch(searchTerm: string) {
-  const [data, setData] = useState<Asset[]>([]);
+  const [data, setData] = useState<AssetUsers[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

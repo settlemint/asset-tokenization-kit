@@ -35,9 +35,9 @@ export type Permission = ZodInfer<typeof PermissionFragmentSchema>;
  * @remarks
  * Contains core asset properties and permission relationships
  */
-export const AssetFragment = theGraphGraphqlKit(
+export const AssetUsersFragment = theGraphGraphqlKit(
   `
-  fragment AssetFragment on Asset {
+  fragment AssetUsersFragment on Asset {
     id
     name
     symbol
@@ -68,7 +68,7 @@ export const AssetFragment = theGraphGraphqlKit(
  * Zod schema for validating on-chain asset data
  *
  */
-export const AssetFragmentSchema = z.object({
+export const AssetUsersFragmentSchema = z.object({
   id: z.address(),
   name: z.string(),
   symbol: z.symbol(),
@@ -91,7 +91,7 @@ export const AssetFragmentSchema = z.object({
 /**
  * Type definition for on-chain asset data
  */
-export type Asset = ZodInfer<typeof AssetFragmentSchema>;
+export type AssetUsers = ZodInfer<typeof AssetUsersFragmentSchema>;
 
 /**
  * GraphQL fragment for off-chain asset data from Hasura

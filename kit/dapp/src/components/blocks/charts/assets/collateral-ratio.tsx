@@ -2,7 +2,7 @@ import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
 import { ChartPieIcon } from "@/components/ui/animated-icons/chart-pie";
 import type { ChartConfig } from "@/components/ui/chart";
-import { getAssetDetail } from "@/lib/queries/asset/asset-detail";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
@@ -24,7 +24,7 @@ export async function CollateralRatio({ address }: CollateralRatioProps) {
     },
   } satisfies ChartConfig;
 
-  const data = await getAssetDetail({ address });
+  const data = await getAssetUsersDetail({ address });
 
   if (!data || ("collateral" in data && data.collateral === 0)) {
     return (

@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
-import { getAssetDetail } from "@/lib/queries/asset/asset-detail";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { AssetType } from "@/lib/utils/zod";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -12,7 +12,7 @@ interface PageProps {
 
 export default async function PermissionsPage({ params }: PageProps) {
   const { address, assettype } = await params;
-  const assetDetail = await getAssetDetail({ address });
+  const assetDetail = await getAssetUsersDetail({ address });
   const t = await getTranslations("private.assets.details.permissions");
 
   return (
