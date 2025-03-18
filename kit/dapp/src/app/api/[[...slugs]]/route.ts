@@ -1,4 +1,5 @@
 import { metadata } from "@/lib/config/metadata";
+import { AssetPriceApi } from "@/lib/providers/asset-price/asset-price-api";
 import { ExchangeRatesApi } from "@/lib/providers/exchange-rates/exchange-rates-api";
 import { ExchangeRateUpdateApi } from "@/lib/providers/exchange-rates/exchange-rates-update-api";
 import { BondDetailApi } from "@/lib/queries/bond/bond-detail-api";
@@ -53,6 +54,9 @@ const app = new Elysia({ prefix: "/api" })
   )
   .group("/providers/exchange-rates", (app) =>
     app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
+  )
+  .group("/asset-price", (app) =>
+    app.use(AssetPriceApi)
   );
 
 export const GET = app.handle;
