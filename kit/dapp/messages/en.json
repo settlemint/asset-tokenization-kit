@@ -848,9 +848,10 @@
       "detail": {
         "forms": {
           "actions": {
-            "block-user": "Block user",
             "burn": "Burn",
             "grant-role": "Add asset admin",
+            "block-user": "Block user",
+            "unblock-user": "Unblock user",
             "mature": "Mature",
             "mint": "Mint",
             "pause": "Pause contract",
@@ -858,7 +859,9 @@
             "unpause": "Unpause contract",
             "update-collateral": "Update collateral",
             "view-events": "View events",
-            "withdraw": "Withdraw"
+            "withdraw": "Withdraw",
+            "allow-user": "Allow user",
+            "disallow-user": "Disallow user"
           },
           "available-balance": "Balance available to burn: {maxLimit}",
           "manage": "Manage",
@@ -868,28 +871,6 @@
       "details": {
         "asset-management": "Asset management",
         "forms": {
-          "account": {
-            "description": {
-              "block": "Enter a wallet address to block, or search for a user by their name, email or wallet address.",
-              "burn": "Enter a wallet address from which the tokens will be burned, or search for a user by their name, email or wallet address.",
-              "freeze": "Enter a wallet address from which the tokens will be frozen, or search for a user by their name, email or wallet address.",
-              "grant-role": "Enter a wallet address to grant roles to, or search for a user by their name, email or wallet address.",
-              "mint": "Enter a wallet address to send tokens directly, or search for a user by their name, email or wallet address.",
-              "withdraw": "Enter a wallet address to withdraw tokens to, or search for a user by their name, email or wallet address."
-            },
-            "enter-user-address-manually": "Enter address manually...",
-            "enter-wallet-address-placeholder": "Enter a wallet address",
-            "search-user-instead": "Search for a user instead...",
-            "search-user-placeholder": "Enter an address, name or email",
-            "title": {
-              "block": "Select user",
-              "burn": "Select user",
-              "freeze": "Select user",
-              "grant-role": "Select user",
-              "mint": "Select recipient",
-              "withdraw": "Select user"
-            }
-          },
           "amount": {
             "available-to": {
               "burn": "Available to burn",
@@ -915,6 +896,7 @@
           "form": {
             "description": {
               "block": "Prevent this user from performing any transactions or interactions.",
+              "unblock": "Allow this user to perform transactions and interactions again.",
               "burn": "Permanently remove bond tokens from circulation to reduce supply.",
               "freeze": "Temporarily restrict a user's access to their funds.",
               "grant-role": "Assign administrative permissions to a new user.",
@@ -924,10 +906,13 @@
               "top-up": "Add more underlying asset to your bond",
               "unpause": "Resume transactions and interactions for this bond.",
               "update-collateral": "Adjust the collateral backing the stablecoin to reflect current requirements.",
-              "withdraw": "Withdraw underlying asset from your bond"
+              "withdraw": "Withdraw underlying asset from your bond",
+              "allow": "Allow this user to perform transactions and interactions.",
+              "disallow": "Prevent this user from performing any transactions or interactions."
             },
             "title": {
               "block": "Block user",
+              "unblock": "Unblock user",
               "burn": "Burn assets",
               "freeze": "Restrict user assets",
               "grant-role": "Grant role",
@@ -937,10 +922,13 @@
               "top-up": "Top up underlying asset",
               "unpause": "Resume contract",
               "update-collateral": "Update collateral",
-              "withdraw": "Withdraw underlying asset"
+              "withdraw": "Withdraw underlying asset",
+              "allow": "Allow user",
+              "disallow": "Disallow user"
             },
             "trigger-label": {
               "block": "Block user",
+              "unblock": "Unblock user",
               "burn": "Burn",
               "freeze": "Freeze",
               "grant-role": "Grant role",
@@ -950,7 +938,30 @@
               "top-up": "Top up",
               "unpause": "Unpause",
               "update-collateral": "Update collateral",
-              "withdraw": "Withdraw"
+              "withdraw": "Withdraw",
+              "allow": "Allow",
+              "disallow": "Disallow"
+            }
+          },
+          "account": {
+            "search-user-placeholder": "Enter an address, name or email",
+            "enter-wallet-address-placeholder": "Enter a wallet address",
+            "enter-user-address-manually": "Enter address manually...",
+            "search-user-instead": "Search for a user instead...",
+            "title": {
+              "mint": "Select recipient",
+              "default": "Select user"
+            },
+            "description": {
+              "mint": "Enter a wallet address to send tokens directly, or search for a user by their name, email or wallet address.",
+              "burn": "Enter a wallet address from which the tokens will be burned, or search for a user by their name, email or wallet address.",
+              "grant-role": "Enter a wallet address to grant roles to, or search for a user by their name, email or wallet address.",
+              "freeze": "Enter a wallet address from which the tokens will be frozen, or search for a user by their name, email or wallet address.",
+              "block": "Enter a wallet address to block, or search for a user by their name, email or wallet address.",
+              "unblock": "Enter a wallet address to unblock, or search for a user by their name, email or wallet address.",
+              "withdraw": "Enter a wallet address to withdraw tokens to, or search for a user by their name, email or wallet address.",
+              "allow": "Enter a wallet address to allow, or search for a user by their name, email or wallet address.",
+              "disallow": "Enter a wallet address to disallow, or search for a user by their name, email or wallet address."
             }
           },
           "roles": {
@@ -966,8 +977,28 @@
             "amount-label": "Amount",
             "asset-label": "Asset",
             "current-state-label": "Current state",
+            "paused-label": "Paused",
+            "roles-label": "Roles",
+            "target-state-label": "Target state",
+            "title": {
+              "mint": "Review and confirm mint",
+              "burn": "Review and confirm burn",
+              "grant-role": "Review and confirm role grant",
+              "freeze": "Review and confirm freeze",
+              "block": "Review and confirm block",
+              "unblock": "Review and confirm unblock",
+              "mature": "Review and confirm maturity",
+              "top-up": "Review and confirm top-up",
+              "update-collateral": "Review and confirm update collateral",
+              "withdraw": "Review and confirm withdrawal",
+              "pause": "Review and confirm pause",
+              "unpause": "Review and confirm unpause",
+              "allow": "Review and confirm allow",
+              "disallow": "Review and confirm disallow"
+            },
             "description": {
               "block": "Verify the details of your block before proceeding.",
+              "unblock": "Verify the details of your unblock before proceeding.",
               "burn": "Verify the details of your burn before proceeding.",
               "freeze": "Verify the details of your freeze before proceeding.",
               "grant-role": "Verify the details of your role grant before proceeding.",
@@ -977,23 +1008,9 @@
               "top-up": "Verify the details of your top-up before proceeding.",
               "unpause": "Verify the details of your unpause before proceeding.",
               "update-collateral": "Verify the details of your update collateral before proceeding.",
-              "withdraw": "Verify the details of your withdrawal before proceeding."
-            },
-            "paused-label": "Paused",
-            "roles-label": "Roles",
-            "target-state-label": "Target state",
-            "title": {
-              "block": "Review and confirm block",
-              "burn": "Review and confirm burn",
-              "freeze": "Review and confirm freeze",
-              "grant-role": "Review and confirm role grant",
-              "mature": "Review and confirm maturity",
-              "mint": "Review and confirm mint",
-              "pause": "Review and confirm pause",
-              "top-up": "Review and confirm top-up",
-              "unpause": "Review and confirm unpause",
-              "update-collateral": "Review and confirm update collateral",
-              "withdraw": "Review and confirm withdrawal"
+              "withdraw": "Verify the details of your withdrawal before proceeding.",
+              "allow": "Verify the details of your allow before proceeding.",
+              "disallow": "Verify the details of your disallow before proceeding."
             }
           }
         },
@@ -1095,6 +1112,8 @@
           "holders": "Holders",
           "permissions": "Permissions",
           "underlying-assets": "Underlying assets",
+          "blocklist": "Block list",
+          "allowlist": "Allow list",
           "yield": "Yield"
         }
       },
@@ -1265,7 +1284,9 @@
         "underlying-asset": "Underlying asset",
         "underlying-asset-balance": "Underlying Asset Balance",
         "wallet-header": "Wallet",
-        "yield-type": "Yield type"
+        "yield-type": "Yield type",
+        "blocked-since-header": "Blocked since",
+        "allowed-since-header": "Allowed since"
       },
       "table": {
         "asset-management": "Asset Management",

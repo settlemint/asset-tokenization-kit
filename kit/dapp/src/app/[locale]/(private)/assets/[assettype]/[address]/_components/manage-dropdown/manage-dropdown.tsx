@@ -9,9 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
-import { getRoles, ROLES, type Role } from "@/lib/config/roles";
+import { getRoles, ROLES } from "@/lib/config/roles";
 import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
+import type { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
 import type { AssetType } from "@/lib/utils/zod";
@@ -19,9 +20,12 @@ import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
-import { blockUserEnabled } from "../block-form/enabled";
+import { AllowForm } from "../allow-form/form";
 import { BlockForm } from "../block-form/form";
+import { DisallowForm } from "../disallow-form/form";
+import { hasAllowlist, hasBlocklist } from "../features-enabled";
 import { MintForm } from "../mint-form/form";
+import { UnblockForm } from "../unblock-form/form";
 import { BurnForm } from "./burn-form/form";
 import { GrantRoleForm } from "./grant-role-form/form";
 import { MatureForm } from "./mature-form/form";
@@ -29,13 +33,13 @@ import { PauseForm } from "./pause-form/form";
 import { TopUpForm } from "./top-up-form/form";
 import { UpdateCollateralForm } from "./update-collateral-form/form";
 import { WithdrawForm } from "./withdraw-form/form";
-
 interface ManageDropdownProps {
   address: Address;
   assettype: AssetType;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-  userRoles: Role[];
+  assetUsersDetails: Awaited<ReturnType<typeof getAssetUsersDetail>>;
+  userAddress: Address;
 }
 
 export function ManageDropdown({
@@ -43,7 +47,8 @@ export function ManageDropdown({
   assettype,
   assetDetails,
   userBalance,
-  userRoles,
+  assetUsersDetails,
+  userAddress,
 }: ManageDropdownProps) {
   const router = useRouter();
   const t = useTranslations("private.assets.detail.forms");
@@ -86,6 +91,9 @@ export function ManageDropdown({
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
+  const userRoles =
+    assetUsersDetails.roles.find((role) => role.id === userAddress)?.roles ??
+    [];
   const userIsSupplyManager = userRoles.includes(
     ROLES.SUPPLY_MANAGEMENT_ROLE.contractRole
   );
@@ -230,6 +238,7 @@ export function ManageDropdown({
       id: "grant-role",
       label: t("actions.grant-role"),
       hidden: !canPerformUserActions,
+      disabled: false,
       form: (
         <GrantRoleForm
           key="grant-role"
@@ -243,12 +252,58 @@ export function ManageDropdown({
     {
       id: "block-user",
       label: t("actions.block-user"),
-      hidden: !blockUserEnabled(assettype) || !canPerformUserActions,
+      hidden: !hasBlocklist(assettype) || !canPerformUserActions,
+      disabled: false,
       form: (
         <BlockForm
           key="block-user"
           address={address}
           open={openMenuItem === "block-user"}
+          onOpenChange={onFormOpenChange}
+          assettype={assettype}
+        />
+      ),
+    },
+    {
+      id: "unblock-user",
+      label: t("actions.unblock-user"),
+      hidden: !hasBlocklist(assettype) || !canPerformUserActions,
+      disabled: assetUsersDetails.blocklist.length === 0,
+      form: (
+        <UnblockForm
+          key="unblock-user"
+          address={address}
+          open={openMenuItem === "unblock-user"}
+          onOpenChange={onFormOpenChange}
+          assettype={assettype}
+        />
+      ),
+    },
+    {
+      id: "allow-user",
+      label: t("actions.allow-user"),
+      hidden: !hasAllowlist(assettype) || !canPerformUserActions,
+      disabled: false,
+      form: (
+        <AllowForm
+          key="allow-user"
+          address={address}
+          open={openMenuItem === "allow-user"}
+          onOpenChange={onFormOpenChange}
+          assettype={assettype}
+        />
+      ),
+    },
+    {
+      id: "disallow-user",
+      label: t("actions.disallow-user"),
+      hidden: !hasAllowlist(assettype) || !canPerformUserActions,
+      disabled: assetUsersDetails.allowlist.length === 1,
+      form: (
+        <DisallowForm
+          key="disallow-user"
+          address={address}
+          open={openMenuItem === "disallow-user"}
           onOpenChange={onFormOpenChange}
           assettype={assettype}
         />
@@ -299,6 +354,7 @@ export function ManageDropdown({
             <DropdownMenuItem
               key={item.id}
               onSelect={() => setOpenMenuItem(item.id)}
+              disabled={item.disabled}
             >
               {item.label}
             </DropdownMenuItem>

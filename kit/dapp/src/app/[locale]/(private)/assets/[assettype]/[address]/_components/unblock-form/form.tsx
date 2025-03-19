@@ -1,7 +1,7 @@
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { blockUser } from "@/lib/mutations/block-user/block-user-action";
-import { BlockUserSchema } from "@/lib/mutations/block-user/block-user-schema";
+import { unblockUser } from "@/lib/mutations/unblock-user/unblock-user-action";
+import { UnblockUserSchema } from "@/lib/mutations/unblock-user/unblock-user-schema";
 import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -9,22 +9,22 @@ import type { Address } from "viem";
 import { Summary } from "./steps/summary";
 import { User } from "./steps/user";
 
-interface BlockFormProps {
+interface UnblockUserActionProps {
+  userAddress?: Address;
   address: Address;
   assettype: AssetType;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  userAddress?: Address;
 }
 
-export function BlockForm({
+export function UnblockForm({
+  userAddress,
   address,
   assettype,
-  userAddress,
   open,
   onOpenChange,
-}: BlockFormProps) {
-  const t = useTranslations("private.assets.details.forms.form");
+}: UnblockUserActionProps) {
+  const t = useTranslations("private.assets.details.forms");
   const steps = userAddress
     ? [<Summary key="summary" />]
     : [<User key="user" />, <Summary key="summary" />];
@@ -33,15 +33,15 @@ export function BlockForm({
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      triggerLabel={t("trigger-label.block")}
-      title={t("title.block")}
-      description={t("description.block")}
+      triggerLabel={t("form.trigger-label.unblock")}
+      title={t("form.title.unblock")}
+      description={t("form.description.unblock")}
     >
       <Form
-        action={blockUser}
-        resolver={zodResolver(BlockUserSchema)}
+        action={unblockUser}
+        resolver={zodResolver(UnblockUserSchema)}
         buttonLabels={{
-          label: t("trigger-label.block"),
+          label: t("form.trigger-label.unblock"),
         }}
         onOpenChange={onOpenChange}
         defaultValues={{

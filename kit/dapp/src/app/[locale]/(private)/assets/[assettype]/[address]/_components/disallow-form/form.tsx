@@ -1,7 +1,7 @@
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { blockUser } from "@/lib/mutations/block-user/block-user-action";
-import { BlockUserSchema } from "@/lib/mutations/block-user/block-user-schema";
+import { disallowUser } from "@/lib/mutations/disallow-user/disallow-user-action";
+import { DisallowUserSchema } from "@/lib/mutations/disallow-user/disallow-user-schema";
 import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -9,22 +9,22 @@ import type { Address } from "viem";
 import { Summary } from "./steps/summary";
 import { User } from "./steps/user";
 
-interface BlockFormProps {
+interface DisallowUserActionProps {
+  userAddress?: Address;
   address: Address;
   assettype: AssetType;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  userAddress?: Address;
 }
 
-export function BlockForm({
+export function DisallowForm({
+  userAddress,
   address,
   assettype,
-  userAddress,
   open,
   onOpenChange,
-}: BlockFormProps) {
-  const t = useTranslations("private.assets.details.forms.form");
+}: DisallowUserActionProps) {
+  const t = useTranslations("private.assets.details.forms");
   const steps = userAddress
     ? [<Summary key="summary" />]
     : [<User key="user" />, <Summary key="summary" />];
@@ -33,15 +33,15 @@ export function BlockForm({
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      triggerLabel={t("trigger-label.block")}
-      title={t("title.block")}
-      description={t("description.block")}
+      triggerLabel={t("form.trigger-label.disallow")}
+      title={t("form.title.disallow")}
+      description={t("form.description.disallow")}
     >
       <Form
-        action={blockUser}
-        resolver={zodResolver(BlockUserSchema)}
+        action={disallowUser}
+        resolver={zodResolver(DisallowUserSchema)}
         buttonLabels={{
-          label: t("trigger-label.block"),
+          label: t("form.trigger-label.disallow"),
         }}
         onOpenChange={onOpenChange}
         defaultValues={{

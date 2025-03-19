@@ -12,14 +12,14 @@ export function User() {
   const t = useTranslations("private.assets.details.forms.account");
 
   return (
-    <FormStep title={t("title.default")} description={t("description.block")}>
+    <FormStep title={t("title.default")} description={t("description.unblock")}>
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-1">
           {isManualEntry ? (
             <FormInput
               control={control}
               name="userAddress"
-              placeholder="0x0000000000000000000000000000000000000000"
+              placeholder={t("enter-wallet-address-placeholder")}
             />
           ) : (
             <FormUsers
