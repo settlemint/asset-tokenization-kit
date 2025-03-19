@@ -59,7 +59,7 @@ export function cryptocurrencyColumns({
       meta: {
         variant: "numeric",
       },
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue }) => formatNumber(getValue(), { locale }),
       enableColumnFilter: false,
     }),
     columnHelper.display({

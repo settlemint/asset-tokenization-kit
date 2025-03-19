@@ -8,7 +8,7 @@ import type {
 } from "@/lib/mutations/asset/transfer/transfer-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 import type { Address } from "viem";
 
@@ -26,6 +26,7 @@ export function Summary({
   const values = useWatch({
     control: control,
   });
+  const locale = useLocale();
 
   return (
     <FormStep title={t("title")} description={t("description")}>
@@ -37,7 +38,7 @@ export function Summary({
         <FormSummaryDetailItem label={t("address")} value={address} />
         <FormSummaryDetailItem
           label={t("amount")}
-          value={formatNumber(values.value)}
+          value={formatNumber(values.value, { locale })}
         />
       </FormSummaryDetailCard>
 

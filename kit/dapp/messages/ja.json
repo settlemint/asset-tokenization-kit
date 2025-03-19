@@ -376,7 +376,7 @@
     },
     "transactions-history": {
       "chart-label": "トランザクション",
-      "description": "過去 {interval} のトランザクションを表示",
+      "description": "最近の期間の取引を表示",
       "title": "トランザクション"
     },
     "transactions-table": {
@@ -621,7 +621,8 @@
       },
       "transfer": "転送",
       "transfer-title": "転送 {name} ({symbol})"
-    }
+    },
+    "assets-count-assets": "資産"
   },
   "private": {
     "assets": {
@@ -1673,7 +1674,20 @@
         "pincode-instruction": "ウォレットを保護するために6桁のピンコードを入力してください。",
         "pincode-set": "ピンコードが正常に設定されました",
         "setup-pincode": "ピンコードを設定"
-      }
+      },
+      "passkeys": "パスキー",
+      "passkeys-description": "安全なアクセスのためのパスキーを管理します。",
+      "passkeys-instructions": "パスワードなしでアカウントに安全にアクセスします。",
+      "add-passkey": "パスキーを追加",
+      "accounts": "アカウント",
+      "accounts-description": "現在サインインしているアカウントを管理します。",
+      "accounts-instructions": "追加のアカウントにサインインします。",
+      "delete": "削除",
+      "resend-verification-email": "確認メールを再送信",
+      "security": "セキュリティ",
+      "switch-account": "アカウントを切り替える",
+      "verify-your-email": "メールアドレスを確認してください。",
+      "verify-your-email-description": "メールアドレスを確認してください。受信トレイに確認メールが届いているか確認してください。メールが届いていない場合は、以下のボタンをクリックして再送信してください。"
     },
     "users": {
       "banned_reason": "{reason}のため禁止されています",
@@ -1766,5 +1780,28 @@
   "language": {
     "changing": "変更中...",
     "language": "言語"
+  },
+  "asset-events": {
+    "ApprovalEvent": "承認",
+    "AssetCreatedEvent": "作成",
+    "BondMaturedEvent": "成熟",
+    "BondRedeemedEvent": "償還",
+    "BurnEvent": "焼却",
+    "CollateralUpdatedEvent": "担保が更新されました",
+    "ManagementFeeCollectedEvent": "管理手数料が徴収されました",
+    "MintEvent": "ミント",
+    "PausedEvent": "一時停止",
+    "PerformanceFeeCollectedEvent": "パフォーマンス手数料が徴収されました",
+    "RoleAdminChangedEvent": "役割管理者が変更されました",
+    "RoleGrantedEvent": "役割が付与されました",
+    "RoleRevokedEvent": "役割が取り消されました",
+    "TokenWithdrawnEvent": "引き出し",
+    "TokensFrozenEvent": "凍結",
+    "TransferEvent": "転送",
+    "UnderlyingAssetTopUpEvent": "追加",
+    "UnderlyingAssetWithdrawnEvent": "引き出し",
+    "UnpausedEvent": "再開",
+    "UserBlockedEvent": "ブロック",
+    "UserUnblockedEvent": "ブロック解除"
   }
 }

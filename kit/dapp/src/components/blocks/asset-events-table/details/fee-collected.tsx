@@ -3,7 +3,7 @@ import type {
   PerformanceFeeCollectedEvent,
 } from "@/lib/queries/asset-events/asset-events-fragments";
 import { formatNumber } from "@/lib/utils/number";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { DetailsCard } from "../details-card";
 
 interface FeeCollectedDetailsProps {
@@ -12,12 +12,13 @@ interface FeeCollectedDetailsProps {
 
 export function FeeCollectedDetails({ details }: FeeCollectedDetailsProps) {
   const t = useTranslations("components.asset-events-table.details");
+  const locale = useLocale();
 
   const detailItems = [
     {
       key: "amount",
       label: t("amount"),
-      value: formatNumber(details.amount),
+      value: formatNumber(details.amount, { locale }),
     },
   ];
 

@@ -137,6 +137,29 @@
     }
   },
   "admin-user": "Admin",
+  "asset-events": {
+    "ApprovalEvent": "Approval",
+    "AssetCreatedEvent": "Create",
+    "BondMaturedEvent": "Matured",
+    "BondRedeemedEvent": "Redeemed",
+    "BurnEvent": "Burn",
+    "CollateralUpdatedEvent": "Collateral updated",
+    "ManagementFeeCollectedEvent": "Management fee collected",
+    "MintEvent": "Mint",
+    "PausedEvent": "Paused",
+    "PerformanceFeeCollectedEvent": "Performance fee collected",
+    "RoleAdminChangedEvent": "Role admin changed",
+    "RoleGrantedEvent": "Role granted",
+    "RoleRevokedEvent": "Role revoked",
+    "TokenWithdrawnEvent": "Withdraw",
+    "TokensFrozenEvent": "Freeze",
+    "TransferEvent": "Transfer",
+    "UnderlyingAssetTopUpEvent": "Top up",
+    "UnderlyingAssetWithdrawnEvent": "Withdraw",
+    "UnpausedEvent": "Unpause",
+    "UserBlockedEvent": "Block",
+    "UserUnblockedEvent": "Unblock"
+  },
   "asset-info": {
     "admin": "Admin",
     "creator-owner": "Creator / Owner",
@@ -376,7 +399,7 @@
     },
     "transactions-history": {
       "chart-label": "Transaction",
-      "description": "Showing transactions over the last {interval}",
+      "description": "Showing transactions over the last period",
       "title": "Transactions"
     },
     "transactions-table": {
@@ -445,6 +468,7 @@
         "wallet-address-label": "Wallet Address"
       }
     },
+    "assets-count-assets": "assets",
     "dashboard": {
       "latest-events": "Latest events",
       "my-assets": "My Assets",
@@ -1302,7 +1326,11 @@
     },
     "auth": {
       "account": "Account",
+      "accounts": "Accounts",
+      "accounts-description": "Manage your currently signed in accounts.",
+      "accounts-instructions": "Sign in to an additional account.",
       "add-account": "Add Account",
+      "add-passkey": "Add passkey",
       "already-have-account": "Already have an account?",
       "avatar": "Avatar",
       "avatar-description": "Click on the avatar to upload a custom one from your files.",
@@ -1314,6 +1342,7 @@
       "current-password": "Current Password",
       "current-password-placeholder": "Enter your current password",
       "current-session": "Current Session",
+      "delete": "Delete",
       "delete-account": "Delete Account",
       "delete-account-description": "Permanently remove your account and all of its contents. This WILL remove your access to your private key and you WILL lose access to your assets! This action is not reversible, so please continue with caution.",
       "delete-account-email": "Please check your email to verify the deletion of your account.",
@@ -1346,6 +1375,9 @@
       "new-password": "New Password",
       "new-password-placeholder": "Enter your new password",
       "passkey": "Passkey",
+      "passkeys": "Passkeys",
+      "passkeys-description": "Manage your passkeys for secure access.",
+      "passkeys-instructions": "Securely access your account without a password.",
       "password": "Password",
       "password-description": "Enter your current password.",
       "password-instructions": "Please use 8 characters at minimum.",
@@ -1362,6 +1394,7 @@
       "providers-description": "Connect your account with a third-party service.",
       "providers-loading-error": "Could not load account info",
       "remember-me": "Remember me",
+      "resend-verification-email": "Resend verification email",
       "reset-password": "Reset Password",
       "reset-password-action": "Save new password",
       "reset-password-description": "Enter your new password below",
@@ -1369,6 +1402,7 @@
       "reset-password-success": "Password reset successfully",
       "revoke": "Revoke",
       "save": "Save",
+      "security": "Security",
       "sessions": "Sessions",
       "sessions-description": "Manage your active sessions and revoke access.",
       "set-password": "Set Password",
@@ -1385,12 +1419,15 @@
       "sign-up-action": "Create an account",
       "sign-up-description": "Enter your information to create an account",
       "sign-up-email": "Check your email for the verification link.",
+      "switch-account": "Switch Account",
       "unlink": "Unlink",
       "username": "Username",
       "username-description": "Enter the username you want to use to log in.",
       "username-instructions": "Please use 32 characters at maximum.",
       "username-placeholder": "John Doe",
       "username-sign-in-placeholder": "Username or email",
+      "verify-your-email": "Verify Your Email",
+      "verify-your-email-description": "Please verify your email address. Check your inbox for the verification email. If you haven't received the email, click the button below to resend.",
       "wallet-security": {
         "pincode-instruction": "Enter a 6-digit pincode to secure your wallet.",
         "pincode-set": "Pincode set successfully",

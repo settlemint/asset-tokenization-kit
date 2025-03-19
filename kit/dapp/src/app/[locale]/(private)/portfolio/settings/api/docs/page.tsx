@@ -1,31 +1,32 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
 import { ApiReferenceReact } from "@scalar/api-reference-react";
 import "@scalar/api-reference-react/style.css";
+import { useTheme } from "next-themes";
 
 export default function ApiDocsPage() {
+  const { resolvedTheme } = useTheme();
+
   return (
     <Card className="p-0">
       <ApiReferenceReact
         configuration={{
           url: "/api/swagger/json",
           withDefaultFonts: false,
+          layout: "classic",
           customCss: `
           .scalar-app.scalar-api-reference,
           .scalar-api-reference .references-rendered {
             font-family: var(--font-sans);
-            background: transparent;
-          }
-          .scalar-app .references-navigation-list {
-            border-top-left-radius: 14px;
-            border-bottom-left-radius: 14px;
-          }
-          .scalar-app section{
-          padding-top: 2em !important;
-          padding-bottom: 4em !important;
           }
         `,
           hideClientButton: true,
           showSidebar: true,
+          darkMode: resolvedTheme === "dark",
+          tagsSorter: "alpha",
+          operationsSorter: "alpha",
+          hideDarkModeToggle: true,
         }}
       />
     </Card>

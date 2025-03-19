@@ -85,6 +85,27 @@ files:
     admin.sidebar.portfolio-management.profile: cce99c598cfdb9773ab041d54c3d973a
     admin.sidebar.portfolio-management.settings: f4f70727dc34561dfde1a3c529b6205c
     admin-user: e3afed0047b08059d0fada10f400c1e5
+    asset-events.ApprovalEvent: 0162bce636a63c3ae499224203e06ed0
+    asset-events.AssetCreatedEvent: 686e697538050e4664636337cc3b834f
+    asset-events.BondMaturedEvent: cddd8b8c35283f03dc0ed6702029247d
+    asset-events.BondRedeemedEvent: d182bd3ccc300a64be9b3b816786c0b7
+    asset-events.BurnEvent: 11635778f116ce6922f6068638a39028
+    asset-events.CollateralUpdatedEvent: 982417e47fe075544fe5984ef214c8bd
+    asset-events.ManagementFeeCollectedEvent: 9f30869edbae91c730b66e3f92b2bfbf
+    asset-events.MintEvent: ca8a196f97a48b2bb489f3e849a68418
+    asset-events.PausedEvent: e99180abf47a8b3a856e0bcb2656990a
+    asset-events.PerformanceFeeCollectedEvent: 2b4c003beb95e1407dc593cd3a9f8ea2
+    asset-events.RoleAdminChangedEvent: fb1ccd2fb8f7debc2c414ec8d1835dff
+    asset-events.RoleGrantedEvent: 1d0a0b9b86d84ce5ad0af1b865e5aed7
+    asset-events.RoleRevokedEvent: 4eacf02d2582628ab164ceaccc33d94e
+    asset-events.TokenWithdrawnEvent: 9d5dbce7d87cede9e0224bb3a48ca1d7
+    asset-events.TokensFrozenEvent: 65467087a19145f43129bba42781aea0
+    asset-events.TransferEvent: 6950810f0d2bba97a6f710c7b965b84e
+    asset-events.UnderlyingAssetTopUpEvent: 1b25fcd2acf8f03e781eb8a90d526084
+    asset-events.UnderlyingAssetWithdrawnEvent: 9d5dbce7d87cede9e0224bb3a48ca1d7
+    asset-events.UnpausedEvent: 648ff76ea7617136d7a5e0cbff92606f
+    asset-events.UserBlockedEvent: e1e4c8c9ccd9fc39c391da4bcd093fb2
+    asset-events.UserUnblockedEvent: 193cb08a65f200adaa4f9c35f7e41154
     asset-info.admin: e3afed0047b08059d0fada10f400c1e5
     asset-info.creator-owner: 5439f356b537a6081aabf0ab5ead403d
     asset-info.regular: d2203cb1237cb6460cbad94564e39345
@@ -254,7 +275,7 @@ files:
     components.transaction-details.type-label: a1fa27779242b4902f7ae3bdd5c6d508
     components.transaction-hash.view-on-explorer: 239587ba27ff078565f05bc22c6b1e34
     components.transactions-history.chart-label: 1b0ffaae3973401f71cd000ab9f7856e
-    components.transactions-history.description: 266d7b1e1e38458dc8721f8526d5c562
+    components.transactions-history.description: 9fcc452bd71c472482ae7dbf8ee554d8
     components.transactions-history.title: 31112aca11d0e9e6eb7db96f317dda49
     components.transactions-table.columns.actions: 06df33001c1d7187fdd81ea1f5b277aa
     components.transactions-table.columns.contract: f49498143b94e78415d06029763412b9
@@ -296,6 +317,7 @@ files:
     portfolio.add-contact-form.contact.last-name-label: 77587239bf4c54ea493c7033e1dbf636
     portfolio.add-contact-form.contact.title: 4e58c159d031b956f9ee227f87df3fcf
     portfolio.add-contact-form.contact.wallet-address-label: a45e5458e44f09f0c4b7682ce8e5b1cc
+    portfolio.assets-count-assets: 32bb636196f91ed59d7a49190e26b42c
     portfolio.dashboard.latest-events: 8b0807a79d36ca9fece2ab62e26bdd9f
     portfolio.dashboard.my-assets: 73fe13baa319e5c115fdc62077f0e1ec
     portfolio.dashboard.page-title: d4f859a96c13f551a2771b7fc3a78d38
@@ -892,7 +914,11 @@ files:
     private.assets.table.topinfo-title.stablecoin: 6f6022eaec5ef1ee3228ec932584ae1e
     private.assets.table.topinfo-title.tokenizeddeposit: c511fe12d6830ee73154705f480e6a35
     private.auth.account: 08bd40c7543007ad06e4fce31618f6ec
+    private.auth.accounts: 9b945efebb006547a94415eadaa12921
+    private.auth.accounts-description: f07652180861e323d5cbb2b73d007a8b
+    private.auth.accounts-instructions: 758b04ca54425eeec9619122bc12c186
     private.auth.add-account: 1f78ae0500c549603a85262981982518
+    private.auth.add-passkey: 889705e0fb3dcfe696d3f0eee723e144
     private.auth.already-have-account: 21bdc5689c12595ae14298354d5550d5
     private.auth.avatar: 32036005d1f6ed59803ba3e13c80993e
     private.auth.avatar-description: c8f5cec1cca3398c428d8f3e40c78e7b
@@ -904,6 +930,7 @@ files:
     private.auth.current-password: 4bc28f132d571b160ba407e143915de2
     private.auth.current-password-placeholder: a454262ec02348608cdf5c73ef3f992b
     private.auth.current-session: c620aba920847791d92fee85fd52208d
+    private.auth.delete: f2a6c498fb90ee345d997f888fce3b18
     private.auth.delete-account: bee04ef1315b3f9562be34e2e28a7831
     private.auth.delete-account-description: 98499cdd327a7477f65d822e085d696b
     private.auth.delete-account-email: 644b3ef8c4e09c9a409d7c987850d272
@@ -936,6 +963,9 @@ files:
     private.auth.new-password: ae3bb2a1ac61750150b606298091d38a
     private.auth.new-password-placeholder: bbddd6ba0948d79e55486e615a265b56
     private.auth.passkey: 816da2672a1205347a4ae8e9eb25f0bd
+    private.auth.passkeys: f6caba65142b6763331050dec8b8509d
+    private.auth.passkeys-description: fcebe3d766553146aef947ff0da9cc24
+    private.auth.passkeys-instructions: d7e2d2d0bdd123271535d72b4ce9e4f0
     private.auth.password: dc647eb65e6711e155375218212b3964
     private.auth.password-description: d33329ec0c775d62b858bf4db5084a69
     private.auth.password-instructions: 9314a77b365ea98c193a7e7537d27c16
@@ -950,6 +980,7 @@ files:
     private.auth.providers-description: bce05168fd5bab0f0cb80dfd2293dfe8
     private.auth.providers-loading-error: 1d6f0554e732b9999daa0184d3fb9be0
     private.auth.remember-me: 878530871f0db73f004f5bd6591eeb76
+    private.auth.resend-verification-email: dfdf2f349b19558e6bfb34b9f1793a03
     private.auth.reset-password: 6072e83b7f35887c76e64920bd370f4a
     private.auth.reset-password-action: 6c9025c5d284889adb27111824de57e0
     private.auth.reset-password-description: fb74f25b8e31caa0541f56be5e89d08b
@@ -957,6 +988,7 @@ files:
     private.auth.reset-password-success: b086e39450cc1801a75d6eb86f9642b8
     private.auth.revoke: 21313f76b111bc0df501bf89fc96ba46
     private.auth.save: c9cc8cce247e49bae79f15173ce97354
+    private.auth.security: 2fae32629d4ef4fc6341f1751b405e45
     private.auth.sessions: a9c4b6c9fbd990849d1f128dfc4ed3e7
     private.auth.sessions-description: 84d33a513406e51ce0be6f7046b0705a
     private.auth.set-password: af214972865d03cc4eb63ed9f0b75554
@@ -973,12 +1005,15 @@ files:
     private.auth.sign-up-action: 2fdfd506efea08144c0794c32ca8250a
     private.auth.sign-up-description: 59662631c17b489090002ce3cc7221f3
     private.auth.sign-up-email: 1bfdea4b3c28f272245b479442b6c21e
+    private.auth.switch-account: 3070961f4a1f186d4ab5331a23da9865
     private.auth.unlink: c1a39b6a60f8b2f87e23d60ab649d994
     private.auth.username: f6039d44b29456b20f8f373155ae4973
     private.auth.username-description: 0c88986397d088646f31cc5c728070e6
     private.auth.username-instructions: 1d9872bc27d142b25b907943cf7a0675
     private.auth.username-placeholder: 4c2a904bafba06591225113ad17b5cec
     private.auth.username-sign-in-placeholder: c8b1d00cf350d4af96cd763852d9c520
+    private.auth.verify-your-email: 9b767094721b25983b22dc98ea177e2f
+    private.auth.verify-your-email-description: d510e89cb30864ea49204b671437da7a
     private.auth.wallet-security.pincode-instruction: 1835fd81901c702bdfe2f09ec8e37cbd
     private.auth.wallet-security.pincode-set: a5c7192ea095028d2c5958503263f57c
     private.auth.wallet-security.setup-pincode: afbf8375e2309f2a64e18911ffa9fd98

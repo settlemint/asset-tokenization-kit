@@ -376,7 +376,7 @@
     },
     "transactions-history": {
       "chart-label": "Transaktion",
-      "description": "Zeige Transaktionen der letzten {interval}",
+      "description": "Transaktionen im letzten Zeitraum anzeigen",
       "title": "Transaktionen"
     },
     "transactions-table": {
@@ -621,7 +621,8 @@
       },
       "transfer": "Überweisung",
       "transfer-title": "Überweisung {name} ({symbol})"
-    }
+    },
+    "assets-count-assets": "Vermögenswerte"
   },
   "private": {
     "assets": {
@@ -1673,7 +1674,20 @@
         "pincode-instruction": "Geben Sie einen 6-stelligen PIN-Code ein, um Ihre Brieftasche zu sichern.",
         "pincode-set": "PIN-Code erfolgreich festgelegt",
         "setup-pincode": "PIN-Code einrichten"
-      }
+      },
+      "passkeys": "Passkeys",
+      "passkeys-description": "Verwalten Sie Ihre Passkeys für einen sicheren Zugriff.",
+      "passkeys-instructions": "Greifen Sie sicher auf Ihr Konto ohne ein Passwort zu.",
+      "add-passkey": "Passwort hinzufügen",
+      "accounts": "Konten",
+      "accounts-description": "Verwalten Sie Ihre derzeit angemeldeten Konten.",
+      "accounts-instructions": "Melden Sie sich bei einem zusätzlichen Konto an.",
+      "delete": "Löschen",
+      "resend-verification-email": "Bestätigungs-E-Mail erneut senden",
+      "security": "Sicherheit",
+      "switch-account": "Konto wechseln",
+      "verify-your-email": "Bestätigen Sie Ihre E-Mail",
+      "verify-your-email-description": "Bitte bestätigen Sie Ihre E-Mail-Adresse. Überprüfen Sie Ihren Posteingang auf die Bestätigungs-E-Mail. Wenn Sie die E-Mail nicht erhalten haben, klicken Sie auf die Schaltfläche unten, um sie erneut zu senden."
     },
     "users": {
       "banned_reason": "Gesperrt wegen {reason}",
@@ -1766,5 +1780,28 @@
   "language": {
     "changing": "Ändern...",
     "language": "Sprache"
+  },
+  "asset-events": {
+    "ApprovalEvent": "Genehmigung",
+    "AssetCreatedEvent": "Erstellen",
+    "BondMaturedEvent": "Reif",
+    "BondRedeemedEvent": "Eingelöst",
+    "BurnEvent": "Verbrennen",
+    "CollateralUpdatedEvent": "Sicherheiten aktualisiert",
+    "ManagementFeeCollectedEvent": "Verwaltungsgebühr eingezogen",
+    "MintEvent": "Prägen",
+    "PausedEvent": "Pausiert",
+    "PerformanceFeeCollectedEvent": "Leistungsgebühr eingezogen",
+    "RoleAdminChangedEvent": "Rolle Admin geändert",
+    "RoleGrantedEvent": "Rolle gewährt",
+    "RoleRevokedEvent": "Rolle widerrufen",
+    "TokenWithdrawnEvent": "Abheben",
+    "TokensFrozenEvent": "Einfrieren",
+    "TransferEvent": "Übertragen",
+    "UnderlyingAssetTopUpEvent": "Aufladen",
+    "UnderlyingAssetWithdrawnEvent": "Abheben",
+    "UnpausedEvent": "Wieder aktivieren",
+    "UserBlockedEvent": "Blockieren",
+    "UserUnblockedEvent": "Entblockieren"
   }
 }

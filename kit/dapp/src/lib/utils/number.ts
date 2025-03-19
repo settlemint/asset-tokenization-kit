@@ -24,10 +24,8 @@ function formatNumberWithFormatter(
   formatter:
     | ReturnType<typeof useFormatter>
     | ReturnType<typeof createFormatter>,
-  amount?: string | bigint | number | BigNumber | null,
-  options: FormatOptions = {
-    locale: "en",
-  }
+  amount: string | bigint | number | BigNumber | null | undefined,
+  options: FormatOptions
 ): string {
   const { currency, token, decimals = 2, percentage = false } = options;
 
@@ -81,10 +79,8 @@ function formatNumberWithFormatter(
  * Can be used in Server Components or outside of the React component tree
  */
 export function formatNumber(
-  amount?: string | bigint | number | BigNumber | null,
-  options: FormatOptions = {
-    locale: "en",
-  }
+  amount: string | bigint | number | BigNumber | null | undefined,
+  options: FormatOptions
 ): string {
   const formatter = createFormatter({
     locale: options.locale?.toString() || "en",

@@ -4,7 +4,7 @@ import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-
 import type { ChartConfig } from "@/components/ui/chart";
 import { createTimeSeries } from "@/lib/charts";
 import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
 interface TotalVolumeProps {
@@ -33,13 +33,19 @@ export async function TotalVolume({ address }: TotalVolumeProps) {
       </ChartSkeleton>
     );
   }
+  const locale = await getLocale();
 
-  const timeseries = createTimeSeries(data, ["totalVolume"], {
-    granularity: "day",
-    intervalType: "week",
-    intervalLength: 1,
-    aggregation: "first",
-  });
+  const timeseries = createTimeSeries(
+    data,
+    ["totalVolume"],
+    {
+      granularity: "day",
+      intervalType: "week",
+      intervalLength: 1,
+      aggregation: "first",
+    },
+    locale
+  );
 
   return (
     <AreaChartComponent
