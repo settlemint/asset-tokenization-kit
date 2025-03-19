@@ -78,7 +78,8 @@ export const AssetPriceApi = new Elysia()
       } catch (error) {
         return {
           success: false,
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           timestamp: new Date().toISOString(),
         };
       }

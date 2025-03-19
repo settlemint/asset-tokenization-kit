@@ -118,21 +118,25 @@ export function FormInput<T extends FieldValues>({
                   onChange={async (evt: ChangeEvent<HTMLInputElement>) => {
                     if (props.type === "number") {
                       const value = evt.target.value;
-                      
+
                       if (value === "") {
                         field.onChange(evt);
                         return;
                       }
-                      
+
                       if (value.startsWith("-")) {
                         return;
                       }
-                      
-                      if (value.startsWith("0") && value !== "0" && !value.startsWith("0.")) {
+
+                      if (
+                        value.startsWith("0") &&
+                        value !== "0" &&
+                        !value.startsWith("0.")
+                      ) {
                         return;
                       }
                     }
-                    
+
                     field.onChange(evt);
                     if (form.formState.errors[field.name]) {
                       await form.trigger(field.name);
