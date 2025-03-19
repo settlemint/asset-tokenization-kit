@@ -11,6 +11,8 @@ import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import type { Address } from "viem";
+import { allowlistEnabled } from "./_components/allow-form/enabled";
+import { blocklistEnabled } from "./_components/block-form/enabled";
 import { ManageDropdown } from "./_components/manage-dropdown/manage-dropdown";
 
 interface LayoutProps extends PropsWithChildren {
@@ -59,7 +61,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
       href: `/assets/${assettype}/${address}/underlying-assets`,
       badge: balances.length,
     },
-    ...(assettype === "tokenizeddeposit"
+    ...(allowlistEnabled(assettype)
       ? [
           {
             name: t("tabs.allowlist"),
@@ -67,13 +69,16 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
             badge: assetUsers.allowlist.length,
           },
         ]
-      : [
+      : []),
+    ...(blocklistEnabled(assettype)
+      ? [
           {
             name: t("tabs.blocklist"),
             href: `/assets/${assettype}/${address}/blocklist`,
             badge: assetUsers.blocklist.length,
           },
-        ]),
+        ]
+      : []),
   ];
 };
 

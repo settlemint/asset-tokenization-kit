@@ -40,7 +40,9 @@ export function columns({
     columnHelper.accessor("blockedAt", {
       header: t("blocked-since-header"),
       cell: ({ getValue }) =>
-        getValue() ? formatDate(getValue(), { type: "distance" }) : "-",
+        getValue()
+          ? formatDate(getValue(), { type: "distance", locale: "en" })
+          : "-",
       enableColumnFilter: false,
     }),
     columnHelper.display({

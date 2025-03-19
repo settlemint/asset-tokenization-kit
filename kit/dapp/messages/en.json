@@ -939,7 +939,9 @@
               "top-up": "Verify the details of your top-up before proceeding.",
               "unpause": "Verify the details of your unpause before proceeding.",
               "update-collateral": "Verify the details of your update collateral before proceeding.",
-              "withdraw": "Verify the details of your withdrawal before proceeding."
+              "withdraw": "Verify the details of your withdrawal before proceeding.",
+              "allow": "Verify the details of your allow before proceeding.",
+              "disallow": "Verify the details of your disallow before proceeding."
             }
           }
         },

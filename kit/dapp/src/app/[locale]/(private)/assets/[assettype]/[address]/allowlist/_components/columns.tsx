@@ -40,7 +40,9 @@ export function columns({
     columnHelper.accessor("allowedAt", {
       header: t("allowed-since-header"),
       cell: ({ getValue }) =>
-        getValue() ? formatDate(getValue(), { type: "distance" }) : "-",
+        getValue()
+          ? formatDate(getValue(), { type: "distance", locale: "en" })
+          : "-",
       enableColumnFilter: false,
     }),
     columnHelper.display({
@@ -50,7 +52,8 @@ export function columns({
           {t("actions-header")}
         </DataTableColumnHeader>
       ),
-      cell: ({ row }) => {
+      cell: ({ row, table }) => {
+        const rows = table.getRowModel().rows.map((row) => row.original);
         return (
           <DataTableRowActions
             actions={[
@@ -66,6 +69,7 @@ export function columns({
                     onOpenChange={onOpenChange}
                   />
                 ),
+                disabled: rows.length === 1,
               },
             ]}
           />
