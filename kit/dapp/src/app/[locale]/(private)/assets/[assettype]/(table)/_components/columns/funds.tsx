@@ -10,7 +10,7 @@ import type { getFundList } from "@/lib/queries/fund/fund-list";
 import { formatNumber } from "@/lib/utils/number";
 import type { fundCategories, fundClasses } from "@/lib/utils/zod";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getFundList>>[number]>();
@@ -21,6 +21,8 @@ type FundClass = (typeof fundClasses)[number];
 export function fundColumns({ baseCurrency }: { baseCurrency: CurrencyCode }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   const translatedFundCategories: Record<FundCategory, string> = {
     ACTIVIST: t("funds.categories.activist"),
@@ -97,6 +99,7 @@ export function fundColumns({ baseCurrency }: { baseCurrency: CurrencyCode }) {
         formatNumber(getValue(), {
           currency: baseCurrency,
           decimals: 2,
+          locale: locale,
         }),
       enableColumnFilter: false,
     }),

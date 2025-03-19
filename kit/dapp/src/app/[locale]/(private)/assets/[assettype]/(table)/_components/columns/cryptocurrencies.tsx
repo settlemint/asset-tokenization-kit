@@ -7,7 +7,7 @@ import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { getCryptoCurrencyList } from "@/lib/queries/cryptocurrency/cryptocurrency-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const columnHelper =
   createColumnHelper<
@@ -21,6 +21,8 @@ export function cryptocurrencyColumns({
 }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("id", {
@@ -48,6 +50,7 @@ export function cryptocurrencyColumns({
         formatNumber(getValue(), {
           currency: baseCurrency,
           decimals: 2,
+          locale: locale,
         }),
       enableColumnFilter: false,
     }),

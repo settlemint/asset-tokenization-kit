@@ -2,7 +2,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { MintEvent } from "@/lib/queries/asset-events/asset-events-fragments";
 import { formatNumber } from "@/lib/utils/number";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { DetailsCard } from "../details-card";
 
 interface MintDetailsProps {
@@ -12,6 +12,7 @@ interface MintDetailsProps {
 
 export function MintDetails({ details, symbol }: MintDetailsProps) {
   const t = useTranslations("components.asset-events-table.details");
+  const locale = useLocale();
 
   const detailItems = [
     {
@@ -28,7 +29,7 @@ export function MintDetails({ details, symbol }: MintDetailsProps) {
       label: t("value"),
       value: formatNumber(
         details.value,
-        symbol ? { token: symbol } : undefined
+        symbol ? { token: symbol, locale: locale } : { locale: locale }
       ),
     },
   ];

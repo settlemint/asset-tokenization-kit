@@ -5,7 +5,7 @@ import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
 import { formatNumber } from "@/lib/utils/number";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
 
@@ -16,9 +16,12 @@ interface CryptocurrenciesDetailsProps {
 export async function CryptocurrenciesDetails({
   address,
 }: CryptocurrenciesDetailsProps) {
-  const cryptocurrency = await getCryptoCurrencyDetail({ address });
-  const t = await getTranslations("private.assets.fields");
-  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
+  const [cryptocurrency, t, baseCurrency, locale] = await Promise.all([
+    getCryptoCurrencyDetail({ address }),
+    getTranslations("private.assets.fields"),
+    getSetting(SETTING_KEYS.BASE_CURRENCY),
+    getLocale(),
+  ]);
 
   return (
     <Suspense>
@@ -55,12 +58,14 @@ export async function CryptocurrenciesDetails({
           {formatNumber(cryptocurrency.concentration, {
             percentage: true,
             decimals: 2,
+            locale: locale,
           })}
         </DetailGridItem>
         <DetailGridItem label={t("price")}>
           {formatNumber(cryptocurrency.value_in_base_currency, {
             currency: baseCurrency,
             decimals: 2,
+            locale: locale,
           })}
         </DetailGridItem>
       </DetailGrid>

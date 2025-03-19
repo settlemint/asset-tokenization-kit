@@ -13,7 +13,7 @@ import {
 import type { Transaction } from "@/lib/queries/transactions/transaction-fragment";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export function TransactionDetailSheet({
   transactionHash,
@@ -24,6 +24,7 @@ export function TransactionDetailSheet({
   receipt,
 }: Transaction) {
   const t = useTranslations("components.transaction-details");
+  const locale = useLocale();
 
   return (
     <Sheet>
@@ -111,7 +112,10 @@ export function TransactionDetailSheet({
                     {t("gas-used-label")}:
                   </dt>
                   <dd className="text-sm">
-                    {formatNumber(receipt.gasUsed, { decimals: 0 })}
+                    {formatNumber(receipt.gasUsed, {
+                      decimals: 0,
+                      locale: locale,
+                    })}
                   </dd>
                   {receipt.blobGasUsed && (
                     <>
@@ -119,7 +123,10 @@ export function TransactionDetailSheet({
                         {t("blob-gas-used-label")}:
                       </dt>
                       <dd className="text-sm">
-                        {formatNumber(receipt.blobGasUsed, { decimals: 0 })}
+                        {formatNumber(receipt.blobGasUsed, {
+                          decimals: 0,
+                          locale: locale,
+                        })}
                       </dd>
                     </>
                   )}
@@ -129,7 +136,10 @@ export function TransactionDetailSheet({
                         {t("blob-gas-price-label")}:
                       </dt>
                       <dd className="text-sm">
-                        {formatNumber(receipt.blobGasPrice, { decimals: 0 })}
+                        {formatNumber(receipt.blobGasPrice, {
+                          decimals: 0,
+                          locale: locale,
+                        })}
                       </dd>
                     </>
                   )}
