@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   User2,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { ComponentType } from "react";
 import { DeleteApiKeyAction } from "./delete-api-key-action";
 
@@ -36,6 +36,8 @@ export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("portfolio.settings.api-keys");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("name", {
@@ -57,7 +59,9 @@ export function columns() {
     columnHelper.accessor("lastRequest", {
       header: t("columns.lastRequest"),
       cell: ({ getValue }) => (
-        <span>{getValue() ? formatDate(getValue()!) : t("never")}</span>
+        <span>
+          {getValue() ? formatDate(getValue()!, { locale }) : t("never")}
+        </span>
       ),
       enableColumnFilter: false,
     }),
@@ -67,7 +71,7 @@ export function columns() {
         const expiresAt = getValue();
         if (!expiresAt) return <span>{t("never")}</span>;
         if (expiresAt < new Date()) return <span>{t("expired")}</span>;
-        return <span>{formatDate(expiresAt)}</span>;
+        return <span>{formatDate(expiresAt, { locale })}</span>;
       },
       enableColumnFilter: false,
     }),

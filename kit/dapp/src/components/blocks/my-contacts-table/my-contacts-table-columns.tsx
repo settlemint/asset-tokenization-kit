@@ -8,7 +8,7 @@ import type { Contact } from "@/lib/queries/contact/contact-fragment";
 import { formatDate } from "@/lib/utils/date";
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import { User2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { type ComponentType, Suspense } from "react";
 
 export const icons: Record<string, ComponentType<{ className?: string }>> = {
@@ -17,6 +17,7 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
 
 export function Columns() {
   const t = useTranslations("portfolio.my-contacts.table");
+  const locale = useLocale();
 
   return [
     {
@@ -57,7 +58,10 @@ export function Columns() {
       cell: ({ row }: { row: Row<Contact> }) => {
         const createdAt = row.original.created_at;
         return createdAt
-          ? formatDate(new Date(createdAt), { type: "distance" })
+          ? formatDate(new Date(createdAt), {
+              type: "distance",
+              locale: locale,
+            })
           : "-";
       },
       enableColumnFilter: false,

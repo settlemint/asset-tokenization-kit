@@ -62,6 +62,7 @@ export const getPredictedAddress = cache(async (input: CreateBondInput) => {
   const capExact = String(parseUnits(String(cap), decimals));
   const maturityDateTimestamp = formatDate(maturityDate, {
     type: "unixSeconds",
+    locale: "en",
   });
 
   const data = await portalClient.request(CreateBondPredictAddress, {

@@ -7,6 +7,7 @@ import {
   isSameDay,
   isSameHour,
   isSameMonth,
+  setDefaultOptions,
   startOfDay,
   startOfHour,
   subDays,
@@ -14,6 +15,8 @@ import {
   subWeeks,
   subYears,
 } from "date-fns";
+import { ar, de, ja } from "date-fns/locale";
+import type { Locale } from "next-intl";
 import { getDateFromTimestamp } from "./utils/date";
 
 export type TimeGranularity = "hour" | "day" | "month";
@@ -52,7 +55,8 @@ type TimeSeriesResult<T> = {
 export function createTimeSeries<T extends DataPoint>(
   data: T[],
   valueKeys: (keyof T)[],
-  options: TimeSeriesOptions
+  options: TimeSeriesOptions,
+  locale: Locale
 ): TimeSeriesResult<Pick<T, keyof T>>[] {
   const {
     granularity,
@@ -91,7 +95,7 @@ export function createTimeSeries<T extends DataPoint>(
     );
 
     const result = {
-      timestamp: formatChartDate(tick, granularity),
+      timestamp: formatChartDate(tick, granularity, locale),
     } as TimeSeriesResult<Pick<T, keyof T>>;
 
     for (const key of valueKeys) {
@@ -177,8 +181,19 @@ function isInTick(
 
 export function formatChartDate(
   date: Date,
-  granularity: TimeGranularity
+  granularity: TimeGranularity,
+  locale: Locale
 ): string {
+  if (locale !== "en") {
+    if (locale === "de") {
+      setDefaultOptions({ locale: de });
+    } else if (locale === "ja") {
+      setDefaultOptions({ locale: ja });
+    } else if (locale === "ar") {
+      setDefaultOptions({ locale: ar });
+    }
+  }
+
   if (granularity === "hour") {
     return format(date, "HH:mm, MMM d");
   }
@@ -189,13 +204,6 @@ export function formatChartDate(
     return format(date, "MMM y");
   }
   throw new Error("Invalid granularity");
-}
-
-export function formatInterval(
-  intervalLength: number,
-  intervalType: IntervalType
-): string {
-  return `${intervalLength} ${intervalType}${intervalLength > 1 ? "s" : ""}`;
 }
 
 function aggregateData<T extends DataPoint>(

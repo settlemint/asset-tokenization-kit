@@ -10,7 +10,7 @@ import type { getEquityList } from "@/lib/queries/equity/equity-list";
 import { formatNumber } from "@/lib/utils/number";
 import type { equityCategories, equityClasses } from "@/lib/utils/zod";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getEquityList>>[number]>();
@@ -25,6 +25,8 @@ export function equityColumns({
 }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   const translatedEquityCategories: Record<EquityCategory, string> = {
     COMMON_EQUITY: t("equity.categories.common-equity"),
@@ -118,7 +120,16 @@ export function equityColumns({
         formatNumber(getValue(), {
           currency: baseCurrency,
           decimals: 2,
+          locale: locale,
         }),
+      enableColumnFilter: false,
+    }),
+    columnHelper.accessor("totalSupply", {
+      header: t("total-supply-header"),
+      meta: {
+        variant: "numeric",
+      },
+      cell: ({ getValue }) => formatNumber(getValue(), { locale }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("equityCategory", {

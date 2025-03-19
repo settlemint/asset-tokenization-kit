@@ -10,7 +10,7 @@ import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { getStableCoinList } from "@/lib/queries/stablecoin/stablecoin-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getStableCoinList>>[number]>();
@@ -22,6 +22,8 @@ export function stablecoinColumns({
 }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("id", {
@@ -49,6 +51,7 @@ export function stablecoinColumns({
         formatNumber(getValue(), {
           currency: baseCurrency,
           decimals: 2,
+          locale: locale,
         }),
       enableColumnFilter: false,
     }),
@@ -57,7 +60,7 @@ export function stablecoinColumns({
       meta: {
         variant: "numeric",
       },
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue }) => formatNumber(getValue(), { locale }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("collateralRatio", {

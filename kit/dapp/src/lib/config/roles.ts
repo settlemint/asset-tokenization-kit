@@ -1,5 +1,5 @@
 import { type Hex, keccak256, stringToBytes } from "viem";
-import { type ZodInfer, z } from "../utils/zod";
+import { type AssetType, type ZodInfer, z } from "../utils/zod";
 
 /**
  * Role configuration for the access control system.
@@ -32,6 +32,14 @@ export const ROLES = {
       "Allows the account to block and unblock users and to freeze and unfreeze accounts.",
   },
 } as const;
+
+export const getRoles = (assettype: AssetType): Role[] => {
+  const allRoles = Object.keys(ROLES) as Role[];
+  if (assettype === "cryptocurrency") {
+    return allRoles.filter((role) => role !== "USER_MANAGEMENT_ROLE");
+  }
+  return allRoles;
+};
 
 // Type for role keys (e.g., 'DEFAULT_ADMIN_ROLE', 'SUPPLY_MANAGEMENT_ROLE', etc.)
 export type RoleKey = keyof typeof ROLES;

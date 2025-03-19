@@ -10,7 +10,7 @@ import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-bala
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { getAddress } from "viem";
 import { blocklistEnabled } from "../../_components/block-form/enabled";
 import { BlockForm } from "../../_components/block-form/form";
@@ -25,6 +25,8 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.details");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("account.id", {
@@ -42,7 +44,10 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
     columnHelper.accessor("value", {
       header: t("holders.fields.balance-header"),
       cell: ({ getValue, row }) =>
-        formatNumber(getValue(), { token: row.original.asset.symbol }),
+        formatNumber(getValue(), {
+          token: row.original.asset.symbol,
+          locale: locale,
+        }),
       enableColumnFilter: false,
       meta: {
         variant: "numeric",
@@ -58,7 +63,10 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
     columnHelper.accessor("frozen", {
       header: t("holders.frozen-header"),
       cell: ({ getValue, row }) =>
-        formatNumber(getValue(), { token: row.original.asset.symbol }),
+        formatNumber(getValue(), {
+          token: row.original.asset.symbol,
+          locale: locale,
+        }),
       enableColumnFilter: false,
       meta: {
         variant: "numeric",
@@ -76,7 +84,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
       cell: ({ getValue }) => {
         const lastActivity = getValue();
         return lastActivity
-          ? formatDate(lastActivity, { type: "distance" })
+          ? formatDate(lastActivity, { type: "distance", locale: locale })
           : "-";
       },
       enableColumnFilter: false,

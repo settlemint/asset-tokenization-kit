@@ -2,5 +2,6 @@
   "semi": true,
   "trailingComma": "es5",
   "quoteProps": "as-needed",
-  "arrowParens": "always"
+  "arrowParens": "always",
+  "proseWrap": "always"
 }

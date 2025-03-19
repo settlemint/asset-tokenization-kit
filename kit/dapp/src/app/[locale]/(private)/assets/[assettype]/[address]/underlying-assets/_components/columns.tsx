@@ -9,7 +9,7 @@ import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-bala
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { getAddress } from "viem";
 
 const columnHelper =
@@ -18,6 +18,8 @@ const columnHelper =
 export function columns() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("asset.id", {
@@ -35,7 +37,10 @@ export function columns() {
     columnHelper.accessor("value", {
       header: t("balance-header"),
       cell: ({ getValue, row }) =>
-        formatNumber(getValue(), { token: row.original.asset.symbol }),
+        formatNumber(getValue(), {
+          token: row.original.asset.symbol,
+          locale: locale,
+        }),
       enableColumnFilter: false,
       meta: {
         variant: "numeric",
@@ -44,7 +49,10 @@ export function columns() {
     columnHelper.accessor("frozen", {
       header: t("frozen-header"),
       cell: ({ getValue, row }) =>
-        formatNumber(getValue(), { token: row.original.asset.symbol }),
+        formatNumber(getValue(), {
+          token: row.original.asset.symbol,
+          locale: locale,
+        }),
       enableColumnFilter: false,
       meta: {
         variant: "numeric",
@@ -62,7 +70,7 @@ export function columns() {
       cell: ({ getValue }) => {
         const lastActivity = getValue();
         return lastActivity
-          ? formatDate(lastActivity, { type: "distance" })
+          ? formatDate(lastActivity, { type: "distance", locale: locale })
           : "-";
       },
       enableColumnFilter: false,

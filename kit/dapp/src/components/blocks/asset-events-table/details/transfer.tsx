@@ -2,7 +2,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { TransferEvent } from "@/lib/queries/asset-events/asset-events-fragments";
 import { formatNumber } from "@/lib/utils/number";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { DetailsCard } from "../details-card";
 
@@ -24,6 +24,7 @@ export function TransferDetails({
   showRelated = "all",
 }: TransferDetailsProps) {
   const t = useTranslations("components.asset-events-table.details");
+  const locale = useLocale();
 
   const isFromZero =
     details.from.id === "0x0000000000000000000000000000000000000000";
@@ -37,7 +38,7 @@ export function TransferDetails({
     {
       key: "amount",
       label: t("amount"),
-      value: formatNumber(details.value, { token: symbol }),
+      value: formatNumber(details.value, { token: symbol, locale: locale }),
     },
   ];
 

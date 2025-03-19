@@ -10,15 +10,17 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
   const t = await getTranslations("layout.header");
 
   return (
-    <div className="min-h-screen w-full bg-[url(/backgrounds/background-lm.svg')] bg-center bg-cover dark:bg-[url('/backgrounds/background-dm.svg')]">
+    <div className="min-h-screen w-full bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
       <div className="absolute top-8 left-8 flex flex-col items-end gap-0">
         <div className={cn("flex w-full items-center gap-3")}>
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
-            <Logo variant="icon" />
+            <Logo variant="icon" forcedColorMode="dark" />
           </div>
           <div className="flex max-w-[180px] flex-col text-foreground leading-none">
-            <span className="font-bold text-lg">{t("app-name")}</span>
-            <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug">
+            <span className="font-bold text-lg text-primary-foreground">
+              {t("app-name")}
+            </span>
+            <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug text-primary-foreground">
               {t("app-description")}
             </span>
           </div>
@@ -26,7 +28,7 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
       </div>
       <div className="absolute top-8 right-8 flex flex-col items-end gap-0">
         <div className="text-right">
-          <Link href="/" className="text-sm-text">
+          <Link href="/" className="text-primary-foreground">
             {t("home")}
           </Link>
         </div>

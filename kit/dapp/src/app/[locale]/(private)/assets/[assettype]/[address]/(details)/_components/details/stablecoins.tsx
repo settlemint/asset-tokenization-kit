@@ -5,7 +5,7 @@ import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { formatNumber } from "@/lib/utils/number";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
 
@@ -14,9 +14,12 @@ interface StablecoinsDetailsProps {
 }
 
 export async function StablecoinsDetails({ address }: StablecoinsDetailsProps) {
-  const stableCoin = await getStableCoinDetail({ address });
-  const t = await getTranslations("private.assets.fields");
-  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
+  const [stableCoin, t, baseCurrency, locale] = await Promise.all([
+    getStableCoinDetail({ address }),
+    getTranslations("private.assets.fields"),
+    getSetting(SETTING_KEYS.BASE_CURRENCY),
+    getLocale(),
+  ]);
 
   return (
     <Suspense>
@@ -45,16 +48,25 @@ export async function StablecoinsDetails({ address }: StablecoinsDetailsProps) {
           {stableCoin.decimals}
         </DetailGridItem>
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
-          {formatNumber(stableCoin.totalSupply, { token: stableCoin.symbol })}
+          {formatNumber(stableCoin.totalSupply, {
+            token: stableCoin.symbol,
+            locale: locale,
+          })}
         </DetailGridItem>
         <DetailGridItem label={t("total-burned")} info={t("total-burned-info")}>
-          {formatNumber(stableCoin.totalBurned, { token: stableCoin.symbol })}
+          {formatNumber(stableCoin.totalBurned, {
+            token: stableCoin.symbol,
+            locale: locale,
+          })}
         </DetailGridItem>
         <DetailGridItem
           label={t("total-holders")}
           info={t("total-holders-info")}
         >
-          {formatNumber(stableCoin.totalHolders, { decimals: 0 })}
+          {formatNumber(stableCoin.totalHolders, {
+            decimals: 0,
+            locale: locale,
+          })}
         </DetailGridItem>
         <DetailGridItem
           label={t("ownership-concentration")}
@@ -63,12 +75,14 @@ export async function StablecoinsDetails({ address }: StablecoinsDetailsProps) {
           {formatNumber(stableCoin.concentration, {
             percentage: true,
             decimals: 2,
+            locale: locale,
           })}
         </DetailGridItem>
         <DetailGridItem label={t("price")}>
           {formatNumber(stableCoin.value_in_base_currency, {
             currency: baseCurrency,
             decimals: 2,
+            locale: locale,
           })}
         </DetailGridItem>
       </DetailGrid>

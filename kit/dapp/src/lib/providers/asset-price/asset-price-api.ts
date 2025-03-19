@@ -52,7 +52,7 @@ export const AssetPriceApi = new Elysia()
       detail: {
         summary: "Get Asset Price",
         description: "Retrieves the current price of an asset by its ID.",
-        tags: ["asset-price"],
+        tags: ["provider"],
       },
       params: t.Object({
         assetId: t.String({
@@ -78,7 +78,8 @@ export const AssetPriceApi = new Elysia()
       } catch (error) {
         return {
           success: false,
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           timestamp: new Date().toISOString(),
         };
       }
@@ -88,7 +89,7 @@ export const AssetPriceApi = new Elysia()
       detail: {
         summary: "Update Asset Price",
         description: "Updates the price of an asset in the base currency.",
-        tags: ["asset-price"],
+        tags: ["provider"],
       },
       params: t.Object({
         assetId: t.String({

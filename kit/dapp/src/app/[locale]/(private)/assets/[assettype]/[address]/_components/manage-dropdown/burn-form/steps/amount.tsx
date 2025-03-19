@@ -2,7 +2,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { BurnInput } from "@/lib/mutations/burn/burn-schema";
 import { formatNumber } from "@/lib/utils/number";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
@@ -12,8 +12,9 @@ interface AmountProps {
 export function Amount({ maxLimit }: AmountProps) {
   const { control } = useFormContext<BurnInput>();
   const t = useTranslations("private.assets.details.forms.amount");
+  const locale = useLocale();
   const maxLimitDescription = maxLimit
-    ? t("max-limit.burn", { limit: formatNumber(maxLimit) })
+    ? t("max-limit.burn", { limit: formatNumber(maxLimit, { locale }) })
     : undefined;
 
   return (

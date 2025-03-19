@@ -24,6 +24,8 @@ export const viewport: Viewport = {
 
 export { metadata } from "@/lib/config/metadata";
 
+const timeZone = "Europe/Brussels";
+
 const figTree = Figtree({
   subsets: ["latin"],
   display: "swap",
@@ -64,7 +66,7 @@ export default async function RootLayout({
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head> */}
       <body className="min-h-screen antialiased">
-        <NextIntlClientProvider>
+        <NextIntlClientProvider timeZone={timeZone}>
           <ThemeProvider attribute="class" enableColorScheme enableSystem>
             <TransitionProvider>
               <AuthProvider

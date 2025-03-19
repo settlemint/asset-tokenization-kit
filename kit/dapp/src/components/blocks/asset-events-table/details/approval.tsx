@@ -2,7 +2,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { ApprovalEvent } from "@/lib/queries/asset-events/asset-events-fragments";
 import { formatNumber } from "@/lib/utils/number";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { DetailsCard } from "../details-card";
 
 interface ApprovalDetailsProps {
@@ -15,6 +15,7 @@ export function ApprovalDetails({
   symbol = "",
 }: ApprovalDetailsProps) {
   const t = useTranslations("components.asset-events-table.details");
+  const locale = useLocale();
 
   const detailItems = [
     {
@@ -38,7 +39,7 @@ export function ApprovalDetails({
     {
       key: "amount",
       label: t("amount"),
-      value: formatNumber(details.value, { token: symbol }),
+      value: formatNumber(details.value, { token: symbol, locale: locale }),
     },
   ];
 

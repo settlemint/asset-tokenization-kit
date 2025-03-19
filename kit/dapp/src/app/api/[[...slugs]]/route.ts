@@ -55,9 +55,7 @@ const app = new Elysia({ prefix: "/api" })
   .group("/providers/exchange-rates", (app) =>
     app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
   )
-  .group("/asset-price", (app) =>
-    app.use(AssetPriceApi)
-  );
+  .group("/providers/asset-price", (app) => app.use(AssetPriceApi));
 
 export const GET = app.handle;
 export const POST = app.handle;

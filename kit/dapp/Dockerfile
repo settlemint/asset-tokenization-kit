@@ -11,5 +11,6 @@ COPY --chmod=0777  .next/static ./kit/dapp/.next/static
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+ENV NODE_ENV=production
 
 CMD ["bun", "kit/dapp/server.js"]
