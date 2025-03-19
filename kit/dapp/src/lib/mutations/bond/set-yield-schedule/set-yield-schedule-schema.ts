@@ -9,6 +9,7 @@ export const SetYieldScheduleSchema = z.object({
     .max(100, "Rate must be between 0 and 100"),
   interval: z.nativeEnum(IntervalPeriod),
   pincode: z.pincode(),
+  locale: z.string(),
 });
 
 export type SetYieldScheduleInput = ZodInfer<typeof SetYieldScheduleSchema>;

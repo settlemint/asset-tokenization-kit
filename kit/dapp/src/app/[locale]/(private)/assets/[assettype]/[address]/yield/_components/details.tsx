@@ -5,7 +5,7 @@ import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { secondsToInterval } from "@/lib/utils/yield";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
 import { SetYieldScheduleForm } from "./set-yield-schedule-form/form";
@@ -18,6 +18,7 @@ export async function YieldDetails({ address }: DetailsProps) {
   // Hardcoded to bond because the other asset types don't have yield
   const bond = await getBondDetail({ address });
   const t = await getTranslations("admin.bonds.yield");
+  const locale = await getLocale();
 
   if (!bond.yieldSchedule) {
     return (
@@ -39,10 +40,9 @@ export async function YieldDetails({ address }: DetailsProps) {
   );
 
   const intervalPeriod = secondsToInterval(bond.yieldSchedule.interval.toString());
-  let intervalDisplay: string;
   // Use the translation from the interval options section
   // The translation keys are in admin.bonds.yield.set-schedule.interval.options.[period]
-  intervalDisplay = intervalPeriod ? t(`set-schedule.interval.options.${intervalPeriod}`) : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
+  const intervalDisplay = intervalPeriod ? t(`set-schedule.interval.options.${intervalPeriod}`) : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
 
   return (
     <Suspense>
@@ -69,13 +69,14 @@ export async function YieldDetails({ address }: DetailsProps) {
           {formatNumber(ratePercentage, {
             percentage: true,
             decimals: 0,
+            locale
           })}
         </DetailGridItem>
         <DetailGridItem label={t("start-date")}>
-          {formatDate(new Date(Number(bond.yieldSchedule.startDate) * 1000))}
+          {formatDate(new Date(Number(bond.yieldSchedule.startDate) * 1000), { locale })}
         </DetailGridItem>
         <DetailGridItem label={t("end-date")}>
-          {formatDate(new Date(Number(bond.yieldSchedule.endDate) * 1000))}
+          {formatDate(new Date(Number(bond.yieldSchedule.endDate) * 1000), { locale })}
         </DetailGridItem>
         <DetailGridItem label={t("interval")}>
           {intervalDisplay}
@@ -110,6 +111,7 @@ export async function YieldDetails({ address }: DetailsProps) {
                 {
                   percentage: true,
                   decimals: 0,
+                  locale
                 }
               )}
         </DetailGridItem>

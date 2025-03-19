@@ -2,11 +2,11 @@
 
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
-import { type Bond } from "@/lib/queries/bond/bond-fragment";
+import type { Bond } from "@/lib/queries/bond/bond-fragment";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
-import { type ColumnDef } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 export interface PeriodTableProps {
@@ -17,6 +17,7 @@ type YieldPeriod = NonNullable<Bond['yieldSchedule']>['periods'][number];
 
 export function YieldPeriodTable({ bond }: PeriodTableProps) {
   const t = useTranslations("admin.bonds.yield.period-table");
+  const locale = useLocale();
 
   const data = useMemo(() => {
     if (!bond.yieldSchedule || !bond.yieldSchedule.periods.length) {
@@ -41,14 +42,14 @@ export function YieldPeriodTable({ bond }: PeriodTableProps) {
         accessorKey: "startDate",
         header: t("start-date"),
         cell: ({ row }) => {
-          return formatDate(new Date(Number(row.original.startDate) * 1000));
+          return formatDate(new Date(Number(row.original.startDate) * 1000), { locale });
         },
       },
       {
         accessorKey: "endDate",
         header: t("end-date"),
         cell: ({ row }) => {
-          return formatDate(new Date(Number(row.original.endDate) * 1000));
+          return formatDate(new Date(Number(row.original.endDate) * 1000), { locale } );
         },
       },
       {
@@ -60,7 +61,7 @@ export function YieldPeriodTable({ bond }: PeriodTableProps) {
 
           return (
             <div>
-              {formatNumber(totalClaimed)} / {formatNumber(totalSupply)}
+              {formatNumber(totalClaimed, { locale })} / {formatNumber(totalSupply, { locale })}
             </div>
           );
         },
@@ -83,7 +84,7 @@ export function YieldPeriodTable({ bond }: PeriodTableProps) {
         },
       },
     ],
-    [t, bond.totalSupply]
+    [t, bond.totalSupply, locale]
   );
 
   const displayData = data.length > 0 ? data : [];

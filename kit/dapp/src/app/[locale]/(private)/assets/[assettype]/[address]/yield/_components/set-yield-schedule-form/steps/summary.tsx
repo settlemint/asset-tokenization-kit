@@ -7,7 +7,7 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { formatDate } from "@/lib/utils/date";
 import { IntervalPeriod, getIntervalLabel } from "@/lib/utils/yield";
 import { Percent } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 import type { Address } from "viem";
 
@@ -18,6 +18,7 @@ interface SummaryProps {
 export function Summary({ address }: SummaryProps) {
   const { control } = useFormContext();
   const t = useTranslations("admin.bonds.yield.set-schedule");
+  const locale = useLocale();
   const values = useWatch({
     control: control,
   });
@@ -35,11 +36,11 @@ export function Summary({ address }: SummaryProps) {
         />
         <FormSummaryDetailItem
           label={t("summary.start-time")}
-          value={formatDate(values.startTime)}
+          value={formatDate(values.startTime, { locale })}
         />
         <FormSummaryDetailItem
           label={t("summary.end-time")}
-          value={formatDate(values.endTime)}
+          value={formatDate(values.endTime, { locale })}
         />
         <FormSummaryDetailItem
           label={t("summary.rate")}
