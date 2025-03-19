@@ -134,6 +134,75 @@
         "profile": "Profil",
         "settings": "Einstellungen"
       }
+    },
+    "bonds": {
+      "yield": {
+        "contract-address": "Vertragsadresse",
+        "creator": "Ersteller",
+        "end-date": "Enddatum",
+        "interval": "Zahlungsintervall",
+        "no-yield": {
+          "description": "Dieser Bond hat noch keinen Ertragszeitplan konfiguriert. Richten Sie einen Ertragszeitplan ein, um automatisierte Zinszahlungen an die Anleiheinhaber zu ermöglichen.",
+          "title": "Kein Ertragszeitplan gefunden"
+        },
+        "period-table": {
+          "claimed-total": "Beanspruchte Gesamtsumme",
+          "end-date": "Enddatum",
+          "no-yield-periods": "Keine Ertragsperioden gefunden",
+          "period-id": "Perioden-ID",
+          "progress": "Fortschritt",
+          "rate": "Rate",
+          "start-date": "Startdatum"
+        },
+        "periods": "Gesamtperioden",
+        "rate": "Zinssatz",
+        "set-schedule": {
+          "button-label": "Ertragszeitplan festlegen",
+          "description": "Legen Sie den Ertragszeitplan für diesen Bond fest. Dies verteilt automatisch Zinszahlungen an die Anleiheinhaber in den angegebenen Intervallen.",
+          "end-time": {
+            "label": "Endzeit"
+          },
+          "interval": {
+            "description": "Das Intervall, in dem Zinszahlungen an die Anleiheinhaber erfolgen.",
+            "label": "Intervall",
+            "options": {
+              "annually": "Jährlich",
+              "daily": "Täglich",
+              "monthly": "Monatlich",
+              "quarterly": "Vierteljährlich",
+              "seconds": "Sekunden",
+              "semi-annually": "Halbjährlich",
+              "weekly": "Wöchentlich"
+            }
+          },
+          "rate": {
+            "description": "Der Zinssatz, der den Anleiheinhabern gezahlt wird, ausgedrückt als Prozentsatz.",
+            "label": "Rate"
+          },
+          "start-time": {
+            "label": "Startzeit"
+          },
+          "summary": {
+            "contract-address": "Vertragsadresse",
+            "end-time": "Endzeit",
+            "interval": "Intervall",
+            "rate": "Rate",
+            "start-time": "Startzeit",
+            "title": "Zusammenfassung des Ertragszeitplans"
+          },
+          "title": "Ertragszeitplan festlegen",
+          "trigger-label": "Ertragszeitplan festlegen"
+        },
+        "start-date": "Startdatum",
+        "total-unclaimed-yield": "Gesamter nicht beanspruchter Ertrag",
+        "total-yield-distributed": "Gesamter verteilte Ertrag",
+        "type": "Ertragsart",
+        "type-fixed": "Festzins",
+        "underlying-asset-balance": "Saldo der zugrunde liegenden Vermögenswerte",
+        "yearly": "Jährlich",
+        "yield-coverage": "Ertragsabdeckung",
+        "yield-per-period": "Ertrag pro Periode"
+      }
     }
   },
   "admin-user": "Admin",
@@ -1277,11 +1346,11 @@
         },
         "tabs": {
           "details": "Details",
-          "events": "Ereignisse", 
+          "events": "Ereignisse",
           "holders": "Inhaber",
           "permissions": "Berechtigungen",
           "underlying-assets": "Zugrunde liegende Vermögenswerte",
-          "yield": "Rendite"
+          "yield": "Ertrag"
         }
       },
       "fields": {
@@ -1447,7 +1516,7 @@
         "total-supply-header": "Gesamtangebot",
         "total-supply-info": "Das Gesamtangebot des Vermögenswerts",
         "underlying-asset": "Unterliegender Vermögenswert",
-        "underlying-asset-balance": "Saldo des unterliegenden Vermögenswerts",
+        "underlying-asset-balance": "Saldo der zugrunde liegenden Vermögenswerte",
         "wallet-header": "Wallet",
         "yield-type": "Ertragsart",
         "price": "Preis",
@@ -1804,5 +1873,85 @@
     "UnpausedEvent": "Wieder aktivieren",
     "UserBlockedEvent": "Blockieren",
     "UserUnblockedEvent": "Entblockieren"
+  },
+  "homepage": {
+    "asset-tokenization": "Vermögens-Tokenisierung",
+    "bonds-funds-equities": "Anleihen, Fonds, Aktien",
+    "cryptocurrencies": "Kryptowährungen",
+    "documentation": "Dokumentation",
+    "features": {
+      "api": {
+        "description": "Integrieren Sie mühelos in bestehende Systeme mit umfangreichen, gut dokumentierten APIs.",
+        "title": "Vollständige API-Abdeckung"
+      },
+      "asset-lifecycle": {
+        "description": "Verwalten Sie den gesamten Lebenszyklus von Vermögenswerten nahtlos – von der Emission und Verwaltung bis zur Abwicklung und darüber hinaus.",
+        "title": "Vollständiger Vermögenswertlebenszyklus"
+      },
+      "compliance": {
+        "description": "Navigieren Sie mühelos durch regulatorische Rahmenbedingungen, einschließlich vollständiger Einhaltung der MiCA-Anforderungen.",
+        "title": "Umfassende Compliance"
+      },
+      "customizable": {
+        "description": "Passen Sie jeden Aspekt der Plattform perfekt an die einzigartigen Bedürfnisse und Arbeitsabläufe Ihrer Institution an.",
+        "title": "100 % anpassbar"
+      },
+      "description": "Das SettleMint Asset Tokenization Kit ist eine Full-Stack-Lösung, die entwickelt wurde, um die Entwicklung digitaler Vermögenswertplattformen zu beschleunigen.",
+      "insights": {
+        "description": "Zugriff auf leistungsstarke Analyse- und Berichtswerkzeuge, um fundierte, datengestützte Entscheidungen zu treffen.",
+        "title": "Tiefe Einblicke"
+      },
+      "interface": {
+        "description": "Genießen Sie eine einfache, optimierte und benutzerfreundliche Oberfläche, die sowohl für technische als auch für nicht-technische Benutzer konzipiert ist.",
+        "title": "Intuitive Benutzeroberfläche"
+      },
+      "purpose-built": {
+        "description": "Speziell für Finanzinstitute entwickelt, um branchenspezifische Herausforderungen präzise und zuverlässig zu adressieren.",
+        "title": "Zweckgebunden"
+      },
+      "time-to-market": {
+        "description": "Beschleunigen Sie Ihre Bereitstellung und erreichen Sie schneller als jede andere Lösung einen schnellen Markteintritt.",
+        "title": "Kürzeste Markteinführungszeit"
+      },
+      "title": "Vollständiges Funktionsset"
+    },
+    "footer": {
+      "company-description": "Verändert, wie die Welt tokenisierte Vermögenswerte auf Blockchain erstellt, verwaltet und handelt.",
+      "legal": {
+        "cookie-policy": "Cookie-Richtlinie",
+        "copyright": "© {year} SettleMint. Funktionale Quelllizenz, Version 1.1, MIT Future License.",
+        "privacy-policy": "Datenschutzrichtlinie",
+        "terms-of-service": "Nutzungsbedingungen"
+      },
+      "sections": {
+        "company": {
+          "about": "Über",
+          "blog": "Blog",
+          "contact": "Kontakt",
+          "title": "UNTERNEHMEN"
+        },
+        "config": {
+          "title": "EINSTELLUNGEN"
+        },
+        "platform": {
+          "console": "Konsole",
+          "mcp": "Modellkontextanbieter",
+          "sdk-cli": "SDK & CLI",
+          "title": "PLATTFORM"
+        },
+        "resources": {
+          "documentation": "Dokumentation",
+          "partners": "Partner",
+          "title": "Ressourcen",
+          "usecases": "Anwendungsfälle"
+        }
+      }
+    },
+    "hero-description": "Dieses Kit ist vorkonfiguriert, um Ihre SettleMint-Anwendung zu nutzen und einen einfachen Einstieg in Ihre eigene Vermögens-Tokenisierungslösung zu bieten.",
+    "hero-subtitle-regular": "Entfesseln Sie die Kraft von",
+    "issuer-portal": "Emittentenportal",
+    "portfolio": "Portfolio",
+    "stablecoins": "Stablecoins",
+    "tokenized-deposits": "Tokenisierte Einlagen"
   }
 }

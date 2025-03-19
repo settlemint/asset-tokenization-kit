@@ -8,6 +8,53 @@ files:
     admin.activity.tabs.all-events: f62708131b13934950fa92671966ecc9
     admin.activity.tabs.recent-transactions: 8885607d7b086407e2d659fd50a63212
     admin.activity.view-all: d8d7ad6abfd08c27baa8bedb78c72ddb
+    admin.bonds.yield.contract-address: d7e1286efec604c15ddab7ef2b290021
+    admin.bonds.yield.creator: ef1d00d8a237a1bbe431e1091f5715fb
+    admin.bonds.yield.end-date: b7de7e4247d4ab279ef031b7a44c201d
+    admin.bonds.yield.interval: e7a64a6ab900e9804a30892416977ffb
+    admin.bonds.yield.no-yield.description: 783273dd8901f91cac63b89a1f42771e
+    admin.bonds.yield.no-yield.title: 42b67dcbffebaa4c51deeca587126683
+    admin.bonds.yield.period-table.claimed-total: a3872496db4aedfb5c8667ac34624f6e
+    admin.bonds.yield.period-table.end-date: b7de7e4247d4ab279ef031b7a44c201d
+    admin.bonds.yield.period-table.no-yield-periods: 592635708df180dff420a1d884d784e5
+    admin.bonds.yield.period-table.period-id: 1538bd8b11d7c2d463ab90cf3d924db5
+    admin.bonds.yield.period-table.progress: 46b5f8c58b679b4243cbdb5749642c86
+    admin.bonds.yield.period-table.rate: dcb66ff6e4a2517ade22183779939c9d
+    admin.bonds.yield.period-table.start-date: 4d34f1097f6c8b9cee28bca8b78bbee9
+    admin.bonds.yield.periods: 0433906bebc085edc6d373c3919b86f0
+    admin.bonds.yield.rate: 7dfa44aee8e21e5967e2fde5a6b0cfa8
+    admin.bonds.yield.set-schedule.button-label: 863718a2cd3bc8a3a711aecc9103f3f5
+    admin.bonds.yield.set-schedule.description: e90a64b33ae15fdbf618d9c5fa7bb6b5
+    admin.bonds.yield.set-schedule.end-time.label: c91a577b72313356fad611c55f43c10f
+    admin.bonds.yield.set-schedule.interval.description: 9b4366e94e300b93187ae81f7074a0b0
+    admin.bonds.yield.set-schedule.interval.label: d16dd01adf735ed9b87eebff5fc39ce5
+    admin.bonds.yield.set-schedule.interval.options.annually: 10b34207c4ef4df0cf0d0cf792e61bf9
+    admin.bonds.yield.set-schedule.interval.options.daily: c512b685438f41daa7386329a3b8f8d3
+    admin.bonds.yield.set-schedule.interval.options.monthly: 9030e39f00132d583da4122532e509e9
+    admin.bonds.yield.set-schedule.interval.options.quarterly: be92c62702dcec6751c101b5adb0ce3b
+    admin.bonds.yield.set-schedule.interval.options.seconds: 783e8e29e6a8c3e22baa58a19420eb4f
+    admin.bonds.yield.set-schedule.interval.options.semi-annually: e4811935d78750f8eaaaaef048b51767
+    admin.bonds.yield.set-schedule.interval.options.weekly: 6c25e6a6da95b3d583c6ec4c3f82ed4d
+    admin.bonds.yield.set-schedule.rate.description: 1b76ca2f04b7ff048cc16929f1434cfc
+    admin.bonds.yield.set-schedule.rate.label: dcb66ff6e4a2517ade22183779939c9d
+    admin.bonds.yield.set-schedule.start-time.label: 2bbc845892f400626baab5af687527c5
+    admin.bonds.yield.set-schedule.summary.contract-address: d7e1286efec604c15ddab7ef2b290021
+    admin.bonds.yield.set-schedule.summary.end-time: 6cb127406d03c649d4013dfe2228ccfd
+    admin.bonds.yield.set-schedule.summary.interval: d16dd01adf735ed9b87eebff5fc39ce5
+    admin.bonds.yield.set-schedule.summary.rate: dcb66ff6e4a2517ade22183779939c9d
+    admin.bonds.yield.set-schedule.summary.start-time: 664b13315c97047b2ba2a1ac2375e0ce
+    admin.bonds.yield.set-schedule.summary.title: e171134414163f294a2aaf66f001cd71
+    admin.bonds.yield.set-schedule.title: 863718a2cd3bc8a3a711aecc9103f3f5
+    admin.bonds.yield.set-schedule.trigger-label: 863718a2cd3bc8a3a711aecc9103f3f5
+    admin.bonds.yield.start-date: 4d34f1097f6c8b9cee28bca8b78bbee9
+    admin.bonds.yield.total-unclaimed-yield: 8291abdf60e5b1596d6df46b71482504
+    admin.bonds.yield.total-yield-distributed: 72d3245f6a290ec68aa2b6de8d05be9e
+    admin.bonds.yield.type: c4c250e0ca984c7f8b5df9afdf45ae94
+    admin.bonds.yield.type-fixed: 75f73c44ebba3092604aa0c90d527e70
+    admin.bonds.yield.underlying-asset-balance: 8a5ec37bf1822e6b2d57fb61bfe3a57a
+    admin.bonds.yield.yearly: c4c696d78d97d24ce69ebe19fd7f8483
+    admin.bonds.yield.yield-coverage: 8c8f1c58b026505a691dcdeafbdadf4f
+    admin.bonds.yield.yield-per-period: 472d8ce333d431894e1bcfbd5ec94ebb
     admin.charts.asset-type-formatter.bonds: b98e3a37b62f7207c8a0a27e0c0d8777
     admin.charts.asset-type-formatter.cryptocurrencies: 69ab3e648e5586bd2a099fc9b21b7440
     admin.charts.asset-type-formatter.equities: f38992a52cef8611666b2db431b493a6
@@ -292,6 +339,52 @@ files:
     error.title: c6701602de1528fd79d5eff3e8eb1edd
     error.try-again: f915a95e609bbd517a8a1e7bdcceef37
     error.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
+    homepage.asset-tokenization: 09572338ab9b55d3fd3e8327f643961a
+    homepage.bonds-funds-equities: d78c37b03915c31ee5c79d6353cc2ce1
+    homepage.cryptocurrencies: 82d545659cf7ab6dd908094739a64fda
+    homepage.documentation: 5b6cf869265c13af8566f192b4ab3d2a
+    homepage.features.api.description: a75d50523f20dcd21803714f0dfb721a
+    homepage.features.api.title: 3ddc12cb87c6f55d885617caa141f225
+    homepage.features.asset-lifecycle.description: 124989eaf22eef36b50d6cca00be5419
+    homepage.features.asset-lifecycle.title: 23472b6f6343bbf45b9a2f7161feff0e
+    homepage.features.compliance.description: 653e66e7cb6a455a81bc95d72e82db4b
+    homepage.features.compliance.title: 093daef9ca66bee6418f918d711c4f3f
+    homepage.features.customizable.description: 76f23cb3ba610717b6ad1a29ffb5b861
+    homepage.features.customizable.title: 238aeeb01f9ccf664aeaf390d9f4e362
+    homepage.features.description: 79a0079eb8ef2bd2133c7098fab5ba1f
+    homepage.features.insights.description: d16c71d646c0c3d79bce93bfcdeafe5b
+    homepage.features.insights.title: 3b84790dca5375fafe68dbe5b5a45482
+    homepage.features.interface.description: feda6f69922f85295bc00482a0207bfc
+    homepage.features.interface.title: d6a97cc1351a6e6df0a51cdf0179c441
+    homepage.features.purpose-built.description: 6a66a354dda219b01a5c9bfa5baaa8f3
+    homepage.features.purpose-built.title: 306109df86fda630171c44dda9dc8473
+    homepage.features.time-to-market.description: f7ff2526328bcd910b07dbb389da81a7
+    homepage.features.time-to-market.title: 983d405304431b3217cbb533f5f69677
+    homepage.features.title: 7e3bd09b84432e6f98f35d49a79542a5
+    homepage.footer.company-description: d68cd934b10b68e5cd305fb67854a1bb
+    homepage.footer.legal.cookie-policy: 26b3bb7bcea37723dcea15254b14510f
+    homepage.footer.legal.copyright: fccaef8801e055f0ae6424da19f6fc56
+    homepage.footer.legal.privacy-policy: fa2ead697d9998cbc65c81384e6533d5
+    homepage.footer.legal.terms-of-service: 3b6c2b4caaf4f14f8d7feeddc4ac3f4d
+    homepage.footer.sections.company.about: 8f7f4c1ce7a4f933663d10543562b096
+    homepage.footer.sections.company.blog: be8df1f28c0abc85a0ed0c6860e5d832
+    homepage.footer.sections.company.contact: bbaff12800505b22a853e8b7f4eb6a22
+    homepage.footer.sections.company.title: 0f025176fb8b953690ad8f20f119ed75
+    homepage.footer.sections.config.title: ed6f7aca7887a927b9ed3d62aa347a86
+    homepage.footer.sections.platform.console: bccaa4aa80831b76c11240a16447975f
+    homepage.footer.sections.platform.mcp: 2b45ec473e7682f65e46602407006cf1
+    homepage.footer.sections.platform.sdk-cli: 3a6f15020fd4c9fa41f323c9e2036a4b
+    homepage.footer.sections.platform.title: 8b55a44b49368262df89fd0e17b1a181
+    homepage.footer.sections.resources.documentation: 5b6cf869265c13af8566f192b4ab3d2a
+    homepage.footer.sections.resources.partners: fd6df34ee4e7642c02ced6012028f6b8
+    homepage.footer.sections.resources.title: 85132af6b5f14319cb4c91ec6ddffe43
+    homepage.footer.sections.resources.usecases: 5cb617d22da857ea5d75209d6b70acb4
+    homepage.hero-description: cde0d1ff8d85c4ceda6c41e0e764c594
+    homepage.hero-subtitle-regular: a024841c4d9a6a7cd34ccaac7df2b740
+    homepage.issuer-portal: 05e93ee934950bba9b453434d9ad6ff3
+    homepage.portfolio: d4f859a96c13f551a2771b7fc3a78d38
+    homepage.stablecoins: 27b561ff856fac592429735b2472f4e3
+    homepage.tokenized-deposits: 7a1f7e04d590988511eacf6d15052866
     language.changing: 33755d0adea182748db47fbe988cd953
     language.language: 4994a8ffeba4ac3140beb89e8d41f174
     layout.header.app-description: b66a3f5e7ce9d50507f6935435e5f4a9
@@ -693,7 +786,8 @@ files:
     private.assets.details.tabs.events: 87f9f735a1d36793ceaecd4e47124b63
     private.assets.details.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7
     private.assets.details.tabs.permissions: d08ccf52b4cdd08e41cfb99ec42e0b29
-    private.assets.details.tabs.underlying-assets: d29ee78d99666a829835753176e75513
+    private.assets.details.tabs.underlying-assets: 513b5e27362967b94ab332c4f3790a4f
+    private.assets.details.tabs.yield: 97345487190c327e1e3ac998e4bf4d08
     private.assets.fields.actions-header: 06df33001c1d7187fdd81ea1f5b277aa
     private.assets.fields.active: 4d3d769b812b6faa6b76e1a8abaece2d
     private.assets.fields.address-header: dd7bf230fde8d4836917806aff6a6b27
@@ -842,7 +936,7 @@ files:
     private.assets.fields.total-supply-header: 1ecae95c3c8f236721cce5b740b2deaa
     private.assets.fields.total-supply-info: 13cd5b05bb532b11e76703d602ccd439
     private.assets.fields.underlying-asset: 7b350ed595b03937afb12262eb0f0960
-    private.assets.fields.underlying-asset-balance: 8a5ec37bf1822e6b2d57fb61bfe3a57a
+    private.assets.fields.underlying-asset-balance: 2d9361ff13b8457b88a2c77815736d56
     private.assets.fields.wallet-header: 156e132b014314b1eae89410e54bcc8c
     private.assets.fields.yield-type: c4c250e0ca984c7f8b5df9afdf45ae94
     private.assets.table.asset-management: 1e1a97e508b3d959b9fc916092948c35

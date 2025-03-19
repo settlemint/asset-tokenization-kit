@@ -134,6 +134,75 @@
         "profile": "プロフィール",
         "settings": "設定"
       }
+    },
+    "bonds": {
+      "yield": {
+        "contract-address": "契約アドレス",
+        "creator": "作成者",
+        "end-date": "終了日",
+        "interval": "支払い間隔",
+        "no-yield": {
+          "description": "この債券にはまだ利回りスケジュールが設定されていません。債券保有者への自動利息支払いを有効にするために、利回りスケジュールを設定してください。",
+          "title": "利回りスケジュールが見つかりません"
+        },
+        "period-table": {
+          "claimed-total": "請求済み合計",
+          "end-date": "終了日",
+          "no-yield-periods": "利回り期間が見つかりません",
+          "period-id": "期間ID",
+          "progress": "進捗",
+          "rate": "利率",
+          "start-date": "開始日"
+        },
+        "periods": "総期間",
+        "rate": "利率",
+        "set-schedule": {
+          "button-label": "利回りスケジュールを設定",
+          "description": "この債券の利回りスケジュールを設定します。これにより、指定された間隔で債券保有者に自動的に利息が配分されます。",
+          "end-time": {
+            "label": "終了時間"
+          },
+          "interval": {
+            "description": "債券保有者への利息支払いが行われる間隔。",
+            "label": "間隔",
+            "options": {
+              "annually": "年次",
+              "daily": "日次",
+              "monthly": "月次",
+              "quarterly": "四半期ごと",
+              "seconds": "秒",
+              "semi-annually": "半期ごと",
+              "weekly": "週次"
+            }
+          },
+          "rate": {
+            "description": "債券保有者に支払われる利率で、パーセンテージで表されます。",
+            "label": "利率"
+          },
+          "start-time": {
+            "label": "開始時間"
+          },
+          "summary": {
+            "contract-address": "契約アドレス",
+            "end-time": "終了時間",
+            "interval": "間隔",
+            "rate": "利率",
+            "start-time": "開始時間",
+            "title": "利回りスケジュールの概要"
+          },
+          "title": "利回りスケジュールを設定",
+          "trigger-label": "利回りスケジュールを設定"
+        },
+        "start-date": "開始日",
+        "total-unclaimed-yield": "未請求の総利回り",
+        "total-yield-distributed": "配分された総利回り",
+        "type": "利回りタイプ",
+        "type-fixed": "固定金利",
+        "underlying-asset-balance": "基礎資産残高",
+        "yearly": "年次",
+        "yield-coverage": "利回りカバレッジ",
+        "yield-per-period": "期間ごとの利回り"
+      }
     }
   },
   "admin-user": "管理者",
@@ -1280,7 +1349,8 @@
           "events": "イベント",
           "holders": "保有者",
           "permissions": "権限",
-          "underlying-assets": "基礎資産"
+          "underlying-assets": "基礎資産",
+          "yield": "利回り"
         }
       },
       "fields": {
@@ -1803,5 +1873,85 @@
     "UnpausedEvent": "再開",
     "UserBlockedEvent": "ブロック",
     "UserUnblockedEvent": "ブロック解除"
+  },
+  "homepage": {
+    "asset-tokenization": "資産トークン化",
+    "bonds-funds-equities": "債券、ファンド、株式",
+    "cryptocurrencies": "暗号通貨",
+    "documentation": "ドキュメンテーション",
+    "features": {
+      "api": {
+        "description": "広範で文書化されたAPIを使用して、既存のシステムにシームレスに統合します。",
+        "title": "完全なAPIカバレッジ"
+      },
+      "asset-lifecycle": {
+        "description": "発行、管理、決済など、資産ライフサイクル全体をシームレスに管理します。",
+        "title": "完全な資産ライフサイクル"
+      },
+      "compliance": {
+        "description": "MiCA要件に完全に準拠し、規制フレームワークを簡単にナビゲートします。",
+        "title": "包括的なコンプライアンス"
+      },
+      "customizable": {
+        "description": "プラットフォームのあらゆる側面を、あなたの機関の独自のニーズとワークフローに完璧に合わせて調整します。",
+        "title": "100%カスタマイズ可能"
+      },
+      "description": "SettleMint資産トークン化キットは、デジタル資産プラットフォームの開発を加速するために設計されたフルスタックソリューションです。",
+      "insights": {
+        "description": "強力な分析と報告ツールにアクセスして、データに基づいた情報に基づく意思決定を行います。",
+        "title": "深い洞察"
+      },
+      "interface": {
+        "description": "技術者と非技術者の両方のユーザー向けに設計されたシンプルで効率的、かつユーザーフレンドリーなインターフェースをお楽しみください。",
+        "title": "直感的なインターフェース"
+      },
+      "purpose-built": {
+        "description": "金融機関向けに特別に設計され、業界特有の課題に精度と信頼性で対応します。",
+        "title": "目的に特化"
+      },
+      "time-to-market": {
+        "description": "展開を加速し、他のどのソリューションよりも早く市場に参入します。",
+        "title": "最短の市場投入時間"
+      },
+      "title": "完全な機能セット"
+    },
+    "footer": {
+      "company-description": "世界がトークン化された資産をブロックチェーン上で作成、管理、取引する方法を変革します。",
+      "legal": {
+        "cookie-policy": "クッキーポリシー",
+        "copyright": "© {year} SettleMint。機能的ソースライセンス、バージョン1.1、MIT未来ライセンス。",
+        "privacy-policy": "プライバシーポリシー",
+        "terms-of-service": "利用規約"
+      },
+      "sections": {
+        "company": {
+          "about": "会社概要",
+          "blog": "ブログ",
+          "contact": "お問い合わせ",
+          "title": "会社"
+        },
+        "config": {
+          "title": "設定"
+        },
+        "platform": {
+          "console": "コンソール",
+          "mcp": "モデルコンテキストプロバイダー",
+          "sdk-cli": "SDK & CLI",
+          "title": "プラットフォーム"
+        },
+        "resources": {
+          "documentation": "ドキュメンテーション",
+          "partners": "パートナー",
+          "title": "リソース",
+          "usecases": "ユースケース"
+        }
+      }
+    },
+    "hero-description": "このキットは、あなたのSettleMintアプリケーションを活用するように事前設定されており、自分自身の資産トークン化ソリューションを始めるための簡単な方法を提供します。",
+    "hero-subtitle-regular": "の力を解放する",
+    "issuer-portal": "発行者ポータル",
+    "portfolio": "ポートフォリオ",
+    "stablecoins": "ステーブルコイン",
+    "tokenized-deposits": "トークン化された預金"
   }
 }
