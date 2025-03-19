@@ -21,7 +21,21 @@ interface Asset {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blockList: Boolean!
+  blockedUsers: [BlockedUser!]!
+  allowList: Boolean!
+  allowedUsers: [AllowedUser!]!
   deployedOn: BigInt!
+}
+
+interface BlockedUser {
+  id: Bytes!
+  blockedAt: BigInt!
+}
+
+interface AllowedUser {
+  id: Bytes!
+  allowedAt: BigInt!
 }
 
 type Factory @entity {
@@ -54,6 +68,10 @@ type Bond implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blockList: Boolean!
+  blockedUsers: [BlockedUser!]!
+  allowList: Boolean!
+  allowedUsers: [AllowedUser!]!
   # Bond-Specific Fields
   cap: BigDecimal!
   capExact: BigInt!
@@ -90,6 +108,10 @@ type Equity implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blockList: Boolean!
+  blockedUsers: [BlockedUser!]!
+  allowList: Boolean!
+  allowedUsers: [AllowedUser!]!
   # Equity-Specific Fields
   equityClass: String!
   equityCategory: String!
@@ -116,6 +138,10 @@ type Fund implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blockList: Boolean!
+  blockedUsers: [BlockedUser!]!
+  allowList: Boolean!
+  allowedUsers: [AllowedUser!]!
   # Fund-Specific Fields
   fundClass: String!
   fundCategory: String!
@@ -144,6 +170,10 @@ type StableCoin implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blockList: Boolean!
+  blockedUsers: [BlockedUser!]!
+  allowList: Boolean!
+  allowedUsers: [AllowedUser!]!
   # StableCoin-Specific Fields
   collateral: BigDecimal!
   collateralExact: BigInt!
@@ -175,6 +205,10 @@ type CryptoCurrency implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blockList: Boolean!
+  blockedUsers: [BlockedUser!]!
+  allowList: Boolean!
+  allowedUsers: [AllowedUser!]!
   # CryptoCurrency-Specific Fields
 }
 
@@ -198,6 +232,10 @@ type TokenizedDeposit implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blockList: Boolean!
+  blockedUsers: [BlockedUser!]!
+  allowList: Boolean!
+  allowedUsers: [AllowedUser!]!
   # TokenizedDeposit-Specific Fields
   paused: Boolean!
   # Collateral Fields

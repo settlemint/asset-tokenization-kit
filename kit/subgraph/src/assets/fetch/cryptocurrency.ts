@@ -26,6 +26,10 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
     cryptoCurrency.admins = [];
     cryptoCurrency.supplyManagers = [];
     cryptoCurrency.userManagers = [];
+    cryptoCurrency.blockList = false;
+    cryptoCurrency.blockedUsers = [];
+    cryptoCurrency.allowList = false;
+    cryptoCurrency.allowedUsers = [];
     cryptoCurrency.lastActivity = BigInt.zero();
     cryptoCurrency.creator = Address.zero();
     cryptoCurrency.totalBurned = BigDecimal.zero();

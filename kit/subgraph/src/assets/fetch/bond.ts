@@ -34,6 +34,10 @@ export function fetchBond(address: Address): Bond {
     bond.admins = [];
     bond.supplyManagers = [];
     bond.userManagers = [];
+    bond.blockList = true;
+    bond.blockedUsers = [];
+    bond.allowList = false;
+    bond.allowedUsers = [];
     bond.lastActivity = BigInt.zero();
     bond.creator = Address.zero();
     bond.totalBurned = BigDecimal.zero();

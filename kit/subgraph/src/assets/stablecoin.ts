@@ -844,6 +844,7 @@ export function handleUserBlocked(event: UserBlocked): void {
   ]);
 
   stableCoin.lastActivity = event.block.timestamp;
+  stableCoin.blockedUsers.push(user.id);
   stableCoin.save();
 
   const balance = fetchAssetBalance(

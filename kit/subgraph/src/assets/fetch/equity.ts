@@ -28,6 +28,10 @@ export function fetchEquity(address: Address): Equity {
     equity.admins = [];
     equity.supplyManagers = [];
     equity.userManagers = [];
+    equity.blockList = true;
+    equity.blockedUsers = [];
+    equity.allowList = false;
+    equity.allowedUsers = [];
     equity.lastActivity = BigInt.zero();
     equity.creator = Address.zero();
     equity.totalBurned = BigDecimal.zero();

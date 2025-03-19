@@ -814,6 +814,7 @@ export function handleUserBlocked(event: UserBlocked): void {
   ]);
 
   equity.lastActivity = event.block.timestamp;
+  equity.blockedUsers.push(user.id);
   equity.save();
 
   const balance = fetchAssetBalance(

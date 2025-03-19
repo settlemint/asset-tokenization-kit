@@ -888,6 +888,7 @@ export function handleUserBlocked(event: UserBlocked): void {
 
   bond.lastActivity = event.block.timestamp;
   updateDerivedFields(bond);
+  bond.blockedUsers.push(user.id);
   bond.save();
 
   const balance = fetchAssetBalance(

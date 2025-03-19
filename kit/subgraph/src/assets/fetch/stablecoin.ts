@@ -27,6 +27,10 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.admins = [];
     stableCoin.supplyManagers = [];
     stableCoin.userManagers = [];
+    stableCoin.blockList = true;
+    stableCoin.blockedUsers = [];
+    stableCoin.allowList = false;
+    stableCoin.allowedUsers = [];
     stableCoin.lastActivity = BigInt.zero();
     stableCoin.creator = Address.zero();
     stableCoin.totalBurned = BigDecimal.zero();
