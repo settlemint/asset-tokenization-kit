@@ -3,7 +3,6 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
-import type { Role } from "@/lib/config/roles";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
@@ -18,7 +17,8 @@ interface DetailPageHeaderProps {
   manageDropdown: (params: {
     assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
     userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-    userRoles: Role[];
+    assetUsersDetails: Awaited<ReturnType<typeof getAssetUsersDetail>>;
+    userAddress: Address;
   }) => ReactNode;
 }
 
@@ -37,9 +37,6 @@ export async function DetailPageHeader({
     }),
     getAssetUsersDetail({ address }),
   ]);
-  const userRoles =
-    assetUsersDetails.roles.find((role) => role.id === user.wallet)?.roles ??
-    [];
 
   return (
     <PageHeader
@@ -60,7 +57,12 @@ export async function DetailPageHeader({
           paused={"paused" in assetDetails ? assetDetails.paused : false}
         />
       }
-      button={manageDropdown({ assetDetails, userBalance, userRoles })}
+      button={manageDropdown({
+        assetDetails,
+        userBalance,
+        assetUsersDetails,
+        userAddress: user.wallet as Address,
+      })}
     />
   );
 }

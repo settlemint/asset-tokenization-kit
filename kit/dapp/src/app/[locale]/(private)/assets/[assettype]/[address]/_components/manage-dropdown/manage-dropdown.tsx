@@ -9,9 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
-import { getRoles, ROLES, type Role } from "@/lib/config/roles";
+import { getRoles, ROLES } from "@/lib/config/roles";
 import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
+import type { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
 import type { AssetType } from "@/lib/utils/zod";
@@ -38,7 +39,8 @@ interface ManageDropdownProps {
   assettype: AssetType;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-  userRoles: Role[];
+  assetUsersDetails: Awaited<ReturnType<typeof getAssetUsersDetail>>;
+  userAddress: Address;
 }
 
 export function ManageDropdown({
@@ -46,7 +48,8 @@ export function ManageDropdown({
   assettype,
   assetDetails,
   userBalance,
-  userRoles,
+  assetUsersDetails,
+  userAddress,
 }: ManageDropdownProps) {
   const router = useRouter();
   const t = useTranslations("private.assets.detail.forms");
@@ -89,6 +92,9 @@ export function ManageDropdown({
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
+  const userRoles =
+    assetUsersDetails.roles.find((role) => role.id === userAddress)?.roles ??
+    [];
   const userIsSupplyManager = userRoles.includes(
     ROLES.SUPPLY_MANAGEMENT_ROLE.contractRole
   );
@@ -233,6 +239,7 @@ export function ManageDropdown({
       id: "grant-role",
       label: t("actions.grant-role"),
       hidden: !canPerformUserActions,
+      disabled: false,
       form: (
         <GrantRoleForm
           key="grant-role"
@@ -247,6 +254,7 @@ export function ManageDropdown({
       id: "block-user",
       label: t("actions.block-user"),
       hidden: !blocklistEnabled(assettype) || !canPerformUserActions,
+      disabled: false,
       form: (
         <BlockForm
           key="block-user"
@@ -261,6 +269,7 @@ export function ManageDropdown({
       id: "unblock-user",
       label: t("actions.unblock-user"),
       hidden: !blocklistEnabled(assettype) || !canPerformUserActions,
+      disabled: assetUsersDetails.blocklist.length === 0,
       form: (
         <UnblockForm
           key="unblock-user"
@@ -275,6 +284,7 @@ export function ManageDropdown({
       id: "allow-user",
       label: t("actions.allow-user"),
       hidden: !allowlistEnabled(assettype) || !canPerformUserActions,
+      disabled: false,
       form: (
         <AllowForm
           key="allow-user"
@@ -289,6 +299,7 @@ export function ManageDropdown({
       id: "disallow-user",
       label: t("actions.disallow-user"),
       hidden: !allowlistEnabled(assettype) || !canPerformUserActions,
+      disabled: assetUsersDetails.allowlist.length === 1,
       form: (
         <DisallowForm
           key="disallow-user"
@@ -344,6 +355,7 @@ export function ManageDropdown({
             <DropdownMenuItem
               key={item.id}
               onSelect={() => setOpenMenuItem(item.id)}
+              disabled={item.disabled}
             >
               {item.label}
             </DropdownMenuItem>

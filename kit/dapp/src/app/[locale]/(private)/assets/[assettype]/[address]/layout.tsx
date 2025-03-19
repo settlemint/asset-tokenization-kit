@@ -94,13 +94,19 @@ export default async function AssetDetailLayout({
       <DetailPageHeader
         address={address}
         assettype={assettype}
-        manageDropdown={({ assetDetails, userBalance, userRoles }) => (
+        manageDropdown={({
+          assetDetails,
+          userBalance,
+          assetUsersDetails,
+          userAddress,
+        }) => (
           <ManageDropdown
             address={address}
             assettype={assettype}
             assetDetails={assetDetails}
             userBalance={userBalance}
-            userRoles={userRoles}
+            assetUsersDetails={assetUsersDetails}
+            userAddress={userAddress}
           />
         )}
       />

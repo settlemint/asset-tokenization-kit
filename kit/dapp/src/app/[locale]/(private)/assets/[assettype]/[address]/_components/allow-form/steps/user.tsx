@@ -44,3 +44,5 @@ export function User() {
     </FormStep>
   );
 }
+
+User.validatedFields = ["userAddress"] as const;
