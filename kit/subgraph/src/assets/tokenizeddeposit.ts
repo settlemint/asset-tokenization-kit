@@ -22,6 +22,7 @@ import {
   UserDisallowed,
 } from "../../generated/templates/TokenizedDeposit/TokenizedDeposit";
 import { fetchAccount } from "../fetch/account";
+import { allowUser, disallowUser } from "../fetch/allow-user";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
@@ -622,6 +623,7 @@ export function handleUserAllowed(event: UserAllowed): void {
   );
   assetStats.save();
 
+  allowUser(tokenizedDeposit.id, user.id, event.block.timestamp);
   accountActivityEvent(
     sender,
     EventName.UserAllowed,
@@ -679,6 +681,7 @@ export function handleUserDisallowed(event: UserDisallowed): void {
   );
   assetStats.save();
 
+  disallowUser(tokenizedDeposit.id, user.id);
   accountActivityEvent(
     sender,
     EventName.UserDisallowed,
