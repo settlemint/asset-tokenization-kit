@@ -124,6 +124,14 @@ export function equityColumns({
         }),
       enableColumnFilter: false,
     }),
+    columnHelper.accessor("totalSupply", {
+      header: t("total-supply-header"),
+      meta: {
+        variant: "numeric",
+      },
+      cell: ({ getValue }) => formatNumber(getValue()),
+      enableColumnFilter: false,
+    }),
     columnHelper.accessor("equityCategory", {
       header: t("category-header"),
       cell: ({ getValue }) => translatedEquityCategories[getValue()],
