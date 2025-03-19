@@ -13,71 +13,71 @@
     },
     "bonds": {
       "yield": {
-        "period-table": {
-          "period-id": "Period id",
-          "start-date": "Start date",
-          "end-date": "End date",
-          "rate": "Rate",
-          "claimed-total": "Claimed total",
-          "progress": "Progress",
-          "no-yield-periods": "No yield periods found"
-        },
-        "no-yield": {
-          "title": "No yield schedule found",
-          "description": "This bond does not have a yield schedule configured yet. Set up a yield schedule to enable automated interest payments to bondholders."
-        },
-        "type": "Yield type",
-        "type-fixed": "Fixed rate",
         "contract-address": "Contract address",
         "creator": "Creator",
-        "rate": "Interest rate",
-        "start-date": "Start date",
         "end-date": "End date",
         "interval": "Payment interval",
-        "yearly": "Annual",
+        "no-yield": {
+          "description": "This bond does not have a yield schedule configured yet. Set up a yield schedule to enable automated interest payments to bondholders.",
+          "title": "No yield schedule found"
+        },
+        "period-table": {
+          "claimed-total": "Claimed total",
+          "end-date": "End date",
+          "no-yield-periods": "No yield periods found",
+          "period-id": "Period id",
+          "progress": "Progress",
+          "rate": "Rate",
+          "start-date": "Start date"
+        },
         "periods": "Total periods",
-        "yield-per-period": "Yield per period",
-        "total-yield-distributed": "Total yield distributed",
-        "total-unclaimed-yield": "Total unclaimed yield",
-        "underlying-asset-balance": "Underlying asset balance",
-        "yield-coverage": "Yield coverage",
+        "rate": "Interest rate",
         "set-schedule": {
-          "trigger-label": "Set yield schedule",
-          "title": "Set yield schedule",
-          "description": "Set the yield schedule for this bond. This will automatically distribute interest payments to bondholders at the specified intervals.",
           "button-label": "Set yield schedule",
-          "start-time": {
-            "label": "Start Time"
-          },
+          "description": "Set the yield schedule for this bond. This will automatically distribute interest payments to bondholders at the specified intervals.",
           "end-time": {
             "label": "End Time"
           },
-          "rate": {
-            "label": "Rate",
-            "description": "The interest rate to be paid to bondholders, expressed as a percentage."
-          },
           "interval": {
-            "label": "Interval",
             "description": "The interval at which interest payments are made to bondholders.",
+            "label": "Interval",
             "options": {
+              "annually": "Annually",
               "daily": "Daily",
-              "weekly": "Weekly",
               "monthly": "Monthly",
               "quarterly": "Quarterly",
+              "seconds": "seconds",
               "semi-annually": "Semi-annually",
-              "annually": "Annually",
-              "seconds": "seconds"
+              "weekly": "Weekly"
             }
           },
+          "rate": {
+            "description": "The interest rate to be paid to bondholders, expressed as a percentage.",
+            "label": "Rate"
+          },
+          "start-time": {
+            "label": "Start Time"
+          },
           "summary": {
-            "title": "Yield schedule summary",
             "contract-address": "Contract address",
-            "start-time": "Start time",
             "end-time": "End time",
+            "interval": "Interval",
             "rate": "Rate",
-            "interval": "Interval"
-          }
-        }
+            "start-time": "Start time",
+            "title": "Yield schedule summary"
+          },
+          "title": "Set yield schedule",
+          "trigger-label": "Set yield schedule"
+        },
+        "start-date": "Start date",
+        "total-unclaimed-yield": "Total unclaimed yield",
+        "total-yield-distributed": "Total yield distributed",
+        "type": "Yield type",
+        "type-fixed": "Fixed rate",
+        "underlying-asset-balance": "Underlying asset balance",
+        "yearly": "Annual",
+        "yield-coverage": "Yield coverage",
+        "yield-per-period": "Yield per period"
       }
     },
     "charts": {
@@ -492,6 +492,86 @@
     "title": "Something went wrong!",
     "try-again": "Try again",
     "validation-errors": "Validation error"
+  },
+  "homepage": {
+    "asset-tokenization": "asset tokenization",
+    "bonds-funds-equities": "bonds, funds, equities",
+    "cryptocurrencies": "cryptocurrencies",
+    "documentation": "Documentation",
+    "features": {
+      "api": {
+        "description": "Integrate effortlessly into existing systems with extensive, well-documented APIs.",
+        "title": "Complete API Coverage"
+      },
+      "asset-lifecycle": {
+        "description": "Manage the complete asset lifecycle seamlessly—from issuance and management to settlement and beyond.",
+        "title": "Full Asset Lifecycle"
+      },
+      "compliance": {
+        "description": "Navigate regulatory frameworks effortlessly, including full compliance with MiCA requirements.",
+        "title": "Comprehensive Compliance"
+      },
+      "customizable": {
+        "description": "Tailor every aspect of the platform to perfectly match your institution's unique needs and workflows.",
+        "title": "100% Customizable"
+      },
+      "description": "The SettleMint Asset Tokenization Kit is a full-stack solution designed to accelerate the development of digital asset platforms.",
+      "insights": {
+        "description": "Access powerful analytics and reporting tools to make informed, data-driven decisions.",
+        "title": "Deep Insights"
+      },
+      "interface": {
+        "description": "Enjoy a simple, streamlined, and user-friendly interface designed for both technical and non-technical users.",
+        "title": "Intuitive Interface"
+      },
+      "purpose-built": {
+        "description": "Engineered specifically for financial institutions, addressing industry-specific challenges with precision and reliability.",
+        "title": "Purpose-Built"
+      },
+      "time-to-market": {
+        "description": "Accelerate your deployment and achieve rapid market entry faster than any other solution.",
+        "title": "Shortest Time to Market"
+      },
+      "title": "Complete Feature Set"
+    },
+    "footer": {
+      "company-description": "Transforming how the world creates, manages, and trades tokenized assets on blockchain.",
+      "legal": {
+        "cookie-policy": "Cookie Policy",
+        "copyright": "© {year} SettleMint. Functional Source License, Version 1.1, MIT Future License.",
+        "privacy-policy": "Privacy Policy",
+        "terms-of-service": "Terms of Service"
+      },
+      "sections": {
+        "company": {
+          "about": "About",
+          "blog": "Blog",
+          "contact": "Contact",
+          "title": "COMPANY"
+        },
+        "config": {
+          "title": "SETTINGS"
+        },
+        "platform": {
+          "console": "Console",
+          "mcp": "Model Context Provider",
+          "sdk-cli": "SDK & CLI",
+          "title": "PLATFORM"
+        },
+        "resources": {
+          "documentation": "Documentation",
+          "partners": "Partners",
+          "title": "RESOURCES",
+          "usecases": "Usecases"
+        }
+      }
+    },
+    "hero-description": "This kit is pre-configured to leverage your SettleMint application and provide an easy way to get started with your own asset tokenization solution.",
+    "hero-subtitle-regular": "Unlock the power of",
+    "issuer-portal": "Issuer portal",
+    "portfolio": "Portfolio",
+    "stablecoins": "stablecoins",
+    "tokenized-deposits": "tokenized deposits"
   },
   "language": {
     "changing": "Changing...",
