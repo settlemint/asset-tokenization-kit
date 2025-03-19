@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
-import { ROLES, type Role } from "@/lib/config/roles";
+import { getRoles, ROLES, type Role } from "@/lib/config/roles";
 import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
@@ -216,9 +216,13 @@ export function ManageDropdown({
     },
   ] as const;
 
-  const assetSupportsUserManagement = assettype !== "cryptocurrency";
+  const assetSupportsUserManagement = getRoles(assettype).includes(
+    ROLES.USER_MANAGEMENT_ROLE.contractRole
+  );
 
-  const canPerformUserActions = !isBlocked && !isPaused &&
+  const canPerformUserActions =
+    !isBlocked &&
+    !isPaused &&
     (assetSupportsUserManagement ? userIsUserManager : userIsAdmin);
 
   const userActions = [
