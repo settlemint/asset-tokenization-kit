@@ -20,11 +20,10 @@ import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
-import { allowlistEnabled } from "../allow-form/enabled";
 import { AllowForm } from "../allow-form/form";
-import { blocklistEnabled } from "../block-form/enabled";
 import { BlockForm } from "../block-form/form";
 import { DisallowForm } from "../disallow-form/form";
+import { hasAllowlist, hasBlocklist } from "../features-enabled";
 import { MintForm } from "../mint-form/form";
 import { UnblockForm } from "../unblock-form/form";
 import { BurnForm } from "./burn-form/form";
@@ -253,7 +252,7 @@ export function ManageDropdown({
     {
       id: "block-user",
       label: t("actions.block-user"),
-      hidden: !blocklistEnabled(assettype) || !canPerformUserActions,
+      hidden: !hasBlocklist(assettype) || !canPerformUserActions,
       disabled: false,
       form: (
         <BlockForm
@@ -268,7 +267,7 @@ export function ManageDropdown({
     {
       id: "unblock-user",
       label: t("actions.unblock-user"),
-      hidden: !blocklistEnabled(assettype) || !canPerformUserActions,
+      hidden: !hasBlocklist(assettype) || !canPerformUserActions,
       disabled: assetUsersDetails.blocklist.length === 0,
       form: (
         <UnblockForm
@@ -283,7 +282,7 @@ export function ManageDropdown({
     {
       id: "allow-user",
       label: t("actions.allow-user"),
-      hidden: !allowlistEnabled(assettype) || !canPerformUserActions,
+      hidden: !hasAllowlist(assettype) || !canPerformUserActions,
       disabled: false,
       form: (
         <AllowForm
@@ -298,7 +297,7 @@ export function ManageDropdown({
     {
       id: "disallow-user",
       label: t("actions.disallow-user"),
-      hidden: !allowlistEnabled(assettype) || !canPerformUserActions,
+      hidden: !hasAllowlist(assettype) || !canPerformUserActions,
       disabled: assetUsersDetails.allowlist.length === 1,
       form: (
         <DisallowForm

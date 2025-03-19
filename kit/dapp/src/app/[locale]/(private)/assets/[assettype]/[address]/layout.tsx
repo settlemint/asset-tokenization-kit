@@ -11,10 +11,13 @@ import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import type { Address } from "viem";
-import { allowlistEnabled } from "./_components/allow-form/enabled";
-import { blocklistEnabled } from "./_components/block-form/enabled";
+import {
+  hasAllowlist,
+  hasBlocklist,
+  hasUnderlyingAsset,
+  hasYield,
+} from "./_components/features-enabled";
 import { ManageDropdown } from "./_components/manage-dropdown/manage-dropdown";
-
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     locale: Locale;
@@ -47,7 +50,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
       href: `/assets/${assettype}/${address}/holders`,
       badge: details.totalHolders,
     },
-    ...(assettype === "bond"
+    ...(hasYield(assettype)
       ? [
           {
             name: t("tabs.yield"),
@@ -70,7 +73,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
       href: `/assets/${assettype}/${address}/underlying-assets`,
       badge: balances.length,
     },
-    ...(allowlistEnabled(assettype)
+    ...(hasAllowlist(assettype)
       ? [
           {
             name: t("tabs.allowlist"),
@@ -79,7 +82,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
           },
         ]
       : []),
-    ...(blocklistEnabled(assettype)
+    ...(hasBlocklist(assettype)
       ? [
           {
             name: t("tabs.blocklist"),
@@ -88,7 +91,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
           },
         ]
       : []),
-    ...(assettype === "bond" || assettype === "fund"
+    ...(hasUnderlyingAsset(assettype)
       ? [
           {
             name: t("tabs.underlying-assets"),

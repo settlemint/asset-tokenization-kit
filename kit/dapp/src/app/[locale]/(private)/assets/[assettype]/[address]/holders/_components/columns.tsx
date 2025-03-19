@@ -12,10 +12,9 @@ import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 import { getAddress } from "viem";
-import { blocklistEnabled } from "../../_components/block-form/enabled";
 import { BlockForm } from "../../_components/block-form/form";
+import { hasBlocklist, hasFreeze } from "../../_components/features-enabled";
 import { MintForm } from "../../_components/mint-form/form";
-import { freezeUserAssetsEnabled } from "./actions/freeze-form/enabled";
 import { FreezeForm } from "./actions/freeze-form/form";
 
 const columnHelper =
@@ -108,7 +107,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     onOpenChange={onOpenChange}
                   />
                 ),
-                hidden: !blocklistEnabled(row.original.asset.type),
+                hidden: !hasBlocklist(row.original.asset.type),
               },
               {
                 id: "freeze-form",
@@ -125,7 +124,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     onOpenChange={onOpenChange}
                   />
                 ),
-                hidden: !freezeUserAssetsEnabled(row.original.asset.type),
+                hidden: !hasFreeze(row.original.asset.type),
               },
               {
                 id: "mint-form",
