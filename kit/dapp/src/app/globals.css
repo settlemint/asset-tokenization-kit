@@ -305,4 +305,8 @@ h3: text-xl
   [dir="rtl"] [data-slot="collapsible-trigger"] {
     text-align: right;
   }
+
+  [data-slot="sidebar-menu-sub-button"].font-bold {
+    @apply bg-sidebar-accent;
+  }
 }
