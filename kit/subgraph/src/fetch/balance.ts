@@ -6,8 +6,7 @@ export function fetchAssetBalance(
   asset: Bytes,
   account: Bytes,
   decimals: number,
-  initialBlockedState: boolean,
-  blockTimestamp: BigInt
+  initialBlockedState: boolean
 ): AssetBalance {
   const id = assetBalanceId(asset, account);
   let balance = AssetBalance.load(id);
@@ -21,7 +20,6 @@ export function fetchAssetBalance(
     balance.approvedExact = BigInt.zero();
     balance.approved = toDecimals(balance.approvedExact, decimals);
     balance.blocked = initialBlockedState;
-    balance.blockedAt = initialBlockedState ? blockTimestamp : null;
     balance.frozenExact = BigInt.zero();
     balance.frozen = toDecimals(balance.frozenExact, decimals);
     balance.lastActivity = BigInt.zero();

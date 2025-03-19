@@ -91,8 +91,7 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.id,
       to.id,
       cryptoCurrency.decimals,
-      false,
-      event.block.timestamp
+      false
     );
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
     balance.value = toDecimals(balance.valueExact, cryptoCurrency.decimals);
@@ -174,8 +173,7 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.id,
       from.id,
       cryptoCurrency.decimals,
-      false,
-      event.block.timestamp
+      false
     );
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
     balance.value = toDecimals(balance.valueExact, cryptoCurrency.decimals);
@@ -264,8 +262,7 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.id,
       from.id,
       cryptoCurrency.decimals,
-      false,
-      event.block.timestamp
+      false
     );
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
     fromBalance.value = toDecimals(
@@ -295,8 +292,7 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.id,
       to.id,
       cryptoCurrency.decimals,
-      false,
-      event.block.timestamp
+      false
     );
     toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
     toBalance.value = toDecimals(toBalance.valueExact, cryptoCurrency.decimals);
@@ -538,8 +534,7 @@ export function handleApproval(event: Approval): void {
     cryptoCurrency.id,
     owner.id,
     cryptoCurrency.decimals,
-    false,
-    event.block.timestamp
+    false
   );
   ownerBalance.approvedExact = event.params.value;
   ownerBalance.approved = toDecimals(
