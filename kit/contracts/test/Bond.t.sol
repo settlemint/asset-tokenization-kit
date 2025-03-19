@@ -5,8 +5,12 @@ import { Test } from "forge-std/Test.sol";
 import { Bond } from "../contracts/Bond.sol";
 import { ERC20Mock } from "./mocks/ERC20Mock.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { ERC20Yield } from "../contracts/extensions/ERC20Yield.sol";
 
 import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
+import { FixedYieldFactory } from "../contracts/FixedYieldFactory.sol";
+import { FixedYield } from "../contracts/FixedYield.sol";
+import { ERC20YieldMock } from "./mocks/ERC20YieldMock.sol";
 
 contract BondTest is Test {
     Bond public bond;
@@ -809,5 +813,41 @@ contract BondTest is Test {
 
         assertEq(bond.totalSupply(), initialSupply, "Total supply should remain unchanged after transfer");
         assertTrue(bond.totalSupply() <= CAP, "Total supply should still be within cap");
+    }
+
+    function test_BondYieldScheduleFlow() public {
+        // Deploy necessary contracts (using the existing Bond from setUp())
+        vm.startPrank(owner);
+
+        // First verify the bond has no yield schedule
+        assertEq(bond.yieldSchedule(), address(0), "Bond should have zero yield schedule initially");
+
+        // Create a forwarder for the FixedYield (already in setup)
+        // Create a factory to create the FixedYield
+        FixedYieldFactory factory = new FixedYieldFactory(address(forwarder));
+
+        // Setup yield schedule parameters
+        uint256 startDate = block.timestamp + 1 days;
+        uint256 endDate = startDate + 365 days;
+        uint256 yieldRate = 500; // 5% in basis points
+        uint256 interval = 30 days;
+
+        // Create the yield schedule for our bond
+        // Note: The factory automatically sets up the circular reference by calling bond.setYieldSchedule()
+        address yieldScheduleAddr =
+            factory.create(ERC20YieldMock(address(bond)), startDate, endDate, yieldRate, interval);
+
+        // Verify the schedule references our bond
+        FixedYield yieldSchedule = FixedYield(yieldScheduleAddr);
+        assertEq(address(yieldSchedule.token()), address(bond), "FixedYield should reference the bond");
+
+        // Verify the bond references the yield schedule (this was set by the factory)
+        assertEq(bond.yieldSchedule(), yieldScheduleAddr, "Bond should reference the yield schedule");
+
+        // Try to change it (should fail)
+        vm.expectRevert(ERC20Yield.YieldScheduleAlreadySet.selector);
+        bond.setYieldSchedule(address(0x123));
+
+        vm.stopPrank();
     }
 }
