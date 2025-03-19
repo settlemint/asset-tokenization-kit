@@ -77,27 +77,34 @@ export async function YieldDetails({ address }: DetailsProps) {
           {periodCount}
         </DetailGridItem>
         <DetailGridItem label={t("yield-per-period")}>
-          {yieldPerPeriod} USDC
+          {yieldPerPeriod}
         </DetailGridItem>
         <DetailGridItem label={t("total-yield-distributed")}>
-          {bond.yieldSchedule.totalClaimed} USDC
+          {bond.yieldSchedule.totalClaimed}
         </DetailGridItem>
         <DetailGridItem label={t("total-unclaimed-yield")}>
-          {bond.yieldSchedule.unclaimedYield} USDC
+          {bond.yieldSchedule.unclaimedYield}
         </DetailGridItem>
         <DetailGridItem label={t("underlying-asset-balance")}>
-          {bond.yieldSchedule.underlyingBalance} USDC
+          {bond.yieldSchedule.underlyingBalance}
         </DetailGridItem>
         <DetailGridItem label={t("yield-coverage")}>
-          {formatNumber(
-            (Number(bond.yieldSchedule.underlyingBalance) /
-              Number(bond.yieldSchedule.unclaimedYield)) *
-              100,
-            {
-              percentage: true,
-              decimals: 0,
-            }
-          )}
+          {/*
+            Yield coverage shows what percentage of unclaimed yield obligations can be covered
+            by the available underlying asset balance. If there's no unclaimed yield (equals 0),
+            we display "N/A" as there's nothing to cover rather than showing 100% which could be misleading.
+          */}
+          {Number(bond.yieldSchedule.unclaimedYield) === 0
+            ? "N/A"
+            : formatNumber(
+                (Number(bond.yieldSchedule.underlyingBalance) /
+                  Number(bond.yieldSchedule.unclaimedYield)) *
+                  100,
+                {
+                  percentage: true,
+                  decimals: 0,
+                }
+              )}
         </DetailGridItem>
       </DetailGrid>
     </Suspense>
