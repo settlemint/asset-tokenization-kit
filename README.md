@@ -125,6 +125,8 @@ specialized features:
     systems
 - **Custodial Support** - Institutional-grade custody solutions for digital
   assets
+- **Regulation** - Supports the full scope of the EU MiCA regulation for
+  stablecoins
 
 #### Technical Features
 
