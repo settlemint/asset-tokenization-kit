@@ -754,6 +754,7 @@
             "burn": "Burn",
             "grant-role": "Add asset admin",
             "block-user": "Block user",
+            "unblock-user": "Unblock user",
             "mature": "Mature",
             "mint": "Mint",
             "pause": "Pause contract",

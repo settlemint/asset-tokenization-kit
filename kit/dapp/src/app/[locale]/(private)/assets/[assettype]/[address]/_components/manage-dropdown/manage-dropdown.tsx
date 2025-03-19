@@ -22,6 +22,7 @@ import type { Address } from "viem";
 import { blockUserEnabled } from "../block-form/enabled";
 import { BlockForm } from "../block-form/form";
 import { MintForm } from "../mint-form/form";
+import { UnblockForm } from "../unblock-form/form";
 import { BurnForm } from "./burn-form/form";
 import { GrantRoleForm } from "./grant-role-form/form";
 import { MatureForm } from "./mature-form/form";
@@ -241,6 +242,20 @@ export function ManageDropdown({
           key="block-user"
           address={address}
           open={openMenuItem === "block-user"}
+          onOpenChange={onFormOpenChange}
+          assettype={assettype}
+        />
+      ),
+    },
+    {
+      id: "unblock-user",
+      label: t("actions.unblock-user"),
+      hidden: !blockUserEnabled(assettype) || !canPerformUserActions,
+      form: (
+        <UnblockForm
+          key="unblock-user"
+          address={address}
+          open={openMenuItem === "unblock-user"}
           onOpenChange={onFormOpenChange}
           assettype={assettype}
         />
