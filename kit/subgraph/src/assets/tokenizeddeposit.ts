@@ -22,6 +22,7 @@ import {
   UserDisallowed,
 } from "../../generated/templates/TokenizedDeposit/TokenizedDeposit";
 import { fetchAccount } from "../fetch/account";
+import { allowUser, disallowUser } from "../fetch/allow-user";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
@@ -43,7 +44,10 @@ import { userAllowedEvent } from "./events/userallowed";
 import { userDisallowedEvent } from "./events/userdisallowed";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchTokenizedDeposit } from "./fetch/tokenizeddeposit";
-import { newAssetStatsData, updateTokenizedDepositCollateralData } from "./stats/assets";
+import {
+  newAssetStatsData,
+  updateTokenizedDepositCollateralData,
+} from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
@@ -611,6 +615,7 @@ export function handleUserAllowed(event: UserAllowed): void {
   );
   assetStats.save();
 
+  allowUser(tokenizedDeposit.id, user.id, event.block.timestamp);
   accountActivityEvent(
     sender,
     EventName.UserAllowed,
@@ -666,6 +671,7 @@ export function handleUserDisallowed(event: UserDisallowed): void {
   );
   assetStats.save();
 
+  disallowUser(tokenizedDeposit.id, user.id);
   accountActivityEvent(
     sender,
     EventName.UserDisallowed,
@@ -956,7 +962,10 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
   tokenizedDeposit.save();
 
-  const assetStats = newAssetStatsData(tokenizedDeposit.id, AssetType.tokenizeddeposit);
+  const assetStats = newAssetStatsData(
+    tokenizedDeposit.id,
+    AssetType.tokenizeddeposit
+  );
   updateTokenizedDepositCollateralData(assetStats, tokenizedDeposit);
   assetStats.save();
 
@@ -977,7 +986,3 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     tokenizedDeposit.id
   );
 }
-
-// Include other necessary handlers (Transfer, Approval, etc.) similar to cryptocurrency.ts
-// but I'll focus on implementing the access control handlers first.
-// Let me know if you want me to implement the other handlers as well.

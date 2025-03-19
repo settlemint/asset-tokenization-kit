@@ -22,6 +22,7 @@ import {
 } from "../../generated/templates/StableCoin/StableCoin";
 import { fetchAccount } from "../fetch/account";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
+import { blockUser, unblockUser } from "../fetch/block-user";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
@@ -43,7 +44,10 @@ import { userUnblockedEvent } from "./events/userunblocked";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchStableCoin } from "./fetch/stablecoin";
-import { newAssetStatsData, updateStableCoinCollateralData } from "./stats/assets";
+import {
+  newAssetStatsData,
+  updateStableCoinCollateralData,
+} from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
@@ -835,6 +839,7 @@ export function handleUserBlocked(event: UserBlocked): void {
   ]);
 
   stableCoin.lastActivity = event.block.timestamp;
+  blockUser(stableCoin.id, user.id, event.block.timestamp);
   stableCoin.save();
 
   const balance = fetchAssetBalance(
@@ -886,6 +891,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   );
 
   stableCoin.lastActivity = event.block.timestamp;
+  unblockUser(stableCoin.id, user.id);
   stableCoin.save();
 
   const balance = fetchAssetBalance(

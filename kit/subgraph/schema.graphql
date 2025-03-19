@@ -21,6 +21,8 @@ interface Asset {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
   deployedOn: BigInt!
 }
 
@@ -54,6 +56,8 @@ type Bond implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
   # Bond-Specific Fields
   cap: BigDecimal!
   capExact: BigInt!
@@ -90,6 +94,8 @@ type Equity implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
   # Equity-Specific Fields
   equityClass: String!
   equityCategory: String!
@@ -116,6 +122,8 @@ type Fund implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
   # Fund-Specific Fields
   fundClass: String!
   fundCategory: String!
@@ -144,6 +152,8 @@ type StableCoin implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
   # StableCoin-Specific Fields
   collateral: BigDecimal!
   collateralExact: BigInt!
@@ -175,6 +185,8 @@ type CryptoCurrency implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
   # CryptoCurrency-Specific Fields
 }
 
@@ -198,6 +210,8 @@ type TokenizedDeposit implements Asset @entity {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
   # TokenizedDeposit-Specific Fields
   paused: Boolean!
   # Collateral Fields
@@ -854,4 +868,22 @@ type PortfolioStats
   ## Frozen
   totalLocked: BigDecimal! @aggregate(fn: "last", arg: "locked")
   totalLockedExact: BigInt! @aggregate(fn: "last", arg: "lockedExact")
+}
+
+# --------------------------------------------------
+# Blocked and Allowed Users
+# --------------------------------------------------
+
+type BlockedUser @entity {
+  id: Bytes!
+  asset: Asset!
+  user: Account!
+  blockedAt: BigInt!
+}
+
+type AllowedUser @entity {
+  id: Bytes!
+  asset: Asset!
+  user: Account!
+  allowedAt: BigInt!
 }
