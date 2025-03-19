@@ -4,6 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
+import { secondsToInterval } from "@/lib/utils/yield";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
@@ -36,6 +37,12 @@ export async function YieldDetails({ address }: DetailsProps) {
     (Number(bond.yieldSchedule.endDate) - Number(bond.yieldSchedule.startDate)) /
       Number(bond.yieldSchedule.interval)
   );
+
+  const intervalPeriod = secondsToInterval(bond.yieldSchedule.interval.toString());
+  let intervalDisplay: string;
+  // Use the translation from the interval options section
+  // The translation keys are in admin.bonds.yield.set-schedule.interval.options.[period]
+  intervalDisplay = intervalPeriod ? t(`set-schedule.interval.options.${intervalPeriod}`) : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
 
   return (
     <Suspense>
@@ -71,7 +78,7 @@ export async function YieldDetails({ address }: DetailsProps) {
           {formatDate(new Date(Number(bond.yieldSchedule.endDate) * 1000))}
         </DetailGridItem>
         <DetailGridItem label={t("interval")}>
-          {t("yearly")}
+          {intervalDisplay}
         </DetailGridItem>
         <DetailGridItem label={t("periods")}>
           {periodCount}

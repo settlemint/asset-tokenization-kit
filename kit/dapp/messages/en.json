@@ -56,7 +56,8 @@
               "monthly": "Monthly",
               "quarterly": "Quarterly",
               "semi-annually": "Semi-annually",
-              "annually": "Annually"
+              "annually": "Annually",
+              "seconds": "seconds"
             }
           },
           "summary": {
