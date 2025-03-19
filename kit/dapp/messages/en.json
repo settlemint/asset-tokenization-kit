@@ -997,7 +997,9 @@
           "events": "Events",
           "holders": "Holders",
           "permissions": "Permissions",
-          "underlying-assets": "Underlying Assets"
+          "underlying-assets": "Underlying assets",
+          "blocklist": "Block list",
+          "allowlist": "Allow list"
         }
       },
       "fields": {
@@ -1167,7 +1169,9 @@
         "underlying-asset": "Underlying asset",
         "underlying-asset-balance": "Underlying asset balance",
         "wallet-header": "Wallet",
-        "yield-type": "Yield type"
+        "yield-type": "Yield type",
+        "blocked-since-header": "Blocked since",
+        "allowed-since-header": "Allowed since"
       },
       "table": {
         "asset-management": "Asset Management",

@@ -13,7 +13,6 @@ interface TabNavigationProps {
 
 export function TabNavigation({ items }: TabNavigationProps) {
   const pathname = usePathname();
-
   return (
     <NavigationMenu className="mt-4 mb-8 w-full max-w-full flex-0 justify-start border-card border-b">
       <NavigationMenuList className="w-full gap-4">
