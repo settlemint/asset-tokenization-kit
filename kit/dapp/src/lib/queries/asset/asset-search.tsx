@@ -7,7 +7,10 @@ import { safeParseWithLogging } from "@/lib/utils/zod";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
 import { cache } from "react";
 import { isAddress } from "viem";
-import { AssetFragment, AssetFragmentSchema } from "./asset-fragment";
+import {
+  AssetUsersFragment,
+  AssetUsersFragmentSchema,
+} from "./asset-users-fragment";
 
 /**
  * GraphQL query to search for assets by name, symbol, or address
@@ -29,11 +32,11 @@ const AssetSearch = theGraphGraphqlKit(
         id
         value
       }
-      ...AssetFragment
+      ...AssetUsersFragment
     }
   }
 `,
-  [AssetFragment]
+  [AssetUsersFragment]
 );
 
 /**
@@ -68,7 +71,7 @@ export const getAssetSearch = cache(
 
     // Validate data using Zod schema
     const validatedAssets = assets.map((asset) =>
-      safeParseWithLogging(AssetFragmentSchema, asset, "asset search")
+      safeParseWithLogging(AssetUsersFragmentSchema, asset, "asset search")
     );
     return validatedAssets;
   }

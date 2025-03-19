@@ -1,11 +1,12 @@
 import { getAssetActivity } from "@/lib/queries/asset-activity/asset-activity";
 import { formatNumber } from "@/lib/utils/number";
 import { BigNumber } from "bignumber.js";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Widget } from "./widget";
 
 export async function AssetsWidget() {
   const t = await getTranslations("admin.dashboard.widgets");
+  const locale = await getLocale();
   const data = await getAssetActivity();
   const allAssetsSupply = data.reduce(
     (acc, asset) => acc.plus(asset.totalSupply),
@@ -21,14 +22,18 @@ export async function AssetsWidget() {
   return (
     <Widget
       label={t("assets.label")}
-      value={formatNumber(allAssetsSupply)}
+      value={formatNumber(allAssetsSupply, { locale })}
       subtext={t("assets.subtext", {
-        stableCoins: formatNumber(getAssetSupply("stablecoin")),
-        bonds: formatNumber(getAssetSupply("bond")),
-        cryptocurrencies: formatNumber(getAssetSupply("cryptocurrency")),
-        equities: formatNumber(getAssetSupply("equity")),
-        funds: formatNumber(getAssetSupply("fund")),
-        tokenizedDeposits: formatNumber(getAssetSupply("tokenizeddeposit")),
+        stableCoins: formatNumber(getAssetSupply("stablecoin"), { locale }),
+        bonds: formatNumber(getAssetSupply("bond"), { locale }),
+        cryptocurrencies: formatNumber(getAssetSupply("cryptocurrency"), {
+          locale,
+        }),
+        equities: formatNumber(getAssetSupply("equity"), { locale }),
+        funds: formatNumber(getAssetSupply("fund"), { locale }),
+        tokenizedDeposits: formatNumber(getAssetSupply("tokenizeddeposit"), {
+          locale,
+        }),
       })}
     />
   );

@@ -1,12 +1,14 @@
 "use client";
 
-import { Link, useRouter } from "@/i18n/routing";
+import { Link } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import {
   AuthUIProvider,
   type SocialProvider,
 } from "@daveyplate/better-auth-ui";
 import { useTranslations } from "next-intl";
+// eslint-disable-next-line no-restricted-imports
+import { useRouter } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
 interface AuthProviderProps extends PropsWithChildren {
@@ -138,6 +140,19 @@ export const AuthProvider = ({
         usernameInstructions: t("username-instructions"),
         usernamePlaceholder: t("username-placeholder"),
         usernameSignInPlaceholder: t("username-sign-in-placeholder"),
+        passkeys: t("passkeys"),
+        passkeysDescription: t("passkeys-description"),
+        passkeysInstructions: t("passkeys-instructions"),
+        addPasskey: t("add-passkey"),
+        verifyYourEmail: t("verify-your-email"),
+        verifyYourEmailDescription: t("verify-your-email-description"),
+        accounts: t("accounts"),
+        accountsDescription: t("accounts-description"),
+        accountsInstructions: t("accounts-instructions"),
+        delete: t("delete"),
+        resendVerificationEmail: t("resend-verification-email"),
+        security: t("security"),
+        switchAccount: t("switch-account"),
       }}
     >
       {children}

@@ -5,6 +5,8 @@ import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supp
 import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
 import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
 import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-distribution";
+import { getUser } from "@/lib/auth/utils";
+import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { AssetType } from "@/lib/utils/zod";
 import type { Locale } from "next-intl";
@@ -23,14 +25,24 @@ interface PageProps {
 
 export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
-  const asset = await getAssetDetail({ assettype, address });
-  const t = await getTranslations("private.assets");
+  const user = await getUser();
+
+  const [assetDetails, t, userBalance] = await Promise.all([
+    getAssetDetail({ address, assettype }),
+    getTranslations("private.assets"),
+    getAssetBalanceDetail({
+      address,
+      account: user.wallet as Address,
+    }),
+  ]);
 
   return (
     <>
       <Details assettype={assettype} address={address} />
       <ChartGrid title={t("asset-statistics-title")}>
-        {assettype === "stablecoin" && <CollateralRatio address={address} />}
+        {["stablecoin", "tokenizeddeposit"].includes(assettype) && (
+          <CollateralRatio address={address} />
+        )}
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />
         <WalletDistribution address={address} />
@@ -40,7 +52,8 @@ export default async function AssetDetailsPage({ params }: PageProps) {
       <Related
         assettype={assettype}
         address={address}
-        totalSupply={asset.totalSupply}
+        assetDetails={assetDetails}
+        userBalance={userBalance}
       />
     </>
   );

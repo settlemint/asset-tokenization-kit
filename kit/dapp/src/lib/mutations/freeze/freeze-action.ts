@@ -144,9 +144,9 @@ export const freeze = action
             TokenizedDepositFreeze,
             params
           );
-          return z
-            .hashes()
-            .parse([response.TokenizedDepositFreeze?.transactionHash]);
+          return safeParseTransactionHash([
+            response.TokenizedDepositFreeze?.transactionHash,
+          ]);
         }
         default:
           throw new Error("Invalid asset type");

@@ -27,7 +27,7 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
       holder.id.toHexString(),
       sender.id.toHexString(),
       event.address.toHexString(),
-    ],
+    ]
   );
 
   // Create event record
@@ -42,28 +42,28 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     event.params.toPeriod,
     event.params.periodAmounts,
     event.params.unclaimedYield,
-    token.decimals,
+    token.decimals
   );
 
   // Update schedule
   schedule.totalClaimedExact = schedule.totalClaimedExact.plus(
-    event.params.totalAmount,
+    event.params.totalAmount
   );
   schedule.totalClaimed = toDecimals(
     schedule.totalClaimedExact,
-    token.decimals,
+    token.decimals
   );
   schedule.unclaimedYieldExact = event.params.unclaimedYield;
   schedule.unclaimedYield = toDecimals(
     schedule.unclaimedYieldExact,
-    token.decimals,
+    token.decimals
   );
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.minus(
-    event.params.totalAmount,
+    event.params.totalAmount
   );
   schedule.underlyingBalance = toDecimals(
     schedule.underlyingBalanceExact,
-    token.decimals,
+    token.decimals
   );
   schedule.save();
 
@@ -73,16 +73,16 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     const periodId = Bytes.fromUTF8(
       event.address.toHexString() +
         "-" +
-        (event.params.fromPeriod.toI32() + i).toString(),
+        (event.params.fromPeriod.toI32() + i).toString()
     );
     const period = YieldPeriod.load(periodId);
     if (period && event.params.periodAmounts[i].gt(BigInt.zero())) {
       period.totalClaimedExact = period.totalClaimedExact.plus(
-        event.params.periodAmounts[i],
+        event.params.periodAmounts[i]
       );
       period.totalClaimed = toDecimals(
         period.totalClaimedExact,
-        token.decimals,
+        token.decimals
       );
       period.save();
     }
@@ -90,7 +90,7 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
 }
 
 export function handleUnderlyingAssetTopUp(
-  event: UnderlyingAssetTopUpEvent,
+  event: UnderlyingAssetTopUpEvent
 ): void {
   const schedule = fetchFixedYield(event.address);
   const sender = fetchAccount(event.transaction.from);
@@ -105,7 +105,7 @@ export function handleUnderlyingAssetTopUp(
       from.id.toHexString(),
       sender.id.toHexString(),
       event.address.toHexString(),
-    ],
+    ]
   );
 
   // Create event record
@@ -116,22 +116,22 @@ export function handleUnderlyingAssetTopUp(
     sender.id,
     from.id,
     event.params.amount,
-    token.decimals,
+    token.decimals
   );
 
   // Update schedule's underlying balance
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.plus(
-    event.params.amount,
+    event.params.amount
   );
   schedule.underlyingBalance = toDecimals(
     schedule.underlyingBalanceExact,
-    token.decimals,
+    token.decimals
   );
   schedule.save();
 }
 
 export function handleUnderlyingAssetWithdrawn(
-  event: UnderlyingAssetWithdrawnEvent,
+  event: UnderlyingAssetWithdrawnEvent
 ): void {
   const schedule = fetchFixedYield(event.address);
   const sender = fetchAccount(event.transaction.from);
@@ -146,7 +146,7 @@ export function handleUnderlyingAssetWithdrawn(
       to.id.toHexString(),
       sender.id.toHexString(),
       event.address.toHexString(),
-    ],
+    ]
   );
 
   // Create event record
@@ -157,16 +157,16 @@ export function handleUnderlyingAssetWithdrawn(
     sender.id,
     to.id,
     event.params.amount,
-    token.decimals,
+    token.decimals
   );
 
   // Update schedule's underlying balance
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.minus(
-    event.params.amount,
+    event.params.amount
   );
   schedule.underlyingBalance = toDecimals(
     schedule.underlyingBalanceExact,
-    token.decimals,
+    token.decimals
   );
   schedule.save();
 }

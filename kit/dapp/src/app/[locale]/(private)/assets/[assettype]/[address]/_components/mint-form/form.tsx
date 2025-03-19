@@ -16,33 +16,51 @@ import { Summary } from "./steps/summary";
 interface MintFormProps {
   address: Address;
   assettype: AssetType;
+  recipient?: Address;
+  maxLimit?: number;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
 }
 
 export function MintForm({
   address,
   assettype,
+  recipient,
+  maxLimit,
   asButton = false,
   open,
   onOpenChange,
+  disabled = false,
 }: MintFormProps) {
-  const t = useTranslations("private.assets.details.forms.mint");
+  const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
-
+  const steps = recipient
+    ? [
+        <Amount key="amount" maxLimit={maxLimit} />,
+        <Summary key="summary" address={address} />,
+      ]
+    : [
+        <Amount key="amount" maxLimit={maxLimit} />,
+        <Recipients key="recipients" />,
+        <Summary key="summary" address={address} />,
+      ];
   return (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      triggerLabel={
+        isExternallyControlled ? undefined : t("trigger-label.mint")
+      }
+      title={t("title.mint")}
+      description={t("description.mint")}
       asButton={asButton}
+      disabled={disabled}
     >
       <Form
         action={mint}
@@ -51,16 +69,15 @@ export function MintForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t("button-label"),
+          label: t("trigger-label.mint"),
         }}
         defaultValues={{
           address,
           assettype,
+          to: recipient,
         }}
       >
-        <Amount />
-        <Recipients />
-        <Summary address={address} />
+        {steps.map((step) => step)}
       </Form>
     </FormSheet>
   );

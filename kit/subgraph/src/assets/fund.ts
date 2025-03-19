@@ -24,6 +24,7 @@ import {
 } from "../../generated/templates/Fund/Fund";
 import { fetchAccount } from "../fetch/account";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
+import { blockUser, unblockUser } from "../fetch/block-user";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
@@ -787,6 +788,7 @@ export function handleUserBlocked(event: UserBlocked): void {
   ]);
 
   fund.lastActivity = event.block.timestamp;
+  blockUser(fund.id, user.id, event.block.timestamp);
   fund.save();
 
   const balance = fetchAssetBalance(fund.id, user.id, fund.decimals, false);
@@ -830,6 +832,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   ]);
 
   fund.lastActivity = event.block.timestamp;
+  unblockUser(fund.id, user.id);
   fund.save();
 
   const balance = fetchAssetBalance(fund.id, user.id, fund.decimals, false);

@@ -8,7 +8,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { admin, apiKey, magicLink, multiSession } from "better-auth/plugins";
+import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
@@ -155,7 +155,6 @@ export const auth = betterAuth({
     magicLink({
       sendMagicLink,
     }),
-    multiSession(),
     nextCookies(),
   ],
 });

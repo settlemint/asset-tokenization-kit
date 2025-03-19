@@ -19,7 +19,7 @@ import {
   ShieldCheck,
   User2,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { type ComponentType, Suspense } from "react";
 import { BanUserAction } from "./actions/ban-user-action";
 import { ChangeRoleAction } from "./actions/change-role-action";
@@ -42,6 +42,8 @@ export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.users");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("name", {
@@ -152,7 +154,7 @@ export function columns() {
       cell: ({ getValue }) => {
         const lastActivity = getValue();
         return lastActivity
-          ? formatDate(lastActivity, { type: "distance" })
+          ? formatDate(lastActivity, { type: "distance", locale: locale })
           : "-";
       },
       enableColumnFilter: false,

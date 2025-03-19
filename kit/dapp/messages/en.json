@@ -194,14 +194,41 @@
         "user-management": "User management"
       },
       "portfolio-management": {
+        "api": "API",
         "dashboard": "Dashboard",
         "group-title": "My portfolio",
         "my-activity": "My activity",
-        "my-assets": "My assets"
+        "my-assets": "My assets",
+        "my-contacts": "My contacts",
+        "profile": "Profile",
+        "settings": "Settings"
       }
     }
   },
   "admin-user": "Admin",
+  "asset-events": {
+    "ApprovalEvent": "Approval",
+    "AssetCreatedEvent": "Create",
+    "BondMaturedEvent": "Matured",
+    "BondRedeemedEvent": "Redeemed",
+    "BurnEvent": "Burn",
+    "CollateralUpdatedEvent": "Collateral updated",
+    "ManagementFeeCollectedEvent": "Management fee collected",
+    "MintEvent": "Mint",
+    "PausedEvent": "Paused",
+    "PerformanceFeeCollectedEvent": "Performance fee collected",
+    "RoleAdminChangedEvent": "Role admin changed",
+    "RoleGrantedEvent": "Role granted",
+    "RoleRevokedEvent": "Role revoked",
+    "TokenWithdrawnEvent": "Withdraw",
+    "TokensFrozenEvent": "Freeze",
+    "TransferEvent": "Transfer",
+    "UnderlyingAssetTopUpEvent": "Top up",
+    "UnderlyingAssetWithdrawnEvent": "Withdraw",
+    "UnpausedEvent": "Unpause",
+    "UserBlockedEvent": "Block",
+    "UserUnblockedEvent": "Unblock"
+  },
   "asset-info": {
     "admin": "Admin",
     "creator-owner": "Creator / Owner",
@@ -441,7 +468,7 @@
     },
     "transactions-history": {
       "chart-label": "Transaction",
-      "description": "Showing transactions over the last {interval}",
+      "description": "Showing transactions over the last period",
       "title": "Transactions"
     },
     "transactions-table": {
@@ -465,6 +492,10 @@
     "title": "Something went wrong!",
     "try-again": "Try again",
     "validation-errors": "Validation error"
+  },
+  "language": {
+    "changing": "Changing...",
+    "language": "Language"
   },
   "layout": {
     "header": {
@@ -506,6 +537,7 @@
         "wallet-address-label": "Wallet Address"
       }
     },
+    "assets-count-assets": "assets",
     "dashboard": {
       "latest-events": "Latest events",
       "my-assets": "My Assets",
@@ -610,17 +642,27 @@
     },
     "settings": {
       "api-keys": {
+        "api-docs": "API Documentation",
         "api-key-copied": "API key copied to clipboard",
         "api-key-created-description": "Your API key has been created. Make sure to copy it now as you won't be able to see it again.",
         "api-key-save-warning": "Make sure to copy your API key now. You won't be able to see it again!",
+        "api-keys": "API Keys",
         "cancel": "Cancel",
         "close": "Close",
+        "columns": {
+          "expiresAt": "Expires at",
+          "lastRequest": "Last request",
+          "name": "Name",
+          "rateLimit": "Rate limit"
+        },
         "create": "Create",
         "create-api-key": "Create API Key",
         "create-api-key-description": "Create a new API key to access the API programmatically.",
         "create-error": "Failed to create API key",
         "created-at": "Created at",
         "creating-api-key": "Creating API key...",
+        "disabled": "Disabled",
+        "expired": "Expired",
         "expires-at": "Expires at",
         "expiry-label": "Expiry",
         "expiry-options": {
@@ -639,7 +681,7 @@
         "swagger-description": "All API requests must include your API key within the x-api-key header for authentication. This header ensures secure and authorized access to our API endpoints, allowing your applications to safely interact with our services.",
         "swagger-link-text": "Open API documentation",
         "swagger-title": "Create, view, and manage API keys to securely integrate your applications with our platform. API keys allow you to programmatically access all available features, documented clearly through our OpenAPI specification.",
-        "title": "API Keys"
+        "title": "API"
       },
       "profile": {
         "portfolio-management": "Portfolio Management",
@@ -806,6 +848,7 @@
       "detail": {
         "forms": {
           "actions": {
+            "block-user": "Block user",
             "burn": "Burn",
             "grant-role": "Add asset admin",
             "mature": "Mature",
@@ -817,185 +860,141 @@
             "view-events": "View events",
             "withdraw": "Withdraw"
           },
-          "manage": "Manage"
+          "available-balance": "Balance available to burn: {maxLimit}",
+          "manage": "Manage",
+          "max-mint-amount": "Collateral available to mint: {limit}"
         }
       },
       "details": {
         "asset-management": "Asset management",
         "forms": {
-          "burn": {
-            "amount": {
-              "amount-label": "Amount",
-              "available-balance": "Available balance: {balance}",
-              "description": "Input the amount you wish to burn.",
-              "title": "Enter Amount"
+          "account": {
+            "description": {
+              "block": "Enter a wallet address to block, or search for a user by their name, email or wallet address.",
+              "burn": "Enter a wallet address from which the tokens will be burned, or search for a user by their name, email or wallet address.",
+              "freeze": "Enter a wallet address from which the tokens will be frozen, or search for a user by their name, email or wallet address.",
+              "grant-role": "Enter a wallet address to grant roles to, or search for a user by their name, email or wallet address.",
+              "mint": "Enter a wallet address to send tokens directly, or search for a user by their name, email or wallet address.",
+              "withdraw": "Enter a wallet address to withdraw tokens to, or search for a user by their name, email or wallet address."
             },
-            "button-label": "Burn Assets",
-            "description": "Permanently remove bond tokens from circulation to reduce supply.",
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Asset",
-              "burn-description": "Burning operation details",
-              "burn-title": "Burn",
-              "description": "Verify the details of your burn before proceeding.",
-              "title": "Review and confirm burn"
-            },
-            "title": "Burn",
-            "trigger-label": "Burn"
-          },
-          "grant-role": {
-            "address": {
-              "address-label": "Admin Wallet Address",
-              "description": "Search for a user by their name or email, or manually enter a wallet address.",
-              "manual-placeholder": "0x0000000000000000000000000000000000000000",
-              "manual-toggle": "Enter address manually...",
-              "search-placeholder": "Search for a user",
-              "search-toggle": "Search for a user instead...",
-              "title": "Select New Admin"
-            },
-            "button-label": "Assign Roles",
-            "description": "Assign administrative permissions to a new user.",
-            "roles": {
-              "description": "Choose the roles to grant to the new admin. At least one role must be selected.",
-              "title": "Select Admin Roles"
-            },
-            "summary": {
-              "admin-address-label": "Admin Address",
-              "asset-label": "Asset",
-              "description": "Verify the details of your role grant before proceeding.",
-              "grant-description": "Granting role operation details",
-              "grant-title": "Grant Role",
-              "roles-label": "Roles",
-              "title": "Review and confirm role grant"
-            },
-            "title": "Grant Role"
-          },
-          "mature": {
-            "button-label": "Mature Bond",
-            "description": "Mature your bond and receive the underlying asset",
-            "summary": {
-              "asset-label": "Bond",
-              "description": "Verify the details of your bond maturity before proceeding.",
-              "mature-description": "Bond maturity details",
-              "mature-title": "Mature",
-              "title": "Review and confirm maturity"
-            },
-            "title": "Mature Bond",
-            "trigger-label": "Mature"
-          },
-          "mint": {
-            "amount": {
-              "amount-label": "Amount",
-              "description": "Input the amount you wish to mint.",
-              "title": "Enter Amount"
-            },
-            "button-label": "Mint Assets",
-            "description": "Issue new tokens to increase the bond's circulating supply.",
-            "recipients": {
-              "description": "Choose who will receive the minted tokens",
-              "title": "Select Recipients"
-            },
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Asset",
-              "description": "Verify the details of your mint before proceeding.",
-              "mint-description": "Minting operation details",
-              "mint-title": "Mint",
-              "title": "Review and confirm mint"
-            },
-            "title": "Mint",
-            "trigger-label": "Mint"
-          },
-          "pause": {
-            "pause": {
-              "button-label": "Pause Transactions",
-              "description": "Temporarily halt all transactions and interactions for this bond.",
-              "title": "Pause Bond Transactions"
-            },
-            "summary": {
-              "asset-label": "Asset",
-              "current-state-label": "Current state",
-              "description": "Verify the details of your pause operation before proceeding.",
-              "pause-description": "Pausing operation details",
-              "pause-title": "Pause",
-              "state-active": "Active",
-              "state-paused": "Paused",
-              "target-state-label": "Target state",
-              "title": "Review and confirm pause operation"
-            },
-            "unpause": {
-              "button-label": "Resume Transactions",
-              "description": "Resume transactions and interactions for this bond.",
-              "title": "Resume Bond Transactions"
+            "enter-user-address-manually": "Enter address manually...",
+            "enter-wallet-address-placeholder": "Enter a wallet address",
+            "search-user-instead": "Search for a user instead...",
+            "search-user-placeholder": "Enter an address, name or email",
+            "title": {
+              "block": "Select user",
+              "burn": "Select user",
+              "freeze": "Select user",
+              "grant-role": "Select user",
+              "mint": "Select recipient",
+              "withdraw": "Select user"
             }
           },
-          "top-up": {
-            "amount": {
-              "amount": {
-                "description": "Enter the amount to top up",
-                "label": "Amount"
-              },
-              "description": "Specify the amount to top up the underlying asset.",
-              "title": "Enter amount"
+          "amount": {
+            "available-to": {
+              "burn": "Available to burn",
+              "freeze": "Available to freeze",
+              "mint": "Available to mint"
             },
-            "button-label": "Top up",
-            "description": "Add more underlying asset to your bond",
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Underlying asset",
-              "description": "Verify the details of your top-up before proceeding.",
-              "title": "Review and confirm top-up"
+            "description": {
+              "burn": "Input the amount you wish to burn. Ensure you have the necessary permissions and sufficient balance in the selected wallet.",
+              "freeze": "Input the amount you wish to freeze. Ensure the amount stays within the total balance of the selected wallet.",
+              "mint": "Input the amount you wish to mint. Ensure the amount stays within the collateral limits.",
+              "top-up": "Input the amount you wish to top up the underlying asset to.",
+              "update-collateral": "Input the amount you wish to update the collateral to. Ensure the amount is bigger or equal to the current supply.",
+              "withdraw": "Input the amount you wish to withdraw."
             },
-            "title": "Top up underlying asset",
-            "trigger-label": "Top up"
+            "max-limit": {
+              "burn": "Balance available to burn: {limit}",
+              "freeze": "Balance available to freeze: {limit}",
+              "mint": "Collateral available to mint: {limit}"
+            },
+            "title": "Enter amount",
+            "wallet-balance": "Wallet balance"
           },
-          "update-collateral": {
-            "amount": {
-              "amount-label": "Amount",
-              "description": "Input the amount you wish to update the collateral to. Ensure the amount is bigger or equal to the current supply.",
-              "title": "Enter Amount"
+          "form": {
+            "description": {
+              "block": "Prevent this user from performing any transactions or interactions.",
+              "burn": "Permanently remove bond tokens from circulation to reduce supply.",
+              "freeze": "Temporarily restrict a user's access to their funds.",
+              "grant-role": "Assign administrative permissions to a new user.",
+              "mature": "Mature your bond and receive the underlying asset",
+              "mint": "Issue new tokens to increase the bond's circulating supply.",
+              "pause": "Temporarily halt all transactions and interactions for this bond.",
+              "top-up": "Add more underlying asset to your bond",
+              "unpause": "Resume transactions and interactions for this bond.",
+              "update-collateral": "Adjust the collateral backing the stablecoin to reflect current requirements.",
+              "withdraw": "Withdraw underlying asset from your bond"
             },
-            "button-label": "Update Collateral Amount",
-            "description": "Adjust the collateral backing the stablecoin to reflect current requirements.",
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Asset",
-              "description": "Verify the details of your update proven collateral before proceeding.",
-              "title": "Review and confirm update proven collateral",
-              "update-description": "Updating collateral operation details",
-              "update-title": "Update Collateral"
+            "title": {
+              "block": "Block user",
+              "burn": "Burn assets",
+              "freeze": "Restrict user assets",
+              "grant-role": "Grant role",
+              "mature": "Mature bond",
+              "mint": "Mint assets",
+              "pause": "Pause contract",
+              "top-up": "Top up underlying asset",
+              "unpause": "Resume contract",
+              "update-collateral": "Update collateral",
+              "withdraw": "Withdraw underlying asset"
             },
-            "title": "Update collateral",
-            "trigger-label": "Update collateral"
+            "trigger-label": {
+              "block": "Block user",
+              "burn": "Burn",
+              "freeze": "Freeze",
+              "grant-role": "Grant role",
+              "mature": "Mature",
+              "mint": "Mint",
+              "pause": "Pause",
+              "top-up": "Top up",
+              "unpause": "Unpause",
+              "update-collateral": "Update collateral",
+              "withdraw": "Withdraw"
+            }
           },
-          "withdraw": {
-            "amount": {
-              "amount": {
-                "description": "Enter the amount to withdraw",
-                "label": "Amount"
-              },
-              "description": "Specify the amount to withdraw.",
-              "title": "Enter amount"
+          "roles": {
+            "description": "Choose the roles to grant to the user. At least one role must be selected.",
+            "title": "Select roles"
+          },
+          "summary": {
+            "account-label": {
+              "default": "User",
+              "recipient": "Recipient"
             },
-            "button-label": "Withdraw",
-            "description": "Withdraw underlying asset from your bond",
-            "recipient": {
-              "description": "Choose who will receive the underlying asset.",
-              "label": "Recipient",
-              "manual-instead": "Enter address manually...",
-              "placeholder": "Search for a user or enter address",
-              "search-instead": "Search for a user instead...",
-              "title": "Select recipient"
+            "active-label": "Active",
+            "amount-label": "Amount",
+            "asset-label": "Asset",
+            "current-state-label": "Current state",
+            "description": {
+              "block": "Verify the details of your block before proceeding.",
+              "burn": "Verify the details of your burn before proceeding.",
+              "freeze": "Verify the details of your freeze before proceeding.",
+              "grant-role": "Verify the details of your role grant before proceeding.",
+              "mature": "Verify the details of your maturity before proceeding.",
+              "mint": "Verify the details of your mint before proceeding.",
+              "pause": "Verify the details of your pause before proceeding.",
+              "top-up": "Verify the details of your top-up before proceeding.",
+              "unpause": "Verify the details of your unpause before proceeding.",
+              "update-collateral": "Verify the details of your update collateral before proceeding.",
+              "withdraw": "Verify the details of your withdrawal before proceeding."
             },
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Underlying asset",
-              "description": "Verify the details of your withdrawal before proceeding.",
-              "recipient-label": "Recipient",
-              "title": "Review and confirm withdrawal"
-            },
-            "title": "Withdraw underlying asset",
-            "trigger-label": "Withdraw"
+            "paused-label": "Paused",
+            "roles-label": "Roles",
+            "target-state-label": "Target state",
+            "title": {
+              "block": "Review and confirm block",
+              "burn": "Review and confirm burn",
+              "freeze": "Review and confirm freeze",
+              "grant-role": "Review and confirm role grant",
+              "mature": "Review and confirm maturity",
+              "mint": "Review and confirm mint",
+              "pause": "Review and confirm pause",
+              "top-up": "Review and confirm top-up",
+              "unpause": "Review and confirm unpause",
+              "update-collateral": "Review and confirm update collateral",
+              "withdraw": "Review and confirm withdrawal"
+            }
           }
         },
         "holders": {
@@ -1003,50 +1002,6 @@
           "fields": {
             "balance-header": "Balance",
             "wallet-header": "Wallet"
-          },
-          "forms": {
-            "block": {
-              "block-button-label": "Block User",
-              "block-description": "Prevent this user from performing any transactions or interactions.",
-              "block-title": "Block User Transactions",
-              "block-trigger-label": "Block",
-              "summary": {
-                "asset-label": "Asset",
-                "block-title": "Block",
-                "current-state-label": "Current state",
-                "description": "Verify the details of your block operation before proceeding.",
-                "operation-description": "Block operation details",
-                "state-active": "Active",
-                "state-blocked": "Blocked",
-                "target-state-label": "Target state",
-                "title": "Review and confirm block operation",
-                "unblock-title": "Unblock"
-              },
-              "unblock-button-label": "Unblock User",
-              "unblock-description": "Restore this user's ability to transact and interact.",
-              "unblock-title": "Restore User Transactions",
-              "unblock-trigger-label": "Unblock"
-            },
-            "freeze": {
-              "amount": {
-                "amount-label": "Amount",
-                "balance-description": "Available balance: {balance} Currently frozen: {frozen}",
-                "description": "Input the amount you wish to freeze.",
-                "title": "Enter Amount"
-              },
-              "button-label": "Freeze Funds",
-              "description": "Temporarily restrict a user's access to their funds.",
-              "summary": {
-                "amount-label": "Amount",
-                "asset-label": "Asset",
-                "description": "Verify the details of your freeze operation before proceeding.",
-                "freeze-title": "Freeze",
-                "operation-description": "Freezing operation details",
-                "title": "Review and confirm freeze operation"
-              },
-              "title": "Restrict User Funds",
-              "trigger-label": "Freeze"
-            }
           },
           "frozen-header": "Frozen",
           "holder-type-header": "Type",
@@ -1091,70 +1046,47 @@
           "table-title": "Permissions"
         },
         "related": {
-          "bonds": {
-            "decrease-supply": {
-              "description": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
-              "title": "Redeem Bonds"
+          "decrease-supply": {
+            "description": {
+              "bonds": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
+              "equities": "An equity manager can reduce the total supply of shares through a buyback program or capital reduction.",
+              "funds": "A fund manager can reduce the total supply through fund redemption at maturity or early repurchase programs.",
+              "stablecoins": "A supply manager can burn existing stablecoins, provided sufficient collateral is available.",
+              "tokenizeddeposits": "A supply manager can burn existing tokenized deposits, provided sufficient collateral is available."
             },
-            "increase-supply": {
-              "description": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
-              "title": "Issue Bonds"
+            "title": {
+              "bonds": "Redeem bonds",
+              "equities": "Reduce share supply",
+              "funds": "Redeem bonds",
+              "stablecoins": "Decrease the supply",
+              "tokenizeddeposits": "Reduce tokenized deposit supply"
             }
           },
-          "cryptocurrencies": {
-            "increase-supply": {
-              "description": "A token manager can mint new tokens according to the tokenomics plan and emission schedule.",
-              "title": "Mint Tokens"
-            }
-          },
-          "equities": {
-            "decrease-supply": {
-              "description": "An equity manager can reduce the total supply of shares through a buyback program or capital reduction.",
-              "title": "Reduce Share Supply"
+          "increase-supply": {
+            "description": {
+              "bonds": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
+              "cryptocurrencies": "A token manager can mint new tokens according to the tokenomics plan and emission schedule.",
+              "equities": "An equity manager can issue new shares through various mechanisms like rights issues, private placements, or stock splits.",
+              "funds": "A fund manager can issue new funds through primary issuance or tap issuance with defined face value and maturity.",
+              "stablecoins": "A supply manager can mint new stablecoins, provided sufficient collateral is available.",
+              "tokenizeddeposits": "A supply manager can mint new tokenized deposits, provided sufficient collateral is available."
             },
-            "increase-supply": {
-              "description": "An equity manager can issue new shares through various mechanisms like rights issues, private placements, or stock splits.",
-              "title": "Issue New Shares"
-            }
-          },
-          "funds": {
-            "decrease-supply": {
-              "description": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
-              "title": "Redeem Bonds"
-            },
-            "increase-supply": {
-              "description": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
-              "title": "Issue Bonds"
-            }
-          },
-          "stablecoins": {
-            "decrease-supply": {
-              "description": "A supply manager can burn existing stablecoins, provided sufficient collateral is available.",
-              "title": "Decrease the supply"
-            },
-            "increase-supply": {
-              "description": "A supply manager can mint new stablecoins, provided sufficient collateral is available.",
-              "title": "Increase the supply"
-            },
-            "update-collateral": {
-              "description": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times.",
-              "title": "Update collateral"
+            "title": {
+              "bonds": "Issue bonds",
+              "cryptocurrencies": "Mint tokens",
+              "equities": "Issue new shares",
+              "funds": "Issue bonds",
+              "stablecoins": "Increase the supply",
+              "tokenizeddeposits": "Increase the supply"
             }
           },
           "title": "Related Actions",
-          "tokenizeddeposits": {
-            "decrease-supply": {
-              "description": "A supply manager can burn existing tokenized deposits, provided sufficient collateral is available.",
-              "title": "Reduce Tokenized Deposit Supply"
+          "update-collateral": {
+            "description": {
+              "stablecoins": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times.",
+              "tokenizeddeposits": "A supply manager needs to refresh and verify the collateral backing the tokenized deposit. This ensures the asset remains fully collateralized at all times."
             },
-            "increase-supply": {
-              "description": "A supply manager can mint new tokenized deposits, provided sufficient collateral is available.",
-              "title": "Increase Tokenized Deposit Supply"
-            },
-            "update-collateral": {
-              "description": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times.",
-              "title": "Update collateral"
-            }
+            "title": "Update collateral"
           }
         },
         "tabs": {
@@ -1464,7 +1396,11 @@
     },
     "auth": {
       "account": "Account",
+      "accounts": "Accounts",
+      "accounts-description": "Manage your currently signed in accounts.",
+      "accounts-instructions": "Sign in to an additional account.",
       "add-account": "Add Account",
+      "add-passkey": "Add passkey",
       "already-have-account": "Already have an account?",
       "avatar": "Avatar",
       "avatar-description": "Click on the avatar to upload a custom one from your files.",
@@ -1476,6 +1412,7 @@
       "current-password": "Current Password",
       "current-password-placeholder": "Enter your current password",
       "current-session": "Current Session",
+      "delete": "Delete",
       "delete-account": "Delete Account",
       "delete-account-description": "Permanently remove your account and all of its contents. This WILL remove your access to your private key and you WILL lose access to your assets! This action is not reversible, so please continue with caution.",
       "delete-account-email": "Please check your email to verify the deletion of your account.",
@@ -1508,6 +1445,9 @@
       "new-password": "New Password",
       "new-password-placeholder": "Enter your new password",
       "passkey": "Passkey",
+      "passkeys": "Passkeys",
+      "passkeys-description": "Manage your passkeys for secure access.",
+      "passkeys-instructions": "Securely access your account without a password.",
       "password": "Password",
       "password-description": "Enter your current password.",
       "password-instructions": "Please use 8 characters at minimum.",
@@ -1524,6 +1464,7 @@
       "providers-description": "Connect your account with a third-party service.",
       "providers-loading-error": "Could not load account info",
       "remember-me": "Remember me",
+      "resend-verification-email": "Resend verification email",
       "reset-password": "Reset Password",
       "reset-password-action": "Save new password",
       "reset-password-description": "Enter your new password below",
@@ -1531,6 +1472,7 @@
       "reset-password-success": "Password reset successfully",
       "revoke": "Revoke",
       "save": "Save",
+      "security": "Security",
       "sessions": "Sessions",
       "sessions-description": "Manage your active sessions and revoke access.",
       "set-password": "Set Password",
@@ -1547,12 +1489,15 @@
       "sign-up-action": "Create an account",
       "sign-up-description": "Enter your information to create an account",
       "sign-up-email": "Check your email for the verification link.",
+      "switch-account": "Switch Account",
       "unlink": "Unlink",
       "username": "Username",
       "username-description": "Enter the username you want to use to log in.",
       "username-instructions": "Please use 32 characters at maximum.",
       "username-placeholder": "John Doe",
       "username-sign-in-placeholder": "Username or email",
+      "verify-your-email": "Verify Your Email",
+      "verify-your-email-description": "Please verify your email address. Check your inbox for the verification email. If you haven't received the email, click the button below to resend.",
       "wallet-security": {
         "pincode-instruction": "Enter a 6-digit pincode to secure your wallet.",
         "pincode-set": "Pincode set successfully",

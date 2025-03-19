@@ -2,7 +2,11 @@ import { ActivePill } from "@/components/blocks/active-pill/active-pill";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { PageHeader } from "@/components/layout/page-header";
+import { getUser } from "@/lib/auth/utils";
+import type { Role } from "@/lib/config/roles";
+import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { AssetType } from "@/lib/utils/zod";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
@@ -11,9 +15,11 @@ import type { Address } from "viem";
 interface DetailPageHeaderProps {
   address: Address;
   assettype: AssetType;
-  manageDropdown: (
-    details: Awaited<ReturnType<typeof getAssetDetail>>
-  ) => ReactNode;
+  manageDropdown: (params: {
+    assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
+    userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
+    userRoles: Role[];
+  }) => ReactNode;
 }
 
 export async function DetailPageHeader({
@@ -21,15 +27,26 @@ export async function DetailPageHeader({
   assettype,
   manageDropdown,
 }: DetailPageHeaderProps) {
-  const details = await getAssetDetail({ address, assettype });
-  const t = await getTranslations("private.assets.details");
+  const user = await getUser();
+  const [assetDetails, t, userBalance, assetUsersDetails] = await Promise.all([
+    getAssetDetail({ address, assettype }),
+    getTranslations("private.assets.details"),
+    getAssetBalanceDetail({
+      address,
+      account: user.wallet as Address,
+    }),
+    getAssetUsersDetail({ address }),
+  ]);
+  const userRoles =
+    assetUsersDetails.roles.find((role) => role.id === user.wallet)?.roles ??
+    [];
 
   return (
     <PageHeader
       title={
         <>
-          <span className="mr-2">{details.name}</span>
-          <span className="text-muted-foreground">({details.symbol})</span>
+          <span className="mr-2">{assetDetails.name}</span>
+          <span className="text-muted-foreground">({assetDetails.symbol})</span>
         </>
       }
       subtitle={
@@ -39,9 +56,11 @@ export async function DetailPageHeader({
       }
       section={t("asset-management")}
       pill={
-        <ActivePill paused={"paused" in details ? details.paused : false} />
+        <ActivePill
+          paused={"paused" in assetDetails ? assetDetails.paused : false}
+        />
       }
-      button={manageDropdown(details)}
+      button={manageDropdown({ assetDetails, userBalance, userRoles })}
     />
   );
 }

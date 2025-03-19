@@ -1,13 +1,16 @@
 import {
-  format,
   formatDistance,
   formatDuration as formatDurationFns,
   formatRelative,
   fromUnixTime,
   parseISO,
+  setDefaultOptions,
 } from "date-fns";
+import { ar, de, ja } from "date-fns/locale";
+import { createFormatter, type Locale, useFormatter } from "next-intl";
 
 const NUMERIC_REGEX = /^\d+$/;
+const timeZone = "Europe/Brussels";
 
 /**
  * Options for date formatting
@@ -15,13 +18,46 @@ const NUMERIC_REGEX = /^\d+$/;
 export interface DateFormatOptions {
   /** Format type: absolute (default), relative, distance, or unix */
   readonly type?: "absolute" | "relative" | "distance" | "unixSeconds";
-  /** Custom format string for absolute dates (e.g., 'yyyy-MM-dd HH:mm') */
-  readonly formatStr?: string;
+  /** The locale to use for formatting (e.g., 'en-US') */
+  readonly locale: Locale;
+  /** Custom format options for absolute dates */
+  readonly formatOptions?: Intl.DateTimeFormatOptions;
+}
+
+/**
+ * Internal helper to format dates with a given formatter
+ */
+function formatDateWithFormatter(
+  formatter:
+    | ReturnType<typeof useFormatter>
+    | ReturnType<typeof createFormatter>,
+  date: Date,
+  options: DateFormatOptions
+): string {
+  const { type = "absolute" } = options;
+
+  if (type === "distance") {
+    return formatDistance(date, new Date());
+  }
+
+  if (type === "relative") {
+    return formatRelative(date, new Date());
+  }
+
+  if (type === "unixSeconds") {
+    return (date.getTime() / 1000).toString();
+  }
+
+  return formatter.dateTime(date, {
+    dateStyle: "long",
+    timeStyle: "short",
+    ...options.formatOptions,
+  });
 }
 
 /**
  * Formats a date string or Date object into a localized date-time string.
- * Uses Intl.DateTimeFormat for consistent localization.
+ * Uses next-intl formatter for consistent localization.
  *
  * @param date - The date to format (string or Date object)
  * @param options - Formatting options including locale and format preferences
@@ -29,10 +65,8 @@ export interface DateFormatOptions {
  */
 export function formatDate(
   date: string | Date,
-  options: DateFormatOptions = {}
+  options: DateFormatOptions
 ): string {
-  const { type = "absolute", formatStr = "MMMM d, yyyy HH:mm" } = options;
-
   try {
     const dateObj =
       typeof date === "string"
@@ -42,24 +76,29 @@ export function formatDate(
         : date;
 
     if (Number.isNaN(dateObj.getTime())) {
-      return "Invalid Date";
+      return "-";
     }
 
-    if (type === "distance") {
-      return formatDistance(dateObj, new Date());
+    const locale = options.locale?.toString() || "en";
+
+    if (locale !== "en") {
+      if (locale === "de") {
+        setDefaultOptions({ locale: de });
+      } else if (locale === "ja") {
+        setDefaultOptions({ locale: ja });
+      } else if (locale === "ar") {
+        setDefaultOptions({ locale: ar });
+      }
     }
 
-    if (type === "relative") {
-      return formatRelative(dateObj, new Date());
-    }
+    const formatter = createFormatter({
+      locale: locale,
+      timeZone: timeZone,
+    });
 
-    if (type === "unixSeconds") {
-      return (dateObj.getTime() / 1000).toString();
-    }
-
-    return format(dateObj, formatStr);
+    return formatDateWithFormatter(formatter, dateObj, options);
   } catch {
-    return "Invalid Date";
+    return "-";
   }
 }
 

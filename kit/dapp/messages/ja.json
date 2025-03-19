@@ -128,7 +128,11 @@
         "dashboard": "ダッシュボード",
         "group-title": "マイポートフォリオ",
         "my-activity": "マイアクティビティ",
-        "my-assets": "マイ資産"
+        "my-assets": "マイ資産",
+        "api": "API",
+        "my-contacts": "私の連絡先",
+        "profile": "プロフィール",
+        "settings": "設定"
       }
     }
   },
@@ -372,7 +376,7 @@
     },
     "transactions-history": {
       "chart-label": "トランザクション",
-      "description": "過去 {interval} のトランザクションを表示",
+      "description": "最近の期間の取引を表示",
       "title": "トランザクション"
     },
     "transactions-table": {
@@ -570,7 +574,17 @@
         "swagger-description": "すべてのAPIリクエストには、認証のためにx-api-keyヘッダー内にAPIキーを含める必要があります。このヘッダーは、APIエンドポイントへの安全で認可されたアクセスを保証し、あなたのアプリケーションが私たちのサービスと安全に対話できるようにします。",
         "swagger-link-text": "APIドキュメントを開く",
         "swagger-title": "APIキーを作成、表示、管理して、あなたのアプリケーションを私たちのプラットフォームと安全に統合します。APIキーを使用すると、すべての利用可能な機能にプログラム的にアクセスでき、私たちのOpenAPI仕様を通じて明確に文書化されています。",
-        "title": "APIキー"
+        "title": "API",
+        "api-docs": "API ドキュメント",
+        "api-keys": "API キー",
+        "columns": {
+          "expiresAt": "有効期限",
+          "lastRequest": "最終リクエスト",
+          "name": "名前",
+          "rateLimit": "レート制限"
+        },
+        "disabled": "無効",
+        "expired": "期限切れ"
       },
       "profile": {
         "portfolio-management": "ポートフォリオ管理",
@@ -607,7 +621,8 @@
       },
       "transfer": "転送",
       "transfer-title": "転送 {name} ({symbol})"
-    }
+    },
+    "assets-count-assets": "資産"
   },
   "private": {
     "assets": {
@@ -688,7 +703,8 @@
             "isin-label": "ISIN",
             "name-label": "名前",
             "seconds-unit-label": "秒",
-            "symbol-label": "シンボル"
+            "symbol-label": "シンボル",
+            "value-in-base-currency-label": "値 {baseCurrency} で"
           },
           "cryptocurrencies": {
             "initial-supply-description": "鋳造されるトークンの初期数量",
@@ -745,9 +761,12 @@
             "unpause": "契約を再開",
             "update-collateral": "担保を更新",
             "view-events": "イベントを表示",
-            "withdraw": "引き出す"
+            "withdraw": "引き出す",
+            "block-user": "ユーザーをブロック"
           },
-          "manage": "管理する"
+          "manage": "管理する",
+          "available-balance": "燃やすために利用可能な残高: {maxLimit}",
+          "max-mint-amount": "ミントするために利用可能な担保: {limit}"
         }
       },
       "details": {
@@ -926,6 +945,134 @@
             },
             "title": "基礎資産を引き出す",
             "trigger-label": "引き出す"
+          },
+          "form": {
+            "description": {
+              "burn": "供給を減らすためにボンドトークンを循環から永久に削除します。",
+              "grant-role": "新しいユーザーに管理権限を割り当てます。",
+              "block": "このユーザーが取引や相互作用を行うのを防ぎます。",
+              "mature": "ボンドを満期にして基礎資産を受け取ります。",
+              "mint": "ボンドの流通供給を増やすために新しいトークンを発行します。",
+              "freeze": "ユーザーの資金へのアクセスを一時的に制限します。",
+              "pause": "このボンドのすべての取引と相互作用を一時的に停止します。",
+              "unpause": "このボンドの取引と相互作用を再開します。",
+              "top-up": "ボンドに基礎資産を追加します。",
+              "update-collateral": "現在の要件を反映するようにステーブルコインの担保を調整します。",
+              "withdraw": "ボンドから基礎資産を引き出します。"
+            },
+            "title": {
+              "burn": "資産を燃やす",
+              "grant-role": "役割を付与",
+              "block": "ユーザーをブロック",
+              "mature": "ボンドを満期にする",
+              "mint": "資産をミントする",
+              "freeze": "ユーザー資産を制限する",
+              "pause": "契約を一時停止",
+              "unpause": "契約を再開",
+              "top-up": "基礎資産を補充",
+              "update-collateral": "担保を更新",
+              "withdraw": "基礎資産を引き出す"
+            },
+            "trigger-label": {
+              "burn": "燃やす",
+              "grant-role": "役割を付与",
+              "block": "ユーザーをブロック",
+              "mature": "満期",
+              "mint": "ミント",
+              "freeze": "凍結",
+              "pause": "一時停止",
+              "unpause": "再開",
+              "top-up": "補充",
+              "update-collateral": "担保を更新",
+              "withdraw": "引き出す"
+            }
+          },
+          "account": {
+            "search-user-placeholder": "アドレス、名前、またはメールアドレスを入力してください",
+            "enter-wallet-address-placeholder": "ウォレットアドレスを入力してください",
+            "enter-user-address-manually": "アドレスを手動で入力...",
+            "search-user-instead": "代わりにユーザーを検索...",
+            "title": {
+              "mint": "受取人を選択",
+              "burn": "ユーザーを選択",
+              "grant-role": "ユーザーを選択",
+              "freeze": "ユーザーを選択",
+              "block": "ユーザーを選択",
+              "withdraw": "ユーザーを選択"
+            },
+            "description": {
+              "mint": "トークンを直接送信するためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
+              "burn": "トークンを燃やすためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
+              "grant-role": "役割を付与するためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
+              "freeze": "トークンを凍結するためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
+              "block": "ブロックするウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
+              "withdraw": "トークンを引き出すためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。"
+            }
+          },
+          "amount": {
+            "title": "金額を入力",
+            "wallet-balance": "ウォレット残高",
+            "description": {
+              "mint": "ミントしたい金額を入力してください。金額が担保の制限内に収まるようにしてください。",
+              "freeze": "凍結したい金額を入力してください。金額が選択したウォレットの総残高内に収まるようにしてください。",
+              "burn": "燃やしたい金額を入力してください。必要な権限と選択したウォレットに十分な残高があることを確認してください。",
+              "update-collateral": "担保を更新したい金額を入力してください。金額が現在の供給と同じかそれ以上であることを確認してください。",
+              "withdraw": "引き出したい金額を入力してください。",
+              "top-up": "基礎資産を補充したい金額を入力してください。"
+            },
+            "available-to": {
+              "mint": "ミント可能",
+              "freeze": "凍結可能",
+              "burn": "燃やすことができる"
+            },
+            "max-limit": {
+              "mint": "ミント可能な担保: {limit}",
+              "burn": "燃やすために利用可能な残高: {limit}",
+              "freeze": "凍結するために利用可能な残高: {limit}"
+            }
+          },
+          "roles": {
+            "title": "役割を選択",
+            "description": "ユーザーに付与する役割を選択してください。少なくとも1つの役割を選択する必要があります。"
+          },
+          "summary": {
+            "amount-label": "金額",
+            "asset-label": "資産",
+            "account-label": {
+              "default": "ユーザー",
+              "recipient": "受取人"
+            },
+            "roles-label": "役割",
+            "current-state-label": "現在の状態",
+            "target-state-label": "ターゲット状態",
+            "paused-label": "一時停止中",
+            "active-label": "アクティブ",
+            "title": {
+              "mint": "ミントを確認して承認",
+              "burn": "燃焼を確認して承認",
+              "grant-role": "役割付与を確認して承認",
+              "freeze": "凍結を確認して承認",
+              "block": "ブロックを確認して承認",
+              "mature": "満期を確認して承認",
+              "top-up": "補充を確認して承認",
+              "update-collateral": "担保更新を確認して承認",
+              "withdraw": "引き出しを確認して承認",
+              "pause": "一時停止を確認して承認する",
+              "unpause": "再開を確認して承認する"
+            },
+            "description": {
+              "mint": "進む前にミントの詳細を確認してください。",
+              "burn": "進む前にバーンの詳細を確認してください。",
+              "grant-role": "進む前に役割付与の詳細を確認してください。",
+              "freeze": "進む前にフリーズの詳細を確認してください。",
+              "block": "進む前にブロックの詳細を確認してください。",
+              "mature": "進む前に満期の詳細を確認してください。",
+              "top-up": "進む前にトップアップの詳細を確認してください。",
+              "update-collateral": "進む前に担保の更新の詳細を確認してください。",
+              "withdraw": "進む前に引き出しの詳細を確認してください。",
+              "pause": "進む前に一時停止の詳細を確認してください。",
+              "unpause": "進む前に再開の詳細を確認してください。"
+            }
           }
         },
         "holders": {
@@ -1084,6 +1231,47 @@
             "update-collateral": {
               "description": "供給マネージャーは、ステーブルコインを支える担保を更新および確認する必要があります。これにより、資産が常に完全に担保されていることが保証されます。",
               "title": "担保の更新"
+            }
+          },
+          "decrease-supply": {
+            "title": {
+              "bonds": "債券を償還する",
+              "equities": "株式供給を減少させる",
+              "funds": "債券を償還する",
+              "stablecoins": "供給を減少させる",
+              "tokenizeddeposits": "トークン化された預金供給を減少させる"
+            },
+            "description": {
+              "bonds": "債券マネージャーは、満期時の債券償還や早期買戻しプログラムを通じて総供給を減少させることができます。",
+              "equities": "株式マネージャーは、買戻しプログラムや資本削減を通じて株式の総供給を減少させることができます。",
+              "funds": "ファンドマネージャーは、満期時のファンド償還や早期買戻しプログラムを通じて総供給を減少させることができます。",
+              "stablecoins": "供給マネージャーは、十分な担保がある場合に既存のステーブルコインをバーンすることができます。",
+              "tokenizeddeposits": "供給マネージャーは、十分な担保がある場合に既存のトークン化された預金をバーンすることができます。"
+            }
+          },
+          "increase-supply": {
+            "title": {
+              "bonds": "債券を発行する",
+              "cryptocurrencies": "トークンをミントする",
+              "equities": "新しい株式を発行する",
+              "funds": "債券を発行する",
+              "stablecoins": "供給を増加させる",
+              "tokenizeddeposits": "供給を増加させる"
+            },
+            "description": {
+              "bonds": "債券マネージャーは、定義された額面と満期を持つプライマリー発行またはタップ発行を通じて新しい債券を発行することができます。",
+              "cryptocurrencies": "トークンマネージャーは、トークノミクス計画と発行スケジュールに従って新しいトークンをミントすることができます。",
+              "equities": "株式マネージャーは、権利発行、プライベートプレースメント、または株式分割などのさまざまなメカニズムを通じて新しい株式を発行することができます。",
+              "funds": "ファンドマネージャーは、定義された額面と満期を持つプライマリー発行またはタップ発行を通じて新しいファンドを発行することができます。",
+              "stablecoins": "供給マネージャーは、十分な担保がある場合に新しいステーブルコインをミントすることができます。",
+              "tokenizeddeposits": "供給マネージャーは、十分な担保がある場合に新しいトークン化された預金をミントすることができます。"
+            }
+          },
+          "update-collateral": {
+            "title": "担保を更新する",
+            "description": {
+              "stablecoins": "供給マネージャーは、ステーブルコインを支える担保を更新し、確認する必要があります。これにより、資産が常に完全に担保されていることが保証されます。",
+              "tokenizeddeposits": "供給マネージャーは、トークン化された預金を支える担保を更新し、確認する必要があります。これにより、資産が常に完全に担保されていることが保証されます。"
             }
           }
         },
@@ -1260,7 +1448,9 @@
         "underlying-asset": "基礎資産",
         "underlying-asset-balance": "基礎資産残高",
         "wallet-header": "ウォレット",
-        "yield-type": "利回りタイプ"
+        "yield-type": "利回りタイプ",
+        "price": "価格",
+        "price-header": "価格"
       },
       "table": {
         "asset-management": "資産管理",
@@ -1484,7 +1674,20 @@
         "pincode-instruction": "ウォレットを保護するために6桁のピンコードを入力してください。",
         "pincode-set": "ピンコードが正常に設定されました",
         "setup-pincode": "ピンコードを設定"
-      }
+      },
+      "passkeys": "パスキー",
+      "passkeys-description": "安全なアクセスのためのパスキーを管理します。",
+      "passkeys-instructions": "パスワードなしでアカウントに安全にアクセスします。",
+      "add-passkey": "パスキーを追加",
+      "accounts": "アカウント",
+      "accounts-description": "現在サインインしているアカウントを管理します。",
+      "accounts-instructions": "追加のアカウントにサインインします。",
+      "delete": "削除",
+      "resend-verification-email": "確認メールを再送信",
+      "security": "セキュリティ",
+      "switch-account": "アカウントを切り替える",
+      "verify-your-email": "メールアドレスを確認してください。",
+      "verify-your-email-description": "メールアドレスを確認してください。受信トレイに確認メールが届いているか確認してください。メールが届いていない場合は、以下のボタンをクリックして再送信してください。"
     },
     "users": {
       "banned_reason": "{reason}のため禁止されています",
@@ -1573,5 +1776,32 @@
     "sending": "送信中",
     "success": "成功",
     "validation-errors": "検証エラー"
+  },
+  "language": {
+    "changing": "変更中...",
+    "language": "言語"
+  },
+  "asset-events": {
+    "ApprovalEvent": "承認",
+    "AssetCreatedEvent": "作成",
+    "BondMaturedEvent": "成熟",
+    "BondRedeemedEvent": "償還",
+    "BurnEvent": "焼却",
+    "CollateralUpdatedEvent": "担保が更新されました",
+    "ManagementFeeCollectedEvent": "管理手数料が徴収されました",
+    "MintEvent": "ミント",
+    "PausedEvent": "一時停止",
+    "PerformanceFeeCollectedEvent": "パフォーマンス手数料が徴収されました",
+    "RoleAdminChangedEvent": "役割管理者が変更されました",
+    "RoleGrantedEvent": "役割が付与されました",
+    "RoleRevokedEvent": "役割が取り消されました",
+    "TokenWithdrawnEvent": "引き出し",
+    "TokensFrozenEvent": "凍結",
+    "TransferEvent": "転送",
+    "UnderlyingAssetTopUpEvent": "追加",
+    "UnderlyingAssetWithdrawnEvent": "引き出し",
+    "UnpausedEvent": "再開",
+    "UserBlockedEvent": "ブロック",
+    "UserUnblockedEvent": "ブロック解除"
   }
 }

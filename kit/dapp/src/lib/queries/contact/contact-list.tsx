@@ -1,6 +1,6 @@
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { ContactFragment } from './contact-fragment';
-import type { Contact } from './contact-fragment';
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { ContactFragment } from "./contact-fragment";
+import type { Contact } from "./contact-fragment";
 
 /**
  * GraphQL query to fetch contact list from Hasura
@@ -30,7 +30,7 @@ export async function getContactsList(userId: string): Promise<Contact[]> {
     });
     return data.contact || [];
   } catch (error) {
-    console.error('Error fetching contacts:', error);
+    console.error("Error fetching contacts:", error);
     return [];
   }
 }

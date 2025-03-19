@@ -8,18 +8,16 @@ import { useFormContext } from "react-hook-form";
 
 export function Amount() {
   const { control } = useFormContext<TopUpInput>();
-  const t = useTranslations("private.assets.details.forms.top-up.amount");
+  const t = useTranslations("private.assets.details.forms.amount");
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
+    <FormStep title={t("title")} description={t("description.top-up")}>
       <FormInput
         control={control}
         name="amount"
         type="number"
         min={0}
         step="any"
-        label={t("amount.label")}
-        description={t("amount.description")}
       />
     </FormStep>
   );

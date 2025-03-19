@@ -22,18 +22,42 @@ const BondBlockUser = portalGraphql(`
   }
 `);
 
+const StableCoinBlockUser = portalGraphql(`
+  mutation StableCoinBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!) {
+    StableCoinBlockUser(address: $address, input: { user: $account }, from: $from, challengeResponse: $challengeResponse) {
+      transactionHash
+    }
+  }
+`);
+
+const EquityBlockUser = portalGraphql(`
+  mutation EquityBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!) {
+    EquityBlockUser(address: $address, input: { user: $account }, from: $from, challengeResponse: $challengeResponse) {
+      transactionHash
+    }
+  }
+`);
+
+const FundBlockUser = portalGraphql(`
+  mutation FundBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!) {
+    FundBlockUser(address: $address, input: { user: $account }, from: $from, challengeResponse: $challengeResponse) {
+      transactionHash
+    }
+  }
+`);
+
 export const blockUser = action
   .schema(BlockUserSchema)
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { address, pincode, account, assettype },
+      parsedInput: { address, pincode, userAddress, assettype },
       ctx: { user },
     }) => {
       // Common parameters for all mutations
       const params = {
         address,
-        account,
+        account: userAddress,
         from: user.wallet,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       };
@@ -45,19 +69,31 @@ export const blockUser = action
             response.BondBlockUser?.transactionHash,
           ]);
         }
+        case "equity": {
+          const response = await portalClient.request(EquityBlockUser, params);
+          return safeParseTransactionHash([
+            response.EquityBlockUser?.transactionHash,
+          ]);
+        }
+        case "fund": {
+          const response = await portalClient.request(FundBlockUser, params);
+          return safeParseTransactionHash([
+            response.FundBlockUser?.transactionHash,
+          ]);
+        }
+        case "stablecoin": {
+          const response = await portalClient.request(
+            StableCoinBlockUser,
+            params
+          );
+          return safeParseTransactionHash([
+            response.StableCoinBlockUser?.transactionHash,
+          ]);
+        }
         case "cryptocurrency": {
           throw new Error(
             "Cryptocurrency does not support block user operations"
           );
-        }
-        case "equity": {
-          throw new Error("Equity does not support block user operations");
-        }
-        case "fund": {
-          throw new Error("Fund does not support block user operations");
-        }
-        case "stablecoin": {
-          throw new Error("Stablecoin does not support block user operations");
         }
         case "tokenizeddeposit": {
           throw new Error(

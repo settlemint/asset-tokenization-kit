@@ -27,25 +27,26 @@ export function PauseForm({
   open,
   onOpenChange,
 }: PauseFormProps) {
-  const t = useTranslations("private.assets.details.forms.pause");
+  const t = useTranslations("private.assets.details.forms.form");
 
   if (isPaused) {
     return (
       <FormSheet
         open={open}
         onOpenChange={onOpenChange}
-        title={t("unpause.title")}
-        description={t("unpause.description")}
+        title={t("title.unpause")}
+        description={t("description.unpause")}
       >
         <Form
           action={unpause}
           resolver={zodResolver(UnpauseSchema)}
           onOpenChange={onOpenChange}
           buttonLabels={{
-            label: t("unpause.button-label"),
+            label: t("trigger-label.unpause"),
           }}
           defaultValues={{
             address,
+            assettype,
           }}
         >
           <Summary address={address} isCurrentlyPaused={isPaused} />
@@ -58,15 +59,15 @@ export function PauseForm({
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title={t("pause.title")}
-      description={t("pause.description")}
+      title={t("title.pause")}
+      description={t("description.pause")}
     >
       <Form
         action={pause}
         resolver={zodResolver(PauseSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{
-          label: t("pause.button-label"),
+          label: t("trigger-label.pause"),
         }}
         defaultValues={{
           address,

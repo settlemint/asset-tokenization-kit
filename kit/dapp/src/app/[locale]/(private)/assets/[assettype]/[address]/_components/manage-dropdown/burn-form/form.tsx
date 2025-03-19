@@ -15,7 +15,8 @@ import { Summary } from "./steps/summary";
 interface BurnFormProps {
   address: Address;
   assettype: AssetType;
-  balance: number;
+  maxLimit?: number;
+  disabled?: boolean;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -24,12 +25,13 @@ interface BurnFormProps {
 export function BurnForm({
   address,
   assettype,
-  balance,
+  maxLimit,
+  disabled = false,
   asButton = false,
   open,
   onOpenChange,
 }: BurnFormProps) {
-  const t = useTranslations("private.assets.details.forms.burn");
+  const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -40,10 +42,13 @@ export function BurnForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      triggerLabel={
+        isExternallyControlled ? undefined : t("trigger-label.burn")
+      }
+      title={t("title.burn")}
+      description={t("description.burn")}
       asButton={asButton}
+      disabled={disabled}
     >
       <Form
         action={burn}
@@ -52,14 +57,14 @@ export function BurnForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t("button-label"),
+          label: t("trigger-label.burn"),
         }}
         defaultValues={{
           address,
           assettype,
         }}
       >
-        <Amount maxBurnAmount={balance} />
+        <Amount maxLimit={maxLimit} />
         <Summary address={address} />
       </Form>
     </FormSheet>

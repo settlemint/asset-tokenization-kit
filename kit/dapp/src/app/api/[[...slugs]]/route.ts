@@ -1,4 +1,5 @@
 import { metadata } from "@/lib/config/metadata";
+import { AssetPriceApi } from "@/lib/providers/asset-price/asset-price-api";
 import { ExchangeRatesApi } from "@/lib/providers/exchange-rates/exchange-rates-api";
 import { ExchangeRateUpdateApi } from "@/lib/providers/exchange-rates/exchange-rates-update-api";
 import { BondDetailApi } from "@/lib/queries/bond/bond-detail-api";
@@ -36,41 +37,27 @@ const app = new Elysia({ prefix: "/api" })
             },
           },
         },
-        tags: [
-          { name: "Auth", description: "Authentication endpoints" },
-          { name: "Bonds", description: "Bond endpoints" },
-          {
-            name: "Cryptocurrencies",
-            description: "CryptoCurrency endpoints",
-          },
-          { name: "Equities", description: "Equity endpoints" },
-          { name: "Funds", description: "Fund endpoints" },
-          { name: "Stablecoins", description: "Stablecoin endpoints" },
-          {
-            name: "Tokenized Deposits",
-            description: "Tokenized Deposit endpoints",
-          },
-          { name: "Providers", description: "Provider endpoints" },
-        ],
       },
     })
   )
-  .group("/stablecoins", (app) =>
+  .group("/stablecoin", (app) =>
     app.use(StablecoinListApi).use(StablecoinDetailApi)
   )
-  .group("/funds", (app) => app.use(FundListApi).use(FundDetailApi))
-  .group("/equities", (app) => app.use(EquityListApi).use(EquityDetailApi))
-  .group("/cryptocurrencies", (app) =>
+  .group("/fund", (app) => app.use(FundListApi).use(FundDetailApi))
+  .group("/equity", (app) => app.use(EquityListApi).use(EquityDetailApi))
+  .group("/cryptocurrency", (app) =>
     app.use(CryptoCurrencyListApi).use(CryptoCurrencyDetailApi)
   )
-  .group("/bonds", (app) => app.use(BondListApi).use(BondDetailApi))
-  .group("/tokenized-deposits", (app) =>
+  .group("/bond", (app) => app.use(BondListApi).use(BondDetailApi))
+  .group("/tokenizeddeposit", (app) =>
     app.use(TokenizedDepositListApi).use(TokenizedDepositApi)
   )
   .group("/providers/exchange-rates", (app) =>
     app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
-  );
+  )
+  .group("/providers/asset-price", (app) => app.use(AssetPriceApi));
 
 export const GET = app.handle;
 export const POST = app.handle;
 export const PATCH = app.handle;
+export const DELETE = app.handle;

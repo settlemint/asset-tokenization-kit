@@ -59,6 +59,7 @@ export function FormInput<T extends FieldValues>({
   ...props
 }: FormInputProps<T>) {
   const form = useFormContext<T>();
+  const { register } = form;
   const t = useTranslations("components.form.input");
 
   return (
@@ -104,6 +105,9 @@ export function FormInput<T extends FieldValues>({
                 <Input
                   {...field}
                   {...props}
+                  {...register(field.name, {
+                    valueAsNumber: props.type === "number",
+                  })}
                   className={cn(
                     className,
                     postfix &&
@@ -112,6 +116,27 @@ export function FormInput<T extends FieldValues>({
                   type={props.type}
                   value={props.defaultValue ? undefined : (field.value ?? "")}
                   onChange={async (evt: ChangeEvent<HTMLInputElement>) => {
+                    if (props.type === "number") {
+                      const value = evt.target.value;
+
+                      if (value === "") {
+                        field.onChange(evt);
+                        return;
+                      }
+
+                      if (value.startsWith("-")) {
+                        return;
+                      }
+
+                      if (
+                        value.startsWith("0") &&
+                        value !== "0" &&
+                        !value.startsWith("0.")
+                      ) {
+                        return;
+                      }
+                    }
+
                     field.onChange(evt);
                     if (form.formState.errors[field.name]) {
                       await form.trigger(field.name);
@@ -121,6 +146,7 @@ export function FormInput<T extends FieldValues>({
                   pattern={
                     props.type === "number" ? "[0-9]*.?[0-9]*" : undefined
                   }
+                  min={props.type === "number" ? 0 : undefined}
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,

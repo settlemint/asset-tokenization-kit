@@ -19,7 +19,7 @@ export const CreateStablecoinSchema = z.object({
   collateralLivenessSeconds: z
     .number()
     .or(z.string())
-    .pipe(z.coerce.number().min(0)),
+    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
   pincode: z.pincode(),
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "stablecoin.duplicate",

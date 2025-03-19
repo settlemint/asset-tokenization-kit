@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { routing, usePathname, useRouter } from "@/i18n/routing";
 import { Check } from "lucide-react";
-import type { Locale } from "next-intl";
+import { useTranslations, type Locale } from "next-intl";
 import { useParams } from "next/navigation";
 import { useRef, useTransition } from "react";
 
@@ -33,6 +33,7 @@ export function LanguageMenuItem() {
   const currentLocale = ((params.locale as string) ||
     routing.defaultLocale) as (typeof routing.locales)[number];
   const [isPending, startTransition] = useTransition();
+  const t = useTranslations("language");
 
   const handleLanguageChange = (locale: Locale) => {
     // Use React's useTransition to avoid blocking the UI during navigation
@@ -65,7 +66,7 @@ export function LanguageMenuItem() {
           ref={languagesIconRef}
           className="mr-4 size-4 text-muted-foreground"
         />
-        <span>{isPending ? "Changing..." : "Language"}</span>
+        <span>{isPending ? t("changing") : t("language")}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="min-w-[8rem]">
         {routing.locales.map((locale) => (

@@ -1,3 +1,5 @@
+"use server";
+
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 
 const SetPinCode = portalGraphql(`

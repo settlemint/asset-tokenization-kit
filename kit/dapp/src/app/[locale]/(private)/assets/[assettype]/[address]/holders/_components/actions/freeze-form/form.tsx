@@ -4,6 +4,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { freeze } from "@/lib/mutations/freeze/freeze-action";
 import { FreezeSchema } from "@/lib/mutations/freeze/freeze-schema";
+import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
@@ -14,50 +15,50 @@ interface FreezeFormProps {
   address: Address;
   userAddress: Address;
   balance: string | number;
-  frozen: string | number;
   symbol: string;
+  decimals: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  assettype: AssetType;
 }
 
 export function FreezeForm({
   address,
   userAddress,
   balance,
-  frozen,
   symbol,
+  decimals,
   open,
   onOpenChange,
+  assettype,
 }: FreezeFormProps) {
-  const t = useTranslations("private.assets.details.holders.forms.freeze");
-
-  // Convert to numbers for component use
+  const t = useTranslations("private.assets.details.forms.form");
   const balanceNum =
     typeof balance === "string" ? Number.parseFloat(balance) : balance;
-  const frozenNum =
-    typeof frozen === "string" ? Number.parseFloat(frozen) : frozen;
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      triggerLabel={t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      triggerLabel={t("trigger-label.freeze")}
+      title={t("title.freeze")}
+      description={t("description.freeze")}
     >
       <Form
         action={freeze}
         resolver={zodResolver(FreezeSchema)}
         buttonLabels={{
-          label: t("button-label"),
+          label: t("trigger-label.freeze"),
         }}
         defaultValues={{
           address,
           userAddress,
           amount: 0,
+          assettype,
         }}
+        onOpenChange={onOpenChange}
       >
-        <Amount balance={balanceNum} frozen={frozenNum} symbol={symbol} />
+        <Amount balance={balanceNum} symbol={symbol} decimals={decimals} />
         <Summary address={address} />
       </Form>
     </FormSheet>

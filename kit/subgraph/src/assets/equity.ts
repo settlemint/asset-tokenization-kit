@@ -21,6 +21,7 @@ import {
 } from "../../generated/templates/Equity/Equity";
 import { fetchAccount } from "../fetch/account";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
+import { blockUser, unblockUser } from "../fetch/block-user";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
@@ -798,6 +799,7 @@ export function handleUserBlocked(event: UserBlocked): void {
   ]);
 
   equity.lastActivity = event.block.timestamp;
+  blockUser(equity.id, user.id, event.block.timestamp);
   equity.save();
 
   const balance = fetchAssetBalance(equity.id, user.id, equity.decimals, false);
@@ -841,6 +843,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   ]);
 
   equity.lastActivity = event.block.timestamp;
+  unblockUser(equity.id, user.id);
   equity.save();
 
   const balance = fetchAssetBalance(equity.id, user.id, equity.decimals, false);

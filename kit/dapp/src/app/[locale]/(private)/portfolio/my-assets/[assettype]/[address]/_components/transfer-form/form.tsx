@@ -20,6 +20,7 @@ interface TransferFormProps {
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
 }
 
 export function TransferForm({
@@ -29,6 +30,7 @@ export function TransferForm({
   asButton = false,
   open,
   onOpenChange,
+  disabled = false,
 }: TransferFormProps) {
   const t = useTranslations("portfolio.my-assets.bond");
   const isExternallyControlled =
@@ -47,6 +49,7 @@ export function TransferForm({
       title={t("transfer-form.title")}
       description={t("transfer-form.description")}
       asButton={asButton}
+      disabled={disabled}
     >
       <Form
         action={transfer}

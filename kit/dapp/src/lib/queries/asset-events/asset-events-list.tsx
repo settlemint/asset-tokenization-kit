@@ -6,6 +6,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { formatDate } from "@/lib/utils/date";
 import { safeParseWithLogging } from "@/lib/utils/zod";
+import { getLocale, getTranslations } from "next-intl/server";
 import { cache } from "react";
 import type { Address } from "viem";
 import {
@@ -165,6 +166,9 @@ export const getAssetEventsList = cache(
       return events;
     }, limit);
 
+    const locale = await getLocale();
+    const t = await getTranslations("asset-events");
+
     // Validate and transform events
     const validatedEvents = events
       .map((event) => {
@@ -172,131 +176,194 @@ export const getAssetEventsList = cache(
 
         switch (eventName) {
           case "AssetCreatedEvent":
-            return safeParseWithLogging(
-              AssetCreatedEventFragmentSchema,
-              event,
-              "AssetCreatedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                AssetCreatedEventFragmentSchema,
+                event,
+                "AssetCreatedEvent"
+              ),
+              prettyName: t("AssetCreatedEvent"),
+            };
           case "ApprovalEvent":
-            return safeParseWithLogging(
-              ApprovalEventFragmentSchema,
-              event,
-              "ApprovalEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                ApprovalEventFragmentSchema,
+                event,
+                "ApprovalEvent"
+              ),
+              prettyName: t("ApprovalEvent"),
+            };
           case "BondMaturedEvent":
-            return safeParseWithLogging(
-              BondMaturedEventFragmentSchema,
-              event,
-              "BondMaturedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                BondMaturedEventFragmentSchema,
+                event,
+                "BondMaturedEvent"
+              ),
+              prettyName: t("BondMaturedEvent"),
+            };
           case "BondRedeemedEvent":
-            return safeParseWithLogging(
-              BondRedeemedEventFragmentSchema,
-              event,
-              "BondRedeemedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                BondRedeemedEventFragmentSchema,
+                event,
+                "BondRedeemedEvent"
+              ),
+              prettyName: t("BondRedeemedEvent"),
+            };
           case "BurnEvent":
-            return safeParseWithLogging(
-              BurnEventFragmentSchema,
-              event,
-              "BurnEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                BurnEventFragmentSchema,
+                event,
+                "BurnEvent"
+              ),
+              prettyName: t("BurnEvent"),
+            };
           case "CollateralUpdatedEvent":
-            return safeParseWithLogging(
-              CollateralUpdatedEventFragmentSchema,
-              event,
-              "CollateralUpdatedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                CollateralUpdatedEventFragmentSchema,
+                event,
+                "CollateralUpdatedEvent"
+              ),
+              prettyName: t("CollateralUpdatedEvent"),
+            };
           case "ManagementFeeCollectedEvent":
-            return safeParseWithLogging(
-              ManagementFeeCollectedEventFragmentSchema,
-              event,
-              "ManagementFeeCollectedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                ManagementFeeCollectedEventFragmentSchema,
+                event,
+                "ManagementFeeCollectedEvent"
+              ),
+              prettyName: t("ManagementFeeCollectedEvent"),
+            };
           case "MintEvent":
-            return safeParseWithLogging(
-              MintEventFragmentSchema,
-              event,
-              "MintEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                MintEventFragmentSchema,
+                event,
+                "MintEvent"
+              ),
+              prettyName: t("MintEvent"),
+            };
           case "PausedEvent":
-            return safeParseWithLogging(
-              PausedEventFragmentSchema,
-              event,
-              "PausedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                PausedEventFragmentSchema,
+                event,
+                "PausedEvent"
+              ),
+              prettyName: t("PausedEvent"),
+            };
           case "PerformanceFeeCollectedEvent":
-            return safeParseWithLogging(
-              PerformanceFeeCollectedEventFragmentSchema,
-              event,
-              "PerformanceFeeCollectedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                PerformanceFeeCollectedEventFragmentSchema,
+                event,
+                "PerformanceFeeCollectedEvent"
+              ),
+              prettyName: t("PerformanceFeeCollectedEvent"),
+            };
           case "RoleAdminChangedEvent":
-            return safeParseWithLogging(
-              RoleAdminChangedEventFragmentSchema,
-              event,
-              "RoleAdminChangedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                RoleAdminChangedEventFragmentSchema,
+                event,
+                "RoleAdminChangedEvent"
+              ),
+              prettyName: t("RoleAdminChangedEvent"),
+            };
           case "RoleGrantedEvent":
-            return safeParseWithLogging(
-              RoleGrantedEventFragmentSchema,
-              event,
-              "RoleGrantedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                RoleGrantedEventFragmentSchema,
+                event,
+                "RoleGrantedEvent"
+              ),
+              prettyName: t("RoleGrantedEvent"),
+            };
           case "RoleRevokedEvent":
-            return safeParseWithLogging(
-              RoleRevokedEventFragmentSchema,
-              event,
-              "RoleRevokedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                RoleRevokedEventFragmentSchema,
+                event,
+                "RoleRevokedEvent"
+              ),
+              prettyName: t("RoleRevokedEvent"),
+            };
           case "TokenWithdrawnEvent":
-            return safeParseWithLogging(
-              TokenWithdrawnEventFragmentSchema,
-              event,
-              "TokenWithdrawnEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                TokenWithdrawnEventFragmentSchema,
+                event,
+                "TokenWithdrawnEvent"
+              ),
+              prettyName: t("TokenWithdrawnEvent"),
+            };
           case "TokensFrozenEvent":
-            return safeParseWithLogging(
-              TokensFrozenEventFragmentSchema,
-              event,
-              "TokensFrozenEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                TokensFrozenEventFragmentSchema,
+                event,
+                "TokensFrozenEvent"
+              ),
+              prettyName: t("TokensFrozenEvent"),
+            };
           case "TransferEvent":
-            return safeParseWithLogging(
-              TransferEventFragmentSchema,
-              event,
-              "TransferEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                TransferEventFragmentSchema,
+                event,
+                "TransferEvent"
+              ),
+              prettyName: t("TransferEvent"),
+            };
           case "UnpausedEvent":
-            return safeParseWithLogging(
-              UnpausedEventFragmentSchema,
-              event,
-              "UnpausedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                UnpausedEventFragmentSchema,
+                event,
+                "UnpausedEvent"
+              ),
+              prettyName: t("UnpausedEvent"),
+            };
           case "UserBlockedEvent":
-            return safeParseWithLogging(
-              UserBlockedEventFragmentSchema,
-              event,
-              "UserBlockedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                UserBlockedEventFragmentSchema,
+                event,
+                "UserBlockedEvent"
+              ),
+              prettyName: t("UserBlockedEvent"),
+            };
           case "UserUnblockedEvent":
-            return safeParseWithLogging(
-              UserUnblockedEventFragmentSchema,
-              event,
-              "UserUnblockedEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                UserUnblockedEventFragmentSchema,
+                event,
+                "UserUnblockedEvent"
+              ),
+              prettyName: t("UserUnblockedEvent"),
+            };
           case "UnderlyingAssetTopUpEvent":
-            return safeParseWithLogging(
-              UnderlyingAssetTopUpEventFragmentSchema,
-              event,
-              "UnderlyingAssetTopUpEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                UnderlyingAssetTopUpEventFragmentSchema,
+                event,
+                "UnderlyingAssetTopUpEvent"
+              ),
+              prettyName: t("UnderlyingAssetTopUpEvent"),
+            };
           case "UnderlyingAssetWithdrawnEvent":
-            return safeParseWithLogging(
-              UnderlyingAssetWithdrawnEventFragmentSchema,
-              event,
-              "UnderlyingAssetWithdrawnEvent"
-            );
+            return {
+              ...safeParseWithLogging(
+                UnderlyingAssetWithdrawnEventFragmentSchema,
+                event,
+                "UnderlyingAssetWithdrawnEvent"
+              ),
+              prettyName: t("UnderlyingAssetWithdrawnEvent"),
+            };
           default:
             return null;
         }
@@ -305,8 +372,8 @@ export const getAssetEventsList = cache(
 
     return validatedEvents.map((validatedEvent): NormalizedEventsListItem => {
       return {
-        event: validatedEvent.__typename,
-        timestamp: formatDate(validatedEvent.timestamp),
+        event: validatedEvent.prettyName,
+        timestamp: formatDate(validatedEvent.timestamp, { locale }),
         asset: validatedEvent.emitter.id,
         assetType: validatedEvent.assetType,
         sender: validatedEvent.sender?.id || "System",

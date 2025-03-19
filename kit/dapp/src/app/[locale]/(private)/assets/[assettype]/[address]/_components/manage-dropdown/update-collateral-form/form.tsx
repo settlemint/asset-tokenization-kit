@@ -18,6 +18,7 @@ interface UpdateCollateralFormProps {
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
 }
 
 export function UpdateCollateralForm({
@@ -26,11 +27,12 @@ export function UpdateCollateralForm({
   asButton = false,
   open,
   onOpenChange,
+  disabled = false,
 }: UpdateCollateralFormProps) {
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
-  const t = useTranslations("private.assets.details.forms.update-collateral");
+  const t = useTranslations("private.assets.details.forms.form");
 
   return (
     <FormSheet
@@ -38,10 +40,15 @@ export function UpdateCollateralForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      title={t("title")}
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      description={t("description")}
+      title={t("title.update-collateral")}
+      triggerLabel={
+        isExternallyControlled
+          ? undefined
+          : t("trigger-label.update-collateral")
+      }
+      description={t("description.update-collateral")}
       asButton={asButton}
+      disabled={disabled}
     >
       <Form
         action={updateCollateral}
@@ -50,7 +57,7 @@ export function UpdateCollateralForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t("button-label"),
+          label: t("trigger-label.update-collateral"),
         }}
         defaultValues={{
           address,

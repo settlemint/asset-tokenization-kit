@@ -5,7 +5,7 @@ import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { formatNumber } from "@/lib/utils/number";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
 
@@ -14,9 +14,12 @@ interface FundsDetailsProps {
 }
 
 export async function FundsDetails({ address }: FundsDetailsProps) {
-  const fund = await getFundDetail({ address });
-  const t = await getTranslations("private.assets.fields");
-  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
+  const [fund, t, baseCurrency, locale] = await Promise.all([
+    getFundDetail({ address }),
+    getTranslations("private.assets.fields"),
+    getSetting(SETTING_KEYS.BASE_CURRENCY),
+    getLocale(),
+  ]);
 
   return (
     <Suspense>
@@ -52,12 +55,14 @@ export async function FundsDetails({ address }: FundsDetailsProps) {
           {formatNumber(fund.concentration, {
             percentage: true,
             decimals: 2,
+            locale: locale,
           })}
         </DetailGridItem>
         <DetailGridItem label={t("price")}>
           {formatNumber(fund.value_in_base_currency, {
             currency: baseCurrency,
             decimals: 2,
+            locale: locale,
           })}
         </DetailGridItem>
       </DetailGrid>

@@ -8,11 +8,11 @@ import { DataTableRowActions } from "@/components/blocks/data-table/data-table-r
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { ROLES } from "@/lib/config/roles";
-import type { PermissionWithRoles } from "@/lib/queries/asset/asset-detail";
+import type { PermissionWithRoles } from "@/lib/queries/asset/asset-users-detail";
 import { formatDate } from "@/lib/utils/date";
 import type { AssetType } from "@/lib/utils/zod";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { Address } from "viem";
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
@@ -26,6 +26,8 @@ export function columns({
 }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("id", {
@@ -48,7 +50,9 @@ export function columns({
     columnHelper.accessor("lastActivity", {
       header: t("last-activity-header"),
       cell: ({ getValue }) =>
-        getValue() ? formatDate(getValue(), { type: "distance" }) : "-",
+        getValue()
+          ? formatDate(getValue(), { type: "distance", locale: locale })
+          : "-",
       enableColumnFilter: false,
     }),
     columnHelper.display({

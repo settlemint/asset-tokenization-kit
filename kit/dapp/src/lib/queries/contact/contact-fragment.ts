@@ -1,5 +1,5 @@
-import { hasuraGraphql } from '@/lib/settlemint/hasura';
-import { z } from '@/lib/utils/zod';
+import { hasuraGraphql } from "@/lib/settlemint/hasura";
+import { z } from "@/lib/utils/zod";
 
 export const ContactFragment = hasuraGraphql(
   `

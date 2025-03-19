@@ -18,25 +18,6 @@ interface DataTableToolbarProps<TData> extends DataTableToolbarOptions {
   table: Table<TData>;
 }
 
-const CAPITAL_LETTER_REGEX = /(?=[A-Z])/;
-
-/**
- * Transforms a camelCase identifier into a pretty title case string
- * @param identifier The identifier to transform
- * @returns The prettified title
- */
-function prettifyTitle(identifier: string): string {
-  // Split the identifier at capital letters and lowercase everything
-  const words = identifier
-    .split(CAPITAL_LETTER_REGEX)
-    .map((word) => word.toLowerCase());
-
-  // Capitalize the first letter of each word
-  return words
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
 export function DataTableToolbar<TData>({
   table,
   enableToolbar = true,
@@ -54,7 +35,7 @@ export function DataTableToolbar<TData>({
     .filter((column) => column.getCanFilter())
     .map((column) => ({
       column,
-      title: prettifyTitle(column.id),
+      title: column.columnDef.header?.toString() ?? "",
       options: Array.from(column.getFacetedUniqueValues().entries()).map(
         ([value]) => ({
           label: String(value),

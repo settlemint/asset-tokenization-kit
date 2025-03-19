@@ -1,12 +1,10 @@
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { FreezeInput } from "@/lib/mutations/freeze/freeze-schema";
 import { formatNumber } from "@/lib/utils/number";
-import { DollarSign } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useLocale, useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 
 interface SummaryProps {
@@ -14,30 +12,25 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<FreezeInput>();
-  const t = useTranslations(
-    "private.assets.details.holders.forms.freeze.summary"
-  );
-  const values = useWatch({
-    control: control,
-  });
+  const { getValues } = useFormContext<FreezeInput>();
+  const t = useTranslations("private.assets.details.forms.summary");
+  const values = getValues();
+  const locale = useLocale();
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
-      <FormSummaryDetailCard
-        title={t("freeze-title")}
-        description={t("operation-description")}
-        icon={<DollarSign className="size-3 text-primary-foreground" />}
-      >
-        <FormSummaryDetailItem
-          label={t("asset-label")}
-          value={<EvmAddress address={address} />}
-        />
-        <FormSummaryDetailItem
-          label={t("amount-label")}
-          value={formatNumber(values.amount)}
-        />
-      </FormSummaryDetailCard>
+    <FormStep title={t("title.freeze")} description={t("description.freeze")}>
+      <FormSummaryDetailItem
+        label={t("asset-label")}
+        value={<EvmAddress address={address} />}
+      />
+      <FormSummaryDetailItem
+        label={t("amount-label")}
+        value={formatNumber(values.amount, { locale })}
+      />
+      <FormSummaryDetailItem
+        label={t("account-label.default")}
+        value={<EvmAddress address={values.userAddress} />}
+      />
     </FormStep>
   );
 }

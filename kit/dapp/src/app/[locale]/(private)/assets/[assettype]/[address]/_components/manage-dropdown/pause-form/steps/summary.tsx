@@ -1,8 +1,6 @@
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { DollarSign } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 
@@ -12,28 +10,22 @@ interface SummaryProps {
 }
 
 export function Summary({ address, isCurrentlyPaused }: SummaryProps) {
-  const t = useTranslations("private.assets.details.forms.pause.summary");
+  const t = useTranslations("private.assets.details.forms.summary");
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
-      <FormSummaryDetailCard
-        title={t("pause-title")}
-        description={t("pause-description")}
-        icon={<DollarSign className="size-3 text-primary-foreground" />}
-      >
-        <FormSummaryDetailItem
-          label={t("asset-label")}
-          value={<EvmAddress address={address} />}
-        />
-        <FormSummaryDetailItem
-          label={t("current-state-label")}
-          value={isCurrentlyPaused ? t("state-paused") : t("state-active")}
-        />
-        <FormSummaryDetailItem
-          label={t("target-state-label")}
-          value={isCurrentlyPaused ? t("state-active") : t("state-paused")}
-        />
-      </FormSummaryDetailCard>
+    <FormStep title={t("title.pause")} description={t("description.pause")}>
+      <FormSummaryDetailItem
+        label={t("asset-label")}
+        value={<EvmAddress address={address} />}
+      />
+      <FormSummaryDetailItem
+        label={t("current-state-label")}
+        value={isCurrentlyPaused ? t("paused-label") : t("active-label")}
+      />
+      <FormSummaryDetailItem
+        label={t("target-state-label")}
+        value={isCurrentlyPaused ? t("active-label") : t("paused-label")}
+      />
     </FormStep>
   );
 }
