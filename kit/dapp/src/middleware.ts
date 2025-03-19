@@ -27,7 +27,14 @@ const getSessionCookie = (request: NextRequest, config?: any) => {
         ? true
         : false),
   } = config || {};
-  console.log({ cookieName, cookiePrefix, useSecureCookies });
+  console.log({
+    cookieName,
+    cookiePrefix,
+    useSecureCookies,
+    type: request instanceof Request,
+    process: process.env.NODE_ENV === "production",
+    url: request.url.startsWith("https://"),
+  });
   const name = useSecureCookies
     ? `__Secure-${cookiePrefix}.${cookieName}`
     : `${cookiePrefix}.${cookieName}`;
