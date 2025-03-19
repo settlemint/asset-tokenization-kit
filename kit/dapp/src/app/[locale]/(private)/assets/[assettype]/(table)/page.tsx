@@ -8,14 +8,14 @@ import { Related } from "./_components/related";
 import { Table } from "./_components/table";
 
 interface PageProps {
-  params: Promise<{
+  params: {
     locale: Locale;
     assettype: AssetType;
-  }>;
+  };
 }
 
 export default async function AssetTypeTablePage({ params }: PageProps) {
-  const { assettype, locale } = await params;
+  const { assettype, locale } = params;
   const t = await getTranslations({
     locale,
     namespace: "private.assets.table",
@@ -39,7 +39,7 @@ export default async function AssetTypeTablePage({ params }: PageProps) {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { assettype, locale } = await params;
+  const { assettype, locale } = params;
   const t = await getTranslations({
     locale,
     namespace: "private.assets.table",
