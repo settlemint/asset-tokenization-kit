@@ -13,6 +13,15 @@
     },
     "bonds": {
       "yield": {
+        "period-table": {
+          "period-id": "Period id",
+          "start-date": "Start date",
+          "end-date": "End date",
+          "rate": "Rate",
+          "claimed-total": "Claimed total",
+          "progress": "Progress",
+          "no-yield-periods": "No yield periods found"
+        },
         "no-yield": {
           "title": "No yield schedule found",
           "description": "This bond does not have a yield schedule configured yet. Set up a yield schedule to enable automated interest payments to bondholders."

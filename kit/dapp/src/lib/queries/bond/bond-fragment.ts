@@ -42,7 +42,7 @@ export const BondFragment = theGraphGraphqlKit(`
       unclaimedYieldExact
       underlyingBalance
       underlyingBalanceExact
-      periods(first: 1) {
+      periods {
         id
         periodId
         startDate
@@ -90,7 +90,7 @@ export const BondFragmentSchema = z.object({
   isMatured: z.boolean(),
   hasSufficientUnderlying: z.boolean(),
   yieldSchedule: z.object({
-    id: z.string(),
+    id: z.address(),
     startDate: z.bigInt(),
     endDate: z.bigInt(),
     rate: z.bigInt(),

@@ -52,7 +52,7 @@ export async function YieldDetails({ address }: DetailsProps) {
         </DetailGridItem>
         <DetailGridItem label={t("contract-address")}>
           <EvmAddress
-            address={address}
+            address={bond.yieldSchedule.id}
             prettyNames={false}
             hoverCard={false}
             copyToClipboard={true}
