@@ -29,6 +29,46 @@ export const PermissionFragmentSchema = z.object({
  */
 export type Permission = ZodInfer<typeof PermissionFragmentSchema>;
 
+export const AllowedUserFragment = theGraphGraphqlKit(`
+  fragment AllowedUserFragment on AllowedUser    {
+    id
+    user {
+      id
+    }
+    allowedAt
+  }
+`);
+
+export const AllowedUserFragmentSchema = z.object({
+  id: z.string(),
+  user: z.object({
+    id: z.address(),
+  }),
+  allowedAt: z.timestamp(),
+});
+
+export type AllowedUser = ZodInfer<typeof AllowedUserFragmentSchema>;
+
+export const BlockedUserFragment = theGraphGraphqlKit(`
+  fragment BlockedUserFragment on BlockedUser {
+    id
+    user {
+      id
+    }
+    blockedAt
+  }
+`);
+
+export const BlockedUserFragmentSchema = z.object({
+  id: z.string(),
+  user: z.object({
+    id: z.address(),
+  }),
+  blockedAt: z.timestamp(),
+});
+
+export type BlockedUser = ZodInfer<typeof BlockedUserFragmentSchema>;
+
 /**
  * GraphQL fragment for on-chain asset data from The Graph
  *
@@ -52,6 +92,12 @@ export const AssetUsersFragment = theGraphGraphqlKit(
     userManagers {
       ...PermissionFragment
     }
+    blocklist {
+      ...BlockedUserFragment
+    }
+    allowlist {
+      ...AllowedUserFragment
+    }
     holders {
       id
       value
@@ -61,7 +107,7 @@ export const AssetUsersFragment = theGraphGraphqlKit(
     }
   }
 `,
-  [PermissionFragment]
+  [PermissionFragment, BlockedUserFragment, AllowedUserFragment]
 );
 
 /**
@@ -86,6 +132,8 @@ export const AssetUsersFragmentSchema = z.object({
       }),
     })
   ),
+  allowlist: z.array(AllowedUserFragmentSchema),
+  blocklist: z.array(BlockedUserFragmentSchema),
 });
 
 /**
