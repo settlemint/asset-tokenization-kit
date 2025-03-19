@@ -12,7 +12,8 @@
     "build": "graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt",
     "deploy:local": "bash graph-local-deploy.sh",
     "deploy:remote": "bash graph-remote-deploy.sh",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "subgraph:deploy": "settlemint scs subgraph deploy"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.96.0",
