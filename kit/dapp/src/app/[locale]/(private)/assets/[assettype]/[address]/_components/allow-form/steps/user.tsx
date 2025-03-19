@@ -1,18 +1,18 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
-import type { BlockUserInput } from "@/lib/mutations/block-user/block-user-schema";
+import type { AllowUserInput } from "@/lib/mutations/allow-user/allow-user-schema";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 export function User() {
-  const { control } = useFormContext<BlockUserInput>();
+  const { control } = useFormContext<AllowUserInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
   const t = useTranslations("private.assets.details.forms.account");
 
   return (
-    <FormStep title={t("title.default")} description={t("description.block")}>
+    <FormStep title={t("title.default")} description={t("description.allow")}>
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-1">
           {isManualEntry ? (
@@ -44,5 +44,3 @@ export function User() {
     </FormStep>
   );
 }
-
-User.validatedFields = ["userAddress"] as const;

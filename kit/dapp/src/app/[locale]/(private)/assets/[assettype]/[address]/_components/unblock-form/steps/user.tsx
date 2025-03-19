@@ -12,7 +12,7 @@ export function User() {
   const t = useTranslations("private.assets.details.forms.account");
 
   return (
-    <FormStep title={t("title.block")} description={t("description.block")}>
+    <FormStep title={t("title.default")} description={t("description.unblock")}>
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-1">
           {isManualEntry ? (

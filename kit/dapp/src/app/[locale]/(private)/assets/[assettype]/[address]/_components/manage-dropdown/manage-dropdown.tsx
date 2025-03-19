@@ -19,8 +19,11 @@ import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
-import { blockUserEnabled } from "../block-form/enabled";
+import { allowlistEnabled } from "../allow-form/enabled";
+import { AllowForm } from "../allow-form/form";
+import { blocklistEnabled } from "../block-form/enabled";
 import { BlockForm } from "../block-form/form";
+import { DisallowForm } from "../disallow-form/form";
 import { MintForm } from "../mint-form/form";
 import { UnblockForm } from "../unblock-form/form";
 import { BurnForm } from "./burn-form/form";
@@ -30,7 +33,6 @@ import { PauseForm } from "./pause-form/form";
 import { TopUpForm } from "./top-up-form/form";
 import { UpdateCollateralForm } from "./update-collateral-form/form";
 import { WithdrawForm } from "./withdraw-form/form";
-
 interface ManageDropdownProps {
   address: Address;
   assettype: AssetType;
@@ -236,7 +238,7 @@ export function ManageDropdown({
     {
       id: "block-user",
       label: t("actions.block-user"),
-      hidden: !blockUserEnabled(assettype) || !canPerformUserActions,
+      hidden: !blocklistEnabled(assettype) || !canPerformUserActions,
       form: (
         <BlockForm
           key="block-user"
@@ -250,12 +252,40 @@ export function ManageDropdown({
     {
       id: "unblock-user",
       label: t("actions.unblock-user"),
-      hidden: !blockUserEnabled(assettype) || !canPerformUserActions,
+      hidden: !blocklistEnabled(assettype) || !canPerformUserActions,
       form: (
         <UnblockForm
           key="unblock-user"
           address={address}
           open={openMenuItem === "unblock-user"}
+          onOpenChange={onFormOpenChange}
+          assettype={assettype}
+        />
+      ),
+    },
+    {
+      id: "allow-user",
+      label: t("actions.allow-user"),
+      hidden: !allowlistEnabled(assettype) || !canPerformUserActions,
+      form: (
+        <AllowForm
+          key="allow-user"
+          address={address}
+          open={openMenuItem === "allow-user"}
+          onOpenChange={onFormOpenChange}
+          assettype={assettype}
+        />
+      ),
+    },
+    {
+      id: "disallow-user",
+      label: t("actions.disallow-user"),
+      hidden: !allowlistEnabled(assettype) || !canPerformUserActions,
+      form: (
+        <DisallowForm
+          key="disallow-user"
+          address={address}
+          open={openMenuItem === "disallow-user"}
           onOpenChange={onFormOpenChange}
           assettype={assettype}
         />

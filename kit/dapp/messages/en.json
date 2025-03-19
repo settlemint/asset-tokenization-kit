@@ -762,7 +762,9 @@
             "unpause": "Unpause contract",
             "update-collateral": "Update collateral",
             "view-events": "View events",
-            "withdraw": "Withdraw"
+            "withdraw": "Withdraw",
+            "allow-user": "Allow user",
+            "disallow-user": "Disallow user"
           },
           "available-balance": "Balance available to burn: {maxLimit}",
           "manage": "Manage",
@@ -785,7 +787,9 @@
               "unpause": "Resume transactions and interactions for this bond.",
               "top-up": "Add more underlying asset to your bond",
               "update-collateral": "Adjust the collateral backing the stablecoin to reflect current requirements.",
-              "withdraw": "Withdraw underlying asset from your bond"
+              "withdraw": "Withdraw underlying asset from your bond",
+              "allow": "Allow this user to perform transactions and interactions.",
+              "disallow": "Prevent this user from performing any transactions or interactions."
             },
             "title": {
               "burn": "Burn assets",
@@ -799,7 +803,9 @@
               "unpause": "Resume contract",
               "top-up": "Top up underlying asset",
               "update-collateral": "Update collateral",
-              "withdraw": "Withdraw underlying asset"
+              "withdraw": "Withdraw underlying asset",
+              "allow": "Allow user",
+              "disallow": "Disallow user"
             },
             "trigger-label": {
               "burn": "Burn",
@@ -813,7 +819,9 @@
               "unpause": "Unpause",
               "top-up": "Top up",
               "update-collateral": "Update collateral",
-              "withdraw": "Withdraw"
+              "withdraw": "Withdraw",
+              "allow": "Allow",
+              "disallow": "Disallow"
             }
           },
           "account": {
@@ -823,11 +831,7 @@
             "search-user-instead": "Search for a user instead...",
             "title": {
               "mint": "Select recipient",
-              "burn": "Select user",
-              "grant-role": "Select user",
-              "freeze": "Select user",
-              "block": "Select user",
-              "withdraw": "Select user"
+              "default": "Select user"
             },
             "description": {
               "mint": "Enter a wallet address to send tokens directly, or search for a user by their name, email or wallet address.",
@@ -835,7 +839,10 @@
               "grant-role": "Enter a wallet address to grant roles to, or search for a user by their name, email or wallet address.",
               "freeze": "Enter a wallet address from which the tokens will be frozen, or search for a user by their name, email or wallet address.",
               "block": "Enter a wallet address to block, or search for a user by their name, email or wallet address.",
-              "withdraw": "Enter a wallet address to withdraw tokens to, or search for a user by their name, email or wallet address."
+              "unblock": "Enter a wallet address to unblock, or search for a user by their name, email or wallet address.",
+              "withdraw": "Enter a wallet address to withdraw tokens to, or search for a user by their name, email or wallet address.",
+              "allow": "Enter a wallet address to allow, or search for a user by their name, email or wallet address.",
+              "disallow": "Enter a wallet address to disallow, or search for a user by their name, email or wallet address."
             }
           },
           "amount": {
@@ -888,7 +895,9 @@
               "update-collateral": "Review and confirm update collateral",
               "withdraw": "Review and confirm withdrawal",
               "pause": "Review and confirm pause",
-              "unpause": "Review and confirm unpause"
+              "unpause": "Review and confirm unpause",
+              "allow": "Review and confirm allow",
+              "disallow": "Review and confirm disallow"
             },
             "description": {
               "mint": "Verify the details of your mint before proceeding.",
@@ -902,7 +911,9 @@
               "update-collateral": "Verify the details of your update collateral before proceeding.",
               "withdraw": "Verify the details of your withdrawal before proceeding.",
               "pause": "Verify the details of your pause before proceeding.",
-              "unpause": "Verify the details of your unpause before proceeding."
+              "unpause": "Verify the details of your unpause before proceeding.",
+              "allow": "Verify the details of your allow before proceeding.",
+              "disallow": "Verify the details of your disallow before proceeding."
             }
           }
         },
