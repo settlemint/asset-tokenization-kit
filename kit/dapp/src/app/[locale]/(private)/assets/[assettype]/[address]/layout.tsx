@@ -68,11 +68,6 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
       name: t("tabs.permissions"),
       href: `/assets/${assettype}/${address}/permissions`,
     },
-    {
-      name: t("tabs.underlying-assets"),
-      href: `/assets/${assettype}/${address}/underlying-assets`,
-      badge: balances.length,
-    },
     ...(hasAllowlist(assettype)
       ? [
           {
