@@ -47,10 +47,6 @@ export function fetchTokenizedDeposit(address: Address): TokenizedDeposit {
     tokenizedDeposit.admins = [];
     tokenizedDeposit.supplyManagers = [];
     tokenizedDeposit.userManagers = [];
-    tokenizedDeposit.blockList = false;
-    tokenizedDeposit.blockedUsers = [];
-    tokenizedDeposit.allowList = true;
-    tokenizedDeposit.allowedUsers = [];
 
     // Add collateral related fields
     tokenizedDeposit.collateralExact = BigInt.zero();

@@ -29,10 +29,6 @@ export function fetchFund(address: Address): Fund {
     fund.admins = [];
     fund.supplyManagers = [];
     fund.userManagers = [];
-    fund.blockList = true;
-    fund.blockedUsers = [];
-    fund.allowList = false;
-    fund.allowedUsers = [];
     fund.lastActivity = BigInt.zero();
     fund.creator = Address.zero();
     fund.totalBurned = BigDecimal.zero();
