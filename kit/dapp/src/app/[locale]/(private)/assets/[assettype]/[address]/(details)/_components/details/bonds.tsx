@@ -4,6 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import { getBondStatus } from "@/lib/utils/bond-status";
 import { formatNumber } from "@/lib/utils/number";
 import { format } from "date-fns";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -59,11 +60,7 @@ export async function BondsDetails({ address }: BondsDetailsProps) {
           {bond.isMatured ? bond.redeemedAmount : t("not-available")}
         </DetailGridItem>
         <DetailGridItem label={t("maturity-status")}>
-          {bond.isMatured
-            ? t("matured")
-            : bond.totalSupply < bond.cap
-              ? t("issuing")
-              : t("active")}
+          {t(getBondStatus(bond))}
         </DetailGridItem>
         <DetailGridItem label={t("maturity-date")}>
           {bond.maturityDate

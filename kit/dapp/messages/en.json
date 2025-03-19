@@ -317,9 +317,15 @@
     },
     "charts": {
       "assets": {
-        "asset-distribution": "Asset Distribution",
+        "asset-distribution": "Asset distribution",
         "asset-distribution-description": "Portfolio allocation by asset type",
         "bond": "Bond",
+        "bond-issuance": "Bond issuance",
+        "bond-redemption-assets": "Redemption assets",
+        "bond-redeemed": "Bond redemption",
+        "bond-status": "Status",
+        "bond-status-progress": "Bond status",
+        "error-loading-data": "Error loading data",
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
           "label": "Collateral Ratio",
