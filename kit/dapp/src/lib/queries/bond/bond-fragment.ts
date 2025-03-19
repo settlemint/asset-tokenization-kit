@@ -91,19 +91,16 @@ export const BondFragmentSchema = z.object({
   hasSufficientUnderlying: z.boolean(),
   yieldSchedule: z.object({
     id: z.string(),
-    token: z.object({
-      id: z.string(),
-    }),
-    underlyingAsset: z.object({
-      id: z.string(),
-    }),
     startDate: z.bigInt(),
     endDate: z.bigInt(),
     rate: z.bigInt(),
     interval: z.bigInt(),
     totalClaimed: z.bigDecimal(),
+    totalClaimedExact: z.bigInt(),
     unclaimedYield: z.bigDecimal(),
+    unclaimedYieldExact: z.bigInt(),
     underlyingBalance: z.bigDecimal(),
+    underlyingBalanceExact: z.bigInt(),
     periods: z.array(
       z.object({
         id: z.string(),
