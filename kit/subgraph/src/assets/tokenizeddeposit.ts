@@ -112,7 +112,7 @@ export function handleTransfer(event: Transfer): void {
       tokenizedDeposit.id,
       to.id,
       tokenizedDeposit.decimals,
-      false
+      true
     );
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
     balance.value = toDecimals(balance.valueExact, tokenizedDeposit.decimals);
@@ -203,7 +203,7 @@ export function handleTransfer(event: Transfer): void {
       tokenizedDeposit.id,
       from.id,
       tokenizedDeposit.decimals,
-      false
+      true
     );
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
     balance.value = toDecimals(balance.valueExact, tokenizedDeposit.decimals);
@@ -289,7 +289,7 @@ export function handleTransfer(event: Transfer): void {
       tokenizedDeposit.id,
       from.id,
       tokenizedDeposit.decimals,
-      false
+      true
     );
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
     fromBalance.value = toDecimals(
@@ -314,7 +314,7 @@ export function handleTransfer(event: Transfer): void {
       tokenizedDeposit.id,
       to.id,
       tokenizedDeposit.decimals,
-      false
+      true
     );
     toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
     toBalance.value = toDecimals(
@@ -421,7 +421,7 @@ export function handleApproval(event: Approval): void {
     tokenizedDeposit.id,
     owner.id,
     tokenizedDeposit.decimals,
-    false
+    true
   );
   balance.approvedExact = event.params.value;
   balance.approved = toDecimals(
@@ -542,7 +542,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     tokenizedDeposit.id,
     user.id,
     tokenizedDeposit.decimals,
-    false
+    true
   );
   balance.frozenExact = event.params.amount;
   balance.frozen = toDecimals(balance.frozenExact, tokenizedDeposit.decimals);
@@ -603,7 +603,7 @@ export function handleUserAllowed(event: UserAllowed): void {
     tokenizedDeposit.id,
     user.id,
     tokenizedDeposit.decimals,
-    false
+    true
   );
   balance.blocked = false;
   balance.lastActivity = event.block.timestamp;
@@ -659,7 +659,7 @@ export function handleUserDisallowed(event: UserDisallowed): void {
     tokenizedDeposit.id,
     user.id,
     tokenizedDeposit.decimals,
-    false
+    true
   );
   balance.blocked = true;
   balance.lastActivity = event.block.timestamp;
