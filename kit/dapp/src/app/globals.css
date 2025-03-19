@@ -291,4 +291,18 @@ h3: text-xl
       )
       0 0 no-repeat padding-box;
   }
+
+  [data-slot="sidebar-wrapper"]
+    [data-state="expanded"]
+    [data-slot="sidebar-content"] {
+    @apply px-4;
+  }
+
+  [data-slot="sidebar-container"] {
+    position: sticky;
+  }
+
+  [dir="rtl"] [data-slot="collapsible-trigger"] {
+    text-align: right;
+  }
 }
