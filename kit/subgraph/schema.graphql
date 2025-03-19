@@ -872,7 +872,7 @@ type PortfolioStats
 }
 
 # --------------------------------------------------
-# Asset Blocklist and Allowlist
+# Blocked and Allowed Users
 # --------------------------------------------------
 
 type BlockedUser @entity {

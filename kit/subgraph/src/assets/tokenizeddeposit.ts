@@ -996,7 +996,3 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     tokenizedDeposit.id
   );
 }
-
-// Include other necessary handlers (Transfer, Approval, etc.) similar to cryptocurrency.ts
-// but I'll focus on implementing the access control handlers first.
-// Let me know if you want me to implement the other handlers as well.
