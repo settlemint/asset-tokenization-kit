@@ -3,7 +3,7 @@
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ColumnAssetType } from "../asset-info/column-asset-type";
 
 const columnHelper = createColumnHelper<UserAsset>();
@@ -11,6 +11,8 @@ const columnHelper = createColumnHelper<UserAsset>();
 export function columnsSmall() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("portfolio.my-assets.table");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("asset.name", {
@@ -34,7 +36,10 @@ export function columnsSmall() {
         variant: "numeric",
       },
       cell: ({ getValue, row }) =>
-        formatNumber(getValue(), { token: row.original.asset.symbol }),
+        formatNumber(getValue(), {
+          token: row.original.asset.symbol,
+          locale: locale,
+        }),
       enableColumnFilter: false,
     }),
   ];

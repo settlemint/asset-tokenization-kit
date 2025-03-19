@@ -5,7 +5,7 @@ import { DataTableRowActions } from "@/components/blocks/data-table/data-table-r
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ColumnAssetStatus } from "../asset-info/column-asset-status";
 import { ColumnAssetType } from "../asset-info/column-asset-type";
 
@@ -14,6 +14,8 @@ const columnHelper = createColumnHelper<UserAsset>();
 export function columns() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("portfolio.my-assets.table");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("asset.name", {
@@ -34,7 +36,10 @@ export function columns() {
         variant: "numeric",
       },
       cell: ({ getValue, row }) =>
-        formatNumber(getValue(), { token: row.original.asset.symbol }),
+        formatNumber(getValue(), {
+          token: row.original.asset.symbol,
+          locale: locale,
+        }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor((row) => <ColumnAssetStatus assetOrBalance={row} />, {

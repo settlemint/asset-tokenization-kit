@@ -271,6 +271,8 @@ files:
     error.title: c6701602de1528fd79d5eff3e8eb1edd
     error.try-again: f915a95e609bbd517a8a1e7bdcceef37
     error.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
+    language.changing: 33755d0adea182748db47fbe988cd953
+    language.language: 4994a8ffeba4ac3140beb89e8d41f174
     layout.header.app-description: b66a3f5e7ce9d50507f6935435e5f4a9
     layout.header.app-name: 0ca5471816725ad71ffdeca830e37eb0
     layout.header.home: 8cf04a9734132302f96da8e113e80ce5
@@ -496,9 +498,9 @@ files:
     private.assets.create.summary.configuration-title: 254f642527b45bc260048e30704edb39
     private.assets.create.summary.description: 41ef45f096625393213305ec435cec01
     private.assets.create.summary.title: 290612199861c31d1036b185b4e69b75
+    private.assets.detail.forms.actions.block-user: f84e2dc493985bbd340b2cd14bf2daeb
     private.assets.detail.forms.actions.burn: 11635778f116ce6922f6068638a39028
     private.assets.detail.forms.actions.grant-role: 64f23e68360a6bf1f7982e7b058ac9b5
-    private.assets.detail.forms.actions.block-user: f84e2dc493985bbd340b2cd14bf2daeb
     private.assets.detail.forms.actions.mature: c4c379f627f36930fe794eb5e2a63d74
     private.assets.detail.forms.actions.mint: ca8a196f97a48b2bb489f3e849a68418
     private.assets.detail.forms.actions.pause: ceead16440a0e572322d4ebd282ac786
@@ -511,102 +513,102 @@ files:
     private.assets.detail.forms.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
     private.assets.detail.forms.max-mint-amount: 0b01c7d38443c779173adfb6be2f35a8
     private.assets.details.asset-management: 177512b9add0b40c38dad61838bf7d79
-    private.assets.details.forms.form.description.burn: 4135df08bf718f0ddd26882c0af91f82
-    private.assets.details.forms.form.description.grant-role: e470b2493fd45aa303f48dd8babf8ca5
-    private.assets.details.forms.form.description.block: ca195616f62f784f0e86968609da8597
-    private.assets.details.forms.form.description.mature: f6c210387a1f441e007cb4f1b2a16b5e
-    private.assets.details.forms.form.description.mint: 2211849262ac534b3a9fe5293a913a74
-    private.assets.details.forms.form.description.freeze: 10691e514d0c89e51ec69078c012f6ba
-    private.assets.details.forms.form.description.pause: 30ab74766762fff4c3ca0aed20a5cd39
-    private.assets.details.forms.form.description.unpause: 9d6d0992343d378e035f0714bd4c4778
-    private.assets.details.forms.form.description.top-up: 9093934e1686ad126e32e39451ea9084
-    private.assets.details.forms.form.description.update-collateral: e4a73a6a6ebac6950c9c8ccb7f0c7dab
-    private.assets.details.forms.form.description.withdraw: 2dc13824b46ead3e09350ef66a3ae6a5
-    private.assets.details.forms.form.title.burn: 80a718ae87657e89bf5638bb0c9c94c1
-    private.assets.details.forms.form.title.grant-role: bac0578e46858f11520c7e9bee9a99b8
-    private.assets.details.forms.form.title.block: f84e2dc493985bbd340b2cd14bf2daeb
-    private.assets.details.forms.form.title.mature: b34790a6859701e91489719d5824c9a8
-    private.assets.details.forms.form.title.mint: 3b3c269f4fce09f8b53a369035c10b3f
-    private.assets.details.forms.form.title.freeze: 9e8be839a3566d6b02eaef5616e213fa
-    private.assets.details.forms.form.title.pause: ceead16440a0e572322d4ebd282ac786
-    private.assets.details.forms.form.title.unpause: 5a7f6a320c8b95f9249ca22fc82ff2c3
-    private.assets.details.forms.form.title.top-up: fe78ae36bcc34ca65ee09c476aa18354
-    private.assets.details.forms.form.title.update-collateral: dd71e441c341791bff80175e1c21c73f
-    private.assets.details.forms.form.title.withdraw: 1906bcf11935ff012a66bb1e1ab12699
-    private.assets.details.forms.form.trigger-label.burn: 11635778f116ce6922f6068638a39028
-    private.assets.details.forms.form.trigger-label.grant-role: bac0578e46858f11520c7e9bee9a99b8
-    private.assets.details.forms.form.trigger-label.block: f84e2dc493985bbd340b2cd14bf2daeb
-    private.assets.details.forms.form.trigger-label.mature: c4c379f627f36930fe794eb5e2a63d74
-    private.assets.details.forms.form.trigger-label.mint: ca8a196f97a48b2bb489f3e849a68418
-    private.assets.details.forms.form.trigger-label.freeze: 65467087a19145f43129bba42781aea0
-    private.assets.details.forms.form.trigger-label.pause: 105b296a83f9c105355403f3332af50f
-    private.assets.details.forms.form.trigger-label.unpause: 648ff76ea7617136d7a5e0cbff92606f
-    private.assets.details.forms.form.trigger-label.top-up: 1b25fcd2acf8f03e781eb8a90d526084
-    private.assets.details.forms.form.trigger-label.update-collateral: dd71e441c341791bff80175e1c21c73f
-    private.assets.details.forms.form.trigger-label.withdraw: 9d5dbce7d87cede9e0224bb3a48ca1d7
-    private.assets.details.forms.account.search-user-placeholder: fad9740fc9d09c7c11e0c78e7f12825b
-    private.assets.details.forms.account.enter-wallet-address-placeholder: ff59e5da8d382e10c689efe632e3ffb7
-    private.assets.details.forms.account.enter-user-address-manually: 9155c6f94f857b0d309c17621bcc128f
-    private.assets.details.forms.account.search-user-instead: 79a26d6aa989e2bc91a4adfe055a87ea
-    private.assets.details.forms.account.title.mint: 8874514d5a5785a774a05021d6891f45
-    private.assets.details.forms.account.title.burn: 0219cd71ca90cdadf058371a069b0ed6
-    private.assets.details.forms.account.title.grant-role: 0219cd71ca90cdadf058371a069b0ed6
-    private.assets.details.forms.account.title.freeze: 0219cd71ca90cdadf058371a069b0ed6
-    private.assets.details.forms.account.title.block: 0219cd71ca90cdadf058371a069b0ed6
-    private.assets.details.forms.account.title.withdraw: 0219cd71ca90cdadf058371a069b0ed6
-    private.assets.details.forms.account.description.mint: b3dc8f768dd8000bea23f18d2e368884
-    private.assets.details.forms.account.description.burn: 7dc68154ce796b211f0c814d59b5c4fa
-    private.assets.details.forms.account.description.grant-role: 4eec435d9f951475527c7d5dffb66cd3
-    private.assets.details.forms.account.description.freeze: c8ca764295caf4a4d8fbd716c06e42c7
     private.assets.details.forms.account.description.block: 449b6f525dfa56b054b46dea9f4e87e1
+    private.assets.details.forms.account.description.burn: 7dc68154ce796b211f0c814d59b5c4fa
+    private.assets.details.forms.account.description.freeze: c8ca764295caf4a4d8fbd716c06e42c7
+    private.assets.details.forms.account.description.grant-role: 4eec435d9f951475527c7d5dffb66cd3
+    private.assets.details.forms.account.description.mint: b3dc8f768dd8000bea23f18d2e368884
     private.assets.details.forms.account.description.withdraw: 7df2158cc88ba413207ab2935b6b1d5c
-    private.assets.details.forms.amount.title: b532ac7cec0ae5c3f43336a77ac1ed25
-    private.assets.details.forms.amount.wallet-balance: 717a40aa02381f5202a0757d529546fc
-    private.assets.details.forms.amount.description.mint: b9849132fad68373d366da87bc92ce82
-    private.assets.details.forms.amount.description.freeze: 2f5a9baa395accd688abf1afd3088102
+    private.assets.details.forms.account.enter-user-address-manually: 9155c6f94f857b0d309c17621bcc128f
+    private.assets.details.forms.account.enter-wallet-address-placeholder: ff59e5da8d382e10c689efe632e3ffb7
+    private.assets.details.forms.account.search-user-instead: 79a26d6aa989e2bc91a4adfe055a87ea
+    private.assets.details.forms.account.search-user-placeholder: fad9740fc9d09c7c11e0c78e7f12825b
+    private.assets.details.forms.account.title.block: 0219cd71ca90cdadf058371a069b0ed6
+    private.assets.details.forms.account.title.burn: 0219cd71ca90cdadf058371a069b0ed6
+    private.assets.details.forms.account.title.freeze: 0219cd71ca90cdadf058371a069b0ed6
+    private.assets.details.forms.account.title.grant-role: 0219cd71ca90cdadf058371a069b0ed6
+    private.assets.details.forms.account.title.mint: 8874514d5a5785a774a05021d6891f45
+    private.assets.details.forms.account.title.withdraw: 0219cd71ca90cdadf058371a069b0ed6
+    private.assets.details.forms.amount.available-to.burn: ebb29eefb1080a831e3fa017a66cfa3d
+    private.assets.details.forms.amount.available-to.freeze: 1c36e8245438eca145ff9e1dc900059e
+    private.assets.details.forms.amount.available-to.mint: 59e58815500201415b3813e25db84fd9
     private.assets.details.forms.amount.description.burn: 47f8f1fc7400ad72339ad1d3f1f89978
+    private.assets.details.forms.amount.description.freeze: 2f5a9baa395accd688abf1afd3088102
+    private.assets.details.forms.amount.description.mint: b9849132fad68373d366da87bc92ce82
+    private.assets.details.forms.amount.description.top-up: fb422732c3a240a18ac4e95e9be2918c
     private.assets.details.forms.amount.description.update-collateral: 79a739dfe12982ffa4bc0b5a76c849bc
     private.assets.details.forms.amount.description.withdraw: 897caa4080abda4dad13f8d68be447cf
-    private.assets.details.forms.amount.description.top-up: fb422732c3a240a18ac4e95e9be2918c
-    private.assets.details.forms.amount.available-to.mint: 59e58815500201415b3813e25db84fd9
-    private.assets.details.forms.amount.available-to.freeze: 1c36e8245438eca145ff9e1dc900059e
-    private.assets.details.forms.amount.available-to.burn: ebb29eefb1080a831e3fa017a66cfa3d
-    private.assets.details.forms.amount.max-limit.mint: 0b01c7d38443c779173adfb6be2f35a8
     private.assets.details.forms.amount.max-limit.burn: b7f22f0f406cbf1fae57ebce5cdb7c7f
     private.assets.details.forms.amount.max-limit.freeze: e0d150dc6cd9802e36744f0799567059
-    private.assets.details.forms.roles.title: f89acd52c4ea09ff337baffd813f2086
+    private.assets.details.forms.amount.max-limit.mint: 0b01c7d38443c779173adfb6be2f35a8
+    private.assets.details.forms.amount.title: b532ac7cec0ae5c3f43336a77ac1ed25
+    private.assets.details.forms.amount.wallet-balance: 717a40aa02381f5202a0757d529546fc
+    private.assets.details.forms.form.description.block: ca195616f62f784f0e86968609da8597
+    private.assets.details.forms.form.description.burn: 4135df08bf718f0ddd26882c0af91f82
+    private.assets.details.forms.form.description.freeze: 10691e514d0c89e51ec69078c012f6ba
+    private.assets.details.forms.form.description.grant-role: e470b2493fd45aa303f48dd8babf8ca5
+    private.assets.details.forms.form.description.mature: f6c210387a1f441e007cb4f1b2a16b5e
+    private.assets.details.forms.form.description.mint: 2211849262ac534b3a9fe5293a913a74
+    private.assets.details.forms.form.description.pause: 30ab74766762fff4c3ca0aed20a5cd39
+    private.assets.details.forms.form.description.top-up: 9093934e1686ad126e32e39451ea9084
+    private.assets.details.forms.form.description.unpause: 9d6d0992343d378e035f0714bd4c4778
+    private.assets.details.forms.form.description.update-collateral: e4a73a6a6ebac6950c9c8ccb7f0c7dab
+    private.assets.details.forms.form.description.withdraw: 2dc13824b46ead3e09350ef66a3ae6a5
+    private.assets.details.forms.form.title.block: f84e2dc493985bbd340b2cd14bf2daeb
+    private.assets.details.forms.form.title.burn: 80a718ae87657e89bf5638bb0c9c94c1
+    private.assets.details.forms.form.title.freeze: 9e8be839a3566d6b02eaef5616e213fa
+    private.assets.details.forms.form.title.grant-role: bac0578e46858f11520c7e9bee9a99b8
+    private.assets.details.forms.form.title.mature: b34790a6859701e91489719d5824c9a8
+    private.assets.details.forms.form.title.mint: 3b3c269f4fce09f8b53a369035c10b3f
+    private.assets.details.forms.form.title.pause: ceead16440a0e572322d4ebd282ac786
+    private.assets.details.forms.form.title.top-up: fe78ae36bcc34ca65ee09c476aa18354
+    private.assets.details.forms.form.title.unpause: 5a7f6a320c8b95f9249ca22fc82ff2c3
+    private.assets.details.forms.form.title.update-collateral: dd71e441c341791bff80175e1c21c73f
+    private.assets.details.forms.form.title.withdraw: 1906bcf11935ff012a66bb1e1ab12699
+    private.assets.details.forms.form.trigger-label.block: f84e2dc493985bbd340b2cd14bf2daeb
+    private.assets.details.forms.form.trigger-label.burn: 11635778f116ce6922f6068638a39028
+    private.assets.details.forms.form.trigger-label.freeze: 65467087a19145f43129bba42781aea0
+    private.assets.details.forms.form.trigger-label.grant-role: bac0578e46858f11520c7e9bee9a99b8
+    private.assets.details.forms.form.trigger-label.mature: c4c379f627f36930fe794eb5e2a63d74
+    private.assets.details.forms.form.trigger-label.mint: ca8a196f97a48b2bb489f3e849a68418
+    private.assets.details.forms.form.trigger-label.pause: 105b296a83f9c105355403f3332af50f
+    private.assets.details.forms.form.trigger-label.top-up: 1b25fcd2acf8f03e781eb8a90d526084
+    private.assets.details.forms.form.trigger-label.unpause: 648ff76ea7617136d7a5e0cbff92606f
+    private.assets.details.forms.form.trigger-label.update-collateral: dd71e441c341791bff80175e1c21c73f
+    private.assets.details.forms.form.trigger-label.withdraw: 9d5dbce7d87cede9e0224bb3a48ca1d7
     private.assets.details.forms.roles.description: 08da034d747b318766e10375fa6ae5ce
-    private.assets.details.forms.summary.amount-label: b2f40690858b404ed10e62bdf422c704
-    private.assets.details.forms.summary.asset-label: 26e9054be7f40079575582b7ad3f7363
+    private.assets.details.forms.roles.title: f89acd52c4ea09ff337baffd813f2086
     private.assets.details.forms.summary.account-label.default: 8f9bfe9d1345237cb3b2b205864da075
     private.assets.details.forms.summary.account-label.recipient: 5d6103b662f41b07e10687f03aca8fdc
-    private.assets.details.forms.summary.roles-label: a5cd3ed116608dac017f14c046ea56bf
-    private.assets.details.forms.summary.current-state-label: 48358648336d501e2336d5360a559533
-    private.assets.details.forms.summary.target-state-label: f700b6febc2ba7f13df9e88e0c0b3a5f
-    private.assets.details.forms.summary.paused-label: e99180abf47a8b3a856e0bcb2656990a
     private.assets.details.forms.summary.active-label: 4d3d769b812b6faa6b76e1a8abaece2d
-    private.assets.details.forms.summary.title.mint: 7aa68f5c56e88b9f265aed105098eca2
-    private.assets.details.forms.summary.title.burn: efd63552d423e55585e0decff1af2e9f
-    private.assets.details.forms.summary.title.grant-role: 613eda63424c1855fbea7d6f52be5538
-    private.assets.details.forms.summary.title.freeze: f964d2abfe1a0ed5229ff58f905fd662
-    private.assets.details.forms.summary.title.block: c3c80b23ae60ab2f4e4937da567afb2c
-    private.assets.details.forms.summary.title.mature: 49c58fddccd109d98e5bee3c288687f2
-    private.assets.details.forms.summary.title.top-up: df87a9f67b9ead221cee4e4fc8f61140
-    private.assets.details.forms.summary.title.update-collateral: c0cc62dcd460e548bf955a37b2f86ac5
-    private.assets.details.forms.summary.title.withdraw: 9e721e4b0c583c1354368c0f6b593e2e
-    private.assets.details.forms.summary.title.pause: ca04f8a7738b2561d307348386c790a3
-    private.assets.details.forms.summary.title.unpause: 5b87bf7d84429ac07b7c8eb8f46b6763
-    private.assets.details.forms.summary.description.mint: 51b13c1547989e0a4c7d173cf623dbfa
-    private.assets.details.forms.summary.description.burn: 257f30507f300d31fd6f9830e9e7ca9d
-    private.assets.details.forms.summary.description.grant-role: 9e8f2a5b336124448c3b8a5fe43c6f80
-    private.assets.details.forms.summary.description.freeze: 2b81adbd7b18038c443fe2d2694a0e3c
+    private.assets.details.forms.summary.amount-label: b2f40690858b404ed10e62bdf422c704
+    private.assets.details.forms.summary.asset-label: 26e9054be7f40079575582b7ad3f7363
+    private.assets.details.forms.summary.current-state-label: 48358648336d501e2336d5360a559533
     private.assets.details.forms.summary.description.block: 5ea074e32d721caaf37f48267df0523a
+    private.assets.details.forms.summary.description.burn: 257f30507f300d31fd6f9830e9e7ca9d
+    private.assets.details.forms.summary.description.freeze: 2b81adbd7b18038c443fe2d2694a0e3c
+    private.assets.details.forms.summary.description.grant-role: 9e8f2a5b336124448c3b8a5fe43c6f80
     private.assets.details.forms.summary.description.mature: d87cd519db5bd1dd183cec30a14ee1ff
+    private.assets.details.forms.summary.description.mint: 51b13c1547989e0a4c7d173cf623dbfa
+    private.assets.details.forms.summary.description.pause: 49f14259639284f53c3ddb59bf5e443e
     private.assets.details.forms.summary.description.top-up: fe38577c53b471a1db82f07f555f0599
+    private.assets.details.forms.summary.description.unpause: 5e09ea82e10b48a46b14d7f78f555dcf
     private.assets.details.forms.summary.description.update-collateral: 9de63769219beffaf381d36f0a69bc5f
     private.assets.details.forms.summary.description.withdraw: 2fb4cc38bb8c9e4f49e723ef74567663
-    private.assets.details.forms.summary.description.pause: 49f14259639284f53c3ddb59bf5e443e
-    private.assets.details.forms.summary.description.unpause: 5e09ea82e10b48a46b14d7f78f555dcf
+    private.assets.details.forms.summary.paused-label: e99180abf47a8b3a856e0bcb2656990a
+    private.assets.details.forms.summary.roles-label: a5cd3ed116608dac017f14c046ea56bf
+    private.assets.details.forms.summary.target-state-label: f700b6febc2ba7f13df9e88e0c0b3a5f
+    private.assets.details.forms.summary.title.block: c3c80b23ae60ab2f4e4937da567afb2c
+    private.assets.details.forms.summary.title.burn: efd63552d423e55585e0decff1af2e9f
+    private.assets.details.forms.summary.title.freeze: f964d2abfe1a0ed5229ff58f905fd662
+    private.assets.details.forms.summary.title.grant-role: 613eda63424c1855fbea7d6f52be5538
+    private.assets.details.forms.summary.title.mature: 49c58fddccd109d98e5bee3c288687f2
+    private.assets.details.forms.summary.title.mint: 7aa68f5c56e88b9f265aed105098eca2
+    private.assets.details.forms.summary.title.pause: ca04f8a7738b2561d307348386c790a3
+    private.assets.details.forms.summary.title.top-up: df87a9f67b9ead221cee4e4fc8f61140
+    private.assets.details.forms.summary.title.unpause: 5b87bf7d84429ac07b7c8eb8f46b6763
+    private.assets.details.forms.summary.title.update-collateral: c0cc62dcd460e548bf955a37b2f86ac5
+    private.assets.details.forms.summary.title.withdraw: 9e721e4b0c583c1354368c0f6b593e2e
     private.assets.details.holders.actions-header: 06df33001c1d7187fdd81ea1f5b277aa
     private.assets.details.holders.fields.balance-header: 99a808d8d16122d70e44bd7f709d30fb
     private.assets.details.holders.fields.wallet-header: 156e132b014314b1eae89410e54bcc8c
@@ -639,32 +641,32 @@ files:
     private.assets.details.permissions.revoke-all-form.title: 0672707ea98faeab5034e3706237bfcc
     private.assets.details.permissions.revoke-all-form.trigger-label: c2cb1774806c9fe2d134221195ae3496
     private.assets.details.permissions.table-title: d08ccf52b4cdd08e41cfb99ec42e0b29
-    private.assets.details.related.title: a2005fe8651d38ccc7a7e285d2e51db8
-    private.assets.details.related.decrease-supply.title.bonds: fb23d9f4943e73e60499deae6a58273c
-    private.assets.details.related.decrease-supply.title.equities: 0d3049ddf0f203753ba97feaa3e29558
-    private.assets.details.related.decrease-supply.title.funds: fb23d9f4943e73e60499deae6a58273c
-    private.assets.details.related.decrease-supply.title.stablecoins: d9c20f809740c93ee82f9561c4a5d1a1
-    private.assets.details.related.decrease-supply.title.tokenizeddeposits: c9ae892941997092e15f339db3ab183e
     private.assets.details.related.decrease-supply.description.bonds: 112ef82d75127985c8c5bc023b8eedd5
     private.assets.details.related.decrease-supply.description.equities: 0cdf7792ae4e7e60eed7d7de6a07e42b
     private.assets.details.related.decrease-supply.description.funds: 405927c0992d4937810597cddd697498
     private.assets.details.related.decrease-supply.description.stablecoins: c685286f49a3980f41a7a1a28535bbfc
     private.assets.details.related.decrease-supply.description.tokenizeddeposits: c8293eaff87373cf79fd1bd1fd73cec5
-    private.assets.details.related.increase-supply.title.bonds: 573bd5b7b82af9c152e488c55e07f275
-    private.assets.details.related.increase-supply.title.cryptocurrencies: cf6e76b4a8e60b29855e3b883e00b000
-    private.assets.details.related.increase-supply.title.equities: a2d080995e248c96f9c5a3602c37a0f8
-    private.assets.details.related.increase-supply.title.funds: 573bd5b7b82af9c152e488c55e07f275
-    private.assets.details.related.increase-supply.title.stablecoins: 765fa1cd6896f4cb878517371ba11c2a
-    private.assets.details.related.increase-supply.title.tokenizeddeposits: 765fa1cd6896f4cb878517371ba11c2a
+    private.assets.details.related.decrease-supply.title.bonds: fb23d9f4943e73e60499deae6a58273c
+    private.assets.details.related.decrease-supply.title.equities: 0d3049ddf0f203753ba97feaa3e29558
+    private.assets.details.related.decrease-supply.title.funds: fb23d9f4943e73e60499deae6a58273c
+    private.assets.details.related.decrease-supply.title.stablecoins: d9c20f809740c93ee82f9561c4a5d1a1
+    private.assets.details.related.decrease-supply.title.tokenizeddeposits: c9ae892941997092e15f339db3ab183e
     private.assets.details.related.increase-supply.description.bonds: 40dd3387c8d704ce436d88f59b28ab7f
     private.assets.details.related.increase-supply.description.cryptocurrencies: d4edb7869f8043845a41fb0a3d4175fb
     private.assets.details.related.increase-supply.description.equities: ab7575076ec897c351ec9d8fdc9ddde3
     private.assets.details.related.increase-supply.description.funds: 90bb94a404b42343f9a9f693f112d411
     private.assets.details.related.increase-supply.description.stablecoins: 8832454636888d09ffd457cb86778046
     private.assets.details.related.increase-supply.description.tokenizeddeposits: eaed2c1d68a5ff9f5f4833c06146dc1c
-    private.assets.details.related.update-collateral.title: dd71e441c341791bff80175e1c21c73f
+    private.assets.details.related.increase-supply.title.bonds: 573bd5b7b82af9c152e488c55e07f275
+    private.assets.details.related.increase-supply.title.cryptocurrencies: cf6e76b4a8e60b29855e3b883e00b000
+    private.assets.details.related.increase-supply.title.equities: a2d080995e248c96f9c5a3602c37a0f8
+    private.assets.details.related.increase-supply.title.funds: 573bd5b7b82af9c152e488c55e07f275
+    private.assets.details.related.increase-supply.title.stablecoins: 765fa1cd6896f4cb878517371ba11c2a
+    private.assets.details.related.increase-supply.title.tokenizeddeposits: 765fa1cd6896f4cb878517371ba11c2a
+    private.assets.details.related.title: a2005fe8651d38ccc7a7e285d2e51db8
     private.assets.details.related.update-collateral.description.stablecoins: d609f7dd28c76a3ddcdf8082180b9b72
     private.assets.details.related.update-collateral.description.tokenizeddeposits: 1c47006e6320f0789e89ba46cd3f8091
+    private.assets.details.related.update-collateral.title: dd71e441c341791bff80175e1c21c73f
     private.assets.details.tabs.details: 3ec365dd533ddb7ef3d1c111186ce872
     private.assets.details.tabs.events: 87f9f735a1d36793ceaecd4e47124b63
     private.assets.details.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7

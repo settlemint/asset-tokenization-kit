@@ -2,7 +2,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { FreezeInput } from "@/lib/mutations/freeze/freeze-schema";
 import { formatNumber } from "@/lib/utils/number";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
@@ -14,9 +14,14 @@ interface AmountProps {
 export function Amount({ balance, symbol, decimals }: AmountProps) {
   const { control } = useFormContext<FreezeInput>();
   const t = useTranslations("private.assets.details.forms.amount");
+  const locale = useLocale();
   const maxLimit = balance;
   const maxLimitDescription = t("max-limit.freeze", {
-    limit: formatNumber(maxLimit, { token: symbol, decimals }),
+    limit: formatNumber(maxLimit, {
+      token: symbol,
+      decimals,
+      locale: locale,
+    }),
   });
 
   return (

@@ -66,6 +66,7 @@ export const createBond = action
       const capExact = String(parseUnits(String(cap), decimals));
       const maturityDateTimestamp = formatDate(maturityDate, {
         type: "unixSeconds",
+        locale: "en",
       });
 
       await hasuraClient.request(CreateOffchainBond, {

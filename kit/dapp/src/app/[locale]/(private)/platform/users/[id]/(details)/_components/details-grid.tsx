@@ -7,15 +7,18 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { Ban, Check } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 type DetailsGridProps = {
   id: string;
 };
 
 export async function DetailsGrid({ id }: DetailsGridProps) {
-  const user = await getUserDetail({ id });
-  const t = await getTranslations("private.users");
+  const [user, t, locale] = await Promise.all([
+    getUserDetail({ id }),
+    getTranslations("private.users"),
+    getLocale(),
+  ]);
 
   return (
     <DetailGrid>
@@ -47,11 +50,14 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         </Badge>
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.created_at")}>
-        {formatDate(user.created_at, { type: "distance" })}
+        {formatDate(user.created_at, { type: "distance", locale: locale })}
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.verified_at")}>
         {user.kyc_verified_at
-          ? formatDate(user.kyc_verified_at, { type: "distance" })
+          ? formatDate(user.kyc_verified_at, {
+              type: "distance",
+              locale: locale,
+            })
           : t("status.not_verified")}
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.wallet")}>
@@ -63,19 +69,22 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         />
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.asset_supply")}>
-        {formatNumber(user.assetCount, { decimals: 0 })}
+        {formatNumber(user.assetCount, { decimals: 0, locale: locale })}
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.transactions")}>
-        {formatNumber(user.transactionCount, { decimals: 0 })}
+        {formatNumber(user.transactionCount, { decimals: 0, locale: locale })}
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.last_activity")}>
         {user.last_activity_at
-          ? formatDate(user.last_activity_at, { type: "distance" })
+          ? formatDate(user.last_activity_at, {
+              type: "distance",
+              locale: locale,
+            })
           : t("status.never")}
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.last_login")}>
         {user.last_login_at
-          ? formatDate(user.last_login_at, { type: "distance" })
+          ? formatDate(user.last_login_at, { type: "distance", locale: locale })
           : t("status.never")}
       </DetailGridItem>
     </DetailGrid>

@@ -1762,5 +1762,9 @@
     "sending": "إرسال",
     "success": "نجاح",
     "validation-errors": "خطأ في التحقق"
+  },
+  "language": {
+    "changing": "تغيير...",
+    "language": "اللغة"
   }
 }

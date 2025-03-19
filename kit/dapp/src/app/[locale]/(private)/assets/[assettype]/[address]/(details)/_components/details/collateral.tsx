@@ -6,7 +6,7 @@ import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokeni
 import { formatDate, formatDuration } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { AssetType } from "@/lib/utils/zod";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
 
@@ -16,13 +16,15 @@ interface CollateralProps {
 }
 
 export async function Collateral({ address, assettype }: CollateralProps) {
-  const asset =
+  const [asset, t, locale] = await Promise.all([
     assettype === "stablecoin"
       ? await getStableCoinDetail({ address })
       : assettype === "tokenizeddeposit"
         ? await getTokenizedDepositDetail({ address })
-        : undefined;
-  const t = await getTranslations("private.assets.fields");
+        : undefined,
+    getTranslations("private.assets.fields"),
+    getLocale(),
+  ]);
 
   if (!asset) {
     return null;
@@ -35,13 +37,20 @@ export async function Collateral({ address, assettype }: CollateralProps) {
           label={t("proven-collateral")}
           info={t("proven-collateral-info")}
         >
-          {formatNumber(asset.collateral, { token: asset.symbol })}
+          {formatNumber(asset.collateral, {
+            token: asset.symbol,
+            locale: locale,
+          })}
         </DetailGridItem>
         <DetailGridItem
           label={t("required-collateral-threshold")}
           info={t("required-collateral-threshold-info")}
         >
-          {formatNumber(100, { percentage: true, decimals: 2 })}
+          {formatNumber(100, {
+            percentage: true,
+            decimals: 2,
+            locale: locale,
+          })}
         </DetailGridItem>
         <DetailGridItem
           label={t("committed-collateral-ratio")}
@@ -56,6 +65,7 @@ export async function Collateral({ address, assettype }: CollateralProps) {
           {asset.collateralProofValidity
             ? formatDate(asset.collateralProofValidity, {
                 type: "absolute",
+                locale: locale,
               })
             : "-"}
         </DetailGridItem>

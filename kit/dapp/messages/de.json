@@ -1762,5 +1762,9 @@
     "sending": "Senden",
     "success": "Erfolg",
     "validation-errors": "Validierungsfehler"
+  },
+  "language": {
+    "changing": "Ändern...",
+    "language": "Sprache"
   }
 }

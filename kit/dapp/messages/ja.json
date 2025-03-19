@@ -1762,5 +1762,9 @@
     "sending": "送信中",
     "success": "成功",
     "validation-errors": "検証エラー"
+  },
+  "language": {
+    "changing": "変更中...",
+    "language": "言語"
   }
 }
