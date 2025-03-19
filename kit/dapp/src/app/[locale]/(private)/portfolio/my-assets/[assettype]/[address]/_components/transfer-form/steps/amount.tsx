@@ -4,7 +4,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { TransferInput } from "@/lib/mutations/transfer/transfer-schema";
 import { formatNumber } from "@/lib/utils/number";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
@@ -14,6 +14,7 @@ interface AmountProps {
 export function Amount({ balance }: AmountProps) {
   const { control } = useFormContext<TransferInput>();
   const t = useTranslations("portfolio.my-assets.cryptocurrency");
+  const locale = useLocale();
 
   return (
     <FormStep
@@ -29,7 +30,7 @@ export function Amount({ balance }: AmountProps) {
           min={1}
           defaultValue={1}
           max={balance}
-          description={`${t("transfer-form.amount.balance-description")} ${formatNumber(balance)}`}
+          description={`${t("transfer-form.amount.balance-description")} ${formatNumber(balance, { locale })}`}
           required
         />
       </div>

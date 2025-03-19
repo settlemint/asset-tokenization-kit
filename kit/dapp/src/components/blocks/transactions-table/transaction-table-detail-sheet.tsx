@@ -65,7 +65,7 @@ export function TransactionDetailSheet({
                   {t("created-at-label")}:
                 </dt>
                 <dd className="text-sm">
-                  {createdAt ? formatDate(createdAt) : "N/A"}
+                  {createdAt ? formatDate(createdAt, { locale }) : "N/A"}
                 </dd>
                 <dt className="text-muted-foreground text-sm">
                   {t("transaction-hash-label")}:

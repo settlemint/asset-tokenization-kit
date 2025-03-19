@@ -60,7 +60,7 @@ export function stablecoinColumns({
       meta: {
         variant: "numeric",
       },
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue }) => formatNumber(getValue(), { locale }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("collateralRatio", {

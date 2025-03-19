@@ -376,7 +376,7 @@
     },
     "transactions-history": {
       "chart-label": "المعاملة",
-      "description": "عرض المعاملات خلال آخر {interval}",
+      "description": "عرض المعاملات خلال الفترة الأخيرة",
       "title": "المعاملات"
     },
     "transactions-table": {
@@ -621,7 +621,8 @@
       },
       "transfer": "تحويل",
       "transfer-title": "تحويل {name} ({symbol})"
-    }
+    },
+    "assets-count-assets": "الأصول"
   },
   "private": {
     "assets": {
@@ -1673,7 +1674,20 @@
         "pincode-instruction": "أدخل رمز PIN مكون من 6 أرقام لتأمين محفظتك.",
         "pincode-set": "تم تعيين رمز PIN بنجاح",
         "setup-pincode": "إعداد رمز PIN"
-      }
+      },
+      "passkeys": "مفاتيح المرور",
+      "passkeys-description": "إدارة مفاتيح المرور الخاصة بك للوصول الآمن.",
+      "passkeys-instructions": "الوصول إلى حسابك بأمان دون الحاجة إلى كلمة مرور.",
+      "add-passkey": "إضافة مفتاح المرور",
+      "accounts": "الحسابات",
+      "accounts-description": "إدارة الحسابات التي قمت بتسجيل الدخول إليها حاليًا.",
+      "accounts-instructions": "تسجيل الدخول إلى حساب إضافي.",
+      "delete": "حذف",
+      "resend-verification-email": "إعادة إرسال بريد التحقق",
+      "security": "الأمان",
+      "switch-account": "تبديل الحساب",
+      "verify-your-email": "تحقق من بريدك الإلكتروني",
+      "verify-your-email-description": "يرجى التحقق من عنوان بريدك الإلكتروني. تحقق من صندوق الوارد الخاص بك للحصول على بريد التحقق. إذا لم تتلق البريد، انقر على الزر أدناه لإعادة الإرسال."
     },
     "users": {
       "banned_reason": "محظور بسبب {reason}",
@@ -1766,5 +1780,28 @@
   "language": {
     "changing": "تغيير...",
     "language": "اللغة"
+  },
+  "asset-events": {
+    "ApprovalEvent": "الموافقة",
+    "AssetCreatedEvent": "إنشاء",
+    "BondMaturedEvent": "نضج",
+    "BondRedeemedEvent": "استرداد",
+    "BurnEvent": "حرق",
+    "CollateralUpdatedEvent": "تم تحديث الضمان",
+    "ManagementFeeCollectedEvent": "تم تحصيل رسوم الإدارة",
+    "MintEvent": "سك",
+    "PausedEvent": "موقوف",
+    "PerformanceFeeCollectedEvent": "تم تحصيل رسوم الأداء",
+    "RoleAdminChangedEvent": "تم تغيير دور المسؤول",
+    "RoleGrantedEvent": "تم منح الدور",
+    "RoleRevokedEvent": "تم إلغاء الدور",
+    "TokenWithdrawnEvent": "سحب",
+    "TokensFrozenEvent": "تجميد",
+    "TransferEvent": "نقل",
+    "UnderlyingAssetTopUpEvent": "إعادة تعبئة",
+    "UnderlyingAssetWithdrawnEvent": "سحب",
+    "UnpausedEvent": "إلغاء التوقف",
+    "UserBlockedEvent": "حظر",
+    "UserUnblockedEvent": "إلغاء الحظر"
   }
 }

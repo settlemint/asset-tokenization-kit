@@ -61,7 +61,7 @@ export function tokenizedDepositColumns({
       meta: {
         variant: "numeric",
       },
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue }) => formatNumber(getValue(), { locale }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor((row) => <ColumnAssetStatus assetOrBalance={row} />, {

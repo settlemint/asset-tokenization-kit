@@ -3,7 +3,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { UpdateCollateralInput } from "@/lib/mutations/update-collateral/update-collateral-schema";
 import { formatNumber } from "@/lib/utils/number";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 import type { Address } from "viem";
 
@@ -17,6 +17,7 @@ export function Summary({ address }: SummaryProps) {
   const values = useWatch({
     control: control,
   });
+  const locale = useLocale();
 
   return (
     <FormStep
@@ -29,7 +30,7 @@ export function Summary({ address }: SummaryProps) {
       />
       <FormSummaryDetailItem
         label={t("amount-label")}
-        value={formatNumber(values.amount ?? 0)}
+        value={formatNumber(values.amount ?? 0, { locale })}
       />
     </FormStep>
   );

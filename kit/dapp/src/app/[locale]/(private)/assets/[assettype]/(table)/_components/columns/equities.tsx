@@ -129,7 +129,7 @@ export function equityColumns({
       meta: {
         variant: "numeric",
       },
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue }) => formatNumber(getValue(), { locale }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("equityCategory", {

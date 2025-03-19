@@ -6,7 +6,7 @@ import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema"
 import { getPredictedAddress } from "@/lib/queries/bond-factory/predict-address";
 import { formatDate } from "@/lib/utils/date";
 import { DollarSign, Settings } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
 
 export function Summary() {
@@ -16,6 +16,7 @@ export function Summary() {
   });
   const t = useTranslations("private.assets.create");
   const baseCurrency = useSettings("baseCurrency");
+  const locale = useLocale();
 
   return (
     <FormStep title={t("summary.title")} description={t("summary.description")}>
@@ -57,7 +58,11 @@ export function Summary() {
         />
         <FormSummaryDetailItem
           label={t("parameters.bonds.maturity-date-label")}
-          value={values.maturityDate ? formatDate(values.maturityDate) : "-"}
+          value={
+            values.maturityDate
+              ? formatDate(values.maturityDate, { locale })
+              : "-"
+          }
         />
         <FormSummaryDetailItem
           label={t("parameters.bonds.underlying-asset-label")}

@@ -4,6 +4,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
+import { getLocale } from "next-intl/server";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import {
@@ -43,6 +44,8 @@ export interface AssetBalanceDetailProps {
  */
 export const getAssetBalanceDetail = cache(
   async ({ address, account }: AssetBalanceDetailProps) => {
+    const locale = await getLocale();
+
     if (!account) {
       return undefined;
     }
@@ -70,8 +73,12 @@ export const getAssetBalanceDetail = cache(
     // Format BigDecimal values
     return {
       ...validatedBalance,
-      value: formatNumber(validatedBalance.value),
-      frozen: formatNumber(validatedBalance.frozen),
+      value: formatNumber(validatedBalance.value, {
+        locale,
+      }),
+      frozen: formatNumber(validatedBalance.frozen, {
+        locale,
+      }),
       available: validatedBalance.value - validatedBalance.frozen,
     };
   }

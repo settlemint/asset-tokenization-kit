@@ -6,7 +6,7 @@ import type { getRecentTransactions } from "@/lib/queries/transactions/transacti
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CheckCircle, Clock, XCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { TransactionDetailSheet } from "./transaction-table-detail-sheet";
 
 const columnHelper =
@@ -17,6 +17,8 @@ const columnHelper =
 export function columns() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("components.transactions-table");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("receipt.status", {
@@ -49,7 +51,7 @@ export function columns() {
     }),
     columnHelper.accessor("createdAt", {
       header: t("columns.created-at"),
-      cell: ({ getValue }) => formatDate(getValue() ?? new Date()),
+      cell: ({ getValue }) => formatDate(getValue() ?? new Date(), { locale }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("functionName", {

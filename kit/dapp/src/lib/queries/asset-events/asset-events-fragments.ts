@@ -645,6 +645,7 @@ export const UnderlyingAssetWithdrawnEventFragmentSchema =
     sender: z.object({
       id: z.address(),
     }),
+    prettyName: z.string().optional(),
   });
 
 /**

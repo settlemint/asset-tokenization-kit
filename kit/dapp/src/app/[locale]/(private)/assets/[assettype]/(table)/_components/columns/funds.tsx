@@ -108,7 +108,7 @@ export function fundColumns({ baseCurrency }: { baseCurrency: CurrencyCode }) {
       meta: {
         variant: "numeric",
       },
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue }) => formatNumber(getValue(), { locale }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("assetsUnderManagement", {
@@ -116,7 +116,7 @@ export function fundColumns({ baseCurrency }: { baseCurrency: CurrencyCode }) {
       meta: {
         variant: "numeric",
       },
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue }) => formatNumber(getValue(), { locale }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("fundCategory", {

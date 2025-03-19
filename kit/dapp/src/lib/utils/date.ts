@@ -32,9 +32,7 @@ function formatDateWithFormatter(
     | ReturnType<typeof useFormatter>
     | ReturnType<typeof createFormatter>,
   date: Date,
-  options: DateFormatOptions = {
-    locale: "en",
-  }
+  options: DateFormatOptions
 ): string {
   const { type = "absolute" } = options;
 
@@ -67,9 +65,7 @@ function formatDateWithFormatter(
  */
 export function formatDate(
   date: string | Date,
-  options: DateFormatOptions = {
-    locale: "en",
-  }
+  options: DateFormatOptions
 ): string {
   try {
     const dateObj =
