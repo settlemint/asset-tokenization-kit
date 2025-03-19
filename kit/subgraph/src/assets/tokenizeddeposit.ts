@@ -43,7 +43,10 @@ import { userAllowedEvent } from "./events/userallowed";
 import { userDisallowedEvent } from "./events/userdisallowed";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchTokenizedDeposit } from "./fetch/tokenizeddeposit";
-import { newAssetStatsData, updateTokenizedDepositCollateralData } from "./stats/assets";
+import {
+  newAssetStatsData,
+  updateTokenizedDepositCollateralData,
+} from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
@@ -108,7 +111,8 @@ export function handleTransfer(event: Transfer): void {
       tokenizedDeposit.id,
       to.id,
       tokenizedDeposit.decimals,
-      true
+      false,
+      event.block.timestamp
     );
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
     balance.value = toDecimals(balance.valueExact, tokenizedDeposit.decimals);
@@ -199,7 +203,8 @@ export function handleTransfer(event: Transfer): void {
       tokenizedDeposit.id,
       from.id,
       tokenizedDeposit.decimals,
-      true
+      false,
+      event.block.timestamp
     );
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
     balance.value = toDecimals(balance.valueExact, tokenizedDeposit.decimals);
@@ -285,7 +290,8 @@ export function handleTransfer(event: Transfer): void {
       tokenizedDeposit.id,
       from.id,
       tokenizedDeposit.decimals,
-      true
+      false,
+      event.block.timestamp
     );
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
     fromBalance.value = toDecimals(
@@ -310,7 +316,8 @@ export function handleTransfer(event: Transfer): void {
       tokenizedDeposit.id,
       to.id,
       tokenizedDeposit.decimals,
-      true
+      false,
+      event.block.timestamp
     );
     toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
     toBalance.value = toDecimals(
@@ -417,7 +424,8 @@ export function handleApproval(event: Approval): void {
     tokenizedDeposit.id,
     owner.id,
     tokenizedDeposit.decimals,
-    true
+    false,
+    event.block.timestamp
   );
   balance.approvedExact = event.params.value;
   balance.approved = toDecimals(
@@ -538,7 +546,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     tokenizedDeposit.id,
     user.id,
     tokenizedDeposit.decimals,
-    true
+    false,
+    event.block.timestamp
   );
   balance.frozenExact = event.params.amount;
   balance.frozen = toDecimals(balance.frozenExact, tokenizedDeposit.decimals);
@@ -599,9 +608,11 @@ export function handleUserAllowed(event: UserAllowed): void {
     tokenizedDeposit.id,
     user.id,
     tokenizedDeposit.decimals,
-    true
+    false,
+    event.block.timestamp
   );
   balance.blocked = false;
+  balance.blockedAt = null;
   balance.lastActivity = event.block.timestamp;
   balance.save();
 
@@ -654,9 +665,11 @@ export function handleUserDisallowed(event: UserDisallowed): void {
     tokenizedDeposit.id,
     user.id,
     tokenizedDeposit.decimals,
-    true
+    false,
+    event.block.timestamp
   );
   balance.blocked = true;
+  balance.blockedAt = event.block.timestamp;
   balance.lastActivity = event.block.timestamp;
   balance.save();
 
@@ -956,7 +969,10 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
   tokenizedDeposit.save();
 
-  const assetStats = newAssetStatsData(tokenizedDeposit.id, AssetType.tokenizeddeposit);
+  const assetStats = newAssetStatsData(
+    tokenizedDeposit.id,
+    AssetType.tokenizeddeposit
+  );
   updateTokenizedDepositCollateralData(assetStats, tokenizedDeposit);
   assetStats.save();
 

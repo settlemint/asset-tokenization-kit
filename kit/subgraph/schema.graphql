@@ -241,6 +241,7 @@ type AssetBalance @entity {
   approved: BigDecimal!
   approvedExact: BigInt!
   blocked: Boolean!
+  blockedAt: BigInt
   frozen: BigDecimal!
   frozenExact: BigInt!
   lastActivity: BigInt!

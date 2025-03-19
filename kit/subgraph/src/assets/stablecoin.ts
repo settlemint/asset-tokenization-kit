@@ -43,7 +43,10 @@ import { userUnblockedEvent } from "./events/userunblocked";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchStableCoin } from "./fetch/stablecoin";
-import { newAssetStatsData, updateStableCoinCollateralData } from "./stats/assets";
+import {
+  newAssetStatsData,
+  updateStableCoinCollateralData,
+} from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
@@ -105,7 +108,8 @@ export function handleTransfer(event: Transfer): void {
       stableCoin.id,
       to.id,
       stableCoin.decimals,
-      false
+      false,
+      event.block.timestamp
     );
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
     balance.value = toDecimals(balance.valueExact, stableCoin.decimals);
@@ -189,7 +193,8 @@ export function handleTransfer(event: Transfer): void {
       stableCoin.id,
       from.id,
       stableCoin.decimals,
-      false
+      false,
+      event.block.timestamp
     );
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
     balance.value = toDecimals(balance.valueExact, stableCoin.decimals);
@@ -279,7 +284,8 @@ export function handleTransfer(event: Transfer): void {
       stableCoin.id,
       from.id,
       stableCoin.decimals,
-      false
+      false,
+      event.block.timestamp
     );
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
     fromBalance.value = toDecimals(fromBalance.valueExact, stableCoin.decimals);
@@ -306,7 +312,8 @@ export function handleTransfer(event: Transfer): void {
       stableCoin.id,
       to.id,
       stableCoin.decimals,
-      false
+      false,
+      event.block.timestamp
     );
     toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
     toBalance.value = toDecimals(toBalance.valueExact, stableCoin.decimals);
@@ -547,7 +554,8 @@ export function handleApproval(event: Approval): void {
     stableCoin.id,
     owner.id,
     stableCoin.decimals,
-    false
+    false,
+    event.block.timestamp
   );
   ownerBalance.approvedExact = event.params.value;
   ownerBalance.approved = toDecimals(event.params.value, stableCoin.decimals);
@@ -779,7 +787,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     stableCoin.id,
     user.id,
     stableCoin.decimals,
-    false
+    false,
+    event.block.timestamp
   );
   balance.frozenExact = event.params.amount;
   balance.frozen = toDecimals(event.params.amount, stableCoin.decimals);
@@ -841,9 +850,11 @@ export function handleUserBlocked(event: UserBlocked): void {
     stableCoin.id,
     user.id,
     stableCoin.decimals,
-    false
+    false,
+    event.block.timestamp
   );
   balance.blocked = true;
+  balance.blockedAt = event.block.timestamp;
   balance.lastActivity = event.block.timestamp;
   balance.save();
 
@@ -892,9 +903,11 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     stableCoin.id,
     user.id,
     stableCoin.decimals,
-    false
+    false,
+    event.block.timestamp
   );
   balance.blocked = false;
+  balance.blockedAt = null;
   balance.lastActivity = event.block.timestamp;
   balance.save();
 
