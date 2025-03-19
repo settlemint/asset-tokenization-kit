@@ -898,6 +898,9 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   );
 
   stableCoin.lastActivity = event.block.timestamp;
+  stableCoin.blockedUsers = stableCoin.blockedUsers.filter(
+    (id) => id.toHexString() !== user.id.toHexString()
+  );
   stableCoin.save();
 
   const balance = fetchAssetBalance(

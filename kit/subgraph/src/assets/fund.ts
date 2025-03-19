@@ -864,6 +864,9 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   ]);
 
   fund.lastActivity = event.block.timestamp;
+  fund.blockedUsers = fund.blockedUsers.filter(
+    (id) => id.toHexString() !== user.id.toHexString()
+  );
   fund.save();
 
   const balance = fetchAssetBalance(

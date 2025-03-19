@@ -940,6 +940,9 @@ export function handleUserUnblocked(event: UserUnblocked): void {
 
   bond.lastActivity = event.block.timestamp;
   updateDerivedFields(bond);
+  bond.blockedUsers = bond.blockedUsers.filter(
+    (id) => id.toHexString() !== user.id.toHexString()
+  );
   bond.save();
 
   const balance = fetchAssetBalance(
