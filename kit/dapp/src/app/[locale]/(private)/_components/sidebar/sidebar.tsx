@@ -17,7 +17,7 @@ export function PrivateSidebar() {
       <SidebarHeader className="h-16">
         <NavHeader />
       </SidebarHeader>
-      <SidebarContent className="pt-4 px-4">
+      <SidebarContent className="pt-4">
         <RoleGuard requiredRoles={["admin", "issuer"]}>
           <DesignerButton />
         </RoleGuard>
