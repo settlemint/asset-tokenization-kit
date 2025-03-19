@@ -110,11 +110,26 @@ function getErrorMessage(error: Error): string {
 const REVERT_REGEX =
   /^The\s+contract\s+function\s+".*?"\s+reverted\.\s+Error:\s+(.*?)\(/i;
 
+// New regex for GraphQL-style contract revert errors
+const GRAPHQL_REVERT_REGEX =
+  /The contract function ".*?" reverted with the following reason: ([a-zA-Z0-9]+)/;
+
 function getRevertReason(error: Error): string | undefined {
-  const match = error.message.replace(/\n/g, " ").match(REVERT_REGEX);
+  const message = error.message.replace(/\n/g, " ");
+
+  // First try the original regex pattern
+  const match = message.match(REVERT_REGEX);
   if (match) {
     return match[1];
   }
+
+  // Then try the GraphQL-specific pattern
+  const graphqlMatch = message.match(GRAPHQL_REVERT_REGEX);
+  if (graphqlMatch) {
+    // Convert camelCase to readable format and lowercase
+    return graphqlMatch[1].replace(/([A-Z])/g, ' $1').trim().toLowerCase();
+  }
+
   return undefined;
 }
 

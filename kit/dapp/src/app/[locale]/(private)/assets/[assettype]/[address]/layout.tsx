@@ -43,20 +43,29 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
       href: `/assets/${assettype}/${address}/holders`,
       badge: details.totalHolders,
     },
+    ...(assettype === "bond" ? [
+      {
+        name: t("tabs.yield"),
+        href: `/assets/${assettype}/${address}/yield`,
+      }
+    ] : []),
     {
       name: t("tabs.events"),
       href: `/assets/${assettype}/${address}/events`,
       badge: events.length,
     },
+
     {
       name: t("tabs.permissions"),
       href: `/assets/${assettype}/${address}/permissions`,
     },
-    {
-      name: t("tabs.underlying-assets"),
-      href: `/assets/${assettype}/${address}/underlying-assets`,
-      badge: balances.length,
-    },
+    ...(assettype === "bond" || assettype === "fund" ? [
+      {
+        name:  t("tabs.underlying-assets"),
+        href: `/assets/${assettype}/${address}/underlying-assets`,
+        badge: balances.length,
+      },
+    ] : []),
   ];
 };
 
