@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { BentoFeatureSection } from "./_components/bento-feature-section";
 import { HeroSection } from "./_components/hero";
 
 export async function generateMetadata({
@@ -25,7 +24,6 @@ export default function Home() {
   return (
     <div className="relative flex min-h-[100dvh] flex-col">
       <HeroSection />
-      <BentoFeatureSection />
     </div>
   );
 }
