@@ -10,7 +10,7 @@ import type { AssetType } from "@/lib/utils/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
-import { UnblockUserAction } from "./actions/unblock-user-action";
+import { UnblockForm } from "../../_components/unblock-form/form";
 
 const columnHelper = createColumnHelper<BlockedUser>();
 
@@ -58,7 +58,7 @@ export function columns({
                 id: "unblock-user",
                 label: "Unblock User",
                 component: ({ open, onOpenChange }) => (
-                  <UnblockUserAction
+                  <UnblockForm
                     userAddress={row.original.user.id}
                     address={address}
                     assettype={assettype}
