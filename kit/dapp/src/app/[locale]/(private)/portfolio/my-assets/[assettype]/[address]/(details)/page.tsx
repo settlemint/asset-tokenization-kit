@@ -22,7 +22,7 @@ interface PageProps {
 export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
   const t = await getTranslations("private.assets");
-  
+
   // The URL parameter 'assettype' is used directly to determine which component to render
   // This ensures that when the URL has 'equity' in it, we show the equity component
   // and when it has 'fund' in it, we show the fund component

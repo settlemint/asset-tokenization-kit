@@ -435,11 +435,16 @@ const extendedZod = {
               // unless it's a decimal less than 1 (e.g., 0.5 is valid)
               const strVal = String(val);
               return (
-                val > 0 && 
-                (strVal.indexOf('.') !== 1 || strVal.charAt(0) !== '0' || val < 1)
+                val > 0 &&
+                (strVal.indexOf(".") !== 1 ||
+                  strVal.charAt(0) !== "0" ||
+                  val < 1)
               );
             },
-            { message: "Amount cannot start with 0 unless it's a decimal less than 1" }
+            {
+              message:
+                "Amount cannot start with 0 unless it's a decimal less than 1",
+            }
           )
       ),
 };

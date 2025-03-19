@@ -1,10 +1,27 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Banknote, BarChart3, Building, Coins, FileText, Lock, Shield, Wallet } from "lucide-react";
+import {
+  ArrowRight,
+  Banknote,
+  BarChart3,
+  Building,
+  Coins,
+  FileText,
+  Lock,
+  Shield,
+  Wallet,
+} from "lucide-react";
 import * as React from "react";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface BentoFeatureProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
@@ -12,7 +29,10 @@ const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
     return (
       <section
         ref={ref}
-        className={cn("relative z-10 mx-auto max-w-7xl px-4 py-24 md:px-8", className)}
+        className={cn(
+          "relative z-10 mx-auto max-w-7xl px-4 py-24 md:px-8",
+          className
+        )}
         {...props}
       >
         <div className="mb-16 text-center">
@@ -20,7 +40,8 @@ const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
             Complete Feature Set
           </h2>
           <p className="mx-auto max-w-2xl text-muted-foreground">
-            The SettleMint Asset Tokenization Kit is a full-stack solution designed to accelerate the development of digital asset platforms.
+            The SettleMint Asset Tokenization Kit is a full-stack solution
+            designed to accelerate the development of digital asset platforms.
           </p>
         </div>
 
@@ -40,7 +61,8 @@ const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-sm mb-4">
-                  Fully collateralized digital currencies backed by real-world assets.
+                  Fully collateralized digital currencies backed by real-world
+                  assets.
                 </CardDescription>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start">
@@ -75,7 +97,8 @@ const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-sm">
-                  Digital representation of traditional fixed-income securities with maturity dates and yield distribution.
+                  Digital representation of traditional fixed-income securities
+                  with maturity dates and yield distribution.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -92,7 +115,8 @@ const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-sm">
-                  Digital shares with voting rights and governance capabilities for streamlined shareholder management.
+                  Digital shares with voting rights and governance capabilities
+                  for streamlined shareholder management.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -109,7 +133,8 @@ const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-sm">
-                  Digital fund shares with automated fee management, supporting various fund types.
+                  Digital fund shares with automated fee management, supporting
+                  various fund types.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -141,16 +166,21 @@ const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-sm mb-4">
-                  Institutional-grade security with comprehensive compliance tools.
+                  Institutional-grade security with comprehensive compliance
+                  tools.
                 </CardDescription>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start">
                     <span className="mr-2 text-primary">•</span>
-                    <span>Role-Based Access Control with granular permissions</span>
+                    <span>
+                      Role-Based Access Control with granular permissions
+                    </span>
                   </li>
                   <li className="flex items-start">
                     <span className="mr-2 text-primary">•</span>
-                    <span>Blocklist/Allowlist functionality for user restrictions</span>
+                    <span>
+                      Blocklist/Allowlist functionality for user restrictions
+                    </span>
                   </li>
                   <li className="flex items-start">
                     <span className="mr-2 text-primary">•</span>
@@ -176,7 +206,8 @@ const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-sm">
-                  Comprehensive overview of all tokenized assets, transactions, and platform activities.
+                  Comprehensive overview of all tokenized assets, transactions,
+                  and platform activities.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -193,7 +224,8 @@ const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-sm">
-                  Create, issue, transfer, and manage digital assets through a user-friendly interface.
+                  Create, issue, transfer, and manage digital assets through a
+                  user-friendly interface.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -210,7 +242,8 @@ const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-sm">
-                  Pre-built, audited contract templates for various asset types with multi-chain compatibility.
+                  Pre-built, audited contract templates for various asset types
+                  with multi-chain compatibility.
                 </CardDescription>
               </CardContent>
             </Card>
