@@ -184,7 +184,6 @@ export function formatChartDate(
   granularity: TimeGranularity,
   locale: Locale
 ): string {
-  console.log(date);
   if (locale !== "en") {
     if (locale === "de") {
       setDefaultOptions({ locale: de });

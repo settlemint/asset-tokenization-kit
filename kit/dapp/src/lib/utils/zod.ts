@@ -425,28 +425,7 @@ const extendedZod = {
       .or(z.string())
       .nullish()
       .transform((val) => (val === null || val === undefined ? 0 : val))
-      .pipe(
-        z.coerce
-          .number()
-          .min(0, { message: "Amount must be positive" })
-          .refine(
-            (val) => {
-              // Check if the value is a valid positive number that doesn't start with 0
-              // unless it's a decimal less than 1 (e.g., 0.5 is valid)
-              const strVal = String(val);
-              return (
-                val > 0 &&
-                (strVal.indexOf(".") !== 1 ||
-                  strVal.charAt(0) !== "0" ||
-                  val < 1)
-              );
-            },
-            {
-              message:
-                "Amount cannot start with 0 unless it's a decimal less than 1",
-            }
-          )
-      ),
+      .pipe(z.coerce.number().min(0, { message: "Amount must be positive" })),
 };
 
 /**
