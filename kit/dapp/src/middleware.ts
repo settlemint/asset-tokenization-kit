@@ -22,8 +22,6 @@ export default function middleware(request: NextRequest) {
     const cookies = getSessionCookie(request, {
       useSecureCookies: process.env.NODE_ENV === "production",
     });
-    console.log("request", request);
-    console.log("cookies", cookies);
     if (!cookies) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
