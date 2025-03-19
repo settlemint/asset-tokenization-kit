@@ -1,5 +1,5 @@
 import { proxyMiddleware } from "@settlemint/sdk-next/middlewares/proxy";
-import { getSessionCookie } from "better-auth/cookies";
+import { parseCookies } from "better-auth/cookies";
 import { default as createIntlMiddleware } from "next-intl/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -10,6 +10,34 @@ const intlMiddleware = createIntlMiddleware({
   // Add this to ensure root path redirects to the default locale
   localePrefix: "always",
 });
+
+const getSessionCookie = (request: NextRequest, config?: any) => {
+  const headers = request instanceof Headers ? request : request.headers;
+  const cookies = headers.get("cookie");
+  if (!cookies) {
+    return null;
+  }
+  const {
+    cookieName = "session_token",
+    cookiePrefix = "better-auth",
+    useSecureCookies = (request instanceof Request &&
+      process.env.NODE_ENV === "production" &&
+      request.url.startsWith("https://")) ||
+      (request instanceof Request && request.url.startsWith("https://")
+        ? true
+        : false),
+  } = config || {};
+  console.log({ cookieName, cookiePrefix, useSecureCookies });
+  const name = useSecureCookies
+    ? `__Secure-${cookiePrefix}.${cookieName}`
+    : `${cookiePrefix}.${cookieName}`;
+  const parsedCookie = parseCookies(cookies);
+  const sessionToken = parsedCookie.get(name);
+  if (sessionToken) {
+    return sessionToken;
+  }
+  return null;
+};
 
 export default function middleware(request: NextRequest) {
   // Handle proxy routes - proxyMiddleware already checks if the path matches
