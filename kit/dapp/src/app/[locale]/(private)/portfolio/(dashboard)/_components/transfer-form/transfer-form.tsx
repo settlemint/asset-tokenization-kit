@@ -5,6 +5,7 @@ import { Recipients } from "@/app/[locale]/(private)/portfolio/(dashboard)/_comp
 import { Summary } from "@/app/[locale]/(private)/portfolio/(dashboard)/_components/transfer-form/steps/summary";
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { authClient } from "@/lib/auth/client";
 import { transferAsset } from "@/lib/mutations/asset/transfer/transfer-action";
 import { getTransferFormSchema } from "@/lib/mutations/asset/transfer/transfer-schema";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
@@ -12,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { SelectAsset } from "./select-asset";
+
 type Asset = UserAsset["asset"] & {
   holders: { value: number; account: { id: string } }[];
 };
@@ -20,6 +22,9 @@ export function MyAssetsTransferForm() {
   const t = useTranslations("portfolio.transfer-form");
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [open, setOpen] = useState(false);
+  const { data: session } = authClient.useSession();
+  const userAddress = session?.user.wallet;
+
   return (
     <>
       {selectedAsset ? (
@@ -52,7 +57,7 @@ export function MyAssetsTransferForm() {
                 selectedAsset?.holders
                   .find(
                     (holder: { account: { id: string } }) =>
-                      holder.account.id === selectedAsset?.id
+                      holder.account.id.toLowerCase() === userAddress?.toLowerCase()
                   )
                   ?.value.toString() ?? "0"
               }
