@@ -28,7 +28,7 @@ export const CreateBondSchema = z.object({
       z.coerce
         .number()
         .min(1, { message: "Must be at least 1" })
-        .max(1000000000, { message: "Value too large, maximum is 1,000,000,000" })
+        .max(Number.MAX_SAFE_INTEGER, { message: "Value too large" })
     ),
   faceValue: z
     .number()
@@ -37,7 +37,7 @@ export const CreateBondSchema = z.object({
       z.coerce
         .number()
         .min(1, { message: "Must be at least 1" })
-        .max(1000000000, { message: "Value too large, maximum is 1,000,000,000" })
+        .max(Number.MAX_SAFE_INTEGER, { message: "Value too large" })
     ),
   maturityDate: z
     .string()
@@ -51,7 +51,7 @@ export const CreateBondSchema = z.object({
     .pipe(
       z.coerce
         .number()
-        .max(1000000000, { message: "Value too large, maximum is 1,000,000,000" })
+        .max(Number.MAX_SAFE_INTEGER, { message: "Value too large" })
     ),
 });
 
