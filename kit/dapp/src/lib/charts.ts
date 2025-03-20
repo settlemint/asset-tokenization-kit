@@ -198,7 +198,7 @@ export function formatChartDate(
     return format(date, "HH:mm, MMM d");
   }
   if (granularity === "day") {
-    return format(date, "EEE, MMM d");
+    return format(date, "MMM d");
   }
   if (granularity === "month") {
     return format(date, "MMM y");

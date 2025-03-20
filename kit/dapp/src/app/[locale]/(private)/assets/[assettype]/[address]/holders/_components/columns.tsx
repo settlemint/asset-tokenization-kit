@@ -12,10 +12,9 @@ import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 import { getAddress } from "viem";
-import { blockUserEnabled } from "../../_components/block-form/enabled";
 import { BlockForm } from "../../_components/block-form/form";
+import { hasBlocklist, hasFreeze } from "../../_components/features-enabled";
 import { MintForm } from "../../_components/mint-form/form";
-import { freezeUserAssetsEnabled } from "./actions/freeze-form/enabled";
 import { FreezeForm } from "./actions/freeze-form/form";
 
 const columnHelper =
@@ -108,7 +107,8 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     onOpenChange={onOpenChange}
                   />
                 ),
-                hidden: !blockUserEnabled(row.original.asset.type),
+                disabled: row.original.asset.paused,
+                hidden: !hasBlocklist(row.original.asset.type),
               },
               {
                 id: "freeze-form",
@@ -125,7 +125,8 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     onOpenChange={onOpenChange}
                   />
                 ),
-                hidden: !freezeUserAssetsEnabled(row.original.asset.type),
+                disabled: row.original.asset.paused,
+                hidden: !hasFreeze(row.original.asset.type),
               },
               {
                 id: "mint-form",
@@ -140,6 +141,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     maxLimit={mintMaxLimit}
                   />
                 ),
+                disabled: row.original.asset.paused,
               },
             ]}
           />

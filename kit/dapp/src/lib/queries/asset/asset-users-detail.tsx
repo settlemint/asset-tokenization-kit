@@ -75,7 +75,11 @@ export const getAssetUsersDetail = cache(
 
     const [onchainData, offchainData] = await Promise.all([
       unstable_cache(
-        () => theGraphClientKit.request(AssetDetail, { id: address }),
+        async () => {
+          return await theGraphClientKit.request(AssetDetail, {
+            id: address,
+          });
+        },
         ["asset", "asset-detail", address],
         {
           revalidate: 60 * 60 * 24, // 24 hours
@@ -83,8 +87,11 @@ export const getAssetUsersDetail = cache(
         }
       )(),
       unstable_cache(
-        () =>
-          hasuraClient.request(OffchainAssetDetail, { id: normalizedAddress }),
+        async () => {
+          return await hasuraClient.request(OffchainAssetDetail, {
+            id: normalizedAddress,
+          });
+        },
         ["asset", "offchain-asset-detail", normalizedAddress],
         {
           revalidate: 60 * 60 * 24, // 24 hours

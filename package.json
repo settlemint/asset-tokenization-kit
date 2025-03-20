@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/asset-tokenization-kit",
   "description": "SettleMint Kit - Asset Tokenization",
-  "version": "0.3.8",
+  "version": "0.3.11",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -46,9 +46,11 @@
     "test:e2e": "bun run --cwd kit/e2e test:e2e",
     "test:e2e:ui": "bun run --cwd kit/e2e test:e2e:ui"
   },
-  "dependencies": {},
+  "dependencies": {
+    "framer-motion": "12.5.0"
+  },
   "devDependencies": {
-    "@settlemint/sdk-cli": "1.2.2",
+    "@settlemint/sdk-cli": "1.2.3",
     "@types/rtl-detect": "1.0.3",
     "prettier": "3.5.3",
     "turbo": "2.4.4",

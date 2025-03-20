@@ -2,15 +2,20 @@ import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
 import { ChartPieIcon } from "@/components/ui/animated-icons/chart-pie";
 import type { ChartConfig } from "@/components/ui/chart";
-import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
+import { getAssetDetail } from "@/lib/queries/asset-detail";
+import type { AssetType } from "@/lib/utils/zod";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
 interface CollateralRatioProps {
   address: Address;
+  assettype: AssetType;
 }
 
-export async function CollateralRatio({ address }: CollateralRatioProps) {
+export async function CollateralRatio({
+  address,
+  assettype,
+}: CollateralRatioProps) {
   const t = await getTranslations("components.charts.assets");
 
   const chartConfig = {
@@ -24,7 +29,7 @@ export async function CollateralRatio({ address }: CollateralRatioProps) {
     },
   } satisfies ChartConfig;
 
-  const data = await getAssetUsersDetail({ address });
+  const data = await getAssetDetail({ address, assettype });
 
   if (!data || ("collateral" in data && data.collateral === 0)) {
     return (

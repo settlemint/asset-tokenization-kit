@@ -4,14 +4,20 @@ import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { AssetType } from "@/lib/utils/zod";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import type { Address } from "viem";
+import {
+  hasAllowlist,
+  hasBlocklist,
+  hasUnderlyingAsset,
+  hasYield,
+} from "./_components/features-enabled";
 import { ManageDropdown } from "./_components/manage-dropdown/manage-dropdown";
-
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     locale: Locale;
@@ -27,10 +33,11 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
     namespace: "private.assets.details",
   });
 
-  const [details, balances, events] = await Promise.all([
+  const [details, balances, events, assetUsers] = await Promise.all([
     getAssetDetail({ address, assettype }),
     getAssetBalanceList({ wallet: address }),
     getAssetEventsList({ asset: address }),
+    getAssetUsersDetail({ address }),
   ]);
 
   return [
@@ -43,12 +50,14 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
       href: `/assets/${assettype}/${address}/holders`,
       badge: details.totalHolders,
     },
-    ...(assettype === "bond" ? [
-      {
-        name: t("tabs.yield"),
-        href: `/assets/${assettype}/${address}/yield`,
-      }
-    ] : []),
+    ...(hasYield(assettype)
+      ? [
+          {
+            name: t("tabs.yield"),
+            href: `/assets/${assettype}/${address}/yield`,
+          },
+        ]
+      : []),
     {
       name: t("tabs.events"),
       href: `/assets/${assettype}/${address}/events`,
@@ -59,13 +68,33 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
       name: t("tabs.permissions"),
       href: `/assets/${assettype}/${address}/permissions`,
     },
-    ...(assettype === "bond" || assettype === "fund" ? [
-      {
-        name:  t("tabs.underlying-assets"),
-        href: `/assets/${assettype}/${address}/underlying-assets`,
-        badge: balances.length,
-      },
-    ] : []),
+    ...(hasAllowlist(assettype)
+      ? [
+          {
+            name: t("tabs.allowlist"),
+            href: `/assets/${assettype}/${address}/allowlist`,
+            badge: assetUsers.allowlist.length,
+          },
+        ]
+      : []),
+    ...(hasBlocklist(assettype)
+      ? [
+          {
+            name: t("tabs.blocklist"),
+            href: `/assets/${assettype}/${address}/blocklist`,
+            badge: assetUsers.blocklist.length,
+          },
+        ]
+      : []),
+    ...(hasUnderlyingAsset(assettype)
+      ? [
+          {
+            name: t("tabs.underlying-assets"),
+            href: `/assets/${assettype}/${address}/underlying-assets`,
+            badge: balances.length,
+          },
+        ]
+      : []),
   ];
 };
 
@@ -81,13 +110,19 @@ export default async function AssetDetailLayout({
       <DetailPageHeader
         address={address}
         assettype={assettype}
-        manageDropdown={({ assetDetails, userBalance, userRoles }) => (
+        manageDropdown={({
+          assetDetails,
+          userBalance,
+          assetUsersDetails,
+          userAddress,
+        }) => (
           <ManageDropdown
             address={address}
             assettype={assettype}
             assetDetails={assetDetails}
             userBalance={userBalance}
-            userRoles={userRoles}
+            assetUsersDetails={assetUsersDetails}
+            userAddress={userAddress}
           />
         )}
       />

@@ -1,5 +1,3 @@
-"use client";
-
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { blockUser } from "@/lib/mutations/block-user/block-user-action";

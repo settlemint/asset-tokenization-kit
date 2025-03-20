@@ -13,7 +13,7 @@ export function AdminAddress() {
 
   return (
     <FormStep
-      title={t("title.grant-role")}
+      title={t("title.default")}
       description={t("description.grant-role")}
     >
       <div className="space-y-1">

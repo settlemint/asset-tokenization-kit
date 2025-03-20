@@ -15,7 +15,7 @@ export function Recipient() {
 
   return (
     <FormStep
-      title={t("title.withdraw")}
+      title={t("title.default")}
       description={t("description.withdraw")}
     >
       <div className="grid grid-cols-1 gap-6">
