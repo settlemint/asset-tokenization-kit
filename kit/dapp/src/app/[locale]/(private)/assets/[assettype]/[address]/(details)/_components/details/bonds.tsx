@@ -58,17 +58,26 @@ export async function BondsDetails({ address, showBalance = false, userAddress }
         </DetailGridItem>
         <DetailGridItem label={t("decimals")}>{bond.decimals}</DetailGridItem>
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
-          {bond.cap}
+          {formatNumber(bond.cap, {
+            token: bond.symbol,
+            locale: locale,
+          })}
         </DetailGridItem>
         <DetailGridItem label={t("total-issued")} info={t("total-issued-info")}>
-          {bond.totalSupply}
+          {formatNumber(bond.totalSupply, {
+            token: bond.symbol,
+            locale: locale,
+          })}
         </DetailGridItem>
         {/* Show balance only when requested and available */}
         {showBalance && balanceData && (
           <DetailGridItem
             label={t("balance")}
           >
-            {balanceData.value}
+            {formatNumber(balanceData.value, {
+              token: bond.symbol,
+              locale: locale,
+            })}
           </DetailGridItem>
         )}
         <DetailGridItem label={t("redeemed")} info={t("redeemed-info")}>

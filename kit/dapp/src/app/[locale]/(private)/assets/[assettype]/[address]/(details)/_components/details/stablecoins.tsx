@@ -70,7 +70,10 @@ export async function StablecoinsDetails({
           <DetailGridItem
             label={t("balance")}
           >
-            {balanceData.value}
+            {formatNumber(balanceData.value, {
+              token: stableCoin.symbol,
+              locale: locale,
+            })}
           </DetailGridItem>
         )}
         <DetailGridItem label={t("total-burned")} info={t("total-burned-info")}>

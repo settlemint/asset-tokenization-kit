@@ -58,14 +58,20 @@ export async function EquitiesDetails({
         </DetailGridItem>
         <DetailGridItem label={t("decimals")}>{equity.decimals}</DetailGridItem>
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
-          {equity.totalSupply}
+          {formatNumber(equity.totalSupply, {
+            token: equity.symbol,
+            locale: locale,
+          })}
         </DetailGridItem>
         {/* Show balance only when requested and available */}
         {showBalance && balanceData && (
           <DetailGridItem
             label={t("balance")}
           >
-            {balanceData.value}
+            {formatNumber(balanceData.value, {
+              token: equity.symbol,
+              locale: locale,
+            })}
           </DetailGridItem>
         )}
         <DetailGridItem

@@ -76,7 +76,10 @@ export async function TokenizedDepositsDetails({
           <DetailGridItem
             label={t("balance")}
           >
-            {balanceData.value}
+            {formatNumber(balanceData.value, {
+              token: tokenizedDeposit.symbol,
+              locale: locale,
+            })}
           </DetailGridItem>
         )}
         <DetailGridItem label={t("total-burned")} info={t("total-burned-info")}>

@@ -59,14 +59,20 @@ export async function CryptocurrenciesDetails({
           {cryptocurrency.decimals}
         </DetailGridItem>
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
-          {cryptocurrency.totalSupply}
+          {formatNumber(cryptocurrency.totalSupply, {
+            token: cryptocurrency.symbol,
+            locale: locale,
+          })}
         </DetailGridItem>
         {/* Show balance only when requested and available */}
         {showBalance && balanceData && (
           <DetailGridItem
             label={t("balance")}
           >
-            {balanceData.value}
+            {formatNumber(balanceData.value, {
+              token: cryptocurrency.symbol,
+              locale: locale,
+            })}
           </DetailGridItem>
         )}
         <DetailGridItem
