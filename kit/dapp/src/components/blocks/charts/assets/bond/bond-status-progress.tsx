@@ -39,14 +39,14 @@ export async function BondStatusProgress({ address }: BondStatusProgressProps) {
     case "issuing":
       // For issuance, show percentage of cap that has been issued
       const issued = Number(bond.totalSupply);
-      const cap = Number(bond.cap);
+      const issuedMax = Number(bond.cap);
 
       return (
         <DonutProgressChart
           title={t("bond-issuance")}
           description={t("bond-issued")}
           value={issued}
-          max={cap}
+          max={issuedMax}
           status="issuing"
           statusLabel={t("bond-issued")}
           statusColor={getBondStatusColor("issuing")}
@@ -55,14 +55,15 @@ export async function BondStatusProgress({ address }: BondStatusProgressProps) {
 
     case "active":
       // For active bonds, show percentage of redemption readiness
-      // This would typically come from actual data about underlying assets
-      // Using dummy values (70%) for now
+      const redeemable = Number(bond.underlyingBalance);
+      const redeemableMax = Number(bond.totalUnderlyingNeededExact);
+
       return (
         <DonutProgressChart
           title={t("bond-redemption-assets")}
           description={t("bond-redeemable")}
-          value={70}
-          max={100}
+          value={redeemable}
+          max={redeemableMax}
           status="redeemable"
           statusLabel={t("bond-redeemable")}
           statusColor={getBondStatusColor("redeemable")}
@@ -71,13 +72,15 @@ export async function BondStatusProgress({ address }: BondStatusProgressProps) {
 
     case "matured":
       // For matured bonds, show percentage of bonds redeemed
-      // Using dummy values (70%) for now
+      const redeemed = Number(bond.redeemedAmount);
+      const redeemedMax = Number(bond.totalSupply);
+
       return (
         <DonutProgressChart
           title={t("bond-redeemed")}
           description={t("bond-matured")}
-          value={70}
-          max={100}
+          value={redeemed}
+          max={redeemedMax}
           status="redeemed"
           statusLabel={t("bond-redeemed")}
           statusColor={getBondStatusColor("redeemed")}
