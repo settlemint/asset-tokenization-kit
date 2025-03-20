@@ -122,8 +122,12 @@ export function ManageDropdown({
     {
       id: "burn",
       label: t("actions.burn"),
-      hidden: false,
-      disabled: isBlocked || isPaused || !userIsSupplyManager,
+      hidden: assettype === "cryptocurrency",
+      disabled:
+        isBlocked ||
+        isPaused ||
+        !userIsSupplyManager ||
+        (userBalance?.available ?? 0) > 0,
       form: (
         <BurnForm
           key="burn"
