@@ -3,13 +3,13 @@ import { cache } from "react";
 import type { Address } from "viem";
 import { z } from "zod";
 
-const yieldDistributionItemSchema = z.object({
+const _yieldDistributionItemSchema = z.object({
   timestamp: z.number(),
   totalYield: z.number(),
   claimed: z.number()
 });
 
-type YieldDistributionData = z.infer<typeof yieldDistributionItemSchema>;
+type YieldDistributionData = z.infer<typeof _yieldDistributionItemSchema>;
 
 interface BondYieldDistributionParams {
   address: Address;
@@ -29,40 +29,84 @@ export const getBondYieldDistribution = cache(
         return [];
       }
 
-      // Generate sample data based on the yield schedule
-      // In a real implementation, this would come from actual historical data
-      const startTime = Number(bondData.yieldSchedule.startDate) * 1000;
-      const endTime = Number(bondData.yieldSchedule.endDate) * 1000;
+      // Get actual yield schedule periods data from the bond
+      const { periods, startDate, endDate, totalClaimed } = bondData.yieldSchedule;
+
+      // If there are no periods, return empty array
+      if (!periods || periods.length === 0) {
+        return [];
+      }
+
+      // Convert timestamps to milliseconds
+      const startTime = Number(startDate) * 1000;
+      const endTime = Number(endDate) * 1000;
       const now = Date.now();
 
-      // Create an array of timestamps from start to current time
-      const dataPoints = [];
-      const totalPoints = 12; // Generate 12 data points
-      const interval = (Math.min(now, endTime) - startTime) / totalPoints;
+      // Create distribution data from actual period data
+      const dataPoints: YieldDistributionData[] = [];
 
+      // Add starting point (zero values)
+      dataPoints.push({
+        timestamp: startTime,
+        totalYield: 0,
+        claimed: 0
+      });
+
+      // Sort periods by start date
+      const sortedPeriods = [...periods].sort((a, b) =>
+        Number(a.startDate) - Number(b.startDate)
+      );
+
+      // Running totals for accumulation
       let accumulatedYield = 0;
       let accumulatedClaimed = 0;
 
-      for (let i = 0; i <= totalPoints; i++) {
-        const timestamp = startTime + (i * interval);
+      // Add data points for each period
+      for (const period of sortedPeriods) {
+        const periodStartTime = Number(period.startDate) * 1000;
 
-        // Simulate increasing yield and claims over time
-        const progressFactor = i / totalPoints;
+        // Only include periods up to current time
+        if (periodStartTime > now) {
+          break;
+        }
 
-        // Calculate total yield (use unclaimedYield + totalClaimed for total yield estimation)
-        const totalYieldEstimate = bondData.yieldSchedule.unclaimedYield + bondData.yieldSchedule.totalClaimed;
-        const totalYield = totalYieldEstimate * progressFactor;
+        // Add the period's yield to the total (estimated from rate and duration)
+        const periodDuration = Number(period.endDate) - Number(period.startDate);
+        const periodYield = Number(period.rate) * periodDuration / (365 * 24 * 60 * 60);
 
-        // Claimed is based on the totalClaimed property
-        const claimed = bondData.yieldSchedule.totalClaimed * progressFactor;
-
-        accumulatedYield = totalYield;
-        accumulatedClaimed = claimed;
+        accumulatedYield += periodYield;
+        accumulatedClaimed += Number(period.totalClaimed);
 
         dataPoints.push({
-          timestamp,
+          timestamp: periodStartTime,
           totalYield: accumulatedYield,
           claimed: accumulatedClaimed
+        });
+      }
+
+      // Add current point if we're between start and end time
+      if (now > startTime && now < endTime && dataPoints.length > 0) {
+        // Get the latest data point
+        const lastPoint = dataPoints[dataPoints.length - 1];
+
+        // Add current point using latest accumulated values
+        // but adjust based on current time proportion if needed
+        dataPoints.push({
+          timestamp: now,
+          totalYield: lastPoint.totalYield,
+          claimed: Number(totalClaimed) // Use actual claimed amount from bond data
+        });
+      }
+
+      // Add end point if it's in the future
+      if (endTime > now && dataPoints.length > 0) {
+        // Use the latest accumulated yield as the final value
+        const lastPoint = dataPoints[dataPoints.length - 1];
+
+        dataPoints.push({
+          timestamp: endTime,
+          totalYield: lastPoint.totalYield,
+          claimed: lastPoint.claimed
         });
       }
 

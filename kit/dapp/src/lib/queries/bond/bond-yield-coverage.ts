@@ -3,13 +3,13 @@ import type { Address } from "viem";
 import { z } from "zod";
 
 // Define the yield coverage schema
-const yieldCoverageSchema = z.object({
+const _yieldCoverageSchema = z.object({
   yieldCoverage: z.number(),
   hasYieldSchedule: z.boolean(),
   isRunning: z.boolean()
 });
 
-type YieldCoverageData = z.infer<typeof yieldCoverageSchema>;
+type YieldCoverageData = z.infer<typeof _yieldCoverageSchema>;
 
 interface GetBondYieldCoverageParams {
   address: Address;
@@ -46,8 +46,7 @@ export async function getBondYieldCoverage({
 
   // Get current timestamp to check if yield is currently running
   const now = BigInt(Math.floor(Date.now() / 1000));
-  const startDate = bondData.yieldSchedule.startDate;
-  const endDate = bondData.yieldSchedule.endDate;
+  const { startDate, endDate, unclaimedYieldExact, underlyingBalanceExact } = bondData.yieldSchedule;
   const isRunning = now >= startDate && now <= endDate;
 
   // If not running, return 0 coverage
@@ -61,9 +60,6 @@ export async function getBondYieldCoverage({
 
   // Calculate yield coverage percentage
   let yieldCoverage = 0;
-
-  const unclaimedYieldExact = bondData.yieldSchedule.unclaimedYieldExact;
-  const underlyingBalanceExact = bondData.yieldSchedule.underlyingBalanceExact;
 
   if (unclaimedYieldExact > 0n) {
     // Calculate how much of the unclaimed yield is covered

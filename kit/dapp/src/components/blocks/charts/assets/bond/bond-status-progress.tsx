@@ -34,71 +34,62 @@ export async function BondStatusProgress({ address }: BondStatusProgressProps) {
   // Get bond status
   const status = getBondStatus(bond);
 
-  // Determine what to display based on bond status
+  // Compute chart parameters based on status
+  let chartProps;
+
   switch (status) {
     case "issuing":
       // For issuance, show percentage of cap that has been issued
-      const issued = Number(bond.totalSupply);
-      const issuedMax = Number(bond.cap);
-
-      return (
-        <DonutProgressChart
-          title={t("bond-issuance")}
-          description={t("bond-issued")}
-          value={issued}
-          max={issuedMax}
-          status="issuing"
-          statusLabel={t("bond-issued")}
-          statusColor={getBondStatusColor("issuing")}
-        />
-      );
+      chartProps = {
+        title: t("bond-issuance"),
+        description: t("bond-issued"),
+        value: Number(bond.totalSupply),
+        max: Number(bond.cap),
+        status: "issuing" as const,
+        statusLabel: t("bond-issued"),
+        statusColor: getBondStatusColor("issuing"),
+      };
+      break;
 
     case "active":
       // For active bonds, show percentage of redemption readiness
-      const redeemable = Number(bond.underlyingBalance);
-      const redeemableMax = Number(bond.totalUnderlyingNeededExact);
-
-      return (
-        <DonutProgressChart
-          title={t("bond-redemption-assets")}
-          description={t("bond-redeemable")}
-          value={redeemable}
-          max={redeemableMax}
-          status="redeemable"
-          statusLabel={t("bond-redeemable")}
-          statusColor={getBondStatusColor("redeemable")}
-        />
-      );
+      chartProps = {
+        title: t("bond-redemption-assets"),
+        description: t("bond-redeemable"),
+        value: Number(bond.underlyingBalance),
+        max: Number(bond.totalUnderlyingNeededExact),
+        status: "redeemable" as const,
+        statusLabel: t("bond-redeemable"),
+        statusColor: getBondStatusColor("redeemable"),
+      };
+      break;
 
     case "matured":
       // For matured bonds, show percentage of bonds redeemed
-      const redeemed = Number(bond.redeemedAmount);
-      const redeemedMax = Number(bond.totalSupply);
-
-      return (
-        <DonutProgressChart
-          title={t("bond-redeemed")}
-          description={t("bond-matured")}
-          value={redeemed}
-          max={redeemedMax}
-          status="redeemed"
-          statusLabel={t("bond-redeemed")}
-          statusColor={getBondStatusColor("redeemed")}
-        />
-      );
+      chartProps = {
+        title: t("bond-redeemed"),
+        description: t("bond-matured"),
+        value: Number(bond.redeemedAmount),
+        max: Number(bond.totalSupply),
+        status: "redeemed" as const,
+        statusLabel: t("bond-redeemed"),
+        statusColor: getBondStatusColor("redeemed"),
+      };
+      break;
 
     default:
       // Fallback for unknown status
-      return (
-        <DonutProgressChart
-          title={t("bond-status-progress")}
-          description={`${t("bond-status")}: ${status}`}
-          value={0}
-          max={100}
-          status="unknown"
-          statusLabel={status}
-          statusColor={getBondStatusColor("pending")}
-        />
-      );
+      chartProps = {
+        title: t("bond-status-progress"),
+        description: `${t("bond-status")}: ${status}`,
+        value: 0,
+        max: 100,
+        status: "unknown" as const,
+        statusLabel: status,
+        statusColor: getBondStatusColor("pending"),
+      };
+      break;
   }
+
+  return <DonutProgressChart {...chartProps} />;
 }

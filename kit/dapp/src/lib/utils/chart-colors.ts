@@ -23,9 +23,6 @@ export function getBondStatusColor(status: string): string {
     // Redeemed - indigo
     case "redeemed":
       return "var(--chart-2)";
-    // Error - gray
-    case "error":
-      return "var(--muted)";
     // General purpose states
     case "success":
       return "var(--success)";
