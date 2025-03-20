@@ -4,7 +4,8 @@ import { handleChallenge } from "@/lib/challenge";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, type TimeUnit, z } from "@/lib/utils/zod";
+import { getTimeUnitSeconds } from "@/lib/utils/date";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
 import { action } from "../../safe-action";
 import { CreateStablecoinSchema } from "./create-schema";
 
@@ -84,18 +85,3 @@ export const createStablecoin = action
       ]);
     }
   );
-
-function getTimeUnitSeconds(unit: TimeUnit): number {
-  switch (unit) {
-    case "seconds":
-      return 1;
-    case "hours":
-      return 3600;
-    case "days":
-      return 86400;
-    case "weeks":
-      return 604800;
-    case "months":
-      return 2592000; // 30 days
-  }
-}
