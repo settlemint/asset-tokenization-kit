@@ -132,8 +132,8 @@ export const AssetUsersFragmentSchema = z.object({
       }),
     })
   ),
-  allowlist: z.array(AllowedUserFragmentSchema),
-  blocklist: z.array(BlockedUserFragmentSchema),
+  allowlist: z.array(AllowedUserFragmentSchema).default([]),
+  blocklist: z.array(BlockedUserFragmentSchema).default([]),
 });
 
 /**

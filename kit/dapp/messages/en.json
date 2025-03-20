@@ -785,7 +785,10 @@
       "recipients": {
         "description": "Enter a wallet address to send tokens directly.",
         "title": "Select Recipients",
-        "wallet-address-label": "Wallet Address"
+        "wallet-address-label": "Wallet Address",
+        "address-placeholder": "Search for a user",
+        "manual-entry-link": "Enter address manually...",
+        "search-user-link": "Search for a user instead..."
       },
       "select-asset": {
         "asset-description": "Select an asset from your portfolio",
@@ -1221,6 +1224,7 @@
         "creator": "Creator",
         "decimals": "Decimals",
         "deployed-on": "Deployed on",
+        "balance": "Balance",
         "edit-roles-form": {
           "trigger-label": "Edit permissions"
         },

@@ -11,32 +11,34 @@ import { TokenizedDepositsDetails } from "./details/tokenizeddeposits";
 interface DetailsProps {
   assettype: AssetType;
   address: Address;
+  showBalance?: boolean;
+  userAddress?: Address;
 }
 
-export function Details({ assettype, address }: DetailsProps) {
+export function Details({ assettype, address, showBalance = false, userAddress }: DetailsProps) {
   switch (assettype) {
     case "bond":
-      return <BondsDetails address={address} />;
+      return <BondsDetails address={address} showBalance={showBalance} userAddress={userAddress} />;
     case "cryptocurrency":
-      return <CryptocurrenciesDetails address={address} />;
+      return <CryptocurrenciesDetails address={address} showBalance={showBalance} userAddress={userAddress} />;
     case "stablecoin":
       return (
         <>
-          <StablecoinsDetails address={address} />
+          <StablecoinsDetails address={address} showBalance={showBalance} userAddress={userAddress} />
           <Collateral address={address} assettype={assettype} />
         </>
       );
     case "tokenizeddeposit":
       return (
         <>
-          <TokenizedDepositsDetails address={address} />
+          <TokenizedDepositsDetails address={address} showBalance={showBalance} userAddress={userAddress} />
           <Collateral address={address} assettype={assettype} />
         </>
       );
     case "equity":
-      return <EquitiesDetails address={address} />;
+      return <EquitiesDetails address={address} showBalance={showBalance} userAddress={userAddress} />;
     case "fund":
-      return <FundsDetails address={address} />;
+      return <FundsDetails address={address} showBalance={showBalance} userAddress={userAddress} />;
     default:
       throw new Error("Invalid asset type");
   }

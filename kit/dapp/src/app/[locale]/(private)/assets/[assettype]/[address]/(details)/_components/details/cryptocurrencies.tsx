@@ -3,6 +3,7 @@ import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
+import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
 import { formatNumber } from "@/lib/utils/number";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -11,10 +12,14 @@ import type { Address } from "viem";
 
 interface CryptocurrenciesDetailsProps {
   address: Address;
+  showBalance?: boolean;
+  userAddress?: Address;
 }
 
 export async function CryptocurrenciesDetails({
   address,
+  showBalance = false,
+  userAddress,
 }: CryptocurrenciesDetailsProps) {
   const [cryptocurrency, t, baseCurrency, locale] = await Promise.all([
     getCryptoCurrencyDetail({ address }),
@@ -22,6 +27,11 @@ export async function CryptocurrenciesDetails({
     getSetting(SETTING_KEYS.BASE_CURRENCY),
     getLocale(),
   ]);
+
+  // Conditionally fetch balance data only when needed
+  const balanceData = showBalance && userAddress
+    ? await getAssetBalanceDetail({ address, account: userAddress })
+    : null;
 
   return (
     <Suspense>
@@ -49,8 +59,22 @@ export async function CryptocurrenciesDetails({
           {cryptocurrency.decimals}
         </DetailGridItem>
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
-          {cryptocurrency.totalSupply}
+          {formatNumber(cryptocurrency.totalSupply, {
+            token: cryptocurrency.symbol,
+            locale: locale,
+          })}
         </DetailGridItem>
+        {/* Show balance only when requested and available */}
+        {showBalance && balanceData && (
+          <DetailGridItem
+            label={t("balance")}
+          >
+            {formatNumber(balanceData.value, {
+              token: cryptocurrency.symbol,
+              locale: locale,
+            })}
+          </DetailGridItem>
+        )}
         <DetailGridItem
           label={t("ownership-concentration")}
           info={t("ownership-concentration-info")}
@@ -68,6 +92,8 @@ export async function CryptocurrenciesDetails({
             locale: locale,
           })}
         </DetailGridItem>
+
+
       </DetailGrid>
     </Suspense>
   );

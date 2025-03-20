@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
 import { getRoles, ROLES } from "@/lib/config/roles";
@@ -272,7 +272,7 @@ export function ManageDropdown({
       id: "unblock-user",
       label: t("actions.unblock-user"),
       hidden: !hasBlocklist(assettype) || !canPerformUserActions,
-      disabled: assetUsersDetails.blocklist.length === 0,
+      disabled: (assetUsersDetails.blocklist?.length ?? 0) === 0,
       form: (
         <UnblockForm
           key="unblock-user"
@@ -302,7 +302,7 @@ export function ManageDropdown({
       id: "disallow-user",
       label: t("actions.disallow-user"),
       hidden: !hasAllowlist(assettype) || !canPerformUserActions,
-      disabled: assetUsersDetails.allowlist.length === 1,
+      disabled: (assetUsersDetails.allowlist?.length ?? 0) === 1,
       form: (
         <DisallowForm
           key="disallow-user"
