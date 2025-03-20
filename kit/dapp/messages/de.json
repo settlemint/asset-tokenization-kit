@@ -17,7 +17,8 @@
         "cryptocurrencies": "Kryptowährungen",
         "equities": "Aktien",
         "funds": "Fonds",
-        "stablecoins": "Stablecoins"
+        "stablecoins": "Stablecoins",
+        "tokenizeddeposit": "Tokenisierte Einlagen"
       }
     },
     "dashboard": {

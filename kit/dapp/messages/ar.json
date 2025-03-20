@@ -17,7 +17,8 @@
         "cryptocurrencies": "العملات المشفرة",
         "equities": "الأسهم",
         "funds": "الصناديق",
-        "stablecoins": "العملات المستقرة"
+        "stablecoins": "العملات المستقرة",
+        "tokenizeddeposit": "الودائع المرمزة"
       }
     },
     "dashboard": {
