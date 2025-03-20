@@ -25,6 +25,7 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
           name="collateralLivenessSeconds"
           label={t("parameters.common.collateral-proof-validity-label")}
           postfix={t("parameters.common.seconds-unit-label")}
+          min={1}
           required
         />
         <FormInput
