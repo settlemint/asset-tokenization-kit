@@ -1,12 +1,11 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
-import { FormLabel } from "@/components/ui/form";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { timeUnits } from "@/lib/utils/zod";
 import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 interface ConfigurationProps {
   baseCurrency: CurrencyCode;
@@ -15,10 +14,16 @@ interface ConfigurationProps {
 export function Configuration({ baseCurrency }: ConfigurationProps) {
   const { control } = useFormContext<CreateStablecoinInput>();
   const t = useTranslations("private.assets.create");
-
+  const collateralLivenessValue = useWatch({
+    control,
+    name: "collateralLivenessValue",
+  });
   const timeUnitOptions = timeUnits.map((value) => ({
     value,
-    label: t(`parameters.common.time-units.${value}`, { fallback: value }),
+    label:
+      Number(collateralLivenessValue) === 1
+        ? t(`parameters.common.time-units.singular.${value}`)
+        : t(`parameters.common.time-units.plural.${value}`),
   }));
 
   return (
@@ -27,27 +32,22 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
       description={t("configuration.stablecoins.description")}
     >
       <div className="grid grid-cols-2 gap-6">
-        <div>
-          <FormLabel>
-            {t("parameters.common.collateral-proof-validity-label")}
-          </FormLabel>
-          <div className="pt-3 grid grid-cols-2">
-            <FormInput
-              control={control}
-              type="number"
-              name="collateralLivenessValue"
-              required
-              className="rounded-r-none border-r-0 focus:border-r focus:ring-0"
-            />
+        <FormInput
+          control={control}
+          type="number"
+          name="collateralLivenessValue"
+          required
+          label={t("parameters.common.collateral-proof-validity-label")}
+          postfix={
             <FormSelect
               name="collateralLivenessTimeUnit"
               control={control}
               options={timeUnitOptions}
               defaultValue="months"
-              className="rounded-l-none border-l-0 focus:border-l focus:ring-0"
+              className="border-l-0 rounded-l-none w-26"
             />
-          </div>
-        </div>
+          }
+        />
         <FormInput
           control={control}
           name="valueInBaseCurrency"

@@ -882,16 +882,20 @@
             "symbol-label": "Symbol",
             "value-in-base-currency-label": "Value in {baseCurrency}",
             "time-units": {
-              "second": "second",
-              "seconds": "seconds",
-              "hour": "hour",
-              "hours": "hours",
-              "day": "day",
-              "days": "days",
-              "week": "week",
-              "weeks": "weeks",
-              "month": "month",
-              "months": "months"
+              "singular": {
+                "seconds": "second",
+                "hours": "hour",
+                "days": "day",
+                "weeks": "week",
+                "months": "month"
+              },
+              "plural": {
+                "seconds": "seconds",
+                "hours": "hours",
+                "days": "days",
+                "weeks": "weeks",
+                "months": "months"
+              }
             }
           },
           "cryptocurrencies": {

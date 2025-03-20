@@ -111,7 +111,7 @@ export function FormInput<T extends FieldValues>({
                   className={cn(
                     className,
                     postfix &&
-                      "-me-px rounded-e-none shadow-none focus:mr-[1px]"
+                      "-mr-px rounded-r-none shadow-none focus:mr-[1px]"
                   )}
                   type={props.type}
                   value={props.defaultValue ? undefined : (field.value ?? "")}
@@ -154,11 +154,7 @@ export function FormInput<T extends FieldValues>({
                   )}
                   disabled={disabled}
                 />
-                {postfix && (
-                  <span className="inline-flex items-center rounded-e-lg border border-input bg-background px-3 text-muted-foreground text-sm">
-                    {postfix}
-                  </span>
-                )}
+                {postfix && <span>{postfix}</span>}
               </div>
             </FormControl>
             {description && (

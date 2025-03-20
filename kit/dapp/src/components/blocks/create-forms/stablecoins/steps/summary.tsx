@@ -49,8 +49,16 @@ export function Summary() {
         <FormSummaryDetailItem
           label={t("parameters.common.collateral-proof-validity-label")}
           value={
-            values.collateralLivenessTimeUnit
-              ? `${values.collateralLivenessValue} ${t(`parameters.common.time-units.${values.collateralLivenessTimeUnit}`)}`
+            values.collateralLivenessValue && values.collateralLivenessTimeUnit
+              ? `${values.collateralLivenessValue} ${
+                  Number(values.collateralLivenessValue) === 1
+                    ? t(
+                        `parameters.common.time-units.singular.${values.collateralLivenessTimeUnit}`
+                      )
+                    : t(
+                        `parameters.common.time-units.plural.${values.collateralLivenessTimeUnit}`
+                      )
+                }`
               : "-"
           }
         />
