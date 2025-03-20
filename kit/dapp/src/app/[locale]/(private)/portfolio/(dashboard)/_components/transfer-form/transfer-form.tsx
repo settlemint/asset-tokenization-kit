@@ -24,6 +24,16 @@ export function MyAssetsTransferForm() {
   const [open, setOpen] = useState(false);
   const { address: userAddress } = useAccount();
   
+  const getUserBalance = () => {
+    if (!selectedAsset?.holders || !userAddress) return "0";
+    
+    const userHolder = selectedAsset.holders.find(
+      (holder) => holder.account.id.toLowerCase() === userAddress.toLowerCase()
+    );
+    
+    return userHolder?.value.toString() ?? "0";
+  };
+  
   return (
     <>
       {selectedAsset ? (
@@ -52,15 +62,7 @@ export function MyAssetsTransferForm() {
           >
             <Recipients />
             <Amount
-              balance={
-                selectedAsset?.holders
-                  .find(
-                    (holder: { account: { id: string } }) =>
-                      // Compare with the current user's wallet address instead of the asset ID
-                      holder.account.id.toLowerCase() === userAddress?.toLowerCase()
-                  )
-                  ?.value.toString() ?? "0"
-              }
+              balance={getUserBalance()}
             />
             <Summary
               address={selectedAsset?.id}
