@@ -126,7 +126,7 @@ export function FormAssets<T extends FieldValues>({
 }
 
 // Define the FormUsersList first, then the memoized components
-function FormUsersList({
+function FormAssetsList({
   onValueChange,
   setOpen,
   value,
@@ -243,4 +243,4 @@ function FormUsersList({
 }
 
 // Memoize the entire FormUsersList component
-const MemoizedFormUsersList = memo(FormUsersList);
+const MemoizedFormUsersList = memo(FormAssetsList);
