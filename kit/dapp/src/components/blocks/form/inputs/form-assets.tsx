@@ -100,7 +100,7 @@ export function FormAssets<T extends FieldValues>({
                     placeholder={t("search-placeholder")}
                     className="h-9"
                   />
-                  <MemoizedFormUsersList
+                  <MemoizedFormAssetsList
                     onValueChange={field.onChange}
                     setOpen={setOpen}
                     value={field.value}
@@ -243,4 +243,4 @@ function FormAssetsList({
 }
 
 // Memoize the entire FormUsersList component
-const MemoizedFormUsersList = memo(FormAssetsList);
+const MemoizedFormAssetsList = memo(FormAssetsList);
