@@ -6,6 +6,7 @@ import {
   equityData,
   fundData,
   stablecoinData,
+  tokenizedDepositData,
 } from "../test-data/asset-data";
 import { assetMessage } from "../test-data/success-msg-data";
 import { adminUser } from "../test-data/user-data";
@@ -99,6 +100,17 @@ test.describe("Create assets", () => {
         sidebarAssetTypes: fundData.sidebarAssetTypes,
         name: fundData.name,
         totalSupply: fundData.initialSupply,
+      });
+    });
+    test("Create Tokenized Deposit asset", async () => {
+      await adminPages.adminPage.createTokenizedDeposit(tokenizedDepositData);
+      await adminPages.adminPage.verifySuccessMessage(
+        assetMessage.successMessage
+      );
+      await adminPages.adminPage.checkIfAssetExists({
+        sidebarAssetTypes: tokenizedDepositData.sidebarAssetTypes,
+        name: tokenizedDepositData.name,
+        totalSupply: tokenizedDepositData.initialSupply,
       });
     });
   });
