@@ -5,6 +5,7 @@ import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import { getBondStatus } from "@/lib/utils/bond-status";
 import { formatNumber } from "@/lib/utils/number";
 import { format } from "date-fns";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -84,11 +85,7 @@ export async function BondsDetails({ address, showBalance = false, userAddress }
           {bond.isMatured ? bond.redeemedAmount : t("not-available")}
         </DetailGridItem>
         <DetailGridItem label={t("maturity-status")}>
-          {bond.isMatured
-            ? t("matured")
-            : bond.totalSupply < bond.cap
-              ? t("issuing")
-              : t("active")}
+          {t(getBondStatus(bond))}
         </DetailGridItem>
         <DetailGridItem label={t("maturity-date")}>
           {bond.maturityDate
@@ -107,9 +104,15 @@ export async function BondsDetails({ address, showBalance = false, userAddress }
             copyToClipboard={true}
           />
         </DetailGridItem>
-        <DetailGridItem label={t("underlying-asset-balance")}>
-          {bond.underlyingBalance}
-        </DetailGridItem>
+        {bond.yieldSchedule && (
+          <DetailGridItem label={t("underlying-asset-balance")}>
+          {formatNumber(bond.underlyingBalance, {
+            token: bond.yieldSchedule.underlyingAsset.symbol,
+            decimals: bond.yieldSchedule.underlyingAsset.decimals,
+            locale: locale,
+            })}
+          </DetailGridItem>
+        )}
         <DetailGridItem label={t("redemption-readiness")}>
           {/* Calculate percentage: (part/total) * 100
               Since we're using bigInt which doesn't support decimal division,

@@ -40,6 +40,11 @@ export const BondFragment = theGraphGraphqlKit(`
       totalClaimedExact
       unclaimedYield
       unclaimedYieldExact
+      underlyingAsset {
+        id
+        symbol
+        decimals
+      }
       underlyingBalance
       underlyingBalanceExact
       periods {
@@ -99,6 +104,11 @@ export const BondFragmentSchema = z.object({
     totalClaimedExact: z.bigInt(),
     unclaimedYield: z.bigDecimal(),
     unclaimedYieldExact: z.bigInt(),
+    underlyingAsset: z.object({
+      id: z.address(),
+      symbol: z.string(),
+      decimals: z.decimals(),
+    }),
     underlyingBalance: z.bigDecimal(),
     underlyingBalanceExact: z.bigInt(),
     periods: z.array(

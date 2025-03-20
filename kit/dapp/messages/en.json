@@ -317,9 +317,25 @@
     },
     "charts": {
       "assets": {
-        "asset-distribution": "Asset Distribution",
+        "asset-distribution": "Asset distribution",
         "asset-distribution-description": "Portfolio allocation by asset type",
         "bond": "Bond",
+        "bond-issuance": "Bond issuance",
+        "bond-redemption-assets": "Redemption assets",
+        "bond-redeemed": "Bond redemption",
+        "bond-status": "Status",
+        "bond-status-progress": "Bond status",
+        "bond-status-description": "Current status of the bond",
+        "bond-issued": "Issued",
+        "bond-pending": "Pending",
+        "bond-redeemable": "Redeemable",
+        "bond-total-underlying-asset-balance": "Total underlying asset balance",
+        "bond-matured": "Matured",
+        "bond-mature-readiness": "Mature Readiness",
+        "bond-mature-readiness-description": "Progress towards maturity readiness",
+        "bond-mature-readiness-status": "Mature Ready",
+        "error-loading-data": "Error loading data",
+        "loading": "Loading...",
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
           "label": "Collateral Ratio",
@@ -364,7 +380,27 @@
         },
         "wallet-distribution": "Wallet distribution",
         "wallet-distribution-description": "Amount of holders vs the amounts they hold",
-        "wallet-distribution-no-data": "No wallet data available"
+        "wallet-distribution-no-data": "No wallet data available",
+        "units-over-time": {
+          "description": "Showing the units in circulation over time",
+          "label": "Units",
+          "no-data": "No data available in this window",
+          "title": "Units over time"
+        },
+        "yield-coverage": {
+          "title": "Yield coverage",
+          "description": "Percentage of yield covered by underlying assets",
+          "no-data": "No data available in this window",
+          "error": "Error loading yield coverage data"
+        },
+        "yield-distribution": {
+          "title": "Yield distribution",
+          "description": "Showing yield distribution over time",
+          "total-yield-label": "Total yield",
+          "claimed-label": "Claimed",
+          "no-data": "No yield distribution data available",
+          "error": "Error loading yield distribution data"
+        }
       }
     },
     "data-table": {

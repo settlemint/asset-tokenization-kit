@@ -1,4 +1,8 @@
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
+import { BondStatusProgress } from "@/components/blocks/charts/assets/bond/bond-status-progress";
+import { BondUnitsOverTime } from "@/components/blocks/charts/assets/bond/bond-units-over-time";
+import { BondYieldCoverage } from "@/components/blocks/charts/assets/bond/bond-yield-coverage";
+import { BondYieldDistribution } from "@/components/blocks/charts/assets/bond/bond-yield-distribution";
 import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
 import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
 import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supply-changed";
@@ -42,6 +46,14 @@ export default async function AssetDetailsPage({ params }: PageProps) {
       <ChartGrid title={t("asset-statistics-title")}>
         {["stablecoin", "tokenizeddeposit"].includes(assettype) && (
           <CollateralRatio address={address} assettype={assettype} />
+        )}
+        {assettype === "bond" && (
+          <>
+            <BondStatusProgress address={address} />
+            <BondUnitsOverTime address={address} />
+            <BondYieldCoverage address={address} />
+            <BondYieldDistribution address={address} />
+          </>
         )}
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />
