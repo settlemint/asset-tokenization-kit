@@ -1,9 +1,11 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { CreateTokenizedDepositInput } from "@/lib/mutations/tokenized-deposit/create/create-schema";
+import { timeUnits } from "@/lib/utils/zod";
 import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 interface ConfigurationProps {
   baseCurrency: CurrencyCode;
@@ -12,6 +14,17 @@ interface ConfigurationProps {
 export function Configuration({ baseCurrency }: ConfigurationProps) {
   const { control } = useFormContext<CreateTokenizedDepositInput>();
   const t = useTranslations("private.assets.create");
+  const collateralLivenessValue = useWatch({
+    control,
+    name: "collateralLivenessValue",
+  });
+  const timeUnitOptions = timeUnits.map((value) => ({
+    value,
+    label:
+      Number(collateralLivenessValue) === 1
+        ? t(`parameters.common.time-units.singular.${value}`)
+        : t(`parameters.common.time-units.plural.${value}`),
+  }));
 
   return (
     <FormStep
@@ -22,11 +35,18 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
         <FormInput
           control={control}
           type="number"
-          name="collateralLivenessSeconds"
-          label={t("parameters.common.collateral-proof-validity-label")}
-          postfix={t("parameters.common.seconds-unit-label")}
-          min={1}
+          name="collateralLivenessValue"
           required
+          label={t("parameters.common.collateral-proof-validity-label")}
+          postfix={
+            <FormSelect
+              name="collateralLivenessTimeUnit"
+              control={control}
+              options={timeUnitOptions}
+              defaultValue="months"
+              className="border-l-0 rounded-l-none w-26"
+            />
+          }
         />
         <FormInput
           control={control}
@@ -44,4 +64,7 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
   );
 }
 
-Configuration.validatedFields = ["collateralLivenessSeconds"] as const;
+Configuration.validatedFields = [
+  "collateralLivenessValue",
+  "collateralLivenessTimeUnit",
+] as const;

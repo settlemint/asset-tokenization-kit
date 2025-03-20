@@ -4,6 +4,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { TOKENIZED_DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { z } from "@/lib/utils/zod";
 import { action } from "../../safe-action";
 import { CreateTokenizedDepositSchema } from "./create-schema";
@@ -50,7 +51,8 @@ export const createTokenizedDeposit = action
         assetName,
         symbol,
         decimals,
-        collateralLivenessSeconds,
+        collateralLivenessValue,
+        collateralLivenessTimeUnit,
         pincode,
         isin,
         predictedAddress,
@@ -63,6 +65,10 @@ export const createTokenizedDeposit = action
         isin,
         value_in_base_currency: String(valueInBaseCurrency),
       });
+
+      const collateralLivenessSeconds =
+        collateralLivenessValue *
+        getTimeUnitSeconds(collateralLivenessTimeUnit);
 
       const data = await portalClient.request(TokenizedDepositFactoryCreate, {
         address: TOKENIZED_DEPOSIT_FACTORY_ADDRESS,

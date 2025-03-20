@@ -1,3 +1,4 @@
+import type { TimeUnit } from "@/lib/utils/zod";
 import {
   formatDistance,
   formatDuration as formatDurationFns,
@@ -162,4 +163,19 @@ export function getDateFromTimestamp(timestamp: string | number | Date): Date {
 
   // Unix seconds (10 digits or less)
   return new Date(numericTimestamp * 1000);
+}
+
+export function getTimeUnitSeconds(unit: TimeUnit): number {
+  switch (unit) {
+    case "seconds":
+      return 1;
+    case "hours":
+      return 3600;
+    case "days":
+      return 86400;
+    case "weeks":
+      return 604800;
+    case "months":
+      return 2592000; // 30 days
+  }
 }

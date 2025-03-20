@@ -16,10 +16,11 @@ export const CreateTokenizedDepositSchema = z.object({
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
-  collateralLivenessSeconds: z
+  collateralLivenessValue: z
     .number()
     .or(z.string())
-    .pipe(z.coerce.number().min(0)),
+    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
+  collateralLivenessTimeUnit: z.timeUnit().default("months"),
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "tokenized-deposit.duplicate",
   }),

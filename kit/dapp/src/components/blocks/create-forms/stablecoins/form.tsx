@@ -48,7 +48,8 @@ export function CreateStablecoinForm({
           label: t("trigger-label.stablecoins"),
         }}
         defaultValues={{
-          collateralLivenessSeconds: 3600 * 24 * 365,
+          collateralLivenessValue: 12,
+          collateralLivenessTimeUnit: "months",
           valueInBaseCurrency: 1,
         }}
         onAnyFieldChange={({ clearErrors }) => {
