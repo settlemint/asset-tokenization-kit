@@ -1,4 +1,5 @@
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
+import { BondMatureReadiness } from "@/components/blocks/charts/assets/bond/bond-mature-readiness";
 import { BondStatusProgress } from "@/components/blocks/charts/assets/bond/bond-status-progress";
 import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
 import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
@@ -45,7 +46,10 @@ export default async function AssetDetailsPage({ params }: PageProps) {
           <CollateralRatio address={address} assettype={assettype} />
         )}
         {assettype === "bond" && (
-          <BondStatusProgress address={address} />
+          <>
+            <BondStatusProgress address={address} />
+            <BondMatureReadiness address={address} />
+          </>
         )}
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />

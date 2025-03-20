@@ -331,6 +331,9 @@
         "bond-redeemable": "Redeemable",
         "bond-total-underlying-asset-balance": "Total underlying asset balance",
         "bond-matured": "Matured",
+        "bond-mature-readiness": "Mature Readiness",
+        "bond-mature-readiness-description": "Progress towards maturity readiness",
+        "bond-mature-readiness-status": "Mature Ready",
         "error-loading-data": "Error loading data",
         "loading": "Loading...",
         "collateral-ratio": {
