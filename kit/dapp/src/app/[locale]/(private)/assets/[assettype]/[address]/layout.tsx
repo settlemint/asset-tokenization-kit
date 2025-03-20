@@ -33,7 +33,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
     namespace: "private.assets.details",
   });
 
-  const [details, balances, events, assetUsers] = await Promise.all([
+  const [details, balances, events] = await Promise.all([
     getAssetDetail({ address, assettype }),
     getAssetBalanceList({ wallet: address }),
     getAssetEventsList({ asset: address }),
