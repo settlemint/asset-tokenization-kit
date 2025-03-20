@@ -50,7 +50,7 @@
     "framer-motion": "12.5.0"
   },
   "devDependencies": {
-    "@settlemint/sdk-cli": "1.2.2",
+    "@settlemint/sdk-cli": "1.2.3",
     "@types/rtl-detect": "1.0.3",
     "prettier": "3.5.3",
     "turbo": "2.4.4",
