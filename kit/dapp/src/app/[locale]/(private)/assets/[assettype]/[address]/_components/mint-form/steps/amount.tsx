@@ -24,6 +24,7 @@ export function Amount({ maxLimit }: AmountProps) {
         type="number"
         min={1}
         max={maxLimit}
+        step={0.000001}
         description={maxLimitDescription}
         required
       />
