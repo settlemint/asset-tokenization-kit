@@ -19,12 +19,23 @@ export const CreateTokenizedDepositSchema = z.object({
   collateralLivenessValue: z
     .number()
     .or(z.string())
-    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
+    .pipe(
+      z.coerce
+        .number()
+        .min(1, { message: "Must be at least 1" })
+        .max(1000000000, { message: "Value too large, maximum is 1,000,000,000" })
+    ),
   collateralLivenessTimeUnit: z.timeUnit().default("months"),
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "tokenized-deposit.duplicate",
   }),
-  valueInBaseCurrency: z.fiatCurrencyAmount(),
+  valueInBaseCurrency: z
+    .fiatCurrencyAmount()
+    .pipe(
+      z.coerce
+        .number()
+        .max(1000000000, { message: "Value too large, maximum is 1,000,000,000" })
+    ),
 });
 
 export type CreateTokenizedDepositInput = ZodInfer<

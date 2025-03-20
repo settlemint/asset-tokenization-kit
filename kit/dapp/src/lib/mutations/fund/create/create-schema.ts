@@ -51,7 +51,13 @@ export const CreateFundSchema = z.object({
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "fund.duplicate",
   }),
-  valueInBaseCurrency: z.fiatCurrencyAmount(),
+  valueInBaseCurrency: z
+    .fiatCurrencyAmount()
+    .pipe(
+      z.coerce
+        .number()
+        .max(1000000000, { message: "Value too large, maximum is 1,000,000,000" })
+    ),
 });
 
 export type CreateFundInput = ZodInfer<typeof CreateFundSchema>;

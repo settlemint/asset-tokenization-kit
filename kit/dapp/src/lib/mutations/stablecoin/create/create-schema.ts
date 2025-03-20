@@ -20,13 +20,24 @@ export const CreateStablecoinSchema = z.object({
   collateralLivenessValue: z
     .number()
     .or(z.string())
-    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
+    .pipe(
+      z.coerce
+        .number()
+        .min(1, { message: "Must be at least 1" })
+        .max(1000000000, { message: "Value too large, maximum is 1,000,000,000" })
+    ),
   collateralLivenessTimeUnit: z.timeUnit().default("months"),
   pincode: z.pincode(),
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "stablecoin.duplicate",
   }),
-  valueInBaseCurrency: z.fiatCurrencyAmount(),
+  valueInBaseCurrency: z
+    .fiatCurrencyAmount()
+    .pipe(
+      z.coerce
+        .number()
+        .max(1000000000, { message: "Value too large, maximum is 1,000,000,000" })
+    ),
 });
 
 export type CreateStablecoinInput = ZodInfer<typeof CreateStablecoinSchema>;

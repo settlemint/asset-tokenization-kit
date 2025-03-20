@@ -23,7 +23,13 @@ export const CreateEquitySchema = z.object({
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "equity.duplicate",
   }),
-  valueInBaseCurrency: z.fiatCurrencyAmount(),
+  valueInBaseCurrency: z
+    .fiatCurrencyAmount()
+    .pipe(
+      z.coerce
+        .number()
+        .max(1000000000, { message: "Value too large, maximum is 1,000,000,000" })
+    ),
 });
 
 export type CreateEquityInput = ZodInfer<typeof CreateEquitySchema>;
