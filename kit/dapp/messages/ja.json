@@ -17,7 +17,8 @@
         "cryptocurrencies": "暗号通貨",
         "equities": "株式",
         "funds": "ファンド",
-        "stablecoins": "ステーブルコイン"
+        "stablecoins": "ステーブルコイン",
+        "tokenizeddeposit": "トークン化された預金"
       }
     },
     "dashboard": {

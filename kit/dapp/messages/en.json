@@ -86,7 +86,8 @@
         "cryptocurrencies": "Cryptocurrencies",
         "equities": "Equities",
         "funds": "Funds",
-        "stablecoins": "Stablecoins"
+        "stablecoins": "Stablecoins",
+        "tokenizeddeposit": "Tokenized Deposits"
       }
     },
     "dashboard": {
