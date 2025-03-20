@@ -35,3 +35,5 @@ export function Amount({ balance }: AmountProps) {
     </FormStep>
   );
 }
+
+Amount.validatedFields = ["value"] as const;

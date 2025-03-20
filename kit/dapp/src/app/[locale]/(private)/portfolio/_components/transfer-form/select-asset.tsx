@@ -30,17 +30,18 @@ export function SelectAsset({ onSelect }: SelectAssetProps) {
 
   return (
     <Form {...form}>
-      <FormAssets
-        control={form.control}
-        name="asset"
-        label={t("asset-label")}
-        description={t("asset-description")}
-      />
-
-      <div className="mt-6 text-right">
-        <Button disabled={!isValid} onClick={handleConfirm}>
-          Confirm
-        </Button>
+      <div className="mx-4">
+        <FormAssets
+          control={form.control}
+          name="asset"
+          label={t("asset-label")}
+          description={t("asset-description")}
+        />
+        <div className="mt-6 text-right">
+          <Button disabled={!isValid} onClick={handleConfirm}>
+            Confirm
+          </Button>
+        </div>
       </div>
     </Form>
   );

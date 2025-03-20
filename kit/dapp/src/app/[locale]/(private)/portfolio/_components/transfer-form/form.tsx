@@ -49,12 +49,23 @@ export function TransferForm({
     selectedAsset?.holders?.find((h) => h.account.id === userAddress)?.value ??
     0;
 
+  const handleSheetOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      // Reset selectedAsset when sheet closes
+      setSelectedAsset(null);
+    }
+
+    if (isExternallyControlled) {
+      onOpenChange?.(isOpen);
+    } else {
+      setInternalOpenState(isOpen);
+    }
+  };
+
   return (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
-      onOpenChange={
-        isExternallyControlled ? onOpenChange : setInternalOpenState
-      }
+      onOpenChange={handleSheetOpenChange}
       triggerLabel={
         isExternallyControlled ? undefined : t("transfer-form.trigger-label")
       }
@@ -69,9 +80,7 @@ export function TransferForm({
         <Form
           action={transfer}
           resolver={zodResolver(TransferSchema)}
-          onOpenChange={
-            isExternallyControlled ? onOpenChange : setInternalOpenState
-          }
+          onOpenChange={handleSheetOpenChange}
           buttonLabels={{
             label: t("transfer-form.button-label"),
           }}
