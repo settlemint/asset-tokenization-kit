@@ -33,7 +33,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
     namespace: "private.assets.details",
   });
 
-  const [details, balances, events] = await Promise.all([
+  const [details, balances, events, assetUsers] = await Promise.all([
     getAssetDetail({ address, assettype }),
     getAssetBalanceList({ wallet: address }),
     getAssetEventsList({ asset: address }),
@@ -61,7 +61,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
     {
       name: t("tabs.events"),
       href: `/assets/${assettype}/${address}/events`,
-      badge: events?.length ?? 0,
+      badge: events.length,
     },
 
     {
@@ -73,6 +73,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
           {
             name: t("tabs.allowlist"),
             href: `/assets/${assettype}/${address}/allowlist`,
+            badge: assetUsers.allowlist.length,
           },
         ]
       : []),
@@ -81,6 +82,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
           {
             name: t("tabs.blocklist"),
             href: `/assets/${assettype}/${address}/blocklist`,
+            badge: assetUsers.blocklist.length,
           },
         ]
       : []),
