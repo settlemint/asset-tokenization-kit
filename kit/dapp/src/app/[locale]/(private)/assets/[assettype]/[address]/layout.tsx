@@ -40,6 +40,8 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
     getAssetUsersDetail({ address }),
   ]);
 
+  const hasCompliance = assettype === "stablecoin";
+
   return [
     {
       name: t("tabs.details"),
@@ -92,6 +94,14 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
             name: t("tabs.underlying-assets"),
             href: `/assets/${assettype}/${address}/underlying-assets`,
             badge: balances.length,
+          },
+        ]
+      : []),
+    ...(hasCompliance
+      ? [
+          {
+            name: t("tabs.compliance"),
+            href: `/assets/${assettype}/${address}/compliance`,
           },
         ]
       : []),

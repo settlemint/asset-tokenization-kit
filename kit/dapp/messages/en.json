@@ -783,12 +783,12 @@
       "asset-types": "{type} {name} ({symbol})",
       "description": "Easily transfer an amount of {name} ({symbol}) by selecting a recipient and specifying the amount.",
       "recipients": {
-        "description": "Enter a wallet address to send tokens directly.",
-        "title": "Select Recipients",
-        "wallet-address-label": "Wallet Address",
         "address-placeholder": "Search for a user",
+        "description": "Enter a wallet address to send tokens directly.",
         "manual-entry-link": "Enter address manually...",
-        "search-user-link": "Search for a user instead..."
+        "search-user-link": "Search for a user instead...",
+        "title": "Select Recipients",
+        "wallet-address-label": "Wallet Address"
       },
       "select-asset": {
         "asset-description": "Select an asset from your portfolio",
@@ -886,23 +886,23 @@
             "name-label": "Name",
             "seconds-unit-label": "seconds",
             "symbol-label": "Symbol",
-            "value-in-base-currency-label": "Value in {baseCurrency}",
             "time-units": {
-              "singular": {
-                "seconds": "second",
-                "hours": "hour",
-                "days": "day",
-                "weeks": "week",
-                "months": "month"
-              },
               "plural": {
-                "seconds": "seconds",
-                "hours": "hours",
                 "days": "days",
-                "weeks": "weeks",
-                "months": "months"
+                "hours": "hours",
+                "months": "months",
+                "seconds": "seconds",
+                "weeks": "weeks"
+              },
+              "singular": {
+                "days": "day",
+                "hours": "hour",
+                "months": "month",
+                "seconds": "second",
+                "weeks": "week"
               }
-            }
+            },
+            "value-in-base-currency-label": "Value in {baseCurrency}"
           },
           "cryptocurrencies": {
             "initial-supply-description": "Initial amount of tokens to be minted",
@@ -1211,6 +1211,7 @@
         "tabs": {
           "allowlist": "Allow list",
           "blocklist": "Block list",
+          "compliance": "Compliance",
           "details": "Details",
           "events": "Events",
           "holders": "Holders",
@@ -1225,6 +1226,7 @@
         "address-header": "Address",
         "allowed-since-header": "Allowed since",
         "assets-under-management-header": "AuM",
+        "balance": "Balance",
         "balance-header": "Balance",
         "blocked-since-header": "Blocked since",
         "category-header": "Category",
@@ -1240,7 +1242,6 @@
         "creator": "Creator",
         "decimals": "Decimals",
         "deployed-on": "Deployed on",
-        "balance": "Balance",
         "edit-roles-form": {
           "trigger-label": "Edit permissions"
         },
