@@ -72,7 +72,7 @@ export function DonutProgressChart({
   return (
     <Card className={cn("overflow-hidden", className)}>
       <CardHeader className="pb-0">
-        <CardTitle className="text-sm">{title}</CardTitle>
+        <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>

@@ -1,6 +1,8 @@
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
-import { BondMatureReadiness } from "@/components/blocks/charts/assets/bond/bond-mature-readiness";
 import { BondStatusProgress } from "@/components/blocks/charts/assets/bond/bond-status-progress";
+import { BondUnitsOverTime } from "@/components/blocks/charts/assets/bond/bond-units-over-time";
+import { BondYieldCoverage } from "@/components/blocks/charts/assets/bond/bond-yield-coverage";
+import { BondYieldDistribution } from "@/components/blocks/charts/assets/bond/bond-yield-distribution";
 import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
 import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
 import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supply-changed";
@@ -48,7 +50,9 @@ export default async function AssetDetailsPage({ params }: PageProps) {
         {assettype === "bond" && (
           <>
             <BondStatusProgress address={address} />
-            <BondMatureReadiness address={address} />
+            <BondUnitsOverTime address={address} />
+            <BondYieldCoverage address={address} />
+            <BondYieldDistribution address={address} />
           </>
         )}
         <TotalSupply address={address} />

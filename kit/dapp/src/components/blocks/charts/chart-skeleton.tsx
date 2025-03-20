@@ -16,6 +16,7 @@ const containerVariants = cva("", {
     variant: {
       loading: "",
       noData: "text-muted-foreground text-sm",
+      error: "text-destructive text-sm",
     },
   },
   defaultVariants: {

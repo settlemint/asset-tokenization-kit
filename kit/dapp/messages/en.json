@@ -380,7 +380,27 @@
         },
         "wallet-distribution": "Wallet distribution",
         "wallet-distribution-description": "Amount of holders vs the amounts they hold",
-        "wallet-distribution-no-data": "No wallet data available"
+        "wallet-distribution-no-data": "No wallet data available",
+        "units-over-time": {
+          "description": "Showing the units in circulation over time",
+          "label": "Units",
+          "no-data": "No data available in this window",
+          "title": "Units over time"
+        },
+        "yield-coverage": {
+          "title": "Yield coverage",
+          "description": "Percentage of yield covered by underlying assets",
+          "no-data": "No data available in this window",
+          "error": "Error loading yield coverage data"
+        },
+        "yield-distribution": {
+          "title": "Yield distribution",
+          "description": "Showing yield distribution over time",
+          "total-yield-label": "Total yield",
+          "claimed-label": "Claimed",
+          "no-data": "No yield distribution data available",
+          "error": "Error loading yield distribution data"
+        }
       }
     },
     "data-table": {
