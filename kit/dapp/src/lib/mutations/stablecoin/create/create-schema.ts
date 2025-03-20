@@ -8,7 +8,8 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {string} symbol - The symbol of the stablecoin (ticker)
  * @property {number} decimals - The number of decimal places for the token
  * @property {string} [isin] - Optional International Securities Identification Number
- * @property {number} collateralLivenessSeconds - Time period for collateral validity
+ * @property {number} collateralLivenessValue - The duration value for collateral validity
+ * @property {string} collateralLivenessTimeUnit - The time unit for collateral validity duration
  * @property {string} pincode - The pincode for signing the transaction
  */
 export const CreateStablecoinSchema = z.object({
@@ -16,10 +17,11 @@ export const CreateStablecoinSchema = z.object({
   symbol: z.symbol(),
   decimals: z.decimals(),
   isin: z.isin().optional(),
-  collateralLivenessSeconds: z
+  collateralLivenessValue: z
     .number()
     .or(z.string())
     .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
+  collateralLivenessTimeUnit: z.timeUnit().default("months"),
   pincode: z.pincode(),
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "stablecoin.duplicate",

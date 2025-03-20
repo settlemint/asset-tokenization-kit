@@ -155,6 +155,16 @@ const assetTypes = [
 
 export type AssetType = (typeof assetTypes)[number];
 
+export const timeUnits = [
+  "seconds",
+  "hours",
+  "days",
+  "weeks",
+  "months",
+] as const;
+
+export type TimeUnit = (typeof timeUnits)[number];
+
 // Create a custom extension of Zod
 // This approach avoids TypeScript errors with namespace merging
 const extendedZod = {
@@ -426,6 +436,13 @@ const extendedZod = {
       .nullish()
       .transform((val) => (val === null || val === undefined ? 0 : val))
       .pipe(z.coerce.number().min(0, { message: "Amount must be positive" })),
+
+  /**
+   * Validates time units for duration inputs
+   *
+   * @returns A Zod schema that validates time units
+   */
+  timeUnit: () => z.enum(timeUnits),
 };
 
 /**

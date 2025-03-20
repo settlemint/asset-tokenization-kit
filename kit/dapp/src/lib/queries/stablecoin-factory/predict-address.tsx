@@ -3,6 +3,7 @@ import { getUser } from "@/lib/auth/utils";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -45,8 +46,17 @@ const PredictedAddressSchema = z.object({
  */
 export const getPredictedAddress = cache(
   async (input: CreateStablecoinInput) => {
-    const { assetName, symbol, decimals, collateralLivenessSeconds } = input;
+    const {
+      assetName,
+      symbol,
+      decimals,
+      collateralLivenessValue,
+      collateralLivenessTimeUnit,
+    } = input;
     const user = await getUser();
+
+    const collateralLivenessSeconds =
+      collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
 
     const data = await portalClient.request(CreateStablecoinPredictAddress, {
       address: STABLE_COIN_FACTORY_ADDRESS,

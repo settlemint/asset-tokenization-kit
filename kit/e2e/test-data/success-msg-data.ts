@@ -1,3 +1,3 @@
 export const assetMessage = {
-  successMessage: "Transaction successfully processed",
+  successMessage: "Success",
 };
