@@ -12,6 +12,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { SelectAsset } from "./select-asset";
+import { useAccount } from "wagmi";
+
 type Asset = UserAsset["asset"] & {
   holders: { value: number; account: { id: string } }[];
 };
@@ -20,6 +22,8 @@ export function MyAssetsTransferForm() {
   const t = useTranslations("portfolio.transfer-form");
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [open, setOpen] = useState(false);
+  const { address: userAddress } = useAccount();
+  
   return (
     <>
       {selectedAsset ? (
@@ -52,7 +56,8 @@ export function MyAssetsTransferForm() {
                 selectedAsset?.holders
                   .find(
                     (holder: { account: { id: string } }) =>
-                      holder.account.id === selectedAsset?.id
+                      // Compare with the current user's wallet address instead of the asset ID
+                      holder.account.id.toLowerCase() === userAddress?.toLowerCase()
                   )
                   ?.value.toString() ?? "0"
               }
