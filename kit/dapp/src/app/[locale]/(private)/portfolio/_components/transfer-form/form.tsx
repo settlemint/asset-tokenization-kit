@@ -4,23 +4,26 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { transfer } from "@/lib/mutations/transfer/transfer-action";
 import { TransferSchema } from "@/lib/mutations/transfer/transfer-schema";
+import type { AssetUsers } from "@/lib/queries/asset/asset-users-fragment";
 import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
+import { SelectAsset } from "./select-asset";
 import { Amount } from "./steps/amount";
 import { Recipients } from "./steps/recipients";
 import { Summary } from "./steps/summary";
 
 interface TransferFormProps {
-  address: Address;
-  assettype: AssetType;
-  balance: number;
+  address?: Address;
+  assettype?: AssetType;
+  balance?: number;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   disabled?: boolean;
+  userAddress: Address;
 }
 
 export function TransferForm({
@@ -31,11 +34,20 @@ export function TransferForm({
   open,
   onOpenChange,
   disabled = false,
+  userAddress,
 }: TransferFormProps) {
   const t = useTranslations("portfolio.my-assets.bond");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<AssetUsers | null>(null);
+
+  const assetAddress = address ?? selectedAsset?.id;
+  const assetType = assettype ?? selectedAsset?.type;
+  const userBalance =
+    balance ??
+    selectedAsset?.holders?.find((h) => h.account.id === userAddress)?.value ??
+    0;
 
   return (
     <FormSheet
@@ -51,24 +63,28 @@ export function TransferForm({
       asButton={asButton}
       disabled={disabled}
     >
-      <Form
-        action={transfer}
-        resolver={zodResolver(TransferSchema)}
-        onOpenChange={
-          isExternallyControlled ? onOpenChange : setInternalOpenState
-        }
-        buttonLabels={{
-          label: t("transfer-form.button-label"),
-        }}
-        defaultValues={{
-          address,
-          assettype,
-        }}
-      >
-        <Amount balance={balance} />
-        <Recipients />
-        <Summary address={address} />
-      </Form>
+      {!address && !selectedAsset ? (
+        <SelectAsset onSelect={setSelectedAsset} />
+      ) : (
+        <Form
+          action={transfer}
+          resolver={zodResolver(TransferSchema)}
+          onOpenChange={
+            isExternallyControlled ? onOpenChange : setInternalOpenState
+          }
+          buttonLabels={{
+            label: t("transfer-form.button-label"),
+          }}
+          defaultValues={{
+            address: assetAddress,
+            assettype: assetType,
+          }}
+        >
+          <Amount balance={Number(userBalance)} />
+          <Recipients />
+          <Summary address={assetAddress!} />
+        </Form>
+      )}
     </FormSheet>
   );
 }

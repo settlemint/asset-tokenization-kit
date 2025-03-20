@@ -19,8 +19,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDebounce } from "@/hooks/use-debounce";
-import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
+import type { AssetUsers } from "@/lib/queries/asset/asset-users-fragment";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -38,13 +38,9 @@ import {
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
     /** The default selected value */
-    defaultValue?: string;
-    onSelect?: (asset: Asset) => void;
+    defaultValue?: AssetUsers;
+    onSelect?: (asset: AssetUsers) => void;
   };
-
-type Asset = UserAsset["asset"] & {
-  holders: { value: number; account: { id: string } }[];
-};
 
 export function FormAssets<T extends FieldValues>({
   label,
@@ -91,7 +87,7 @@ export function FormAssets<T extends FieldValues>({
                   )}
                 >
                   {field.value ? (
-                    <EvmAddress address={field.value as Address} />
+                    <EvmAddress address={field.value.id} />
                   ) : (
                     placeholder || defaultPlaceholder
                   )}
@@ -108,7 +104,7 @@ export function FormAssets<T extends FieldValues>({
                     onValueChange={field.onChange}
                     setOpen={setOpen}
                     value={field.value}
-                    onSelect={(asset) => onSelect?.(asset as unknown as Asset)}
+                    onSelect={(asset) => onSelect?.(asset)}
                   />
                 </Command>
               </PopoverContent>
@@ -136,16 +132,14 @@ function FormUsersList({
   value,
   onSelect,
 }: {
-  onValueChange: (value: string) => void;
+  value?: AssetUsers;
+  onValueChange: (value: AssetUsers) => void;
+  onSelect: (asset: AssetUsers) => void;
   setOpen: (open: boolean) => void;
-  value: string;
-  onSelect: (asset: UserAsset) => void;
 }) {
   const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
-  const [assets, setAssets] = useState<
-    Awaited<ReturnType<typeof getAssetSearch>>
-  >([]);
+  const [assets, setAssets] = useState<AssetUsers[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations("components.form.assets");
 
@@ -185,11 +179,11 @@ function FormUsersList({
 
   // Memoize the handler to prevent recreating it on every render
   const handleSelect = useCallback(
-    (currentValue: string, asset: UserAsset) => {
+    (_currentValue: string, asset: AssetUsers) => {
       if (onSelect) {
         onSelect(asset);
       }
-      onValueChange(currentValue);
+      onValueChange(asset);
       setOpen(false);
     },
     [onValueChange, setOpen, onSelect]
@@ -202,24 +196,24 @@ function FormUsersList({
       value,
       onSelect,
     }: {
-      asset: { id: Address };
-      value: string;
-      onSelect: (currentValue: string) => void;
-    }) => (
-      <CommandItem
-        key={asset.id}
-        value={asset.id}
-        onSelect={(currentValue) => onSelect(currentValue)}
-      >
-        <EvmAddress address={asset.id} hoverCard={false} />
-        <Check
-          className={cn(
-            "ml-auto",
-            value === asset.id ? "opacity-100" : "opacity-0"
-          )}
-        />
-      </CommandItem>
-    )
+      asset: AssetUsers;
+      value?: AssetUsers;
+      onSelect: (currentValue: Address) => void;
+    }) => {
+      const isSelected = value?.id === asset.id;
+
+      return (
+        <CommandItem
+          key={asset.id}
+          onSelect={(currentValue) => onSelect(currentValue as Address)}
+        >
+          <EvmAddress address={asset.id} hoverCard={false} />
+          <Check
+            className={cn("ml-auto", isSelected ? "opacity-100" : "opacity-0")}
+          />
+        </CommandItem>
+      );
+    }
   );
 
   AssetItem.displayName = "AssetItem";
@@ -232,9 +226,7 @@ function FormUsersList({
           key={asset.id}
           asset={asset}
           value={value}
-          onSelect={(currentValue) =>
-            handleSelect(currentValue, asset as unknown as UserAsset)
-          }
+          onSelect={(currentValue) => handleSelect(currentValue, asset)}
         />
       )),
     [assets, value, handleSelect, AssetItem]
