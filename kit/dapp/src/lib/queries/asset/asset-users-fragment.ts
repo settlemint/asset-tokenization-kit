@@ -92,12 +92,6 @@ export const AssetUsersFragment = theGraphGraphqlKit(
     userManagers {
       ...PermissionFragment
     }
-    blocklist {
-      ...BlockedUserFragment
-    }
-    allowlist {
-      ...AllowedUserFragment
-    }
     holders {
       id
       value
@@ -132,8 +126,6 @@ export const AssetUsersFragmentSchema = z.object({
       }),
     })
   ),
-  allowlist: z.array(AllowedUserFragmentSchema),
-  blocklist: z.array(BlockedUserFragmentSchema),
 });
 
 /**
