@@ -390,7 +390,8 @@
         "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
         "max-value": "Der Wert darf nicht höher sein als {max}",
         "min-value": "Der Wert darf nicht niedriger sein als {min}",
-        "valid-number": "Bitte geben Sie eine gültige Zahl ein"
+        "valid-number": "Bitte geben Sie eine gültige Zahl ein",
+        "positive-number-required": "Bitte geben Sie eine positive Zahl ein"
       },
       "pincode-dialog": {
         "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Verifizierung und Autorisierung ein.",

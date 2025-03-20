@@ -449,7 +449,8 @@
         "max-value": "Value cannot be higher than {max}",
         "min-value": "Value cannot be lower than {min}",
         "valid-email": "Please enter a valid email address",
-        "valid-number": "Please enter a valid number"
+        "valid-number": "Please enter a valid number",
+        "positive-number-required": "Please enter a positive number"
       },
       "pincode-dialog": {
         "description": "To sign the transaction, please enter your pincode for verification and authorization.",

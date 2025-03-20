@@ -150,7 +150,14 @@ export function FormInput<T extends FieldValues>({
                         return;
                       }
 
-                      if (value.startsWith("-")) {
+                      if (value.startsWith("-") && (props.min === undefined || props.min >= 0)) {
+                        field.onChange("");
+                        // Set a custom error message for negative values
+                        form.setError(field.name, {
+                          type: "manual",
+                          message: t("positive-number-required")
+                        });
+                        await form.trigger(field.name);
                         return;
                       }
 

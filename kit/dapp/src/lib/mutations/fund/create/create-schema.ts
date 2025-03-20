@@ -27,8 +27,8 @@ export const CreateFundSchema = z.object({
     .pipe(
       z.coerce
         .number()
-        .min(0)
-        .max(100 * 100) // 100 bps = 1%,
+        .min(0, { message: "Management fee must be a positive number" })
+        .max(100 * 100, { message: "Management fee cannot exceed 100%" }) // 100 bps = 1%,
         .refine(
           (val) => {
             // Check if the value is a valid positive number that doesn't start with 0

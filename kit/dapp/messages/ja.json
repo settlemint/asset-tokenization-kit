@@ -390,7 +390,8 @@
         "valid-email": "有効なメールアドレスを入力してください",
         "max-value": "値は {max} より大きくすることはできません",
         "min-value": "値は {min} より小さくすることはできません",
-        "valid-number": "有効な数値を入力してください"
+        "valid-number": "有効な数値を入力してください",
+        "positive-number-required": "正の数値を入力してください"
       },
       "pincode-dialog": {
         "description": "トランザクションに署名するには、確認と承認のためにピンコードを入力してください。",
