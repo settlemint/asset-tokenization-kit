@@ -57,7 +57,6 @@ export function MyAssetsTransferForm() {
                 selectedAsset?.holders
                   .find(
                     (holder: { account: { id: string } }) =>
-                      // Compare with the current user's wallet address instead of the asset ID
                       holder.account.id.toLowerCase() === userAddress?.toLowerCase()
                   )
                   ?.value.toString() ?? "0"
