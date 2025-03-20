@@ -170,6 +170,19 @@ const fundAssetClasses = ["Equity", "Fixed Income", "Multi-Asset", "Global"];
 
 const stableCurrencies = ["Dollar", "Euro", "Pound", "Yen", "Franc"];
 
+const tokenizedDepositCurrencies = [
+  "Dollar",
+  "Euro",
+  "Pound",
+  "Yen",
+  "Franc",
+  "Swiss Franc",
+  "Yuan",
+  "Rupee",
+  "Real",
+  "Peso",
+];
+
 const getUniqueId = (): string => {
   sequenceCounter++;
   return `${sequenceCounter}-${getRandomString(3)}-${getRandomInt(100, 999)}`;
@@ -215,6 +228,14 @@ export const generateStablecoinName = (): string => {
   return `${prefix}${currency} Stable-${uniqueId}`;
 };
 
+export const generateTokenizedDepositName = (): string => {
+  const prefix = getRandomElement(prefixes);
+  const currency = getRandomElement(tokenizedDepositCurrencies);
+  const uniqueId = getUniqueId();
+
+  return `${prefix}${currency} Tokenized Deposit-${uniqueId}`;
+};
+
 const generateSymbol = (name: string): string => {
   const words = name.split(/[\s-]+/);
   let symbol = "";
@@ -234,10 +255,11 @@ export const bondData = {
   assetType: "Bond",
   name: generateBondName(),
   symbol: generateSymbol(generateBondName()),
-  decimals: "18",
+  decimals: "12",
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
   maximumSupply: "1000",
   faceValue: "100",
+  valueInEur: "10",
   pincode: pincode,
   sidebarAssetTypes: "Bonds",
   initialSupply: "0",
@@ -247,7 +269,9 @@ export const cryptocurrencyData = {
   assetType: "Cryptocurrency",
   name: generateCryptoName(),
   symbol: generateSymbol(generateCryptoName()),
+  decimals: "6",
   initialSupply: "0",
+  valueInEur: "100",
   pincode: pincode,
   sidebarAssetTypes: "Cryptocurrencies",
 };
@@ -257,8 +281,10 @@ export const equityData = {
   name: generateEquityName(),
   symbol: generateSymbol(generateEquityName()),
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
+  decimals: "13",
   equityClass: "Common Equity",
   equityCategory: "Communication Services",
+  valueInEur: "35",
   pincode: pincode,
   sidebarAssetTypes: "Equities",
   initialSupply: "0",
@@ -269,9 +295,11 @@ export const fundData = {
   name: generateFundName(),
   symbol: generateSymbol(generateFundName()),
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
+  decimals: "0",
   fundCategory: "Fund of Funds",
-  fundClass: "Regional",
+  fundClass: "Diversified",
   managementFee: "2",
+  valueInEur: "135",
   pincode: pincode,
   sidebarAssetTypes: "Funds",
   initialSupply: "0",
@@ -282,9 +310,24 @@ export const stablecoinData = {
   name: generateStablecoinName(),
   symbol: generateSymbol(generateStablecoinName()),
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
+  decimals: "16",
   validityPeriod: "600",
+  valueInEur: "3",
   pincode: pincode,
   sidebarAssetTypes: "Stablecoins",
+  initialSupply: "0",
+};
+
+export const tokenizedDepositData = {
+  assetType: "Tokenized Deposits",
+  name: generateTokenizedDepositName(),
+  symbol: generateSymbol(generateTokenizedDepositName()),
+  isin: `US${getRandomInt(1000000000, 9999999999)}`,
+  decimals: "16",
+  validityPeriod: "600",
+  valueInEur: "3",
+  pincode: pincode,
+  sidebarAssetTypes: "Tokenized Deposits",
   initialSupply: "0",
 };
 

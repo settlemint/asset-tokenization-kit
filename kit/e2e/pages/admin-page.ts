@@ -7,7 +7,7 @@ export class AdminPage extends BasePage {
   private static readonly COMMA_REGEX = /,/g;
 
   async goto() {
-    await this.page.goto("/assets");
+    await this.page.goto("/portfolio");
   }
 
   private async startAssetCreation(
@@ -22,32 +22,16 @@ export class AdminPage extends BasePage {
   }
 
   private async completeAssetCreation(pincode: string, assetType: string) {
-    await this.page.locator('[data-input-otp="true"]').fill(pincode);
-
     const buttonName = `Issue a new ${assetType?.toLowerCase()}`;
     const button = this.page.getByRole("button", { name: buttonName });
 
-    await this.page.evaluate((buttonSelector) => {
-      const button = document.querySelector(
-        `button[aria-label="${buttonSelector}"]`
-      );
-      if (button) {
-        let element = button;
-        while (element.parentElement) {
-          const parent = element.parentElement;
-          const style = window.getComputedStyle(parent);
-          if (style.overflow === "hidden" || style.overflowY === "hidden") {
-            parent.style.overflow = "visible";
-          }
-          if (style.position === "fixed" || style.position === "absolute") {
-            parent.style.position = "static";
-          }
-          element = parent;
-        }
+    await button.waitFor({ state: "attached" });
+    await button.scrollIntoViewIfNeeded();
+    await button.click();
 
-        (button as HTMLElement).click();
-      }
-    }, buttonName);
+    await this.page.getByRole("dialog").waitFor({ state: "visible" });
+    await this.page.locator('[data-input-otp="true"]').fill(pincode);
+    await this.page.getByRole("button", { name: "Yes, confirm" }).click();
   }
 
   async createBond(options: {
@@ -59,6 +43,7 @@ export class AdminPage extends BasePage {
     maximumSupply: string;
     faceValue: string;
     underlyingAsset: string;
+    valueInEur: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -66,8 +51,8 @@ export class AdminPage extends BasePage {
       options.name,
       options.symbol
     );
-    await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page.getByLabel("ISIN").fill(options.isin);
+    await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByLabel("Maximum supply").fill(options.maximumSupply);
     await this.page.getByLabel("Face value").fill(options.faceValue);
@@ -76,7 +61,12 @@ export class AdminPage extends BasePage {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const formattedDate = tomorrow.toISOString().split("T")[0];
     await this.page.getByLabel("Maturity date").fill(formattedDate);
-    await this.page.getByRole("button", { name: "Select an option" }).click();
+    await this.page
+      .locator('[id="underlyingAsset"]')
+      .waitFor({ state: "visible" });
+    await this.page
+      .locator('button[id="underlyingAsset"][data-slot="popover-trigger"]')
+      .click();
     await this.page.getByPlaceholder("Search for an asset...").click();
     await this.page
       .getByPlaceholder("Search for an asset...")
@@ -84,6 +74,7 @@ export class AdminPage extends BasePage {
     await this.page
       .getByRole("option", { name: `Avatar ${options.underlyingAsset}` })
       .click();
+    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.completeAssetCreation(options.pincode, options.assetType);
   }
@@ -92,7 +83,9 @@ export class AdminPage extends BasePage {
     assetType: string;
     name: string;
     symbol: string;
+    decimals: string;
     initialSupply: string;
+    valueInEur: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -102,6 +95,7 @@ export class AdminPage extends BasePage {
     );
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByLabel("Initial supply").fill(options.initialSupply);
+    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.completeAssetCreation(options.pincode, options.assetType);
   }
@@ -111,8 +105,10 @@ export class AdminPage extends BasePage {
     name: string;
     symbol: string;
     isin: string;
+    decimals: string;
     equityClass: string;
     equityCategory: string;
+    valueInEur: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -121,6 +117,7 @@ export class AdminPage extends BasePage {
       options.symbol
     );
     await this.page.getByLabel("ISIN").fill(options.isin);
+    await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByRole("combobox", { name: "Equity class" }).click();
     await this.page
@@ -134,6 +131,7 @@ export class AdminPage extends BasePage {
     await this.page
       .getByRole("option", { name: options.equityCategory })
       .click();
+    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.completeAssetCreation(options.pincode, options.assetType);
   }
@@ -143,9 +141,11 @@ export class AdminPage extends BasePage {
     name: string;
     symbol: string;
     isin: string;
+    decimals: string;
     fundCategory: string;
     fundClass: string;
     managementFee: string;
+    valueInEur: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -154,6 +154,7 @@ export class AdminPage extends BasePage {
       options.symbol
     );
     await this.page.getByLabel("ISIN").fill(options.isin);
+    await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByRole("combobox", { name: "Fund category" }).click();
     await this.page
@@ -166,6 +167,7 @@ export class AdminPage extends BasePage {
       .waitFor({ state: "visible" });
     await this.page.getByRole("option", { name: options.fundClass }).click();
     await this.page.getByLabel("Management fee").fill(options.managementFee);
+    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.completeAssetCreation(options.pincode, options.assetType);
   }
@@ -175,7 +177,9 @@ export class AdminPage extends BasePage {
     name: string;
     symbol: string;
     isin: string;
+    decimals: string;
     validityPeriod: string;
+    valueInEur: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -184,12 +188,48 @@ export class AdminPage extends BasePage {
       options.symbol
     );
     await this.page.getByLabel("ISIN").fill(options.isin);
+    await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.page
       .getByLabel("Collateral Proof Validity")
       .fill(options.validityPeriod);
+    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.completeAssetCreation(options.pincode, options.assetType);
+  }
+
+  async createTokenizedDeposit(options: {
+    assetType: string;
+    name: string;
+    symbol: string;
+    isin: string;
+    decimals: string;
+    validityPeriod: string;
+    valueInEur: string;
+    pincode: string;
+  }) {
+    await this.startAssetCreation(
+      options.assetType,
+      options.name,
+      options.symbol
+    );
+    await this.page.getByLabel("ISIN").fill(options.isin);
+    await this.page.getByLabel("Decimals").fill(options.decimals);
+    await this.page.getByRole("button", { name: "Next" }).click();
+    await this.page
+      .getByLabel("Collateral Proof Validity")
+      .fill(options.validityPeriod);
+    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
+    await this.page.getByRole("button", { name: "Next" }).click();
+    const buttonName = "Issue a new tokenized deposit";
+    const button = this.page.getByRole("button", { name: buttonName });
+
+    await button.waitFor({ state: "attached" });
+    await button.scrollIntoViewIfNeeded();
+    await button.click();
+    await this.page.getByRole("dialog").waitFor({ state: "visible" });
+    await this.page.locator('[data-input-otp="true"]').fill(options.pincode);
+    await this.page.getByRole("button", { name: "Yes, confirm" }).click();
   }
 
   private async getColumnIndices() {
@@ -676,13 +716,28 @@ export class AdminPage extends BasePage {
   }
 
   async chooseAssetTypeFromSidebar(options: { sidebarAssetTypes: string }) {
-    await this.page
-      .getByRole("button", { name: options.sidebarAssetTypes })
-      .click();
+    const assetTypeButton = this.page.getByRole("button", {
+      name: options.sidebarAssetTypes,
+    });
+    await assetTypeButton.click();
+
+    const getSingularForm = (type: string): string => {
+      const pluralToSingular: Record<string, string> = {
+        Cryptocurrencies: "cryptocurrency",
+        Stablecoins: "stablecoin",
+        Bonds: "bond",
+        Equities: "equity",
+        Funds: "fund",
+        "Tokenized Deposits": "tokenizeddeposit",
+      };
+      return pluralToSingular[type] || type.toLowerCase();
+    };
+
+    const singularForm = getSingularForm(options.sidebarAssetTypes);
 
     const viewAllLink = this.page
       .locator(
-        `a[data-sidebar="menu-sub-button"][href*="/assets/${options.sidebarAssetTypes.toLowerCase()}"]`
+        `a[data-sidebar="menu-sub-button"][href*="/assets/${singularForm}"]`
       )
       .filter({ hasText: "View all" });
 
@@ -694,7 +749,7 @@ export class AdminPage extends BasePage {
     });
 
     await viewAllLink.click();
-    await this.page.waitForURL(`**/${options.sidebarAssetTypes.toLowerCase()}`);
+    await this.page.waitForURL(`**/${singularForm}`);
     await Promise.all([
       this.page.waitForSelector("table tbody"),
       this.page.waitForSelector('[data-testid="data-table-search-input"]'),
