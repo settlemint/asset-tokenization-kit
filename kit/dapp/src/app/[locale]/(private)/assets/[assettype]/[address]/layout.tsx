@@ -61,7 +61,7 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
     {
       name: t("tabs.events"),
       href: `/assets/${assettype}/${address}/events`,
-      badge: events.length,
+      badge: events?.length ?? 0,
     },
 
     {
@@ -73,7 +73,6 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
           {
             name: t("tabs.allowlist"),
             href: `/assets/${assettype}/${address}/allowlist`,
-            badge: assetUsers.allowlist.length,
           },
         ]
       : []),
@@ -82,7 +81,6 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
           {
             name: t("tabs.blocklist"),
             href: `/assets/${assettype}/${address}/blocklist`,
-            badge: assetUsers.blocklist.length,
           },
         ]
       : []),

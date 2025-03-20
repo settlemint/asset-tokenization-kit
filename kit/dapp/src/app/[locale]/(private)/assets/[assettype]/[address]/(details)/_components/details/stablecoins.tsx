@@ -3,6 +3,7 @@ import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
+import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { formatNumber } from "@/lib/utils/number";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -11,15 +12,26 @@ import type { Address } from "viem";
 
 interface StablecoinsDetailsProps {
   address: Address;
+  showBalance?: boolean;
+  userAddress?: Address;
 }
 
-export async function StablecoinsDetails({ address }: StablecoinsDetailsProps) {
+export async function StablecoinsDetails({
+  address,
+  showBalance = false,
+  userAddress
+}: StablecoinsDetailsProps) {
   const [stableCoin, t, baseCurrency, locale] = await Promise.all([
     getStableCoinDetail({ address }),
     getTranslations("private.assets.fields"),
     getSetting(SETTING_KEYS.BASE_CURRENCY),
     getLocale(),
   ]);
+
+  // Conditionally fetch balance data only when needed
+  const balanceData = showBalance && userAddress
+    ? await getAssetBalanceDetail({ address, account: userAddress })
+    : null;
 
   return (
     <Suspense>
@@ -53,6 +65,14 @@ export async function StablecoinsDetails({ address }: StablecoinsDetailsProps) {
             locale: locale,
           })}
         </DetailGridItem>
+        {/* Show balance only when requested and available */}
+        {showBalance && balanceData && (
+          <DetailGridItem
+            label={t("balance")}
+          >
+            {balanceData.value}
+          </DetailGridItem>
+        )}
         <DetailGridItem label={t("total-burned")} info={t("total-burned-info")}>
           {formatNumber(stableCoin.totalBurned, {
             token: stableCoin.symbol,

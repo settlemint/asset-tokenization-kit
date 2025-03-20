@@ -1224,6 +1224,7 @@
         "creator": "Creator",
         "decimals": "Decimals",
         "deployed-on": "Deployed on",
+        "balance": "Balance",
         "edit-roles-form": {
           "trigger-label": "Edit permissions"
         },

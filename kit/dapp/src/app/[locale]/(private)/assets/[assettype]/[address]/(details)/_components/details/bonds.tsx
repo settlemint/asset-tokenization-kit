@@ -3,6 +3,7 @@ import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
+import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { formatNumber } from "@/lib/utils/number";
 import { format } from "date-fns";
@@ -12,15 +13,22 @@ import type { Address } from "viem";
 
 interface BondsDetailsProps {
   address: Address;
+  showBalance?: boolean;
+  userAddress?: Address;
 }
 
-export async function BondsDetails({ address }: BondsDetailsProps) {
+export async function BondsDetails({ address, showBalance = false, userAddress }: BondsDetailsProps) {
   const [baseCurrency, bond, t, locale] = await Promise.all([
     getSetting(SETTING_KEYS.BASE_CURRENCY),
     getBondDetail({ address }),
     getTranslations("private.assets.fields"),
     getLocale(),
   ]);
+
+  // Conditionally fetch balance data only when needed
+  const balanceData = showBalance && userAddress
+    ? await getAssetBalanceDetail({ address, account: userAddress })
+    : null;
 
   return (
     <Suspense>
@@ -55,6 +63,14 @@ export async function BondsDetails({ address }: BondsDetailsProps) {
         <DetailGridItem label={t("total-issued")} info={t("total-issued-info")}>
           {bond.totalSupply}
         </DetailGridItem>
+        {/* Show balance only when requested and available */}
+        {showBalance && balanceData && (
+          <DetailGridItem
+            label={t("balance")}
+          >
+            {balanceData.value}
+          </DetailGridItem>
+        )}
         <DetailGridItem label={t("redeemed")} info={t("redeemed-info")}>
           {bond.isMatured ? bond.redeemedAmount : t("not-available")}
         </DetailGridItem>
