@@ -6,7 +6,7 @@
         "framer-motion": "12.5.0",
       },
       "devDependencies": {
-        "@settlemint/sdk-cli": "1.2.2",
+        "@settlemint/sdk-cli": "1.2.3",
         "@types/rtl-detect": "1.0.3",
         "prettier": "3.5.3",
         "turbo": "2.4.4",
@@ -1086,7 +1086,7 @@
 
     "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@1.2.2", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.2", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-KD7967To1fkJA20O3lV3/wziv6JUP1T2EWx7bUYiXI7YPYl4+dee3rNaw4aSCZAIhwoql8Ya5Lwre7P0y8zu+g=="],
 
-    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@1.2.2", "", { "dependencies": { "tinyexec": "0.3.2" }, "peerDependencies": { "hardhat": "2.22.19" }, "optionalPeers": ["hardhat"], "bin": { "settlemint": "dist/cli.js" } }, "sha512-nbH0sOcvxHzYF6XuoXhpQ0boxTVQ8u54fsMidBUEy9hchbhQgsjd/jLGrTQZ5KqwZ4FjfrLoV2hplmF8Inx74w=="],
+    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@1.2.3", "", { "dependencies": { "tinyexec": "0.3.2" }, "peerDependencies": { "hardhat": "2.22.19" }, "optionalPeers": ["hardhat"], "bin": { "settlemint": "dist/cli.js" } }, "sha512-9CpaQkCx+KwrwBUyIruUuRWez5vmnjOHHNCdcCd+LDsllMgMtavkJeyv3442GV0NlKz/vsRVVe42t5OXOz+37g=="],
 
     "@settlemint/sdk-hasura": ["@settlemint/sdk-hasura@1.2.2", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.2", "drizzle-kit": "^0.30", "drizzle-orm": "^0.40.0", "gql.tada": "^1", "graphql-request": "^7", "pg": "^8", "zod": "^3" } }, "sha512-XXMEI+Wrr2f8iyCxtxa/UUsS4H4HoRGtc0BI7Cp9CCIA6FDloPDKQ/Dyv4RG22/XSHXNIBqvpOlmFLCtgntJqQ=="],
 
