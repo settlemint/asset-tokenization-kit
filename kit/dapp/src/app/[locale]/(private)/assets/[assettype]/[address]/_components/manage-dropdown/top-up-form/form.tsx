@@ -4,12 +4,14 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { topUpUnderlyingAsset } from "@/lib/mutations/bond/top-up/top-up-action";
 import { TopUpSchema } from "@/lib/mutations/bond/top-up/top-up-schema";
+import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
+import { Target } from "./steps/target";
 
 interface TopUpFormProps {
   address: Address;
@@ -30,6 +32,19 @@ export function TopUpForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
+  const [yieldScheduleAddress, setYieldScheduleAddress] = useState<Address | undefined>(undefined);
+
+  // Fetch bond details to get the yield schedule information
+  useEffect(() => {
+    const fetchBondDetails = async () => {
+      const bondData = await getBondDetail({ address });
+      // If we have a yield schedule, update the state
+      if (bondData.yieldSchedule?.id) {
+        setYieldScheduleAddress(bondData.yieldSchedule.id);
+      }
+    };
+    fetchBondDetails();
+  }, [address]);
 
   return (
     <FormSheet
@@ -56,8 +71,11 @@ export function TopUpForm({
         defaultValues={{
           address,
           underlyingAssetAddress,
+          target: "bond",
+          yieldScheduleAddress,
         }}
       >
+        <Target />
         <Amount />
         <Summary />
       </Form>

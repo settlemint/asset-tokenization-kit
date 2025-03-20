@@ -1052,6 +1052,15 @@
             "title": "Enter amount",
             "wallet-balance": "Wallet balance"
           },
+          "target": {
+            "title": "Select top-up target",
+            "description": "Choose which asset you want to top up",
+            "placeholder": "Select target",
+            "options": {
+              "bond": "Bond",
+              "yield": "Yield"
+            }
+          },
           "form": {
             "description": {
               "allow": "Allow this user to perform transactions and interactions.",
@@ -1107,6 +1116,8 @@
             "title": "Select roles"
           },
           "summary": {
+            "target-label": "Target",
+            "yield-schedule-label": "Yield schedule",
             "account-label": {
               "default": "User",
               "recipient": "Recipient"

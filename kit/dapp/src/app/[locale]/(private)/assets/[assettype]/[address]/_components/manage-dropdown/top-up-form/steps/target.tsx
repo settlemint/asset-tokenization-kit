@@ -1,0 +1,36 @@
+"use client";
+
+import { FormStep } from "@/components/blocks/form/form-step";
+import { FormSelect } from "@/components/blocks/form/inputs/form-select";
+import type { TopUpInput } from "@/lib/mutations/bond/top-up/top-up-schema";
+import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
+
+interface TargetOption {
+  value: "bond" | "yield";
+  label: string;
+}
+
+export function Target() {
+  const { control } = useFormContext<TopUpInput>();
+  const t = useTranslations("private.assets.details.forms.target");
+
+  // Create options for the select input
+  const targetOptions: TargetOption[] = [
+    { value: "bond", label: t("options.bond") },
+    { value: "yield", label: t("options.yield") },
+  ];
+
+  return (
+    <FormStep title={t("title")} description={t("description")}>
+      <FormSelect
+        control={control}
+        name="target"
+        options={targetOptions}
+        placeholder={t("placeholder")}
+      />
+    </FormStep>
+  );
+}
+
+Target.validatedFields = ["target"] as const;

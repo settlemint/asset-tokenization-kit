@@ -50,12 +50,36 @@ const BondTopUpUnderlyingAsset = portalGraphql(`
   }
 `);
 
+/**
+ * GraphQL mutation for topping up the underlying asset of a yield schedule
+ *
+ * @remarks
+ * This mutation requires authentication via challenge response
+ */
+const FixedYieldTopUpUnderlyingAsset = portalGraphql(`
+  mutation FixedYieldTopUpUnderlyingAsset(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: FixedYieldTopUpUnderlyingAssetInput!
+  ) {
+    FixedYieldTopUpUnderlyingAsset(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
 export const topUpUnderlyingAsset = action
   .schema(TopUpSchema)
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { address, pincode, amount, underlyingAssetAddress },
+      parsedInput: { address, pincode, amount, underlyingAssetAddress, target, yieldScheduleAddress },
       ctx: { user },
     }) => {
       const asset = await getAssetUsersDetail({
@@ -67,12 +91,19 @@ export const topUpUnderlyingAsset = action
         asset.decimals
       ).toString();
 
+      // Resolve spender based on target
+      const spender = target === "bond" ? address : yieldScheduleAddress;
+      if (!spender) {
+        throw new Error("Invalid spender address");
+      }
+
+      // Approve spending of the underlying asset
       const approvalData = await portalClient.request(StableCoinApprove, {
         address: underlyingAssetAddress,
         from: user.wallet,
         challengeResponse: await handleChallenge(user.wallet, pincode),
         input: {
-          spender: address,
+          spender,
           value: formattedAmount,
         },
       });
@@ -80,25 +111,50 @@ export const topUpUnderlyingAsset = action
       const approvalTxHash = approvalData.StableCoinApprove?.transactionHash;
       if (!approvalTxHash) {
         throw new Error(
-          "Failed to approve the bond to spend the underlying asset"
+          "Failed to approve spending of the underlying asset"
         );
       }
 
-      const response = await portalClient.request(BondTopUpUnderlyingAsset, {
-        address,
-        from: user.wallet,
-        input: {
-          amount: parseUnits(amount.toString(), asset.decimals).toString(),
-        },
-        challengeResponse: await handleChallenge(user.wallet, pincode),
-      });
+      // Top up either the bond or the yield schedule
+      if (target === "bond") {
+        const response = await portalClient.request(BondTopUpUnderlyingAsset, {
+          address,
+          from: user.wallet,
+          input: {
+            amount: formattedAmount,
+          },
+          challengeResponse: await handleChallenge(user.wallet, pincode),
+        });
 
-      if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
-        throw new Error("Failed to get transaction hash");
+        if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
+          throw new Error("Failed to get transaction hash");
+        }
+
+        return z
+          .hashes()
+          .parse([response.BondTopUpUnderlyingAsset.transactionHash]);
+      } else {
+        // Top up the yield schedule
+        if (!yieldScheduleAddress) {
+          throw new Error("Yield schedule address is required for topping up yield");
+        }
+
+        const response = await portalClient.request(FixedYieldTopUpUnderlyingAsset, {
+          address: yieldScheduleAddress,
+          from: user.wallet,
+          input: {
+            amount: formattedAmount,
+          },
+          challengeResponse: await handleChallenge(user.wallet, pincode),
+        });
+
+        if (!response.FixedYieldTopUpUnderlyingAsset?.transactionHash) {
+          throw new Error("Failed to get transaction hash");
+        }
+
+        return z
+          .hashes()
+          .parse([response.FixedYieldTopUpUnderlyingAsset.transactionHash]);
       }
-
-      return z
-        .hashes()
-        .parse([response.BondTopUpUnderlyingAsset.transactionHash]);
     }
   );

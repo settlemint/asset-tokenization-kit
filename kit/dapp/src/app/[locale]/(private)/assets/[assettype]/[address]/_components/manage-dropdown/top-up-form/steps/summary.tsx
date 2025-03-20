@@ -19,6 +19,10 @@ export function Summary() {
   return (
     <FormStep title={t("title.top-up")} description={t("description.top-up")}>
       <FormSummaryDetailItem
+        label={t("target-label")}
+        value={<EvmAddress address={(values.target === "bond" ? values.address : values.yieldScheduleAddress) ?? "0x0"} />}
+      />
+      <FormSummaryDetailItem
         label={t("asset-label")}
         value={<EvmAddress address={values.underlyingAssetAddress ?? "0x0"} />}
       />

@@ -7,12 +7,22 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {number} amount - The amount of underlying asset to top up
  * @property {string} underlyingAssetAddress - The address of the underlying asset contract
  * @property {string} pincode - The pincode for signing the transaction
+ * @property {string} target - The target to top up ("bond" or "yield")
+ * @property {string} yieldScheduleAddress - The address of the yield schedule contract (required if target is "yield")
  */
 export const TopUpSchema = z.object({
   address: z.address(),
   underlyingAssetAddress: z.address(),
   amount: z.amount(),
   pincode: z.pincode(),
-});
+  target: z.enum(["bond", "yield"]),
+  yieldScheduleAddress: z.address().optional(),
+}).refine(
+  (data) => data.target !== "yield" || data.yieldScheduleAddress,
+  {
+    message: "Yield schedule address is required when target is 'yield'",
+    path: ["yieldScheduleAddress"]
+  }
+);
 
 export type TopUpInput = ZodInfer<typeof TopUpSchema>;
