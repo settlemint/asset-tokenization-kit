@@ -64,4 +64,7 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
   );
 }
 
-Configuration.validatedFields = ["collateralLivenessValue"] as const;
+Configuration.validatedFields = [
+  "collateralLivenessValue",
+  "collateralLivenessTimeUnit",
+] as const;
