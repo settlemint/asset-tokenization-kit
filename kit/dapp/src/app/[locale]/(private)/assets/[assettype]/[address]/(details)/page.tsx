@@ -1,5 +1,5 @@
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
-import { BondStatusProgress } from "@/components/blocks/charts/assets/bond-status-progress";
+import { BondStatusProgress } from "@/components/blocks/charts/assets/bond/bond-status-progress";
 import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
 import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
 import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supply-changed";
