@@ -4,7 +4,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParseTransactionHash, type TimeUnit, z } from "@/lib/utils/zod";
 import { action } from "../../safe-action";
 import { CreateStablecoinSchema } from "./create-schema";
 
@@ -52,7 +52,8 @@ export const createStablecoin = action
         decimals,
         pincode,
         isin,
-        collateralLivenessSeconds,
+        collateralLivenessValue,
+        collateralLivenessTimeUnit,
         predictedAddress,
         valueInBaseCurrency,
       },
@@ -64,13 +65,17 @@ export const createStablecoin = action
         value_in_base_currency: String(valueInBaseCurrency),
       });
 
+      const collateralLivenessSeconds =
+        collateralLivenessValue *
+        getTimeUnitSeconds(collateralLivenessTimeUnit);
+
       const data = await portalClient.request(StableCoinFactoryCreate, {
         address: STABLE_COIN_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
         symbol,
         decimals,
-        collateralLivenessSeconds: collateralLivenessSeconds,
+        collateralLivenessSeconds,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
@@ -79,3 +84,18 @@ export const createStablecoin = action
       ]);
     }
   );
+
+function getTimeUnitSeconds(unit: TimeUnit): number {
+  switch (unit) {
+    case "seconds":
+      return 1;
+    case "hours":
+      return 3600;
+    case "days":
+      return 86400;
+    case "weeks":
+      return 604800;
+    case "months":
+      return 2592000; // 30 days
+  }
+}

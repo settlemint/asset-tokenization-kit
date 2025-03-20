@@ -1,7 +1,9 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
+import { timeUnits } from "@/lib/utils/zod";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
@@ -13,6 +15,21 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
   const { control } = useFormContext<CreateStablecoinInput>();
   const t = useTranslations("private.assets.create");
 
+  const timeUnitOptions = timeUnits.map((value) => ({
+    value,
+    label: t(`parameters.common.time-units.${value}`, { fallback: value }),
+  }));
+
+  const DurationUnitSelect = (
+    <FormSelect
+      name="collateralLivenessTimeUnit"
+      control={control}
+      options={timeUnitOptions}
+      defaultValue="months"
+      className="w-[110px] border-0 shadow-none"
+    />
+  );
+
   return (
     <FormStep
       title={t("configuration.stablecoins.title")}
@@ -22,9 +39,9 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
         <FormInput
           control={control}
           type="number"
-          name="collateralLivenessSeconds"
+          name="collateralLivenessValue"
           label={t("parameters.common.collateral-proof-validity-label")}
-          postfix={t("parameters.common.seconds-unit-label")}
+          postfix={DurationUnitSelect}
           required
         />
         <FormInput
@@ -42,4 +59,4 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
   );
 }
 
-Configuration.validatedFields = ["collateralLivenessSeconds"] as const;
+Configuration.validatedFields = ["collateralLivenessValue"] as const;

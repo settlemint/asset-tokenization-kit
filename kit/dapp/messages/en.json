@@ -880,7 +880,14 @@
             "name-label": "Name",
             "seconds-unit-label": "seconds",
             "symbol-label": "Symbol",
-            "value-in-base-currency-label": "Value in {baseCurrency}"
+            "value-in-base-currency-label": "Value in {baseCurrency}",
+            "time-units": {
+              "seconds": "Seconds",
+              "hours": "Hours",
+              "days": "Days",
+              "weeks": "Weeks",
+              "months": "Months"
+            }
           },
           "cryptocurrencies": {
             "initial-supply-description": "Initial amount of tokens to be minted",
