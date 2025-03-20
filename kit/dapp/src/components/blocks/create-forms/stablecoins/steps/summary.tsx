@@ -4,8 +4,9 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/predict-address";
+import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
 
 export function Summary() {
@@ -14,6 +15,7 @@ export function Summary() {
     control: control,
   });
   const t = useTranslations("private.assets.create");
+  const locale = useLocale();
   const baseCurrency = useSettings("baseCurrency");
 
   return (
@@ -66,7 +68,10 @@ export function Summary() {
           label={t("parameters.common.value-in-base-currency-label", {
             baseCurrency,
           })}
-          value={values.valueInBaseCurrency || "-"}
+          value={formatNumber(values.valueInBaseCurrency || 0, {
+            currency: baseCurrency,
+            locale: locale,
+          })}
         />
       </FormSummaryDetailCard>
     </FormStep>

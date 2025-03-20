@@ -53,6 +53,7 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
         <FormInput
           control={control}
           name="valueInBaseCurrency"
+          min={0}
           type="number"
           step={0.01}
           label={t("parameters.common.value-in-base-currency-label", {

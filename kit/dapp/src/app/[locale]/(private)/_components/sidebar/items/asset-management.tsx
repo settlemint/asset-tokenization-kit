@@ -4,6 +4,7 @@ import { type NavItem, NavMain } from "@/components/layout/nav-main";
 import { ActivityIcon } from "@/components/ui/animated-icons/activity";
 import { ChartScatterIcon } from "@/components/ui/animated-icons/chart-scatter";
 import { getSidebarAssets } from "@/lib/queries/sidebar-assets/sidebar-assets";
+import { EllipsisIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 export async function AssetManagement() {
@@ -84,7 +85,7 @@ export async function AssetManagement() {
           id: "view-all",
           label: t("view-all"),
           path: section.path,
-          icon: <span>→</span>,
+          icon: <EllipsisIcon className="size-4" />,
         });
       }
     }

@@ -3,6 +3,7 @@ import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
+import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { formatNumber } from "@/lib/utils/number";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -11,15 +12,26 @@ import type { Address } from "viem";
 
 interface FundsDetailsProps {
   address: Address;
+  showBalance?: boolean;
+  userAddress?: Address;
 }
 
-export async function FundsDetails({ address }: FundsDetailsProps) {
+export async function FundsDetails({
+  address,
+  showBalance = false,
+  userAddress
+}: FundsDetailsProps) {
   const [fund, t, baseCurrency, locale] = await Promise.all([
     getFundDetail({ address }),
     getTranslations("private.assets.fields"),
     getSetting(SETTING_KEYS.BASE_CURRENCY),
     getLocale(),
   ]);
+
+  // Conditionally fetch balance data only when needed
+  const balanceData = showBalance && userAddress
+    ? await getAssetBalanceDetail({ address, account: userAddress })
+    : null;
 
   return (
     <Suspense>
@@ -46,8 +58,22 @@ export async function FundsDetails({ address }: FundsDetailsProps) {
         </DetailGridItem>
         <DetailGridItem label={t("decimals")}>{fund.decimals}</DetailGridItem>
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
-          {fund.totalSupply}
+          {formatNumber(fund.totalSupply, {
+            token: fund.symbol,
+            locale: locale,
+          })}
         </DetailGridItem>
+        {/* Show balance only when requested and available */}
+        {showBalance && balanceData && (
+          <DetailGridItem
+            label={t("balance")}
+          >
+            {formatNumber(balanceData.value, {
+              token: fund.symbol,
+              locale: locale,
+            })}
+          </DetailGridItem>
+        )}
         <DetailGridItem
           label={t("ownership-concentration")}
           info={t("ownership-concentration-info")}

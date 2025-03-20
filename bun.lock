@@ -6,7 +6,7 @@
         "framer-motion": "12.5.0",
       },
       "devDependencies": {
-        "@settlemint/sdk-cli": "1.2.2",
+        "@settlemint/sdk-cli": "1.2.3",
         "@types/rtl-detect": "1.0.3",
         "prettier": "3.5.3",
         "turbo": "2.4.4",
@@ -54,13 +54,13 @@
         "@react-email/components": "0.0.34",
         "@scalar/api-reference-react": "0.6.3",
         "@scalar/types": "0.1.2",
-        "@settlemint/sdk-blockscout": "1.2.2",
-        "@settlemint/sdk-hasura": "1.2.2",
-        "@settlemint/sdk-ipfs": "1.2.2",
-        "@settlemint/sdk-minio": "1.2.2",
-        "@settlemint/sdk-next": "1.2.2",
-        "@settlemint/sdk-portal": "1.2.2",
-        "@settlemint/sdk-thegraph": "1.2.2",
+        "@settlemint/sdk-blockscout": "1.2.3",
+        "@settlemint/sdk-hasura": "1.2.3",
+        "@settlemint/sdk-ipfs": "1.2.3",
+        "@settlemint/sdk-minio": "1.2.3",
+        "@settlemint/sdk-next": "1.2.3",
+        "@settlemint/sdk-portal": "1.2.3",
+        "@settlemint/sdk-thegraph": "1.2.3",
         "@tanstack/react-table": "8.21.2",
         "ajv": "8.17.1",
         "better-auth": "1.2.4",
@@ -1084,23 +1084,23 @@
 
     "@sentry/utils": ["@sentry/utils@5.30.0", "", { "dependencies": { "@sentry/types": "5.30.0", "tslib": "^1.9.3" } }, "sha512-zaYmoH0NWWtvnJjC9/CBseXMtKHm/tm40sz3YfJRxeQjyzRqNQPgivpd9R/oDJCYj999mzdW382p/qi2ypjLww=="],
 
-    "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@1.2.2", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.2", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-KD7967To1fkJA20O3lV3/wziv6JUP1T2EWx7bUYiXI7YPYl4+dee3rNaw4aSCZAIhwoql8Ya5Lwre7P0y8zu+g=="],
+    "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@1.2.3", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.3", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-KnXvacZ3wKoWFAS+8bcNqMviahGkZfa8L1rnjv+GSPoMIzuvNjDqQTDKylg+L1378QX8vdg1/Msy/AveY2CT4Q=="],
 
-    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@1.2.2", "", { "dependencies": { "tinyexec": "0.3.2" }, "peerDependencies": { "hardhat": "2.22.19" }, "optionalPeers": ["hardhat"], "bin": { "settlemint": "dist/cli.js" } }, "sha512-nbH0sOcvxHzYF6XuoXhpQ0boxTVQ8u54fsMidBUEy9hchbhQgsjd/jLGrTQZ5KqwZ4FjfrLoV2hplmF8Inx74w=="],
+    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@1.2.3", "", { "dependencies": { "tinyexec": "0.3.2" }, "peerDependencies": { "hardhat": "2.22.19" }, "optionalPeers": ["hardhat"], "bin": { "settlemint": "dist/cli.js" } }, "sha512-9CpaQkCx+KwrwBUyIruUuRWez5vmnjOHHNCdcCd+LDsllMgMtavkJeyv3442GV0NlKz/vsRVVe42t5OXOz+37g=="],
 
-    "@settlemint/sdk-hasura": ["@settlemint/sdk-hasura@1.2.2", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.2", "drizzle-kit": "^0.30", "drizzle-orm": "^0.40.0", "gql.tada": "^1", "graphql-request": "^7", "pg": "^8", "zod": "^3" } }, "sha512-XXMEI+Wrr2f8iyCxtxa/UUsS4H4HoRGtc0BI7Cp9CCIA6FDloPDKQ/Dyv4RG22/XSHXNIBqvpOlmFLCtgntJqQ=="],
+    "@settlemint/sdk-hasura": ["@settlemint/sdk-hasura@1.2.3", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.3", "drizzle-kit": "^0.30", "drizzle-orm": "^0.40.0", "gql.tada": "^1", "graphql-request": "^7", "pg": "^8", "zod": "^3" } }, "sha512-QMm5pHGS13Aziqc3dJmfoRAfHqWiLjso+/Ir07VKE8AnjYnkPCxQGZ/JB9izxixG3xmTnniHPuAINO/iewtnzg=="],
 
-    "@settlemint/sdk-ipfs": ["@settlemint/sdk-ipfs@1.2.2", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.2", "kubo-rpc-client": "^5", "zod": "^3" } }, "sha512-cTWt/isiBHo20q9ChbPleH6b2uPiNfHRPOh5K7GijKM9b5coSVXmaO/Mj74Ex68PSR6dhExZmUlZo6or8m6qzw=="],
+    "@settlemint/sdk-ipfs": ["@settlemint/sdk-ipfs@1.2.3", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.3", "kubo-rpc-client": "^5", "zod": "^3" } }, "sha512-Ynhfhv7uzdW7r+xp00IpMh1O64wvy6mgFrpLVNpP3JWLRbEfgHvQAqkdYMeZWk3ew/wXSn7196RD8Hc435CMnQ=="],
 
-    "@settlemint/sdk-minio": ["@settlemint/sdk-minio@1.2.2", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.2", "minio": "^8", "zod": "^3" } }, "sha512-WltIsQV42qCTY0dBSw/bYXs5k+Jrm4WXbp1hV4wuqfRZnkgDu4WTgtwym8w2xQMbDvVCazNBf6qp+7rCYvPUEQ=="],
+    "@settlemint/sdk-minio": ["@settlemint/sdk-minio@1.2.3", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.3", "minio": "^8", "zod": "^3" } }, "sha512-pi7y1fhxe4z5aJ+mm7z4lU85R52E+9nxDUvamKFHvDShoCvyQlRO22TNo+lx22ffl6m6+poNkQ8kGe2kLltANQ=="],
 
-    "@settlemint/sdk-next": ["@settlemint/sdk-next@1.2.2", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.2", "path-to-regexp": "^8" }, "peerDependencies": { "next": ">=15", "react": ">=18" } }, "sha512-5759D99nQcMDEvJMEI8ofdiOcrhovQ0syuLRWcozmIu4fI+ZLBGTg3Vm5URYO9S2BalL0zXgFFmPhQ9z1FDX3Q=="],
+    "@settlemint/sdk-next": ["@settlemint/sdk-next@1.2.3", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.3", "path-to-regexp": "^8" }, "peerDependencies": { "next": ">=15", "react": ">=18" } }, "sha512-CTeqSCmM0EovTBR2lP2Qe0gVsfxckxIIQGAYsWwhLDXcqhYhjCG1VV4c7uu8t9UhnGqsZ2FqgDLhsjznc8qELA=="],
 
-    "@settlemint/sdk-portal": ["@settlemint/sdk-portal@1.2.2", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.2", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-DdXExYeklwoLuu/zsPGw8dzEM2xDLDV/hH+P+AlA93kq5PuPiB5lJ+bY++w+5wJ/RQAHpk9zW9ZUkhAykuoEDA=="],
+    "@settlemint/sdk-portal": ["@settlemint/sdk-portal@1.2.3", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.3", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-YECNio6xR8M43uzM4ctzUFhPXJwt26pXijTMLHHDIWF9XDZ4BwoS6xfmHeCrrt+MvomMRaiB2PLXIGE/chQZsA=="],
 
-    "@settlemint/sdk-thegraph": ["@settlemint/sdk-thegraph@1.2.2", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.2", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-fkMWCzcUjMsi1XOEEPsT6eH/3+y2cxnxgLwpbpujDCImfa95oCmciKIDnzlEhFKnO86a3In4YE7jiG8vmSGV6A=="],
+    "@settlemint/sdk-thegraph": ["@settlemint/sdk-thegraph@1.2.3", "", { "dependencies": { "@settlemint/sdk-utils": "1.2.3", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-YZ9Ff+BGyOkLRtEi5SbBoJ1BZU/PadbAKGrG3oBnj+4H3ivLiZTXUiqTjnwudZdZztVO1Z5HbYNNMiFpvIqT0Q=="],
 
-    "@settlemint/sdk-utils": ["@settlemint/sdk-utils@1.2.2", "", { "dependencies": { "@antfu/install-pkg": "^1", "@dotenvx/dotenvx": "^1", "@manypkg/find-root": "^2", "@npmcli/package-json": "^6", "console-table-printer": "^2", "deepmerge-ts": "^7", "environment": "^1", "find-up": "^7", "is-in-ci": "^1", "nano-spawn": "^0.2", "package-manager-detector": "^1.0.0", "yocto-spinner": "^0.2.0", "yoctocolors": "^2" } }, "sha512-ccGYdI+N/A+DnU4XZpH9mcA7dv/erzGx6vWJzG3UHxX+Ku5jhRYAnwQSYLksAI12JDAV8NI0c8E+Rq4lMiaf1g=="],
+    "@settlemint/sdk-utils": ["@settlemint/sdk-utils@1.2.3", "", { "dependencies": { "@antfu/install-pkg": "^1", "@dotenvx/dotenvx": "^1", "@manypkg/find-root": "^2", "@npmcli/package-json": "^6", "console-table-printer": "^2", "deepmerge-ts": "^7", "environment": "^1", "find-up": "^7", "is-in-ci": "^1", "nano-spawn": "^0.2", "package-manager-detector": "^1.0.0", "yocto-spinner": "^0.2.0", "yoctocolors": "^2" } }, "sha512-0LFYi1KGMcSYriNJkr/cqOr+F2VXlAhugkyMdCnRjsCVZcmEGtq+rK9Emq2jxYckWH+3b7lRl6uagtOYNg4Fig=="],
 
     "@simplewebauthn/browser": ["@simplewebauthn/browser@13.1.0", "", {}, "sha512-WuHZ/PYvyPJ9nxSzgHtOEjogBhwJfC8xzYkPC+rR/+8chl/ft4ngjiK8kSU5HtRJfczupyOh33b25TjYbvwAcg=="],
 
