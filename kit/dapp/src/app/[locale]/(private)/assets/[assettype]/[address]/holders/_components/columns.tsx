@@ -107,6 +107,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     onOpenChange={onOpenChange}
                   />
                 ),
+                disabled: row.original.asset.paused,
                 hidden: !hasBlocklist(row.original.asset.type),
               },
               {
@@ -124,6 +125,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     onOpenChange={onOpenChange}
                   />
                 ),
+                disabled: row.original.asset.paused,
                 hidden: !hasFreeze(row.original.asset.type),
               },
               {
@@ -139,6 +141,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     maxLimit={mintMaxLimit}
                   />
                 ),
+                disabled: row.original.asset.paused,
               },
             ]}
           />
