@@ -5,6 +5,7 @@ import { Recipients } from "@/app/[locale]/(private)/portfolio/(dashboard)/_comp
 import { Summary } from "@/app/[locale]/(private)/portfolio/(dashboard)/_components/transfer-form/steps/summary";
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { authClient } from "@/lib/auth/client";
 import { transferAsset } from "@/lib/mutations/asset/transfer/transfer-action";
 import { getTransferFormSchema } from "@/lib/mutations/asset/transfer/transfer-schema";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
@@ -12,7 +13,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { SelectAsset } from "./select-asset";
-import { useAccount } from "wagmi";
 
 type Asset = UserAsset["asset"] & {
   holders: { value: number; account: { id: string } }[];
@@ -22,18 +22,9 @@ export function MyAssetsTransferForm() {
   const t = useTranslations("portfolio.transfer-form");
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [open, setOpen] = useState(false);
-  const { address: userAddress } = useAccount();
-  
-  const getUserBalance = () => {
-    if (!selectedAsset?.holders || !userAddress) return "0";
-    
-    const userHolder = selectedAsset.holders.find(
-      (holder) => holder.account.id.toLowerCase() === userAddress.toLowerCase()
-    );
-    
-    return userHolder?.value.toString() ?? "0";
-  };
-  
+  const { data: session } = authClient.useSession();
+  const userAddress = session?.user.wallet;
+
   return (
     <>
       {selectedAsset ? (
@@ -62,7 +53,15 @@ export function MyAssetsTransferForm() {
           >
             <Recipients />
             <Amount
-              balance={getUserBalance()}
+              balance={
+                selectedAsset?.holders
+                  .find(
+                    (holder: { account: { id: string } }) =>
+                      // Compare with the current user's wallet address instead of the asset ID
+                      holder.account.id.toLowerCase() === userAddress?.toLowerCase()
+                  )
+                  ?.value.toString() ?? "0"
+              }
             />
             <Summary
               address={selectedAsset?.id}
