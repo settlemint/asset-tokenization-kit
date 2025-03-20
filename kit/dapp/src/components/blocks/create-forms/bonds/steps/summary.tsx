@@ -1,3 +1,4 @@
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
@@ -67,7 +68,13 @@ export function Summary() {
         />
         <FormSummaryDetailItem
           label={t("parameters.bonds.underlying-asset-label")}
-          value={values.underlyingAsset || "-"}
+          value={
+            values.underlyingAsset ? (
+              <EvmAddress address={values.underlyingAsset} />
+            ) : (
+              "-"
+            )
+          }
         />
         <FormSummaryDetailItem
           label={t("parameters.common.value-in-base-currency-label", {

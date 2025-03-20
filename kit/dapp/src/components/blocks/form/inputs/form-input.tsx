@@ -87,26 +87,22 @@ export function FormInput<T extends FieldValues>({
             value: NUMBER_PATTERN,
             message: t("valid-number"),
           },
-          ...(props.max !== undefined && {
-            max: {
-              value: props.max,
-              message: t("max-value", {
-                max: formatNumber(props.max, {
-                  locale: locale,
-                }),
+          max: {
+            value: props.max ?? Number.MAX_SAFE_INTEGER,
+            message: t("max-value", {
+              max: formatNumber(props.max ?? Number.MAX_SAFE_INTEGER, {
+                locale: locale,
               }),
-            },
-          }),
-          ...(props.min !== undefined && {
-            min: {
-              value: props.min,
-              message: t("min-value", {
-                min: formatNumber(props.min, {
-                  locale: locale,
-                }),
+            }),
+          },
+          min: {
+            value: props.min ?? Number.MIN_SAFE_INTEGER,
+            message: t("min-value", {
+              min: formatNumber(props.min ?? Number.MIN_SAFE_INTEGER, {
+                locale: locale,
               }),
-            },
-          }),
+            }),
+          },
         }),
       }}
       render={({ field, fieldState }) => {
