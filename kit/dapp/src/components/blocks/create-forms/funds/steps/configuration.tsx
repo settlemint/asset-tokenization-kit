@@ -39,6 +39,7 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
           name="valueInBaseCurrency"
           type="number"
           step={0.01}
+          min={0}
           label={t("parameters.common.value-in-base-currency-label", {
             baseCurrency,
           })}
