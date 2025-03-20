@@ -36,7 +36,7 @@ h3: text-xl
   /* shadcn colors */
   --background: var(--sm-background-lightest);
   --foreground: var(--sm-text);
-  --card: var(--sm-background-gradient-start);
+  --card: var(--sm-colored-shadow);
   --card-foreground: var(--sm-text);
   --popover: var(--sm-background-lightest);
   --popover-foreground: var(--sm-text);
@@ -44,7 +44,7 @@ h3: text-xl
   --primary-foreground: var(--sm-text-contrast);
   --secondary: var(--sm-graphics-primary);
   --secondary-foreground: var(--sm-text);
-  --muted: var(--sm-muted);
+  --muted: var(--sm-colored-shadow);
   --muted-foreground: var(--sm-muted);
   --accent: var(--sm-accent);
   --accent-foreground: var(--sm-text-contrast);
@@ -306,7 +306,8 @@ h3: text-xl
     text-align: right;
   }
 
-  [data-slot="sidebar-menu-sub-button"].font-bold {
+  [data-slot="sidebar-menu-sub-button"].font-bold,
+  [data-slot="sidebar-menu-button"].font-bold {
     @apply bg-sidebar-accent;
   }
 }
