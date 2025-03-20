@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { formatNumber } from "@/lib/utils/number";
+import { useLocale, useTranslations } from "next-intl";
 import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
 import { type FieldValues, useFormContext } from "react-hook-form";
 import {
@@ -19,9 +20,9 @@ import {
   type WithTextOnlyProps,
   getAriaAttributes,
 } from "./types";
-
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 const TEXT_ONLY_PATTERN = /^[A-Za-z]+$/;
+const NUMBER_PATTERN = /^[0-9]*.?[0-9]*$/;
 
 type InputProps = ComponentPropsWithoutRef<typeof Input>;
 
@@ -61,6 +62,7 @@ export function FormInput<T extends FieldValues>({
   const form = useFormContext<T>();
   const { register } = form;
   const t = useTranslations("components.form.input");
+  const locale = useLocale();
 
   return (
     <FormField
@@ -78,6 +80,33 @@ export function FormInput<T extends FieldValues>({
             value: TEXT_ONLY_PATTERN,
             message: t("letters-only"),
           },
+        }),
+        ...(props.type === "number" && {
+          valueAsNumber: true,
+          pattern: {
+            value: NUMBER_PATTERN,
+            message: t("valid-number"),
+          },
+          ...(props.max !== undefined && {
+            max: {
+              value: props.max,
+              message: t("max-value", {
+                max: formatNumber(props.max, {
+                  locale: locale,
+                }),
+              }),
+            },
+          }),
+          ...(props.min !== undefined && {
+            min: {
+              value: props.min,
+              message: t("min-value", {
+                min: formatNumber(props.min, {
+                  locale: locale,
+                }),
+              }),
+            },
+          }),
         }),
       }}
       render={({ field, fieldState }) => {
@@ -103,11 +132,11 @@ export function FormInput<T extends FieldValues>({
                 )}
               >
                 <Input
-                  {...field}
-                  {...props}
                   {...register(field.name, {
                     valueAsNumber: props.type === "number",
                   })}
+                  {...field}
+                  {...props}
                   className={cn(
                     className,
                     postfix &&
@@ -121,6 +150,7 @@ export function FormInput<T extends FieldValues>({
 
                       if (value === "") {
                         field.onChange(evt);
+                        await form.trigger(field.name);
                         return;
                       }
 
@@ -135,18 +165,34 @@ export function FormInput<T extends FieldValues>({
                       ) {
                         return;
                       }
-                    }
 
-                    field.onChange(evt);
-                    if (form.formState.errors[field.name]) {
+                      const numValue = parseFloat(value);
+                      if (!isNaN(numValue)) {
+                        if (
+                          typeof props.max === "number" &&
+                          numValue > props.max
+                        ) {
+                          return;
+                        }
+                        if (
+                          typeof props.min === "number" &&
+                          numValue < props.min
+                        ) {
+                          return;
+                        }
+                        field.onChange(numValue);
+                      } else {
+                        field.onChange(value);
+                      }
                       await form.trigger(field.name);
+                    } else {
+                      field.onChange(evt);
+                      if (form.formState.errors[field.name]) {
+                        await form.trigger(field.name);
+                      }
                     }
                   }}
                   inputMode={props.type === "number" ? "decimal" : "text"}
-                  pattern={
-                    props.type === "number" ? "[0-9]*.?[0-9]*" : undefined
-                  }
-                  min={props.type === "number" ? 0 : undefined}
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,

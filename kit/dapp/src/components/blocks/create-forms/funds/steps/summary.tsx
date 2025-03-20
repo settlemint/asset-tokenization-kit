@@ -4,9 +4,10 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/fund-factory/predict-address";
+import { formatNumber } from "@/lib/utils/number";
 import type { fundCategories, fundClasses } from "@/lib/utils/zod";
 import { DollarSign, Settings } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
 import { FundCategoriesSummary } from "./_components/fund-categories-summary";
 import { FundClassesSummary } from "./_components/fund-classes-summary";
@@ -18,6 +19,7 @@ export function Summary() {
   });
   const t = useTranslations("private.assets.create");
   const baseCurrency = useSettings("baseCurrency");
+  const locale = useLocale();
 
   return (
     <FormStep title={t("summary.title")} description={t("summary.description")}>
@@ -85,7 +87,10 @@ export function Summary() {
           label={t("parameters.common.value-in-base-currency-label", {
             baseCurrency,
           })}
-          value={values.valueInBaseCurrency || "-"}
+          value={formatNumber(values.valueInBaseCurrency || 0, {
+            currency: baseCurrency,
+            locale: locale,
+          })}
         />
       </FormSummaryDetailCard>
     </FormStep>
