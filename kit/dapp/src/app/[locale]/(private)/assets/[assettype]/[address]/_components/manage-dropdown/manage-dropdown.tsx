@@ -206,6 +206,26 @@ export function ManageDropdown({
               ? assetDetails.underlyingAsset.id
               : "0x0"
           }
+          underlyingAssetType={
+            "underlyingAsset" in assetDetails
+              ? assetDetails.underlyingAsset.type as AssetType
+              : "stablecoin" as AssetType
+          }
+          yieldScheduleAddress={
+            "yieldSchedule" in assetDetails
+              ? assetDetails.yieldSchedule?.id
+              : "0x0"
+          }
+          yieldUnderlyingAssetAddress={
+            "yieldSchedule" in assetDetails
+              ? assetDetails.yieldSchedule?.underlyingAsset.id
+              : "0x0"
+          }
+          yieldUnderlyingAssetType={
+            "yieldSchedule" in assetDetails
+              ? assetDetails.yieldSchedule?.underlyingAsset.type as AssetType | undefined
+              : undefined
+          }
           open={openMenuItem === "withdraw"}
           onOpenChange={onFormOpenChange}
         />
