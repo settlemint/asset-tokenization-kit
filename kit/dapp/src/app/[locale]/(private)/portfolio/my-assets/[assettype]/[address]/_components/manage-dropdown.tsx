@@ -93,6 +93,8 @@ export function ManageDropdown({
         onOpenChange={onFormOpenChange}
         disabled={isBlocked || isPaused || (userBalance?.available ?? 0) === 0}
         userAddress={userAddress}
+        decimals={assetDetails.decimals}
+        symbol={assetDetails.symbol}
       />
       {assettype === "bond" && (
         <RedeemForm

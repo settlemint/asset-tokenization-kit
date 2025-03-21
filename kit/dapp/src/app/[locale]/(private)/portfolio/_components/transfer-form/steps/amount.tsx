@@ -9,9 +9,11 @@ import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
   balance: number;
+  decimals: number;
+  symbol: string;
 }
 
-export function Amount({ balance }: AmountProps) {
+export function Amount({ balance, decimals, symbol }: AmountProps) {
   const { control } = useFormContext<TransferInput>();
   const t = useTranslations("portfolio.my-assets.cryptocurrency");
   const locale = useLocale();
@@ -26,11 +28,11 @@ export function Amount({ balance }: AmountProps) {
         name="value"
         label={t("transfer-form.amount.amount-label")}
         type="number"
-        min={1}
-        defaultValue={1}
         max={balance}
         description={`${t("transfer-form.amount.balance-description")} ${formatNumber(balance, { locale })}`}
         required
+        postfix={symbol}
+        step={decimals ? 10 ** -decimals : 1}
       />
     </FormStep>
   );
