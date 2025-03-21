@@ -101,6 +101,7 @@ export function ManageDropdown({
     ROLES.USER_MANAGEMENT_ROLE.contractRole
   );
   const userIsAdmin = userRoles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole);
+  const hasYieldSchedule = 'yieldSchedule' in assetDetails && assetDetails.yieldSchedule !== null;
 
   const contractActions = [
     {
@@ -162,31 +163,7 @@ export function ManageDropdown({
         <TopUpForm
           key="top-up"
           address={address}
-          underlyingAssetAddress={
-            "underlyingAsset" in assetDetails
-              ? assetDetails.underlyingAsset.id
-              : "0x0"
-          }
-          underlyingAssetType={
-            "underlyingAsset" in assetDetails
-              ? assetDetails.underlyingAsset.type as AssetType
-              : "stablecoin" as AssetType
-          }
-          yieldScheduleAddress={
-            "yieldSchedule" in assetDetails
-              ? assetDetails.yieldSchedule?.id
-              : "0x0"
-          }
-          yieldUnderlyingAssetAddress={
-            "yieldSchedule" in assetDetails
-              ? assetDetails.yieldSchedule?.underlyingAsset.id
-              : "0x0"
-          }
-          yieldUnderlyingAssetType={
-            "yieldSchedule" in assetDetails
-              ? assetDetails.yieldSchedule?.underlyingAsset.type as AssetType | undefined
-              : undefined
-          }
+          showTarget={hasYieldSchedule}
           open={openMenuItem === "top-up"}
           onOpenChange={onFormOpenChange}
         />
@@ -201,31 +178,7 @@ export function ManageDropdown({
         <WithdrawForm
           key="withdraw"
           address={address}
-          underlyingAssetAddress={
-            "underlyingAsset" in assetDetails
-              ? assetDetails.underlyingAsset.id
-              : "0x0"
-          }
-          underlyingAssetType={
-            "underlyingAsset" in assetDetails
-              ? assetDetails.underlyingAsset.type as AssetType
-              : "stablecoin" as AssetType
-          }
-          yieldScheduleAddress={
-            "yieldSchedule" in assetDetails
-              ? assetDetails.yieldSchedule?.id
-              : "0x0"
-          }
-          yieldUnderlyingAssetAddress={
-            "yieldSchedule" in assetDetails
-              ? assetDetails.yieldSchedule?.underlyingAsset.id
-              : "0x0"
-          }
-          yieldUnderlyingAssetType={
-            "yieldSchedule" in assetDetails
-              ? assetDetails.yieldSchedule?.underlyingAsset.type as AssetType | undefined
-              : undefined
-          }
+          showTarget={hasYieldSchedule}
           open={openMenuItem === "withdraw"}
           onOpenChange={onFormOpenChange}
         />

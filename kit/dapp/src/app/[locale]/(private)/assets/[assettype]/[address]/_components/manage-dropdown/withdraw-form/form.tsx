@@ -5,7 +5,6 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { FormStepElement } from "@/components/blocks/form/types";
 import { withdraw } from "@/lib/mutations/withdraw/withdraw-action";
 import { WithdrawSchema } from "@/lib/mutations/withdraw/withdraw-schema";
-import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -17,11 +16,7 @@ import { Target } from "./steps/target";
 
 interface WithdrawFormProps {
   address: Address;
-  underlyingAssetAddress: Address;
-  underlyingAssetType: AssetType;
-  yieldScheduleAddress?: Address;
-  yieldUnderlyingAssetAddress?: Address;
-  yieldUnderlyingAssetType?: AssetType;
+  showTarget?: boolean;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -29,11 +24,7 @@ interface WithdrawFormProps {
 
 export function WithdrawForm({
   address,
-  underlyingAssetAddress,
-  underlyingAssetType,
-  yieldScheduleAddress,
-  yieldUnderlyingAssetAddress,
-  yieldUnderlyingAssetType,
+  showTarget = false,
   asButton = false,
   open,
   onOpenChange,
@@ -48,7 +39,7 @@ export function WithdrawForm({
     const steps: FormStepElement<typeof WithdrawSchema>[] = [];
 
     // Only show the target selection if there's a yield schedule
-    if (yieldScheduleAddress) {
+    if (showTarget) {
       steps.push(<Target key="target" />);
     }
 
@@ -84,11 +75,6 @@ export function WithdrawForm({
         }}
         defaultValues={{
           address,
-          underlyingAssetAddress,
-          underlyingAssetType,
-          yieldScheduleAddress,
-          yieldUnderlyingAssetAddress,
-          yieldUnderlyingAssetType,
           target: "bond",
         }}
       >

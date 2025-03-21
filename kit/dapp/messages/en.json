@@ -1058,6 +1058,7 @@
             "placeholder": "Select target",
             "options": {
               "bond": "Bond",
+              "fund": "Fund",
               "yield": "Yield"
             }
           },

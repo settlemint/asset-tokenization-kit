@@ -2,6 +2,7 @@
 
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import type { Bond } from "@/lib/queries/bond/bond-fragment";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
@@ -58,46 +59,42 @@ export const withdraw = action
         pincode,
         amount,
         to,
-        underlyingAssetAddress,
-        underlyingAssetType,
-        yieldScheduleAddress,
-        yieldUnderlyingAssetAddress,
-        yieldUnderlyingAssetType
       },
       ctx: { user },
     }) => {
-      // Determine the correct underlying asset address and contract address based on target
-      const assetAddress = target === "bond" ? underlyingAssetAddress : yieldUnderlyingAssetAddress;
-      const contractAddress = target === "bond" ? address : yieldScheduleAddress;
-      const assetType = target === "bond" ? underlyingAssetType : yieldUnderlyingAssetType;
+      const asset = await getAssetDetail({
+        address,
+        assettype: "bond"
+      }) as Bond;
 
-      if (!assetAddress) {
+      const underlyingAssetAddress = target === "bond" ? asset.underlyingAsset.id : asset.yieldSchedule?.underlyingAsset.id;
+      const underlyingAssetType = target === "bond" ? asset.underlyingAsset.type as "bond" | "cryptocurrency" | "stablecoin" | "equity" | "fund" | "tokenizeddeposit" :
+        asset.yieldSchedule?.underlyingAsset.type as "bond" | "cryptocurrency" | "stablecoin" | "equity" | "fund" | "tokenizeddeposit";
+      if (!underlyingAssetAddress) {
         throw new Error(`Missing ${target === "bond" ? "underlying" : "yield underlying"} asset address`);
       }
 
-      if (!contractAddress) {
+      const underlyingAsset = await getAssetDetail({
+        address: underlyingAssetAddress,
+        assettype: underlyingAssetType
+      });
+      if (!underlyingAsset) {
+        throw new Error(`Missing ${target === "bond" ? "underlying" : "yield underlying"} asset address`);
+      }
+
+      const spender = target === "bond" ? address : asset.yieldSchedule?.id;
+      if (!spender) {
         throw new Error(`Missing ${target === "bond" ? "bond" : "yield schedule"} address`);
       }
-
-      if (!assetType) {
-        throw new Error(`Missing asset type for ${target === "bond" ? "underlying" : "yield underlying"} asset`);
-      }
-
-      // Get token details for decimals
-      const asset = await getAssetDetail({
-        address: assetAddress,
-        assettype: assetType as "bond" | "cryptocurrency" | "stablecoin" | "equity" | "fund" | "tokenizeddeposit"
-      });
 
       const formattedAmount = parseUnits(
         amount.toString(),
         asset.decimals
       ).toString();
 
-
       if (target === "bond") {
         const response = await portalClient.request(BondWithdrawUnderlyingAsset, {
-          address,
+          address: spender,
           from: user.wallet,
           input: {
             to,
@@ -114,13 +111,8 @@ export const withdraw = action
           .hashes()
           .parse([response.BondWithdrawUnderlyingAsset.transactionHash]);
       } else {
-        // Top up the yield schedule
-        if (!yieldScheduleAddress) {
-          throw new Error("Yield schedule address is required for topping up yield");
-        }
-
         const response = await portalClient.request(FixedYieldWithdrawUnderlyingAsset, {
-          address: yieldScheduleAddress,
+          address: spender,
           from: user.wallet,
           input: {
             to,

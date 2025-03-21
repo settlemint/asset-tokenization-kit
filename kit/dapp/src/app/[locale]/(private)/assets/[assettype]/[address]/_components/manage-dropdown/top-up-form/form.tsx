@@ -5,7 +5,6 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { FormStepElement } from "@/components/blocks/form/types";
 import { topUpUnderlyingAsset } from "@/lib/mutations/bond/top-up/top-up-action";
 import { TopUpSchema } from "@/lib/mutations/bond/top-up/top-up-schema";
-import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -16,11 +15,7 @@ import { Target } from "./steps/target";
 
 interface TopUpFormProps {
   address: Address;
-  underlyingAssetAddress: Address;
-  underlyingAssetType: AssetType;
-  yieldScheduleAddress?: Address;
-  yieldUnderlyingAssetAddress?: Address;
-  yieldUnderlyingAssetType?: AssetType;
+  showTarget?: boolean;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -28,11 +23,7 @@ interface TopUpFormProps {
 
 export function TopUpForm({
   address,
-  underlyingAssetAddress,
-  underlyingAssetType,
-  yieldScheduleAddress,
-  yieldUnderlyingAssetAddress,
-  yieldUnderlyingAssetType,
+  showTarget = false,
   asButton = false,
   open,
   onOpenChange,
@@ -46,8 +37,8 @@ export function TopUpForm({
   const renderFormSteps = () => {
     const steps: FormStepElement<typeof TopUpSchema>[] = [];
 
-    if (yieldScheduleAddress) {
-      steps.push(<Target key="target" />);
+    if (showTarget) {
+      steps.push(<Target key="target"/>);
     }
 
     steps.push(<Amount key="amount" />);
@@ -80,11 +71,6 @@ export function TopUpForm({
         }}
         defaultValues={{
           address,
-          underlyingAssetAddress,
-          underlyingAssetType,
-          yieldScheduleAddress,
-          yieldUnderlyingAssetAddress,
-          yieldUnderlyingAssetType,
           target: "bond",
         }}
       >

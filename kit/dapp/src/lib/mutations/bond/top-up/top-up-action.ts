@@ -2,10 +2,10 @@
 
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import type { Bond } from "@/lib/queries/bond/bond-fragment";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
-import console from "console";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { TopUpSchema } from "./top-up-schema";
@@ -174,31 +174,33 @@ export const topUpUnderlyingAsset = action
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { target, address, underlyingAssetAddress, underlyingAssetType, yieldScheduleAddress, yieldUnderlyingAssetAddress, yieldUnderlyingAssetType, amount, pincode },
+      parsedInput: { target, address, amount, pincode },
       ctx: { user },
     }) => {
-      // Determine the correct underlying asset address and spender based on target
-      const assetAddress = target === "bond" ? underlyingAssetAddress : yieldUnderlyingAssetAddress;
-      const spender = target === "bond" ? address : yieldScheduleAddress;
-      const assetType = target === "bond" ? underlyingAssetType : yieldUnderlyingAssetType;
+      const asset = await getAssetDetail({
+        address,
+        assettype: 'bond'
+      }) as Bond;
 
-      if (!assetAddress) {
+      const underlyingAssetAddress = target === "bond" ? asset.underlyingAsset.id : asset.yieldSchedule?.underlyingAsset.id;
+      const underlyingAssetType = target === "bond" ? asset.underlyingAsset.type as "bond" | "cryptocurrency" | "stablecoin" | "equity" | "fund" | "tokenizeddeposit" :
+        asset.yieldSchedule?.underlyingAsset.type as "bond" | "cryptocurrency" | "stablecoin" | "equity" | "fund" | "tokenizeddeposit";
+      if (!underlyingAssetAddress) {
         throw new Error(`Missing ${target === "bond" ? "underlying" : "yield underlying"} asset address`);
       }
 
+      const underlyingAsset = await getAssetDetail({
+        address: underlyingAssetAddress,
+        assettype: underlyingAssetType
+      });
+      if (!underlyingAsset) {
+        throw new Error(`Missing ${target === "bond" ? "underlying" : "yield underlying"} asset address`);
+      }
+
+      const spender = target === "bond" ? address : asset.yieldSchedule?.id;
       if (!spender) {
         throw new Error(`Missing ${target === "bond" ? "bond" : "yield schedule"} address`);
       }
-
-      if (!assetType) {
-        throw new Error(`Missing asset type for ${target === "bond" ? "underlying" : "yield underlying"} asset`);
-      }
-
-      // Get token details for decimals
-      const asset = await getAssetDetail({
-        address: assetAddress,
-        assettype: assetType as "bond" | "cryptocurrency" | "stablecoin" | "equity" | "fund" | "tokenizeddeposit"
-      });
 
       const formattedAmount = parseUnits(
         amount.toString(),
@@ -207,7 +209,7 @@ export const topUpUnderlyingAsset = action
 
       // Common parameters for all approve mutations
       const approveParams = {
-        address: assetAddress,
+        address: underlyingAsset.id,
         from: user.wallet,
         challengeResponse: await handleChallenge(user.wallet, pincode),
         input: {
@@ -216,12 +218,10 @@ export const topUpUnderlyingAsset = action
         },
       };
 
-      console.log("approveParams", approveParams);
-
       // Approve spending of the underlying asset based on asset type
       let approvalTxHash;
 
-      switch (assetType) {
+      switch (underlyingAssetType) {
         case "bond": {
           const response = await portalClient.request(BondApprove, approveParams);
           approvalTxHash = response.BondApprove?.transactionHash;
@@ -268,7 +268,7 @@ export const topUpUnderlyingAsset = action
       // Top up either the bond or the yield schedule
       if (target === "bond") {
         const response = await portalClient.request(BondTopUpUnderlyingAsset, {
-          address,
+          address: spender,
           from: user.wallet,
           input: {
             amount: formattedAmount,
@@ -284,13 +284,8 @@ export const topUpUnderlyingAsset = action
           .hashes()
           .parse([response.BondTopUpUnderlyingAsset.transactionHash]);
       } else {
-        // Top up the yield schedule
-        if (!yieldScheduleAddress) {
-          throw new Error("Yield schedule address is required for topping up yield");
-        }
-
         const response = await portalClient.request(FixedYieldTopUpUnderlyingAsset, {
-          address: yieldScheduleAddress,
+          address: spender,
           from: user.wallet,
           input: {
             amount: formattedAmount,

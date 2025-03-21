@@ -2,7 +2,7 @@
 
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
-import type { WithdrawInput } from "@/lib/mutations/withdraw/withdraw-schema";
+import type { TopUpInput } from "@/lib/mutations/bond/top-up/top-up-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
@@ -12,7 +12,7 @@ interface TargetOption {
 }
 
 export function Target() {
-  const { control } = useFormContext<WithdrawInput>();
+  const { control } = useFormContext<TopUpInput>();
   const t = useTranslations("private.assets.details.forms.target");
 
   // Create options for the select input
