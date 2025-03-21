@@ -257,7 +257,7 @@ To modify database schema:
    bun db:push
    ```
 
-3. Register your updates to the table with Hasura by executing:
+3. Ensure your updates are registered with Hasura by executing:
 
    ```bash
    settlemint hasura track -a
