@@ -15,6 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { cn } from "@/lib/utils";
 import { shortHex } from "@/lib/utils/hex";
 import { ChevronDown } from "lucide-react";
@@ -27,6 +28,7 @@ import {
   useRef,
 } from "react";
 import type { Address } from "viem";
+import { CurrencyMenuItem } from "../blocks/currency/currency-menu-item";
 import {
   BookTextIcon,
   type BookTextIconHandle,
@@ -160,6 +162,10 @@ export function UserDropdown() {
           <DropdownMenuGroup>
             <ThemeMenuItem />
             <LanguageMenuItem />
+            <CurrencyMenuItem
+              defaultCurrency={user.currency as CurrencyCode}
+              onCurrencyChange={refetch}
+            />
             <DropdownMenuItem
               onMouseEnter={() => bookIconRef.current?.startAnimation()}
               onMouseLeave={() => bookIconRef.current?.stopAnimation()}
