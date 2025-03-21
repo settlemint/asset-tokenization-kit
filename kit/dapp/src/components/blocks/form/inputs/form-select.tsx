@@ -79,7 +79,7 @@ export function FormSelect<T extends FieldValues>({
       defaultValue={defaultValue}
       render={({ field, fieldState }) => {
         return (
-          <FormItem className="flex flex-col space-y-1">
+          <FormItem className="flex flex-col">
             {label && (
               <FormLabel
                 className={cn(disabled && "cursor-not-allowed opacity-70")}

@@ -44,7 +44,7 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
               control={control}
               options={timeUnitOptions}
               defaultValue="months"
-              className="border-l-0 rounded-l-none w-26"
+              className="border-l-0 rounded-l-none w-26 shadow-none"
             />
           }
         />

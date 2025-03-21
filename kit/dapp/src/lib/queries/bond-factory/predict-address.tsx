@@ -72,7 +72,7 @@ export const getPredictedAddress = cache(async (input: CreateBondInput) => {
     cap: capExact,
     faceValue: String(faceValue),
     maturityDate: maturityDateTimestamp,
-    underlyingAsset,
+    underlyingAsset: underlyingAsset.id,
     name: assetName,
     symbol,
   });
