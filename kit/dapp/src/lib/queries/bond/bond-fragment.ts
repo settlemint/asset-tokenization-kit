@@ -30,6 +30,7 @@ export const BondFragment = theGraphGraphqlKit(`
       id
       symbol
       decimals
+      type
     }
     maturityDate
     isMatured
@@ -48,6 +49,7 @@ export const BondFragment = theGraphGraphqlKit(`
         id
         symbol
         decimals
+        type
       }
       underlyingBalance
       underlyingBalanceExact
@@ -98,6 +100,7 @@ export const BondFragmentSchema = z.object({
     id: z.address(),
     symbol: z.string(),
     decimals: z.decimals(),
+    type: z.string()
   }),
   maturityDate: z.bigInt().optional(),
   isMatured: z.boolean(),
@@ -116,6 +119,7 @@ export const BondFragmentSchema = z.object({
       id: z.address(),
       symbol: z.string(),
       decimals: z.decimals(),
+      type: z.string(),
     }),
     underlyingBalance: z.bigDecimal(),
     underlyingBalanceExact: z.bigInt(),

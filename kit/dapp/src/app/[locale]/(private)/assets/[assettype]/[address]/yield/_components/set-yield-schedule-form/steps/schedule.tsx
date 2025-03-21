@@ -29,11 +29,10 @@ export function Schedule() {
       />
       <FormInput
         name="rate"
-        type="number"
+        type="text"
+        pattern="[0-9]+([\.,][0-9]+)?"
         label={t("rate.label")}
-        step="0.01"
-        min="0"
-        max="100"
+        inputMode="decimal"
         description={t("rate.description")}
         required
       />

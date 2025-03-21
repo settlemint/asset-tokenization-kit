@@ -26,6 +26,8 @@ export async function BondsDetails({ address, showBalance = false, userAddress }
     getLocale(),
   ]);
 
+  console.log("bond", bond);
+
   // Conditionally fetch balance data only when needed
   const balanceData = showBalance && userAddress
     ? await getAssetBalanceDetail({ address, account: userAddress })

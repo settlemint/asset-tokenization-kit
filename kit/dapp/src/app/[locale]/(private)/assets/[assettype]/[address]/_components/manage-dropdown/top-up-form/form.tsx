@@ -5,10 +5,10 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { FormStepElement } from "@/components/blocks/form/types";
 import { topUpUnderlyingAsset } from "@/lib/mutations/bond/top-up/top-up-action";
 import { TopUpSchema } from "@/lib/mutations/bond/top-up/top-up-schema";
-import { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
@@ -17,6 +17,10 @@ import { Target } from "./steps/target";
 interface TopUpFormProps {
   address: Address;
   underlyingAssetAddress: Address;
+  underlyingAssetType: AssetType;
+  yieldScheduleAddress?: Address;
+  yieldUnderlyingAssetAddress?: Address;
+  yieldUnderlyingAssetType?: AssetType;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -25,6 +29,10 @@ interface TopUpFormProps {
 export function TopUpForm({
   address,
   underlyingAssetAddress,
+  underlyingAssetType,
+  yieldScheduleAddress,
+  yieldUnderlyingAssetAddress,
+  yieldUnderlyingAssetType,
   asButton = false,
   open,
   onOpenChange,
@@ -33,19 +41,6 @@ export function TopUpForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
-  const [yieldScheduleAddress, setYieldScheduleAddress] = useState<Address | undefined>(undefined);
-
-  // Fetch bond details to get the yield schedule information
-  useEffect(() => {
-    const fetchBondDetails = async () => {
-      const bondData = await getBondDetail({ address });
-      // If we have a yield schedule, update the state
-      if (bondData.yieldSchedule?.id) {
-        setYieldScheduleAddress(bondData.yieldSchedule.id);
-      }
-    };
-    fetchBondDetails();
-  }, [address]);
 
   // Generate form steps based on yield schedule availability
   const renderFormSteps = () => {
@@ -86,8 +81,11 @@ export function TopUpForm({
         defaultValues={{
           address,
           underlyingAssetAddress,
-          target: "bond",
+          underlyingAssetType,
           yieldScheduleAddress,
+          yieldUnderlyingAssetAddress,
+          yieldUnderlyingAssetType,
+          target: "bond",
         }}
       >
         {renderFormSteps()}

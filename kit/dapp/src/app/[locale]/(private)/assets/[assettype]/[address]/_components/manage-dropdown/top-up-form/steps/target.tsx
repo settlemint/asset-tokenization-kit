@@ -28,6 +28,7 @@ export function Target() {
         name="target"
         options={targetOptions}
         placeholder={t("placeholder")}
+        className="w-full"
       />
     </FormStep>
   );

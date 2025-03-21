@@ -1,4 +1,4 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type ZodInfer, z } from '@/lib/utils/zod';
 
 /**
  * Zod schema for validating top up underlying asset mutation inputs
@@ -13,10 +13,13 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
 export const TopUpSchema = z.object({
   address: z.address(),
   underlyingAssetAddress: z.address(),
+  underlyingAssetType: z.assetType(),
+  yieldScheduleAddress: z.address().optional(),
+  yieldUnderlyingAssetAddress: z.address().optional(),
+  yieldUnderlyingAssetType: z.assetType().optional(),
   amount: z.amount(),
   pincode: z.pincode(),
   target: z.enum(["bond", "yield"]),
-  yieldScheduleAddress: z.address().optional(),
 }).refine(
   (data) => data.target !== "yield" || data.yieldScheduleAddress,
   {

@@ -1,12 +1,89 @@
 "use server";
 
 import { handleChallenge } from "@/lib/challenge";
-import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
+import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
+import console from "console";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { TopUpSchema } from "./top-up-schema";
+
+/**
+ * GraphQL mutations for approving token spending for each asset type
+ */
+const BondApprove = portalGraphql(`
+  mutation BondApprove(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: BondApproveInput!
+  ) {
+    BondApprove(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const CryptoCurrencyApprove = portalGraphql(`
+  mutation CryptoCurrencyApprove(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: CryptoCurrencyApproveInput!
+  ) {
+    CryptoCurrencyApprove(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const EquityApprove = portalGraphql(`
+  mutation EquityApprove(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: EquityApproveInput!
+  ) {
+    EquityApprove(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const FundApprove = portalGraphql(`
+  mutation FundApprove(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: FundApproveInput!
+  ) {
+    FundApprove(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
 
 const StableCoinApprove = portalGraphql(`
   mutation StableCoinApprove(
@@ -16,6 +93,24 @@ const StableCoinApprove = portalGraphql(`
     $input: StableCoinApproveInput!
   ) {
     StableCoinApprove(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const TokenizedDepositApprove = portalGraphql(`
+  mutation TokenizedDepositApprove(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: TokenizedDepositApproveInput!
+  ) {
+    TokenizedDepositApprove(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
@@ -79,11 +174,30 @@ export const topUpUnderlyingAsset = action
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { address, pincode, amount, underlyingAssetAddress, target, yieldScheduleAddress },
+      parsedInput: { target, address, underlyingAssetAddress, underlyingAssetType, yieldScheduleAddress, yieldUnderlyingAssetAddress, yieldUnderlyingAssetType, amount, pincode },
       ctx: { user },
     }) => {
-      const asset = await getAssetUsersDetail({
-        address: underlyingAssetAddress,
+      // Determine the correct underlying asset address and spender based on target
+      const assetAddress = target === "bond" ? underlyingAssetAddress : yieldUnderlyingAssetAddress;
+      const spender = target === "bond" ? address : yieldScheduleAddress;
+      const assetType = target === "bond" ? underlyingAssetType : yieldUnderlyingAssetType;
+
+      if (!assetAddress) {
+        throw new Error(`Missing ${target === "bond" ? "underlying" : "yield underlying"} asset address`);
+      }
+
+      if (!spender) {
+        throw new Error(`Missing ${target === "bond" ? "bond" : "yield schedule"} address`);
+      }
+
+      if (!assetType) {
+        throw new Error(`Missing asset type for ${target === "bond" ? "underlying" : "yield underlying"} asset`);
+      }
+
+      // Get token details for decimals
+      const asset = await getAssetDetail({
+        address: assetAddress,
+        assettype: assetType as "bond" | "cryptocurrency" | "stablecoin" | "equity" | "fund" | "tokenizeddeposit"
       });
 
       const formattedAmount = parseUnits(
@@ -91,29 +205,65 @@ export const topUpUnderlyingAsset = action
         asset.decimals
       ).toString();
 
-      // Resolve spender based on target
-      const spender = target === "bond" ? address : yieldScheduleAddress;
-      if (!spender) {
-        throw new Error("Invalid spender address");
-      }
-
-      // Approve spending of the underlying asset
-      const approvalData = await portalClient.request(StableCoinApprove, {
-        address: underlyingAssetAddress,
+      // Common parameters for all approve mutations
+      const approveParams = {
+        address: assetAddress,
         from: user.wallet,
         challengeResponse: await handleChallenge(user.wallet, pincode),
         input: {
           spender,
           value: formattedAmount,
         },
-      });
+      };
 
-      const approvalTxHash = approvalData.StableCoinApprove?.transactionHash;
+      console.log("approveParams", approveParams);
+
+      // Approve spending of the underlying asset based on asset type
+      let approvalTxHash;
+
+      switch (assetType) {
+        case "bond": {
+          const response = await portalClient.request(BondApprove, approveParams);
+          approvalTxHash = response.BondApprove?.transactionHash;
+          break;
+        }
+        case "cryptocurrency": {
+          const response = await portalClient.request(CryptoCurrencyApprove, approveParams);
+          approvalTxHash = response.CryptoCurrencyApprove?.transactionHash;
+          break;
+        }
+        case "equity": {
+          const response = await portalClient.request(EquityApprove, approveParams);
+          approvalTxHash = response.EquityApprove?.transactionHash;
+          break;
+        }
+        case "fund": {
+          const response = await portalClient.request(FundApprove, approveParams);
+          approvalTxHash = response.FundApprove?.transactionHash;
+          break;
+        }
+        case "stablecoin": {
+          const response = await portalClient.request(StableCoinApprove, approveParams);
+          approvalTxHash = response.StableCoinApprove?.transactionHash;
+          break;
+        }
+        case "tokenizeddeposit": {
+          const response = await portalClient.request(TokenizedDepositApprove, approveParams);
+          approvalTxHash = response.TokenizedDepositApprove?.transactionHash;
+          break;
+        }
+        default:
+          throw new Error("Invalid asset type");
+      }
+
       if (!approvalTxHash) {
         throw new Error(
           "Failed to approve spending of the underlying asset"
         );
       }
+
+      // Wait for the approval transaction to be confirmed before proceeding
+      await waitForTransactions(approvalTxHash);
 
       // Top up either the bond or the yield schedule
       if (target === "bond") {
@@ -158,3 +308,4 @@ export const topUpUnderlyingAsset = action
       }
     }
   );
+

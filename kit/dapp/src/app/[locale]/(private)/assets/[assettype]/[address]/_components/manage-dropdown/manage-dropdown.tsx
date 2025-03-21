@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
 import { getRoles, ROLES } from "@/lib/config/roles";
@@ -164,8 +164,28 @@ export function ManageDropdown({
           address={address}
           underlyingAssetAddress={
             "underlyingAsset" in assetDetails
-              ? assetDetails.underlyingAsset
+              ? assetDetails.underlyingAsset.id
               : "0x0"
+          }
+          underlyingAssetType={
+            "underlyingAsset" in assetDetails
+              ? assetDetails.underlyingAsset.type as AssetType
+              : "stablecoin" as AssetType
+          }
+          yieldScheduleAddress={
+            "yieldSchedule" in assetDetails
+              ? assetDetails.yieldSchedule?.id
+              : "0x0"
+          }
+          yieldUnderlyingAssetAddress={
+            "yieldSchedule" in assetDetails
+              ? assetDetails.yieldSchedule?.underlyingAsset.id
+              : "0x0"
+          }
+          yieldUnderlyingAssetType={
+            "yieldSchedule" in assetDetails
+              ? assetDetails.yieldSchedule?.underlyingAsset.type as AssetType | undefined
+              : undefined
           }
           open={openMenuItem === "top-up"}
           onOpenChange={onFormOpenChange}
@@ -183,7 +203,7 @@ export function ManageDropdown({
           address={address}
           underlyingAssetAddress={
             "underlyingAsset" in assetDetails
-              ? assetDetails.underlyingAsset
+              ? assetDetails.underlyingAsset.id
               : "0x0"
           }
           open={openMenuItem === "withdraw"}

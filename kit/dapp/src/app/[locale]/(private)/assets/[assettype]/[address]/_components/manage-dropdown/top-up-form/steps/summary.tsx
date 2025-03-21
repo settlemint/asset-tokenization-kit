@@ -28,7 +28,7 @@ export function Summary() {
       />
       <FormSummaryDetailItem
         label={t("amount-label")}
-        value={formatNumber(values.amount ?? 0, { locale })}
+        value={formatNumber(values.amount ?? 0, { decimals: values.underlyingAssetDecimals, locale })}
       />
     </FormStep>
   );
