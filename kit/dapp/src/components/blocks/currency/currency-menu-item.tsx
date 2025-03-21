@@ -7,8 +7,10 @@ import {
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
+import { updateCurrency } from "@/lib/mutations/user/update-currency";
 import { Check, DollarSign } from "lucide-react";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 
 // Currency display names mapping
 const CURRENCY_NAMES: Record<CurrencyCode, string> = {
@@ -24,7 +26,7 @@ const CURRENCY_NAMES: Record<CurrencyCode, string> = {
 const AVAILABLE_CURRENCIES = Object.keys(CURRENCY_NAMES) as CurrencyCode[];
 
 interface CurrencyMenuItemProps {
-  defaultCurrency?: CurrencyCode;
+  defaultCurrency: CurrencyCode;
   onCurrencyChange?: (currency: CurrencyCode) => void;
 }
 
@@ -33,37 +35,39 @@ export function CurrencyMenuItem({
   onCurrencyChange,
 }: CurrencyMenuItemProps) {
   const [currentCurrency, setCurrentCurrency] = useState(defaultCurrency);
-  const [isPending, setIsPending] = useState(false);
 
   const handleCurrencyChange = useCallback(
-    (currency: CurrencyCode) => {
+    async (currency: CurrencyCode) => {
       if (currency === currentCurrency) return;
 
-      setIsPending(true);
+      try {
+        // Call the server action to update currency
+        await updateCurrency({ currency });
 
-      // Update local state
-      setCurrentCurrency(currency);
+        // Update local state
+        setCurrentCurrency(currency);
 
-      // Call the callback if provided
-      if (onCurrencyChange) {
-        onCurrencyChange(currency);
+        // Call the callback if provided
+        if (onCurrencyChange) {
+          onCurrencyChange(currency);
+        }
+
+        toast.success(
+          `Default currency changed to ${CURRENCY_NAMES[currency]}`
+        );
+      } catch (error) {
+        toast.error("Failed to update default currency");
+        console.error("Error updating default currency:", error);
       }
-
-      // Simulate pending state for UI feedback
-      setTimeout(() => {
-        setIsPending(false);
-      }, 300);
     },
     [currentCurrency, onCurrencyChange]
   );
 
   return (
     <DropdownMenuSub>
-      <DropdownMenuSubTrigger disabled={isPending} className="p-2">
+      <DropdownMenuSubTrigger className="p-2">
         <DollarSign className="mr-4 size-4 text-muted-foreground" />
-        <span>
-          {isPending ? "Changing..." : CURRENCY_NAMES[currentCurrency]}
-        </span>
+        <span>{CURRENCY_NAMES[currentCurrency]}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="min-w-[8rem]">
         {AVAILABLE_CURRENCIES.map((currency) => (
@@ -71,7 +75,7 @@ export function CurrencyMenuItem({
             key={currency}
             className="dropdown-menu-item cursor-pointer justify-between gap-1 px-2 py-1.5 text-sm"
             onSelect={() => handleCurrencyChange(currency)}
-            disabled={isPending || currency === currentCurrency}
+            disabled={currency === currentCurrency}
           >
             {CURRENCY_NAMES[currency] || currency}
             {currency === currentCurrency && (
