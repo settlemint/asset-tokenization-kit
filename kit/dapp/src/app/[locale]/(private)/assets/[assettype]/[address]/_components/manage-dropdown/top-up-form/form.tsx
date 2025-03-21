@@ -2,6 +2,7 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import type { FormStepElement } from "@/components/blocks/form/types";
 import { topUpUnderlyingAsset } from "@/lib/mutations/bond/top-up/top-up-action";
 import { TopUpSchema } from "@/lib/mutations/bond/top-up/top-up-schema";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
@@ -46,6 +47,20 @@ export function TopUpForm({
     fetchBondDetails();
   }, [address]);
 
+  // Generate form steps based on yield schedule availability
+  const renderFormSteps = () => {
+    const steps: FormStepElement<typeof TopUpSchema>[] = [];
+
+    if (yieldScheduleAddress) {
+      steps.push(<Target key="target" />);
+    }
+
+    steps.push(<Amount key="amount" />);
+    steps.push(<Summary key="summary" />);
+
+    return steps;
+  };
+
   return (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
@@ -75,9 +90,7 @@ export function TopUpForm({
           yieldScheduleAddress,
         }}
       >
-        <Target />
-        <Amount />
-        <Summary />
+        {renderFormSteps()}
       </Form>
     </FormSheet>
   );

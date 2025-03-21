@@ -98,21 +98,19 @@ export async function BondsDetails({ address, showBalance = false, userAddress }
         </DetailGridItem>
         <DetailGridItem label={t("underlying-asset")}>
           <EvmAddress
-            address={bond.underlyingAsset}
+            address={bond.underlyingAsset.id}
             prettyNames={true}
             hoverCard={true}
             copyToClipboard={true}
           />
         </DetailGridItem>
-        {bond.yieldSchedule && (
-          <DetailGridItem label={t("underlying-asset-balance")}>
-          {formatNumber(bond.underlyingBalance, {
-            token: bond.yieldSchedule.underlyingAsset.symbol,
-            decimals: bond.yieldSchedule.underlyingAsset.decimals,
-            locale: locale,
-            })}
-          </DetailGridItem>
-        )}
+        <DetailGridItem label={t("underlying-asset-balance")}>
+        {formatNumber(bond.underlyingBalance, {
+          token: bond.underlyingAsset.symbol,
+          decimals: bond.underlyingAsset.decimals,
+          locale: locale,
+          })}
+        </DetailGridItem>
         <DetailGridItem label={t("redemption-readiness")}>
           {/* Calculate percentage: (part/total) * 100
               Since we're using bigInt which doesn't support decimal division,

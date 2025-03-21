@@ -26,7 +26,11 @@ export const BondFragment = theGraphGraphqlKit(`
     holders(first: 5, orderBy: valueExact, orderDirection: desc) {
       valueExact
     }
-    underlyingAsset
+    underlyingAsset {
+      id
+      symbol
+      decimals
+    }
     maturityDate
     isMatured
     hasSufficientUnderlying
@@ -90,7 +94,11 @@ export const BondFragmentSchema = z.object({
       valueExact: z.bigInt(),
     })
   ),
-  underlyingAsset: z.address(),
+  underlyingAsset: z.object({
+    id: z.address(),
+    symbol: z.string(),
+    decimals: z.decimals(),
+  }),
   maturityDate: z.bigInt().optional(),
   isMatured: z.boolean(),
   hasSufficientUnderlying: z.boolean(),
