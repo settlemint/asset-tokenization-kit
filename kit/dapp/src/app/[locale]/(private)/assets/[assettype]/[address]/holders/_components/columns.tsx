@@ -20,7 +20,13 @@ import { FreezeForm } from "./actions/freeze-form/form";
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
 
-export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
+export function columns({
+  maxMint,
+  decimals,
+}: {
+  maxMint?: number;
+  decimals: number;
+}) {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.details");
@@ -138,7 +144,8 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     assettype={row.original.asset.type}
                     open={open}
                     onOpenChange={onOpenChange}
-                    maxLimit={mintMaxLimit}
+                    max={maxMint}
+                    decimals={decimals}
                   />
                 ),
                 disabled: row.original.asset.paused,

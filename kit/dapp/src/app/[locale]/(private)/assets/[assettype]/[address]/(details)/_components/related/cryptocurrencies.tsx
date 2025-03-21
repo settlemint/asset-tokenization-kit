@@ -33,6 +33,7 @@ export async function CryptocurrenciesRelated({
       >
         <MintForm
           address={address}
+          decimals={assetDetails.decimals}
           assettype="cryptocurrency"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}

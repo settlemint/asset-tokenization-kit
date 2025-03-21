@@ -17,7 +17,8 @@ interface MintFormProps {
   address: Address;
   assettype: AssetType;
   recipient?: Address;
-  maxLimit?: number;
+  max?: number;
+  decimals: number;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -28,7 +29,8 @@ export function MintForm({
   address,
   assettype,
   recipient,
-  maxLimit,
+  max,
+  decimals,
   asButton = false,
   open,
   onOpenChange,
@@ -40,11 +42,11 @@ export function MintForm({
   const [internalOpenState, setInternalOpenState] = useState(false);
   const steps = recipient
     ? [
-        <Amount key="amount" maxLimit={maxLimit} />,
+        <Amount key="amount" max={max} decimals={decimals} />,
         <Summary key="summary" address={address} />,
       ]
     : [
-        <Amount key="amount" maxLimit={maxLimit} />,
+        <Amount key="amount" max={max} decimals={decimals} />,
         <Recipients key="recipients" />,
         <Summary key="summary" address={address} />,
       ];
@@ -64,7 +66,7 @@ export function MintForm({
     >
       <Form
         action={mint}
-        resolver={zodResolver(MintSchema)}
+        resolver={zodResolver(MintSchema(max, decimals))}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

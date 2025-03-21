@@ -18,19 +18,20 @@ export default async function BondHoldersPage({ params }: PageProps) {
     getAssetDetail({ address, assettype }),
   ]);
 
-  let mintMaxLimit: number | undefined = undefined;
+  let maxMint: number | undefined = undefined;
   if (assettype === "stablecoin" || assettype === "tokenizeddeposit") {
     const tokenizedDeposit = assetDetails as Awaited<
       ReturnType<typeof getTokenizedDepositDetail>
     >;
     const freeCollateral = tokenizedDeposit.freeCollateral;
-    mintMaxLimit = freeCollateral;
+    maxMint = freeCollateral;
   }
 
   return (
     <DataTable
       columnParams={{
-        mintMaxLimit,
+        maxMint,
+        decimals: assetDetails.decimals,
       }}
       columns={columns}
       data={balances}

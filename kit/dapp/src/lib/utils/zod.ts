@@ -29,8 +29,51 @@ export function safeParseWithLogging<Output, Input, Def extends z.ZodTypeDef>(
   try {
     return schema.parse(data);
   } catch (error) {
-    console.error(`Zod validation error for ${context}:`, error);
-    console.error(`Failed ${context} data:`, data);
+    if (error instanceof z.ZodError) {
+      console.error(`🔴 Zod validation error for ${context}:`);
+
+      // Format and log each issue in a readable way
+      error.errors.forEach((issue, index) => {
+        const path = issue.path.length ? issue.path.join(".") : "(root)";
+        const code = issue.code;
+        const message = issue.message;
+
+        console.error(`  Error ${index + 1}:`);
+        console.error(`    Path: ${path}`);
+        console.error(`    Code: ${code}`);
+        console.error(`    Message: ${message}`);
+
+        // Add extra details based on the issue type
+        if (code === "invalid_type") {
+          const typedIssue = issue as z.ZodInvalidTypeIssue;
+          console.error(`    Expected: ${typedIssue.expected}`);
+          console.error(`    Received: ${typedIssue.received}`);
+        }
+
+        // Log additional context for specific error types
+        if ("minimum" in issue) {
+          console.error(`    Minimum: ${issue.minimum}`);
+        }
+
+        if ("maximum" in issue) {
+          console.error(`    Maximum: ${issue.maximum}`);
+        }
+
+        if ("validation" in issue) {
+          console.error(`    Validation: ${(issue as any).validation}`);
+        }
+      });
+
+      // Pretty print the failed data
+      console.error(
+        `Failed ${context} data:`,
+        typeof data === "object" ? JSON.stringify(data, null, 2) : data
+      );
+    } else {
+      console.error(`Unknown error validating ${context}:`, error);
+      console.error(`Failed ${context} data:`, data);
+    }
+
     throw error; // Re-throw to maintain original behavior
   }
 }
@@ -165,6 +208,156 @@ export const timeUnits = [
 
 export type TimeUnit = (typeof timeUnits)[number];
 
+/**
+ * Comprehensive error map for Zod validation errors
+ *
+ * This error map translates Zod validation errors into message keys that can be
+ * used for i18n translations in the UI. It covers all standard Zod error types
+ * and custom domain-specific validation errors.
+ */
+const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
+  // Always return an object with a message property
+  let message: string;
+
+  switch (issue.code) {
+    // Standard Zod error types
+    case z.ZodIssueCode.invalid_type:
+      if (issue.received === "undefined" || issue.received === "null") {
+        message = "required";
+      } else if (issue.expected === "string") {
+        message = "must_be_string";
+      } else if (issue.expected === "number") {
+        message = "must_be_number";
+      } else if (issue.expected === "boolean") {
+        message = "must_be_boolean";
+      } else if (issue.expected === "date") {
+        message = "must_be_date";
+      } else if (issue.expected === "bigint") {
+        message = "must_be_bigint";
+      } else if (issue.expected === "array") {
+        message = "must_be_array";
+      } else if (issue.expected === "object") {
+        message = "must_be_object";
+      } else {
+        message = `invalid_type`;
+      }
+      break;
+
+    case z.ZodIssueCode.invalid_string:
+      if (issue.validation === "url") {
+        message = "invalid_url";
+      } else if (issue.validation === "email") {
+        message = "invalid_email";
+      } else if (issue.validation === "uuid") {
+        message = "invalid_uuid";
+      } else if (issue.validation === "cuid") {
+        message = "invalid_cuid";
+      } else if (issue.validation === "regex") {
+        message = "invalid_format";
+      } else if (issue.validation === "datetime") {
+        message = "invalid_datetime";
+      } else {
+        message = `invalid_string`;
+      }
+      break;
+
+    case z.ZodIssueCode.too_small:
+      if (issue.type === "string") {
+        if (issue.inclusive) {
+          message = "string_length_too_small.inclusive";
+        } else {
+          message = "string_length_too_small.exclusive";
+        }
+      } else if (issue.type === "number") {
+        if (issue.inclusive) {
+          message = "number_too_small.inclusive";
+        } else {
+          message = "number_too_small.exclusive";
+        }
+      } else if (issue.type === "array") {
+        if (issue.inclusive) {
+          message = "array_length_too_small.inclusive";
+        } else {
+          message = "array_length_too_small.exclusive";
+        }
+      } else {
+        message = "too_small";
+      }
+      break;
+
+    case z.ZodIssueCode.too_big:
+      if (issue.type === "string") {
+        if (issue.inclusive) {
+          message = "string_length_too_big.inclusive";
+        } else {
+          message = "string_length_too_big.exclusive";
+        }
+      } else if (issue.type === "number") {
+        if (issue.inclusive) {
+          message = "number_too_big.inclusive";
+        } else {
+          message = "number_too_big.exclusive";
+        }
+      } else if (issue.type === "array") {
+        if (issue.inclusive) {
+          message = "array_length_too_big.inclusive";
+        } else {
+          message = "array_length_too_big.exclusive";
+        }
+      } else {
+        message = "too_big";
+      }
+      break;
+
+    case z.ZodIssueCode.invalid_literal:
+      message = "invalid_literal";
+      break;
+
+    case z.ZodIssueCode.invalid_union:
+      message = "invalid_union";
+      break;
+
+    case z.ZodIssueCode.invalid_union_discriminator:
+      message = "invalid_union_discriminator";
+      break;
+
+    case z.ZodIssueCode.invalid_enum_value:
+      message = "invalid_enum_value";
+      break;
+
+    case z.ZodIssueCode.invalid_arguments:
+      message = "invalid_arguments";
+      break;
+
+    case z.ZodIssueCode.invalid_return_type:
+      message = "invalid_return_type";
+      break;
+
+    case z.ZodIssueCode.invalid_date:
+      message = "invalid_date";
+      break;
+
+    case z.ZodIssueCode.custom:
+      // For custom validators, prioritize existing message or use a default
+      if (issue.message) {
+        // Already contains one of our custom keys like "invalid-ethereum-address"
+        message = issue.message;
+      } else {
+        message = "validation_failed";
+      }
+      break;
+
+    // Default fallback
+    default:
+      message = ctx.defaultError;
+      break;
+  }
+
+  return { message };
+};
+
+z.setErrorMap(customErrorMap);
+
 // Create a custom extension of Zod
 // This approach avoids TypeScript errors with namespace merging
 const extendedZod = {
@@ -178,7 +371,7 @@ const extendedZod = {
     z
       .string()
       .refine((val) => isAddress(val), {
-        message: "Invalid Ethereum address format",
+        message: "invalid-ethereum-address",
       })
       .transform((val): Address => getAddress(val)),
 
@@ -191,7 +384,7 @@ const extendedZod = {
     z
       .string()
       .refine((val) => isHash(val), {
-        message: "Invalid hash format",
+        message: "invalid-hash-format",
       })
       .transform((val): Hash => val),
 
@@ -216,8 +409,8 @@ const extendedZod = {
       .pipe(
         z.coerce
           .number()
-          .min(100000, { message: "Invalid pincode" })
-          .max(999999, { message: "Invalid pincode" })
+          .min(100000, { message: "invalid-pincode" })
+          .max(999999, { message: "invalid-pincode" })
       ),
 
   /**
@@ -232,8 +425,8 @@ const extendedZod = {
       .pipe(
         z.coerce
           .number()
-          .min(0, { message: "Must be at least 0" })
-          .max(18, { message: "Must be between 0 and 18" })
+          .min(0, { message: "decimals-min" })
+          .max(18, { message: "decimals-max" })
           .default(18)
       ),
 
@@ -242,12 +435,23 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates positive amounts
    */
-  amount: () =>
-    z
+  amount: (max?: number, decimals?: number) => {
+    const smallestPossibleValue = decimals ? Math.pow(10, -decimals) : 1;
+
+    return z
       .number()
       .or(z.string())
-      .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
-
+      .pipe(
+        z.coerce
+          .number()
+          .min(smallestPossibleValue, {
+            message: "amount-too-small",
+          })
+          .max(max ?? Infinity, {
+            message: "amount-too-large",
+          })
+      );
+  },
   /**
    * Validates user roles selection
    *
@@ -263,7 +467,7 @@ const extendedZod = {
         USER_MANAGEMENT_ROLE: z.boolean().nullish(),
       })
       .refine((data) => Object.values(data).some(Boolean), {
-        message: "At least one role must be selected",
+        message: "role-required",
       }),
 
   /**
@@ -278,7 +482,7 @@ const extendedZod = {
       .string()
       .nonempty()
       .regex(/^[A-Z0-9]+$/, {
-        message: "Symbol must contain only uppercase letters and numbers",
+        message: "invalid-symbol",
       }),
   /**
    * Validates an International Securities Identification Number (ISIN)
@@ -291,10 +495,10 @@ const extendedZod = {
     z
       .string()
       .refine((val) => val === "" || /^[A-Z0-9]+$/.test(val), {
-        message: "ISIN must contain only uppercase letters and numbers",
+        message: "isin-format",
       })
       .refine((val) => val === "" || val.length === 12, {
-        message: "ISIN must be exactly 12 characters",
+        message: "isin-length",
       }),
 
   /**
@@ -328,7 +532,7 @@ const extendedZod = {
               // Check if it's a valid decimal string
               return /^-?\d*\.?\d+$/.test(val);
             },
-            { message: "Invalid decimal number format" }
+            { message: "invalid-decimal" }
           )
           .transform((val) => {
             try {
@@ -358,7 +562,7 @@ const extendedZod = {
   timestamp: () =>
     z.coerce
       .number()
-      .min(0, { message: "Timestamp must be a positive number" })
+      .min(0, { message: "invalid-timestamp" })
       .transform((val) => {
         // Detect timestamp format based on the number of digits
         // Unix timestamp (seconds): ~10 digits
@@ -435,7 +639,7 @@ const extendedZod = {
       .or(z.string())
       .nullish()
       .transform((val) => (val === null || val === undefined ? 0 : val))
-      .pipe(z.coerce.number().min(0, { message: "Amount must be positive" })),
+      .pipe(z.coerce.number().min(0, { message: "negative-amount" })),
 
   /**
    * Validates time units for duration inputs
