@@ -1,5 +1,6 @@
 import {
   emailVerification,
+  sendChangeEmailVerification,
   sendDeleteAccountVerification,
   sendMagicLink,
 } from "@/lib/auth/emails";
@@ -58,6 +59,10 @@ export const auth = betterAuth({
     deleteUser: {
       enabled: true,
       sendDeleteAccountVerification,
+    },
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailVerification,
     },
     additionalFields: {
       wallet: {

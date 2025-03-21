@@ -102,3 +102,46 @@ export const sendMagicLink = async ({
     }),
   });
 };
+
+export const sendChangeEmailVerification = async ({
+  newEmail,
+  url,
+}: {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    emailVerified: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    image?: string | null;
+  };
+  newEmail: string;
+  url: string;
+  token: string;
+}) => {
+  if (!hasEmailConfigured || !resend) {
+    throw new Error("Email is not configured");
+  }
+
+  await resend.emails.send({
+    from: `${siteConfig.publisher} ${siteConfig.name} <${siteConfig.email}>`,
+    to: newEmail,
+    subject: `Change email address`,
+    react: EmailTemplate({
+      action: "Change email address",
+      content: (
+        <>
+          <p>Hello,</p>
+
+          <p>
+            Your email address has been changed to {newEmail}. If this was not
+            you, please contact support.
+          </p>
+        </>
+      ),
+      heading: `Change email address`,
+      url,
+    }),
+  });
+};
