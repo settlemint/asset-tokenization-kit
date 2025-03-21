@@ -20,12 +20,12 @@ export const WithdrawSchema = z.object({
   to: z.address(),
   amount: z.amount(),
   underlyingAssetAddress: z.address(),
-  underlyingAssetType: z.assetType().optional(),
+  underlyingAssetType: z.assetType(),
   yieldScheduleAddress: z.address().optional(),
   yieldUnderlyingAssetAddress: z.address().optional(),
   yieldUnderlyingAssetType: z.assetType().optional(),
   pincode: z.pincode(),
-  target: z.enum(["bond", "yield"]).optional(),
+  target: z.enum(["bond", "yield"]),
   assettype: z.assetType().optional(),
 }).refine(
   (data) => {

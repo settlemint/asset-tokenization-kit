@@ -24,11 +24,11 @@ export function Summary() {
       />
       <FormSummaryDetailItem
         label={t("asset-label")}
-        value={<EvmAddress address={values.underlyingAssetAddress ?? "0x0"} />}
+        value={<EvmAddress address={(values.target === "bond" ? values.underlyingAssetAddress : values.yieldUnderlyingAssetAddress ?? "0x0") ?? "0x0"} />}
       />
       <FormSummaryDetailItem
         label={t("amount-label")}
-        value={formatNumber(values.amount ?? 0, { decimals: values.underlyingAssetDecimals, locale })}
+        value={formatNumber(values.amount ?? 0, { locale })}
       />
     </FormStep>
   );

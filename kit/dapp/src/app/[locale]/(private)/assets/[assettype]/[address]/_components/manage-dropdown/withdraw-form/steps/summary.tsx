@@ -16,16 +16,6 @@ export function Summary() {
   });
   const locale = useLocale();
 
-  // Determine which asset address to show based on target
-  const targetAddress = values.target === "bond"
-    ? values.address
-    : values.yieldScheduleAddress;
-
-  // Determine which asset address to show based on target
-  const assetAddress = values.target === "bond"
-    ? values.underlyingAssetAddress
-    : values.yieldUnderlyingAssetAddress;
-
   return (
     <FormStep
       title={t("title.withdraw")}
@@ -33,16 +23,18 @@ export function Summary() {
     >
       <FormSummaryDetailItem
         label={t("target-label")}
-        value={<EvmAddress address={targetAddress ?? "0x0"} />}
+        value={<EvmAddress address={(values.target === "bond" ? values.address : values.yieldScheduleAddress) ?? "0x0"} />}
       />
       <FormSummaryDetailItem
         label={t("asset-label")}
-        value={<EvmAddress address={assetAddress ?? "0x0"} />}
+        value={<EvmAddress address={(values.target === "bond" ? values.underlyingAssetAddress : values.yieldUnderlyingAssetAddress ?? "0x0") ?? "0x0"} />}
       />
-      <FormSummaryDetailItem
-        label={t("account-label.recipient")}
-        value={<EvmAddress address={values.to ?? "0x0"} />}
-      />
+      {values.to && (
+        <FormSummaryDetailItem
+          label={t("account-label.recipient")}
+          value={<EvmAddress address={values.to} />}
+        />
+      )}
       <FormSummaryDetailItem
         label={t("amount-label")}
         value={formatNumber(values.amount ?? 0, { locale })}
