@@ -1,7 +1,7 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { Elysia, t } from "elysia";
-import { updateExchangeRates } from "./exchange-rates";
+import { getTodayDateString, updateExchangeRates } from "./exchange-rates";
 
 const ExchangeRateUpdateResponseSchema = t.Object({
   success: t.Boolean({
@@ -22,7 +22,7 @@ export const ExchangeRateUpdateApi = new Elysia()
     "/",
     async () => {
       try {
-        await updateExchangeRates();
+        await updateExchangeRates(getTodayDateString());
         return {
           success: true,
           message: "Exchange rates updated successfully",
@@ -42,7 +42,7 @@ export const ExchangeRateUpdateApi = new Elysia()
       detail: {
         summary: "Update",
         description:
-          "Updates all exchange rates by fetching current data from Yahoo Finance.",
+          "Updates all exchange rates for today by fetching current data from Yahoo Finance.",
         tags: ["provider"],
       },
       response: {

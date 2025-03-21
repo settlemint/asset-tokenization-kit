@@ -22,7 +22,7 @@ const ExchangeRateAPIResponseSchema = z.object({
 /**
  * Gets the current date formatted as ISO string (YYYY-MM-DD)
  */
-function getTodayDateString(): string {
+export function getTodayDateString(): string {
   return format(new Date(), "yyyy-MM-dd");
 }
 
