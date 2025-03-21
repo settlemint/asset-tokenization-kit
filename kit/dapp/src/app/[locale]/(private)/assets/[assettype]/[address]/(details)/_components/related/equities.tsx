@@ -34,6 +34,7 @@ export async function EquitiesRelated({
       >
         <MintForm
           address={address}
+          decimals={assetDetails.decimals}
           assettype="equity"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}

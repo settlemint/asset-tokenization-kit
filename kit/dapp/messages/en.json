@@ -1,4 +1,78 @@
 {
+  "zod": {
+    "error": {
+      "invalid-ethereum-address": "Invalid Ethereum address format",
+      "invalid-hash-format": "Invalid hash format",
+      "invalid-pincode": "Invalid pincode, must be a 6-digit number",
+      "decimals-min": "Decimals must be at least 0",
+      "decimals-max": "Decimals must be between 0 and 18",
+      "amount-too-small": "Amount is too small",
+      "amount-too-large": "Amount exceeds the maximum allowed",
+      "role-required": "At least one role must be selected",
+      "invalid-symbol": "Symbol must contain only uppercase letters and numbers",
+      "isin-format": "ISIN must contain only uppercase letters and numbers",
+      "isin-length": "ISIN must be exactly 12 characters",
+      "invalid-decimal": "Invalid decimal number format",
+      "invalid-timestamp": "Timestamp must be a positive number",
+      "negative-amount": "Amount must be positive",
+
+      "required": "This field is required",
+      "must_be_string": "This field must be a string",
+      "must_be_number": "This field must be a number",
+      "must_be_boolean": "This field must be a boolean",
+      "must_be_date": "This field must be a date",
+      "must_be_bigint": "This field must be a big integer",
+      "must_be_array": "This field must be an array",
+      "must_be_object": "This field must be an object",
+      "invalid_type": "Invalid type for this field",
+
+      "invalid_url": "Invalid URL format",
+      "invalid_email": "Invalid email format",
+      "invalid_uuid": "Invalid UUID format",
+      "invalid_cuid": "Invalid CUID format",
+      "invalid_format": "Invalid format for this field",
+      "invalid_datetime": "Invalid date/time format",
+      "invalid_string": "Invalid string format",
+
+      "string_length_too_small": {
+        "inclusive": "Text must be at least {minimum} characters",
+        "exclusive": "Text must be more than {minimum} characters"
+      },
+      "number_too_small": {
+        "inclusive": "Number must be at least {minimum}",
+        "exclusive": "Number must be greater than {minimum}"
+      },
+      "array_length_too_small": {
+        "inclusive": "Must contain at least {minimum} items",
+        "exclusive": "Must contain more than {minimum} items"
+      },
+      "too_small": "Value is too small",
+
+      "string_length_too_big": {
+        "inclusive": "Text must not exceed {maximum} characters",
+        "exclusive": "Text must be less than {maximum} characters"
+      },
+      "number_too_big": {
+        "inclusive": "Number must not exceed {maximum}",
+        "exclusive": "Number must be less than {maximum}"
+      },
+      "array_length_too_big": {
+        "inclusive": "Must not contain more than {maximum} items",
+        "exclusive": "Must contain less than {maximum} items"
+      },
+      "too_big": "Value is too large",
+
+      "invalid_literal": "Invalid literal value",
+      "invalid_union": "Invalid input for this type",
+      "invalid_union_discriminator": "Invalid discriminator value",
+      "invalid_enum_value": "Invalid option selected",
+      "invalid_arguments": "Invalid function arguments",
+      "invalid_return_type": "Invalid return type",
+      "invalid_date": "Invalid date",
+      "custom": "Invalid input",
+      "validation_failed": "Validation failed"
+    }
+  },
   "active": "Active",
   "admin": {
     "activity": {

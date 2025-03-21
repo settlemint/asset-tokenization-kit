@@ -295,7 +295,7 @@
     },
     "charts": {
       "assets": {
-        "asset-distribution": "資産分配",
+        "asset-distribution": "資産の分配",
         "asset-distribution-description": "資産タイプによるポートフォリオ配分",
         "bond": "債券",
         "collateral-ratio": {
@@ -342,7 +342,43 @@
         },
         "wallet-distribution": "ウォレット分配",
         "wallet-distribution-description": "保有者の数と保有量",
-        "wallet-distribution-no-data": "ウォレットデータは利用できません"
+        "wallet-distribution-no-data": "ウォレットデータは利用できません",
+        "bond-issuance": "債券の発行",
+        "bond-redemption-assets": "償還資産",
+        "bond-redeemed": "債券の償還",
+        "bond-status": "ステータス",
+        "bond-status-progress": "債券のステータス",
+        "bond-status-description": "債券の現在のステータス",
+        "bond-issued": "発行済み",
+        "bond-pending": "保留中",
+        "bond-redeemable": "償還可能",
+        "bond-total-underlying-asset-balance": "総基礎資産残高",
+        "bond-matured": "満期",
+        "bond-mature-readiness": "満期準備状況",
+        "bond-mature-readiness-description": "満期準備状況への進捗",
+        "bond-mature-readiness-status": "満期準備完了",
+        "error-loading-data": "データの読み込みエラー",
+        "loading": "読み込み中...",
+        "units-over-time": {
+          "description": "時間の経過に伴う流通ユニットの表示",
+          "label": "ユニット",
+          "no-data": "このウィンドウにデータはありません",
+          "title": "時間の経過に伴うユニット"
+        },
+        "yield-coverage": {
+          "title": "利回りカバレッジ",
+          "description": "基礎資産によってカバーされる利回りの割合",
+          "no-data": "このウィンドウにデータはありません",
+          "error": "利回りカバレッジデータの読み込みエラー"
+        },
+        "yield-distribution": {
+          "title": "利回り分配",
+          "description": "時間の経過に伴う利回り分配の表示",
+          "total-yield-label": "総利回り",
+          "claimed-label": "請求済み",
+          "no-data": "利回り分配データは利用できません",
+          "error": "利回り分配データの読み込みエラー"
+        }
       }
     },
     "data-table": {
@@ -678,7 +714,10 @@
       "recipients": {
         "description": "トークンを直接送信するためのウォレットアドレスを入力してください。",
         "title": "受取人を選択",
-        "wallet-address-label": "ウォレットアドレス"
+        "wallet-address-label": "ウォレットアドレス",
+        "address-placeholder": "ユーザーを検索",
+        "manual-entry-link": "アドレスを手動で入力...",
+        "search-user-link": "代わりにユーザーを検索..."
       },
       "select-asset": {
         "asset-description": "ポートフォリオから資産を選択",
@@ -777,7 +816,23 @@
             "name-label": "名前",
             "seconds-unit-label": "秒",
             "symbol-label": "シンボル",
-            "value-in-base-currency-label": "値 {baseCurrency} で"
+            "value-in-base-currency-label": "値 {baseCurrency} で",
+            "time-units": {
+              "singular": {
+                "seconds": "秒",
+                "hours": "時間",
+                "days": "日",
+                "weeks": "週",
+                "months": "月"
+              },
+              "plural": {
+                "seconds": "秒",
+                "hours": "時間",
+                "days": "日",
+                "weeks": "週",
+                "months": "月"
+              }
+            }
           },
           "cryptocurrencies": {
             "initial-supply-description": "鋳造されるトークンの初期数量",
@@ -1550,7 +1605,8 @@
         "price": "価格",
         "price-header": "価格",
         "allowed-since-header": "許可された日",
-        "blocked-since-header": "ブロックされた日"
+        "blocked-since-header": "ブロックされた日",
+        "balance": "残高"
       },
       "table": {
         "asset-management": "資産管理",
@@ -1983,5 +2039,74 @@
     "portfolio": "ポートフォリオ",
     "stablecoins": "ステーブルコイン",
     "tokenized-deposits": "トークン化された預金"
+  },
+  "zod": {
+    "error": {
+      "invalid-ethereum-address": "無効なイーサリアムアドレス形式",
+      "invalid-hash-format": "無効なハッシュ形式",
+      "invalid-pincode": "無効なピンコード、6桁の数字でなければなりません",
+      "decimals-min": "小数は少なくとも0でなければなりません",
+      "decimals-max": "小数は0から18の間でなければなりません",
+      "amount-too-small": "金額が小さすぎます",
+      "amount-too-large": "金額が許可されている最大値を超えています",
+      "role-required": "少なくとも1つの役割を選択する必要があります",
+      "invalid-symbol": "シンボルは大文字のアルファベットと数字のみを含む必要があります",
+      "isin-format": "ISINは大文字のアルファベットと数字のみを含む必要があります",
+      "isin-length": "ISINは正確に12文字でなければなりません",
+      "invalid-decimal": "無効な小数点数形式",
+      "invalid-timestamp": "タイムスタンプは正の数でなければなりません",
+      "negative-amount": "金額は正でなければなりません",
+      "required": "このフィールドは必須です",
+      "must_be_string": "このフィールドは文字列でなければなりません",
+      "must_be_number": "このフィールドは数値でなければなりません",
+      "must_be_boolean": "このフィールドはブール値でなければなりません",
+      "must_be_date": "このフィールドは日付でなければなりません",
+      "must_be_bigint": "このフィールドは大きな整数でなければなりません",
+      "must_be_array": "このフィールドは配列でなければなりません",
+      "must_be_object": "このフィールドはオブジェクトでなければなりません",
+      "invalid_type": "このフィールドの無効な型",
+      "invalid_url": "無効なURL形式",
+      "invalid_email": "無効なメール形式",
+      "invalid_uuid": "無効なUUID形式",
+      "invalid_cuid": "無効なCUID形式",
+      "invalid_format": "このフィールドの無効な形式",
+      "invalid_datetime": "無効な日付/時間形式",
+      "invalid_string": "無効な文字列形式",
+      "string_length_too_small": {
+        "inclusive": "テキストは少なくとも{minimum}文字でなければなりません",
+        "exclusive": "テキストは{minimum}文字より多くなければなりません"
+      },
+      "number_too_small": {
+        "inclusive": "数値は少なくとも{minimum}でなければなりません",
+        "exclusive": "数値は{minimum}より大きくなければなりません"
+      },
+      "array_length_too_small": {
+        "inclusive": "少なくとも{minimum}項目を含む必要があります",
+        "exclusive": "より多くの{minimum}項目を含む必要があります"
+      },
+      "too_small": "値が小さすぎます",
+      "string_length_too_big": {
+        "inclusive": "テキストは{maximum}文字を超えてはいけません",
+        "exclusive": "テキストは{maximum}文字未満でなければなりません"
+      },
+      "number_too_big": {
+        "inclusive": "数値は{maximum}を超えてはいけません",
+        "exclusive": "数値は{maximum}未満でなければなりません"
+      },
+      "array_length_too_big": {
+        "inclusive": "最大{maximum}項目を含んではいけません",
+        "exclusive": "最大{maximum}項目未満でなければなりません"
+      },
+      "too_big": "値が大きすぎます",
+      "invalid_literal": "無効なリテラル値",
+      "invalid_union": "この型の無効な入力",
+      "invalid_union_discriminator": "無効な識別子値",
+      "invalid_enum_value": "無効なオプションが選択されました",
+      "invalid_arguments": "無効な関数引数",
+      "invalid_return_type": "無効な戻り値の型",
+      "invalid_date": "無効な日付",
+      "custom": "無効な入力",
+      "validation_failed": "検証に失敗しました"
+    }
   }
 }

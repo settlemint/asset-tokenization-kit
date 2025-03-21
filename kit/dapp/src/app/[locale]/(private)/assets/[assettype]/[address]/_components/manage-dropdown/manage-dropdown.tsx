@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
 import { getRoles, ROLES } from "@/lib/config/roles";
@@ -80,13 +80,12 @@ export function ManageDropdown({
     );
   }
 
-  let mintMaxLimit: number | undefined = undefined;
+  let mintMax: number | undefined = undefined;
   if (assettype === "stablecoin" || assettype === "tokenizeddeposit") {
     const tokenizedDeposit = assetDetails as Awaited<
       ReturnType<typeof getTokenizedDepositDetail>
     >;
-    const freeCollateral = tokenizedDeposit.freeCollateral;
-    mintMaxLimit = freeCollateral;
+    mintMax = tokenizedDeposit.freeCollateral;
   }
 
   const isBlocked = userBalance?.blocked ?? false;
@@ -115,7 +114,8 @@ export function ManageDropdown({
           assettype={assettype}
           open={openMenuItem === "mint"}
           onOpenChange={onFormOpenChange}
-          maxLimit={mintMaxLimit}
+          max={mintMax}
+          decimals={assetDetails.decimals}
         />
       ),
     },

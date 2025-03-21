@@ -31,8 +31,7 @@ export async function StablecoinsRelated({
   const stablecoin = assetDetails as Awaited<
     ReturnType<typeof getStableCoinDetail>
   >;
-  const freeCollateral = stablecoin.freeCollateral;
-  const mintMaxLimit = freeCollateral;
+  const maxMint = stablecoin.freeCollateral;
 
   return (
     <RelatedGrid title={t("title")}>
@@ -53,10 +52,11 @@ export async function StablecoinsRelated({
       >
         <MintForm
           address={address}
+          decimals={assetDetails.decimals}
+          max={maxMint}
           assettype="stablecoin"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
-          maxLimit={mintMaxLimit}
         />
       </RelatedGridItem>
       <RelatedGridItem

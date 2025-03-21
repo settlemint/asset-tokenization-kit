@@ -31,8 +31,7 @@ export async function TokenizedDepositsRelated({
   const tokenizedDeposit = assetDetails as Awaited<
     ReturnType<typeof getTokenizedDepositDetail>
   >;
-  const freeCollateral = tokenizedDeposit.freeCollateral;
-  const mintMaxLimit = freeCollateral;
+  const maxMint = tokenizedDeposit.freeCollateral;
 
   return (
     <RelatedGrid title={t("title")}>
@@ -56,7 +55,8 @@ export async function TokenizedDepositsRelated({
           assettype="tokenizeddeposit"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
-          maxLimit={mintMaxLimit}
+          max={maxMint}
+          decimals={tokenizedDeposit.decimals}
         />
       </RelatedGridItem>
       <RelatedGridItem
