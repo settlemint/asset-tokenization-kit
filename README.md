@@ -242,10 +242,40 @@ by clicking "Sign up" - the first account created will have admin privileges.
 
 To modify database schema:
 
-1. Update schema definitions in `kit/dapp/src/lib/db` folder
-2. Apply changes to the database by running `bun run db:push` in the `kit/dapp`
-   folder
-3. Test your changes by running the application
+1. Update your schema definitions in the schema folder:
+
+   ```bash
+   # Navigate to schema directory
+   cd kit/dapp/src/lib/db
+   ```
+
+2. Apply your changes to the database:
+
+   ```bash
+   # Run in the kit/dapp directory
+   cd kit/dapp
+   bun db:push
+   ```
+
+3. Register your updates to the table with Hasura by executing:
+
+   ```bash
+   settlemint hasura track-table --schema public --table <table-name>
+   ```
+
+4. Regenerate GraphQL types by running the following command in the root
+   directory. It is important to use the `--force` flag to ensure the types are
+   regenerated:
+
+   ```bash
+   bun codegen --force
+   ```
+
+5. Launch the application to verify your changes:
+
+   ```bash
+   bun dev
+   ```
 
 > **Note**: When modifying tables managed by Better Auth (user, session,
 > account, verification), you may need to update `additionalFields` in
