@@ -162,7 +162,10 @@ export function UserDropdown() {
           <DropdownMenuGroup>
             <ThemeMenuItem />
             <LanguageMenuItem />
-            <CurrencyMenuItem defaultCurrency={user.currency as CurrencyCode} />
+            <CurrencyMenuItem
+              defaultCurrency={user.currency as CurrencyCode}
+              onCurrencyChange={refetch}
+            />
             <DropdownMenuItem
               onMouseEnter={() => bookIconRef.current?.startAnimation()}
               onMouseLeave={() => bookIconRef.current?.stopAnimation()}
