@@ -44,6 +44,8 @@ export async function StablecoinsRelated({
           assettype="stablecoin"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
         />
       </RelatedGridItem>
       <RelatedGridItem

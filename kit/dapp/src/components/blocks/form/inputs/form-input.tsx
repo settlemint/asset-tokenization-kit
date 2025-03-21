@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { formatNumber } from "@/lib/utils/number";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
 import { type FieldValues, useFormContext } from "react-hook-form";
 import {
@@ -22,7 +21,6 @@ import {
 } from "./types";
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 const TEXT_ONLY_PATTERN = /^[A-Za-z]+$/;
-const NUMBER_PATTERN = /^[0-9]*.?[0-9]*$/;
 
 type InputProps = ComponentPropsWithoutRef<typeof Input>;
 
@@ -62,7 +60,6 @@ export function FormInput<T extends FieldValues>({
   const form = useFormContext<T>();
   const { register } = form;
   const t = useTranslations("components.form.input");
-  const locale = useLocale();
 
   return (
     <FormField
@@ -83,26 +80,6 @@ export function FormInput<T extends FieldValues>({
         }),
         ...(props.type === "number" && {
           valueAsNumber: true,
-          pattern: {
-            value: NUMBER_PATTERN,
-            message: t("valid-number"),
-          },
-          max: {
-            value: props.max ?? Number.MAX_SAFE_INTEGER,
-            message: t("max-value", {
-              max: formatNumber(props.max ?? Number.MAX_SAFE_INTEGER, {
-                locale: locale,
-              }),
-            }),
-          },
-          min: {
-            value: props.min ?? Number.MIN_SAFE_INTEGER,
-            message: t("min-value", {
-              min: formatNumber(props.min ?? Number.MIN_SAFE_INTEGER, {
-                locale: locale,
-              }),
-            }),
-          },
         }),
       }}
       render={({ field, fieldState }) => {

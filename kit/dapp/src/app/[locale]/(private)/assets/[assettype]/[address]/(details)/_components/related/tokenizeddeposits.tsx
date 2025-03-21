@@ -44,6 +44,8 @@ export async function TokenizedDepositsRelated({
           assettype="tokenizeddeposit"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
+          decimals={tokenizedDeposit.decimals}
+          symbol={tokenizedDeposit.symbol}
         />
       </RelatedGridItem>
       <RelatedGridItem
