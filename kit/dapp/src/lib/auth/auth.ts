@@ -81,6 +81,12 @@ export const auth = betterAuth({
         default: "user",
         input: false,
       },
+      currency: {
+        type: "string",
+        required: true,
+        default: "EUR",
+        input: false,
+      },
     },
   },
   databaseHooks: {

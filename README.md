@@ -189,8 +189,8 @@ bun addresses
 bun dev
 ```
 
-Browse to http://localhost:3000 to access the application. Create an account by
-clicking "Sign up" - the first account created will have admin privileges.
+Browse to <http://localhost:3000> to access the application. Create an account
+by clicking "Sign up" - the first account created will have admin privileges.
 
 ### Customized Setup
 
@@ -235,5 +235,21 @@ bun db:push
 bun dev
 ```
 
-Browse to http://localhost:3000 to access the application. Create an account by
-clicking "Sign up" - the first account created will have admin privileges.
+Browse to <http://localhost:3000> to access the application. Create an account
+by clicking "Sign up" - the first account created will have admin privileges.
+
+### Database Customization
+
+To modify database schema:
+
+1. Update schema definitions in `kit/dapp/src/lib/db` folder
+2. Apply changes to the database by running `bun run db:push` in the `kit/dapp`
+   folder
+3. Test your changes by running the application
+
+> **Note**: When modifying tables managed by Better Auth (user, session,
+> account, verification), you may need to update `additionalFields` in
+> `kit/dapp/src/lib/auth/auth.ts`. If user object field changes aren't reflected
+> in the `useSession` hook, try clearing cookies and signing in again. See
+> [Better Auth database core schema](https://www.better-auth.com/docs/concepts/database#core-schema)
+> for more information.
