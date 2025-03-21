@@ -260,7 +260,7 @@ To modify database schema:
 3. Register your updates to the table with Hasura by executing:
 
    ```bash
-   settlemint hasura track-table --schema public --table <table-name>
+   settlemint hasura track -a
    ```
 
 4. Regenerate GraphQL types by running the following command in the root
