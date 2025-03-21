@@ -242,15 +242,16 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates amounts, ensuring they are non-negative
    */
-  amount: () =>
+  amount: (max?: number) =>
     z
       .number()
       .or(z.string())
-      .nullish()
-      .transform((val) =>
-        val === null || val === undefined || val === "" ? 0 : val
-      )
-      .pipe(z.coerce.number().min(0, { message: "Amount must be positive" })),
+      .pipe(
+        z.coerce
+          .number()
+          .min(0, { message: "Amount must be positive" })
+          .max(max ?? Infinity)
+      ),
 
   /**
    * Validates user roles selection

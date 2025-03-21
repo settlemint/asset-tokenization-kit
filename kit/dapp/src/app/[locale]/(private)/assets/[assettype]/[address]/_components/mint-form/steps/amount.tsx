@@ -23,6 +23,7 @@ export function Amount({ maxLimit, decimals, symbol }: AmountProps) {
       <FormNumberInput
         control={control}
         name="amount"
+        label={t("label")}
         minNotZero
         max={maxLimit}
         decimals={decimals}

@@ -98,10 +98,12 @@ export function FormInput<T extends FieldValues>({
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
-                <span>{label}</span>
-                {props.required && (
-                  <span className="ml-1 text-destructive">*</span>
-                )}
+                <span>
+                  {label}
+                  {props.required && (
+                    <span className="text-destructive">*</span>
+                  )}
+                </span>
               </FormLabel>
             )}
             <FormControl>

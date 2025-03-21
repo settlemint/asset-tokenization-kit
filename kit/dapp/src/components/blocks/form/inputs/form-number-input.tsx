@@ -30,7 +30,6 @@ import {
 } from "react-hook-form";
 import {
   type BaseFormInputProps,
-  type BigNumberInputProps,
   type WithPostfixProps,
   getAriaAttributes,
 } from "./types";
@@ -39,15 +38,24 @@ type InputProps = ComponentPropsWithoutRef<typeof Input>;
 
 type FormNumberInputProps<T extends FieldValues> = Omit<
   InputProps,
-  keyof BaseFormInputProps<T> | keyof BigNumberInputProps | "type"
+  keyof BaseFormInputProps<T> | "type"
 > &
   BaseFormInputProps<T> &
-  BigNumberInputProps &
   WithPostfixProps & {
     /** Enforce non-zero values (zero is not allowed) */
     minNotZero?: boolean;
     /** Allow negative values (by default only non-negative values are allowed) */
     allowNegative?: boolean;
+    /** Number of decimal places allowed */
+    decimals?: number;
+    /** Format the display value with locale-specific formatting */
+    formatDisplay?: boolean;
+    /** Minimum value */
+    min?: number | string;
+    /** Maximum value */
+    max?: number | string;
+    /** Step value for incrementing/decrementing */
+    step?: number | string;
     placeholder?: string;
   };
 
@@ -59,8 +67,8 @@ interface NumberInputContentProps<T extends FieldValues>
   field: ControllerRenderProps<T>;
   fieldState: { error?: FieldError };
   formContext: ReturnType<typeof useFormContext<T>>;
-  minValue?: BigNumber;
-  maxValue?: BigNumber;
+  min?: number | string;
+  max?: number | string;
   step: string;
   decimals: number;
   formatDisplay: boolean;
@@ -72,6 +80,7 @@ interface NumberInputContentProps<T extends FieldValues>
   allowNegative?: boolean;
   placeholder?: string;
 }
+
 /**
  * Internal component to render the number input field content
  */
@@ -79,8 +88,8 @@ function NumberInputContent<T extends FieldValues>({
   field,
   fieldState,
   formContext,
-  minValue,
-  maxValue,
+  min,
+  max,
   step,
   decimals,
   formatDisplay,
@@ -196,10 +205,10 @@ function NumberInputContent<T extends FieldValues>({
     const smallestValue = new BigNumber(1).div(new BigNumber(10).pow(decimals));
 
     // Add rules based on constraints
-    if (minValue) {
+    if (min !== undefined) {
       rules.push(
         t("min-value", {
-          min: formatNumber(minValue.toString(), { locale, decimals }),
+          min: formatNumber(min.toString(), { locale, decimals }),
         })
       );
     } else if (minNotZero) {
@@ -210,10 +219,10 @@ function NumberInputContent<T extends FieldValues>({
       );
     }
 
-    if (maxValue) {
+    if (max !== undefined) {
       rules.push(
         t("max-value", {
-          max: formatNumber(maxValue.toString(), {
+          max: formatNumber(max.toString(), {
             locale,
             decimals,
             stripZeroDecimals: true,
@@ -241,8 +250,10 @@ function NumberInputContent<T extends FieldValues>({
           htmlFor={field.name}
           id={`${field.name}-label`}
         >
-          <span className="flex items-center gap-1">{label}</span>
-          {props.required && <span className="ml-1 text-destructive">*</span>}
+          <span className="flex items-center gap-1">
+            {label}
+            {props.required && <span className="text-destructive">*</span>}
+          </span>
         </FormLabel>
       )}
       <FormControl>
@@ -278,16 +289,10 @@ function NumberInputContent<T extends FieldValues>({
                     onBlur={(e) => {
                       setIsFocused(false);
                       sanitizeAndValidate(e.target.value);
-                      console.log(
-                        "Triggering validation for",
-                        field.name,
-                        "value:",
-                        field.value
-                      );
                       const result = formContext.trigger(field.name);
-                      result
-                        .then((valid) => console.log("Trigger result:", valid))
-                        .catch((err) => console.error("Trigger error:", err));
+                      result.catch((err) =>
+                        console.error("Trigger error:", err)
+                      );
                     }}
                     onChange={(evt: ChangeEvent<HTMLInputElement>) => {
                       const inputValue = evt.target.value;
@@ -342,40 +347,13 @@ function NumberInputContent<T extends FieldValues>({
               onBlur={(e) => {
                 setIsFocused(false);
                 sanitizeAndValidate(e.target.value);
-                console.log(
-                  "Triggering validation for",
-                  field.name,
-                  "value:",
-                  field.value
-                );
                 const result = formContext.trigger(field.name);
-                result
-                  .then((valid) => console.log("Trigger result:", valid))
-                  .catch((err) => console.error("Trigger error:", err));
+                result.catch((err) => console.error("Trigger error:", err));
               }}
-              onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-                const inputValue = evt.target.value;
-                setRawInput(inputValue);
-
-                // If minNotZero is true and value is a variant of zero, trigger validation immediately
-                if (
-                  minNotZero &&
-                  (inputValue === "0" || /^0[.,]0*$/.test(inputValue))
-                ) {
-                  console.log(
-                    "Rejecting zero value in onChange due to minNotZero constraint"
-                  );
-                  // Calculate smallest possible value based on decimals
-                  const smallestValue = new BigNumber(1).div(
-                    new BigNumber(10).pow(decimals)
-                  );
-                  console.log(
-                    "Using smallest valid value instead:",
-                    smallestValue.toString()
-                  );
-                  field.onChange(smallestValue.toString());
-                  void formContext.trigger(field.name);
-                }
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                sanitizeAndValidate(e.target.value);
+                const result = formContext.trigger(field.name);
+                result.catch((err) => console.error("Trigger error:", err));
               }}
               {...getAriaAttributes(field.name, !!fieldState.error, disabled)}
               disabled={disabled}
@@ -428,46 +406,41 @@ export function FormNumberInput<T extends FieldValues>({
   postfix,
   className,
   disabled,
-  min,
-  max,
-  step = "1",
-  decimals = 18, // Default to maximum precision for Ethereum
-  formatDisplay = true,
+
   minNotZero,
-  allowNegative,
-  placeholder,
+  formatDisplay = true,
+  allowNegative = false,
+  decimals = 18,
+  // decimals = 18, // Default to maximum precision for Ethereum
+  // formatDisplay = true,
+  // minNotZero,
+  // allowNegative,
+  // placeholder,
   ...props
 }: FormNumberInputProps<T>) {
   const form = useFormContext<T>();
   const t = useTranslations("components.form.input");
   const locale = useLocale();
-
-  // Calculate the smallest possible value based on decimals (e.g., 0.01 for 2 decimals)
-  const smallestValue = new BigNumber(1).div(new BigNumber(10).pow(decimals));
-
-  // Convert min/max to BigNumber for comparisons
-  // Use smallestValue as min when min is not provided but minNotZero is true
-  const minValue =
-    min !== undefined
-      ? new BigNumber(min)
-      : minNotZero
-        ? smallestValue
-        : undefined;
-  const maxValue = max !== undefined ? new BigNumber(max) : undefined;
+  const { register } = form;
 
   return (
     <FormField
       {...props}
       rules={{
-        required: props.required,
+        ...rules,
+        required: props.required
+          ? { value: true, message: t("required") }
+          : false,
         pattern: {
           value: NUMBER_PATTERN,
           message: t("valid-number"),
         },
         validate: {
           validBigNumber: (value) => {
-            console.log("validBigNumber validation running", value);
             try {
+              if (value === undefined || value === "") {
+                return props.required ? false : true;
+              }
               const bnValue = new BigNumber(value);
               return !bnValue.isNaN() || t("valid-number");
             } catch {
@@ -475,22 +448,16 @@ export function FormNumberInput<T extends FieldValues>({
             }
           },
           notZero: (value) => {
-            console.log("notZero validation running", value, minNotZero);
+            if (!minNotZero) return true;
 
             try {
               const bnValue = new BigNumber(value);
-              if (bnValue.isZero()) {
-                console.log("notZero validation failed: zero not allowed");
-                return t("min-not-zero");
-              }
-              return true;
-            } catch (err) {
-              console.log("notZero validation error:", err);
+              return !bnValue.isZero() || t("min-not-zero");
+            } catch {
               return true;
             }
           },
           nonNegative: (value) => {
-            console.log("nonNegative validation running", value);
             if (value === undefined || allowNegative) return true;
 
             try {
@@ -501,14 +468,15 @@ export function FormNumberInput<T extends FieldValues>({
             }
           },
           maxValue: (value) => {
-            if (value === undefined || !maxValue) return true;
+            if (value === undefined || props.max === undefined) return true;
 
             try {
               const bnValue = new BigNumber(value);
+              const maxBN = new BigNumber(props.max);
               return (
-                bnValue.lte(maxValue) ||
+                bnValue.lte(maxBN) ||
                 t("max-value", {
-                  max: formatNumber(maxValue.toString(), { locale }),
+                  max: formatNumber(maxBN.toString(), { locale }),
                 })
               );
             } catch {
@@ -516,36 +484,35 @@ export function FormNumberInput<T extends FieldValues>({
             }
           },
           minValue: (value) => {
-            console.log("minValue validation running", value, minValue);
-            if (value === undefined || !minValue) {
-              console.log("minValue validation skipped:", {
-                value,
-                minValue,
-                reason: "value undefined or minValue not set",
-              });
-              return true;
-            }
+            if (value === undefined) return true;
 
-            try {
-              const bnValue = new BigNumber(value ?? 0);
-              console.log("minValue calculated bnValue:", bnValue.toString());
-
-              // Check explicit minimum if set
-              if (minValue && bnValue.lt(minValue)) {
-                console.log(
-                  "minValue validation failed: value less than minimum"
-                );
-                return t("min-value", {
-                  min: formatNumber(minValue.toString(), { locale }),
-                });
+            // If minNotZero is set, check that value is greater than zero
+            if (minNotZero && props.min === undefined) {
+              try {
+                const bnValue = new BigNumber(value);
+                return !bnValue.isZero() || t("min-not-zero");
+              } catch {
+                return true;
               }
-
-              console.log("minValue validation passed");
-              return true;
-            } catch (err) {
-              console.log("minValue validation error:", err);
-              return true;
             }
+
+            // If min is specified, check that value is greater than or equal to min
+            if (props.min !== undefined) {
+              try {
+                const bnValue = new BigNumber(value);
+                const minBN = new BigNumber(props.min);
+                return (
+                  bnValue.gte(minBN) ||
+                  t("min-value", {
+                    min: formatNumber(minBN.toString(), { locale }),
+                  })
+                );
+              } catch {
+                return true;
+              }
+            }
+
+            return true;
           },
           decimalsCheck: (value) => {
             if (value === undefined || decimals === undefined) return true;
@@ -563,27 +530,74 @@ export function FormNumberInput<T extends FieldValues>({
           },
         },
       }}
-      render={({ field, fieldState }) => (
-        <NumberInputContent
-          field={field}
-          fieldState={fieldState}
-          formContext={form}
-          minValue={minValue}
-          maxValue={maxValue}
-          step={step as string}
-          decimals={decimals}
-          formatDisplay={formatDisplay}
-          postfix={postfix}
-          disabled={disabled}
-          description={description}
-          label={label}
-          minNotZero={minNotZero}
-          allowNegative={allowNegative}
-          placeholder={placeholder}
-          {...props}
-          className={className}
-        />
-      )}
+      render={({ field, fieldState }) => {
+        return (
+          <FormItem className="flex flex-col space-y-1">
+            {label && (
+              <FormLabel
+                className={cn(disabled && "cursor-not-allowed opacity-70")}
+                htmlFor={field.name}
+                id={`${field.name}-label`}
+              >
+                <span>
+                  {label}
+                  {props.required && (
+                    <span className="text-destructive">*</span>
+                  )}
+                </span>
+              </FormLabel>
+            )}
+            <FormControl>
+              <div
+                className={cn(
+                  "flex rounded-lg shadow-black/5 shadow-xs",
+                  !postfix && "shadow-none"
+                )}
+              >
+                <Input
+                  {...register(field.name)}
+                  {...field}
+                  {...props}
+                  className={cn(
+                    className,
+                    postfix &&
+                      "-mr-px rounded-r-none shadow-none focus:mr-[1px]"
+                  )}
+                  type="number"
+                  value={props.defaultValue ? undefined : (field.value ?? "")}
+                  onChange={async (evt: ChangeEvent<HTMLInputElement>) => {
+                    field.onChange(evt);
+                    if (form.formState.errors[field.name]) {
+                      await form.trigger(field.name);
+                    }
+                  }}
+                  inputMode="decimal"
+                  {...getAriaAttributes(
+                    field.name,
+                    !!fieldState.error,
+                    disabled
+                  )}
+                  disabled={disabled}
+                />
+                {postfix && (
+                  <span className="flex items-center px-3 text-sm text-foreground border border-l-0 rounded-r-md bg-muted/50">
+                    {postfix}
+                  </span>
+                )}
+              </div>
+            </FormControl>
+            {description && (
+              <FormDescription id={`${field.name}-description`}>
+                {description}
+              </FormDescription>
+            )}
+            <TranslatableFormFieldMessage
+              id={`${field.name}-error`}
+              aria-live="polite"
+            />
+          </FormItem>
+        );
+      }}
     />
   );
 }

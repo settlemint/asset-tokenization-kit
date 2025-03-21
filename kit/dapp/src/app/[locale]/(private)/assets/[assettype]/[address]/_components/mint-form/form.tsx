@@ -58,7 +58,7 @@ export function MintForm({
     >
       <Form
         action={mint}
-        resolver={zodResolver(MintSchema)}
+        resolver={zodResolver(MintSchema(maxLimit))}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

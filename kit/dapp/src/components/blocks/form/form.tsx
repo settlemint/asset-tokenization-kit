@@ -73,7 +73,7 @@ export function Form<
   const { form, handleSubmitWithAction, resetFormAndAction } =
     useHookFormAction(action, resolver, {
       formProps: {
-        mode: "onSubmit",
+        mode: "onChange",
         criteriaMode: "all",
         shouldFocusError: false,
         defaultValues,
@@ -207,7 +207,6 @@ export function Form<
                 </Alert>
               )}
               {Array.isArray(children) ? children[currentStep] : children}
-              {JSON.stringify(form.formState, null, 2)}
               {showFormSecurityConfirmation && (
                 <FormOtpDialog
                   name={"pincode" as Path<ZodInfer<S>>}

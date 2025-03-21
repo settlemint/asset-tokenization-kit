@@ -453,6 +453,7 @@
         "min-smallestValue": "Value must be at least {min}",
         "min-value": "Minimum allowed is {min}",
         "non-negative": "Must be a positive number",
+        "required": "Required",
         "valid-email": "Please enter a valid email address",
         "valid-number": "Please enter a valid number",
         "validation-rules": "Validation Rules"
@@ -1050,6 +1051,7 @@
               "update-collateral": "Input the amount you wish to update the collateral to. Ensure the amount is bigger or equal to the current supply.",
               "withdraw": "Input the amount you wish to withdraw."
             },
+            "label": "Amount",
             "max-limit": {
               "burn": "Balance available to burn: {limit}",
               "freeze": "Balance available to freeze: {limit}",
