@@ -14,6 +14,7 @@ import { Summary } from "./steps/summary";
 interface RedeemFormProps {
   address: Address;
   balance: number;
+  decimals: number;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -23,6 +24,7 @@ interface RedeemFormProps {
 export function RedeemForm({
   address,
   balance,
+  decimals,
   asButton = false,
   open,
   onOpenChange,
@@ -60,7 +62,7 @@ export function RedeemForm({
           address,
         }}
       >
-        <Amount balance={balance} />
+        <Amount balance={balance} decimals={decimals} />
         <Summary address={address} />
       </Form>
     </FormSheet>

@@ -19,6 +19,7 @@ interface TransferFormProps {
   address?: Address;
   assettype?: AssetType;
   balance?: number;
+  decimals?: number;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -30,6 +31,7 @@ export function TransferForm({
   address,
   assettype,
   balance,
+  decimals,
   asButton = false,
   open,
   onOpenChange,
@@ -89,7 +91,10 @@ export function TransferForm({
             assettype: assetType,
           }}
         >
-          <Amount balance={Number(userBalance)} />
+          <Amount
+            balance={Number(userBalance)}
+            decimals={decimals ?? selectedAsset?.decimals ?? 6}
+          />
           <Recipients />
           <Summary address={assetAddress!} />
         </Form>

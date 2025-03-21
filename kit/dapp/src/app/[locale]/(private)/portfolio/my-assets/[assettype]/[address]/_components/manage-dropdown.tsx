@@ -89,6 +89,7 @@ export function ManageDropdown({
         address={address}
         assettype={assettype}
         balance={Number(userBalance?.available ?? 0)}
+        decimals={assetDetails.decimals}
         open={openMenuItem === "transfer"}
         onOpenChange={onFormOpenChange}
         disabled={isBlocked || isPaused || (userBalance?.available ?? 0) === 0}
@@ -98,6 +99,7 @@ export function ManageDropdown({
         <RedeemForm
           address={address}
           balance={Number(userBalance?.available ?? 0)}
+          decimals={assetDetails.decimals}
           open={openMenuItem === "redeem"}
           onOpenChange={onFormOpenChange}
           disabled={isBlocked || isPaused}
