@@ -84,7 +84,7 @@ export const createBond = action
         cap: capExact,
         faceValue: String(faceValue),
         maturityDate: maturityDateTimestamp,
-        underlyingAsset,
+        underlyingAsset: underlyingAsset.id,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 

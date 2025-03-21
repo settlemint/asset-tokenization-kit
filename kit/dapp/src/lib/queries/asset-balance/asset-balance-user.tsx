@@ -26,9 +26,7 @@ const UserAssetsBalance = theGraphGraphqlKit(
   [AssetBalanceFragment]
 );
 
-export type UserAsset = Awaited<
-  ReturnType<typeof getUserAssetsBalance>
->["balances"][number];
+export type UserAsset = AssetBalance;
 
 type AssetType = AssetBalance["asset"]["type"];
 

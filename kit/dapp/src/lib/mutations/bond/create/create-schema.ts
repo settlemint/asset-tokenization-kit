@@ -1,3 +1,4 @@
+import { AssetUsersFragmentSchema } from "@/lib/queries/asset/asset-users-fragment";
 import { isAddressAvailable } from "@/lib/queries/bond-factory/address-available";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 import { isFuture } from "date-fns";
@@ -32,7 +33,7 @@ export const CreateBondSchema = z.object({
   maturityDate: z
     .string()
     .refine(isFuture, { message: "Maturity date must be in the future" }),
-  underlyingAsset: z.address(),
+  underlyingAsset: AssetUsersFragmentSchema,
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "bond.duplicate",
   }),

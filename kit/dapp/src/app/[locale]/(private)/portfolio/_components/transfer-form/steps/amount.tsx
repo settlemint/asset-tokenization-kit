@@ -21,19 +21,19 @@ export function Amount({ balance }: AmountProps) {
       title={t("transfer-form.amount.title")}
       description={t("transfer-form.amount.description")}
     >
-      <div className="grid grid-cols-1 gap-6">
-        <FormInput
-          control={control}
-          name="value"
-          label={t("transfer-form.amount.amount-label")}
-          type="number"
-          min={1}
-          defaultValue={1}
-          max={balance}
-          description={`${t("transfer-form.amount.balance-description")} ${formatNumber(balance, { locale })}`}
-          required
-        />
-      </div>
+      <FormInput
+        control={control}
+        name="value"
+        label={t("transfer-form.amount.amount-label")}
+        type="number"
+        min={1}
+        defaultValue={1}
+        max={balance}
+        description={`${t("transfer-form.amount.balance-description")} ${formatNumber(balance, { locale })}`}
+        required
+      />
     </FormStep>
   );
 }
+
+Amount.validatedFields = ["value"] as const;

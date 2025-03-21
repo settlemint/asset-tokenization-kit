@@ -43,7 +43,10 @@ export default async function PortfolioDashboard({
       />
       <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:divide-x lg:divide-y-0">
         <Greeting />
-        <MyAssetsHeader data={myAssetsBalance} />
+        <MyAssetsHeader
+          data={myAssetsBalance}
+          userAddress={user.wallet as Address}
+        />
         <TransactionsHistory
           data={data}
           chartOptions={{
