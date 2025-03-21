@@ -3,6 +3,7 @@ import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-i
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
+import { isBefore } from "date-fns";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
@@ -27,6 +28,10 @@ export async function StablecoinsRelated({
   const userIsSupplyManager = userBalance?.asset.supplyManagers.some(
     (manager) => manager.id === userBalance?.account.id
   );
+  const collateralIsExpired =
+    "collateralProofValidity" in assetDetails &&
+    assetDetails.collateralProofValidity !== undefined &&
+    isBefore(assetDetails.collateralProofValidity, new Date());
 
   const stablecoin = assetDetails as Awaited<
     ReturnType<typeof getStableCoinDetail>
@@ -59,7 +64,9 @@ export async function StablecoinsRelated({
           max={maxMint}
           assettype="stablecoin"
           asButton
-          disabled={isBlocked || isPaused || !userIsSupplyManager}
+          disabled={
+            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
+          }
         />
       </RelatedGridItem>
       <RelatedGridItem
@@ -73,7 +80,9 @@ export async function StablecoinsRelated({
           symbol={assetDetails.symbol}
           assettype="stablecoin"
           asButton
-          disabled={isBlocked || isPaused || !userIsSupplyManager}
+          disabled={
+            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
+          }
         />
       </RelatedGridItem>
     </RelatedGrid>
