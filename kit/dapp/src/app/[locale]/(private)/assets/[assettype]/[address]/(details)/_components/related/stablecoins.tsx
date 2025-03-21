@@ -53,6 +53,7 @@ export async function StablecoinsRelated({
         <MintForm
           address={address}
           decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           max={maxMint}
           assettype="stablecoin"
           asButton
@@ -65,7 +66,9 @@ export async function StablecoinsRelated({
       >
         <BurnForm
           address={address}
-          maxLimit={userBalance?.available}
+          max={userBalance?.available ?? 0}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           assettype="stablecoin"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}

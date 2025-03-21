@@ -116,6 +116,7 @@ export function ManageDropdown({
           onOpenChange={onFormOpenChange}
           max={mintMax}
           decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
         />
       ),
     },
@@ -127,13 +128,15 @@ export function ManageDropdown({
         isBlocked ||
         isPaused ||
         !userIsSupplyManager ||
-        (userBalance?.available ?? 0) > 0,
+        (userBalance?.available ?? 0) === 0,
       form: (
         <BurnForm
           key="burn"
           address={address}
           assettype={assettype}
-          maxLimit={userBalance?.available}
+          max={userBalance?.available ?? 0}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           open={openMenuItem === "burn"}
           onOpenChange={onFormOpenChange}
         />
@@ -204,6 +207,8 @@ export function ManageDropdown({
           address={address}
           open={openMenuItem === "update-collateral"}
           onOpenChange={onFormOpenChange}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
         />
       ),
     },

@@ -19,6 +19,8 @@ interface UpdateCollateralFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   disabled?: boolean;
+  decimals: number;
+  symbol: string;
 }
 
 export function UpdateCollateralForm({
@@ -28,6 +30,8 @@ export function UpdateCollateralForm({
   open,
   onOpenChange,
   disabled = false,
+  decimals,
+  symbol,
 }: UpdateCollateralFormProps) {
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
@@ -64,7 +68,7 @@ export function UpdateCollateralForm({
           assettype: assettype,
         }}
       >
-        <Amount />
+        <Amount decimals={decimals} symbol={symbol} />
         <Summary address={address} />
       </Form>
     </FormSheet>

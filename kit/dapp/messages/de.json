@@ -1173,7 +1173,8 @@
               "mint": "Verfügbare Sicherheiten zum Minten: {limit}",
               "burn": "Verfügbares Guthaben zum Verbrennen: {limit}",
               "freeze": "Verfügbares Guthaben zum Einfrieren: {limit}"
-            }
+            },
+            "label": "Betrag"
           },
           "roles": {
             "title": "Rollen auswählen",

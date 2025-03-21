@@ -6,27 +6,30 @@ import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
-  maxLimit?: number;
+  max: number;
+  decimals: number;
+  symbol: string;
 }
 
-export function Amount({ maxLimit }: AmountProps) {
+export function Amount({ max, decimals, symbol }: AmountProps) {
   const { control } = useFormContext<BurnInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();
-  const maxLimitDescription = maxLimit
-    ? t("max-limit.burn", { limit: formatNumber(maxLimit, { locale }) })
+  const maxDescription = max
+    ? t("max-limit.burn", { limit: formatNumber(max, { locale }) })
     : undefined;
 
   return (
-    <FormStep title={t("title")} description={t("description.mint")}>
+    <FormStep title={t("title")} description={t("description.burn")}>
       <FormInput
         control={control}
         name="amount"
         type="number"
-        min={1}
-        max={maxLimit}
-        description={maxLimitDescription}
+        step={decimals ? 10 ** -decimals : 1}
+        max={max}
+        description={maxDescription}
         required
+        postfix={symbol}
       />
     </FormStep>
   );

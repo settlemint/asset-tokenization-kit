@@ -57,6 +57,7 @@ export async function TokenizedDepositsRelated({
           disabled={isBlocked || isPaused || !userIsSupplyManager}
           max={maxMint}
           decimals={tokenizedDeposit.decimals}
+          symbol={tokenizedDeposit.symbol}
         />
       </RelatedGridItem>
       <RelatedGridItem
@@ -65,7 +66,9 @@ export async function TokenizedDepositsRelated({
       >
         <BurnForm
           address={address}
-          maxLimit={userBalance?.available}
+          max={userBalance?.available ?? 0}
+          decimals={tokenizedDeposit.decimals}
+          symbol={tokenizedDeposit.symbol}
           assettype="tokenizeddeposit"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}

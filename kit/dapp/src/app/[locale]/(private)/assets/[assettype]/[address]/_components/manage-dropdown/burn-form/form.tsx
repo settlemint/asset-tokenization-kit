@@ -15,7 +15,9 @@ import { Summary } from "./steps/summary";
 interface BurnFormProps {
   address: Address;
   assettype: AssetType;
-  maxLimit?: number;
+  max: number;
+  decimals: number;
+  symbol: string;
   disabled?: boolean;
   asButton?: boolean;
   open?: boolean;
@@ -25,7 +27,9 @@ interface BurnFormProps {
 export function BurnForm({
   address,
   assettype,
-  maxLimit,
+  max,
+  decimals,
+  symbol,
   disabled = false,
   asButton = false,
   open,
@@ -52,7 +56,7 @@ export function BurnForm({
     >
       <Form
         action={burn}
-        resolver={zodResolver(BurnSchema)}
+        resolver={zodResolver(BurnSchema(max, decimals))}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
@@ -64,7 +68,7 @@ export function BurnForm({
           assettype,
         }}
       >
-        <Amount maxLimit={maxLimit} />
+        <Amount max={max} decimals={decimals} symbol={symbol} />
         <Summary address={address} />
       </Form>
     </FormSheet>

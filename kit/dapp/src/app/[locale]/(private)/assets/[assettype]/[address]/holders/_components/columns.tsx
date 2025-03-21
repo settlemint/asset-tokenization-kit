@@ -146,6 +146,7 @@ export function columns({
                     onOpenChange={onOpenChange}
                     max={maxMint}
                     decimals={decimals}
+                    symbol={row.original.asset.symbol}
                   />
                 ),
                 disabled: row.original.asset.paused,

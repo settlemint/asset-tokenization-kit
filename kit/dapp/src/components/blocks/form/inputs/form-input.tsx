@@ -114,10 +114,12 @@ export function FormInput<T extends FieldValues>({
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
-                <span>{label}</span>
-                {props.required && (
-                  <span className="ml-1 text-destructive">*</span>
-                )}
+                <span>
+                  {label}
+                  {props.required && (
+                    <span className="text-destructive">*</span>
+                  )}
+                </span>
               </FormLabel>
             )}
             <FormControl>
@@ -196,7 +198,18 @@ export function FormInput<T extends FieldValues>({
                   )}
                   disabled={disabled}
                 />
-                {postfix && <span>{postfix}</span>}
+                {postfix && (
+                  <span
+                    className={cn(
+                      "flex items-center px-3 text-sm text-foreground border border-l-0 rounded-r-md",
+                      fieldState.error
+                        ? "border-destructive bg-destructive/10"
+                        : "bg-muted/50"
+                    )}
+                  >
+                    {postfix}
+                  </span>
+                )}
               </div>
             </FormControl>
             {description && (

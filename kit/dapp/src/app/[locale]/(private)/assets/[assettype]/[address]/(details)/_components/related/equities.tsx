@@ -35,6 +35,7 @@ export async function EquitiesRelated({
         <MintForm
           address={address}
           decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           assettype="equity"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
@@ -46,7 +47,9 @@ export async function EquitiesRelated({
       >
         <BurnForm
           address={address}
-          maxLimit={userBalance?.available}
+          max={userBalance?.available ?? 0}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           assettype="equity"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
