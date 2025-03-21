@@ -1,59 +1,6 @@
 version: 1
 files:
   messages/en.json:
-    zod.error.invalid-ethereum-address: e065f97d89d2f49e5fd3782c7b73bf50
-    zod.error.invalid-hash-format: 559379eea65af76709553c36433b6094
-    zod.error.invalid-pincode: b4785851cf390a3b914ca0247aac11bb
-    zod.error.decimals-min: 5686ac4736200feefe8aabe0c1a74051
-    zod.error.decimals-max: 4e5ac57dc930821716b9fbe671d92757
-    zod.error.amount-too-small: 78c037cd4117ca335c7462a8b03bed45
-    zod.error.amount-too-large: db26eafb55d93d6cc7277656c0ec96a1
-    zod.error.role-required: c535f2eb3fee2c263d3425f9b14e0284
-    zod.error.invalid-symbol: d56ac0fd2ee407ed241185cfe6c9d1a0
-    zod.error.isin-format: 1b4758c43402209ebe0f7b61981ab2e4
-    zod.error.isin-length: 3edcea4a92e61a1d24f255490984c36a
-    zod.error.invalid-decimal: 99d2a1a04c0cfe442fd26fb887c62db5
-    zod.error.invalid-timestamp: 73362e52de5c978b3e6331062ab242f1
-    zod.error.negative-amount: 6a59488f8174f3a3b18fbee80cc80094
-    zod.error.required: 0511ee0d41117aa7b4abaaf102aa513d
-    zod.error.must_be_string: 984306778f29519f72fce3319b10391b
-    zod.error.must_be_number: 7293795ec32bf0608e80a789419bb55e
-    zod.error.must_be_boolean: c9e55284871729bb745a691ad2c65b6e
-    zod.error.must_be_date: f64ff571aad4db6c14a9e345d9dc0623
-    zod.error.must_be_bigint: 469143d42dbd257fc2edd8584b7f31f1
-    zod.error.must_be_array: 21a1f7977daea4cd549935ad9ff15a87
-    zod.error.must_be_object: 8e475babea156a65d364f79b38ee4079
-    zod.error.invalid_type: 988396946db1c1cd82bef11d47ddec9a
-    zod.error.invalid_url: 271177b03cb7fac355dfa12aca9be618
-    zod.error.invalid_email: e918b3646854ddfb97b67ebb40c8200f
-    zod.error.invalid_uuid: e85d2b9f6362f2589531d5484e44653e
-    zod.error.invalid_cuid: 97d067d5d1362f7b50443964a5eba9e0
-    zod.error.invalid_format: 704c1a051c035f12fc8588e70131ee61
-    zod.error.invalid_datetime: 43ecb317ec284252ff8339d9ec5c610c
-    zod.error.invalid_string: e0bf26b4b64363083d77ce3ca569be31
-    zod.error.string_length_too_small.inclusive: 196f22d84c6b185d415396f64a52b65a
-    zod.error.string_length_too_small.exclusive: 072837314a024226ca083b5629db0049
-    zod.error.number_too_small.inclusive: dfa36bb42e25a2824a4ae171ccd45092
-    zod.error.number_too_small.exclusive: a5a863648f3621fbb844e3c141e6ad6b
-    zod.error.array_length_too_small.inclusive: 2d3581ec8a949f4b1915f239eed31941
-    zod.error.array_length_too_small.exclusive: 10ce54b84f6edd902a55c4ac0643fc1c
-    zod.error.too_small: 98bfdb2cf420ebf668404ee68038da1c
-    zod.error.string_length_too_big.inclusive: 96e77400755df23a0df86c751e577e82
-    zod.error.string_length_too_big.exclusive: 50ec7f087c166e20e2f05a007e6f3f8e
-    zod.error.number_too_big.inclusive: 51914dee22eb0760952f98e070035e17
-    zod.error.number_too_big.exclusive: de4bfc97862436f8807a6027fb8f899d
-    zod.error.array_length_too_big.inclusive: 43e3e22968c5622caf355ba84261a644
-    zod.error.array_length_too_big.exclusive: 30538d25907414565f9c90f946d03f90
-    zod.error.too_big: 41ea7c729a91b32192899be51397240c
-    zod.error.invalid_literal: 295ecce40d19ed58b0388248eb35d802
-    zod.error.invalid_union: 3581aa3e644a38502a7307a01a4a1557
-    zod.error.invalid_union_discriminator: 0f0e707b30bfa74b686f1bec8e239f3a
-    zod.error.invalid_enum_value: fa390b278205d590d3e55634c5ae3031
-    zod.error.invalid_arguments: 79c3a6fc888aa8695ddbb0ea6ee869bb
-    zod.error.invalid_return_type: 6a9660ce9b45ffc9d847afb5d51ea056
-    zod.error.invalid_date: 6983e1dbaf645233e304a723271973a7
-    zod.error.custom: 8ec99a7264620677dfdaba9785a62dc4
-    zod.error.validation_failed: d10fb60c71d2c232120f9df29cbc7989
     active: 4d3d769b812b6faa6b76e1a8abaece2d
     admin.activity.asset-management: 1e1a97e508b3d959b9fc916092948c35
     admin.activity.page-description: 983090a00543bc1dbd0756da87973a78
@@ -274,29 +221,29 @@ files:
     components.charts.assets.asset-distribution-description: f2f637627e48036150f1a99adbdf4397
     components.charts.assets.bond: 7a3b691731db2969498907b960183633
     components.charts.assets.bond-issuance: fb8c1667abf6e14ad0ee035ea509926f
-    components.charts.assets.bond-redemption-assets: 1f1520faf6808809348502caccbc0a90
-    components.charts.assets.bond-redeemed: 4fd494accdc0f5e1c1e29ea42215d1f6
-    components.charts.assets.bond-status: ec53a8c4f07baed5d8825072c89799be
-    components.charts.assets.bond-status-progress: 4196256078f4be418f937b5e1be25f59
-    components.charts.assets.bond-status-description: 905e485d1e8aa3181d54cb5d946c5342
     components.charts.assets.bond-issued: 76bfc7f2b681dbab03ac439f9a605a3d
-    components.charts.assets.bond-pending: 2d13df6f8b5e4c5af9f87e0dc39df69d
-    components.charts.assets.bond-redeemable: cd5ece0fa94385037f3b6a45d3a22bc9
-    components.charts.assets.bond-total-underlying-asset-balance: 3d535ccbaeaff2e8bce87815d2e8c613
-    components.charts.assets.bond-matured: cddd8b8c35283f03dc0ed6702029247d
     components.charts.assets.bond-mature-readiness: 12733cc0299828a8e014f94041f4e06b
     components.charts.assets.bond-mature-readiness-description: d086558341619d464101f979c44b261c
     components.charts.assets.bond-mature-readiness-status: ea678cb2d2779d996e1906720db659f0
-    components.charts.assets.error-loading-data: 03427eb2d90a26fd11a0b44ab99f3920
-    components.charts.assets.loading: 8524de963f07201e5c086830d370797f
+    components.charts.assets.bond-matured: cddd8b8c35283f03dc0ed6702029247d
+    components.charts.assets.bond-pending: 2d13df6f8b5e4c5af9f87e0dc39df69d
+    components.charts.assets.bond-redeemable: cd5ece0fa94385037f3b6a45d3a22bc9
+    components.charts.assets.bond-redeemed: 4fd494accdc0f5e1c1e29ea42215d1f6
+    components.charts.assets.bond-redemption-assets: 1f1520faf6808809348502caccbc0a90
+    components.charts.assets.bond-status: ec53a8c4f07baed5d8825072c89799be
+    components.charts.assets.bond-status-description: 905e485d1e8aa3181d54cb5d946c5342
+    components.charts.assets.bond-status-progress: 4196256078f4be418f937b5e1be25f59
+    components.charts.assets.bond-total-underlying-asset-balance: 3d535ccbaeaff2e8bce87815d2e8c613
     components.charts.assets.collateral-ratio.description: 7c2b795ab5e7407ae5a5dbc2618c5b4f
     components.charts.assets.collateral-ratio.label: 402c0bb389fdb67267e5ced7921d5fbf
     components.charts.assets.collateral-ratio.no-data: a174e0686d26c92d56bf13366f54f84c
     components.charts.assets.cryptocurrency: 4c11904ee0b793fc10046d533cae723e
     components.charts.assets.equity: d9df825203724a2f3412de3fc7a7a2be
+    components.charts.assets.error-loading-data: 03427eb2d90a26fd11a0b44ab99f3920
     components.charts.assets.free-collateral-ratio.label: b24ce0cd392a5b0b8dedc66c25213594
     components.charts.assets.fund: c1098dd48f0fb20eeea79235055d02ca
     components.charts.assets.last-updated: ffbb3331182cbfda3ccea5bb0c3eea46
+    components.charts.assets.loading: 8524de963f07201e5c086830d370797f
     components.charts.assets.stablecoin: 0501a2e331bfc725e5ea1728a8de9098
     components.charts.assets.tokenizeddeposit: b76912a65edce9a71850a9e09b4f3fd3
     components.charts.assets.total-supply.description: 2c73005a0303bc52d3f4285cc4a71104
@@ -316,24 +263,24 @@ files:
     components.charts.assets.total-volume.label: ea4cacf786de47ee79720980514c48d5
     components.charts.assets.total-volume.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
     components.charts.assets.total-volume.title: ea4cacf786de47ee79720980514c48d5
-    components.charts.assets.used-collateral-ratio.label: fd8f656590df4b2d2b217b060b7204d3
-    components.charts.assets.wallet-distribution: 3b4a6eb75af26d63996b584c1650499a
-    components.charts.assets.wallet-distribution-description: ebc7b0c11d01b59739f27b425e91a5a1
-    components.charts.assets.wallet-distribution-no-data: 4721df9d7dc81aa627608bf42a932f83
     components.charts.assets.units-over-time.description: e3b2e5d9ec6e0f3d9c68897ced3f0f45
     components.charts.assets.units-over-time.label: e5771a362d88a71a657bfcd21ca54b3f
     components.charts.assets.units-over-time.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
     components.charts.assets.units-over-time.title: c118cc96ddabab4cca1ac976cff3ded2
-    components.charts.assets.yield-coverage.title: 8c8f1c58b026505a691dcdeafbdadf4f
+    components.charts.assets.used-collateral-ratio.label: fd8f656590df4b2d2b217b060b7204d3
+    components.charts.assets.wallet-distribution: 3b4a6eb75af26d63996b584c1650499a
+    components.charts.assets.wallet-distribution-description: ebc7b0c11d01b59739f27b425e91a5a1
+    components.charts.assets.wallet-distribution-no-data: 4721df9d7dc81aa627608bf42a932f83
     components.charts.assets.yield-coverage.description: a2ae4456c9f4fcf89da2c8e7577ebefa
-    components.charts.assets.yield-coverage.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
     components.charts.assets.yield-coverage.error: c16aef533358001508ae81e9c27582d8
-    components.charts.assets.yield-distribution.title: c550227d371e130c2d892d3b838d04b8
-    components.charts.assets.yield-distribution.description: 30568b9a28f85ac49d9d2d962205950c
-    components.charts.assets.yield-distribution.total-yield-label: b30eafbf82345105003f2d2add7734ae
+    components.charts.assets.yield-coverage.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
+    components.charts.assets.yield-coverage.title: 8c8f1c58b026505a691dcdeafbdadf4f
     components.charts.assets.yield-distribution.claimed-label: 9d8b15ef78357692564f5aced0c68eaf
-    components.charts.assets.yield-distribution.no-data: 1b961f5566f72f961babb94936c6c04d
+    components.charts.assets.yield-distribution.description: 30568b9a28f85ac49d9d2d962205950c
     components.charts.assets.yield-distribution.error: fb91fddc0ac1c8aeb691afd8657fd7ee
+    components.charts.assets.yield-distribution.no-data: 1b961f5566f72f961babb94936c6c04d
+    components.charts.assets.yield-distribution.title: c550227d371e130c2d892d3b838d04b8
+    components.charts.assets.yield-distribution.total-yield-label: b30eafbf82345105003f2d2add7734ae
     components.data-table.clear-filters: 0b275442d6556cff30b75f37f1918899
     components.data-table.details: 3ec365dd533ddb7ef3d1c111186ce872
     components.data-table.export: 0095a9fa74d1713e43e370a7d7846224
@@ -608,12 +555,12 @@ files:
     portfolio.transfer-form.amount.title: 034f1f16f32db94ee6659289fdcaa4e8
     portfolio.transfer-form.asset-types: 7a8f32058273f93cf158d8ce39ba40ad
     portfolio.transfer-form.description: ac6a6a8b4b60372d71aed84172ab9f31
-    portfolio.transfer-form.recipients.description: 121576e6c032ae5dbfb878d1b91e14c7
-    portfolio.transfer-form.recipients.title: 8f419c48506f3cf74a150f1f5257d6e7
-    portfolio.transfer-form.recipients.wallet-address-label: a45e5458e44f09f0c4b7682ce8e5b1cc
     portfolio.transfer-form.recipients.address-placeholder: 0b04832b113b2d7bcde8d214587f5879
+    portfolio.transfer-form.recipients.description: 121576e6c032ae5dbfb878d1b91e14c7
     portfolio.transfer-form.recipients.manual-entry-link: 9155c6f94f857b0d309c17621bcc128f
     portfolio.transfer-form.recipients.search-user-link: 79a26d6aa989e2bc91a4adfe055a87ea
+    portfolio.transfer-form.recipients.title: 8f419c48506f3cf74a150f1f5257d6e7
+    portfolio.transfer-form.recipients.wallet-address-label: a45e5458e44f09f0c4b7682ce8e5b1cc
     portfolio.transfer-form.select-asset.asset-description: 39f9d35a12ea95fc93e7a53a3ae348b5
     portfolio.transfer-form.select-asset.asset-label: 26e9054be7f40079575582b7ad3f7363
     portfolio.transfer-form.select-asset.description: 939a56a4b02eec703a286fb1f8f0a4ee
@@ -673,17 +620,17 @@ files:
     private.assets.create.parameters.common.name-label: 49ee3087348e8d44e1feda1917443987
     private.assets.create.parameters.common.seconds-unit-label: 783e8e29e6a8c3e22baa58a19420eb4f
     private.assets.create.parameters.common.symbol-label: 02c86eb2792f3262c21d030a87e19793
-    private.assets.create.parameters.common.value-in-base-currency-label: c4a9cca23e1361496a12d21c034f19c0
-    private.assets.create.parameters.common.time-units.singular.seconds: a9f0e61a137d86aa9db53465e0801612
-    private.assets.create.parameters.common.time-units.singular.hours: 896c55cc5e46fab38ce9f51ebf7bfcd3
-    private.assets.create.parameters.common.time-units.singular.days: 628b7db04235f228d40adc671413a8c8
-    private.assets.create.parameters.common.time-units.singular.weeks: 172a8327fcd3685ab3c0f740d031da09
-    private.assets.create.parameters.common.time-units.singular.months: 7436f942d5ea836cb84f1bb2527d8286
-    private.assets.create.parameters.common.time-units.plural.seconds: 783e8e29e6a8c3e22baa58a19420eb4f
-    private.assets.create.parameters.common.time-units.plural.hours: 73cdddd7730abfc13a55efb9f5685a3b
     private.assets.create.parameters.common.time-units.plural.days: 44fdec47036f482b68b748f9d786801b
-    private.assets.create.parameters.common.time-units.plural.weeks: ae60f11ab51860bdb22794a943335a34
+    private.assets.create.parameters.common.time-units.plural.hours: 73cdddd7730abfc13a55efb9f5685a3b
     private.assets.create.parameters.common.time-units.plural.months: da36cfaf48b9e19896e23e1207040d1e
+    private.assets.create.parameters.common.time-units.plural.seconds: 783e8e29e6a8c3e22baa58a19420eb4f
+    private.assets.create.parameters.common.time-units.plural.weeks: ae60f11ab51860bdb22794a943335a34
+    private.assets.create.parameters.common.time-units.singular.days: 628b7db04235f228d40adc671413a8c8
+    private.assets.create.parameters.common.time-units.singular.hours: 896c55cc5e46fab38ce9f51ebf7bfcd3
+    private.assets.create.parameters.common.time-units.singular.months: 7436f942d5ea836cb84f1bb2527d8286
+    private.assets.create.parameters.common.time-units.singular.seconds: a9f0e61a137d86aa9db53465e0801612
+    private.assets.create.parameters.common.time-units.singular.weeks: 172a8327fcd3685ab3c0f740d031da09
+    private.assets.create.parameters.common.value-in-base-currency-label: c4a9cca23e1361496a12d21c034f19c0
     private.assets.create.parameters.cryptocurrencies.initial-supply-description: 1556496117b4664e4471904453587d0a
     private.assets.create.parameters.cryptocurrencies.initial-supply-label: 642a2cc0832a64da551484c62bbd7f8a
     private.assets.create.parameters.cryptocurrencies.name-placeholder: d023ec040f79f1a9b2ac960b43785089
@@ -755,6 +702,7 @@ files:
     private.assets.details.forms.amount.description.top-up: fb422732c3a240a18ac4e95e9be2918c
     private.assets.details.forms.amount.description.update-collateral: 79a739dfe12982ffa4bc0b5a76c849bc
     private.assets.details.forms.amount.description.withdraw: 897caa4080abda4dad13f8d68be447cf
+    private.assets.details.forms.amount.label: b2f40690858b404ed10e62bdf422c704
     private.assets.details.forms.amount.max-limit.burn: b7f22f0f406cbf1fae57ebce5cdb7c7f
     private.assets.details.forms.amount.max-limit.freeze: e0d150dc6cd9802e36744f0799567059
     private.assets.details.forms.amount.max-limit.mint: 0b01c7d38443c779173adfb6be2f35a8
@@ -912,6 +860,7 @@ files:
     private.assets.fields.address-header: dd7bf230fde8d4836917806aff6a6b27
     private.assets.fields.allowed-since-header: 67a347d841fa68098e643d2106625b67
     private.assets.fields.assets-under-management-header: 4b99631227184f943addc7dbee1bd396
+    private.assets.fields.balance: 99a808d8d16122d70e44bd7f709d30fb
     private.assets.fields.balance-header: 99a808d8d16122d70e44bd7f709d30fb
     private.assets.fields.blocked-since-header: e994d62c4367fe593120e3853d828783
     private.assets.fields.category-header: 3adbdb3ac060038aa0e6e6c138ef9873
@@ -927,7 +876,6 @@ files:
     private.assets.fields.creator: ef1d00d8a237a1bbe431e1091f5715fb
     private.assets.fields.decimals: 2b417805040de3a3df31c8fd3626b57c
     private.assets.fields.deployed-on: 742d05d2641524cabb50be6874f319d5
-    private.assets.fields.balance: 99a808d8d16122d70e44bd7f709d30fb
     private.assets.fields.edit-roles-form.trigger-label: f9ee7fe65834029073858f06256a03ee
     private.assets.fields.equity.categories.blend-equity: 0eaaa36b984c9773310dcc172a531c1f
     private.assets.fields.equity.categories.common-equity: 63332e00e867f47dd0935678c9278476
@@ -1290,3 +1238,56 @@ files:
     transactions.sending: e4b0c2b6d59cb4cf3e169a9886008087
     transactions.success: 505a83f220c02df2f85c3810cd9ceb38
     transactions.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
+    zod.error.amount-too-large: db26eafb55d93d6cc7277656c0ec96a1
+    zod.error.amount-too-small: 78c037cd4117ca335c7462a8b03bed45
+    zod.error.array_length_too_big.exclusive: 30538d25907414565f9c90f946d03f90
+    zod.error.array_length_too_big.inclusive: 43e3e22968c5622caf355ba84261a644
+    zod.error.array_length_too_small.exclusive: 10ce54b84f6edd902a55c4ac0643fc1c
+    zod.error.array_length_too_small.inclusive: 2d3581ec8a949f4b1915f239eed31941
+    zod.error.custom: 8ec99a7264620677dfdaba9785a62dc4
+    zod.error.decimals-max: 4e5ac57dc930821716b9fbe671d92757
+    zod.error.decimals-min: 5686ac4736200feefe8aabe0c1a74051
+    zod.error.invalid-decimal: 99d2a1a04c0cfe442fd26fb887c62db5
+    zod.error.invalid-ethereum-address: e065f97d89d2f49e5fd3782c7b73bf50
+    zod.error.invalid-hash-format: 559379eea65af76709553c36433b6094
+    zod.error.invalid-pincode: b4785851cf390a3b914ca0247aac11bb
+    zod.error.invalid-symbol: d56ac0fd2ee407ed241185cfe6c9d1a0
+    zod.error.invalid-timestamp: 73362e52de5c978b3e6331062ab242f1
+    zod.error.invalid_arguments: 79c3a6fc888aa8695ddbb0ea6ee869bb
+    zod.error.invalid_cuid: 97d067d5d1362f7b50443964a5eba9e0
+    zod.error.invalid_date: 6983e1dbaf645233e304a723271973a7
+    zod.error.invalid_datetime: 43ecb317ec284252ff8339d9ec5c610c
+    zod.error.invalid_email: e918b3646854ddfb97b67ebb40c8200f
+    zod.error.invalid_enum_value: fa390b278205d590d3e55634c5ae3031
+    zod.error.invalid_format: 704c1a051c035f12fc8588e70131ee61
+    zod.error.invalid_literal: 295ecce40d19ed58b0388248eb35d802
+    zod.error.invalid_return_type: 6a9660ce9b45ffc9d847afb5d51ea056
+    zod.error.invalid_string: e0bf26b4b64363083d77ce3ca569be31
+    zod.error.invalid_type: 988396946db1c1cd82bef11d47ddec9a
+    zod.error.invalid_union: 3581aa3e644a38502a7307a01a4a1557
+    zod.error.invalid_union_discriminator: 0f0e707b30bfa74b686f1bec8e239f3a
+    zod.error.invalid_url: 271177b03cb7fac355dfa12aca9be618
+    zod.error.invalid_uuid: e85d2b9f6362f2589531d5484e44653e
+    zod.error.isin-format: 1b4758c43402209ebe0f7b61981ab2e4
+    zod.error.isin-length: 3edcea4a92e61a1d24f255490984c36a
+    zod.error.must_be_array: 21a1f7977daea4cd549935ad9ff15a87
+    zod.error.must_be_bigint: 469143d42dbd257fc2edd8584b7f31f1
+    zod.error.must_be_boolean: c9e55284871729bb745a691ad2c65b6e
+    zod.error.must_be_date: f64ff571aad4db6c14a9e345d9dc0623
+    zod.error.must_be_number: 7293795ec32bf0608e80a789419bb55e
+    zod.error.must_be_object: 8e475babea156a65d364f79b38ee4079
+    zod.error.must_be_string: 984306778f29519f72fce3319b10391b
+    zod.error.negative-amount: 6a59488f8174f3a3b18fbee80cc80094
+    zod.error.number_too_big.exclusive: de4bfc97862436f8807a6027fb8f899d
+    zod.error.number_too_big.inclusive: 51914dee22eb0760952f98e070035e17
+    zod.error.number_too_small.exclusive: a5a863648f3621fbb844e3c141e6ad6b
+    zod.error.number_too_small.inclusive: dfa36bb42e25a2824a4ae171ccd45092
+    zod.error.required: 0511ee0d41117aa7b4abaaf102aa513d
+    zod.error.role-required: c535f2eb3fee2c263d3425f9b14e0284
+    zod.error.string_length_too_big.exclusive: 50ec7f087c166e20e2f05a007e6f3f8e
+    zod.error.string_length_too_big.inclusive: 96e77400755df23a0df86c751e577e82
+    zod.error.string_length_too_small.exclusive: 072837314a024226ca083b5629db0049
+    zod.error.string_length_too_small.inclusive: 196f22d84c6b185d415396f64a52b65a
+    zod.error.too_big: 41ea7c729a91b32192899be51397240c
+    zod.error.too_small: 98bfdb2cf420ebf668404ee68038da1c
+    zod.error.validation_failed: d10fb60c71d2c232120f9df29cbc7989

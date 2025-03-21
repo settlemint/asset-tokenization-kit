@@ -8,9 +8,10 @@ import { useFormContext } from "react-hook-form";
 interface AmountProps {
   max?: number;
   decimals?: number;
+  symbol: string;
 }
 
-export function Amount({ max, decimals }: AmountProps) {
+export function Amount({ max, decimals, symbol }: AmountProps) {
   const { control } = useFormContext<MintInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();
@@ -21,12 +22,14 @@ export function Amount({ max, decimals }: AmountProps) {
     <FormStep title={t("title")} description={t("description.mint")}>
       <FormInput
         control={control}
+        label={t("label")}
         name="amount"
         type="number"
         max={max}
         step={decimals ? 10 ** -decimals : 1}
         description={description}
         required
+        postfix={symbol}
       />
     </FormStep>
   );

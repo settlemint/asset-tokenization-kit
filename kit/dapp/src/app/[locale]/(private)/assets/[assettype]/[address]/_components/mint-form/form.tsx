@@ -19,6 +19,7 @@ interface MintFormProps {
   recipient?: Address;
   max?: number;
   decimals: number;
+  symbol: string;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -31,6 +32,7 @@ export function MintForm({
   recipient,
   max,
   decimals,
+  symbol,
   asButton = false,
   open,
   onOpenChange,
@@ -42,11 +44,11 @@ export function MintForm({
   const [internalOpenState, setInternalOpenState] = useState(false);
   const steps = recipient
     ? [
-        <Amount key="amount" max={max} decimals={decimals} />,
+        <Amount key="amount" max={max} decimals={decimals} symbol={symbol} />,
         <Summary key="summary" address={address} />,
       ]
     : [
-        <Amount key="amount" max={max} decimals={decimals} />,
+        <Amount key="amount" max={max} decimals={decimals} symbol={symbol} />,
         <Recipients key="recipients" />,
         <Summary key="summary" address={address} />,
       ];

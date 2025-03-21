@@ -4,7 +4,12 @@ import type { UpdateCollateralInput } from "@/lib/mutations/update-collateral/up
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function Amount() {
+interface AmountProps {
+  decimals: number;
+  symbol: string;
+}
+
+export function Amount({ decimals, symbol }: AmountProps) {
   const { control } = useFormContext<UpdateCollateralInput>();
   const t = useTranslations("private.assets.details.forms.amount");
 
@@ -17,8 +22,9 @@ export function Amount() {
         control={control}
         name="amount"
         type="number"
-        min={1}
         required
+        postfix={symbol}
+        step={decimals ? 10 ** -decimals : 1}
       />
     </FormStep>
   );

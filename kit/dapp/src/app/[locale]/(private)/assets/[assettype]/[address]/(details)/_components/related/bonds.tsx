@@ -36,6 +36,7 @@ export async function BondsRelated({
           address={address}
           assettype="bond"
           decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
@@ -46,7 +47,9 @@ export async function BondsRelated({
       >
         <BurnForm
           address={address}
-          maxLimit={userBalance?.available}
+          max={userBalance?.available ?? 0}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           assettype="bond"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
