@@ -124,47 +124,6 @@ function NumberInputContent<T extends FieldValues>({
         return;
       }
 
-      // If minNotZero is true, don't allow zero values
-      if (minNotZero && bnValue.isZero()) {
-        console.log("Rejecting zero value due to minNotZero constraint");
-        // Calculate smallest possible value based on decimals
-        const smallestValue = new BigNumber(1).div(
-          new BigNumber(10).pow(decimals)
-        );
-        console.log(
-          "Using smallest valid value instead:",
-          smallestValue.toString()
-        );
-        field.onChange(smallestValue.toString());
-        console.log("Triggering validation after fixing zero value");
-        void formContext.trigger(field.name);
-        return;
-      }
-
-      // Don't allow negative values unless explicitly allowed
-      if (!allowNegative && bnValue.isNegative()) {
-        return;
-      }
-
-      // Validate against min/max constraints
-      if (maxValue && bnValue.gt(maxValue)) {
-        return;
-      }
-
-      if (minValue && bnValue.lt(minValue)) {
-        return;
-      }
-
-      // Calculate smallest possible value based on decimals
-      const smallestValue = new BigNumber(1).div(
-        new BigNumber(10).pow(decimals)
-      );
-
-      // If minNotZero is true, ensure it's at least the smallest possible value
-      if (minNotZero && bnValue.lt(smallestValue)) {
-        return;
-      }
-
       // Validate decimal places
       if (decimals !== undefined) {
         const decimalPart = sanitized.split(".")[1] || "";
@@ -339,18 +298,6 @@ function NumberInputContent<T extends FieldValues>({
                         minNotZero &&
                         (inputValue === "0" || /^0[.,]0*$/.test(inputValue))
                       ) {
-                        console.log(
-                          "Rejecting zero value in onChange due to minNotZero constraint"
-                        );
-                        // Calculate smallest possible value based on decimals
-                        const smallestValue = new BigNumber(1).div(
-                          new BigNumber(10).pow(decimals)
-                        );
-                        console.log(
-                          "Using smallest valid value instead:",
-                          smallestValue.toString()
-                        );
-                        field.onChange(smallestValue.toString());
                         void formContext.trigger(field.name);
                       }
                     }}

@@ -207,6 +207,7 @@ export function Form<
                 </Alert>
               )}
               {Array.isArray(children) ? children[currentStep] : children}
+              {JSON.stringify(form.formState, null, 2)}
               {showFormSecurityConfirmation && (
                 <FormOtpDialog
                   name={"pincode" as Path<ZodInfer<S>>}
