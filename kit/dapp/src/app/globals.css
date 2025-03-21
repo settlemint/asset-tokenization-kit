@@ -292,6 +292,14 @@ h3: text-xl
       0 0 no-repeat padding-box;
   }
 
+  [data-slot="navigation-menu-link"]:focus {
+    color: var(--sm-text);
+  }
+
+  input[data-slot="form-control"] {
+    background-color: transparent !important;
+  }
+
   [data-slot="sidebar-wrapper"]
     [data-state="expanded"]
     [data-slot="sidebar-content"] {
