@@ -392,7 +392,8 @@
         "max-decimals": "値は{decimals}桁以上の小数点を持つことができません",
         "min-value": "値は{min}より小さくできません",
         "valid-email": "有効なメールアドレスを入力してください",
-        "valid-number": "有効な数値を入力してください"
+        "valid-number": "有効な数値を入力してください",
+        "validation-rules": "検証ルール"
       },
       "pincode-dialog": {
         "description": "トランザクションに署名するには、確認と承認のためにピンコードを入力してください。",

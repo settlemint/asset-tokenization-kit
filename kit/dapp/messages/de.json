@@ -391,8 +391,9 @@
         "max-value": "Wert darf nicht höher als {max} sein",
         "max-decimals": "Wert darf nicht mehr als {decimals} Dezimalstellen haben",
         "min-value": "Wert darf nicht niedriger als {min} sein",
-        "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
-        "valid-number": "Bitte geben Sie eine gültige Zahl ein"
+        "valid-email": "Bitte gib eine gültige E-Mail-Adresse ein",
+        "valid-number": "Bitte gib eine gültige Zahl ein",
+        "validation-rules": "Validierungsregeln"
       },
       "pincode-dialog": {
         "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Verifizierung und Autorisierung ein.",

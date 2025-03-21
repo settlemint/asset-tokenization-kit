@@ -117,6 +117,7 @@ export function ManageDropdown({
           onOpenChange={onFormOpenChange}
           maxLimit={mintMaxLimit}
           decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
         />
       ),
     },
@@ -209,6 +210,7 @@ export function ManageDropdown({
           open={openMenuItem === "update-collateral"}
           onOpenChange={onFormOpenChange}
           decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
         />
       ),
     },

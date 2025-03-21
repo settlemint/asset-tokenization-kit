@@ -449,20 +449,13 @@
         "letters-only": "Please enter letters only",
         "max-decimals": "Maximum decimals is {decimals}",
         "max-value": "Maximum allowed is {max}",
+        "min-not-zero": "Value cannot be zero",
+        "min-smallestValue": "Value must be at least {min}",
         "min-value": "Minimum allowed is {min}",
-        "placeholder": {
-          "all-constraints": "minimum: {min} • maximum: {max} • minimum non-zero: {smallestValue} • maximum {decimals} decimals",
-          "decimals-only": "maximum {decimals} decimals",
-          "max": "maximum: {max}",
-          "max-not-zero-decimals": "maximum: {max} • maximum {decimals} decimals • zero not allowed",
-          "min": "minimum: {min}",
-          "min-max": "minimum: {min} • maximum: {max}",
-          "min-max-decimals": "minimum: {min} • maximum: {max} • maximum {decimals} decimals",
-          "min-not-zero": "minimum: {min} • zero not allowed",
-          "min-not-zero-only": "minimum: {smallestValue} • zero not allowed"
-        },
+        "non-negative": "Must be a positive number",
         "valid-email": "Please enter a valid email address",
-        "valid-number": "Please enter a valid number"
+        "valid-number": "Please enter a valid number",
+        "validation-rules": "Validation Rules"
       },
       "pincode-dialog": {
         "description": "To sign the transaction, please enter your pincode for verification and authorization.",

@@ -9,9 +9,10 @@ import type { Address } from "viem";
 
 interface SummaryProps {
   address: Address;
+  symbol: string;
 }
 
-export function Summary({ address }: SummaryProps) {
+export function Summary({ address, symbol }: SummaryProps) {
   const { control } = useFormContext<UpdateCollateralInput>();
   const t = useTranslations("private.assets.details.forms.summary");
   const values = useWatch({
@@ -30,7 +31,7 @@ export function Summary({ address }: SummaryProps) {
       />
       <FormSummaryDetailItem
         label={t("amount-label")}
-        value={formatNumber(values.amount ?? 0, { locale })}
+        value={formatNumber(values.amount ?? 0, { locale, token: symbol })}
       />
     </FormStep>
   );

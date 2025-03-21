@@ -6,9 +6,10 @@ import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
   decimals: number;
+  symbol: string;
 }
 
-export function Amount({ decimals }: AmountProps) {
+export function Amount({ decimals, symbol }: AmountProps) {
   const { control } = useFormContext<UpdateCollateralInput>();
   const t = useTranslations("private.assets.details.forms.amount");
 
@@ -21,6 +22,7 @@ export function Amount({ decimals }: AmountProps) {
         control={control}
         name="amount"
         decimals={decimals}
+        postfix={symbol}
         required
       />
     </FormStep>

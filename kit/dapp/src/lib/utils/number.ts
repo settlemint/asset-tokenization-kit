@@ -15,6 +15,8 @@ export interface FormatOptions {
   readonly decimals?: number;
   /** Whether to display the number as a percentage */
   readonly percentage?: boolean;
+  /** Whether to strip zero decimals */
+  readonly stripZeroDecimals?: boolean;
 }
 
 /**
@@ -27,7 +29,13 @@ function formatNumberWithFormatter(
   amount: string | bigint | number | BigNumber | null | undefined,
   options: FormatOptions
 ): string {
-  const { currency, token, decimals = 2, percentage = false } = options;
+  const {
+    currency,
+    token,
+    decimals = 2,
+    percentage = false,
+    stripZeroDecimals = false,
+  } = options;
 
   // Convert input to BigNumber safely
   const value = (() => {
@@ -68,7 +76,7 @@ function formatNumberWithFormatter(
     style: percentage ? "percent" : currency ? "currency" : "decimal",
     currency,
     maximumFractionDigits: decimals,
-    minimumFractionDigits: decimals,
+    minimumFractionDigits: stripZeroDecimals ? 0 : decimals,
   });
 
   return token ? `${formattedNumber} ${token}` : formattedNumber;

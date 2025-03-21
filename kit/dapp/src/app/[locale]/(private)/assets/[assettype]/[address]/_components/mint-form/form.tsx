@@ -21,6 +21,7 @@ interface MintFormProps {
   asButton?: boolean;
   open?: boolean;
   decimals: number;
+  symbol: string;
   onOpenChange?: (open: boolean) => void;
   disabled?: boolean;
 }
@@ -31,6 +32,7 @@ export function MintForm({
   recipient,
   maxLimit,
   decimals,
+  symbol,
   asButton = false,
   open,
   onOpenChange,
@@ -71,13 +73,23 @@ export function MintForm({
       >
         {recipient
           ? [
-              <Amount key="amount" maxLimit={maxLimit} decimals={decimals} />,
-              <Summary key="summary" address={address} />,
+              <Amount
+                key="amount"
+                maxLimit={maxLimit}
+                decimals={decimals}
+                symbol={symbol}
+              />,
+              <Summary key="summary" address={address} symbol={symbol} />,
             ]
           : [
-              <Amount key="amount" maxLimit={maxLimit} decimals={decimals} />,
+              <Amount
+                key="amount"
+                maxLimit={maxLimit}
+                decimals={decimals}
+                symbol={symbol}
+              />,
               <Recipients key="recipients" />,
-              <Summary key="summary" address={address} />,
+              <Summary key="summary" address={address} symbol={symbol} />,
             ]}
       </Form>
     </FormSheet>

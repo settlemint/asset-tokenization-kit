@@ -8,9 +8,10 @@ import { useFormContext } from "react-hook-form";
 interface AmountProps {
   maxLimit?: number;
   decimals: number;
+  symbol: string;
 }
 
-export function Amount({ maxLimit, decimals }: AmountProps) {
+export function Amount({ maxLimit, decimals, symbol }: AmountProps) {
   const { control } = useFormContext<MintInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();
@@ -28,6 +29,7 @@ export function Amount({ maxLimit, decimals }: AmountProps) {
         description={maxLimitDescription}
         formatDisplay
         required
+        postfix={symbol}
       />
     </FormStep>
   );

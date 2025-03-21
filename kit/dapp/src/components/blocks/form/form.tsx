@@ -137,19 +137,18 @@ export function Form<
     const beforeValidate = CurrentStep.beforeValidate ?? [];
     await Promise.all(beforeValidate.map((validate) => validate(form)));
 
-    for (const field of fieldsToValidate) {
-      const value = form.getValues(field as Path<ZodInfer<S>>);
-
-      form.setValue(field as Path<ZodInfer<S>>, value, {
-        shouldValidate: true,
-        shouldTouch: true,
-      });
-    }
-
     const results = await Promise.all(
-      fieldsToValidate.map((field) =>
-        form.trigger(field as Path<ZodInfer<S>>, { shouldFocus: true })
-      )
+      fieldsToValidate.map((field) => {
+        const value = form.getValues(field as Path<ZodInfer<S>>);
+        form.setValue(field as Path<ZodInfer<S>>, value, {
+          shouldValidate: true,
+          shouldTouch: true,
+          shouldDirty: true,
+        });
+
+        // console.log("Triggering validation for", field, value);
+        return form.trigger(field as Path<ZodInfer<S>>, { shouldFocus: true });
+      })
     );
 
     if (results.every(Boolean)) {

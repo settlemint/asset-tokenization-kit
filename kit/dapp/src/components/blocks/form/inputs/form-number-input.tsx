@@ -9,12 +9,19 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/number";
 import BigNumber from "bignumber.js";
 import { useLocale, useTranslations } from "next-intl";
 import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   type ControllerRenderProps,
   type FieldError,
@@ -47,6 +54,24 @@ type FormNumberInputProps<T extends FieldValues> = Omit<
 // Allow just numbers, an optional single decimal separator, and optional minus at the start
 const NUMBER_PATTERN = /^-?[0-9]*[.,]?[0-9]*$/;
 
+interface NumberInputContentProps<T extends FieldValues>
+  extends Omit<InputProps, "disabled" | "description" | "label"> {
+  field: ControllerRenderProps<T>;
+  fieldState: { error?: FieldError };
+  formContext: ReturnType<typeof useFormContext<T>>;
+  minValue?: BigNumber;
+  maxValue?: BigNumber;
+  step: string;
+  decimals: number;
+  formatDisplay: boolean;
+  postfix?: React.ReactNode;
+  disabled?: boolean;
+  description?: React.ReactNode;
+  label?: string;
+  minNotZero?: boolean;
+  allowNegative?: boolean;
+  placeholder?: string;
+}
 /**
  * Internal component to render the number input field content
  */
@@ -67,32 +92,12 @@ function NumberInputContent<T extends FieldValues>({
   allowNegative,
   placeholder,
   ...props
-}: {
-  field: ControllerRenderProps<T>;
-  fieldState: { error?: FieldError };
-  formContext: ReturnType<typeof useFormContext<T>>;
-  minValue?: BigNumber;
-  maxValue?: BigNumber;
-  step: string;
-  decimals: number;
-  formatDisplay: boolean;
-  postfix?: React.ReactNode;
-  disabled?: boolean;
-  description?: React.ReactNode;
-  label?: string;
-  minNotZero?: boolean;
-  allowNegative?: boolean;
-  placeholder?: string;
-} & Omit<InputProps, "disabled" | "description" | "label">) {
+}: NumberInputContentProps<T>) {
   const t = useTranslations("components.form.input");
   const locale = useLocale();
   const [isFocused, setIsFocused] = useState(false);
   const [rawInput, setRawInput] = useState("");
-
-  // Helper function to normalize decimal separator to period for BigNumber
-  const normalizeDecimalSeparator = (value: string) => {
-    return value.replace(",", ".");
-  };
+  const debouncedRawInput = useDebounce(rawInput, 500);
 
   // Helper function to format decimal separator based on locale
   const formatDecimalSeparator = (value: string) => {
@@ -104,11 +109,6 @@ function NumberInputContent<T extends FieldValues>({
 
   // Helper function to sanitize and validate the input
   const sanitizeAndValidate = (value: string) => {
-    if (value === "") {
-      field.onChange("");
-      return;
-    }
-
     try {
       // Remove any non-numeric characters except . and -
       const sanitized = value
@@ -126,6 +126,18 @@ function NumberInputContent<T extends FieldValues>({
 
       // If minNotZero is true, don't allow zero values
       if (minNotZero && bnValue.isZero()) {
+        console.log("Rejecting zero value due to minNotZero constraint");
+        // Calculate smallest possible value based on decimals
+        const smallestValue = new BigNumber(1).div(
+          new BigNumber(10).pow(decimals)
+        );
+        console.log(
+          "Using smallest valid value instead:",
+          smallestValue.toString()
+        );
+        field.onChange(smallestValue.toString());
+        console.log("Triggering validation after fixing zero value");
+        void formContext.trigger(field.name);
         return;
       }
 
@@ -170,10 +182,31 @@ function NumberInputContent<T extends FieldValues>({
     }
   };
 
+  // Effect to handle debounced formatting
+  useEffect(() => {
+    if (!isFocused && debouncedRawInput) {
+      sanitizeAndValidate(debouncedRawInput);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedRawInput, isFocused]);
+
+  // Store the actual numeric value for focusing
+  const getActualValue = () => {
+    if (field.value === undefined) return "";
+
+    try {
+      const bnValue = new BigNumber(field.value);
+      if (bnValue.isNaN()) return "";
+      return bnValue.toString();
+    } catch {
+      return "";
+    }
+  };
+
   // Convert the form value to a display string
   const displayValue = (() => {
-    if (isFocused) return rawInput;
-    if (field.value === "" || field.value === undefined) return "";
+    if (isFocused) return rawInput || getActualValue();
+    if (field.value === undefined) return "";
 
     try {
       const bnValue = new BigNumber(field.value);
@@ -196,67 +229,49 @@ function NumberInputContent<T extends FieldValues>({
     }
   })();
 
-  // Generate dynamic placeholder if none is provided
-  const dynamicPlaceholder = (() => {
-    if (placeholder) return placeholder;
+  // Generate validation rules text for the tooltip
+  const validationRules = (() => {
+    const rules = [];
 
     // Calculate smallest possible value based on decimals
     const smallestValue = new BigNumber(1).div(new BigNumber(10).pow(decimals));
 
-    // Determine which constraints are active
-    const hasMin = !!minValue;
-    const hasMax = !!maxValue;
-    const hasMinNotZero = !!minNotZero;
-    const hasDecimalLimit = decimals < 18;
-
-    // Use the most specific placeholder translation based on active constraints
-    if (hasMin && hasMax && hasMinNotZero && hasDecimalLimit) {
-      return t("placeholder.all-constraints", {
-        min: formatNumber(minValue!.toString(), { locale }),
-        max: formatNumber(maxValue!.toString(), { locale }),
-        smallestValue: formatNumber(smallestValue.toString(), { locale }),
-        decimals,
-      });
-    } else if (hasMax && hasMinNotZero && hasDecimalLimit) {
-      return t("placeholder.max-not-zero-decimals", {
-        max: formatNumber(maxValue!.toString(), { locale }),
-        smallestValue: formatNumber(smallestValue.toString(), { locale }),
-        decimals,
-      });
-    } else if (hasMin && hasMax && hasDecimalLimit) {
-      return t("placeholder.min-max-decimals", {
-        min: formatNumber(minValue!.toString(), { locale }),
-        max: formatNumber(maxValue!.toString(), { locale }),
-        decimals,
-      });
-    } else if (hasMin && hasMax) {
-      return t("placeholder.min-max", {
-        min: formatNumber(minValue!.toString(), { locale }),
-        max: formatNumber(maxValue!.toString(), { locale }),
-      });
-    } else if (hasMin && hasMinNotZero) {
-      return t("placeholder.min-not-zero", {
-        min: formatNumber(minValue!.toString(), { locale }),
-      });
-    } else if (hasMin) {
-      return t("placeholder.min", {
-        min: formatNumber(minValue!.toString(), { locale }),
-      });
-    } else if (hasMax) {
-      return t("placeholder.max", {
-        max: formatNumber(maxValue!.toString(), { locale }),
-      });
-    } else if (hasMinNotZero) {
-      return t("placeholder.min-not-zero-only", {
-        smallestValue: formatNumber(smallestValue.toString(), { locale }),
-      });
-    } else if (hasDecimalLimit) {
-      return t("placeholder.decimals-only", {
-        decimals,
-      });
+    // Add rules based on constraints
+    if (minValue) {
+      rules.push(
+        t("min-value", {
+          min: formatNumber(minValue.toString(), { locale, decimals }),
+        })
+      );
+    } else if (minNotZero) {
+      rules.push(
+        t("min-value", {
+          min: formatNumber(smallestValue.toString(), { locale, decimals }),
+        })
+      );
     }
 
-    return undefined;
+    if (maxValue) {
+      rules.push(
+        t("max-value", {
+          max: formatNumber(maxValue.toString(), {
+            locale,
+            decimals,
+            stripZeroDecimals: true,
+          }),
+        })
+      );
+    }
+
+    if (decimals < 18) {
+      rules.push(t("max-decimals", { decimals }));
+    }
+
+    if (!allowNegative) {
+      rules.push(t("non-negative"));
+    }
+
+    return rules;
   })();
 
   return (
@@ -267,7 +282,7 @@ function NumberInputContent<T extends FieldValues>({
           htmlFor={field.name}
           id={`${field.name}-label`}
         >
-          <span>{label}</span>
+          <span className="flex items-center gap-1">{label}</span>
           {props.required && <span className="ml-1 text-destructive">*</span>}
         </FormLabel>
       )}
@@ -278,44 +293,151 @@ function NumberInputContent<T extends FieldValues>({
             !postfix && "shadow-none"
           )}
         >
-          <Input
-            {...formContext.register(field.name)}
-            {...field}
-            {...props}
-            className={cn(
-              props.className,
-              postfix && "-mr-px rounded-r-none shadow-none focus:mr-[1px]",
-              "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            )}
-            type="text"
-            inputMode="decimal"
-            value={props.defaultValue ? undefined : displayValue}
-            onFocus={(e) => {
-              setIsFocused(true);
-              setRawInput(e.target.value);
-            }}
-            onBlur={(e) => {
-              setIsFocused(false);
-              sanitizeAndValidate(e.target.value);
-              void formContext.trigger(field.name);
-            }}
-            onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-              const inputValue = evt.target.value;
-              setRawInput(inputValue);
+          {validationRules.length > 0 ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Input
+                    {...field}
+                    {...props}
+                    className={cn(
+                      props.className,
+                      postfix &&
+                        "-mr-px rounded-r-none shadow-none focus:mr-[1px]",
+                      "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    )}
+                    type="text"
+                    inputMode="decimal"
+                    value={props.defaultValue ? undefined : displayValue}
+                    onFocus={(e) => {
+                      setIsFocused(true);
+                      // When focusing, show the actual numeric value without formatting
+                      const actualValue = getActualValue();
+                      setRawInput(actualValue);
+                      e.target.value = actualValue;
+                    }}
+                    onBlur={(e) => {
+                      setIsFocused(false);
+                      sanitizeAndValidate(e.target.value);
+                      console.log(
+                        "Triggering validation for",
+                        field.name,
+                        "value:",
+                        field.value
+                      );
+                      const result = formContext.trigger(field.name);
+                      result
+                        .then((valid) => console.log("Trigger result:", valid))
+                        .catch((err) => console.error("Trigger error:", err));
+                    }}
+                    onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+                      const inputValue = evt.target.value;
+                      setRawInput(inputValue);
 
-              // During typing, we only update the form value if it's empty
-              if (inputValue === "") {
-                field.onChange("");
-              }
-            }}
-            {...getAriaAttributes(field.name, !!fieldState.error, disabled)}
-            disabled={disabled}
-            placeholder={dynamicPlaceholder}
-          />
+                      // If minNotZero is true and value is a variant of zero, trigger validation immediately
+                      if (
+                        minNotZero &&
+                        (inputValue === "0" || /^0[.,]0*$/.test(inputValue))
+                      ) {
+                        console.log(
+                          "Rejecting zero value in onChange due to minNotZero constraint"
+                        );
+                        // Calculate smallest possible value based on decimals
+                        const smallestValue = new BigNumber(1).div(
+                          new BigNumber(10).pow(decimals)
+                        );
+                        console.log(
+                          "Using smallest valid value instead:",
+                          smallestValue.toString()
+                        );
+                        field.onChange(smallestValue.toString());
+                        void formContext.trigger(field.name);
+                      }
+                    }}
+                    {...getAriaAttributes(
+                      field.name,
+                      !!fieldState.error,
+                      disabled
+                    )}
+                    disabled={disabled}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-sm" side="bottom">
+                  <div className="text-sm">
+                    <ul className="list-disc pl-4 space-y-1">
+                      {validationRules.map((rule, index) => (
+                        <li key={index}>{rule}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <Input
+              {...field}
+              {...props}
+              className={cn(
+                props.className,
+                postfix && "-mr-px rounded-r-none shadow-none focus:mr-[1px]",
+                "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              )}
+              type="text"
+              inputMode="decimal"
+              value={props.defaultValue ? undefined : displayValue}
+              onFocus={(e) => {
+                setIsFocused(true);
+                // When focusing, show the actual numeric value without formatting
+                const actualValue = getActualValue();
+                setRawInput(actualValue);
+                e.target.value = actualValue;
+              }}
+              onBlur={(e) => {
+                setIsFocused(false);
+                sanitizeAndValidate(e.target.value);
+                console.log(
+                  "Triggering validation for",
+                  field.name,
+                  "value:",
+                  field.value
+                );
+                const result = formContext.trigger(field.name);
+                result
+                  .then((valid) => console.log("Trigger result:", valid))
+                  .catch((err) => console.error("Trigger error:", err));
+              }}
+              onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+                const inputValue = evt.target.value;
+                setRawInput(inputValue);
+
+                // If minNotZero is true and value is a variant of zero, trigger validation immediately
+                if (
+                  minNotZero &&
+                  (inputValue === "0" || /^0[.,]0*$/.test(inputValue))
+                ) {
+                  console.log(
+                    "Rejecting zero value in onChange due to minNotZero constraint"
+                  );
+                  // Calculate smallest possible value based on decimals
+                  const smallestValue = new BigNumber(1).div(
+                    new BigNumber(10).pow(decimals)
+                  );
+                  console.log(
+                    "Using smallest valid value instead:",
+                    smallestValue.toString()
+                  );
+                  field.onChange(smallestValue.toString());
+                  void formContext.trigger(field.name);
+                }
+              }}
+              {...getAriaAttributes(field.name, !!fieldState.error, disabled)}
+              disabled={disabled}
+            />
+          )}
           {postfix && (
             <span
               className={cn(
-                "flex items-center px-3 text-sm text-muted-foreground border border-l-0 bg-muted/50 rounded-r-md"
+                "flex items-center px-3 text-sm text-foreground border border-l-0 bg-muted/50 rounded-r-md"
               )}
             >
               {postfix}
@@ -363,7 +485,7 @@ export function FormNumberInput<T extends FieldValues>({
   max,
   step = "1",
   decimals = 18, // Default to maximum precision for Ethereum
-  formatDisplay = false,
+  formatDisplay = true,
   minNotZero,
   allowNegative,
   placeholder,
@@ -377,22 +499,27 @@ export function FormNumberInput<T extends FieldValues>({
   const smallestValue = new BigNumber(1).div(new BigNumber(10).pow(decimals));
 
   // Convert min/max to BigNumber for comparisons
-  const minValue = min !== undefined ? new BigNumber(min) : undefined;
+  // Use smallestValue as min when min is not provided but minNotZero is true
+  const minValue =
+    min !== undefined
+      ? new BigNumber(min)
+      : minNotZero
+        ? smallestValue
+        : undefined;
   const maxValue = max !== undefined ? new BigNumber(max) : undefined;
 
   return (
     <FormField
       {...props}
       rules={{
-        ...rules,
+        required: props.required,
         pattern: {
           value: NUMBER_PATTERN,
           message: t("valid-number"),
         },
         validate: {
           validBigNumber: (value) => {
-            if (value === "" || value === undefined) return true;
-
+            console.log("validBigNumber validation running", value);
             try {
               const bnValue = new BigNumber(value);
               return !bnValue.isNaN() || t("valid-number");
@@ -400,9 +527,24 @@ export function FormNumberInput<T extends FieldValues>({
               return t("valid-number");
             }
           },
-          nonNegative: (value) => {
-            if (value === "" || value === undefined || allowNegative)
+          notZero: (value) => {
+            console.log("notZero validation running", value, minNotZero);
+
+            try {
+              const bnValue = new BigNumber(value);
+              if (bnValue.isZero()) {
+                console.log("notZero validation failed: zero not allowed");
+                return t("min-not-zero");
+              }
               return true;
+            } catch (err) {
+              console.log("notZero validation error:", err);
+              return true;
+            }
+          },
+          nonNegative: (value) => {
+            console.log("nonNegative validation running", value);
+            if (value === undefined || allowNegative) return true;
 
             try {
               const bnValue = new BigNumber(value);
@@ -412,7 +554,7 @@ export function FormNumberInput<T extends FieldValues>({
             }
           },
           maxValue: (value) => {
-            if (value === "" || value === undefined || !maxValue) return true;
+            if (value === undefined || !maxValue) return true;
 
             try {
               const bnValue = new BigNumber(value);
@@ -427,36 +569,39 @@ export function FormNumberInput<T extends FieldValues>({
             }
           },
           minValue: (value) => {
-            if (value === "" || value === undefined) return true;
+            console.log("minValue validation running", value, minValue);
+            if (value === undefined || !minValue) {
+              console.log("minValue validation skipped:", {
+                value,
+                minValue,
+                reason: "value undefined or minValue not set",
+              });
+              return true;
+            }
 
             try {
-              const bnValue = new BigNumber(value);
-
-              // Check if zero is not allowed
-              if (minNotZero && bnValue.isZero()) {
-                return "Value cannot be zero";
-              }
+              const bnValue = new BigNumber(value ?? 0);
+              console.log("minValue calculated bnValue:", bnValue.toString());
 
               // Check explicit minimum if set
               if (minValue && bnValue.lt(minValue)) {
+                console.log(
+                  "minValue validation failed: value less than minimum"
+                );
                 return t("min-value", {
                   min: formatNumber(minValue.toString(), { locale }),
                 });
               }
 
-              // Check minimum for non-zero values
-              if (minNotZero && bnValue.lt(smallestValue)) {
-                return `Value must be at least ${formatNumber(smallestValue.toString(), { locale })}`;
-              }
-
+              console.log("minValue validation passed");
               return true;
-            } catch {
+            } catch (err) {
+              console.log("minValue validation error:", err);
               return true;
             }
           },
           decimalsCheck: (value) => {
-            if (value === "" || value === undefined || decimals === undefined)
-              return true;
+            if (value === undefined || decimals === undefined) return true;
 
             try {
               const bnValue = new BigNumber(value);

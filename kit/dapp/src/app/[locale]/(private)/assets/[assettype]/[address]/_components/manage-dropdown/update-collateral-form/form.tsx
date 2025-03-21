@@ -16,6 +16,7 @@ interface UpdateCollateralFormProps {
   address: Address;
   assettype: AssetType;
   decimals: number;
+  symbol: string;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -26,6 +27,7 @@ export function UpdateCollateralForm({
   address,
   assettype,
   decimals,
+  symbol,
   asButton = false,
   open,
   onOpenChange,
@@ -66,8 +68,8 @@ export function UpdateCollateralForm({
           assettype: assettype,
         }}
       >
-        <Amount decimals={decimals} />
-        <Summary address={address} />
+        <Amount decimals={decimals} symbol={symbol} />
+        <Summary address={address} symbol={symbol} />
       </Form>
     </FormSheet>
   );

@@ -45,6 +45,7 @@ export async function StablecoinsRelated({
           assettype="stablecoin"
           asButton
           decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
@@ -57,6 +58,7 @@ export async function StablecoinsRelated({
           assettype="stablecoin"
           asButton
           decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           disabled={isBlocked || isPaused || !userIsSupplyManager}
           maxLimit={mintMaxLimit}
         />

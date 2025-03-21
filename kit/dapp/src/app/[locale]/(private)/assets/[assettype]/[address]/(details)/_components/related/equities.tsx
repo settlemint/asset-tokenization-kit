@@ -37,6 +37,7 @@ export async function EquitiesRelated({
           assettype="equity"
           asButton
           decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
