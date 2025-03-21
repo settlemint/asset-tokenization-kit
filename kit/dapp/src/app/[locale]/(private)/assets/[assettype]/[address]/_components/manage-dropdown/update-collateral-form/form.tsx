@@ -15,6 +15,7 @@ import { Summary } from "./steps/summary";
 interface UpdateCollateralFormProps {
   address: Address;
   assettype: AssetType;
+  decimals: number;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -24,6 +25,7 @@ interface UpdateCollateralFormProps {
 export function UpdateCollateralForm({
   address,
   assettype,
+  decimals,
   asButton = false,
   open,
   onOpenChange,
@@ -64,7 +66,7 @@ export function UpdateCollateralForm({
           assettype: assettype,
         }}
       >
-        <Amount />
+        <Amount decimals={decimals} />
         <Summary address={address} />
       </Form>
     </FormSheet>

@@ -1,5 +1,5 @@
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormNumberInput } from "@/components/blocks/form/inputs";
 import type { MintInput } from "@/lib/mutations/mint/mint-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { useLocale, useTranslations } from "next-intl";
@@ -7,9 +7,10 @@ import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
   maxLimit?: number;
+  decimals: number;
 }
 
-export function Amount({ maxLimit }: AmountProps) {
+export function Amount({ maxLimit, decimals }: AmountProps) {
   const { control } = useFormContext<MintInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();
@@ -18,14 +19,14 @@ export function Amount({ maxLimit }: AmountProps) {
     : undefined;
   return (
     <FormStep title={t("title")} description={t("description.mint")}>
-      <FormInput
+      <FormNumberInput
         control={control}
         name="amount"
-        type="number"
-        min={1}
+        minNotZero
         max={maxLimit}
-        step={0.000001}
+        decimals={decimals}
         description={maxLimitDescription}
+        formatDisplay
         required
       />
     </FormStep>

@@ -1,5 +1,5 @@
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormNumberInput } from "@/components/blocks/form/inputs";
 import type { FreezeInput } from "@/lib/mutations/freeze/freeze-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { useLocale, useTranslations } from "next-intl";
@@ -26,11 +26,11 @@ export function Amount({ balance, symbol, decimals }: AmountProps) {
 
   return (
     <FormStep title={t("title")} description={t("description.freeze")}>
-      <FormInput
+      <FormNumberInput
         control={control}
         name="amount"
-        type="number"
-        min={1}
+        minNotZero
+        decimals={decimals}
         max={maxLimit}
         description={maxLimitDescription}
         required

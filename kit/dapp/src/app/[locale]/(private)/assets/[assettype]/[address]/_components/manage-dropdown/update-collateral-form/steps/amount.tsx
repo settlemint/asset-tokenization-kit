@@ -1,10 +1,14 @@
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormNumberInput } from "@/components/blocks/form/inputs";
 import type { UpdateCollateralInput } from "@/lib/mutations/update-collateral/update-collateral-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function Amount() {
+interface AmountProps {
+  decimals: number;
+}
+
+export function Amount({ decimals }: AmountProps) {
   const { control } = useFormContext<UpdateCollateralInput>();
   const t = useTranslations("private.assets.details.forms.amount");
 
@@ -13,11 +17,10 @@ export function Amount() {
       title={t("title")}
       description={t("description.update-collateral")}
     >
-      <FormInput
+      <FormNumberInput
         control={control}
         name="amount"
-        type="number"
-        min={1}
+        decimals={decimals}
         required
       />
     </FormStep>

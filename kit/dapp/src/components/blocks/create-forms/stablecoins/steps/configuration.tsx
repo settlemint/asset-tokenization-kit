@@ -1,5 +1,5 @@
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormNumberInput } from "@/components/blocks/form/inputs";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
@@ -32,9 +32,8 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
       description={t("configuration.stablecoins.description")}
     >
       <div className="grid grid-cols-2 gap-6">
-        <FormInput
+        <FormNumberInput
           control={control}
-          type="number"
           name="collateralLivenessValue"
           required
           label={t("parameters.common.collateral-proof-validity-label")}
@@ -48,12 +47,10 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
             />
           }
         />
-        <FormInput
+        <FormNumberInput
           control={control}
           name="valueInBaseCurrency"
-          type="number"
-          step={0.01}
-          min={0}
+          decimals={6}
           label={t("parameters.common.value-in-base-currency-label", {
             baseCurrency,
           })}

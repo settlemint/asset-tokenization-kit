@@ -375,23 +375,24 @@
     "form": {
       "assets": {
         "default-placeholder": "اختر خيارًا",
-        "loading": "جارٍ التحميل...",
+        "loading": "جاري التحميل...",
         "no-asset-found": "لم يتم العثور على أصل.",
-        "search-placeholder": "ابحث عن أصل..."
+        "search-placeholder": "البحث عن أصل..."
       },
       "button": {
         "next": "التالي",
         "previous": "السابق",
-        "processing": "جارٍ المعالجة...",
+        "processing": "جاري المعالجة...",
         "send-transaction": "إرسال المعاملة",
-        "sending-transaction": "جارٍ إرسال المعاملة..."
+        "sending-transaction": "جاري إرسال المعاملة..."
       },
       "input": {
-        "letters-only": "يرجى إدخال الأحرف فقط",
-        "valid-email": "يرجى إدخال عنوان بريد إلكتروني صالح",
+        "letters-only": "الرجاء إدخال الحروف فقط",
         "max-value": "لا يمكن أن تكون القيمة أعلى من {max}",
+        "max-decimals": "لا يمكن أن تحتوي القيمة على أكثر من {decimals} منازل عشرية",
         "min-value": "لا يمكن أن تكون القيمة أقل من {min}",
-        "valid-number": "يرجى إدخال رقم صالح"
+        "valid-email": "الرجاء إدخال عنوان بريد إلكتروني صالح",
+        "valid-number": "الرجاء إدخال رقم صالح"
       },
       "pincode-dialog": {
         "description": "لتوقيع المعاملة، يرجى إدخال الرقم السري الخاص بك للتحقق والتفويض.",

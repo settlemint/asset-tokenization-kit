@@ -1,5 +1,5 @@
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormNumberInput } from "@/components/blocks/form/inputs";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
 import { useTranslations } from "next-intl";
@@ -27,12 +27,10 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
         <EquityCategoriesSelect
           label={t("parameters.equities.equity-category-label")}
         />
-        <FormInput
+        <FormNumberInput
           control={control}
           name="valueInBaseCurrency"
-          type="number"
-          step={0.01}
-          min={0}
+          decimals={6}
           label={t("parameters.common.value-in-base-currency-label", {
             baseCurrency,
           })}

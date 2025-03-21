@@ -35,6 +35,7 @@ export async function CryptocurrenciesRelated({
           address={address}
           assettype="cryptocurrency"
           asButton
+          decimals={assetDetails.decimals}
           disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>

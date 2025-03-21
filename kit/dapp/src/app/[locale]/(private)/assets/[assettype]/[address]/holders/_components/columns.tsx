@@ -139,6 +139,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     open={open}
                     onOpenChange={onOpenChange}
                     maxLimit={mintMaxLimit}
+                    decimals={row.original.asset.decimals}
                   />
                 ),
                 disabled: row.original.asset.paused,

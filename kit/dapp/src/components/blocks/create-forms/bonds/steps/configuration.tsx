@@ -1,4 +1,5 @@
 import { FormStep } from "@/components/blocks/form/form-step";
+import { FormNumberInput } from "@/components/blocks/form/inputs";
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
@@ -50,12 +51,10 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
           description={t("parameters.bonds.underlying-asset-description")}
           required
         />
-        <FormInput
+        <FormNumberInput
           control={control}
           name="valueInBaseCurrency"
-          min={0}
-          type="number"
-          step={0.01}
+          decimals={6}
           label={t("parameters.common.value-in-base-currency-label", {
             baseCurrency,
           })}

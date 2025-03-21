@@ -14,6 +14,7 @@ import { Summary } from "./steps/summary";
 interface TopUpFormProps {
   address: Address;
   underlyingAssetAddress: Address;
+  decimals: number;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -22,6 +23,7 @@ interface TopUpFormProps {
 export function TopUpForm({
   address,
   underlyingAssetAddress,
+  decimals,
   asButton = false,
   open,
   onOpenChange,
@@ -58,7 +60,7 @@ export function TopUpForm({
           underlyingAssetAddress,
         }}
       >
-        <Amount />
+        <Amount decimals={decimals} />
         <Summary />
       </Form>
     </FormSheet>

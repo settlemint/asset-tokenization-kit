@@ -242,11 +242,7 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates positive amounts
    */
-  amount: () =>
-    z
-      .number()
-      .or(z.string())
-      .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
+  amount: () => z.number().or(z.string()).pipe(z.coerce.number()),
 
   /**
    * Validates user roles selection

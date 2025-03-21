@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
 import { getRoles, ROLES } from "@/lib/config/roles";
@@ -116,6 +116,7 @@ export function ManageDropdown({
           open={openMenuItem === "mint"}
           onOpenChange={onFormOpenChange}
           maxLimit={mintMaxLimit}
+          decimals={assetDetails.decimals}
         />
       ),
     },
@@ -136,6 +137,7 @@ export function ManageDropdown({
           maxLimit={userBalance?.available}
           open={openMenuItem === "burn"}
           onOpenChange={onFormOpenChange}
+          decimals={assetDetails.decimals}
         />
       ),
     },
@@ -169,6 +171,7 @@ export function ManageDropdown({
           }
           open={openMenuItem === "top-up"}
           onOpenChange={onFormOpenChange}
+          decimals={assetDetails.decimals}
         />
       ),
     },
@@ -188,6 +191,7 @@ export function ManageDropdown({
           }
           open={openMenuItem === "withdraw"}
           onOpenChange={onFormOpenChange}
+          decimals={assetDetails.decimals}
         />
       ),
     },
@@ -204,6 +208,7 @@ export function ManageDropdown({
           address={address}
           open={openMenuItem === "update-collateral"}
           onOpenChange={onFormOpenChange}
+          decimals={assetDetails.decimals}
         />
       ),
     },

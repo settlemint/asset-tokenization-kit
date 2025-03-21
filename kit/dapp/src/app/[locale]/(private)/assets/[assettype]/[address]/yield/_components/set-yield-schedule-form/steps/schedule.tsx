@@ -1,5 +1,6 @@
 "use client";
 
+import { FormNumberInput } from "@/components/blocks/form/inputs";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import { IntervalPeriod, getIntervalLabel } from "@/lib/utils/yield";
@@ -27,12 +28,10 @@ export function Schedule() {
         label={t("end-time.label")}
         required
       />
-      <FormInput
+      <FormNumberInput
         name="rate"
-        type="number"
         label={t("rate.label")}
-        step="0.01"
-        min="0"
+        decimals={2}
         max="100"
         description={t("rate.description")}
         required

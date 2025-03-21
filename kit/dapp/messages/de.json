@@ -374,23 +374,24 @@
     },
     "form": {
       "assets": {
-        "default-placeholder": "Wählen Sie eine Option",
-        "loading": "Lade...",
-        "no-asset-found": "Kein Vermögenswert gefunden.",
-        "search-placeholder": "Suchen Sie nach einem Vermögenswert..."
+        "default-placeholder": "Eine Option auswählen",
+        "loading": "Wird geladen...",
+        "no-asset-found": "Kein Asset gefunden.",
+        "search-placeholder": "Nach einem Asset suchen..."
       },
       "button": {
         "next": "Weiter",
         "previous": "Zurück",
-        "processing": "Verarbeitung...",
+        "processing": "Wird verarbeitet...",
         "send-transaction": "Transaktion senden",
         "sending-transaction": "Transaktion wird gesendet..."
       },
       "input": {
         "letters-only": "Bitte nur Buchstaben eingeben",
+        "max-value": "Wert darf nicht höher als {max} sein",
+        "max-decimals": "Wert darf nicht mehr als {decimals} Dezimalstellen haben",
+        "min-value": "Wert darf nicht niedriger als {min} sein",
         "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
-        "max-value": "Der Wert darf nicht höher sein als {max}",
-        "min-value": "Der Wert darf nicht niedriger sein als {min}",
         "valid-number": "Bitte geben Sie eine gültige Zahl ein"
       },
       "pincode-dialog": {

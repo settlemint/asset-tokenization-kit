@@ -44,6 +44,7 @@ export async function TokenizedDepositsRelated({
           address={address}
           assettype="tokenizeddeposit"
           asButton
+          decimals={assetDetails.decimals}
           disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
@@ -55,6 +56,7 @@ export async function TokenizedDepositsRelated({
           address={address}
           assettype="tokenizeddeposit"
           asButton
+          decimals={assetDetails.decimals}
           disabled={isBlocked || isPaused || !userIsSupplyManager}
           maxLimit={mintMaxLimit}
         />
@@ -68,6 +70,7 @@ export async function TokenizedDepositsRelated({
           maxLimit={userBalance?.available}
           assettype="tokenizeddeposit"
           asButton
+          decimals={assetDetails.decimals}
           disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>

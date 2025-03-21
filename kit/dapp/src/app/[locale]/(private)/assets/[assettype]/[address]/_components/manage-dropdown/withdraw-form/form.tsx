@@ -15,6 +15,7 @@ import { Summary } from "./steps/summary";
 interface WithdrawFormProps {
   address: Address;
   underlyingAssetAddress: Address;
+  decimals: number;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -23,6 +24,7 @@ interface WithdrawFormProps {
 export function WithdrawForm({
   address,
   underlyingAssetAddress,
+  decimals,
   asButton = false,
   open,
   onOpenChange,
@@ -60,7 +62,7 @@ export function WithdrawForm({
         }}
       >
         <Recipient />
-        <Amount />
+        <Amount decimals={decimals} />
         <Summary />
       </Form>
     </FormSheet>

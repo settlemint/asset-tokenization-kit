@@ -20,6 +20,7 @@ interface MintFormProps {
   maxLimit?: number;
   asButton?: boolean;
   open?: boolean;
+  decimals: number;
   onOpenChange?: (open: boolean) => void;
   disabled?: boolean;
 }
@@ -29,6 +30,7 @@ export function MintForm({
   assettype,
   recipient,
   maxLimit,
+  decimals,
   asButton = false,
   open,
   onOpenChange,
@@ -38,16 +40,6 @@ export function MintForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
-  const steps = recipient
-    ? [
-        <Amount key="amount" maxLimit={maxLimit} />,
-        <Summary key="summary" address={address} />,
-      ]
-    : [
-        <Amount key="amount" maxLimit={maxLimit} />,
-        <Recipients key="recipients" />,
-        <Summary key="summary" address={address} />,
-      ];
   return (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
@@ -77,7 +69,16 @@ export function MintForm({
           to: recipient,
         }}
       >
-        {steps.map((step) => step)}
+        {recipient
+          ? [
+              <Amount key="amount" maxLimit={maxLimit} decimals={decimals} />,
+              <Summary key="summary" address={address} />,
+            ]
+          : [
+              <Amount key="amount" maxLimit={maxLimit} decimals={decimals} />,
+              <Recipients key="recipients" />,
+              <Summary key="summary" address={address} />,
+            ]}
       </Form>
     </FormSheet>
   );

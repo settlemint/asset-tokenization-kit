@@ -388,9 +388,10 @@
       },
       "input": {
         "letters-only": "文字のみを入力してください",
+        "max-value": "値は{max}より大きくできません",
+        "max-decimals": "値は{decimals}桁以上の小数点を持つことができません",
+        "min-value": "値は{min}より小さくできません",
         "valid-email": "有効なメールアドレスを入力してください",
-        "max-value": "値は {max} より大きくすることはできません",
-        "min-value": "値は {min} より小さくすることはできません",
         "valid-number": "有効な数値を入力してください"
       },
       "pincode-dialog": {

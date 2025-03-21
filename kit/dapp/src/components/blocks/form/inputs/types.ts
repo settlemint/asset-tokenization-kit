@@ -19,6 +19,22 @@ export type BaseFormInputProps<T extends FieldValues> =
   };
 
 /**
+ * Props specific to BigNumber inputs
+ */
+export type BigNumberInputProps = {
+  /** Minimum allowed value (can be a number or string for large values) */
+  min?: number | string;
+  /** Maximum allowed value (can be a number or string for large values) */
+  max?: number | string;
+  /** Step value for number input */
+  step?: number | string;
+  /** Number of decimal places allowed */
+  decimals?: number;
+  /** Whether to format the displayed value */
+  formatDisplay?: boolean;
+};
+
+/**
  * Props for form inputs that support placeholders
  */
 export type WithPlaceholderProps = {

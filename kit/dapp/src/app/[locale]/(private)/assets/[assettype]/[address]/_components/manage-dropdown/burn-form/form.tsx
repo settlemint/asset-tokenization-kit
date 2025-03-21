@@ -16,6 +16,7 @@ interface BurnFormProps {
   address: Address;
   assettype: AssetType;
   maxLimit?: number;
+  decimals: number;
   disabled?: boolean;
   asButton?: boolean;
   open?: boolean;
@@ -26,6 +27,7 @@ export function BurnForm({
   address,
   assettype,
   maxLimit,
+  decimals,
   disabled = false,
   asButton = false,
   open,
@@ -64,7 +66,7 @@ export function BurnForm({
           assettype,
         }}
       >
-        <Amount maxLimit={maxLimit} />
+        <Amount maxLimit={maxLimit} decimals={decimals} />
         <Summary address={address} />
       </Form>
     </FormSheet>

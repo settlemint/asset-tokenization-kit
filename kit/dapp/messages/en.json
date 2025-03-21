@@ -322,21 +322,19 @@
         "asset-distribution-description": "Portfolio allocation by asset type",
         "bond": "Bond",
         "bond-issuance": "Bond issuance",
-        "bond-redemption-assets": "Redemption assets",
-        "bond-redeemed": "Bond redemption",
-        "bond-status": "Status",
-        "bond-status-progress": "Bond status",
-        "bond-status-description": "Current status of the bond",
         "bond-issued": "Issued",
-        "bond-pending": "Pending",
-        "bond-redeemable": "Redeemable",
-        "bond-total-underlying-asset-balance": "Total underlying asset balance",
-        "bond-matured": "Matured",
         "bond-mature-readiness": "Mature Readiness",
         "bond-mature-readiness-description": "Progress towards maturity readiness",
         "bond-mature-readiness-status": "Mature Ready",
-        "error-loading-data": "Error loading data",
-        "loading": "Loading...",
+        "bond-matured": "Matured",
+        "bond-pending": "Pending",
+        "bond-redeemable": "Redeemable",
+        "bond-redeemed": "Bond redemption",
+        "bond-redemption-assets": "Redemption assets",
+        "bond-status": "Status",
+        "bond-status-description": "Current status of the bond",
+        "bond-status-progress": "Bond status",
+        "bond-total-underlying-asset-balance": "Total underlying asset balance",
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
           "label": "Collateral Ratio",
@@ -344,11 +342,13 @@
         },
         "cryptocurrency": "Cryptocurrency",
         "equity": "Equity",
+        "error-loading-data": "Error loading data",
         "free-collateral-ratio": {
           "label": "Free"
         },
         "fund": "Fund",
         "last-updated": "Last updated",
+        "loading": "Loading...",
         "stablecoin": "Stablecoin",
         "tokenizeddeposit": "Tokenized Deposit",
         "total-supply": {
@@ -376,31 +376,31 @@
           "no-data": "No data available in this window",
           "title": "Total volume"
         },
-        "used-collateral-ratio": {
-          "label": "Committed"
-        },
-        "wallet-distribution": "Wallet distribution",
-        "wallet-distribution-description": "Amount of holders vs the amounts they hold",
-        "wallet-distribution-no-data": "No wallet data available",
         "units-over-time": {
           "description": "Showing the units in circulation over time",
           "label": "Units",
           "no-data": "No data available in this window",
           "title": "Units over time"
         },
+        "used-collateral-ratio": {
+          "label": "Committed"
+        },
+        "wallet-distribution": "Wallet distribution",
+        "wallet-distribution-description": "Amount of holders vs the amounts they hold",
+        "wallet-distribution-no-data": "No wallet data available",
         "yield-coverage": {
-          "title": "Yield coverage",
           "description": "Percentage of yield covered by underlying assets",
+          "error": "Error loading yield coverage data",
           "no-data": "No data available in this window",
-          "error": "Error loading yield coverage data"
+          "title": "Yield coverage"
         },
         "yield-distribution": {
-          "title": "Yield distribution",
-          "description": "Showing yield distribution over time",
-          "total-yield-label": "Total yield",
           "claimed-label": "Claimed",
+          "description": "Showing yield distribution over time",
+          "error": "Error loading yield distribution data",
           "no-data": "No yield distribution data available",
-          "error": "Error loading yield distribution data"
+          "title": "Yield distribution",
+          "total-yield-label": "Total yield"
         }
       }
     },
@@ -447,8 +447,20 @@
       },
       "input": {
         "letters-only": "Please enter letters only",
-        "max-value": "Value cannot be higher than {max}",
-        "min-value": "Value cannot be lower than {min}",
+        "max-decimals": "Maximum decimals is {decimals}",
+        "max-value": "Maximum allowed is {max}",
+        "min-value": "Minimum allowed is {min}",
+        "placeholder": {
+          "all-constraints": "minimum: {min} • maximum: {max} • minimum non-zero: {smallestValue} • maximum {decimals} decimals",
+          "decimals-only": "maximum {decimals} decimals",
+          "max": "maximum: {max}",
+          "max-not-zero-decimals": "maximum: {max} • maximum {decimals} decimals • zero not allowed",
+          "min": "minimum: {min}",
+          "min-max": "minimum: {min} • maximum: {max}",
+          "min-max-decimals": "minimum: {min} • maximum: {max} • maximum {decimals} decimals",
+          "min-not-zero": "minimum: {min} • zero not allowed",
+          "min-not-zero-only": "minimum: {smallestValue} • zero not allowed"
+        },
         "valid-email": "Please enter a valid email address",
         "valid-number": "Please enter a valid number"
       },
@@ -820,12 +832,12 @@
       "asset-types": "{type} {name} ({symbol})",
       "description": "Easily transfer an amount of {name} ({symbol}) by selecting a recipient and specifying the amount.",
       "recipients": {
-        "description": "Enter a wallet address to send tokens directly.",
-        "title": "Select Recipients",
-        "wallet-address-label": "Wallet Address",
         "address-placeholder": "Search for a user",
+        "description": "Enter a wallet address to send tokens directly.",
         "manual-entry-link": "Enter address manually...",
-        "search-user-link": "Search for a user instead..."
+        "search-user-link": "Search for a user instead...",
+        "title": "Select Recipients",
+        "wallet-address-label": "Wallet Address"
       },
       "select-asset": {
         "asset-description": "Select an asset from your portfolio",
@@ -923,23 +935,23 @@
             "name-label": "Name",
             "seconds-unit-label": "seconds",
             "symbol-label": "Symbol",
-            "value-in-base-currency-label": "Value in {baseCurrency}",
             "time-units": {
-              "singular": {
-                "seconds": "second",
-                "hours": "hour",
-                "days": "day",
-                "weeks": "week",
-                "months": "month"
-              },
               "plural": {
-                "seconds": "seconds",
-                "hours": "hours",
                 "days": "days",
-                "weeks": "weeks",
-                "months": "months"
+                "hours": "hours",
+                "months": "months",
+                "seconds": "seconds",
+                "weeks": "weeks"
+              },
+              "singular": {
+                "days": "day",
+                "hours": "hour",
+                "months": "month",
+                "seconds": "second",
+                "weeks": "week"
               }
-            }
+            },
+            "value-in-base-currency-label": "Value in {baseCurrency}"
           },
           "cryptocurrencies": {
             "initial-supply-description": "Initial amount of tokens to be minted",
@@ -1262,6 +1274,7 @@
         "address-header": "Address",
         "allowed-since-header": "Allowed since",
         "assets-under-management-header": "AuM",
+        "balance": "Balance",
         "balance-header": "Balance",
         "blocked-since-header": "Blocked since",
         "category-header": "Category",
@@ -1277,7 +1290,6 @@
         "creator": "Creator",
         "decimals": "Decimals",
         "deployed-on": "Deployed on",
-        "balance": "Balance",
         "edit-roles-form": {
           "trigger-label": "Edit permissions"
         },

@@ -36,6 +36,7 @@ export async function FundsRelated({
           address={address}
           assettype="fund"
           asButton
+          decimals={assetDetails.decimals}
           disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
@@ -48,6 +49,7 @@ export async function FundsRelated({
           maxLimit={userBalance?.available}
           assettype="fund"
           asButton
+          decimals={assetDetails.decimals}
           disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
