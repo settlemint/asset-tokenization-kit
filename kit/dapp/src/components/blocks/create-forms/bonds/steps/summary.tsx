@@ -69,8 +69,8 @@ export function Summary() {
         <FormSummaryDetailItem
           label={t("parameters.bonds.underlying-asset-label")}
           value={
-            values.underlyingAsset ? (
-              <EvmAddress address={values.underlyingAsset} />
+            values.underlyingAsset?.id ? (
+              <EvmAddress address={values.underlyingAsset.id} />
             ) : (
               "-"
             )
