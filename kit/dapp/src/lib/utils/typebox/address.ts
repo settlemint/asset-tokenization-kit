@@ -4,13 +4,10 @@
  * This module provides a TypeBox schema for validating Ethereum addresses,
  * ensuring they conform to the correct format and can be converted to checksummed format.
  */
-import {
-  FormatRegistry,
-  Type,
-  TypeRegistry,
-  type SchemaOptions,
-} from "@sinclair/typebox";
+import type { SchemaOptions } from "@sinclair/typebox";
+import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
 import { getAddress, isAddress, type Address } from "viem";
+
 // Ethereum address format validator
 if (!FormatRegistry.Has("eth-address")) {
   FormatRegistry.Set("eth-address", (value) => {
@@ -31,8 +28,8 @@ if (!TypeRegistry.Has("eth-address")) {
  * @returns A TypeBox schema that validates Ethereum addresses and types as Viem's Address
  */
 export const EthereumAddress = (options?: SchemaOptions) =>
-  Type.Unsafe<Address>(
-    Type.String({
+  t.Unsafe<Address>(
+    t.String({
       format: "eth-address",
       transform: [(value: string) => getAddress(value)],
       title: "Ethereum Address",

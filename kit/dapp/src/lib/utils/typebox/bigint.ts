@@ -4,12 +4,8 @@
  * This module provides a TypeBox schema for validating and transforming decimal values
  * with precision handling using BigNumber.js.
  */
-import {
-  FormatRegistry,
-  type SchemaOptions,
-  Type,
-  TypeRegistry,
-} from "@sinclair/typebox";
+import type { SchemaOptions } from "@sinclair/typebox";
+import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
 
 // BigDecimal format validator
 if (!FormatRegistry.Has("big-int")) {
@@ -40,14 +36,15 @@ if (!TypeRegistry.Has("big-int")) {
  * @returns A TypeBox schema that validates and transforms decimal numbers
  */
 export const StringifiedBigInt = (options?: SchemaOptions) =>
-  Type.Transform(
-    Type.String({
-      format: "big-int",
-      title: "BigInt",
-      description: "A string representation of a large number",
-      examples: ["123456789012345678901234567890123"],
-      ...options,
-    })
-  )
+  t
+    .Transform(
+      t.String({
+        format: "big-int",
+        title: "BigInt",
+        description: "A string representation of a large number",
+        examples: ["123456789012345678901234567890123"],
+        ...options,
+      })
+    )
     .Decode((value) => BigInt(value))
     .Encode((value) => value.toString());

@@ -4,7 +4,8 @@
  * This module provides TypeBox schemas for validating equity classes,
  * ensuring they match predefined enumerations.
  */
-import { type SchemaOptions, Type } from "@sinclair/typebox";
+import type { SchemaOptions } from "@sinclair/typebox";
+import { t } from "elysia/type-system";
 
 /**
  * Enum of valid equity classes
@@ -27,6 +28,6 @@ export const equityClasses = [
  * @returns A TypeBox schema that validates equity classes
  */
 export const EquityClass = (options?: SchemaOptions) =>
-  Type.UnionEnum(equityClasses, {
+  t.UnionEnum(equityClasses, {
     ...options,
   });

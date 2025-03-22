@@ -4,7 +4,8 @@
  * This module provides a TypeBox schema for validating token decimals,
  * ensuring they are integers within an appropriate range.
  */
-import { type SchemaOptions, Type } from "@sinclair/typebox";
+import type { SchemaOptions } from "@sinclair/typebox";
+import { t } from "elysia/type-system";
 
 /**
  * Validates a token's decimals value
@@ -13,7 +14,7 @@ import { type SchemaOptions, Type } from "@sinclair/typebox";
  * @returns A TypeBox schema that validates token decimals
  */
 export const Decimals = (options?: SchemaOptions) =>
-  Type.Integer({
+  t.Integer({
     minimum: 0,
     maximum: 18,
     title: "Decimals",

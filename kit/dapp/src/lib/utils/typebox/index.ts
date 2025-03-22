@@ -1,9 +1,6 @@
-import {
-  Type,
-  type SchemaOptions,
-  type StaticDecode,
-  type TSchema,
-} from "@sinclair/typebox";
+import { t as tElysia } from "elysia/type-system";
+
+import type { StaticDecode, TSchema } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { EthereumAddress } from "./address";
 import { Amount } from "./amount";
@@ -50,7 +47,7 @@ declare module "@sinclair/typebox" {
 }
 
 // Extend the Type system with custom validators
-const t = Object.assign({}, Type);
+const t = Object.assign({}, tElysia);
 
 t.EthereumAddress = EthereumAddress;
 t.Amount = Amount;
@@ -71,10 +68,6 @@ t.AssetSymbol = AssetSymbol;
 t.TimeUnit = TimeUnit;
 t.Timestamp = Timestamp;
 t.StringifiedBigInt = StringifiedBigInt;
-
-// Ported from Elysia
-t.MaybeEmpty = <T extends TSchema>(schema: T, options?: SchemaOptions) =>
-  t.Union([schema, t.Null(), t.Undefined()], options);
 
 export function safeParse<T extends TSchema>(
   schema: T,

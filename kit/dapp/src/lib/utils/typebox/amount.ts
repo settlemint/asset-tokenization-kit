@@ -4,7 +4,8 @@
  * This module provides a TypeBox schema for validating positive amounts,
  * ensuring they are numbers above a minimum threshold.
  */
-import { type SchemaOptions, Type } from "@sinclair/typebox";
+import type { SchemaOptions } from "@sinclair/typebox";
+import { t } from "elysia/type-system";
 
 /**
  * Validates a positive amount with specific boundaries
@@ -19,7 +20,7 @@ export const Amount = (
   min = 0,
   options?: SchemaOptions
 ) =>
-  Type.Number({
+  t.Number({
     minimum: min,
     maximum: max,
     title: "Amount",

@@ -4,13 +4,8 @@
  * This module provides a TypeBox schema for validating International Securities Identification Numbers (ISIN),
  * ensuring they conform to the ISO 6166 standard format.
  */
-
-import {
-  FormatRegistry,
-  type SchemaOptions,
-  Type,
-  TypeRegistry,
-} from "@sinclair/typebox";
+import type { SchemaOptions } from "@sinclair/typebox";
+import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
 
 // ISIN format validator
 if (!FormatRegistry.Has("isin")) {
@@ -35,7 +30,7 @@ if (!TypeRegistry.Has("isin")) {
  * @returns A TypeBox schema that validates ISIN codes
  */
 export const Isin = (options?: SchemaOptions) =>
-  Type.String({
+  t.String({
     format: "isin",
     title: "ISIN",
     description: "An ISO 6166 International Securities Identification Number",
