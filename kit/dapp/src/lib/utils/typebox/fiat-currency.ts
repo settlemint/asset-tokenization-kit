@@ -4,8 +4,7 @@
  * This module provides TypeBox schemas for validating fiat currencies,
  * ensuring they match predefined enumerations.
  */
-import type { SchemaOptions } from "@sinclair/typebox";
-import { t } from "elysia";
+import { type SchemaOptions, Type } from "@sinclair/typebox";
 
 /**
  * Enum of valid fiat currencies
@@ -28,6 +27,6 @@ export const fiatCurrencies = [
  * @returns A TypeBox schema that validates fiat currencies
  */
 export const FiatCurrency = (options?: SchemaOptions) =>
-  t.UnionEnum(fiatCurrencies, {
+  Type.UnionEnum(fiatCurrencies, {
     ...options,
   });

@@ -1,6 +1,10 @@
-import type { StaticDecode, TSchema } from "@sinclair/typebox";
+import {
+  Type,
+  type SchemaOptions,
+  type StaticDecode,
+  type TSchema,
+} from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { t as ElysiaTypebox } from "elysia/type-system";
 import { EthereumAddress } from "./address";
 import { Amount } from "./amount";
 import { AssetSymbol } from "./asset-symbol";
@@ -19,6 +23,7 @@ import { Pincode } from "./pincode";
 import { Roles } from "./roles";
 import { TimeUnit } from "./time-units";
 import { Timestamp } from "./timestamp";
+
 // Extend TypeBox types with module augmentation
 declare module "@sinclair/typebox" {
   interface JavaScriptTypeBuilder {
@@ -45,7 +50,7 @@ declare module "@sinclair/typebox" {
 }
 
 // Extend the Type system with custom validators
-const t = Object.assign({}, ElysiaTypebox);
+const t = Object.assign({}, Type);
 
 t.EthereumAddress = EthereumAddress;
 t.Amount = Amount;
@@ -67,6 +72,10 @@ t.TimeUnit = TimeUnit;
 t.Timestamp = Timestamp;
 t.StringifiedBigInt = StringifiedBigInt;
 
+// Ported from Elysia
+t.MaybeEmpty = <T extends TSchema>(schema: T, options?: SchemaOptions) =>
+  t.Union([schema, t.Null(), t.Undefined()], options);
+
 export function safeParse<T extends TSchema>(
   schema: T,
   value: unknown
@@ -86,3 +95,4 @@ export function safeParse<T extends TSchema>(
 }
 
 export { t };
+export type { StaticDecode, TSchema };

@@ -4,8 +4,7 @@
  * This module provides TypeBox schemas for validating fund classes,
  * ensuring they match predefined enumerations.
  */
-import type { SchemaOptions } from "@sinclair/typebox";
-import { t } from "elysia";
+import { type SchemaOptions, Type } from "@sinclair/typebox";
 
 /**
  * Enum of valid fund classes
@@ -44,6 +43,6 @@ export const fundClasses = [
  * @returns A TypeBox schema that validates fund classes
  */
 export const FundClass = (options?: SchemaOptions) =>
-  t.UnionEnum(fundClasses, {
+  Type.UnionEnum(fundClasses, {
     ...options,
   });

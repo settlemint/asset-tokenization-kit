@@ -5,8 +5,7 @@
  * ensuring they conform to the correct format.
  */
 import type { SchemaOptions } from "@sinclair/typebox";
-import { t } from "elysia";
-import { FormatRegistry, TypeRegistry } from "elysia/type-system";
+import { FormatRegistry, Type, TypeRegistry } from "@sinclair/typebox";
 import { isHash, type Hash as HashType } from "viem";
 
 // Ethereum hash format validator
@@ -29,15 +28,17 @@ if (!TypeRegistry.Has("eth-hash")) {
  * @returns A TypeBox schema that validates Ethereum hashes
  */
 export const Hash = (options?: SchemaOptions) =>
-  t.String({
-    format: "eth-hash",
-    title: "Ethereum Hash",
-    description: "Ethereum transaction or block hash",
-    examples: [
-      "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-    ],
-    ...options,
-  });
+  Type.Unsafe<HashType>(
+    Type.String({
+      format: "eth-hash",
+      title: "Ethereum Hash",
+      description: "Ethereum transaction or block hash",
+      examples: [
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      ],
+      ...options,
+    })
+  );
 
 /**
  * Validates an array of Ethereum hashes
@@ -46,4 +47,4 @@ export const Hash = (options?: SchemaOptions) =>
  * @returns A TypeBox schema that validates an array of Ethereum hashes
  */
 export const Hashes = (options?: SchemaOptions) =>
-  t.Array(Hash(), { ...options });
+  Type.Array(Hash(), { ...options });

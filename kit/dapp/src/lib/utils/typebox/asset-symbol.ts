@@ -4,10 +4,12 @@
  * This module provides a TypeBox schema for validating token symbols,
  * ensuring they contain only uppercase letters and numbers.
  */
-import type { SchemaOptions } from "@sinclair/typebox";
-import { t } from "elysia";
-import { FormatRegistry, TypeRegistry } from "elysia/type-system";
-
+import {
+  type SchemaOptions,
+  FormatRegistry,
+  Type,
+  TypeRegistry,
+} from "@sinclair/typebox";
 // Token symbol format validator
 if (!FormatRegistry.Has("asset-symbol")) {
   FormatRegistry.Set("asset-symbol", (value) => {
@@ -33,7 +35,7 @@ if (!TypeRegistry.Has("asset-symbol")) {
  * @returns A TypeBox schema that validates token symbols
  */
 export const AssetSymbol = (options?: SchemaOptions) =>
-  t.String({
+  Type.String({
     format: "asset-symbol",
     title: "Asset Symbol",
     description: "An asset symbol consisting of uppercase letters and numbers",

@@ -4,8 +4,7 @@
  * This module provides TypeBox schemas for validating time units,
  * ensuring they match predefined enumerations.
  */
-import type { SchemaOptions } from "@sinclair/typebox";
-import { t } from "elysia";
+import { type SchemaOptions, Type } from "@sinclair/typebox";
 
 /**
  * Enum of valid time units
@@ -25,6 +24,6 @@ export const timeUnits = [
  * @returns A TypeBox schema that validates time units
  */
 export const TimeUnit = (options?: SchemaOptions) =>
-  t.UnionEnum(timeUnits, {
+  Type.UnionEnum(timeUnits, {
     ...options,
   });

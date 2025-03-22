@@ -1,5 +1,4 @@
-import { t } from "@/lib/utils/typebox";
-import type { StaticDecode } from "@sinclair/typebox";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 /**
  * TypeBox schema for cryptocurrency data

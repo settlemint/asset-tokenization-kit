@@ -4,8 +4,7 @@
  * This module provides TypeBox schemas for validating user roles,
  * ensuring they match predefined enumerations.
  */
-import type { SchemaOptions } from "@sinclair/typebox";
-import { t } from "elysia";
+import { type SchemaOptions, Type } from "@sinclair/typebox";
 
 /**
  * Enum of valid user roles
@@ -25,6 +24,6 @@ export const roles = [
  * @returns A TypeBox schema that validates user roles
  */
 export const Roles = (options?: SchemaOptions) =>
-  t.UnionEnum(roles, {
+  Type.UnionEnum(roles, {
     ...options,
   });

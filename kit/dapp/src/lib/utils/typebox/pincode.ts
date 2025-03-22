@@ -4,9 +4,12 @@
  * This module provides a TypeBox schema for validating PIN codes,
  * ensuring they are exactly 6 digits and securely processed.
  */
-import type { SchemaOptions } from "@sinclair/typebox";
-import { t } from "elysia";
-import { FormatRegistry, TypeRegistry } from "elysia/type-system";
+import {
+  FormatRegistry,
+  type SchemaOptions,
+  Type,
+  TypeRegistry,
+} from "@sinclair/typebox";
 
 // PIN code format validator
 if (!FormatRegistry.Has("pincode")) {
@@ -29,7 +32,7 @@ if (!TypeRegistry.Has("pincode")) {
  * @returns A TypeBox schema that validates PIN codes
  */
 export const Pincode = (options?: SchemaOptions) =>
-  t.String({
+  Type.String({
     format: "pincode",
     title: "PIN Code",
     description: "A 6-digit PIN code",

@@ -4,9 +4,12 @@
  * This module provides a TypeBox schema for validating and transforming timestamps
  * in different formats (ISO string, milliseconds, or Date objects).
  */
-import type { SchemaOptions } from "@sinclair/typebox";
-import { t } from "elysia";
-import { FormatRegistry, TypeRegistry } from "elysia/type-system";
+import {
+  type SchemaOptions,
+  FormatRegistry,
+  Type,
+  TypeRegistry,
+} from "@sinclair/typebox";
 
 // Union type for timestamps input
 type TimestampInput = string | number | Date;
@@ -47,21 +50,20 @@ if (!TypeRegistry.Has("timestamp")) {
  * @returns A TypeBox schema that validates and transforms timestamps
  */
 export const Timestamp = (options?: SchemaOptions) =>
-  t
-    .Transform(
-      t.Any({
-        format: "timestamp",
-        title: "Timestamp",
-        description:
-          "A timestamp (ISO string, milliseconds, or Date object) that will be normalized to a Date object",
-        examples: [
-          "2023-04-01T12:00:00Z",
-          1680354000000,
-          new Date("2023-04-01T12:00:00Z"),
-        ],
-        ...options,
-      })
-    )
+  Type.Transform(
+    Type.Any({
+      format: "timestamp",
+      title: "Timestamp",
+      description:
+        "A timestamp (ISO string, milliseconds, or Date object) that will be normalized to a Date object",
+      examples: [
+        "2023-04-01T12:00:00Z",
+        1680354000000,
+        new Date("2023-04-01T12:00:00Z"),
+      ],
+      ...options,
+    })
+  )
     .Decode((value: TimestampInput) => {
       if (typeof value === "string") {
         return new Date(value);
