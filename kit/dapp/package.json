@@ -67,7 +67,7 @@
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
     "date-fns": "4.1.0",
-    "drizzle-orm": "0.40.1",
+    "drizzle-orm": "0.41.0",
     "elysia": "1.2.25",
     "fast-xml-parser": "5.0.9",
     "framer-motion": "12.5.0",
