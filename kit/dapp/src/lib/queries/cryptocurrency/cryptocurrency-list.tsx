@@ -1,19 +1,22 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
+import {
+  OffChainCryptoCurrencySchema,
+  OnChainCryptoCurrencySchema,
+} from "@/lib/queries/cryptocurrency/cryptocurrency-schema";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { t } from "@/lib/utils/typebox";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { getAddress } from "viem";
+import { cryptoCurrencyCalculateFields } from "./cryptocurrency-calculated";
 import {
   CryptoCurrencyFragment,
-  CryptoCurrencyFragmentSchema,
   OffchainCryptoCurrencyFragment,
-  OffchainCryptoCurrencyFragmentSchema,
 } from "./cryptocurrency-fragment";
-
 /**
  * GraphQL query to fetch on-chain cryptocurrency list from The Graph
  *
@@ -57,58 +60,52 @@ const OffchainCryptocurrencyList = hasuraGraphql(
  * then merges the results to provide a complete view of each cryptocurrency.
  */
 export const getCryptoCurrencyList = cache(async () => {
-  const [theGraphCryptoCurrencies, dbAssets] = await Promise.all([
-    fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKit.request(CryptoCurrencyList, {
-        first,
-        skip,
-      });
+  const [onChainCryptoCurrencies, offChainCryptoCurrencies] = await Promise.all(
+    [
+      fetchAllTheGraphPages(async (first, skip) => {
+        const result = await theGraphClientKit.request(CryptoCurrencyList, {
+          first,
+          skip,
+        });
 
-      const cryptoCurrencies = result.cryptoCurrencies || [];
+        return safeParse(
+          t.Array(OnChainCryptoCurrencySchema),
+          result.cryptoCurrencies || []
+        );
+      }),
 
-      return cryptoCurrencies;
-    }),
+      fetchAllHasuraPages(async (pageLimit, offset) => {
+        const result = await hasuraClient.request(OffchainCryptocurrencyList, {
+          limit: pageLimit,
+          offset,
+        });
 
-    fetchAllHasuraPages(async (pageLimit, offset) => {
-      const result = await hasuraClient.request(OffchainCryptocurrencyList, {
-        limit: pageLimit,
-        offset,
-      });
-      return result.asset_aggregate.nodes || [];
-    }),
-  ]);
-
-  // Parse and validate the data using Zod schemas
-  const validatedCryptoCurrencies = theGraphCryptoCurrencies.map(
-    (cryptocurrency) =>
-      safeParseWithLogging(
-        CryptoCurrencyFragmentSchema,
-        cryptocurrency,
-        "cryptocurrency"
-      )
-  );
-
-  const validatedDbAssets = dbAssets.map((asset) =>
-    safeParseWithLogging(
-      OffchainCryptoCurrencyFragmentSchema,
-      asset,
-      "offchain cryptocurrency"
-    )
+        return safeParse(
+          t.Array(OffChainCryptoCurrencySchema),
+          result.asset_aggregate.nodes || []
+        );
+      }),
+    ]
   );
 
   const assetsById = new Map(
-    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+    offChainCryptoCurrencies.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const cryptoCurrencies = validatedCryptoCurrencies.map((cryptocurrency) => {
-    const dbAsset = assetsById.get(getAddress(cryptocurrency.id));
+  const cryptoCurrencies = onChainCryptoCurrencies.map((cryptocurrency) => {
+    const offChainCryptoCurrency = assetsById.get(
+      getAddress(cryptocurrency.id)
+    );
+
+    const calculatedFields = cryptoCurrencyCalculateFields(
+      cryptocurrency,
+      offChainCryptoCurrency
+    );
 
     return {
       ...cryptocurrency,
-      ...{
-        private: false,
-        ...dbAsset,
-      },
+      ...offChainCryptoCurrency,
+      ...calculatedFields,
     };
   });
 

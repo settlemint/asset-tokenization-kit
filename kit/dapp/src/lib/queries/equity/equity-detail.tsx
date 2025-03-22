@@ -3,15 +3,12 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import {
-  EquityFragment,
-  EquityFragmentSchema,
-  OffchainEquityFragment,
-  OffchainEquityFragmentSchema,
-} from "./equity-fragment";
+import { equityCalculateFields } from "./equity-calculated";
+import { EquityFragment, OffchainEquityFragment } from "./equity-fragment";
+import { OffChainEquitySchema, OnChainEquitySchema } from "./equity-schema";
 
 /**
  * GraphQL query to fetch on-chain equity details from The Graph
@@ -57,41 +54,32 @@ export interface EquityDetailProps {
  * @throws Error if fetching or parsing fails
  */
 export const getEquityDetail = cache(async ({ address }: EquityDetailProps) => {
-  const normalizedAddress = getAddress(address);
-
-  const [data, dbEquity] = await Promise.all([
-    theGraphClientKit.request(EquityDetail, { id: address }),
-    hasuraClient.request(OffchainEquityDetail, { id: normalizedAddress }),
+  const [onChainEquity, offChainEquity] = await Promise.all([
+    (async () => {
+      const response = await theGraphClientKit.request(EquityDetail, {
+        id: address,
+      });
+      if (!response.equity) {
+        throw new Error("Equity not found");
+      }
+      return safeParse(OnChainEquitySchema, response.equity);
+    })(),
+    (async () => {
+      const response = await hasuraClient.request(OffchainEquityDetail, {
+        id: getAddress(address),
+      });
+      if (response.asset.length === 0) {
+        return undefined;
+      }
+      return safeParse(OffChainEquitySchema, response.asset[0]);
+    })(),
   ]);
 
-  const equity = safeParseWithLogging(
-    EquityFragmentSchema,
-    data.equity,
-    "equity"
-  );
-  const offchainEquity = dbEquity.asset[0]
-    ? safeParseWithLogging(
-        OffchainEquityFragmentSchema,
-        dbEquity.asset[0],
-        "offchain equity"
-      )
-    : undefined;
-
-  const topHoldersSum = equity.holders.reduce(
-    (sum, holder) => sum + holder.valueExact,
-    0n
-  );
-  const concentration =
-    equity.totalSupplyExact === 0n
-      ? 0
-      : Number((topHoldersSum * 100n) / equity.totalSupplyExact);
+  const calculatedFields = equityCalculateFields(onChainEquity, offChainEquity);
 
   return {
-    ...equity,
-    ...{
-      private: false,
-      ...offchainEquity,
-    },
-    concentration,
+    ...onChainEquity,
+    ...offChainEquity,
+    ...calculatedFields,
   };
 });

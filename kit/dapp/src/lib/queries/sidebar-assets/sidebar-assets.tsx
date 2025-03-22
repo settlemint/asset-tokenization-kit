@@ -2,17 +2,15 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { t } from "@/lib/utils/typebox";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { type ZodInfer, safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
 import { BondFragment, BondFragmentSchema } from "../bond/bond-fragment";
-import {
-  CryptoCurrencyFragment,
-  CryptoCurrencyFragmentSchema,
-} from "../cryptocurrency/cryptocurrency-fragment";
-import {
-  EquityFragment,
-  EquityFragmentSchema,
-} from "../equity/equity-fragment";
+import { CryptoCurrencyFragment } from "../cryptocurrency/cryptocurrency-fragment";
+import { OnChainCryptoCurrencySchema } from "../cryptocurrency/cryptocurrency-schema";
+import { EquityFragment } from "../equity/equity-fragment";
+import { OnChainEquitySchema } from "../equity/equity-schema";
 import { FundFragment, FundFragmentSchema } from "../fund/fund-fragment";
 import {
   StableCoinFragment,
@@ -104,21 +102,18 @@ export const getSidebarAssets = cache(
       safeParseWithLogging(BondFragmentSchema, bond, "bond")
     );
 
-    const validatedEquities = (result.equities || []).map((equity) =>
-      safeParseWithLogging(EquityFragmentSchema, equity, "equity")
+    const validatedEquities = safeParse(
+      t.Array(OnChainEquitySchema),
+      result.equities || []
     );
 
     const validatedFunds = (result.funds || []).map((fund) =>
       safeParseWithLogging(FundFragmentSchema, fund, "fund")
     );
 
-    const validatedCryptoCurrencies = (result.cryptoCurrencies || []).map(
-      (currency) =>
-        safeParseWithLogging(
-          CryptoCurrencyFragmentSchema,
-          currency,
-          "cryptocurrency"
-        )
+    const validatedCryptoCurrencies = safeParse(
+      t.Array(OnChainCryptoCurrencySchema),
+      result.cryptoCurrencies || []
     );
 
     const validatedTokenizedDeposits = (result.tokenizedDeposits || []).map(

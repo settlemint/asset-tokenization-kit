@@ -1,17 +1,8 @@
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
-
-/** ISO 4217 Currency codes */
-export const FiatCurrencies = [
-  "EUR",
-  "USD",
-  "JPY",
-  "AED",
-  "SGD",
-  "SAR",
-] as const;
+import type { fiatCurrencies } from "../utils/typebox/fiat-currency";
 
 /** Type for valid currency codes */
-export type CurrencyCode = (typeof FiatCurrencies)[number];
+export type CurrencyCode = (typeof fiatCurrencies)[number];
 
 /**
  * Settings table schema for storing application-wide settings

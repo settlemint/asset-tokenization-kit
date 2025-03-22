@@ -3,15 +3,18 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
+import { cryptoCurrencyCalculateFields } from "./cryptocurrency-calculated";
 import {
   CryptoCurrencyFragment,
-  CryptoCurrencyFragmentSchema,
   OffchainCryptoCurrencyFragment,
-  OffchainCryptoCurrencyFragmentSchema,
 } from "./cryptocurrency-fragment";
+import {
+  OffChainCryptoCurrencySchema,
+  OnChainCryptoCurrencySchema,
+} from "./cryptocurrency-schema";
 
 /**
  * GraphQL query to fetch on-chain cryptocurrency details from The Graph
@@ -58,44 +61,39 @@ export interface CryptoCurrencyDetailProps {
  */
 export const getCryptoCurrencyDetail = cache(
   async ({ address }: CryptoCurrencyDetailProps) => {
-    const normalizedAddress = getAddress(address);
-
-    const [data, dbCryptoCurrency] = await Promise.all([
-      theGraphClientKit.request(CryptoCurrencyDetail, { id: address }),
-      hasuraClient.request(OffchainCryptoCurrencyDetail, {
-        id: normalizedAddress,
-      }),
+    const [onChainCryptoCurrency, offChainCryptoCurrency] = await Promise.all([
+      (async () => {
+        const response = await theGraphClientKit.request(CryptoCurrencyDetail, {
+          id: address,
+        });
+        if (!response.cryptoCurrency) {
+          throw new Error("Cryptocurrency not found");
+        }
+        return safeParse(OnChainCryptoCurrencySchema, response.cryptoCurrency);
+      })(),
+      (async () => {
+        const response = await hasuraClient.request(
+          OffchainCryptoCurrencyDetail,
+          {
+            id: getAddress(address),
+          }
+        );
+        if (response.asset.length === 0) {
+          return undefined;
+        }
+        return safeParse(OffChainCryptoCurrencySchema, response.asset[0]);
+      })(),
     ]);
 
-    const cryptocurrency = safeParseWithLogging(
-      CryptoCurrencyFragmentSchema,
-      data.cryptoCurrency,
-      "cryptocurrency"
+    const calculatedFields = cryptoCurrencyCalculateFields(
+      onChainCryptoCurrency,
+      offChainCryptoCurrency
     );
-    const offchainCryptoCurrency = dbCryptoCurrency.asset[0]
-      ? safeParseWithLogging(
-          OffchainCryptoCurrencyFragmentSchema,
-          dbCryptoCurrency.asset[0],
-          "offchain cryptocurrency"
-        )
-      : undefined;
-
-    const topHoldersSum = cryptocurrency.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
-    );
-    const concentration =
-      cryptocurrency.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / cryptocurrency.totalSupplyExact);
 
     return {
-      ...cryptocurrency,
-      ...{
-        private: false,
-        ...offchainCryptoCurrency,
-      },
-      concentration,
+      ...onChainCryptoCurrency,
+      ...offChainCryptoCurrency,
+      ...calculatedFields,
     };
   }
 );
