@@ -1,11 +1,11 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
-import { FiatCurrencies } from "@/lib/db/schema-settings";
 import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { Elysia, t } from "elysia";
 import { getExchangeRatesForBase } from "./exchange-rates";
 
 const FiatCurrencyEnum = Object.fromEntries(
-  FiatCurrencies.map((currency) => [currency, currency])
+  fiatCurrencies.map((currency) => [currency, currency])
 );
 
 const ExchangeRateSchema = t.Object({

@@ -21,7 +21,7 @@ const UpdateUserCurrency = hasuraGraphql(`
  * Zod schema for validating user currency update
  */
 const UpdateCurrencySchema = z.object({
-  currency: z.enum(["USD", "EUR", "JPY", "AED", "SGD", "SAR"]),
+  currency: z.enum(["USD", "EUR", "JPY", "AED", "SGD", "SAR", "GBP", "CHF"]),
 });
 
 /**

@@ -154,7 +154,9 @@
         "base-currency-updated": "Base currency updated successfully",
         "currencies": {
           "aed": "UAE Dirham (AED)",
+          "chf": "Swiss Franc (CHF)",
           "eur": "Euro (EUR)",
+          "gbp": "British Pound (GBP)",
           "jpy": "Japanese Yen (JPY)",
           "sar": "Saudi Riyal (SAR)",
           "sgd": "Singapore Dollar (SGD)",

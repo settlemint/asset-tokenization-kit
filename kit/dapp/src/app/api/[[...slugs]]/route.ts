@@ -1,11 +1,10 @@
+import { CryptoCurrencyApi } from "@/lib/api/cryptocurrency";
 import { metadata } from "@/lib/config/metadata";
 import { AssetPriceApi } from "@/lib/providers/asset-price/asset-price-api";
 import { ExchangeRatesApi } from "@/lib/providers/exchange-rates/exchange-rates-api";
 import { ExchangeRateUpdateApi } from "@/lib/providers/exchange-rates/exchange-rates-update-api";
 import { BondDetailApi } from "@/lib/queries/bond/bond-detail-api";
 import { BondListApi } from "@/lib/queries/bond/bond-list-api";
-import { CryptoCurrencyDetailApi } from "@/lib/queries/cryptocurrency/cryptocurrency-detail-api";
-import { CryptoCurrencyListApi } from "@/lib/queries/cryptocurrency/cryptocurrency-list-api";
 import { EquityDetailApi } from "@/lib/queries/equity/equity-detail-api";
 import { EquityListApi } from "@/lib/queries/equity/equity-list-api";
 import { FundDetailApi } from "@/lib/queries/fund/fund-detail-api";
@@ -45,9 +44,7 @@ const app = new Elysia({ prefix: "/api" })
   )
   .group("/fund", (app) => app.use(FundListApi).use(FundDetailApi))
   .group("/equity", (app) => app.use(EquityListApi).use(EquityDetailApi))
-  .group("/cryptocurrency", (app) =>
-    app.use(CryptoCurrencyListApi).use(CryptoCurrencyDetailApi)
-  )
+  .group("/cryptocurrency", (app) => app.use(CryptoCurrencyApi))
   .group("/bond", (app) => app.use(BondListApi).use(BondDetailApi))
   .group("/tokenizeddeposit", (app) =>
     app.use(TokenizedDepositListApi).use(TokenizedDepositApi)
