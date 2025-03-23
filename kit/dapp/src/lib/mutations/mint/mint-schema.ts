@@ -9,12 +9,13 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {string} pincode - User's pincode for authentication
  * @property {string} assetType - The type of asset
  */
-export const MintSchema = z.object({
-  address: z.address(),
-  amount: z.amount(),
-  to: z.address(),
-  pincode: z.pincode(),
-  assettype: z.assetType(),
-});
+export const MintSchema = (max?: number, decimals?: number) =>
+  z.object({
+    address: z.address(),
+    amount: z.amount(max, decimals),
+    to: z.address(),
+    pincode: z.pincode(),
+    assettype: z.assetType(),
+  });
 
-export type MintInput = ZodInfer<typeof MintSchema>;
+export type MintInput = ZodInfer<ReturnType<typeof MintSchema>>;

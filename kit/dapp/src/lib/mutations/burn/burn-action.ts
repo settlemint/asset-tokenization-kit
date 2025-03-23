@@ -89,7 +89,7 @@ const TokenizedDepositBurn = portalGraphql(`
 `);
 
 export const burn = action
-  .schema(BurnSchema)
+  .schema(BurnSchema())
   .outputSchema(z.hashes())
   .action(
     async ({

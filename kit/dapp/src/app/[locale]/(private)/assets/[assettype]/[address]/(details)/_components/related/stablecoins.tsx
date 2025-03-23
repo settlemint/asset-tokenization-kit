@@ -3,6 +3,7 @@ import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-i
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
+import { isBefore } from "date-fns";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
@@ -27,12 +28,15 @@ export async function StablecoinsRelated({
   const userIsSupplyManager = userBalance?.asset.supplyManagers.some(
     (manager) => manager.id === userBalance?.account.id
   );
+  const collateralIsExpired =
+    "collateralProofValidity" in assetDetails &&
+    assetDetails.collateralProofValidity !== undefined &&
+    isBefore(assetDetails.collateralProofValidity, new Date());
 
   const stablecoin = assetDetails as Awaited<
     ReturnType<typeof getStableCoinDetail>
   >;
-  const freeCollateral = stablecoin.freeCollateral;
-  const mintMaxLimit = freeCollateral;
+  const maxMint = stablecoin.freeCollateral;
 
   return (
     <RelatedGrid title={t("title")}>
@@ -45,6 +49,8 @@ export async function StablecoinsRelated({
           assettype="stablecoin"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
         />
       </RelatedGridItem>
       <RelatedGridItem
@@ -53,10 +59,14 @@ export async function StablecoinsRelated({
       >
         <MintForm
           address={address}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
+          max={maxMint}
           assettype="stablecoin"
           asButton
-          disabled={isBlocked || isPaused || !userIsSupplyManager}
-          maxLimit={mintMaxLimit}
+          disabled={
+            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
+          }
         />
       </RelatedGridItem>
       <RelatedGridItem
@@ -65,10 +75,14 @@ export async function StablecoinsRelated({
       >
         <BurnForm
           address={address}
-          maxLimit={userBalance?.available}
+          max={userBalance?.available ?? 0}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           assettype="stablecoin"
           asButton
-          disabled={isBlocked || isPaused || !userIsSupplyManager}
+          disabled={
+            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
+          }
         />
       </RelatedGridItem>
     </RelatedGrid>

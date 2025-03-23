@@ -22,6 +22,7 @@ export const UserFragment = hasuraGraphql(`
     ban_expires
     last_login_at
     image
+    currency
   }
 `);
 

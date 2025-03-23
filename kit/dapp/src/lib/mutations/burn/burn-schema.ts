@@ -8,11 +8,12 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {string} pincode - The pincode for signing the transaction
  * @property {string} assettype - The type of asset
  */
-export const BurnSchema = z.object({
-  address: z.address(),
-  amount: z.amount(),
-  pincode: z.pincode(),
-  assettype: z.assetType(),
-});
+export const BurnSchema = (max?: number, decimals?: number) =>
+  z.object({
+    address: z.address(),
+    amount: z.amount(max, decimals),
+    pincode: z.pincode(),
+    assettype: z.assetType(),
+  });
 
-export type BurnInput = ZodInfer<typeof BurnSchema>;
+export type BurnInput = ZodInfer<ReturnType<typeof BurnSchema>>;

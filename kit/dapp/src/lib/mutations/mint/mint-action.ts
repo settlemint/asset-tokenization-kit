@@ -105,7 +105,7 @@ const TokenizedDepositMint = portalGraphql(`
 `);
 
 export const mint = action
-  .schema(MintSchema)
+  .schema(MintSchema())
   .outputSchema(z.hashes())
   .action(
     async ({

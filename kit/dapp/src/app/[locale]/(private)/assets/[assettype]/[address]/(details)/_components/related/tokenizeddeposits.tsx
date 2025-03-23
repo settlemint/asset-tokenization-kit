@@ -3,6 +3,7 @@ import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-i
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
+import { isBefore } from "date-fns";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
@@ -27,12 +28,15 @@ export async function TokenizedDepositsRelated({
   const userIsSupplyManager = userBalance?.asset.supplyManagers.some(
     (manager) => manager.id === userBalance?.account.id
   );
+  const collateralIsExpired =
+    "collateralProofValidity" in assetDetails &&
+    assetDetails.collateralProofValidity !== undefined &&
+    isBefore(assetDetails.collateralProofValidity, new Date());
 
   const tokenizedDeposit = assetDetails as Awaited<
     ReturnType<typeof getTokenizedDepositDetail>
   >;
-  const freeCollateral = tokenizedDeposit.freeCollateral;
-  const mintMaxLimit = freeCollateral;
+  const maxMint = tokenizedDeposit.freeCollateral;
 
   return (
     <RelatedGrid title={t("title")}>
@@ -45,6 +49,8 @@ export async function TokenizedDepositsRelated({
           assettype="tokenizeddeposit"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
+          decimals={tokenizedDeposit.decimals}
+          symbol={tokenizedDeposit.symbol}
         />
       </RelatedGridItem>
       <RelatedGridItem
@@ -55,8 +61,12 @@ export async function TokenizedDepositsRelated({
           address={address}
           assettype="tokenizeddeposit"
           asButton
-          disabled={isBlocked || isPaused || !userIsSupplyManager}
-          maxLimit={mintMaxLimit}
+          disabled={
+            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
+          }
+          max={maxMint}
+          decimals={tokenizedDeposit.decimals}
+          symbol={tokenizedDeposit.symbol}
         />
       </RelatedGridItem>
       <RelatedGridItem
@@ -65,10 +75,14 @@ export async function TokenizedDepositsRelated({
       >
         <BurnForm
           address={address}
-          maxLimit={userBalance?.available}
+          max={userBalance?.available ?? 0}
+          decimals={tokenizedDeposit.decimals}
+          symbol={tokenizedDeposit.symbol}
           assettype="tokenizeddeposit"
           asButton
-          disabled={isBlocked || isPaused || !userIsSupplyManager}
+          disabled={
+            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
+          }
         />
       </RelatedGridItem>
     </RelatedGrid>

@@ -18,7 +18,7 @@
         "equities": "الأسهم",
         "funds": "الصناديق",
         "stablecoins": "العملات المستقرة",
-        "tokenizeddeposit": "الودائع المرمزة"
+        "tokenizeddeposit": "ودائع مجزأة"
       }
     },
     "dashboard": {
@@ -342,7 +342,43 @@
         },
         "wallet-distribution": "توزيع المحفظة",
         "wallet-distribution-description": "عدد المالكين مقابل المبالغ التي يمتلكونها",
-        "wallet-distribution-no-data": "لا توجد بيانات محفظة متاحة"
+        "wallet-distribution-no-data": "لا توجد بيانات محفظة متاحة",
+        "bond-issuance": "إصدار السندات",
+        "bond-redemption-assets": "أصول الاسترداد",
+        "bond-redeemed": "استرداد السندات",
+        "bond-status": "الحالة",
+        "bond-status-progress": "حالة السند",
+        "bond-status-description": "الحالة الحالية للسند",
+        "bond-issued": "تم الإصدار",
+        "bond-pending": "قيد الانتظار",
+        "bond-redeemable": "قابل للاسترداد",
+        "bond-total-underlying-asset-balance": "إجمالي رصيد الأصول الأساسية",
+        "bond-matured": "استحق",
+        "bond-mature-readiness": "جاهزية الاستحقاق",
+        "bond-mature-readiness-description": "التقدم نحو جاهزية الاستحقاق",
+        "bond-mature-readiness-status": "جاهز للاستحقاق",
+        "error-loading-data": "خطأ في تحميل البيانات",
+        "loading": "جارٍ التحميل...",
+        "units-over-time": {
+          "description": "عرض الوحدات المتداولة على مر الزمن",
+          "label": "الوحدات",
+          "no-data": "لا توجد بيانات متاحة في هذه النافذة",
+          "title": "الوحدات على مر الزمن"
+        },
+        "yield-coverage": {
+          "title": "تغطية العائد",
+          "description": "نسبة العائد المغطاة بالأصول الأساسية",
+          "no-data": "لا توجد بيانات متاحة في هذه النافذة",
+          "error": "خطأ في تحميل بيانات تغطية العائد"
+        },
+        "yield-distribution": {
+          "title": "توزيع العائد",
+          "description": "عرض توزيع العائد على مر الزمن",
+          "total-yield-label": "إجمالي العائد",
+          "claimed-label": "تم المطالبة",
+          "no-data": "لا توجد بيانات لتوزيع العائد متاحة",
+          "error": "خطأ في تحميل بيانات توزيع العائد"
+        }
       }
     },
     "data-table": {
@@ -678,7 +714,10 @@
       "recipients": {
         "description": "أدخل عنوان محفظة لإرسال الرموز مباشرة.",
         "title": "اختر المستلمين",
-        "wallet-address-label": "عنوان المحفظة"
+        "wallet-address-label": "عنوان المحفظة",
+        "address-placeholder": "ابحث عن مستخدم",
+        "manual-entry-link": "أدخل العنوان يدويًا...",
+        "search-user-link": "ابحث عن مستخدم بدلاً من ذلك..."
       },
       "select-asset": {
         "asset-description": "اختر أصلًا من محفظتك",
@@ -777,7 +816,23 @@
             "name-label": "الاسم",
             "seconds-unit-label": "ثواني",
             "symbol-label": "الرمز",
-            "value-in-base-currency-label": "القيمة بـ {baseCurrency}"
+            "value-in-base-currency-label": "القيمة بـ {baseCurrency}",
+            "time-units": {
+              "singular": {
+                "seconds": "ثانية",
+                "hours": "ساعة",
+                "days": "يوم",
+                "weeks": "أسبوع",
+                "months": "شهر"
+              },
+              "plural": {
+                "seconds": "ثواني",
+                "hours": "ساعات",
+                "days": "أيام",
+                "weeks": "أسابيع",
+                "months": "أشهر"
+              }
+            }
           },
           "cryptocurrencies": {
             "initial-supply-description": "الكمية الأولية من الرموز التي سيتم سكها",
@@ -1118,7 +1173,8 @@
               "mint": "الضمان المتاح للتعدين: {limit}",
               "burn": "الرصيد المتاح للحرق: {limit}",
               "freeze": "الرصيد المتاح للتجميد: {limit}"
-            }
+            },
+            "label": "المبلغ"
           },
           "roles": {
             "title": "اختر الأدوار",
@@ -1550,7 +1606,8 @@
         "price": "السعر",
         "price-header": "السعر",
         "allowed-since-header": "مسموح منذ",
-        "blocked-since-header": "محظور منذ"
+        "blocked-since-header": "محظور منذ",
+        "balance": "الرصيد"
       },
       "table": {
         "asset-management": "إدارة الأصول",
@@ -1983,5 +2040,74 @@
     "portfolio": "محفظة",
     "stablecoins": "العملات المستقرة",
     "tokenized-deposits": "الودائع المشفرة"
+  },
+  "zod": {
+    "error": {
+      "invalid-ethereum-address": "تنسيق عنوان إيثريوم غير صالح",
+      "invalid-hash-format": "تنسيق هاش غير صالح",
+      "invalid-pincode": "رمز التعريف غير صالح، يجب أن يكون رقمًا مكونًا من 6 أرقام",
+      "decimals-min": "يجب أن تكون الأرقام العشرية على الأقل 0",
+      "decimals-max": "يجب أن تكون الأرقام العشرية بين 0 و 18",
+      "amount-too-small": "المبلغ صغير جدًا",
+      "amount-too-large": "المبلغ يتجاوز الحد الأقصى المسموح به",
+      "role-required": "يجب اختيار دور واحد على الأقل",
+      "invalid-symbol": "يجب أن يحتوي الرمز على أحرف كبيرة وأرقام فقط",
+      "isin-format": "يجب أن يحتوي ISIN على أحرف كبيرة وأرقام فقط",
+      "isin-length": "يجب أن يكون ISIN مكونًا من 12 حرفًا بالضبط",
+      "invalid-decimal": "تنسيق الرقم العشري غير صالح",
+      "invalid-timestamp": "يجب أن يكون الطابع الزمني رقمًا موجبًا",
+      "negative-amount": "يجب أن يكون المبلغ موجبًا",
+      "required": "هذا الحقل مطلوب",
+      "must_be_string": "يجب أن يكون هذا الحقل سلسلة نصية",
+      "must_be_number": "يجب أن يكون هذا الحقل رقمًا",
+      "must_be_boolean": "يجب أن يكون هذا الحقل قيمة منطقية",
+      "must_be_date": "يجب أن يكون هذا الحقل تاريخًا",
+      "must_be_bigint": "يجب أن يكون هذا الحقل عددًا صحيحًا كبيرًا",
+      "must_be_array": "يجب أن يكون هذا الحقل مصفوفة",
+      "must_be_object": "يجب أن يكون هذا الحقل كائنًا",
+      "invalid_type": "نوع غير صالح لهذا الحقل",
+      "invalid_url": "تنسيق URL غير صالح",
+      "invalid_email": "تنسيق البريد الإلكتروني غير صالح",
+      "invalid_uuid": "تنسيق UUID غير صالح",
+      "invalid_cuid": "تنسيق CUID غير صالح",
+      "invalid_format": "تنسيق غير صالح لهذا الحقل",
+      "invalid_datetime": "تنسيق التاريخ/الوقت غير صالح",
+      "invalid_string": "تنسيق السلسلة النصية غير صالح",
+      "string_length_too_small": {
+        "inclusive": "يجب أن يتكون النص من {minimum} حرفًا على الأقل",
+        "exclusive": "يجب أن يتجاوز النص {minimum} حرفًا"
+      },
+      "number_too_small": {
+        "inclusive": "يجب أن يكون الرقم على الأقل {minimum}",
+        "exclusive": "يجب أن يكون الرقم أكبر من {minimum}"
+      },
+      "array_length_too_small": {
+        "inclusive": "يجب أن يحتوي على {minimum} عنصر على الأقل",
+        "exclusive": "يجب أن يحتوي على أكثر من {minimum} عنصر"
+      },
+      "too_small": "القيمة صغيرة جدًا",
+      "string_length_too_big": {
+        "inclusive": "يجب ألا يتجاوز النص {maximum} حرفًا",
+        "exclusive": "يجب أن يكون النص أقل من {maximum} حرفًا"
+      },
+      "number_too_big": {
+        "inclusive": "يجب ألا يتجاوز الرقم {maximum}",
+        "exclusive": "يجب أن يكون الرقم أقل من {maximum}"
+      },
+      "array_length_too_big": {
+        "inclusive": "يجب ألا يحتوي على أكثر من {maximum} عنصر",
+        "exclusive": "يجب أن يحتوي على أقل من {maximum} عنصر"
+      },
+      "too_big": "القيمة كبيرة جدًا",
+      "invalid_literal": "قيمة حرفية غير صالحة",
+      "invalid_union": "إدخال غير صالح لهذا النوع",
+      "invalid_union_discriminator": "قيمة مميز غير صالحة",
+      "invalid_enum_value": "خيار غير صالح تم اختياره",
+      "invalid_arguments": "وسائط دالة غير صالحة",
+      "invalid_return_type": "نوع إرجاع غير صالح",
+      "invalid_date": "تاريخ غير صالح",
+      "custom": "إدخال غير صالح",
+      "validation_failed": "فشل التحقق"
+    }
   }
 }
