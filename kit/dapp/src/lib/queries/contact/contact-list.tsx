@@ -3,7 +3,6 @@ import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
-import { getAddress } from "viem";
 import { ContactFragment } from "./contact-fragment";
 import { ContactSchema } from "./contact-schema";
 
@@ -44,30 +43,8 @@ export const getContactsList = cache(async (userId: string) => {
     });
 
     // Parse and validate the contacts with TypeBox
-    return safeParse(
-      t.Array(ContactSchema),
-      formatContacts(result.contact || [])
-    );
+    return safeParse(t.Array(ContactSchema), result.contact || []);
   });
 
   return contacts;
 });
-
-/**
- * Formats raw contact data to match the expected schema format
- *
- * @param contacts - Raw contact data from Hasura
- * @returns Formatted contact data
- */
-function formatContacts(contacts: any[]) {
-  return contacts.map((contact) => ({
-    ...contact,
-    wallet: getAddress(contact.wallet),
-    created_at: contact.created_at
-      ? new Date(contact.created_at).toISOString()
-      : null,
-    updated_at: contact.updated_at
-      ? new Date(contact.updated_at).toISOString()
-      : null,
-  }));
-}

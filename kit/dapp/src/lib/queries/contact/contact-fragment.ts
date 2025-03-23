@@ -12,21 +12,6 @@ export const ContactFragment = hasuraGraphql(
     id
     wallet
     name
-    created_at
-    user_id
-    updated_at
   }
 `
 );
-
-/**
- * Type definition for contact data
- */
-export interface Contact {
-  id: string;
-  name: string;
-  wallet: `0x${string}`;
-  created_at: Date;
-  user_id: string;
-  updated_at?: Date | null;
-}

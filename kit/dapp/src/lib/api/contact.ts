@@ -38,10 +38,9 @@ export const ContactApi = new Elysia({
   )
   .get(
     "/:id",
-    async ({ params: { id }, session }) => {
+    async ({ params: { id } }) => {
       const contact = await getContactDetail({
         id,
-        userId: session.userId,
       });
 
       if (!contact) {

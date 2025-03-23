@@ -14,10 +14,8 @@ const columnHelper =
     Awaited<ReturnType<typeof getRecentTransactions>>[number]
   >();
 
-export function columns() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export function Columns() {
   const t = useTranslations("components.transactions-table");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
   return [

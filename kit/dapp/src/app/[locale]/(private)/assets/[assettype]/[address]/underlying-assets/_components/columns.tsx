@@ -15,10 +15,8 @@ import { getAddress } from "viem";
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
 
-export function columns() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export function Columns() {
   const t = useTranslations("private.assets.fields");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
   return [

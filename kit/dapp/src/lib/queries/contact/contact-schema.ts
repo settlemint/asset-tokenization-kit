@@ -17,21 +17,6 @@ export const ContactSchema = t.Object(
     wallet: t.EthereumAddress({
       description: "The wallet address of the contact",
     }),
-    created_at: t.String({
-      format: "date-time",
-      description: "The timestamp when the contact was created",
-    }),
-    user_id: t.String({
-      description: "The user ID of the contact owner",
-    }),
-    updated_at: t.Optional(
-      t.Nullable(
-        t.String({
-          format: "date-time",
-          description: "The timestamp when the contact was last updated",
-        })
-      )
-    ),
   },
   {
     description: "Contact information for a user's address book",

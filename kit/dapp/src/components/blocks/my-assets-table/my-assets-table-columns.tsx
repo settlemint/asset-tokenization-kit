@@ -11,10 +11,8 @@ import { ColumnAssetType } from "../asset-info/column-asset-type";
 
 const columnHelper = createColumnHelper<UserAsset>();
 
-export function columns() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export function Columns() {
   const t = useTranslations("portfolio.my-assets.table");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
   return [
