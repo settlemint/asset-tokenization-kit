@@ -1,12 +1,15 @@
 "use server";
 import { getUser } from "@/lib/auth/utils";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
-import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
+import {
+  PredictedAddressSchema,
+  type PredictAddressInput,
+} from "./stablecoin-factory-schema";
 
 /**
  * GraphQL query for predicting the address of a new stablecoin
@@ -30,49 +33,35 @@ const CreateStablecoinPredictAddress = portalGraphql(`
   }
 `);
 
-const PredictedAddressSchema = z.object({
-  StableCoinFactory: z.object({
-    predictAddress: z.object({
-      predicted: z.address(),
-    }),
-  }),
-});
-
 /**
  * Predicts the address of a new stablecoin
  *
  * @param input - The data for creating a new stablecoin
  * @returns The predicted address of the new stablecoin
  */
-export const getPredictedAddress = cache(
-  async (input: CreateStablecoinInput) => {
-    const {
-      assetName,
-      symbol,
-      decimals,
-      collateralLivenessValue,
-      collateralLivenessTimeUnit,
-    } = input;
-    const user = await getUser();
+export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
+  const {
+    assetName,
+    symbol,
+    decimals,
+    collateralLivenessValue,
+    collateralLivenessTimeUnit,
+  } = input;
+  const user = await getUser();
 
-    const collateralLivenessSeconds =
-      collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
+  const collateralLivenessSeconds =
+    collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
 
-    const data = await portalClient.request(CreateStablecoinPredictAddress, {
-      address: STABLE_COIN_FACTORY_ADDRESS,
-      sender: user.wallet as Address,
-      decimals,
-      collateralLivenessSeconds,
-      name: assetName,
-      symbol,
-    });
+  const data = await portalClient.request(CreateStablecoinPredictAddress, {
+    address: STABLE_COIN_FACTORY_ADDRESS,
+    sender: user.wallet as Address,
+    decimals,
+    name: assetName,
+    symbol,
+    collateralLivenessSeconds,
+  });
 
-    const predictedAddress = safeParseWithLogging(
-      PredictedAddressSchema,
-      data,
-      "stablecoin"
-    );
+  const predictedAddress = safeParse(PredictedAddressSchema, data);
 
-    return predictedAddress.StableCoinFactory.predictAddress.predicted;
-  }
-);
+  return predictedAddress.StableCoinFactory.predictAddress.predicted;
+});

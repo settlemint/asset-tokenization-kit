@@ -4,9 +4,10 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
+import { EquityExistsSchema } from "./equity-factory-schema";
 
 /**
  * GraphQL query for checking if an address is deployed
@@ -22,24 +23,12 @@ const EquityExists = theGraphGraphqlKit(`
   }
 `);
 
-const EquityExistsSchema = z.object({
-  equity: z
-    .object({
-      id: z.string(),
-    })
-    .nullish(),
-});
-
 export const isAddressAvailable = cache(async (address: Address) => {
   const data = await theGraphClientKit.request(EquityExists, {
     token: address,
   });
 
-  const equityExists = safeParseWithLogging(
-    EquityExistsSchema,
-    data,
-    "equity factory"
-  );
+  const equityExists = safeParse(EquityExistsSchema, data);
 
   return !equityExists.equity;
 });

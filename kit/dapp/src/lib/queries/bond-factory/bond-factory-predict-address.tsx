@@ -1,12 +1,15 @@
 "use server";
 import { getUser } from "@/lib/auth/utils";
 import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
-import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
-import { type Address, parseUnits } from "viem";
+import { parseUnits, type Address } from "viem";
+import {
+  PredictedAddressSchema,
+  type PredictAddressInput,
+} from "./bond-factory-schema";
 
 /**
  * GraphQL query for predicting the address of a new bond
@@ -33,22 +36,13 @@ const CreateBondPredictAddress = portalGraphql(`
   }
 `);
 
-const PredictedAddressSchema = z.object({
-  BondFactory: z.object({
-    predictAddress: z.object({
-      predicted: z.address(),
-    }),
-  }),
-});
-
 /**
  * Predicts the address of a new bond
  *
- * @param data - The data for creating a new bond
+ * @param input - The data for creating a new bond
  * @returns The predicted address of the new bond
  */
-export const getPredictedAddress = cache(async (input: CreateBondInput) => {
-  const user = await getUser();
+export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
   const {
     assetName,
     symbol,
@@ -58,6 +52,7 @@ export const getPredictedAddress = cache(async (input: CreateBondInput) => {
     maturityDate,
     underlyingAsset,
   } = input;
+  const user = await getUser();
 
   const capExact = String(parseUnits(String(cap), decimals));
   const maturityDateTimestamp = formatDate(maturityDate, {
@@ -69,19 +64,15 @@ export const getPredictedAddress = cache(async (input: CreateBondInput) => {
     address: BOND_FACTORY_ADDRESS,
     sender: user.wallet as Address,
     decimals,
+    name: assetName,
+    symbol,
     cap: capExact,
     faceValue: String(faceValue),
     maturityDate: maturityDateTimestamp,
     underlyingAsset: underlyingAsset.id,
-    name: assetName,
-    symbol,
   });
 
-  const predictedAddress = safeParseWithLogging(
-    PredictedAddressSchema,
-    data,
-    "bond"
-  );
+  const predictedAddress = safeParse(PredictedAddressSchema, data);
 
   return predictedAddress.BondFactory.predictAddress.predicted;
 });

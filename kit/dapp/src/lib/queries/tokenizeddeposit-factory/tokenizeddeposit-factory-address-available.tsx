@@ -4,9 +4,10 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
+import { TokenizedDepositExistsSchema } from "./tokenizeddeposit-factory-schema";
 
 /**
  * GraphQL query for checking if an address is deployed
@@ -22,24 +23,12 @@ const TokenizedDepositExists = theGraphGraphqlKit(`
   }
 `);
 
-const TokenizedDepositExistsSchema = z.object({
-  tokenizedDeposit: z
-    .object({
-      id: z.string(),
-    })
-    .nullish(),
-});
-
 export const isAddressAvailable = cache(async (address: Address) => {
   const data = await theGraphClientKit.request(TokenizedDepositExists, {
     token: address,
   });
 
-  const tokenizedDepositExists = safeParseWithLogging(
-    TokenizedDepositExistsSchema,
-    data,
-    "tokenized deposit factory"
-  );
+  const tokenizedDepositExists = safeParse(TokenizedDepositExistsSchema, data);
 
   return !tokenizedDepositExists.tokenizedDeposit;
 });

@@ -4,9 +4,10 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
+import { FundExistsSchema } from "./fund-factory-schema";
 
 /**
  * GraphQL query for checking if an address is deployed
@@ -22,24 +23,12 @@ const FundExists = theGraphGraphqlKit(`
   }
 `);
 
-const FundExistsSchema = z.object({
-  fund: z
-    .object({
-      id: z.string(),
-    })
-    .nullish(),
-});
-
 export const isAddressAvailable = cache(async (address: Address) => {
   const data = await theGraphClientKit.request(FundExists, {
     token: address,
   });
 
-  const fundExists = safeParseWithLogging(
-    FundExistsSchema,
-    data,
-    "fund factory"
-  );
+  const fundExists = safeParse(FundExistsSchema, data);
 
   return !fundExists.fund;
 });
