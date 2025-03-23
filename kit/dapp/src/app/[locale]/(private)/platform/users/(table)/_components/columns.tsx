@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { cn } from "@/lib/utils";
-import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   BadgeCheck,
@@ -146,16 +145,6 @@ export function columns() {
             </span>
           </>
         );
-      },
-      enableColumnFilter: false,
-    }),
-    columnHelper.accessor("last_activity_at", {
-      header: t("columns.last_activity"),
-      cell: ({ getValue }) => {
-        const lastActivity = getValue();
-        return lastActivity
-          ? formatDate(lastActivity, { type: "distance", locale: locale })
-          : "-";
       },
       enableColumnFilter: false,
     }),

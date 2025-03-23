@@ -1,12 +1,8 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
-import {
-  RecentUsersCountFragment,
-  RecentUsersCountFragmentSchema,
-  UserFragment,
-  UserFragmentSchema,
-} from "./user-fragment";
+import { RecentUsersCountFragment, UserFragment } from "./user-fragment";
+import { UserCountSchema, UserSchema } from "./user-schema";
 
 /**
  * GraphQL query to get users, with an optional filter for recent users
@@ -66,32 +62,29 @@ export const getUserCount = cache(async ({ since }: UserCountProps = {}) => {
     date: date.toISOString(),
   });
 
-  // Validate the response using Zod schemas
-  const validatedRecentUsers = safeParseWithLogging(
-    RecentUsersCountFragmentSchema,
-    result.recentUsers.aggregate,
-    "recent users count"
+  // Validate the response using TypeBox schemas
+  const recentUsersCount = safeParse(
+    UserCountSchema,
+    result.recentUsers.aggregate
   );
 
-  const validatedTotalUsers = safeParseWithLogging(
-    RecentUsersCountFragmentSchema,
-    result.totalUsers.aggregate,
-    "total users count"
+  const totalUsersCount = safeParse(
+    UserCountSchema,
+    result.totalUsers.aggregate
   );
 
-  // Parse and validate each user in the results using the UserFragmentSchema
-  const validatedUsers = Array.isArray(result.user)
-    ? result.user.map((user) =>
-        safeParseWithLogging(UserFragmentSchema, user, "user count")
-      )
-    : [];
+  // Parse and validate each user in the results
+  const validatedUsers = safeParse(
+    t.Array(UserSchema),
+    Array.isArray(result.user) ? result.user : []
+  );
 
   return {
     users: validatedUsers.map((user) => ({
       timestamp: user.created_at,
       users: 1, // Each entry represents a single user
     })),
-    recentUsersCount: validatedRecentUsers.count,
-    totalUsersCount: validatedTotalUsers.count,
+    recentUsersCount: recentUsersCount.count,
+    totalUsersCount: totalUsersCount.count,
   };
 });
