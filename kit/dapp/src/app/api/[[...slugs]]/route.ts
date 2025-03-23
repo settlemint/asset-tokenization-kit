@@ -16,7 +16,16 @@ import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import pkgjson from "../../../../package.json";
 
-const app = new Elysia({ prefix: "/api" })
+const app = new Elysia({
+  prefix: "/api",
+  detail: {
+    security: [
+      {
+        apiKeyAuth: [],
+      },
+    ],
+  },
+})
   .use(serverTiming())
   .use(
     swagger({
@@ -25,12 +34,18 @@ const app = new Elysia({ prefix: "/api" })
           title: metadata.title.default,
           version: pkgjson.version,
         },
+        security: [
+          {
+            apiKeyAuth: [],
+          },
+        ],
         components: {
           securitySchemes: {
             apiKeyAuth: {
               type: "apiKey",
               in: "header",
               name: "x-api-key",
+              description: "API key",
             },
           },
         },
