@@ -36,7 +36,7 @@ export function tokenizedDepositCalculateFields(
     Number(onChainTokenizedDeposit.lastCollateralUpdate) > 0
       ? addSeconds(
           new Date(Number(onChainTokenizedDeposit.lastCollateralUpdate) * 1000),
-          onChainTokenizedDeposit.liveness
+          Number(onChainTokenizedDeposit.liveness)
         )
       : undefined;
 

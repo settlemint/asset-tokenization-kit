@@ -29,7 +29,7 @@ export const UserSchema = t.Object(
         description: "The timestamp when the user was last updated",
       })
     ),
-    kyc_verified_at: t.Optional(
+    kyc_verified_at: t.MaybeEmpty(
       t.String({
         description: "The timestamp when the user's KYC was verified",
       })
@@ -37,17 +37,17 @@ export const UserSchema = t.Object(
     role: t.String({
       description: "The role of the user in the system",
     }),
-    banned: t.Optional(
+    banned: t.MaybeEmpty(
       t.Boolean({
         description: "Whether the user is banned from the platform",
       })
     ),
-    ban_reason: t.Optional(
+    ban_reason: t.MaybeEmpty(
       t.String({
         description: "The reason why the user was banned",
       })
     ),
-    ban_expires: t.Optional(
+    ban_expires: t.MaybeEmpty(
       t.Date({
         description: "The timestamp when the user's ban expires",
       })
@@ -57,12 +57,12 @@ export const UserSchema = t.Object(
         description: "The timestamp of the user's last login",
       })
     ),
-    image: t.Optional(
+    image: t.MaybeEmpty(
       t.String({
         description: "The URL of the user's profile image",
       })
     ),
-    currency: t.Optional(
+    currency: t.MaybeEmpty(
       t.String({
         description: "The preferred currency of the user",
       })
@@ -124,7 +124,7 @@ export type CalculatedUser = StaticDecode<typeof CalculatedUserSchema>;
  * Combined schema for complete user details
  */
 export const UserDetailSchema = t.Intersect(
-  [UserSchema, t.Partial(AccountSchema), CalculatedUserSchema],
+  [UserSchema, t.Partial(t.Omit(AccountSchema, ["id"])), CalculatedUserSchema],
   {
     description:
       "Combined schema for complete user details including Hasura data, account data, and calculated fields",

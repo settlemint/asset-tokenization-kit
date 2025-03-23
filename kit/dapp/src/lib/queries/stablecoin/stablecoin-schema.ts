@@ -55,7 +55,7 @@ export const OnChainStableCoinSchema = t.Object(
     lastCollateralUpdate: t.Timestamp({
       description: "The timestamp of the last collateral update",
     }),
-    liveness: t.Number({
+    liveness: t.StringifiedBigInt({
       description:
         "The liveness period for collateral-related operations in seconds",
     }),

@@ -34,7 +34,7 @@ export function stablecoinCalculateFields(
     Number(onChainStableCoin.lastCollateralUpdate) > 0
       ? addSeconds(
           new Date(Number(onChainStableCoin.lastCollateralUpdate) * 1000),
-          onChainStableCoin.liveness
+          Number(onChainStableCoin.liveness)
         )
       : undefined;
 
