@@ -6,7 +6,8 @@ import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { type ZodInfer, safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
-import { BondFragment, BondFragmentSchema } from "../bond/bond-fragment";
+import { BondFragment } from "../bond/bond-fragment";
+import { OnChainBondSchema } from "../bond/bond-schema";
 import { CryptoCurrencyFragment } from "../cryptocurrency/cryptocurrency-fragment";
 import { OnChainCryptoCurrencySchema } from "../cryptocurrency/cryptocurrency-schema";
 import { EquityFragment } from "../equity/equity-fragment";
@@ -99,8 +100,9 @@ export const getSidebarAssets = cache(
       safeParseWithLogging(StableCoinFragmentSchema, coin, "stablecoin")
     );
 
-    const validatedBonds = (result.bonds || []).map((bond) =>
-      safeParseWithLogging(BondFragmentSchema, bond, "bond")
+    const validatedBonds = safeParse(
+      t.Array(OnChainBondSchema),
+      result.bonds || []
     );
 
     const validatedEquities = safeParse(

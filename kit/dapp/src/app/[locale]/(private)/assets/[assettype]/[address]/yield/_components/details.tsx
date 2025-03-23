@@ -35,21 +35,24 @@ export async function YieldDetails({ address }: DetailsProps) {
   const yieldPerPeriod = bond.yieldSchedule.periods[0]?.totalClaimed ?? "0";
   const ratePercentage = Number(bond.yieldSchedule.rate) / 100;
   const periodCount = Math.floor(
-    (Number(bond.yieldSchedule.endDate) - Number(bond.yieldSchedule.startDate)) /
+    (Number(bond.yieldSchedule.endDate) -
+      Number(bond.yieldSchedule.startDate)) /
       Number(bond.yieldSchedule.interval)
   );
 
-  const intervalPeriod = secondsToInterval(bond.yieldSchedule.interval.toString());
+  const intervalPeriod = secondsToInterval(
+    bond.yieldSchedule.interval.toString()
+  );
   // Use the translation from the interval options section
   // The translation keys are in admin.bonds.yield.set-schedule.interval.options.[period]
-  const intervalDisplay = intervalPeriod ? t(`set-schedule.interval.options.${intervalPeriod}`) : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
+  const intervalDisplay = intervalPeriod
+    ? t(`set-schedule.interval.options.${intervalPeriod}`)
+    : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
 
   return (
     <Suspense>
       <DetailGrid>
-        <DetailGridItem label={t("type")}>
-          {t("type-fixed")}
-        </DetailGridItem>
+        <DetailGridItem label={t("type")}>{t("type-fixed")}</DetailGridItem>
         <DetailGridItem label={t("contract-address")}>
           <EvmAddress
             address={bond.yieldSchedule.id}
@@ -69,21 +72,21 @@ export async function YieldDetails({ address }: DetailsProps) {
           {formatNumber(ratePercentage, {
             percentage: true,
             decimals: 0,
-            locale
+            locale,
           })}
         </DetailGridItem>
         <DetailGridItem label={t("start-date")}>
-          {formatDate(new Date(Number(bond.yieldSchedule.startDate) * 1000), { locale })}
+          {formatDate(new Date(Number(bond.yieldSchedule.startDate) * 1000), {
+            locale,
+          })}
         </DetailGridItem>
         <DetailGridItem label={t("end-date")}>
-          {formatDate(new Date(Number(bond.yieldSchedule.endDate) * 1000), { locale })}
+          {formatDate(new Date(Number(bond.yieldSchedule.endDate) * 1000), {
+            locale,
+          })}
         </DetailGridItem>
-        <DetailGridItem label={t("interval")}>
-          {intervalDisplay}
-        </DetailGridItem>
-        <DetailGridItem label={t("periods")}>
-          {periodCount}
-        </DetailGridItem>
+        <DetailGridItem label={t("interval")}>{intervalDisplay}</DetailGridItem>
+        <DetailGridItem label={t("periods")}>{periodCount}</DetailGridItem>
         <DetailGridItem label={t("yield-per-period")}>
           {yieldPerPeriod}
         </DetailGridItem>
@@ -111,7 +114,7 @@ export async function YieldDetails({ address }: DetailsProps) {
                 {
                   percentage: true,
                   decimals: 0,
-                  locale
+                  locale,
                 }
               )}
         </DetailGridItem>

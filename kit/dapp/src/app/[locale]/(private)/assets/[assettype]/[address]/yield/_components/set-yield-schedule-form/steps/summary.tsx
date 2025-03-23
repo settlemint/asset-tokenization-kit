@@ -48,7 +48,9 @@ export function Summary({ address }: SummaryProps) {
         />
         <FormSummaryDetailItem
           label={t("summary.interval")}
-          value={getIntervalLabel(values.interval as IntervalPeriod, (key) => t(key))}
+          value={getIntervalLabel(values.interval as IntervalPeriod, (key) =>
+            t(key)
+          )}
         />
       </FormSummaryDetailCard>
     </FormStep>
