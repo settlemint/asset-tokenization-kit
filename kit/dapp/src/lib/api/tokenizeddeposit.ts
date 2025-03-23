@@ -10,7 +10,15 @@ import { Elysia } from "elysia";
 import { getAddress } from "viem";
 import { PredictAddressInputSchema } from "../queries/tokenizeddeposit-factory/tokenizeddeposit-factory-schema";
 
-export const TokenizedDepositApi = new Elysia()
+export const TokenizedDepositApi = new Elysia({
+  detail: {
+    security: [
+      {
+        apiKeyAuth: [],
+      },
+    ],
+  },
+})
   .use(betterAuth)
   .use(superJson)
   .get(

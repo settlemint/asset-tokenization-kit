@@ -10,7 +10,15 @@ import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
 
-export const FundApi = new Elysia()
+export const FundApi = new Elysia({
+  detail: {
+    security: [
+      {
+        apiKeyAuth: [],
+      },
+    ],
+  },
+})
   .use(betterAuth)
   .use(superJson)
   .get(
