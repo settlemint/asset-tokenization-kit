@@ -79,7 +79,7 @@ export function safeParse<T extends TSchema>(
       errors
         .map(
           (error) =>
-            `${error.path}: ${error.message} (${error.value} = ${typeof error.value})`
+            `${error.path}: ${error.message} (${JSON.stringify(error.value)} = ${typeof error.value})`
         )
         .join("\n")
     );

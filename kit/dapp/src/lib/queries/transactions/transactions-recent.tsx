@@ -4,7 +4,7 @@ import {
   TransactionFragmentSchema,
 } from "@/lib/queries/transactions/transaction-fragment";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
 
@@ -46,25 +46,30 @@ export interface RecentTransactionsProps {
  * Returns transaction data with total count, recent count, and transaction records
  */
 export const getRecentTransactions = cache(
-  async (props: RecentTransactionsProps) => {
+  async (props: RecentTransactionsProps = {}) => {
     const { address, processedAfter } = props;
+
     const transactions = await fetchAllPortalPages(
       async ({ page, pageSize }) => {
         const response = await portalClient.request(RecentTransactionsHistory, {
           from: address,
-          processedAfter: processedAfter?.toISOString(),
+          processedAfter: processedAfter?.toJSON(),
           pageSize,
           page,
         });
+
         return {
           count:
             response.getPendingAndRecentlyProcessedTransactions?.count ?? 0,
           records:
-            response.getPendingAndRecentlyProcessedTransactions?.records ?? [],
+            safeParse(
+              t.Array(TransactionFragmentSchema),
+              response.getPendingAndRecentlyProcessedTransactions?.records ?? []
+            ) ?? [],
         };
       }
     );
 
-    return z.array(TransactionFragmentSchema).parse(transactions?.records);
+    return transactions?.records;
   }
 );

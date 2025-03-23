@@ -1,6 +1,6 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 export const ReceiptFragment = portalGraphql(`
   fragment ReceiptFragment on TransactionReceiptOutput {
@@ -26,29 +26,88 @@ export const ReceiptFragment = portalGraphql(`
   }
 `);
 
-export const ReceiptFragmentSchema = z.object({
-  status: z.string(),
-  revertReasonDecoded: z.string().nullish(),
-  blockNumber: z.coerce.number(),
-  gasUsed: z.bigInt(),
-  blobGasPrice: z.bigInt().nullish(),
-  blobGasUsed: z.bigInt().nullish(),
-  blockHash: z.hash(),
-  contractAddress: z.string().nullish(),
-  cumulativeGasUsed: z.bigInt(),
-  effectiveGasPrice: z.bigInt(),
-  from: z.address(),
-  logs: z.array(z.any()),
-  logsBloom: z.string(),
-  revertReason: z.string().nullish(),
-  root: z.string().nullish(),
-  to: z.address().nullish(),
-  transactionHash: z.hash(),
-  transactionIndex: z.coerce.number(),
-  type: z.string(),
+export const ReceiptFragmentSchema = t.Object({
+  status: t.String({
+    description: "The status of the transaction (success/failure)",
+  }),
+  revertReasonDecoded: t.Optional(
+    t.String({
+      description: "The decoded reason if the transaction reverted",
+    })
+  ),
+  blockNumber: t.Number({
+    description: "The block number in which the transaction was included",
+  }),
+  gasUsed: t.BigInt({
+    description: "The amount of gas used by the transaction",
+  }),
+  blobGasPrice: t.Optional(
+    t.BigInt({
+      description: "The price of blob gas for the transaction",
+    })
+  ),
+  blobGasUsed: t.Optional(
+    t.BigInt({
+      description: "The amount of blob gas used by the transaction",
+    })
+  ),
+  blockHash: t.Hash({
+    description: "The hash of the block containing the transaction",
+  }),
+  contractAddress: t.Optional(
+    t.EthereumAddress({
+      description: "The address of the created contract, if any",
+    })
+  ),
+  cumulativeGasUsed: t.BigInt({
+    description:
+      "The total gas used when this transaction was executed in the block",
+  }),
+  effectiveGasPrice: t.BigInt({
+    description: "The effective gas price for the transaction",
+  }),
+  from: t.EthereumAddress({
+    description: "The sender of the transaction",
+  }),
+  logs: t.Array(
+    t.Any({
+      description: "An individual log entry",
+    }),
+    {
+      description: "The logs generated during the transaction execution",
+    }
+  ),
+  logsBloom: t.String({
+    description:
+      "A bloom filter of logs/events generated during transaction execution",
+  }),
+  revertReason: t.Optional(
+    t.String({
+      description: "The reason for transaction reversion, if applicable",
+    })
+  ),
+  root: t.Optional(
+    t.String({
+      description: "The root of the state trie after transaction execution",
+    })
+  ),
+  to: t.Optional(
+    t.EthereumAddress({
+      description: "The recipient address of the transaction",
+    })
+  ),
+  transactionHash: t.Hash({
+    description: "The hash of the transaction",
+  }),
+  transactionIndex: t.Number({
+    description: "The index of the transaction in the block",
+  }),
+  type: t.String({
+    description: "The type of the transaction",
+  }),
 });
 
-export type Receipt = ZodInfer<typeof ReceiptFragmentSchema>;
+export type Receipt = StaticDecode<typeof ReceiptFragmentSchema>;
 
 /**
  * GraphQL fragment for transaction data
@@ -75,23 +134,40 @@ export const TransactionFragment = portalGraphql(
 );
 
 /**
- * Zod schema for validating transaction data
+ * TypeBox schema for validating transaction data
  *
  */
-export const TransactionFragmentSchema = z.object({
-  from: z.address(),
-  functionName: z.string(),
-  transactionHash: z.hash(),
-  updatedAt: z.coerce.date(),
-  receipt: ReceiptFragmentSchema.optional(),
-  address: z.address(),
-  createdAt: z.coerce.date(),
+export const TransactionFragmentSchema = t.Object({
+  from: t.EthereumAddress({
+    description: "The address that initiated the transaction",
+  }),
+  functionName: t.String({
+    description: "The name of the function called in the transaction",
+  }),
+  transactionHash: t.Hash({
+    description: "The hash of the transaction",
+  }),
+  updatedAt: t.Date({
+    description: "The timestamp when the transaction was last updated",
+  }),
+  receipt: t.Optional(ReceiptFragmentSchema),
+  address: t.EthereumAddress({
+    description: "The contract address the transaction interacted with",
+  }),
+  createdAt: t.Date({
+    description: "The timestamp when the transaction was created",
+  }),
+  metadata: t.Optional(
+    t.Record(t.String(), t.Any(), {
+      description: "Additional metadata about the transaction",
+    })
+  ),
 });
 
 /**
  * Type definition for transaction data
  */
-export type Transaction = ZodInfer<typeof TransactionFragmentSchema>;
+export type Transaction = StaticDecode<typeof TransactionFragmentSchema>;
 
 export const IndexingFragment = theGraphGraphqlKit(`
   fragment IndexingFragment on _Block_ {
@@ -99,6 +175,10 @@ export const IndexingFragment = theGraphGraphqlKit(`
   }
 `);
 
-export const IndexingFragmentSchema = z.object({
-  number: z.number(),
+export const IndexingFragmentSchema = t.Object({
+  number: t.Number({
+    description: "The block number",
+  }),
 });
+
+export type IndexingFragment = StaticDecode<typeof IndexingFragmentSchema>;

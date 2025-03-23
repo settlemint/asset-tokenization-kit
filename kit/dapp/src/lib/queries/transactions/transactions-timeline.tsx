@@ -1,5 +1,5 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
+import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
 
@@ -13,11 +13,19 @@ const ProcessedTransactionsTimeline = portalGraphql(
   }`
 );
 
-const TransactionTimelineSchema = z.object({
-  start: z.coerce.date(),
-  end: z.coerce.date(),
-  count: z.number(),
+const TimelineResultSchema = t.Object({
+  start: t.Date({
+    description: "The start time of this timeline period",
+  }),
+  end: t.Date({
+    description: "The end time of this timeline period",
+  }),
+  count: t.Number({
+    description: "The count of transactions in this period",
+  }),
 });
+
+type TimelineResult = StaticDecode<typeof TimelineResultSchema>;
 
 /**
  * Props interface for transaction timeline queries
@@ -52,10 +60,13 @@ export const getTransactionsTimeline = cache(
         timelineStartDate: timelineStartDate.toJSON(),
       }
     );
-    const mapped = z
-      .array(TransactionTimelineSchema)
-      .parse(transactionsTimeline.getTransactionsTimeline);
-    return mapped.map((item) => ({
+
+    const timelineData = safeParse(
+      t.Array(TimelineResultSchema),
+      transactionsTimeline.getTransactionsTimeline
+    );
+
+    return timelineData.map((item: TimelineResult) => ({
       timestamp: item.start.toJSON(),
       transaction: item.count,
     }));
