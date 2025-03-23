@@ -36,7 +36,7 @@ export const AssetEventsApi = new Elysia({
         summary: "List all events",
         description:
           "Retrieves a list of all asset events with optional filters for asset address, sender, and result limits.",
-        tags: ["asset-events"],
+        tags: ["events"],
       },
       query: t.Object({
         asset: t.Optional(
@@ -74,7 +74,7 @@ export const AssetEventsApi = new Elysia({
         summary: "List events for asset",
         description:
           "Retrieves a list of events for a specific asset by address.",
-        tags: ["asset-events"],
+        tags: ["events"],
       },
       params: t.Object({
         asset: t.String({

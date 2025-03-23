@@ -1,3 +1,4 @@
+import { AssetBalanceApi } from "@/lib/api/asset-balance";
 import { AssetEventsApi } from "@/lib/api/asset-events";
 import { AssetStatsApi } from "@/lib/api/asset-stats";
 import { BondApi } from "@/lib/api/bond";
@@ -67,6 +68,7 @@ const app = new Elysia({
   .group("/user", (app) => app.use(UserApi))
   .group("/asset-stats", (app) => app.use(AssetStatsApi))
   .group("/asset-events", (app) => app.use(AssetEventsApi))
+  .group("/asset-balance", (app) => app.use(AssetBalanceApi))
   .group("/providers/exchange-rates", (app) =>
     app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
   )

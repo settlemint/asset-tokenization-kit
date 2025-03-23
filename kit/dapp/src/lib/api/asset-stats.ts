@@ -32,7 +32,7 @@ export const AssetStatsApi = new Elysia({
         summary: "Asset Statistics",
         description:
           "Retrieves statistics for an asset by address, including supply metrics and transaction data.",
-        tags: ["asset-stats"],
+        tags: ["stats"],
       },
       params: t.Object({
         address: t.String({
