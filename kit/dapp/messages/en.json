@@ -229,7 +229,9 @@
     "UnderlyingAssetTopUpEvent": "Top up",
     "UnderlyingAssetWithdrawnEvent": "Withdraw",
     "UnpausedEvent": "Unpause",
+    "UserAllowedEvent": "Allow",
     "UserBlockedEvent": "Block",
+    "UserDisallowedEvent": "Disallow",
     "UserUnblockedEvent": "Unblock"
   },
   "asset-info": {

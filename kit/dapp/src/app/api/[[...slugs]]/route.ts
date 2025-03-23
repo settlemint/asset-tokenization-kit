@@ -1,3 +1,5 @@
+import { AssetEventsApi } from "@/lib/api/asset-events";
+import { AssetStatsApi } from "@/lib/api/asset-stats";
 import { BondApi } from "@/lib/api/bond";
 import { ContactApi } from "@/lib/api/contact";
 import { CryptoCurrencyApi } from "@/lib/api/cryptocurrency";
@@ -63,6 +65,8 @@ const app = new Elysia({
   .group("/tokenizeddeposit", (app) => app.use(TokenizedDepositApi))
   .group("/transaction", (app) => app.use(TransactionApi))
   .group("/user", (app) => app.use(UserApi))
+  .group("/asset-stats", (app) => app.use(AssetStatsApi))
+  .group("/asset-events", (app) => app.use(AssetEventsApi))
   .group("/providers/exchange-rates", (app) =>
     app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
   )

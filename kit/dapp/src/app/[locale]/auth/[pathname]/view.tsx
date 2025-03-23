@@ -13,7 +13,7 @@ export function AuthView({ pathname }: { pathname: string }) {
   }, [router]);
 
   return (
-    <main className="flex flex-col grow p-4 items-center justify-center">
+    <main className="my-auto flex flex-col items-center">
       <AuthCard pathname={pathname} />
     </main>
   );

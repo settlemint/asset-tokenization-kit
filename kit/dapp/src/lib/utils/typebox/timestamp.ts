@@ -63,8 +63,16 @@ export const Timestamp = (options?: SchemaOptions) =>
     )
     .Decode((value: TimestampInput) => {
       if (typeof value === "string") {
+        // Check if it looks like a Unix timestamp (seconds)
+        if (/^\d{10}$/.test(value)) {
+          return new Date(parseInt(value) * 1000);
+        }
         return new Date(value);
       } else if (typeof value === "number") {
+        // Check if it looks like seconds rather than milliseconds
+        if (value < 10000000000) {
+          return new Date(value * 1000);
+        }
         return new Date(value);
       } else if (value instanceof Date) {
         return value;
