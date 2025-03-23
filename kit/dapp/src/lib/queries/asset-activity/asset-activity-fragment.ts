@@ -1,5 +1,5 @@
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import type { AssetActivity } from "./asset-activity-schema";
 
 /**
  * GraphQL fragment for asset activity data from The Graph
@@ -20,22 +20,5 @@ export const AssetActivityFragment = theGraphGraphqlKit(`
   }
 `);
 
-/**
- * Zod schema for validating asset activity data
- *
- */
-export const AssetActivityFragmentSchema = z.object({
-  id: z.string(),
-  assetType: z.assetType(),
-  totalSupply: z.bigDecimal(),
-  burnEventCount: z.bigInt(),
-  mintEventCount: z.bigInt(),
-  transferEventCount: z.bigInt(),
-  frozenEventCount: z.bigInt(),
-  unfrozenEventCount: z.bigInt(),
-});
-
-/**
- * Type definition for asset activity data
- */
-export type AssetActivity = ZodInfer<typeof AssetActivityFragmentSchema>;
+// Re-export the type
+export type { AssetActivity };
