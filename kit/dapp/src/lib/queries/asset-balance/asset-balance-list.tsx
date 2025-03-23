@@ -4,13 +4,11 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
-import {
-  AssetBalanceFragment,
-  AssetBalanceFragmentSchema,
-} from "./asset-balance-fragment";
+import { AssetBalanceFragment } from "./asset-balance-fragment";
+import { AssetBalanceSchema } from "./asset-balance-schema";
 
 /**
  * GraphQL query to fetch asset balances
@@ -54,36 +52,19 @@ export const getAssetBalanceList = cache(
       wallet: wallet,
     });
 
-    const balances = result.assetBalances || [];
-    const userBalances = result.userBalances || [];
-
-    // Validate data using Zod schema
-    const validatedBalances = balances.map((balance) => {
-      const validatedBalance = safeParseWithLogging(
-        AssetBalanceFragmentSchema,
-        balance,
-        "balance"
-      );
-      return {
-        ...validatedBalance,
-      };
-    });
-
-    const validatedUserBalances = userBalances.map((balance) => {
-      const validatedBalance = safeParseWithLogging(
-        AssetBalanceFragmentSchema,
-        balance,
-        "user balance"
-      );
-      return {
-        ...validatedBalance,
-      };
-    });
+    const balances = safeParse(
+      t.Array(AssetBalanceSchema),
+      result.assetBalances || []
+    );
+    const userBalances = safeParse(
+      t.Array(AssetBalanceSchema),
+      result.userBalances || []
+    );
 
     if (wallet) {
-      return validatedUserBalances;
+      return userBalances;
     }
 
-    return validatedBalances;
+    return balances;
   }
 );

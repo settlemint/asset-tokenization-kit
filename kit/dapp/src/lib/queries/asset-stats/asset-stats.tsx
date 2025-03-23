@@ -3,14 +3,12 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox";
 import { getUnixTime, startOfDay, subDays } from "date-fns";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import {
-  AssetStatsFragment,
-  AssetStatsFragmentSchema,
-} from "./asset-stats-fragment";
+import { AssetStatsFragment } from "./asset-stats-fragment";
+import { AssetStatsSchema } from "./asset-stats-schema";
 
 /**
  * GraphQL query to fetch asset statistics from The Graph
@@ -52,8 +50,8 @@ export interface AssetStatsProps {
  *
  * @remarks
  * This function calculates the start date based on the days parameter,
- * fetches data from The Graph, validates it using the AssetStatsFragmentSchema,
- * and processes the totalBurned field to be a negated string value.
+ * fetches data from The Graph, validates it using the AssetStatsSchema,
+ * and returns validated asset statistics.
  */
 export const getAssetStats = cache(
   async ({ address, days = 1 }: AssetStatsProps) => {
@@ -73,17 +71,14 @@ export const getAssetStats = cache(
       return response.assetStats_collection || [];
     });
 
-    // Validate data using Zod schema and process
+    // Validate data using TypeBox schema
     const validatedStats = result.map((item) => {
-      const validatedItem = safeParseWithLogging(
-        AssetStatsFragmentSchema,
-        item,
-        "asset stats"
-      );
-
-      return {
-        ...validatedItem,
-      };
+      try {
+        return safeParse(AssetStatsSchema, item);
+      } catch (error) {
+        console.error("Failed to validate asset stats:", error);
+        throw new Error("Invalid asset stats data");
+      }
     });
 
     return validatedStats;

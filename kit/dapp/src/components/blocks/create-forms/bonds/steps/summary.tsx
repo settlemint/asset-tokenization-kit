@@ -4,7 +4,7 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
-import { getPredictedAddress } from "@/lib/queries/bond-factory/predict-address";
+import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";

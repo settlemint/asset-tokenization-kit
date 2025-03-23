@@ -1,5 +1,5 @@
 import { AssetUsersFragmentSchema } from "@/lib/queries/asset/asset-users-fragment";
-import { isAddressAvailable } from "@/lib/queries/bond-factory/address-available";
+import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 import { isFuture } from "date-fns";
 

@@ -1,15 +1,6 @@
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { Address } from "viem";
-import { z } from "zod";
-
-// Define the yield coverage schema
-const _yieldCoverageSchema = z.object({
-  yieldCoverage: z.number(),
-  hasYieldSchedule: z.boolean(),
-  isRunning: z.boolean()
-});
-
-type YieldCoverageData = z.infer<typeof _yieldCoverageSchema>;
+import type { YieldCoverage } from "./bond-schema";
 
 interface GetBondYieldCoverageParams {
   address: Address;
@@ -27,8 +18,8 @@ interface GetBondYieldCoverageParams {
  * @returns The yield coverage data including percentage and status flags
  */
 export async function getBondYieldCoverage({
-  address
-}: GetBondYieldCoverageParams): Promise<YieldCoverageData> {
+  address,
+}: GetBondYieldCoverageParams): Promise<YieldCoverage> {
   // Get bond details
   const bondData = await getBondDetail({ address });
 
@@ -40,13 +31,14 @@ export async function getBondYieldCoverage({
     return {
       yieldCoverage: 0,
       hasYieldSchedule: false,
-      isRunning: false
+      isRunning: false,
     };
   }
 
   // Get current timestamp to check if yield is currently running
   const now = BigInt(Math.floor(Date.now() / 1000));
-  const { startDate, endDate, unclaimedYieldExact, underlyingBalanceExact } = bondData.yieldSchedule;
+  const { startDate, endDate, unclaimedYieldExact, underlyingBalanceExact } =
+    bondData.yieldSchedule;
   const isRunning = now >= startDate && now <= endDate;
 
   // If not running, return 0 coverage
@@ -54,7 +46,7 @@ export async function getBondYieldCoverage({
     return {
       yieldCoverage: 0,
       hasYieldSchedule: true,
-      isRunning: false
+      isRunning: false,
     };
   }
 
@@ -67,7 +59,9 @@ export async function getBondYieldCoverage({
     // 200% means covering both current and next yield periods
 
     // Calculate the base coverage (100% = just covering current unclaimed yield)
-    const baseCoverage = Number((underlyingBalanceExact * 100n) / unclaimedYieldExact);
+    const baseCoverage = Number(
+      (underlyingBalanceExact * 100n) / unclaimedYieldExact
+    );
 
     // If we have just enough to cover the current unclaimed yield, that's 100%
     // If we have enough to cover current unclaimed yield + an equal amount (next period),
@@ -82,6 +76,6 @@ export async function getBondYieldCoverage({
   return {
     yieldCoverage,
     hasYieldSchedule: true,
-    isRunning
+    isRunning,
   };
 }

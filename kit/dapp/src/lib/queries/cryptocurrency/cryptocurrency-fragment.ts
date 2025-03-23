@@ -1,6 +1,5 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for on-chain stablecoin data from The Graph
@@ -27,33 +26,6 @@ export const CryptoCurrencyFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating on-chain stablecoin data
- *
- */
-export const CryptoCurrencyFragmentSchema = z.object({
-  id: z.address(),
-  name: z.string(),
-  symbol: z.symbol(),
-  decimals: z.decimals(),
-  totalSupply: z.bigDecimal(),
-  totalSupplyExact: z.bigInt(),
-  totalHolders: z.number(),
-  creator: z.object({
-    id: z.address(),
-  }),
-  holders: z.array(
-    z.object({
-      valueExact: z.bigInt(),
-    })
-  ),
-});
-
-/**
- * Type definition for on-chain stablecoin data
- */
-export type CryptoCurrency = ZodInfer<typeof CryptoCurrencyFragmentSchema>;
-
-/**
  * GraphQL fragment for off-chain stablecoin data from Hasura
  *
  * @remarks
@@ -66,20 +38,3 @@ export const OffchainCryptoCurrencyFragment = hasuraGraphql(`
     value_in_base_currency
   }
 `);
-
-/**
- * Zod schema for validating off-chain stablecoin data
- *
- */
-export const OffchainCryptoCurrencyFragmentSchema = z.object({
-  id: z.address(),
-  isin: z.isin().nullish(),
-  value_in_base_currency: z.fiatCurrencyAmount(),
-});
-
-/**
- * Type definition for off-chain stablecoin data
- */
-export type OffchainCryptoCurrency = ZodInfer<
-  typeof OffchainCryptoCurrencyFragmentSchema
->;

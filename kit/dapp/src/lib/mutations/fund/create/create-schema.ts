@@ -1,4 +1,4 @@
-import { isAddressAvailable } from "@/lib/queries/fund-factory/address-available";
+import { isAddressAvailable } from "@/lib/queries/fund-factory/fund-factory-address-available";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**

@@ -1,15 +1,7 @@
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import type { YieldDistributionItem } from "@/lib/queries/bond/bond-schema";
 import { cache } from "react";
 import type { Address } from "viem";
-import { z } from "zod";
-
-const _yieldDistributionItemSchema = z.object({
-  timestamp: z.number(),
-  totalYield: z.number(),
-  claimed: z.number()
-});
-
-type YieldDistributionData = z.infer<typeof _yieldDistributionItemSchema>;
 
 interface BondYieldDistributionParams {
   address: Address;
@@ -20,7 +12,9 @@ interface BondYieldDistributionParams {
  * Shows total yield available over time and amount claimed
  */
 export const getBondYieldDistribution = cache(
-  async ({ address }: BondYieldDistributionParams): Promise<YieldDistributionData[]> => {
+  async ({
+    address,
+  }: BondYieldDistributionParams): Promise<YieldDistributionItem[]> => {
     try {
       // Get bond details to access yield data
       const bondData = await getBondDetail({ address });
@@ -30,7 +24,8 @@ export const getBondYieldDistribution = cache(
       }
 
       // Get actual yield schedule periods data from the bond
-      const { periods, startDate, endDate, totalClaimed } = bondData.yieldSchedule;
+      const { periods, startDate, endDate, totalClaimed } =
+        bondData.yieldSchedule;
 
       // If there are no periods, return empty array
       if (!periods || periods.length === 0) {
@@ -43,18 +38,18 @@ export const getBondYieldDistribution = cache(
       const now = Date.now();
 
       // Create distribution data from actual period data
-      const dataPoints: YieldDistributionData[] = [];
+      const dataPoints: YieldDistributionItem[] = [];
 
       // Add starting point (zero values)
       dataPoints.push({
         timestamp: startTime,
         totalYield: 0,
-        claimed: 0
+        claimed: 0,
       });
 
       // Sort periods by start date
-      const sortedPeriods = [...periods].sort((a, b) =>
-        Number(a.startDate) - Number(b.startDate)
+      const sortedPeriods = [...periods].sort(
+        (a, b) => Number(a.startDate) - Number(b.startDate)
       );
 
       // Running totals for accumulation
@@ -71,8 +66,10 @@ export const getBondYieldDistribution = cache(
         }
 
         // Add the period's yield to the total (estimated from rate and duration)
-        const periodDuration = Number(period.endDate) - Number(period.startDate);
-        const periodYield = Number(period.rate) * periodDuration / (365 * 24 * 60 * 60);
+        const periodDuration =
+          Number(period.endDate) - Number(period.startDate);
+        const periodYield =
+          (Number(period.rate) * periodDuration) / (365 * 24 * 60 * 60);
 
         accumulatedYield += periodYield;
         accumulatedClaimed += Number(period.totalClaimed);
@@ -80,7 +77,7 @@ export const getBondYieldDistribution = cache(
         dataPoints.push({
           timestamp: periodStartTime,
           totalYield: accumulatedYield,
-          claimed: accumulatedClaimed
+          claimed: accumulatedClaimed,
         });
       }
 
@@ -94,7 +91,7 @@ export const getBondYieldDistribution = cache(
         dataPoints.push({
           timestamp: now,
           totalYield: lastPoint.totalYield,
-          claimed: Number(totalClaimed) // Use actual claimed amount from bond data
+          claimed: Number(totalClaimed), // Use actual claimed amount from bond data
         });
       }
 
@@ -106,7 +103,7 @@ export const getBondYieldDistribution = cache(
         dataPoints.push({
           timestamp: endTime,
           totalYield: lastPoint.totalYield,
-          claimed: lastPoint.claimed
+          claimed: lastPoint.claimed,
         });
       }
 

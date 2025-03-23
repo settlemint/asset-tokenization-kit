@@ -4,15 +4,13 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { t } from "@/lib/utils/typebox";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { getAddress } from "viem";
-import {
-  FundFragment,
-  FundFragmentSchema,
-  OffchainFundFragment,
-  OffchainFundFragmentSchema,
-} from "./fund-fragment";
+import { fundCalculateFields } from "./fund-calculated";
+import { FundFragment, OffchainFundFragment } from "./fund-fragment";
+import { OffChainFundSchema, OnChainFundSchema } from "./fund-schema";
 
 /**
  * GraphQL query to fetch on-chain fund list from The Graph
@@ -57,16 +55,14 @@ const OffchainFundList = hasuraGraphql(
  * then merges the results to provide a complete view of each fund.
  */
 export const getFundList = cache(async () => {
-  const [theGraphFunds, dbAssets] = await Promise.all([
+  const [onChainFunds, offChainFunds] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
       const result = await theGraphClientKit.request(FundList, {
         first,
         skip,
       });
 
-      const funds = result.funds || [];
-
-      return funds;
+      return safeParse(t.Array(OnChainFundSchema), result.funds || []);
     }),
 
     fetchAllHasuraPages(async (pageLimit, offset) => {
@@ -74,47 +70,27 @@ export const getFundList = cache(async () => {
         limit: pageLimit,
         offset,
       });
-      return result.asset_aggregate.nodes || [];
+
+      return safeParse(
+        t.Array(OffChainFundSchema),
+        result.asset_aggregate.nodes || []
+      );
     }),
   ]);
 
-  // Parse and validate the data using Zod schemas
-  const validatedFunds = theGraphFunds.map((fund) =>
-    safeParseWithLogging(FundFragmentSchema, fund, "fund")
-  );
-
-  const validatedDbAssets = dbAssets.map((asset) =>
-    safeParseWithLogging(OffchainFundFragmentSchema, asset, "offchain fund")
-  );
-
   const assetsById = new Map(
-    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+    offChainFunds.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const funds = validatedFunds.map((fund) => {
-    const dbAsset = assetsById.get(getAddress(fund.id));
-    const assetsUnderManagement = fund.asAccount.balances.reduce(
-      (acc, balance) => acc + balance.value,
-      0
-    );
+  const funds = onChainFunds.map((fund) => {
+    const offChainFund = assetsById.get(getAddress(fund.id));
 
-    const topHoldersSum = fund.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
-    );
-    const concentration =
-      fund.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / fund.totalSupplyExact);
+    const calculatedFields = fundCalculateFields(fund, offChainFund);
 
     return {
       ...fund,
-      ...{
-        private: false,
-        ...dbAsset,
-      },
-      assetsUnderManagement,
-      concentration,
+      ...offChainFund,
+      ...calculatedFields,
     };
   });
 

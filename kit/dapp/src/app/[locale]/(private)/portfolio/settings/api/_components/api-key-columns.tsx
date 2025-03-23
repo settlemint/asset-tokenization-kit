@@ -32,11 +32,8 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
   notVerified: BadgeX,
 };
 
-export function columns() {
-  // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export function Columns() {
   const t = useTranslations("portfolio.settings.api-keys");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
   return [

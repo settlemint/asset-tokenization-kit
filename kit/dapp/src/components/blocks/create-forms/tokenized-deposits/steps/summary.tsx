@@ -3,7 +3,7 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateTokenizedDepositInput } from "@/lib/mutations/tokenized-deposit/create/create-schema";
-import { getPredictedAddress } from "@/lib/queries/tokenizeddeposit-factory/predict-address";
+import { getPredictedAddress } from "@/lib/queries/tokenizeddeposit-factory/tokenizeddeposit-factory-predict-address";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";

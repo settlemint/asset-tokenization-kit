@@ -12,10 +12,8 @@ import { ColumnHolderType } from "../asset-info/column-holder-type";
 
 const columnHelper = createColumnHelper<UserAsset>();
 
-export function columns() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export function Columns() {
   const t = useTranslations("private.users.holdings.table");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
   return [

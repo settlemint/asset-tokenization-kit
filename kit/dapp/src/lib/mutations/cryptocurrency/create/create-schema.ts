@@ -1,4 +1,4 @@
-import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/address-available";
+import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-address-available";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**

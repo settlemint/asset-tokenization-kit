@@ -2,7 +2,7 @@ import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import type { Locale } from "next-intl";
 import type { Address } from "viem";
-import { columns } from "./_components/columns";
+import { Columns } from "./_components/columns";
 
 interface PageProps {
   params: Promise<{
@@ -16,6 +16,6 @@ export default async function UnderlyingAssetsPage({ params }: PageProps) {
   const balances = await getAssetBalanceList({ wallet: address });
 
   return (
-    <DataTable columns={columns} data={balances} name={"underlying-assets"} />
+    <DataTable columns={Columns} data={balances} name={"underlying-assets"} />
   );
 }

@@ -2,12 +2,12 @@
 
 import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { revalidatePath, revalidateTag } from "next/cache";
 import {
-  type Receipt,
   ReceiptFragment,
   ReceiptFragmentSchema,
+  type Receipt,
 } from "./transaction-fragment";
 
 /**
@@ -50,63 +50,64 @@ interface TransactionMonitoringOptions {
 async function waitForSingleTransaction(
   transactionHash: string,
   options: TransactionMonitoringOptions = {}
-) {
+): Promise<Receipt> {
   const timeoutMs = options.timeoutMs ?? POLLING_DEFAULTS.TIMEOUT_MS;
   const pollingIntervalMs =
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
-  let receipt: Receipt | null = null;
   const startTime = Date.now();
 
-  while (!receipt) {
-    if (Date.now() - startTime > timeoutMs) {
-      throw new Error(
-        `Transaction mining timed out after ${timeoutMs / 1000} seconds`
+  let receipt: Receipt | null = null;
+
+  while (Date.now() - startTime < timeoutMs) {
+    try {
+      const result = await portalClient.request(GetTransaction, {
+        transactionHash,
+      });
+
+      if (result.getTransaction?.receipt) {
+        // We have a receipt, means the transaction was mined
+        receipt = ReceiptFragmentSchema.parse(result.getTransaction.receipt);
+        break;
+      }
+    } catch (error) {
+      console.error(
+        `Error while waiting for transaction ${transactionHash}:`,
+        error
       );
+      // Continue polling even if there's an error
     }
 
-    const transaction = await portalClient.request(GetTransaction, {
-      transactionHash,
-    });
-    receipt = transaction.getTransaction?.receipt
-      ? ReceiptFragmentSchema.parse(transaction.getTransaction.receipt)
-      : null;
-
-    if (receipt?.status === "Reverted") {
-      throw new Error(
-        `Transaction reverted: ${receipt.revertReasonDecoded ?? "unknown error"}`
-      );
-    }
-
-    if (!receipt) {
-      await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
-    }
+    // Wait for the specified polling interval
+    await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
   }
+
+  if (!receipt) {
+    throw new Error(
+      `Transaction ${transactionHash} was not mined within the timeout period`
+    );
+  }
+
   return receipt;
 }
 
 /**
- * Waits for one or more transactions to be mined
- *
- * @param transactionHashes - Single hash or array of transaction hashes to monitor
- * @param options - Optional configuration for the monitoring process
- * @returns Promise resolving to transaction results
- * @throws {TransactionError} If any transaction fails, times out, or encounters other issues
+ * Waits for multiple transactions to be mined
+ * @param transactionHashes Array of transaction hashes to wait for
+ * @param options Configuration options for transaction monitoring
  */
 export async function waitForTransactions(
-  transactionHashes: string | string[],
+  transactionHashes: string[],
   options: TransactionMonitoringOptions = {}
 ) {
-  const hashes = Array.isArray(transactionHashes)
-    ? transactionHashes
-    : [transactionHashes];
+  if (!transactionHashes.length) {
+    throw new Error("No transaction hashes provided");
+  }
 
+  // Wait for all transactions to be mined in parallel
   const results = await Promise.all(
-    hashes.map((hash) => waitForSingleTransaction(hash, options))
+    transactionHashes.map((hash) => waitForSingleTransaction(hash, options))
   );
-
-  // Sleep for 2 seconds to allow the graph to update
-  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   const response = WaitForTransactionsResponseSchema.parse({
     receipts: results,
@@ -125,7 +126,14 @@ export async function waitForTransactions(
   return response;
 }
 
-const WaitForTransactionsResponseSchema = z.object({
-  receipts: z.array(ReceiptFragmentSchema),
+const WaitForTransactionsResponseSchema = t.Object({
+  receipts: t.Array(ReceiptFragmentSchema, {
+    description:
+      "Array of transaction receipts for all the processed transactions",
+  }),
   lastTransaction: ReceiptFragmentSchema,
 });
+
+export type WaitForTransactionsResponse = StaticDecode<
+  typeof WaitForTransactionsResponseSchema
+>;

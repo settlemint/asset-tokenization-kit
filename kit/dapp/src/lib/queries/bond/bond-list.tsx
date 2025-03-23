@@ -4,15 +4,13 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { t } from "@/lib/utils/typebox";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { getAddress } from "viem";
-import {
-  BondFragment,
-  BondFragmentSchema,
-  OffchainBondFragment,
-  OffchainBondFragmentSchema,
-} from "./bond-fragment";
+import { bondCalculateFields } from "./bond-calculated";
+import { BondFragment, OffchainBondFragment } from "./bond-fragment";
+import { OffChainBondSchema, OnChainBondSchema } from "./bond-schema";
 
 /**
  * GraphQL query to fetch on-chain bond list from The Graph
@@ -57,16 +55,14 @@ const OffchainBondList = hasuraGraphql(
  * then merges the results to provide a complete view of each bond.
  */
 export const getBondList = cache(async () => {
-  const [theGraphBonds, dbAssets] = await Promise.all([
+  const [onChainBonds, offChainBonds] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
       const result = await theGraphClientKit.request(BondList, {
         first,
         skip,
       });
 
-      const bonds = result.bonds || [];
-
-      return bonds;
+      return safeParse(t.Array(OnChainBondSchema), result.bonds || []);
     }),
 
     fetchAllHasuraPages(async (pageLimit, offset) => {
@@ -74,42 +70,27 @@ export const getBondList = cache(async () => {
         limit: pageLimit,
         offset,
       });
-      return result.asset_aggregate.nodes || [];
+
+      return safeParse(
+        t.Array(OffChainBondSchema),
+        result.asset_aggregate.nodes || []
+      );
     }),
   ]);
 
-  // Parse and validate the data using Zod schemas
-  const validatedBonds = theGraphBonds.map((bond) =>
-    safeParseWithLogging(BondFragmentSchema, bond, "bond")
-  );
-
-  const validatedDbAssets = dbAssets.map((asset) =>
-    safeParseWithLogging(OffchainBondFragmentSchema, asset, "offchain bond")
-  );
-
   const assetsById = new Map(
-    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+    offChainBonds.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const bonds = validatedBonds.map((bond) => {
-    const dbAsset = assetsById.get(getAddress(bond.id));
+  const bonds = onChainBonds.map((bond) => {
+    const offChainBond = assetsById.get(getAddress(bond.id));
 
-    const topHoldersSum = bond.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
-    );
-    const concentration =
-      bond.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / bond.totalSupplyExact);
+    const calculatedFields = bondCalculateFields(bond, offChainBond);
 
     return {
       ...bond,
-      ...{
-        private: false,
-        ...dbAsset,
-      },
-      concentration,
+      ...offChainBond,
+      ...calculatedFields,
     };
   });
 

@@ -2,10 +2,9 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import type { z } from "zod";
 import {
   IndexingFragment,
-  type IndexingFragmentSchema,
+  type IndexingFragment as IndexingFragmentType,
 } from "./transaction-fragment";
 
 /**
@@ -53,7 +52,7 @@ export async function waitForIndexing(
   const pollingIntervalMs =
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
-  let indexedBlock: z.infer<typeof IndexingFragmentSchema> | null = null;
+  let indexedBlock: IndexingFragmentType | null = null;
   const startTime = Date.now();
 
   while (!indexedBlock || indexedBlock.number < blockNumber) {

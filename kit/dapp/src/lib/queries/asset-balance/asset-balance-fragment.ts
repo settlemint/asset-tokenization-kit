@@ -1,9 +1,6 @@
-import {
-  PermissionFragment,
-  PermissionFragmentSchema,
-} from "@/lib/queries/asset/asset-users-fragment";
+import { PermissionFragment } from "@/lib/queries/asset/asset-users-fragment";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import type { AssetBalance } from "./asset-balance-schema";
 
 /**
  * GraphQL fragment for asset balance data from The Graph
@@ -54,34 +51,5 @@ export const AssetBalanceFragment = theGraphGraphqlKit(
   [PermissionFragment]
 );
 
-/**
- * Zod schema for validating asset balance data
- *
- */
-export const AssetBalanceFragmentSchema = z.object({
-  blocked: z.boolean(),
-  frozen: z.bigDecimal(),
-  value: z.bigDecimal(),
-  lastActivity: z.timestamp(),
-  account: z.object({
-    id: z.address(),
-    lastActivity: z.timestamp(),
-  }),
-  asset: z.object({
-    id: z.address(),
-    name: z.string(),
-    symbol: z.symbol(),
-    decimals: z.number(),
-    type: z.assetType(),
-    creator: z.object({ id: z.address() }),
-    admins: z.array(PermissionFragmentSchema),
-    supplyManagers: z.array(PermissionFragmentSchema),
-    userManagers: z.array(PermissionFragmentSchema),
-    paused: z.boolean().optional().default(false),
-  }),
-});
-
-/**
- * Type definition for asset balance data
- */
-export type AssetBalance = ZodInfer<typeof AssetBalanceFragmentSchema>;
+// Re-export the type
+export type { AssetBalance };
