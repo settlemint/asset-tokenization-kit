@@ -3,15 +3,12 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import {
-  FundFragment,
-  FundFragmentSchema,
-  OffchainFundFragment,
-  OffchainFundFragmentSchema,
-} from "./fund-fragment";
+import { fundCalculateFields } from "./fund-calculated";
+import { FundFragment, OffchainFundFragment } from "./fund-fragment";
+import { OffChainFundSchema, OnChainFundSchema } from "./fund-schema";
 
 /**
  * GraphQL query to fetch on-chain fund details from The Graph
@@ -57,43 +54,32 @@ export interface FundDetailProps {
  * @throws Error if fetching or parsing fails
  */
 export const getFundDetail = cache(async ({ address }: FundDetailProps) => {
-  const normalizedAddress = getAddress(address);
-
-  const [data, dbFund] = await Promise.all([
-    theGraphClientKit.request(FundDetail, { id: address }),
-    hasuraClient.request(OffchainFundDetail, { id: normalizedAddress }),
+  const [onChainFund, offChainFund] = await Promise.all([
+    (async () => {
+      const response = await theGraphClientKit.request(FundDetail, {
+        id: address,
+      });
+      if (!response.fund) {
+        throw new Error("Fund not found");
+      }
+      return safeParse(OnChainFundSchema, response.fund);
+    })(),
+    (async () => {
+      const response = await hasuraClient.request(OffchainFundDetail, {
+        id: getAddress(address),
+      });
+      if (response.asset.length === 0) {
+        return undefined;
+      }
+      return safeParse(OffChainFundSchema, response.asset[0]);
+    })(),
   ]);
 
-  const fund = safeParseWithLogging(FundFragmentSchema, data.fund, "fund");
-  const offchainFund = dbFund.asset[0]
-    ? safeParseWithLogging(
-        OffchainFundFragmentSchema,
-        dbFund.asset[0],
-        "offchain fund"
-      )
-    : undefined;
-
-  const topHoldersSum = fund.holders.reduce(
-    (sum, holder) => sum + holder.valueExact,
-    0n
-  );
-  const concentration =
-    fund.totalSupplyExact === 0n
-      ? 0
-      : Number((topHoldersSum * 100n) / fund.totalSupplyExact);
-
-  const assetsUnderManagement = fund.asAccount.balances.reduce(
-    (acc, balance) => acc + balance.value,
-    0
-  );
+  const calculatedFields = fundCalculateFields(onChainFund, offChainFund);
 
   return {
-    ...fund,
-    ...{
-      private: false,
-      ...offchainFund,
-    },
-    concentration,
-    assetsUnderManagement,
+    ...onChainFund,
+    ...offChainFund,
+    ...calculatedFields,
   };
 });

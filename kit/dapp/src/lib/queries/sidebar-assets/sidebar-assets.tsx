@@ -11,7 +11,8 @@ import { CryptoCurrencyFragment } from "../cryptocurrency/cryptocurrency-fragmen
 import { OnChainCryptoCurrencySchema } from "../cryptocurrency/cryptocurrency-schema";
 import { EquityFragment } from "../equity/equity-fragment";
 import { OnChainEquitySchema } from "../equity/equity-schema";
-import { FundFragment, FundFragmentSchema } from "../fund/fund-fragment";
+import { FundFragment } from "../fund/fund-fragment";
+import { OnChainFundSchema } from "../fund/fund-schema";
 import {
   StableCoinFragment,
   StableCoinFragmentSchema,
@@ -107,8 +108,9 @@ export const getSidebarAssets = cache(
       result.equities || []
     );
 
-    const validatedFunds = (result.funds || []).map((fund) =>
-      safeParseWithLogging(FundFragmentSchema, fund, "fund")
+    const validatedFunds = safeParse(
+      t.Array(OnChainFundSchema),
+      result.funds || []
     );
 
     const validatedCryptoCurrencies = safeParse(
