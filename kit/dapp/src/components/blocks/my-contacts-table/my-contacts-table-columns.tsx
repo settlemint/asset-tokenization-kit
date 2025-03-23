@@ -6,7 +6,7 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Contact } from "@/lib/queries/contact/contact-fragment";
 import { formatDate } from "@/lib/utils/date";
-import type { ColumnDef, Row } from "@tanstack/react-table";
+import type { Row } from "@tanstack/react-table";
 import { User2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type ComponentType, Suspense } from "react";
@@ -66,5 +66,5 @@ export function Columns() {
       },
       enableColumnFilter: false,
     },
-  ] as ColumnDef<Contact>[];
+  ];
 }
