@@ -3,16 +3,18 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
-import { addSeconds } from "date-fns";
+import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
+import { stablecoinCalculateFields } from "./stablecoin-calculated";
 import {
   OffchainStableCoinFragment,
-  OffchainStableCoinFragmentSchema,
   StableCoinFragment,
-  StableCoinFragmentSchema,
 } from "./stablecoin-fragment";
+import {
+  OffChainStableCoinSchema,
+  OnChainStableCoinSchema,
+} from "./stablecoin-schema";
 
 /**
  * GraphQL query to fetch on-chain stablecoin details from The Graph
@@ -59,49 +61,36 @@ export interface StableCoinDetailProps {
  */
 export const getStableCoinDetail = cache(
   async ({ address }: StableCoinDetailProps) => {
-    const normalizedAddress = getAddress(address);
-
-    const [data, dbStableCoin] = await Promise.all([
-      theGraphClientKit.request(StableCoinDetail, { id: address }),
-      hasuraClient.request(OffchainStableCoinDetail, { id: normalizedAddress }),
+    const [onChainStableCoin, offChainStableCoin] = await Promise.all([
+      (async () => {
+        const response = await theGraphClientKit.request(StableCoinDetail, {
+          id: address,
+        });
+        if (!response.stableCoin) {
+          throw new Error("StableCoin not found");
+        }
+        return safeParse(OnChainStableCoinSchema, response.stableCoin);
+      })(),
+      (async () => {
+        const response = await hasuraClient.request(OffchainStableCoinDetail, {
+          id: getAddress(address),
+        });
+        if (response.asset.length === 0) {
+          return undefined;
+        }
+        return safeParse(OffChainStableCoinSchema, response.asset[0]);
+      })(),
     ]);
 
-    const stableCoin = safeParseWithLogging(
-      StableCoinFragmentSchema,
-      data.stableCoin,
-      "stablecoin"
+    const calculatedFields = stablecoinCalculateFields(
+      onChainStableCoin,
+      offChainStableCoin
     );
-    const offchainStableCoin = dbStableCoin.asset[0]
-      ? safeParseWithLogging(
-          OffchainStableCoinFragmentSchema,
-          dbStableCoin.asset[0],
-          "offchain stablecoin"
-        )
-      : undefined;
-
-    const topHoldersSum = stableCoin.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
-    );
-
-    const concentration =
-      stableCoin.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / stableCoin.totalSupplyExact);
-
-    const collateralProofValidity =
-      stableCoin.lastCollateralUpdate.valueOf() > 0
-        ? addSeconds(stableCoin.lastCollateralUpdate, stableCoin.liveness)
-        : undefined;
 
     return {
-      ...stableCoin,
-      ...{
-        private: false,
-        ...offchainStableCoin,
-      },
-      concentration,
-      collateralProofValidity,
+      ...onChainStableCoin,
+      ...offChainStableCoin,
+      ...calculatedFields,
     };
   }
 );

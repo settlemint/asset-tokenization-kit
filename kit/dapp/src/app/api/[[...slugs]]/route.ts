@@ -2,14 +2,12 @@ import { BondApi } from "@/lib/api/bond";
 import { CryptoCurrencyApi } from "@/lib/api/cryptocurrency";
 import { EquityApi } from "@/lib/api/equity";
 import { FundApi } from "@/lib/api/fund";
+import { StableCoinApi } from "@/lib/api/stablecoin";
+import { TokenizedDepositApi } from "@/lib/api/tokenizeddeposit";
 import { metadata } from "@/lib/config/metadata";
 import { AssetPriceApi } from "@/lib/providers/asset-price/asset-price-api";
 import { ExchangeRatesApi } from "@/lib/providers/exchange-rates/exchange-rates-api";
 import { ExchangeRateUpdateApi } from "@/lib/providers/exchange-rates/exchange-rates-update-api";
-import { StablecoinDetailApi } from "@/lib/queries/stablecoin/stablecoin-detail-api";
-import { StablecoinListApi } from "@/lib/queries/stablecoin/stablecoin-list-api";
-import { TokenizedDepositApi } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail-api";
-import { TokenizedDepositListApi } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-list-api";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
@@ -40,12 +38,8 @@ const app = new Elysia({ prefix: "/api" })
   .group("/cryptocurrency", (app) => app.use(CryptoCurrencyApi))
   .group("/equity", (app) => app.use(EquityApi))
   .group("/fund", (app) => app.use(FundApi))
-  .group("/stablecoin", (app) =>
-    app.use(StablecoinListApi).use(StablecoinDetailApi)
-  )
-  .group("/tokenizeddeposit", (app) =>
-    app.use(TokenizedDepositListApi).use(TokenizedDepositApi)
-  )
+  .group("/stablecoin", (app) => app.use(StableCoinApi))
+  .group("/tokenizeddeposit", (app) => app.use(TokenizedDepositApi))
   .group("/providers/exchange-rates", (app) =>
     app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
   )

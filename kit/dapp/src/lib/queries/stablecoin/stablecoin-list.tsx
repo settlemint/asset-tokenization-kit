@@ -4,15 +4,18 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { getAddress } from "viem";
+import { stablecoinCalculateFields } from "./stablecoin-calculated";
 import {
   OffchainStableCoinFragment,
-  OffchainStableCoinFragmentSchema,
   StableCoinFragment,
-  StableCoinFragmentSchema,
 } from "./stablecoin-fragment";
+import {
+  OffChainStableCoinSchema,
+  OnChainStableCoinSchema,
+} from "./stablecoin-schema";
 
 /**
  * GraphQL query to fetch on-chain stablecoin list from The Graph
@@ -49,18 +52,23 @@ const OffchainStableCoinList = hasuraGraphql(
 
 /**
  * Fetches a list of stablecoins from both on-chain and off-chain sources
+ *
+ * @remarks
+ * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
+ * then merges the results to provide a complete view of each stablecoin.
  */
 export const getStableCoinList = cache(async () => {
-  const [theGraphStableCoins, dbAssets] = await Promise.all([
+  const [onChainStableCoins, offChainStableCoins] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
       const result = await theGraphClientKit.request(StableCoinList, {
         first,
         skip,
       });
 
-      const stableCoins = result.stableCoins || [];
-
-      return stableCoins;
+      return safeParse(
+        t.Array(OnChainStableCoinSchema),
+        result.stableCoins || []
+      );
     }),
 
     fetchAllHasuraPages(async (pageLimit, offset) => {
@@ -68,43 +76,32 @@ export const getStableCoinList = cache(async () => {
         limit: pageLimit,
         offset,
       });
-      return result.asset_aggregate.nodes || [];
+
+      return safeParse(
+        t.Array(OffChainStableCoinSchema),
+        result.asset_aggregate.nodes || []
+      );
     }),
   ]);
 
-  // Parse and validate the data using Zod schemas
-  const validatedStableCoins = theGraphStableCoins.map((stableCoin) =>
-    safeParseWithLogging(StableCoinFragmentSchema, stableCoin, "stablecoin")
-  );
-
-  const validatedDbAssets = dbAssets.map((asset) =>
-    safeParseWithLogging(
-      OffchainStableCoinFragmentSchema,
-      asset,
-      "offchain stablecoin"
-    )
-  );
-
   const assetsById = new Map(
-    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+    offChainStableCoins.map((asset) => [getAddress(asset.id), asset])
   );
 
-  return validatedStableCoins.map((stableCoin) => {
-    const dbAsset = assetsById.get(getAddress(stableCoin.id));
+  const stableCoins = onChainStableCoins.map((stableCoin) => {
+    const offChainStableCoin = assetsById.get(getAddress(stableCoin.id));
 
-    const topHoldersSum = stableCoin.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
+    const calculatedFields = stablecoinCalculateFields(
+      stableCoin,
+      offChainStableCoin
     );
-    const concentration =
-      stableCoin.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / stableCoin.totalSupplyExact);
 
     return {
       ...stableCoin,
-      ...dbAsset,
-      concentration,
+      ...offChainStableCoin,
+      ...calculatedFields,
     };
   });
+
+  return stableCoins;
 });

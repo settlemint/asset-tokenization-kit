@@ -14,14 +14,10 @@ import { EquityFragment } from "../equity/equity-fragment";
 import { OnChainEquitySchema } from "../equity/equity-schema";
 import { FundFragment } from "../fund/fund-fragment";
 import { OnChainFundSchema } from "../fund/fund-schema";
-import {
-  StableCoinFragment,
-  StableCoinFragmentSchema,
-} from "../stablecoin/stablecoin-fragment";
-import {
-  TokenizedDepositFragment,
-  TokenizedDepositFragmentSchema,
-} from "../tokenizeddeposit/tokenizeddeposit-fragment";
+import { StableCoinFragment } from "../stablecoin/stablecoin-fragment";
+import { OnChainStableCoinSchema } from "../stablecoin/stablecoin-schema";
+import { TokenizedDepositFragment } from "../tokenizeddeposit/tokenizeddeposit-fragment";
+import { OnChainTokenizedDepositSchema } from "../tokenizeddeposit/tokenizeddeposit-schema";
 
 /**
  * GraphQL query to fetch sidebar asset data
@@ -95,9 +91,9 @@ export const getSidebarAssets = cache(
     const result = await theGraphClientKit.request(SidebarAssets);
     const { limit = 10 } = options || {};
 
-    // Validate stableCoins with Zod schema
-    const validatedStableCoins = (result.stableCoins || []).map((coin) =>
-      safeParseWithLogging(StableCoinFragmentSchema, coin, "stablecoin")
+    const validatedStableCoins = safeParse(
+      t.Array(OnChainStableCoinSchema),
+      result.stableCoins || []
     );
 
     const validatedBonds = safeParse(
@@ -120,13 +116,9 @@ export const getSidebarAssets = cache(
       result.cryptoCurrencies || []
     );
 
-    const validatedTokenizedDeposits = (result.tokenizedDeposits || []).map(
-      (deposit) =>
-        safeParseWithLogging(
-          TokenizedDepositFragmentSchema,
-          deposit,
-          "tokenizeddeposit"
-        )
+    const validatedTokenizedDeposits = safeParse(
+      t.Array(OnChainTokenizedDepositSchema),
+      result.tokenizedDeposits || []
     );
 
     // Validate assetCounts with Zod schema
