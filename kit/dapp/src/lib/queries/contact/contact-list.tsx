@@ -1,6 +1,11 @@
+import { fetchAllHasuraPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { t } from "@/lib/utils/typebox";
+import { safeParse } from "@/lib/utils/typebox/index";
+import { cache } from "react";
+import { getAddress } from "viem";
 import { ContactFragment } from "./contact-fragment";
-import type { Contact } from "./contact-fragment";
+import { ContactSchema } from "./contact-schema";
 
 /**
  * GraphQL query to fetch contact list from Hasura
@@ -8,29 +13,61 @@ import type { Contact } from "./contact-fragment";
  * @remarks
  * Retrieves contacts ordered by creation date in descending order
  */
-const ContactList = hasuraGraphql(
+const ContactListQuery = hasuraGraphql(
   `
-  query ContactList($userId: String) {
-    contact(where: {user_id: {_eq: $userId}}) {
-        ...ContactFragment
+  query ContactList($userId: String, $limit: Int, $offset: Int) {
+    contact(
+      where: {user_id: {_eq: $userId}},
+      order_by: {created_at: desc},
+      limit: $limit,
+      offset: $offset
+    ) {
+      ...ContactFragment
     }
   }
 `,
   [ContactFragment]
 );
 
-interface ContactListResponse {
-  contact: Contact[];
-}
-
-export async function getContactsList(userId: string): Promise<Contact[]> {
-  try {
-    const data = await hasuraClient.request<ContactListResponse>(ContactList, {
+/**
+ * Fetches a list of contacts for a specific user
+ *
+ * @param userId - The ID of the user whose contacts to fetch
+ * @returns An array of contacts belonging to the user
+ */
+export const getContactsList = cache(async (userId: string) => {
+  const contacts = await fetchAllHasuraPages(async (pageLimit, offset) => {
+    const result = await hasuraClient.request(ContactListQuery, {
       userId,
+      limit: pageLimit,
+      offset,
     });
-    return data.contact || [];
-  } catch (error) {
-    console.error("Error fetching contacts:", error);
-    return [];
-  }
+
+    // Parse and validate the contacts with TypeBox
+    return safeParse(
+      t.Array(ContactSchema),
+      formatContacts(result.contact || [])
+    );
+  });
+
+  return contacts;
+});
+
+/**
+ * Formats raw contact data to match the expected schema format
+ *
+ * @param contacts - Raw contact data from Hasura
+ * @returns Formatted contact data
+ */
+function formatContacts(contacts: any[]) {
+  return contacts.map((contact) => ({
+    ...contact,
+    wallet: getAddress(contact.wallet),
+    created_at: contact.created_at
+      ? new Date(contact.created_at).toISOString()
+      : null,
+    updated_at: contact.updated_at
+      ? new Date(contact.updated_at).toISOString()
+      : null,
+  }));
 }

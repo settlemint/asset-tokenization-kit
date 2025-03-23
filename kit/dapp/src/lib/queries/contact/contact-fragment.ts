@@ -1,6 +1,11 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
-import { z } from "@/lib/utils/zod";
 
+/**
+ * GraphQL fragment for contact data from Hasura
+ *
+ * @remarks
+ * Contains core contact properties including ID, name, wallet address, and related timestamps
+ */
 export const ContactFragment = hasuraGraphql(
   `
   fragment ContactFragment on contact {
@@ -13,19 +18,6 @@ export const ContactFragment = hasuraGraphql(
   }
 `
 );
-
-/**
- * Zod schema for validating contact data
- *
- */
-export const ContactFragmentSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  wallet: z.address(),
-  created_at: z.coerce.date(),
-  user_id: z.string(),
-  updated_at: z.coerce.date().nullish(),
-});
 
 /**
  * Type definition for contact data

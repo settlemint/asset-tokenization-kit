@@ -1,4 +1,5 @@
 import { BondApi } from "@/lib/api/bond";
+import { ContactApi } from "@/lib/api/contact";
 import { CryptoCurrencyApi } from "@/lib/api/cryptocurrency";
 import { EquityApi } from "@/lib/api/equity";
 import { FixedYieldApi } from "@/lib/api/fixed-yield";
@@ -53,6 +54,7 @@ const app = new Elysia({
     })
   )
   .group("/bond", (app) => app.use(BondApi))
+  .group("/contact", (app) => app.use(ContactApi))
   .group("/cryptocurrency", (app) => app.use(CryptoCurrencyApi))
   .group("/equity", (app) => app.use(EquityApi))
   .group("/fixed-yield", (app) => app.use(FixedYieldApi))
