@@ -8,6 +8,7 @@ import { TransactionsHistory } from "./_components/charts/transactions-history";
 import { UsersHistory } from "./_components/charts/users-history";
 import { LatestEvents } from "./_components/table/latest-events";
 import { AssetsWidget } from "./_components/widgets/assets";
+import { PriceWidget } from "./_components/widgets/price";
 import { TransactionsWidget } from "./_components/widgets/transactions";
 import { UsersWidget } from "./_components/widgets/users";
 
@@ -48,6 +49,7 @@ export default async function AdminDashboard({
         <AssetsWidget />
         <TransactionsWidget />
         <UsersWidget />
+        <PriceWidget />
       </div>
       <p className="mt-8 mb-4 font-semibold text-2xl">{t("stats-heading")}</p>
       <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 2xl:grid-cols-4">
