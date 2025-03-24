@@ -8,8 +8,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { updateCurrency } from "@/lib/mutations/user/update-currency-action";
+import type { User } from "@/lib/queries/user/user-schema";
 import { Check, DollarSign } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { toast } from "sonner";
 
 // Currency display names mapping
@@ -28,31 +29,17 @@ const CURRENCY_NAMES: Record<CurrencyCode, string> = {
 const AVAILABLE_CURRENCIES = Object.keys(CURRENCY_NAMES) as CurrencyCode[];
 
 interface CurrencyMenuItemProps {
-  defaultCurrency: CurrencyCode;
-  onCurrencyChange?: (currency: CurrencyCode) => void;
+  user: User;
 }
 
-export function CurrencyMenuItem({
-  defaultCurrency = "EUR",
-  onCurrencyChange,
-}: CurrencyMenuItemProps) {
-  const [currentCurrency, setCurrentCurrency] = useState(defaultCurrency);
-
+export function CurrencyMenuItem({ user }: CurrencyMenuItemProps) {
   const handleCurrencyChange = useCallback(
     async (currency: CurrencyCode) => {
-      if (currency === currentCurrency) return;
+      if (currency === user.currency) return;
 
       try {
         // Call the server action to update currency
         await updateCurrency({ currency });
-
-        // Update local state
-        setCurrentCurrency(currency);
-
-        // Call the callback if provided
-        if (onCurrencyChange) {
-          onCurrencyChange(currency);
-        }
 
         toast.success(
           `Default currency changed to ${CURRENCY_NAMES[currency]}`
@@ -62,14 +49,14 @@ export function CurrencyMenuItem({
         console.error("Error updating default currency:", error);
       }
     },
-    [currentCurrency, onCurrencyChange]
+    [user.currency]
   );
 
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger className="p-2">
         <DollarSign className="mr-4 size-4 text-muted-foreground" />
-        <span>{CURRENCY_NAMES[currentCurrency]}</span>
+        <span>{CURRENCY_NAMES[user.currency]}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="min-w-[8rem]">
         {AVAILABLE_CURRENCIES.map((currency) => (
@@ -77,10 +64,10 @@ export function CurrencyMenuItem({
             key={currency}
             className="dropdown-menu-item cursor-pointer justify-between gap-1 px-2 py-1.5 text-sm"
             onSelect={() => handleCurrencyChange(currency)}
-            disabled={currency === currentCurrency}
+            disabled={currency === user.currency}
           >
             {CURRENCY_NAMES[currency] || currency}
-            {currency === currentCurrency && (
+            {currency === user.currency && (
               <Check className="ml-auto size-4 opacity-100" />
             )}
           </DropdownMenuItem>

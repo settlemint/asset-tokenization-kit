@@ -15,7 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
-import type { CurrencyCode } from "@/lib/db/schema-settings";
+import type { User } from "@/lib/queries/user/user-schema";
 import { cn } from "@/lib/utils";
 import { shortHex } from "@/lib/utils/hex";
 import { ChevronDown } from "lucide-react";
@@ -64,9 +64,8 @@ function TextOrSkeleton({
   );
 }
 
-export function UserDropdown() {
-  const { data, error, isPending, refetch } = authClient.useSession();
-  const user = data?.user;
+export function UserDropdown({ user }: { user: User }) {
+  const { error, isPending, refetch } = authClient.useSession();
 
   const router = useRouter();
   const t = useTranslations("layout.user-dropdown");
@@ -162,10 +161,7 @@ export function UserDropdown() {
           <DropdownMenuGroup>
             <ThemeMenuItem />
             <LanguageMenuItem />
-            <CurrencyMenuItem
-              defaultCurrency={user.currency as CurrencyCode}
-              onCurrencyChange={refetch}
-            />
+            <CurrencyMenuItem user={user} />
             <DropdownMenuItem
               onMouseEnter={() => bookIconRef.current?.startAnimation()}
               onMouseLeave={() => bookIconRef.current?.stopAnimation()}
