@@ -1,38 +1,43 @@
-import { getAssetActivity } from "@/lib/queries/asset-activity/asset-activity";
+import { getSidebarAssets } from "@/lib/queries/sidebar-assets/sidebar-assets";
 import { formatNumber } from "@/lib/utils/number";
-import { BigNumber } from "bignumber.js";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Widget } from "./widget";
 
 export async function AssetsWidget() {
   const t = await getTranslations("admin.dashboard.widgets");
   const locale = await getLocale();
-  const data = await getAssetActivity();
-  const allAssetsSupply = data.reduce(
-    (acc, asset) => acc.plus(asset.totalSupply),
-    new BigNumber(0)
-  );
+  const counts = await getSidebarAssets();
 
-  const getAssetSupply = (assetType: (typeof data)[number]["assetType"]) => {
-    return (
-      data.find((asset) => asset.assetType === assetType)?.totalSupply || 0
-    );
+  const getAssetCount = (assetType: keyof typeof counts) => {
+    return counts[assetType].count;
   };
+  const allAssetsCount = Object.values(counts).reduce(
+    (acc, asset) => acc + asset.count,
+    0
+  );
 
   return (
     <Widget
       label={t("assets.label")}
-      value={formatNumber(allAssetsSupply, { locale })}
+      value={formatNumber(allAssetsCount, { locale, decimals: 0 })}
       subtext={t("assets.subtext", {
-        stableCoins: formatNumber(getAssetSupply("stablecoin"), { locale }),
-        bonds: formatNumber(getAssetSupply("bond"), { locale }),
-        cryptocurrencies: formatNumber(getAssetSupply("cryptocurrency"), {
+        stableCoins: formatNumber(getAssetCount("stablecoin"), {
           locale,
+          decimals: 0,
         }),
-        equities: formatNumber(getAssetSupply("equity"), { locale }),
-        funds: formatNumber(getAssetSupply("fund"), { locale }),
-        tokenizedDeposits: formatNumber(getAssetSupply("tokenizeddeposit"), {
+        bonds: formatNumber(getAssetCount("bond"), { locale, decimals: 0 }),
+        cryptocurrencies: formatNumber(getAssetCount("cryptocurrency"), {
           locale,
+          decimals: 0,
+        }),
+        equities: formatNumber(getAssetCount("equity"), {
+          locale,
+          decimals: 0,
+        }),
+        funds: formatNumber(getAssetCount("fund"), { locale, decimals: 0 }),
+        tokenizedDeposits: formatNumber(getAssetCount("tokenizeddeposit"), {
+          locale,
+          decimals: 0,
         }),
       })}
     />

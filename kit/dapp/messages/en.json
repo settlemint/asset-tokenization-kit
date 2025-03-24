@@ -145,6 +145,10 @@
         "users": {
           "label": "Users",
           "subtext": "{count} users in the last {days} days"
+        },
+        "price": {
+          "label": "Value",
+          "subtext": "Total value across all assets"
         }
       }
     },
