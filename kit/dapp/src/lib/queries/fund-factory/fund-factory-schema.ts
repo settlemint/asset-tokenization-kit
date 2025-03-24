@@ -40,7 +40,7 @@ export const PredictedAddressSchema = t.Object({
 export type PredictedAddress = StaticDecode<typeof PredictedAddressSchema>;
 
 export const FundExistsSchema = t.Object({
-  fund: t.Optional(
+  fund: t.MaybeEmpty(
     t.Object({
       id: t.String(),
     })
