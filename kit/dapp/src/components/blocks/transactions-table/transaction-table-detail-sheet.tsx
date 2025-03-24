@@ -22,7 +22,7 @@ export function TransactionDetailSheet({
   from,
   functionName,
   receipt,
-}: Transaction) {
+}: Omit<Transaction, "metadata">) {
   const t = useTranslations("components.transaction-details");
   const locale = useLocale();
 
