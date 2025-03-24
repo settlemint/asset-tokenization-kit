@@ -3,7 +3,7 @@
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { Role } from "@/lib/config/roles";
-import { revokeRole } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role";
+import { revokeRole } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-action";
 import { RevokeRoleSchema } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-schema";
 import type { AssetType } from "@/lib/utils/zod";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
