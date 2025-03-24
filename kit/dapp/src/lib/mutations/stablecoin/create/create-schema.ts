@@ -1,5 +1,5 @@
 import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
-import { type StaticDecode } from "@/lib/utils/typebox";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
  * TypeBox schema for validating stablecoin creation inputs
@@ -14,22 +14,44 @@ import { type StaticDecode } from "@/lib/utils/typebox";
  * @property {string} predictedAddress - The predicted contract address
  * @property {number} valueInBaseCurrency - The value in base currency
  */
-export const CreateStablecoinSchema = z.object({
-  assetName: z.string().nonempty(),
-  symbol: z.symbol(),
-  decimals: z.decimals(),
-  isin: z.isin().optional(),
-  collateralLivenessValue: z
-    .number()
-    .or(z.string())
-    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
-  collateralLivenessTimeUnit: z.timeUnit().default("months"),
-  pincode: z.pincode(),
-  predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "stablecoin.duplicate",
-  }),
-  valueInBaseCurrency: z.fiatCurrencyAmount(),
-});
+export function CreateStablecoinSchema() {
+  return t.Object(
+    {
+      assetName: t.String({
+        description: "The name of the stablecoin",
+        minLength: 1,
+      }),
+      symbol: t.Symbol({
+        description: "The symbol of the stablecoin (ticker)",
+      }),
+      decimals: t.Decimals({
+        description: "The number of decimal places for the token",
+      }),
+      collateralLivenessValue: t.Number({
+        description: "The duration value for collateral validity",
+        minimum: 1,
+      }),
+      collateralLivenessTimeUnit: t.TimeUnit({
+        description: "The time unit for collateral validity duration",
+        default: "months",
+      }),
+      pincode: t.Pincode({
+        description: "The pincode for signing the transaction",
+      }),
+      predictedAddress: t.EthereumAddress({
+        description: "The predicted contract address",
+        refine: isAddressAvailable,
+        error: "stablecoin.duplicate",
+      }),
+      valueInBaseCurrency: t.FiatCurrency({
+        description: "The value in base currency",
+      }),
+    },
+    {
+      description: "Schema for validating stablecoin creation inputs",
+    }
+  );
+}
 
 export type CreateStablecoinInput = StaticDecode<
   ReturnType<typeof CreateStablecoinSchema>
