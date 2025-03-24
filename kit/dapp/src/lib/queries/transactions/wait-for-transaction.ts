@@ -1,6 +1,5 @@
 "use server";
 
-import type { Receipt } from "@/lib/queries/transactions/transaction-fragment";
 import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
@@ -31,6 +30,8 @@ const GetTransaction = portalGraphql(
   [ReceiptFragment]
 );
 
+type TransactionReceipt = FragmentOf<typeof ReceiptFragment>;
+
 /**
  * Configuration options for transaction monitoring
  */
@@ -48,14 +49,14 @@ interface TransactionMonitoringOptions {
 export async function waitForSingleTransaction(
   transactionHash: string,
   options: TransactionMonitoringOptions = {}
-): Promise<Receipt> {
+): Promise<TransactionReceipt> {
   const timeoutMs = options.timeoutMs ?? POLLING_DEFAULTS.TIMEOUT_MS;
   const pollingIntervalMs =
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
   const startTime = Date.now();
 
-  let receipt: Receipt | null = null;
+  let receipt: TransactionReceipt | null = null;
 
   while (Date.now() - startTime < timeoutMs) {
     try {
