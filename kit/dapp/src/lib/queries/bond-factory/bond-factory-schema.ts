@@ -50,12 +50,11 @@ export const PredictedAddressSchema = t.Object({
 export type PredictedAddress = StaticDecode<typeof PredictedAddressSchema>;
 
 export const BondExistsSchema = t.Object({
-  bond: t.Union([
+  bond: t.MaybeEmpty(
     t.Object({
       id: t.String(),
-    }),
-    t.Null(),
-  ]),
+    })
+  ),
 });
 
 export type BondExists = StaticDecode<typeof BondExistsSchema>;

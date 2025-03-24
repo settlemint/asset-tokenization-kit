@@ -36,12 +36,11 @@ export const PredictedAddressSchema = t.Object({
 export type PredictedAddress = StaticDecode<typeof PredictedAddressSchema>;
 
 export const StableCoinExistsSchema = t.Object({
-  stableCoin: t.Union([
+  stableCoin: t.MaybeEmpty(
     t.Object({
       id: t.String(),
-    }),
-    t.Null(),
-  ]),
+    })
+  ),
 });
 
 export type StableCoinExists = StaticDecode<typeof StableCoinExistsSchema>;

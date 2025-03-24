@@ -30,39 +30,35 @@ export const ReceiptFragmentSchema = t.Object({
   status: t.String({
     description: "The status of the transaction (success/failure)",
   }),
-  revertReasonDecoded: t.Union([
+  revertReasonDecoded: t.MaybeEmpty(
     t.String({
       description: "The decoded reason if the transaction reverted",
-    }),
-    t.Null(),
-  ]),
+    })
+  ),
   blockNumber: t.String({
     description: "The block number in which the transaction was included",
   }),
   gasUsed: t.StringifiedBigInt({
     description: "The amount of gas used by the transaction",
   }),
-  blobGasPrice: t.Union([
+  blobGasPrice: t.MaybeEmpty(
     t.StringifiedBigInt({
       description: "The price of blob gas for the transaction",
-    }),
-    t.Null(),
-  ]),
-  blobGasUsed: t.Union([
+    })
+  ),
+  blobGasUsed: t.MaybeEmpty(
     t.StringifiedBigInt({
       description: "The amount of blob gas used by the transaction",
-    }),
-    t.Null(),
-  ]),
+    })
+  ),
   blockHash: t.Hash({
     description: "The hash of the block containing the transaction",
   }),
-  contractAddress: t.Union([
+  contractAddress: t.MaybeEmpty(
     t.EthereumAddress({
       description: "The address of the created contract, if any",
-    }),
-    t.Null(),
-  ]),
+    })
+  ),
   cumulativeGasUsed: t.StringifiedBigInt({
     description:
       "The total gas used when this transaction was executed in the block",
@@ -85,24 +81,21 @@ export const ReceiptFragmentSchema = t.Object({
     description:
       "A bloom filter of logs/events generated during transaction execution",
   }),
-  revertReason: t.Union([
+  revertReason: t.MaybeEmpty(
     t.String({
       description: "The reason for transaction reversion, if applicable",
-    }),
-    t.Null(),
-  ]),
-  root: t.Union([
+    })
+  ),
+  root: t.MaybeEmpty(
     t.String({
       description: "The root of the state trie after transaction execution",
-    }),
-    t.Null(),
-  ]),
-  to: t.Union([
+    })
+  ),
+  to: t.MaybeEmpty(
     t.EthereumAddress({
       description: "The recipient address of the transaction",
-    }),
-    t.Null(),
-  ]),
+    })
+  ),
   transactionHash: t.Hash({
     description: "The hash of the transaction",
   }),
@@ -157,19 +150,18 @@ export const TransactionFragmentSchema = t.Object({
   updatedAt: t.Date({
     description: "The timestamp when the transaction was last updated",
   }),
-  receipt: t.Union([ReceiptFragmentSchema, t.Null()]),
+  receipt: t.MaybeEmpty(ReceiptFragmentSchema),
   address: t.EthereumAddress({
     description: "The contract address the transaction interacted with",
   }),
   createdAt: t.Date({
     description: "The timestamp when the transaction was created",
   }),
-  metadata: t.Union([
+  metadata: t.MaybeEmpty(
     t.Record(t.String(), t.Any(), {
       description: "Additional metadata about the transaction",
-    }),
-    t.Null(),
-  ]),
+    })
+  ),
 });
 
 /**
