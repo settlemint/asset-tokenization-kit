@@ -2,7 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 import type { Address } from "viem";
 import { getAddress } from "viem";
 
@@ -11,35 +11,24 @@ interface EvmAddressBalancesProps {
 }
 
 export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
-  const [balances, setBalances] =
-    useState<Awaited<ReturnType<typeof getAssetBalanceList>>>();
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Effect to fetch user and asset data
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        const balances = await getAssetBalanceList({
-          address: getAddress(address),
-        });
-        setBalances(balances);
-      } finally {
-        setIsLoading(false);
-      }
+  const { data: balances, isLoading } = useSWR(
+    [`asset-balances`, address],
+    async () => getAssetBalanceList({ wallet: getAddress(address) }),
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 10000, // 10 seconds
     }
-
-    // Call the fetch function
-    void fetchData();
-  }, [address]);
+  );
 
   if (isLoading) {
     return (
       <div className="flex flex-col gap-1">
-        <div className="flex items-center justify-between py-1">
-          <Skeleton className="size-56" />
-          <Skeleton className="size-52" />
-        </div>
+        {Array.from({ length: 2 }).map((_, index) => (
+          <div key={index} className="flex items-center justify-between py-1">
+            <Skeleton className="h-5 w-20 bg-muted/50" />
+            <Skeleton className="h-5 w-16 bg-muted/50" />
+          </div>
+        ))}
       </div>
     );
   }
@@ -54,7 +43,7 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
 
   return (
     <div className="flex flex-col gap-1">
-      {balances.map((balance, index) => (
+      {balances.map((balance, index: number) => (
         <div key={index} className="flex items-center justify-between">
           <span className="font-medium text-sm">{balance.asset.symbol}</span>
           <span className="text-muted-foreground text-sm">{balance.value}</span>

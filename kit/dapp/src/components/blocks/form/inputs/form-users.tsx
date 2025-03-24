@@ -18,14 +18,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { FieldValues } from "react-hook-form";
+import useSWR from "swr";
 import type { Address } from "viem";
 import { EvmAddress } from "../../evm-address/evm-address";
 import {
@@ -135,54 +137,33 @@ function FormUsersList({
 }) {
   const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
-  const [users, setUsers] = useState<Awaited<ReturnType<typeof getUserSearch>>>(
-    []
-  );
-  const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations("components.form.users");
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function fetchUsers() {
-      if (!debounced) {
-        setUsers([]);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const results = await getUserSearch({ searchTerm: debounced });
-        if (isMounted) {
-          // Filter users by role if specified
-          const filteredUsers = role
-            ? results.filter((user) => user.role === role)
-            : results;
-          setUsers(filteredUsers);
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        if (isMounted) {
-          setUsers([]);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
+  const { data: users = [], isLoading } = useSWR(
+    debounced ? [`user-search`, debounced, role] : null,
+    async () => {
+      const results = await getUserSearch({ searchTerm: debounced });
+      return role ? results.filter((user) => user.role === role) : results;
+    },
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 600000, // 10 minutes
     }
-
-    void fetchUsers();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [debounced, role]);
+  );
 
   return (
     <CommandList>
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
-        {isLoading ? t("loading") : t("no-user-found")}
+        {isLoading ? (
+          <>
+            <div className="flex flex-col space-y-2 px-2 py-1">
+              <Skeleton className="h-6 w-full bg-muted/50" />
+              <Skeleton className="h-6 w-full bg-muted/50" />
+            </div>
+          </>
+        ) : (
+          t("no-user-found")
+        )}
       </CommandEmpty>
       <CommandGroup>
         {users.map((user) => (

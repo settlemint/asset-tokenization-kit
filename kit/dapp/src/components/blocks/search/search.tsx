@@ -6,103 +6,19 @@ import {
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Link } from "@/i18n/routing";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
-import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { cn } from "@/lib/utils";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import useSWR from "swr";
 import { getAddress } from "viem";
 import { EvmAddress } from "../evm-address/evm-address";
-
-// Client-side hooks to fetch search results
-function useClientAssetSearch(searchTerm: string) {
-  const [data, setData] = useState<AssetUsers[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function fetchData() {
-      if (!searchTerm) {
-        setData([]);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const result = await getAssetSearch({ searchTerm });
-        if (isMounted) {
-          setData(result || []);
-        }
-      } catch (error) {
-        console.error("Error searching assets:", error);
-        if (isMounted) {
-          setData([]);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [searchTerm]);
-
-  return { data, isLoading };
-}
-
-function useClientUserSearch(searchTerm: string) {
-  const [data, setData] = useState<Awaited<ReturnType<typeof getUserSearch>>>(
-    []
-  );
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function fetchData() {
-      if (!searchTerm) {
-        setData([]);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const result = await getUserSearch({ searchTerm });
-        if (isMounted) {
-          setData(result || []);
-        }
-      } catch (error) {
-        console.error("Error searching users:", error);
-        if (isMounted) {
-          setData([]);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [searchTerm]);
-
-  return { data, isLoading };
-}
 
 export const Search = () => {
   const form = useForm({
@@ -122,8 +38,33 @@ export const Search = () => {
   const debounced = useDebounce(search, 250);
   const sanitizedSearchTerm = sanitizeSearchTerm(debounced);
 
-  const { data: users } = useClientUserSearch(sanitizedSearchTerm);
-  const { data: assets } = useClientAssetSearch(sanitizedSearchTerm);
+  // Fetch users with SWR
+  const { data: users, isLoading: isLoadingUsers } = useSWR(
+    sanitizedSearchTerm ? [`user-search`, sanitizedSearchTerm] : null,
+    async () => {
+      const result = await getUserSearch({ searchTerm: sanitizedSearchTerm });
+      return result || [];
+    },
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 30000, // 30 seconds
+    }
+  );
+
+  // Fetch assets with SWR
+  const { data: assets, isLoading: isLoadingAssets } = useSWR(
+    sanitizedSearchTerm ? [`asset-search`, sanitizedSearchTerm] : null,
+    async () => {
+      const result = await getAssetSearch({ searchTerm: sanitizedSearchTerm });
+      return result || [];
+    },
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 30000, // 30 seconds
+    }
+  );
+
+  const isLoading = isLoadingUsers || isLoadingAssets;
 
   // Get URL segment based on asset type
   const getAssetUrlSegment = (type: string): string => {
@@ -196,19 +137,42 @@ export const Search = () => {
               "absolute top-full right-0 left-0 z-50 max-h-[300px] overflow-y-auto overflow-x-hidden rounded-b-lg border border-t-0 bg-popover shadow-md"
             )}
           >
-            {(assets ?? []).length === 0 && (users ?? []).length === 0 && (
-              <div className="py-6 text-center text-sm">
-                <p className="text-muted-foreground text-sm">
-                  {t("no-results")}
-                </p>
+            {isLoading && (
+              <div className="p-2">
+                <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
+                  {t("assets-section")}
+                </div>
+                {[1, 2].map((i) => (
+                  <div key={i} className="px-2 py-1.5">
+                    <Skeleton className="h-6 w-full bg-muted/50" />
+                  </div>
+                ))}
+                <Separator className="my-1" />
+                <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
+                  {t("users-section")}
+                </div>
+                {[1, 2].map((i) => (
+                  <div key={i} className="px-2 py-1.5">
+                    <Skeleton className="h-6 w-full bg-muted/50" />
+                  </div>
+                ))}
               </div>
             )}
-            {(assets ?? []).length > 0 && (
+            {!isLoading &&
+              (!assets || assets.length === 0) &&
+              (!users || users.length === 0) && (
+                <div className="py-6 text-center text-sm">
+                  <p className="text-muted-foreground text-sm">
+                    {t("no-results")}
+                  </p>
+                </div>
+              )}
+            {!isLoading && assets && assets.length > 0 && (
               <>
                 <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
                   {t("assets-section")}
                 </div>
-                {(assets ?? []).map((asset) => (
+                {assets.map((asset) => (
                   <div
                     key={asset.id}
                     className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
@@ -232,8 +196,8 @@ export const Search = () => {
                 ))}
               </>
             )}
-            {users && users.length > 0 && <Separator />}
-            {users && users.length > 0 && (
+            {!isLoading && users && users.length > 0 && <Separator />}
+            {!isLoading && users && users.length > 0 && (
               <>
                 <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
                   {t("users-section")}
