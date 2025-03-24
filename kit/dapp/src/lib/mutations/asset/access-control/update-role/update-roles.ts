@@ -1,6 +1,5 @@
 "use server";
 
-import type { Role } from "@/lib/config/roles";
 import { action } from "@/lib/mutations/safe-action";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { grantRole } from "../grant-role/grant-role-action";
@@ -57,7 +56,7 @@ export const updateRoles = action
       if (hasRolesToGrant) {
         const grantResult = await grantRole({
           address,
-          roles: rolesToEnable as Record<Role, boolean>,
+          roles: rolesToEnable,
           userAddress,
           pincode,
           assettype,
@@ -71,7 +70,7 @@ export const updateRoles = action
       if (hasRolesToRevoke) {
         const revokeResult = await revokeRole({
           address,
-          roles: rolesToDisable as Record<Role, boolean>,
+          roles: rolesToDisable,
           userAddress,
           pincode,
           assettype,

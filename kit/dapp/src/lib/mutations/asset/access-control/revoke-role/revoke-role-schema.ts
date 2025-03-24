@@ -13,7 +13,7 @@ export const RevokeRoleSchema = () =>
     address: t.EthereumAddress({
       description: "The contract address",
     }),
-    roles: t.Record(t.String(), t.Boolean(), {
+    roles: t.RoleMap({
       description:
         "Map of role names to boolean values indicating which roles to revoke",
     }),

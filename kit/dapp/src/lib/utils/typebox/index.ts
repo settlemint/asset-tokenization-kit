@@ -18,7 +18,7 @@ import { FundClass } from "./fund-classes";
 import { Hash, Hashes } from "./hash";
 import { Isin } from "./isin";
 import { Pincode } from "./pincode";
-import { Roles } from "./roles";
+import { RoleMap, Roles } from "./roles";
 import { TimeUnit } from "./time-units";
 import { Timestamp } from "./timestamp";
 
@@ -40,6 +40,7 @@ declare module "@sinclair/typebox" {
     Isin: typeof Isin;
     Pincode: typeof Pincode;
     Roles: typeof Roles;
+    RoleMap: typeof RoleMap;
     AssetSymbol: typeof AssetSymbol;
     TimeUnit: typeof TimeUnit;
     Timestamp: typeof Timestamp;
@@ -65,6 +66,7 @@ t.Hashes = Hashes;
 t.Isin = Isin;
 t.Pincode = Pincode;
 t.Roles = Roles;
+t.RoleMap = RoleMap;
 t.AssetSymbol = AssetSymbol;
 t.TimeUnit = TimeUnit;
 t.Timestamp = Timestamp;
