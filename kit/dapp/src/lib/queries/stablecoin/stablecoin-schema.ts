@@ -102,6 +102,14 @@ export const OffChainStableCoinSchema = t.Object(
     id: t.EthereumAddress({
       description: "The contract address of the stablecoin token",
     }),
+    isin: t.Optional(
+      t.MaybeEmpty(
+        t.Isin({
+          description:
+            "International Securities Identification Number for the stablecoin token",
+        })
+      )
+    ),
     value_in_base_currency: t.Number({
       minimum: 0,
       description: "The token's value in terms of the base fiat currency",

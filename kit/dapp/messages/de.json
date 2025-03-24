@@ -76,6 +76,10 @@
         "users": {
           "label": "Benutzer",
           "subtext": "{count} Benutzer in den letzten {days} Tagen"
+        },
+        "price": {
+          "label": "Wert",
+          "subtext": "Gesamtwert aller Vermögenswerte"
         }
       }
     },
@@ -510,7 +514,72 @@
     "success": "Erfolg",
     "title": "Etwas ist schiefgelaufen!",
     "try-again": "Versuchen Sie es erneut",
-    "validation-errors": "Validierungsfehler"
+    "validation-errors": "Validierungsfehler",
+    "array-contains": "Bitte wählen Sie mindestens einen Artikel aus der Liste aus",
+    "array-max-contains": "Bitte wählen Sie nicht mehr als {maxContains} Artikel aus",
+    "array-min-contains": "Bitte wählen Sie mindestens {minContains} Artikel aus",
+    "array-max-items": "Bitte wählen Sie nicht mehr als {maxItems} Artikel aus",
+    "array-min-items": "Bitte wählen Sie mindestens {minItems} Artikel aus",
+    "array-unique-items": "Bitte stellen Sie sicher, dass alle ausgewählten Artikel einzigartig sind",
+    "array": "Bitte geben Sie eine Liste von Artikeln an",
+    "async-iterator": "Ungültiges Datenformat",
+    "bigint-exclusive-maximum": "Bitte geben Sie eine Zahl kleiner als {exclusiveMaximum} ein",
+    "bigint-exclusive-minimum": "Bitte geben Sie eine Zahl größer als {exclusiveMinimum} ein",
+    "bigint-maximum": "Bitte geben Sie eine Zahl nicht größer als {maximum} ein",
+    "bigint-minimum": "Bitte geben Sie eine Zahl nicht kleiner als {minimum} ein",
+    "bigint-multiple-of": "Bitte geben Sie eine Zahl ein, die durch {multipleOf} teilbar ist",
+    "bigint": "Bitte geben Sie eine ganze Zahl ein",
+    "boolean": "Bitte wählen Sie Ja oder Nein",
+    "date-exclusive-minimum-timestamp": "Bitte wählen Sie ein Datum nach {exclusiveMinimumTimestamp} aus",
+    "date-exclusive-maximum-timestamp": "Bitte wählen Sie ein Datum vor {exclusiveMaximumTimestamp} aus",
+    "date-minimum-timestamp": "Bitte wählen Sie ein Datum am oder nach {minimumTimestamp} aus",
+    "date-maximum-timestamp": "Bitte wählen Sie ein Datum am oder vor {maximumTimestamp} aus",
+    "date-multiple-of-timestamp": "Bitte wählen Sie ein gültiges Datum aus",
+    "date": "Bitte wählen Sie ein gültiges Datum aus",
+    "function": "Ungültiges Format",
+    "integer-exclusive-maximum": "Bitte geben Sie eine ganze Zahl kleiner als {exclusiveMaximum} ein",
+    "integer-exclusive-minimum": "Bitte geben Sie eine ganze Zahl größer als {exclusiveMinimum} ein",
+    "integer-maximum": "Bitte geben Sie eine ganze Zahl nicht größer als {maximum} ein",
+    "integer-minimum": "Bitte geben Sie eine ganze Zahl nicht kleiner als {minimum} ein",
+    "integer-multiple-of": "Bitte geben Sie eine ganze Zahl ein, die durch {multipleOf} teilbar ist",
+    "integer": "Bitte geben Sie eine ganze Zahl (keine Dezimalzahlen) ein",
+    "intersect-unevaluated-properties": "Unerwartete Informationen bereitgestellt",
+    "intersect": "Bitte stellen Sie sicher, dass alle Informationen gültig sind",
+    "iterator": "Ungültiges Datenformat",
+    "literal": "Bitte geben Sie genau {const} ein",
+    "never": "Dieses Feld kann nicht ausgefüllt werden",
+    "not": "Dieser Wert wird nicht akzeptiert",
+    "null": "Dieses Feld sollte leer sein",
+    "number-exclusive-maximum": "Bitte geben Sie eine Zahl kleiner als {exclusiveMaximum} ein",
+    "number-exclusive-minimum": "Bitte geben Sie eine Zahl größer als {exclusiveMinimum} ein",
+    "number-maximum": "Bitte geben Sie eine Zahl nicht größer als {maximum} ein",
+    "number-minimum": "Bitte geben Sie eine Zahl nicht kleiner als {minimum} ein",
+    "number-multiple-of": "Bitte geben Sie eine Zahl ein, die durch {multipleOf} teilbar ist",
+    "number": "Bitte geben Sie eine gültige Zahl ein",
+    "object": "Bitte geben Sie alle erforderlichen Informationen an",
+    "object-additional-properties": "Unbekanntes Feld bereitgestellt",
+    "object-max-properties": "Zu viele Felder bereitgestellt (maximal {maxProperties})",
+    "object-min-properties": "Bitte füllen Sie mindestens {minProperties} Felder aus",
+    "object-required-property": "Dieses Feld ist erforderlich",
+    "promise": "Ungültiges Datenformat",
+    "regexp": "Bitte geben Sie Text im richtigen Format ein",
+    "string-format-unknown": "Unbekanntes Format '{format}'",
+    "string-format": "Bitte geben Sie Text im richtigen {format}-Format ein",
+    "string-max-length": "Bitte geben Sie nicht mehr als {maxLength} Zeichen ein",
+    "string-min-length": "Bitte geben Sie mindestens {minLength} Zeichen ein",
+    "string-pattern": "Bitte folgen Sie dem erforderlichen Muster",
+    "string": "Bitte geben Sie Text ein",
+    "symbol": "Ungültiges Format",
+    "tuple-length": "Bitte geben Sie genau {maxItems} Artikel an",
+    "tuple": "Bitte geben Sie alle erforderlichen Artikel in der richtigen Reihenfolge an",
+    "uint8array-max-byte-length": "Datei ist zu groß",
+    "uint8array-min-byte-length": "Datei ist zu klein",
+    "uint8array": "Ungültiges Dateiformat",
+    "undefined": "Dieses Feld sollte leer sein",
+    "union": "Bitte geben Sie einen gültigen Wert ein",
+    "void": "Dieses Feld sollte leer sein",
+    "kind": "Ungültiges Format",
+    "unknown": "Ungültiger Wert eingegeben"
   },
   "layout": {
     "header": {
@@ -2044,74 +2113,5 @@
     "portfolio": "Portfolio",
     "stablecoins": "Stablecoins",
     "tokenized-deposits": "Tokenisierte Einlagen"
-  },
-  "zod": {
-    "error": {
-      "invalid-ethereum-address": "Ungültiges Ethereum-Adressenformat",
-      "invalid-hash-format": "Ungültiges Hash-Format",
-      "invalid-pincode": "Ungültiger PIN-Code, muss eine 6-stellige Zahl sein",
-      "decimals-min": "Dezimalstellen müssen mindestens 0 sein",
-      "decimals-max": "Dezimalstellen müssen zwischen 0 und 18 liegen",
-      "amount-too-small": "Betrag ist zu klein",
-      "amount-too-large": "Betrag überschreitet das maximal erlaubte",
-      "role-required": "Mindestens eine Rolle muss ausgewählt werden",
-      "invalid-symbol": "Symbol darf nur Großbuchstaben und Zahlen enthalten",
-      "isin-format": "ISIN darf nur Großbuchstaben und Zahlen enthalten",
-      "isin-length": "ISIN muss genau 12 Zeichen lang sein",
-      "invalid-decimal": "Ungültiges Dezimalzahlformat",
-      "invalid-timestamp": "Zeitstempel muss eine positive Zahl sein",
-      "negative-amount": "Betrag muss positiv sein",
-      "required": "Dieses Feld ist erforderlich",
-      "must_be_string": "Dieses Feld muss eine Zeichenkette sein",
-      "must_be_number": "Dieses Feld muss eine Zahl sein",
-      "must_be_boolean": "Dieses Feld muss ein Boolean sein",
-      "must_be_date": "Dieses Feld muss ein Datum sein",
-      "must_be_bigint": "Dieses Feld muss eine große Ganzzahl sein",
-      "must_be_array": "Dieses Feld muss ein Array sein",
-      "must_be_object": "Dieses Feld muss ein Objekt sein",
-      "invalid_type": "Ungültiger Typ für dieses Feld",
-      "invalid_url": "Ungültiges URL-Format",
-      "invalid_email": "Ungültiges E-Mail-Format",
-      "invalid_uuid": "Ungültiges UUID-Format",
-      "invalid_cuid": "Ungültiges CUID-Format",
-      "invalid_format": "Ungültiges Format für dieses Feld",
-      "invalid_datetime": "Ungültiges Datum/Zeit-Format",
-      "invalid_string": "Ungültiges Zeichenkettenformat",
-      "string_length_too_small": {
-        "inclusive": "Text muss mindestens {minimum} Zeichen lang sein",
-        "exclusive": "Text muss mehr als {minimum} Zeichen lang sein"
-      },
-      "number_too_small": {
-        "inclusive": "Zahl muss mindestens {minimum} sein",
-        "exclusive": "Zahl muss größer als {minimum} sein"
-      },
-      "array_length_too_small": {
-        "inclusive": "Muss mindestens {minimum} Elemente enthalten",
-        "exclusive": "Muss mehr als {minimum} Elemente enthalten"
-      },
-      "too_small": "Wert ist zu klein",
-      "string_length_too_big": {
-        "inclusive": "Text darf {maximum} Zeichen nicht überschreiten",
-        "exclusive": "Text muss weniger als {maximum} Zeichen lang sein"
-      },
-      "number_too_big": {
-        "inclusive": "Zahl darf {maximum} nicht überschreiten",
-        "exclusive": "Zahl muss weniger als {maximum} sein"
-      },
-      "array_length_too_big": {
-        "inclusive": "Darf nicht mehr als {maximum} Elemente enthalten",
-        "exclusive": "Muss weniger als {maximum} Elemente enthalten"
-      },
-      "too_big": "Wert ist zu groß",
-      "invalid_literal": "Ungültiger literaler Wert",
-      "invalid_union": "Ungültige Eingabe für diesen Typ",
-      "invalid_union_discriminator": "Ungültiger Diskriminatorwert",
-      "invalid_enum_value": "Ungültige Auswahl getroffen",
-      "invalid_arguments": "Ungültige Funktionsargumente",
-      "invalid_return_type": "Ungültiger Rückgabewert",
-      "invalid_date": "Ungültiges Datum",
-      "custom": "Ungültige Eingabe",
-      "validation_failed": "Validierung fehlgeschlagen"
-    }
   }
 }

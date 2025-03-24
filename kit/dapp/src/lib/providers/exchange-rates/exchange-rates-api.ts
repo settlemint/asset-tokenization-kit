@@ -4,10 +4,6 @@ import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { Elysia, t } from "elysia";
 import { getExchangeRatesForBase } from "./exchange-rates";
 
-const FiatCurrencyEnum = Object.fromEntries(
-  fiatCurrencies.map((currency) => [currency, currency])
-);
-
 const ExchangeRateSchema = t.Object({
   id: t.String({
     description: "Unique identifier for the exchange rate record",
@@ -40,7 +36,7 @@ export const ExchangeRatesApi = new Elysia()
     {
       auth: true,
       params: t.Object({
-        base: t.Enum(FiatCurrencyEnum, {
+        base: t.UnionEnum(fiatCurrencies, {
           description: "The base currency code (e.g., USD)",
         }),
       }),
