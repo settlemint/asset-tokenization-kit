@@ -25,8 +25,8 @@ export const UserApi = new Elysia({
   .use(superJson)
   .get(
     "",
-    async () => {
-      return await getUserList();
+    async ({ user }) => {
+      return await getUserList(user);
     },
     {
       auth: true,

@@ -16,9 +16,10 @@ import { metadata } from "@/lib/config/metadata";
 import { AssetPriceApi } from "@/lib/providers/asset-price/asset-price-api";
 import { ExchangeRatesApi } from "@/lib/providers/exchange-rates/exchange-rates-api";
 import { ExchangeRateUpdateApi } from "@/lib/providers/exchange-rates/exchange-rates-update-api";
+import { AccessControlError } from "@/lib/utils/access-control";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
-import { Elysia } from "elysia";
+import { Elysia, error as elysiaError } from "elysia";
 import pkgjson from "../../../../package.json";
 
 const app = new Elysia({
@@ -57,6 +58,17 @@ const app = new Elysia({
       },
     })
   )
+  .onError(({ error }) => {
+    if (error instanceof AccessControlError) {
+      return elysiaError(error.status, error.message);
+    }
+    // TODO: handle specific errors (hasura, postgress, thegraph, portal, etc)
+    console.error(
+      `Unexpected error: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
+      error
+    );
+    return elysiaError(500, "Internal server error");
+  })
   .group("/bond", (app) => app.use(BondApi))
   .group("/contact", (app) => app.use(ContactApi))
   .group("/cryptocurrency", (app) => app.use(CryptoCurrencyApi))
