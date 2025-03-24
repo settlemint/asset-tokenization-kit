@@ -1,18 +1,33 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
- * Zod schema for validating block user mutation inputs
+ * TypeBox schema for validating block user mutation inputs
  *
  * @property {string} address - The contract address
  * @property {string} pincode - The pincode for signing the transaction
  * @property {string} userAddress - The address of the user to block
- * @property {string} assetType - The type of asset
+ * @property {string} assettype - The type of asset
  */
-export const BlockUserSchema = z.object({
-  address: z.address(),
-  pincode: z.pincode(),
-  userAddress: z.address(),
-  assettype: z.assetType(),
-});
+export function BlockUserSchema() {
+  return t.Object(
+    {
+      address: t.EthereumAddress({
+        description: "The contract address",
+      }),
+      pincode: t.Pincode({
+        description: "The pincode for signing the transaction",
+      }),
+      userAddress: t.EthereumAddress({
+        description: "The address of the user to block",
+      }),
+      assettype: t.AssetType({
+        description: "The type of asset",
+      }),
+    },
+    {
+      description: "Schema for validating block user mutation inputs",
+    }
+  );
+}
 
-export type BlockUserInput = ZodInfer<typeof BlockUserSchema>;
+export type BlockUserInput = StaticDecode<ReturnType<typeof BlockUserSchema>>;

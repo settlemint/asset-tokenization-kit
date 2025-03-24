@@ -90,8 +90,8 @@ export const getUserList = cache(async () => {
     const calculatedFields = userCalculateFields(user, account);
 
     return {
-      ...user,
       ...account,
+      ...user,
       ...calculatedFields,
     };
   });

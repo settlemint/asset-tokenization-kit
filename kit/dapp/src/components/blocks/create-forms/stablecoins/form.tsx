@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { useSettings } from "@/hooks/use-settings";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
 import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Basics } from "./steps/basics";
@@ -42,7 +42,7 @@ export function CreateStablecoinForm({
     >
       <Form
         action={createStablecoin}
-        resolver={zodResolver(CreateStablecoinSchema)}
+        resolver={typeboxResolver(CreateStablecoinSchema())}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("trigger-label.stablecoins"),

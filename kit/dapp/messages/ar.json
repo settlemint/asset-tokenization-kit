@@ -89,7 +89,9 @@
           "jpy": "ين ياباني (JPY)",
           "sar": "ريال سعودي (SAR)",
           "sgd": "دولار سنغافوري (SGD)",
-          "usd": "دولار أمريكي (USD)"
+          "usd": "دولار أمريكي (USD)",
+          "chf": "فرنك سويسري (CHF)",
+          "gbp": "جنيه إسترليني (GBP)"
         },
         "platform-management": "إدارة المنصة",
         "save": "حفظ",
@@ -1959,7 +1961,9 @@
     "UnderlyingAssetWithdrawnEvent": "سحب",
     "UnpausedEvent": "إلغاء التوقف",
     "UserBlockedEvent": "حظر",
-    "UserUnblockedEvent": "إلغاء الحظر"
+    "UserUnblockedEvent": "إلغاء الحظر",
+    "UserAllowedEvent": "السماح",
+    "UserDisallowedEvent": "عدم السماح"
   },
   "homepage": {
     "asset-tokenization": "تشفير الأصول",

@@ -26,35 +26,35 @@ export const TransactionSchema = t.Object(
     createdAt: t.Date({
       description: "The timestamp when the transaction was created",
     }),
-    metadata: t.Optional(
+    metadata: t.MaybeEmpty(
       t.Record(t.String(), t.Any(), {
         description: "Additional metadata about the transaction",
       })
     ),
-    receipt: t.Optional(
+    receipt: t.MaybeEmpty(
       t.Object(
         {
           status: t.String({
             description: "The status of the transaction (success/failure)",
           }),
-          revertReasonDecoded: t.Optional(
+          revertReasonDecoded: t.MaybeEmpty(
             t.String({
               description: "The decoded reason if the transaction reverted",
             })
           ),
-          blockNumber: t.Number({
+          blockNumber: t.String({
             description:
               "The block number in which the transaction was included",
           }),
           gasUsed: t.StringifiedBigInt({
             description: "The amount of gas used by the transaction",
           }),
-          blobGasPrice: t.Optional(
+          blobGasPrice: t.MaybeEmpty(
             t.StringifiedBigInt({
               description: "The price of blob gas for the transaction",
             })
           ),
-          blobGasUsed: t.Optional(
+          blobGasUsed: t.MaybeEmpty(
             t.StringifiedBigInt({
               description: "The amount of blob gas used by the transaction",
             })
@@ -62,7 +62,7 @@ export const TransactionSchema = t.Object(
           blockHash: t.Hash({
             description: "The hash of the block containing the transaction",
           }),
-          contractAddress: t.Optional(
+          contractAddress: t.MaybeEmpty(
             t.EthereumAddress({
               description: "The address of the created contract, if any",
             })
@@ -90,19 +90,19 @@ export const TransactionSchema = t.Object(
             description:
               "A bloom filter of logs/events generated during transaction execution",
           }),
-          revertReason: t.Optional(
+          revertReason: t.MaybeEmpty(
             t.String({
               description:
                 "The reason for transaction reversion, if applicable",
             })
           ),
-          root: t.Optional(
+          root: t.MaybeEmpty(
             t.String({
               description:
                 "The root of the state trie after transaction execution",
             })
           ),
-          to: t.Optional(
+          to: t.MaybeEmpty(
             t.EthereumAddress({
               description: "The recipient address of the transaction",
             })

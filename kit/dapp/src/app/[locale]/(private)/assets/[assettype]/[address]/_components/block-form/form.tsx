@@ -3,7 +3,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { blockUser } from "@/lib/mutations/block-user/block-user-action";
 import { BlockUserSchema } from "@/lib/mutations/block-user/block-user-schema";
 import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
@@ -39,7 +39,7 @@ export function BlockForm({
     >
       <Form
         action={blockUser}
-        resolver={zodResolver(BlockUserSchema)}
+        resolver={typeboxResolver(BlockUserSchema())}
         buttonLabels={{
           label: t("trigger-label.block"),
         }}

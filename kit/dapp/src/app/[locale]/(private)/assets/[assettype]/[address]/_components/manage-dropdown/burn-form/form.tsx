@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { burn } from "@/lib/mutations/burn/burn-action";
 import { BurnSchema } from "@/lib/mutations/burn/burn-schema";
 import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -56,7 +56,7 @@ export function BurnForm({
     >
       <Form
         action={burn}
-        resolver={zodResolver(BurnSchema(max, decimals))}
+        resolver={typeboxResolver(BurnSchema({ maxAmount: max, decimals }))}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

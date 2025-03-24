@@ -1,7 +1,9 @@
-"use server";
-
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import type { SetPincodeInput } from "./set-pincode-schema";
 
+/**
+ * GraphQL mutation to set a pincode for wallet verification
+ */
 const SetPinCode = portalGraphql(`
   mutation SetPinCode($name: String!, $address: String!, $pincode: String!) {
     createWalletVerification(
@@ -16,20 +18,22 @@ const SetPinCode = portalGraphql(`
   }
 `);
 
-export const setPinCode = async ({
-  name,
-  address,
-  pincode,
+/**
+ * Function to set a pincode for wallet verification
+ *
+ * @param input - Validated input containing name, address, and pincode
+ * @returns Wallet verification data
+ */
+export async function setPincodeFunction({
+  parsedInput: { name, address, pincode },
 }: {
-  name: string;
-  address: string;
-  pincode: string;
-}) => {
+  parsedInput: SetPincodeInput;
+}) {
   const result = await portalClient.request(SetPinCode, {
     name,
     address,
-    pincode,
+    pincode: pincode.toString(),
   });
 
   return result.createWalletVerification;
-};
+}

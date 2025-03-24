@@ -23,7 +23,7 @@ export const AssetBalanceApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async ({ query }) => {
       const address = query.asset ? getAddress(query.asset) : undefined;
       const wallet = query.wallet ? getAddress(query.wallet) : undefined;

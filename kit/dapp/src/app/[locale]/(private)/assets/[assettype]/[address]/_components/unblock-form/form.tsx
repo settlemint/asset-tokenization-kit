@@ -3,7 +3,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { unblockUser } from "@/lib/mutations/unblock-user/unblock-user-action";
 import { UnblockUserSchema } from "@/lib/mutations/unblock-user/unblock-user-schema";
 import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
@@ -39,7 +39,7 @@ export function UnblockForm({
     >
       <Form
         action={unblockUser}
-        resolver={zodResolver(UnblockUserSchema)}
+        resolver={typeboxResolver(UnblockUserSchema())}
         buttonLabels={{
           label: t("form.trigger-label.unblock"),
         }}

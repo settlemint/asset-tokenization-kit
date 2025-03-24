@@ -4,7 +4,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { mature } from "@/lib/mutations/bond/mature/mature-action";
 import { MatureFormSchema } from "@/lib/mutations/bond/mature/mature-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -43,7 +43,7 @@ export function MatureForm({
     >
       <Form
         action={mature}
-        resolver={zodResolver(MatureFormSchema)}
+        resolver={typeboxResolver(MatureFormSchema())}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

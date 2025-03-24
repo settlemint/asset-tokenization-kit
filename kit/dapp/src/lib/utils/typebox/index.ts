@@ -2,6 +2,7 @@ import { t as tElysia } from "elysia/type-system";
 
 import type { StaticDecode, TSchema } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
+import { redactSensitiveFields } from "../redaction";
 import { EthereumAddress } from "./address";
 import { Amount } from "./amount";
 import { AssetSymbol } from "./asset-symbol";
@@ -17,7 +18,7 @@ import { FundClass } from "./fund-classes";
 import { Hash, Hashes } from "./hash";
 import { Isin } from "./isin";
 import { Pincode } from "./pincode";
-import { Roles } from "./roles";
+import { RoleMap, Roles } from "./roles";
 import { TimeUnit } from "./time-units";
 import { Timestamp } from "./timestamp";
 
@@ -39,6 +40,7 @@ declare module "@sinclair/typebox" {
     Isin: typeof Isin;
     Pincode: typeof Pincode;
     Roles: typeof Roles;
+    RoleMap: typeof RoleMap;
     AssetSymbol: typeof AssetSymbol;
     TimeUnit: typeof TimeUnit;
     Timestamp: typeof Timestamp;
@@ -64,6 +66,7 @@ t.Hashes = Hashes;
 t.Isin = Isin;
 t.Pincode = Pincode;
 t.Roles = Roles;
+t.RoleMap = RoleMap;
 t.AssetSymbol = AssetSymbol;
 t.TimeUnit = TimeUnit;
 t.Timestamp = Timestamp;
@@ -75,14 +78,21 @@ export function safeParse<T extends TSchema>(
 ): StaticDecode<T> {
   const errors = [...Value.Errors(schema, value)];
   if (errors.length > 0) {
-    throw new Error(
-      errors
-        .map(
-          (error) =>
-            `${error.path}: ${error.message} (${JSON.stringify(error.value)} = ${typeof error.value})`
-        )
-        .join("\n")
-    );
+    console.error(`\n${"=".repeat(80)}`);
+    console.error("🚨 Typebox Validation Error");
+    console.error("=".repeat(80));
+
+    console.error("\n📥 Input Data:");
+    console.error(redactSensitiveFields(value));
+
+    console.error("\n❌ Error Details:");
+    errors.map((error) => {
+      console.error(
+        `${error.path}: ${error.message} (${JSON.stringify(error.value)} = ${typeof error.value})`
+      );
+    });
+    console.error("=".repeat(80));
+    throw new Error(`Validation errors, see the console for more details`);
   }
   return Value.Parse(schema, value);
 }

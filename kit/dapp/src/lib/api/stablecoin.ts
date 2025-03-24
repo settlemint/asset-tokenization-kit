@@ -9,6 +9,34 @@ import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
+import { grantRoleFunction } from "../mutations/asset/access-control/grant-role/grant-role-function";
+import { GrantRoleSchema } from "../mutations/asset/access-control/grant-role/grant-role-schema";
+import { revokeRoleFunction } from "../mutations/asset/access-control/revoke-role/revoke-role-function";
+import { RevokeRoleSchema } from "../mutations/asset/access-control/revoke-role/revoke-role-schema";
+import { updateRolesFunction } from "../mutations/asset/access-control/update-role/update-role-function";
+import { UpdateRolesSchema } from "../mutations/asset/access-control/update-role/update-role-schema";
+import { transferAssetFunction } from "../mutations/asset/transfer/transfer-function";
+import { getTransferFormSchema } from "../mutations/asset/transfer/transfer-schema";
+import { blockUserFunction } from "../mutations/block-user/block-user-function";
+import { BlockUserSchema } from "../mutations/block-user/block-user-schema";
+import { burnFunction } from "../mutations/burn/burn-function";
+import { BurnSchema } from "../mutations/burn/burn-schema";
+import { freezeFunction } from "../mutations/freeze/freeze-function";
+import { FreezeSchema } from "../mutations/freeze/freeze-schema";
+import { mintFunction } from "../mutations/mint/mint-function";
+import { MintSchema } from "../mutations/mint/mint-schema";
+import { pauseFunction } from "../mutations/pause/pause-function";
+import { PauseSchema } from "../mutations/pause/pause-schema";
+import { createStablecoinFunction } from "../mutations/stablecoin/create/create-function";
+import { CreateStablecoinSchema } from "../mutations/stablecoin/create/create-schema";
+import { unblockUserFunction } from "../mutations/unblock-user/unblock-user-function";
+import { UnblockUserSchema } from "../mutations/unblock-user/unblock-user-schema";
+import { unpauseFunction } from "../mutations/unpause/unpause-function";
+import { UnpauseSchema } from "../mutations/unpause/unpause-schema";
+import { updateCollateralFunction } from "../mutations/update-collateral/update-collateral-function";
+import { UpdateCollateralSchema } from "../mutations/update-collateral/update-collateral-schema";
+import { withdrawFunction } from "../mutations/withdraw/withdraw-function";
+import { WithdrawSchema } from "../mutations/withdraw/withdraw-schema";
 
 export const StableCoinApi = new Elysia({
   detail: {
@@ -22,7 +50,7 @@ export const StableCoinApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async () => {
       return getStableCoinList();
     },
@@ -110,6 +138,364 @@ export const StableCoinApi = new Elysia({
         200: t.EthereumAddress({
           description: "The predicted contract address",
         }),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .post(
+    "/factory",
+    async ({ body, user }) => {
+      return createStablecoinFunction({
+        parsedInput: body,
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Create stablecoin",
+        description:
+          "Creates a new stablecoin token based on creation parameters.",
+        tags: ["stablecoin"],
+      },
+      body: CreateStablecoinSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .post(
+    "/transfer",
+    async ({ body, user }) => {
+      return transferAssetFunction({
+        parsedInput: {
+          ...body,
+          assetType: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Transfer stablecoin",
+        description:
+          "Transfers stablecoin tokens from the current user's account to another address.",
+        tags: ["stablecoin"],
+      },
+      body: getTransferFormSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .put(
+    "/access-control/grant-role",
+    async ({ body, user }) => {
+      return grantRoleFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Grant role",
+        description:
+          "Grants a specific role to a user for a stablecoin contract.",
+        tags: ["stablecoin"],
+      },
+      body: GrantRoleSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .delete(
+    "/access-control/revoke-role",
+    async ({ body, user }) => {
+      return revokeRoleFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Revoke role",
+        description:
+          "Revokes a specific role from a user for a stablecoin contract.",
+        tags: ["stablecoin"],
+      },
+      body: RevokeRoleSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .patch(
+    "/access-control/update-roles",
+    async ({ body, user }) => {
+      return updateRolesFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Update roles",
+        description:
+          "Updates the roles assigned to a user for a stablecoin contract.",
+        tags: ["stablecoin"],
+      },
+      body: UpdateRolesSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .post(
+    "/mint",
+    async ({ body, user }) => {
+      return mintFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Mint new stablecoin tokens",
+        description:
+          "Creates new stablecoin tokens and assigns them to the specified address.",
+        tags: ["stablecoin"],
+      },
+      body: MintSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .delete(
+    "/burn",
+    async ({ body, user }) => {
+      return burnFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Burn stablecoin tokens",
+        description:
+          "Burns the specified amount of stablecoin tokens from the user's account.",
+        tags: ["stablecoin"],
+      },
+      body: BurnSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .put(
+    "/freeze",
+    async ({ body, user }) => {
+      return freezeFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Freeze user account",
+        description:
+          "Freezes a specified amount of stablecoin tokens in a user's account.",
+        tags: ["stablecoin"],
+      },
+      body: FreezeSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .put(
+    "/pause",
+    async ({ body, user }) => {
+      return pauseFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Pause contract",
+        description: "Pauses all operations on the stablecoin contract.",
+        tags: ["stablecoin"],
+      },
+      body: PauseSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .delete(
+    "/unpause",
+    async ({ body, user }) => {
+      return unpauseFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Unpause contract",
+        description:
+          "Resumes all operations on a previously paused stablecoin contract.",
+        tags: ["stablecoin"],
+      },
+      body: UnpauseSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .patch(
+    "/update-collateral",
+    async ({ body, user }) => {
+      return updateCollateralFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Update collateral",
+        description: "Updates the collateral amount for a stablecoin contract.",
+        tags: ["stablecoin"],
+      },
+      body: UpdateCollateralSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .put(
+    "/block-user",
+    async ({ body, user }) => {
+      return blockUserFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Block user",
+        description:
+          "Blocks a user from interacting with a stablecoin contract.",
+        tags: ["stablecoin"],
+      },
+      body: BlockUserSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .delete(
+    "/unblock-user",
+    async ({ body, user }) => {
+      return unblockUserFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Unblock user",
+        description:
+          "Unblocks a previously blocked user, allowing them to interact with a stablecoin contract.",
+        tags: ["stablecoin"],
+      },
+      body: UnblockUserSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .post(
+    "/withdraw",
+    async ({ body, user }) => {
+      return withdrawFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Withdraw token",
+        description: "Withdraws token from a stablecoin contract.",
+        tags: ["stablecoin"],
+      },
+      body: WithdrawSchema(),
+      response: {
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }

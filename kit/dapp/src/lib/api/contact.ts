@@ -18,7 +18,7 @@ export const ContactApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async ({ session }) => {
       return await getContactsList(session.userId);
     },

@@ -1,15 +1,12 @@
 "use server";
 
+import type { Receipt } from "@/lib/queries/transactions/transaction-fragment";
 import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { revalidatePath, revalidateTag } from "next/cache";
-import {
-  ReceiptFragment,
-  ReceiptFragmentSchema,
-  type Receipt,
-} from "./transaction-fragment";
+import { ReceiptFragment, ReceiptFragmentSchema } from "./transaction-fragment";
 
 /**
  * Constants for transaction monitoring
@@ -113,12 +110,12 @@ export async function waitForTransactions(
     transactionHashes.map((hash) => waitForSingleTransaction(hash, options))
   );
 
-  const response = WaitForTransactionsResponseSchema.parse({
+  const response = safeParse(WaitForTransactionsResponseSchema, {
     receipts: results,
     lastTransaction: results.at(-1),
   });
 
-  await waitForIndexing(response.lastTransaction.blockNumber);
+  await waitForIndexing(Number(response.lastTransaction.blockNumber));
 
   // Revalidate all cache tags
   revalidateTag("asset");

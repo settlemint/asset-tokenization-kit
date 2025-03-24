@@ -89,7 +89,9 @@
           "jpy": "日本円 (JPY)",
           "sar": "サウジリヤル (SAR)",
           "sgd": "シンガポールドル (SGD)",
-          "usd": "米ドル (USD)"
+          "usd": "米ドル (USD)",
+          "chf": "スイスフラン (CHF)",
+          "gbp": "イギリスポンド (GBP)"
         },
         "platform-management": "プラットフォーム管理",
         "save": "保存",
@@ -1959,7 +1961,9 @@
     "UnderlyingAssetWithdrawnEvent": "引き出し",
     "UnpausedEvent": "再開",
     "UserBlockedEvent": "ブロック",
-    "UserUnblockedEvent": "ブロック解除"
+    "UserUnblockedEvent": "ブロック解除",
+    "UserAllowedEvent": "許可",
+    "UserDisallowedEvent": "不許可"
   },
   "homepage": {
     "asset-tokenization": "資産トークン化",

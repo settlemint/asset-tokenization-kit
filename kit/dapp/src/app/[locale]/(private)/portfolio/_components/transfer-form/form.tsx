@@ -6,7 +6,7 @@ import { transfer } from "@/lib/mutations/transfer/transfer-action";
 import { TransferSchema } from "@/lib/mutations/transfer/transfer-schema";
 import type { AssetUsers } from "@/lib/queries/asset/asset-users-fragment";
 import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -83,7 +83,7 @@ export function TransferForm({
       ) : (
         <Form
           action={transfer}
-          resolver={zodResolver(TransferSchema)}
+          resolver={typeboxResolver(TransferSchema())}
           onOpenChange={handleSheetOpenChange}
           buttonLabels={{
             label: t("transfer-form.button-label"),

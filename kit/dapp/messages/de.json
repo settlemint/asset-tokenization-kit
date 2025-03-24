@@ -89,7 +89,9 @@
           "jpy": "Japanischer Yen (JPY)",
           "sar": "Saudi-Riyal (SAR)",
           "sgd": "Singapur-Dollar (SGD)",
-          "usd": "US-Dollar (USD)"
+          "usd": "US-Dollar (USD)",
+          "chf": "Schweizer Franken (CHF)",
+          "gbp": "Britisches Pfund (GBP)"
         },
         "platform-management": "Plattformverwaltung",
         "save": "Speichern",
@@ -1959,7 +1961,9 @@
     "UnderlyingAssetWithdrawnEvent": "Abheben",
     "UnpausedEvent": "Wieder aktivieren",
     "UserBlockedEvent": "Blockieren",
-    "UserUnblockedEvent": "Entblockieren"
+    "UserUnblockedEvent": "Entblockieren",
+    "UserAllowedEvent": "Erlauben",
+    "UserDisallowedEvent": "Nicht erlauben"
   },
   "homepage": {
     "asset-tokenization": "Vermögens-Tokenisierung",
