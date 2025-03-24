@@ -34,4 +34,8 @@ export function Contact() {
   );
 }
 
-Contact.validatedFields = ["address", "firstName", "lastName"] as const;
+Contact.validatedFields = [
+  "address",
+  "firstName",
+  "lastName",
+] satisfies (keyof AddContactFormType)[];

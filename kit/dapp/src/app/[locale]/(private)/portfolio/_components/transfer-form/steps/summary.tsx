@@ -45,4 +45,4 @@ export function Summary({ address }: SummaryProps) {
   );
 }
 
-Summary.validatedFields = [] as const;
+Summary.validatedFields = [] as (keyof TransferInput)[];

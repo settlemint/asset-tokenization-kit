@@ -23,4 +23,4 @@ export function Amount() {
   );
 }
 
-Amount.validatedFields = ["amount"] as const;
+Amount.validatedFields = ["amount"] satisfies (keyof TopUpInput)[];

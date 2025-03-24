@@ -46,4 +46,4 @@ export function Recipients() {
   );
 }
 
-Recipients.validatedFields = ["to"] as const;
+Recipients.validatedFields = ["to"] satisfies (keyof MintInput)[];
