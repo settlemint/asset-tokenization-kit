@@ -20,7 +20,7 @@ const serverEnvironmentSchema = t.Object(
     }),
 
     // Define APP_URL as part of the schema with a default value
-    APP_URL: t.Optional(t.String({ format: "uri" })),
+    APP_URL: t.String({ format: "uri" }),
   },
   { $id: "ServerEnvironment" }
 );
@@ -41,17 +41,15 @@ type ClientEnvironment = StaticDecode<typeof clientEnvironmentSchema>;
  * @throws If environment variables are invalid
  */
 export function getServerEnvironment(): ServerEnvironment {
-  const env = safeParse(serverEnvironmentSchema, process.env);
-
   // Add the APP_URL property with fallbacks
-  return {
-    ...env,
+  return safeParse(serverEnvironmentSchema, {
+    ...process.env,
     APP_URL:
-      env.NEXT_PUBLIC_APP_URL ??
-      env.BETTER_AUTH_URL ??
-      env.NEXTAUTH_URL ??
+      process.env.NEXT_PUBLIC_APP_URL ??
+      process.env.BETTER_AUTH_URL ??
+      process.env.NEXTAUTH_URL ??
       "http://localhost:3000",
-  };
+  });
 }
 
 export function getClientEnvironment(): ClientEnvironment {
