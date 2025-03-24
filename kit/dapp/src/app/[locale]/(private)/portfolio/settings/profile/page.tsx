@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/layout/page-header";
+import { metadata } from "@/lib/config/metadata";
 import {
   ChangeEmailCard,
   ChangePasswordCard,
@@ -7,7 +8,28 @@ import {
   ProvidersCard,
   UpdateNameCard,
 } from "@daveyplate/better-auth-ui";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({
+    locale,
+    namespace: "portfolio.settings.profile",
+  });
+
+  return {
+    title: {
+      ...metadata.title,
+      default: t("title"),
+    },
+    description: t("portfolio-management"),
+  };
+}
 
 export default async function SecuritySettingsPage() {
   const t = await getTranslations("portfolio.settings.profile");

@@ -1,5 +1,6 @@
 import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
+import { metadata } from "@/lib/config/metadata";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
@@ -46,7 +47,10 @@ export async function generateMetadata({
   });
 
   return {
-    title: t(`page-title.${assettype}`),
+    title: {
+      ...metadata.title,
+      default: t(`page-title.${assettype}`),
+    },
     description: t(`topinfo-title.${assettype}`),
   };
 }

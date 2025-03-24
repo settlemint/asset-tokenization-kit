@@ -25,7 +25,7 @@
       "charts": {
         "asset-activity": {
           "burn": "Verbrennen",
-          "description": "Vermögensaktivität",
+          "description": "Die Anzahl der durchgeführten Aktionen in den verschiedenen Anlageklassen",
           "mint": "Prägen",
           "title": "Vermögensaktivität",
           "transfer": "Übertragen"
@@ -39,17 +39,17 @@
           "tokenizeddeposit": "Tokenisierte Einlagen"
         },
         "assets-supply": {
-          "description": "Vermögensangebot",
+          "description": "Die Verteilung der Token pro Anlageklasse",
           "title": "Vermögensangebot"
         },
         "transaction-history": {
-          "description": "Transaktionsverlauf",
+          "description": "Anzahl der Transaktionen pro Tag in der letzten Woche",
           "title": "Transaktionsverlauf"
         },
         "users-history": {
-          "description": "Benutzerverlauf",
+          "description": "Anzahl der in der letzten Woche registrierten Benutzer",
           "label": "Benutzer",
-          "title": "Benutzerverlauf"
+          "title": "Registrierte Benutzer"
         }
       },
       "page": {
@@ -437,7 +437,9 @@
       },
       "pincode-dialog": {
         "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Verifizierung und Autorisierung ein.",
-        "title": "Geben Sie Ihren PIN-Code zur Bestätigung ein"
+        "title": "Geben Sie Ihren PIN-Code zur Bestätigung ein",
+        "cancel": "Abbrechen",
+        "confirm": "Ja, bestätigen"
       },
       "progress": {
         "completed-step": "Abgeschlossener Schritt",
@@ -591,7 +593,8 @@
       "admin": "Aussteller-Portal",
       "asset-management": "Vermögensverwaltung",
       "platform": "Plattformverwaltung",
-      "portfolio": "Mein Portfolio"
+      "portfolio": "Mein Portfolio",
+      "title": "Privat"
     },
     "user-dropdown": {
       "documentation": "Dokumentation",

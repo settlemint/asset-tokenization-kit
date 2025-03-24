@@ -62,7 +62,7 @@ files:
     admin.charts.asset-type-formatter.stablecoins: 2f7d136a5b9efb222650243b1d38b6ff
     admin.charts.asset-type-formatter.tokenizeddeposit: 54e943a5918f140003ed964d64393d5d
     admin.dashboard.charts.asset-activity.burn: 11635778f116ce6922f6068638a39028
-    admin.dashboard.charts.asset-activity.description: 0af652d4c797a0c6b75cff690129f572
+    admin.dashboard.charts.asset-activity.description: d1eec278e81db448429fcdff184e9abc
     admin.dashboard.charts.asset-activity.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.dashboard.charts.asset-activity.title: 0af652d4c797a0c6b75cff690129f572
     admin.dashboard.charts.asset-activity.transfer: 6950810f0d2bba97a6f710c7b965b84e
@@ -72,13 +72,13 @@ files:
     admin.dashboard.charts.asset-types.funds: d42b2bb7ac17fc34a099909c0a2f1de9
     admin.dashboard.charts.asset-types.stablecoins: 2f7d136a5b9efb222650243b1d38b6ff
     admin.dashboard.charts.asset-types.tokenizeddeposit: 54e943a5918f140003ed964d64393d5d
-    admin.dashboard.charts.assets-supply.description: cebd7e01de0cd31b3c8f27428ab5ac76
+    admin.dashboard.charts.assets-supply.description: 82f28cfc1ff78797b53a54f75643669d
     admin.dashboard.charts.assets-supply.title: cebd7e01de0cd31b3c8f27428ab5ac76
-    admin.dashboard.charts.transaction-history.description: ed431c9f4d10a2ead0eb3643f5e33f33
+    admin.dashboard.charts.transaction-history.description: a6082e523f1363a320ccddd0750a784d
     admin.dashboard.charts.transaction-history.title: ed431c9f4d10a2ead0eb3643f5e33f33
-    admin.dashboard.charts.users-history.description: 44fb29646871b901dd1d53849d62a43e
+    admin.dashboard.charts.users-history.description: ab16f8ee557b3e48b90cb0dd72cc0ccb
     admin.dashboard.charts.users-history.label: f9aae5fda8d810a29f12d1e61b4ab25f
-    admin.dashboard.charts.users-history.title: 44fb29646871b901dd1d53849d62a43e
+    admin.dashboard.charts.users-history.title: 91890712853cc914d3b4bd64cdeca73b
     admin.dashboard.page.asset-management: 177512b9add0b40c38dad61838bf7d79
     admin.dashboard.page.description: 0205b0dd64032285b929ef0dd5c6ac11
     admin.dashboard.page.latest-events-heading: 8b0807a79d36ca9fece2ab62e26bdd9f
@@ -87,12 +87,12 @@ files:
     admin.dashboard.table.latest-events.view-all: 0b4db271fc4624853e634ef6882ea8be
     admin.dashboard.widgets.assets.label: 9aedeaf1f77b8642abe528503b8c5de8
     admin.dashboard.widgets.assets.subtext: 235881ad252944b7acca8b854cd5ca27
+    admin.dashboard.widgets.price.label: 689202409e48743b914713f96d93947c
+    admin.dashboard.widgets.price.subtext: d8a6124e07757b089f596d8bf9a8da0c
     admin.dashboard.widgets.transactions.label: 31112aca11d0e9e6eb7db96f317dda49
     admin.dashboard.widgets.transactions.subtext: 2fad55667c83a280f2147280d9351aaf
     admin.dashboard.widgets.users.label: f9aae5fda8d810a29f12d1e61b4ab25f
     admin.dashboard.widgets.users.subtext: ab1de1f85e9569bc8a08cb994779e3a9
-    admin.dashboard.widgets.price.label: 689202409e48743b914713f96d93947c
-    admin.dashboard.widgets.price.subtext: d8a6124e07757b089f596d8bf9a8da0c
     admin.platform.settings.base-currency-label: 58d5c14f81669ba2d7b24bd6664f7f87
     admin.platform.settings.base-currency-updated: 4b32d3465f9f29e0f14dda57d35a54ed
     admin.platform.settings.currencies.aed: 6a54d6830f82ea4ca08b5eaf2be8e668
@@ -324,6 +324,8 @@ files:
     components.form.input.min-value: 751d0dc7c145a5a07a4ddfc98250c6db
     components.form.input.valid-email: 6fc78ea6908a7cbd0b36f7bc468b4275
     components.form.input.valid-number: 1d75af7ead4847536d75284ad31e0e9f
+    components.form.pincode-dialog.cancel: ea4788705e6873b424c65e91c2846b19
+    components.form.pincode-dialog.confirm: 6297cdd34823b19402b792867ed42f70
     components.form.pincode-dialog.description: 270fcb334b1eca6a3475504fbebfd3b7
     components.form.pincode-dialog.title: 502e7d8e83097a1e726112cf13e842a8
     components.form.progress.completed-step: 11da564a254921897afcf5f9f1082860
@@ -372,6 +374,78 @@ files:
     components.transactions-table.columns.status: ec53a8c4f07baed5d8825072c89799be
     components.transactions-table.columns.transaction-hash: a0bd1db035c6e85fbe6f3cbbf3ff28ee
     creator-owner: 5439f356b537a6081aabf0ab5ead403d
+    error.array: 1c8c8151581701fa5b597ade2d5b4aea
+    error.array-contains: 3e67040c90b80c828384745786c7ed9a
+    error.array-max-contains: 70c318ee77460a10df3183dbe1ed3063
+    error.array-max-items: 736fa9a47370aec6d32c8fd5994cf0ed
+    error.array-min-contains: c20553612f7b5a755d7ec5feb277e021
+    error.array-min-items: c2768cd157ae57d55eb1291349622d54
+    error.array-unique-items: 925de22e1354fb187e3fecd9c2dff489
+    error.async-iterator: 5634b0239204e864fd2b608103b7841a
+    error.bigint: 3e6b4500a1aa2a28c87308dd0f845b65
+    error.bigint-exclusive-maximum: 9f1e866a96d1e4a8671b2de0976148b2
+    error.bigint-exclusive-minimum: 9213ceeee7875e4f57345ac49c64fd27
+    error.bigint-maximum: 5aaa5f0de263f4c05ab66c314c040429
+    error.bigint-minimum: 46d1845a12403ebe8a06c831a5552280
+    error.bigint-multiple-of: 65f2af8984fb4696a3edc859729787c6
+    error.boolean: 8bd80a21aa314506e32c49bbdc9b539f
+    error.date: c96280f76032df218d08eebbb62f8696
+    error.date-exclusive-maximum-timestamp: 8eb5adf547f0215fde70a86220e96635
+    error.date-exclusive-minimum-timestamp: 7ef984a7aa3f93c2529826edfe9d31a8
+    error.date-maximum-timestamp: 6ea3a63d1eabda5ce4a49a8739a1c938
+    error.date-minimum-timestamp: a37e0392a040b55c495f50e56bf76a3d
+    error.date-multiple-of-timestamp: c96280f76032df218d08eebbb62f8696
+    error.error-id: 69e9e13ca4e079dd3d988bc404306884
+    error.function: 78ddaa33aa4e09d62959484df4ed5f5a
+    error.go-home: 382c69628e6c1c196feec18cba47b6a9
+    error.integer: ee4438aa11b15ec7585ded050ee889cd
+    error.integer-exclusive-maximum: aaa297da8a1d23c403bbd74aab7479d7
+    error.integer-exclusive-minimum: c087b4e7dc9b6c14dffb56a488cb1326
+    error.integer-maximum: cdac6597b54f188a35d2316d58c14024
+    error.integer-minimum: 0ae237b70f0b9b74a74cdc1f11598726
+    error.integer-multiple-of: 0746df732113a93406db39b1ab31ef7b
+    error.intersect: 2cbee9ca1e9bb14c4b74dcc55e601bd6
+    error.intersect-unevaluated-properties: a246c452a2b3744731f2cbab7006b302
+    error.iterator: 5634b0239204e864fd2b608103b7841a
+    error.kind: 78ddaa33aa4e09d62959484df4ed5f5a
+    error.literal: 9d83b1cce85ecf505084146c761acc37
+    error.never: fd75e3ed396cee5d9c52a3ce64233370
+    error.not: c693ae1c323983947bcb4fc9f62bc09b
+    error.null: b1d80863b3cc102de85a83a8c78c4ee2
+    error.number: 1d75af7ead4847536d75284ad31e0e9f
+    error.number-exclusive-maximum: 66bd645226d8d5aab1ed98b1afce801a
+    error.number-exclusive-minimum: d7fcaf895736ba5bc82ad0b7f962d60a
+    error.number-maximum: 44386ba926929a98e0248e2148e431d3
+    error.number-minimum: a7440e8e1b7b78b92d4c02aca49e81a5
+    error.number-multiple-of: 674f8a7555327250d9b060eae8cfa4e7
+    error.object: 08ffc92e46e02355a7f4553aa2b18615
+    error.object-additional-properties: de4936a9acf49994a31c872b51af7f33
+    error.object-max-properties: d1e42552c072fe7fefa6ec8f57c2da96
+    error.object-min-properties: add2eb05e3f8fe94172e03ae8bb45cf2
+    error.object-required-property: 0511ee0d41117aa7b4abaaf102aa513d
+    error.promise: 5634b0239204e864fd2b608103b7841a
+    error.regexp: 739b06c0dfeb8388aada5f1330645816
+    error.sending: e4b0c2b6d59cb4cf3e169a9886008087
+    error.string: 087bfafc45b86ce28faf6f6334562382
+    error.string-format: fe83c3f5bda6191d84177a49a53fd647
+    error.string-format-unknown: 8c77eb811f7be3ca1b8b4a6e379d8115
+    error.string-max-length: ff3d75ca62a4371adc7764f3973f713b
+    error.string-min-length: 8aa51203cd0a918cdaeb3e9705a9dc03
+    error.string-pattern: c4570cbe59e3fb42cfcf29bdaddc6e8a
+    error.success: 505a83f220c02df2f85c3810cd9ceb38
+    error.symbol: 78ddaa33aa4e09d62959484df4ed5f5a
+    error.title: c6701602de1528fd79d5eff3e8eb1edd
+    error.try-again: f915a95e609bbd517a8a1e7bdcceef37
+    error.tuple: 7e1255c3f0d1ab640200da6b4c2555ac
+    error.tuple-length: 6a9d75fb8032021c89ebcdf7c2816842
+    error.uint8array: 3aa09611c7c5ca24cdfdc2e51900c56e
+    error.uint8array-max-byte-length: ec89c7fa06f1df12a2b43c7159e21119
+    error.uint8array-min-byte-length: 7694642c2923adc52fad9d9df064dba2
+    error.undefined: b1d80863b3cc102de85a83a8c78c4ee2
+    error.union: f23738594f51d25753c0e679535529d5
+    error.unknown: 13e39826b98706157ee4ceb641c7199f
+    error.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
+    error.void: b1d80863b3cc102de85a83a8c78c4ee2
     homepage.asset-tokenization: 09572338ab9b55d3fd3e8327f643961a
     homepage.bonds-funds-equities: d78c37b03915c31ee5c79d6353cc2ce1
     homepage.cryptocurrencies: 82d545659cf7ab6dd908094739a64fda
@@ -427,6 +501,7 @@ files:
     layout.navigation.asset-management: 177512b9add0b40c38dad61838bf7d79
     layout.navigation.platform: bf6ba0d41ffdc7a03e03f87c569e0c3a
     layout.navigation.portfolio: 654b240dd044565e9ba2ff98858003c3
+    layout.navigation.title: 47f9082fc380ca62d531096aa1d110f1
     layout.user-dropdown.documentation: 5b6cf869265c13af8566f192b4ab3d2a
     layout.user-dropdown.logout: 4394c8d8e63c470de62ced3ae85de5ae
     layout.user-dropdown.pending-transactions: d20ab843371da5dfa95bb6212a9f6aeb
@@ -1237,75 +1312,3 @@ files:
     transactions.sending: e4b0c2b6d59cb4cf3e169a9886008087
     transactions.success: 505a83f220c02df2f85c3810cd9ceb38
     transactions.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
-    error.error-id: 69e9e13ca4e079dd3d988bc404306884
-    error.go-home: 382c69628e6c1c196feec18cba47b6a9
-    error.sending: e4b0c2b6d59cb4cf3e169a9886008087
-    error.success: 505a83f220c02df2f85c3810cd9ceb38
-    error.title: c6701602de1528fd79d5eff3e8eb1edd
-    error.try-again: f915a95e609bbd517a8a1e7bdcceef37
-    error.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
-    error.array-contains: 3e67040c90b80c828384745786c7ed9a
-    error.array-max-contains: 70c318ee77460a10df3183dbe1ed3063
-    error.array-min-contains: c20553612f7b5a755d7ec5feb277e021
-    error.array-max-items: 736fa9a47370aec6d32c8fd5994cf0ed
-    error.array-min-items: c2768cd157ae57d55eb1291349622d54
-    error.array-unique-items: 925de22e1354fb187e3fecd9c2dff489
-    error.array: 1c8c8151581701fa5b597ade2d5b4aea
-    error.async-iterator: 5634b0239204e864fd2b608103b7841a
-    error.bigint-exclusive-maximum: 9f1e866a96d1e4a8671b2de0976148b2
-    error.bigint-exclusive-minimum: 9213ceeee7875e4f57345ac49c64fd27
-    error.bigint-maximum: 5aaa5f0de263f4c05ab66c314c040429
-    error.bigint-minimum: 46d1845a12403ebe8a06c831a5552280
-    error.bigint-multiple-of: 65f2af8984fb4696a3edc859729787c6
-    error.bigint: 3e6b4500a1aa2a28c87308dd0f845b65
-    error.boolean: 8bd80a21aa314506e32c49bbdc9b539f
-    error.date-exclusive-minimum-timestamp: 7ef984a7aa3f93c2529826edfe9d31a8
-    error.date-exclusive-maximum-timestamp: 8eb5adf547f0215fde70a86220e96635
-    error.date-minimum-timestamp: a37e0392a040b55c495f50e56bf76a3d
-    error.date-maximum-timestamp: 6ea3a63d1eabda5ce4a49a8739a1c938
-    error.date-multiple-of-timestamp: c96280f76032df218d08eebbb62f8696
-    error.date: c96280f76032df218d08eebbb62f8696
-    error.function: 78ddaa33aa4e09d62959484df4ed5f5a
-    error.integer-exclusive-maximum: aaa297da8a1d23c403bbd74aab7479d7
-    error.integer-exclusive-minimum: c087b4e7dc9b6c14dffb56a488cb1326
-    error.integer-maximum: cdac6597b54f188a35d2316d58c14024
-    error.integer-minimum: 0ae237b70f0b9b74a74cdc1f11598726
-    error.integer-multiple-of: 0746df732113a93406db39b1ab31ef7b
-    error.integer: ee4438aa11b15ec7585ded050ee889cd
-    error.intersect-unevaluated-properties: a246c452a2b3744731f2cbab7006b302
-    error.intersect: 2cbee9ca1e9bb14c4b74dcc55e601bd6
-    error.iterator: 5634b0239204e864fd2b608103b7841a
-    error.literal: 9d83b1cce85ecf505084146c761acc37
-    error.never: fd75e3ed396cee5d9c52a3ce64233370
-    error.not: c693ae1c323983947bcb4fc9f62bc09b
-    error.null: b1d80863b3cc102de85a83a8c78c4ee2
-    error.number-exclusive-maximum: 66bd645226d8d5aab1ed98b1afce801a
-    error.number-exclusive-minimum: d7fcaf895736ba5bc82ad0b7f962d60a
-    error.number-maximum: 44386ba926929a98e0248e2148e431d3
-    error.number-minimum: a7440e8e1b7b78b92d4c02aca49e81a5
-    error.number-multiple-of: 674f8a7555327250d9b060eae8cfa4e7
-    error.number: 1d75af7ead4847536d75284ad31e0e9f
-    error.object: 08ffc92e46e02355a7f4553aa2b18615
-    error.object-additional-properties: de4936a9acf49994a31c872b51af7f33
-    error.object-max-properties: d1e42552c072fe7fefa6ec8f57c2da96
-    error.object-min-properties: add2eb05e3f8fe94172e03ae8bb45cf2
-    error.object-required-property: 0511ee0d41117aa7b4abaaf102aa513d
-    error.promise: 5634b0239204e864fd2b608103b7841a
-    error.regexp: 739b06c0dfeb8388aada5f1330645816
-    error.string-format-unknown: 8c77eb811f7be3ca1b8b4a6e379d8115
-    error.string-format: fe83c3f5bda6191d84177a49a53fd647
-    error.string-max-length: ff3d75ca62a4371adc7764f3973f713b
-    error.string-min-length: 8aa51203cd0a918cdaeb3e9705a9dc03
-    error.string-pattern: c4570cbe59e3fb42cfcf29bdaddc6e8a
-    error.string: 087bfafc45b86ce28faf6f6334562382
-    error.symbol: 78ddaa33aa4e09d62959484df4ed5f5a
-    error.tuple-length: 6a9d75fb8032021c89ebcdf7c2816842
-    error.tuple: 7e1255c3f0d1ab640200da6b4c2555ac
-    error.uint8array-max-byte-length: ec89c7fa06f1df12a2b43c7159e21119
-    error.uint8array-min-byte-length: 7694642c2923adc52fad9d9df064dba2
-    error.uint8array: 3aa09611c7c5ca24cdfdc2e51900c56e
-    error.undefined: b1d80863b3cc102de85a83a8c78c4ee2
-    error.union: f23738594f51d25753c0e679535529d5
-    error.void: b1d80863b3cc102de85a83a8c78c4ee2
-    error.kind: 78ddaa33aa4e09d62959484df4ed5f5a
-    error.unknown: 13e39826b98706157ee4ceb641c7199f

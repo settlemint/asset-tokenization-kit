@@ -25,7 +25,7 @@
       "charts": {
         "asset-activity": {
           "burn": "バーン",
-          "description": "資産アクティビティ",
+          "description": "異なる資産クラスに対して行われたアクションの量",
           "mint": "ミント",
           "title": "資産アクティビティ",
           "transfer": "転送"
@@ -39,17 +39,17 @@
           "tokenizeddeposit": "トークン化された預金"
         },
         "assets-supply": {
-          "description": "資産供給",
+          "description": "資産クラスごとのトークンの分布",
           "title": "資産供給"
         },
         "transaction-history": {
-          "description": "取引履歴",
+          "description": "先週の1日あたりの取引数",
           "title": "取引履歴"
         },
         "users-history": {
-          "description": "ユーザー履歴",
+          "description": "先週登録されたユーザー数",
           "label": "ユーザー",
-          "title": "ユーザー履歴"
+          "title": "登録ユーザー"
         }
       },
       "page": {
@@ -437,7 +437,9 @@
       },
       "pincode-dialog": {
         "description": "トランザクションに署名するには、確認と承認のためにピンコードを入力してください。",
-        "title": "確認のためにピンコードを入力してください"
+        "title": "確認のためにピンコードを入力してください",
+        "cancel": "キャンセル",
+        "confirm": "はい、確認する"
       },
       "progress": {
         "completed-step": "ステップ完了",
@@ -591,7 +593,8 @@
       "admin": "発行者ポータル",
       "asset-management": "資産管理",
       "platform": "プラットフォーム管理",
-      "portfolio": "マイポートフォリオ"
+      "portfolio": "マイポートフォリオ",
+      "title": "プライベート"
     },
     "user-dropdown": {
       "documentation": "ドキュメント",
