@@ -1,4 +1,4 @@
-import type { equityCategories } from "@/lib/utils/zod";
+import type { equityCategories } from "@/lib/utils/typebox/equity-categories";
 import { useTranslations } from "next-intl";
 
 export function EquityCategoriesSummary({

@@ -2,9 +2,8 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { t } from "@/lib/utils/typebox";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { type ZodInfer, safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
 import { BondFragment } from "../bond/bond-fragment";
 import { OnChainBondSchema } from "../bond/bond-schema";
@@ -60,17 +59,26 @@ const SidebarAssets = theGraphGraphqlKit(
 );
 
 /**
- * Zod schema for asset count entries
+ * TypeBox schema for asset count entries
  */
-const AssetCountSchema = z.object({
-  assetType: z.assetType(),
-  count: z.number(),
-});
+const AssetCountSchema = t.Object(
+  {
+    assetType: t.AssetType({
+      description: "The type of asset being counted",
+    }),
+    count: t.Number({
+      description: "The total number of assets of this type",
+    }),
+  },
+  {
+    description: "Counter for the number of assets of a specific type",
+  }
+);
 
 /**
  * Type for asset count entries
  */
-export type AssetCount = ZodInfer<typeof AssetCountSchema>;
+export type AssetCount = StaticDecode<typeof AssetCountSchema>;
 
 /**
  * Options interface for sidebar assets queries
@@ -121,9 +129,10 @@ export const getSidebarAssets = cache(
       result.tokenizedDeposits || []
     );
 
-    // Validate assetCounts with Zod schema
-    const validatedAssetCounts = (result.assetCounts || []).map((count) =>
-      safeParseWithLogging(AssetCountSchema, count, "assetCount")
+    // Validate assetCounts with TypeBox schema
+    const validatedAssetCounts = safeParse(
+      t.Array(AssetCountSchema),
+      result.assetCounts || []
     );
 
     // Limit the number of records if requested

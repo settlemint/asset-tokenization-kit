@@ -1,4 +1,4 @@
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { BondsRelated } from "./related/bonds";
 import { CryptocurrenciesRelated } from "./related/cryptocurrencies";
 import { EquitiesRelated } from "./related/equities";

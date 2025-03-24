@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Link } from "@/i18n/routing";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
-import type { AssetUsers } from "@/lib/queries/asset/asset-users-fragment";
+import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { cn } from "@/lib/utils";
 import { sanitizeSearchTerm } from "@/lib/utils/string";

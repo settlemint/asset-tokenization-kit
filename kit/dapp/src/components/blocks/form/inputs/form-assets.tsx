@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
-import type { AssetUsers } from "@/lib/queries/asset/asset-users-fragment";
+import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
 import { Check, ChevronsUpDown } from "lucide-react";

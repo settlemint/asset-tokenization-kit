@@ -1,6 +1,6 @@
 "use client";
 
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { useTranslations } from "next-intl";
 
 interface AssetTypeProps {

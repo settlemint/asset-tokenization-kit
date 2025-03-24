@@ -1,5 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { RoleMap } from "@/lib/utils/typebox/roles";
 import { grantRole } from "../grant-role/grant-role-action";
 import { revokeRole } from "../revoke-role/revoke-role-action";
 import type { UpdateRolesInput } from "./update-role-schema";
@@ -18,14 +19,22 @@ export async function updateRolesFunction({
   ctx: { user: User };
 }) {
   // Separate roles to grant and revoke
-  const rolesToEnable: Record<string, boolean> = {};
-  const rolesToDisable: Record<string, boolean> = {};
+  const rolesToEnable: RoleMap = {
+    DEFAULT_ADMIN_ROLE: false,
+    SUPPLY_MANAGEMENT_ROLE: false,
+    USER_MANAGEMENT_ROLE: false,
+  };
+  const rolesToDisable: RoleMap = {
+    DEFAULT_ADMIN_ROLE: false,
+    SUPPLY_MANAGEMENT_ROLE: false,
+    USER_MANAGEMENT_ROLE: false,
+  };
 
   for (const [role, enabled] of Object.entries(roles)) {
     if (enabled) {
-      rolesToEnable[role] = true;
+      rolesToEnable[role as keyof RoleMap] = true;
     } else {
-      rolesToDisable[role] = true;
+      rolesToDisable[role as keyof RoleMap] = true;
     }
   }
 

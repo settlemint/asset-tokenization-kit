@@ -1,23 +1,24 @@
 import { db } from "@/lib/db";
 import { exchangeRate } from "@/lib/db/schema-exchange-rates";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
+import { safeParse } from "@/lib/utils/typebox";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
-import { z } from "@/lib/utils/zod";
 import { format } from "date-fns";
 import { and, eq } from "drizzle-orm";
+import { t } from "elysia/type-system";
 
-const ExchangeRateAPIResponseSchema = z.object({
-  result: z.literal("success"),
-  provider: z.string(),
-  documentation: z.string(),
-  terms_of_use: z.string(),
-  time_last_update_unix: z.number(),
-  time_last_update_utc: z.string(),
-  time_next_update_unix: z.number(),
-  time_next_update_utc: z.string(),
-  time_eol_unix: z.number(),
-  base_code: z.string(),
-  rates: z.record(z.string(), z.number()),
+const ExchangeRateAPIResponseSchema = t.Object({
+  result: t.Literal("success"),
+  provider: t.String(),
+  documentation: t.String(),
+  terms_of_use: t.String(),
+  time_last_update_unix: t.Number(),
+  time_last_update_utc: t.String(),
+  time_next_update_unix: t.Number(),
+  time_next_update_utc: t.String(),
+  time_eol_unix: t.Number(),
+  base_code: t.String(),
+  rates: t.Record(t.String(), t.Number()),
 });
 
 /**
@@ -42,14 +43,9 @@ async function fetchExchangeRates(
   }
 
   const data = await response.json();
-  const parsed = ExchangeRateAPIResponseSchema.safeParse(data);
 
-  if (!parsed.success) {
-    console.error("API Response validation failed:", parsed.error);
-    throw new Error("Invalid API response format");
-  }
-
-  return parsed.data.rates;
+  const parsed = safeParse(ExchangeRateAPIResponseSchema, data);
+  return parsed.rates;
 }
 
 /**

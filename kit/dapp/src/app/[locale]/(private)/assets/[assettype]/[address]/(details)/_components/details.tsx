@@ -1,4 +1,4 @@
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Address } from "viem";
 import { BondsDetails } from "./details/bonds";
 import { Collateral } from "./details/collateral";
@@ -15,30 +15,67 @@ interface DetailsProps {
   userAddress?: Address;
 }
 
-export function Details({ assettype, address, showBalance = false, userAddress }: DetailsProps) {
+export function Details({
+  assettype,
+  address,
+  showBalance = false,
+  userAddress,
+}: DetailsProps) {
   switch (assettype) {
     case "bond":
-      return <BondsDetails address={address} showBalance={showBalance} userAddress={userAddress} />;
+      return (
+        <BondsDetails
+          address={address}
+          showBalance={showBalance}
+          userAddress={userAddress}
+        />
+      );
     case "cryptocurrency":
-      return <CryptocurrenciesDetails address={address} showBalance={showBalance} userAddress={userAddress} />;
+      return (
+        <CryptocurrenciesDetails
+          address={address}
+          showBalance={showBalance}
+          userAddress={userAddress}
+        />
+      );
     case "stablecoin":
       return (
         <>
-          <StablecoinsDetails address={address} showBalance={showBalance} userAddress={userAddress} />
+          <StablecoinsDetails
+            address={address}
+            showBalance={showBalance}
+            userAddress={userAddress}
+          />
           <Collateral address={address} assettype={assettype} />
         </>
       );
     case "tokenizeddeposit":
       return (
         <>
-          <TokenizedDepositsDetails address={address} showBalance={showBalance} userAddress={userAddress} />
+          <TokenizedDepositsDetails
+            address={address}
+            showBalance={showBalance}
+            userAddress={userAddress}
+          />
           <Collateral address={address} assettype={assettype} />
         </>
       );
     case "equity":
-      return <EquitiesDetails address={address} showBalance={showBalance} userAddress={userAddress} />;
+      return (
+        <EquitiesDetails
+          address={address}
+          showBalance={showBalance}
+          userAddress={userAddress}
+        />
+      );
     case "fund":
-      return <FundsDetails address={address} showBalance={showBalance} userAddress={userAddress} />;
+      return (
+        <FundsDetails
+          address={address}
+          showBalance={showBalance}
+          userAddress={userAddress}
+        />
+      );
     default:
       throw new Error("Invalid asset type");
   }

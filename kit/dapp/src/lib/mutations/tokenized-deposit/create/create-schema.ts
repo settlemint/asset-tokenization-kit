@@ -49,8 +49,8 @@ export function CreateTokenizedDepositSchema() {
         refine: isAddressAvailable,
         error: "tokenized-deposit.duplicate",
       }),
-      valueInBaseCurrency: t.FiatCurrency({
-        description: "The value in base currency",
+      valueInBaseCurrency: t.Amount(Number.MAX_SAFE_INTEGER, 0, 6, {
+        description: "Value in base currency",
       }),
     },
     {

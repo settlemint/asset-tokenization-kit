@@ -4,18 +4,20 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
-import { type Address, getAddress } from "viem";
+import { getAddress, type Address } from "viem";
 import {
   AssetUsersFragment,
-  AssetUsersFragmentSchema,
   OffchainAssetFragment,
-  OffchainAssetFragmentSchema,
-  type Permission,
-  PermissionFragmentSchema,
 } from "./asset-users-fragment";
+import {
+  AssetUsersSchema,
+  OffchainAssetSchema,
+  PermissionSchema,
+  type Permission,
+} from "./asset-users-schema";
 /**
  * GraphQL query to fetch on-chain asset details from The Graph
  */
@@ -104,19 +106,11 @@ export const getAssetUsersDetail = cache(
       throw new Error(`Asset ${address} not found`);
     }
 
-    // Parse and validate the asset data with Zod schema
-    const validatedAsset = safeParseWithLogging(
-      AssetUsersFragmentSchema,
-      onchainData.asset,
-      "asset"
-    );
+    // Parse and validate the asset data with TypeBox schema
+    const validatedAsset = safeParse(AssetUsersSchema, onchainData.asset);
 
     const offchainAsset = offchainData.asset[0]
-      ? safeParseWithLogging(
-          OffchainAssetFragmentSchema,
-          offchainData.asset[0],
-          "offchain asset"
-        )
+      ? safeParse(OffchainAssetSchema, offchainData.asset[0])
       : undefined;
 
     // Define the role configurations
@@ -140,8 +134,8 @@ export const getAssetUsersDetail = cache(
 
     // Process all role configurations
     for (const { permissions, role } of roleConfigs) {
-      const validatedPermissions = permissions.map((permission) =>
-        safeParseWithLogging(PermissionFragmentSchema, permission, "permission")
+      const validatedPermissions = permissions.map((permission: unknown) =>
+        safeParse(PermissionSchema, permission)
       );
       for (const validatedPermission of validatedPermissions) {
         const userId = validatedPermission.id;

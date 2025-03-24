@@ -3,7 +3,7 @@ import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
 import { ChartPieIcon } from "@/components/ui/animated-icons/chart-pie";
 import type { ChartConfig } from "@/components/ui/chart";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 

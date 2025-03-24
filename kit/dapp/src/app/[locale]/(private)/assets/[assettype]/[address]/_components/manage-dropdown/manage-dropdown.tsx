@@ -15,7 +15,7 @@ import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { isBefore } from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
