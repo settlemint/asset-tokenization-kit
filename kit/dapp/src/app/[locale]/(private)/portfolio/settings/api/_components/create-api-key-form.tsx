@@ -1,7 +1,8 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+import type { StaticDecode } from "@/lib/utils/typebox";
+import { t } from "@/lib/utils/typebox";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { CopyToClipboard } from "@/components/blocks/copy/copy";
 import { Button } from "@/components/ui/button";
@@ -33,12 +34,15 @@ import { authClient } from "@/lib/auth/client";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const createApiKeySchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  expiresIn: z.string(),
-});
+const createApiKeySchema = t.Object(
+  {
+    name: t.String({ minLength: 1, error: "Name is required" }),
+    expiresIn: t.String(),
+  },
+  { $id: "CreateApiKeyForm" }
+);
 
-type CreateApiKeyFormValues = z.infer<typeof createApiKeySchema>;
+type CreateApiKeyFormValues = StaticDecode<typeof createApiKeySchema>;
 
 interface CreateApiKeyFormProps {
   open: boolean;
@@ -63,7 +67,7 @@ export function CreateApiKeyForm({
   const [createdApiKey, setCreatedApiKey] = useState<string | null>(null);
 
   const form = useForm<CreateApiKeyFormValues>({
-    resolver: zodResolver(createApiKeySchema),
+    resolver: typeboxResolver(createApiKeySchema),
     defaultValues: {
       name: "",
       expiresIn: "",

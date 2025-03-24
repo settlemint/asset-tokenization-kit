@@ -4,9 +4,9 @@ import {
   createSafeActionClient,
 } from "next-safe-action";
 import { typeboxAdapter } from "next-safe-action/adapters/typebox";
+import type { Schema } from "next-safe-action/adapters/types";
 import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
-import type { Schema } from "zod";
 import type { User } from "../auth/types";
 import { redactSensitiveFields } from "../utils/redaction";
 
