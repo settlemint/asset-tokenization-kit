@@ -2,13 +2,14 @@ import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import {
-  AssetUsersFragmentSchema,
+  AssetUsersSchema,
   type AssetUsers,
-} from "@/lib/queries/asset/asset-users-fragment";
-import { z } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from "@/lib/queries/asset/asset-users-schema";
+import { t as tb } from "@/lib/utils/typebox";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+
 interface SelectAssetProps {
   onSelect: (asset: AssetUsers) => void;
 }
@@ -16,7 +17,7 @@ interface SelectAssetProps {
 export function SelectAsset({ onSelect }: SelectAssetProps) {
   const t = useTranslations("portfolio.transfer-form.select-asset");
   const form = useForm<{ asset: AssetUsers }>({
-    resolver: zodResolver(z.object({ asset: AssetUsersFragmentSchema })),
+    resolver: typeboxResolver(tb.Object({ asset: AssetUsersSchema })),
     mode: "onChange",
   });
   const { isValid } = form.formState;

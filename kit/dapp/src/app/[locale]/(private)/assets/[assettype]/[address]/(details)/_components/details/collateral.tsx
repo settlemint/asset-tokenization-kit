@@ -5,7 +5,7 @@ import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail"
 import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
 import { formatDate, formatDuration } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";

@@ -12,7 +12,7 @@ import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-dis
 import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";

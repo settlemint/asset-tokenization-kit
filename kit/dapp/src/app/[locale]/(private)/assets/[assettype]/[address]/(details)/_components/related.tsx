@@ -1,6 +1,6 @@
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Address } from "viem";
 import { BondsRelated } from "./related/bonds";
 import { CryptocurrenciesRelated } from "./related/cryptocurrencies";

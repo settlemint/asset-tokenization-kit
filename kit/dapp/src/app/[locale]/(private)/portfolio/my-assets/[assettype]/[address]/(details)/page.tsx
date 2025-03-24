@@ -7,7 +7,7 @@ import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfer
 import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
 import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-distribution";
 import { getUser } from "@/lib/auth/utils";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
@@ -30,9 +30,9 @@ export default async function AssetDetailsPage({ params }: PageProps) {
   // and when it has 'fund' in it, we show the fund component
   return (
     <>
-      <Details 
-        assettype={assettype} 
-        address={address} 
+      <Details
+        assettype={assettype}
+        address={address}
         showBalance={true}
         userAddress={user.wallet as Address}
       />
