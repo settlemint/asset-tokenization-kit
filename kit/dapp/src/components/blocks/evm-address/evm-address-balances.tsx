@@ -21,7 +21,7 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
       setIsLoading(true);
       try {
         const balances = await getAssetBalanceList({
-          address: getAddress(address),
+          wallet: getAddress(address),
         });
         setBalances(balances);
       } finally {
@@ -36,10 +36,12 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-1">
-        <div className="flex items-center justify-between py-1">
-          <Skeleton className="size-56" />
-          <Skeleton className="size-52" />
-        </div>
+        {Array.from({ length: 2 }).map((_, index) => (
+          <div key={index} className="flex items-center justify-between py-1">
+            <Skeleton className="h-5 w-20 bg-muted/50" />
+            <Skeleton className="h-5 w-16 bg-muted/50" />
+          </div>
+        ))}
       </div>
     );
   }
