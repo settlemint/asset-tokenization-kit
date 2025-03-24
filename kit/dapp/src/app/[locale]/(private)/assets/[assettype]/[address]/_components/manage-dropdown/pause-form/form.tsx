@@ -6,7 +6,7 @@ import { pause } from "@/lib/mutations/pause/pause-action";
 import { PauseSchema } from "@/lib/mutations/pause/pause-schema";
 import { unpause } from "@/lib/mutations/unpause/unpause-action";
 import { UnpauseSchema } from "@/lib/mutations/unpause/unpause-schema";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";

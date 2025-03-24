@@ -1,6 +1,5 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for permission data related to accounts
@@ -15,20 +14,6 @@ export const PermissionFragment = theGraphGraphqlKit(`
   }
 `);
 
-/**
- * Zod schema for validating permission data
- *
- */
-export const PermissionFragmentSchema = z.object({
-  id: z.address(),
-  lastActivity: z.timestamp(),
-});
-
-/**
- * Type definition for permission data
- */
-export type Permission = ZodInfer<typeof PermissionFragmentSchema>;
-
 export const AllowedUserFragment = theGraphGraphqlKit(`
   fragment AllowedUserFragment on AllowedUser    {
     id
@@ -39,16 +24,6 @@ export const AllowedUserFragment = theGraphGraphqlKit(`
   }
 `);
 
-export const AllowedUserFragmentSchema = z.object({
-  id: z.string(),
-  user: z.object({
-    id: z.address(),
-  }),
-  allowedAt: z.timestamp(),
-});
-
-export type AllowedUser = ZodInfer<typeof AllowedUserFragmentSchema>;
-
 export const BlockedUserFragment = theGraphGraphqlKit(`
   fragment BlockedUserFragment on BlockedUser {
     id
@@ -58,16 +33,6 @@ export const BlockedUserFragment = theGraphGraphqlKit(`
     blockedAt
   }
 `);
-
-export const BlockedUserFragmentSchema = z.object({
-  id: z.string(),
-  user: z.object({
-    id: z.address(),
-  }),
-  blockedAt: z.timestamp(),
-});
-
-export type BlockedUser = ZodInfer<typeof BlockedUserFragmentSchema>;
 
 /**
  * GraphQL fragment for on-chain asset data from The Graph
@@ -111,37 +76,6 @@ export const AssetUsersFragment = theGraphGraphqlKit(
 );
 
 /**
- * Zod schema for validating on-chain asset data
- *
- */
-export const AssetUsersFragmentSchema = z.object({
-  id: z.address(),
-  name: z.string(),
-  symbol: z.symbol(),
-  type: z.assetType(),
-  decimals: z.number(),
-  admins: z.array(PermissionFragmentSchema),
-  supplyManagers: z.array(PermissionFragmentSchema),
-  userManagers: z.array(PermissionFragmentSchema),
-  holders: z.array(
-    z.object({
-      id: z.string(),
-      value: z.string(),
-      account: z.object({
-        id: z.address(),
-      }),
-    })
-  ),
-  allowlist: z.array(AllowedUserFragmentSchema).default([]),
-  blocklist: z.array(BlockedUserFragmentSchema).default([]),
-});
-
-/**
- * Type definition for on-chain asset data
- */
-export type AssetUsers = ZodInfer<typeof AssetUsersFragmentSchema>;
-
-/**
  * GraphQL fragment for off-chain asset data from Hasura
  *
  * @remarks
@@ -154,18 +88,3 @@ export const OffchainAssetFragment = hasuraGraphql(`
     value_in_base_currency
   }
 `);
-
-/**
- * Zod schema for validating off-chain asset data
- *
- */
-export const OffchainAssetFragmentSchema = z.object({
-  id: z.address(),
-  isin: z.isin().nullish(),
-  value_in_base_currency: z.fiatCurrencyAmount(),
-});
-
-/**
- * Type definition for off-chain asset data
- */
-export type OffchainAsset = ZodInfer<typeof OffchainAssetFragmentSchema>;

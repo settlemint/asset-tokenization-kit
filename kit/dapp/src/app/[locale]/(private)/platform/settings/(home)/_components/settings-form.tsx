@@ -16,16 +16,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
+import { t as tb } from "@/lib/utils/typebox";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
-import { z } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { updateSettings } from "./settings-action";
 
-const schema = z.object({
-  baseCurrency: z.fiatCurrency(),
+const schema = tb.Object({
+  baseCurrency: tb.FiatCurrency(),
 });
 
 const currencyKeys = {
@@ -48,7 +48,7 @@ export function SettingsForm({ defaultBaseCurrency }: SettingsFormProps) {
 
   const { form, handleSubmitWithAction } = useHookFormAction(
     updateSettings,
-    zodResolver(schema),
+    typeboxResolver(schema),
     {
       formProps: {
         mode: "onSubmit",

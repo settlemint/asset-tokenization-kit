@@ -1,5 +1,6 @@
-import { type Hex, keccak256, stringToBytes } from "viem";
-import { type AssetType, type ZodInfer, z } from "../utils/zod";
+import { t } from "@/lib/utils/typebox";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import { keccak256, stringToBytes, type Hex } from "viem";
 
 /**
  * Role configuration for the access control system.
@@ -57,8 +58,8 @@ export const getRoleDisplayName = (roleKey: RoleKey): string => {
   return ROLES[roleKey].displayName;
 };
 
-const _RolesSchema = z.roles();
-export type RolesInput = ZodInfer<typeof _RolesSchema>;
+const _RolesSchema = t.Roles();
+export type RolesInput = Record<RoleKey, boolean>;
 
 export const getActiveRoles = (roles?: RolesInput): Role[] => {
   if (!roles) return [];

@@ -1,6 +1,6 @@
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
-import type { fundCategories } from "@/lib/utils/zod";
+import type { fundCategories } from "@/lib/utils/typebox/fund-categories";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 

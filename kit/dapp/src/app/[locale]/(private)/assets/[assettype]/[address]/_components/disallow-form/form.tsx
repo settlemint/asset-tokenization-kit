@@ -2,7 +2,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { disallowUser } from "@/lib/mutations/disallow-user/disallow-user-action";
 import { DisallowUserSchema } from "@/lib/mutations/disallow-user/disallow-user-schema";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";

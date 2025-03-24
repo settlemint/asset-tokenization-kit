@@ -2,19 +2,20 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form as UIForm } from "@/components/ui/form";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { safeParse, t as tb } from "@/lib/utils/typebox";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { useTranslations } from "next-intl";
+import type { Infer, Schema } from "next-safe-action/adapters/types";
 import type { HookSafeActionFn } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
 import type {
+  Control,
   DefaultValues,
   Path,
   Resolver,
   UseFormReturn,
 } from "react-hook-form";
 import { toast } from "sonner";
-import type { Schema } from "zod";
 import { type ButtonLabels, FormButton } from "./form-button";
 import { FormProgress } from "./form-progress";
 import { FormOtpDialog } from "./inputs/form-otp-dialog";
@@ -30,9 +31,9 @@ interface FormProps<
   FormContext = unknown,
 > {
   children: FormStepElement<S> | FormStepElement<S>[];
-  defaultValues?: DefaultValues<ZodInfer<S>>;
+  defaultValues?: DefaultValues<Infer<S>>;
   action: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
-  resolver: Resolver<ZodInfer<S>, FormContext>;
+  resolver: Resolver<Infer<S>, FormContext>;
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
   hideButtons?: boolean;
@@ -41,7 +42,7 @@ interface FormProps<
     success?: string;
   };
   secureForm?: boolean;
-  onAnyFieldChange?: (form: UseFormReturn<ZodInfer<S>>) => void;
+  onAnyFieldChange?: (form: UseFormReturn<Infer<S>>) => void;
 }
 
 export function Form<
@@ -71,45 +72,49 @@ export function Form<
     useState(false);
 
   const { form, handleSubmitWithAction, resetFormAndAction } =
-    useHookFormAction(action, resolver, {
-      formProps: {
-        mode: "onSubmit",
-        criteriaMode: "all",
-        shouldFocusError: false,
-        defaultValues,
-      },
-      actionProps: {
-        onSuccess: ({ data }) => {
-          const hashes = z.hashes().parse(data);
-          if (secureForm) {
-            toast.promise(waitForTransactions(hashes), {
-              loading: toastMessages?.loading || t("sending"),
-              success: toastMessages?.success || t("success"),
-              error: (error: Error) => `Failed to submit: ${error.message}`,
-            });
-          }
-          resetFormAndAction();
-          onOpenChange?.(false);
+    useHookFormAction(
+      action,
+      resolver as Resolver<S extends Schema ? Infer<S> : any, FormContext>,
+      {
+        formProps: {
+          mode: "onSubmit",
+          criteriaMode: "all",
+          shouldFocusError: false,
+          defaultValues,
         },
-        onError: (error) => {
-          let errorMessage = "Unknown error";
+        actionProps: {
+          onSuccess: ({ data }) => {
+            const hashes = safeParse(tb.Hashes(), data);
+            if (secureForm) {
+              toast.promise(waitForTransactions(hashes), {
+                loading: toastMessages?.loading || t("sending"),
+                success: toastMessages?.success || t("success"),
+                error: (error: Error) => `Failed to submit: ${error.message}`,
+              });
+            }
+            resetFormAndAction();
+            onOpenChange?.(false);
+          },
+          onError: (error) => {
+            let errorMessage = "Unknown error";
 
-          if (error?.error?.serverError) {
-            errorMessage = error.error.serverError as string;
-          } else if (error?.error?.validationErrors) {
-            errorMessage = "Validation error";
-          }
+            if (error?.error?.serverError) {
+              errorMessage = error.error.serverError as string;
+            } else if (error?.error?.validationErrors) {
+              errorMessage = "Validation error";
+            }
 
-          toast.error(`Failed to submit: ${errorMessage}`);
+            toast.error(`Failed to submit: ${errorMessage}`);
+          },
         },
-      },
-    });
+      }
+    );
 
   useEffect(() => {
     if (!onAnyFieldChange) return;
 
     const subscription = form.watch(() => {
-      onAnyFieldChange(form);
+      onAnyFieldChange(form as UseFormReturn<Infer<S>>);
     });
 
     return () => subscription.unsubscribe();
@@ -135,12 +140,18 @@ export function Form<
     }
 
     const beforeValidate = CurrentStep.beforeValidate ?? [];
-    await Promise.all(beforeValidate.map((validate) => validate(form)));
+    await Promise.all(
+      beforeValidate.map((validate) =>
+        validate(form as UseFormReturn<Infer<S>>)
+      )
+    );
 
     for (const field of fieldsToValidate) {
-      const value = form.getValues(field as Path<ZodInfer<S>>);
+      const value = form.getValues(
+        field as Path<S extends Schema ? Infer<S> : any>
+      );
 
-      form.setValue(field as Path<ZodInfer<S>>, value, {
+      form.setValue(field as Path<S extends Schema ? Infer<S> : any>, value, {
         shouldValidate: true,
         shouldTouch: true,
       });
@@ -148,7 +159,9 @@ export function Form<
 
     const results = await Promise.all(
       fieldsToValidate.map((field) =>
-        form.trigger(field as Path<ZodInfer<S>>, { shouldFocus: true })
+        form.trigger(field as Path<S extends Schema ? Infer<S> : any>, {
+          shouldFocus: true,
+        })
       )
     );
 
@@ -210,10 +223,10 @@ export function Form<
               {Array.isArray(children) ? children[currentStep] : children}
               {showFormSecurityConfirmation && (
                 <FormOtpDialog
-                  name={"pincode" as Path<ZodInfer<S>>}
+                  name={"pincode" as Path<Infer<S>>}
                   open={showFormSecurityConfirmation}
                   onOpenChange={setShowFormSecurityConfirmation}
-                  control={form.control}
+                  control={form.control as Control<Infer<S>>}
                   onSubmit={() => {
                     handleSubmitWithAction().catch((error: Error) => {
                       console.error("Error submitting form:", error);

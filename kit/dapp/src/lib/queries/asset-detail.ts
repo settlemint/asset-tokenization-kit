@@ -4,8 +4,8 @@ import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
 import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
-import type { AssetType } from "@/lib/utils/zod";
 import type { Address } from "viem";
+import type { AssetType } from "../utils/typebox/asset-types";
 
 interface AssetDetailProps {
   assettype: AssetType;

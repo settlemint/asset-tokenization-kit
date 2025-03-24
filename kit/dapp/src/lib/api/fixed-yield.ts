@@ -1,12 +1,11 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { getFixedYieldDetail } from "@/lib/queries/fixed-yield/fixed-yield-detail";
 import { getFixedYieldList } from "@/lib/queries/fixed-yield/fixed-yield-list";
-import { FixedYieldTypeBox } from "@/lib/queries/fixed-yield/fixed-yield-schema";
-import { getFixedYield } from "@/lib/queries/fixed-yield/get-fixed-yield";
 import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia, NotFoundError } from "elysia";
 import { getAddress } from "viem";
+import { FixedYieldSchema } from "../queries/fixed-yield/fixed-yield-schema";
 
 export const FixedYieldApi = new Elysia({
   detail: {
@@ -33,7 +32,7 @@ export const FixedYieldApi = new Elysia({
         tags: ["yield"],
       },
       response: {
-        200: t.Array(FixedYieldTypeBox),
+        200: t.Array(FixedYieldSchema),
         ...defaultErrorSchema,
       },
     }
@@ -65,7 +64,7 @@ export const FixedYieldApi = new Elysia({
         }),
       }),
       response: {
-        200: FixedYieldTypeBox,
+        200: FixedYieldSchema,
         ...defaultErrorSchema,
       },
     }
@@ -73,8 +72,8 @@ export const FixedYieldApi = new Elysia({
   .get(
     "/bond/:bondAddress",
     async ({ params: { bondAddress } }) => {
-      const result = await getFixedYield({
-        bondAddress: getAddress(bondAddress),
+      const result = await getFixedYieldDetail({
+        address: getAddress(bondAddress),
       });
 
       if (!result) {
@@ -97,7 +96,7 @@ export const FixedYieldApi = new Elysia({
         }),
       }),
       response: {
-        200: FixedYieldTypeBox,
+        200: FixedYieldSchema,
         ...defaultErrorSchema,
       },
     }

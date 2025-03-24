@@ -74,7 +74,7 @@ export function CreateBondSchema({
           message: "bond.duplicate",
         },
       }),
-      valueInBaseCurrency: t.FiatCurrency({
+      valueInBaseCurrency: t.Amount(Number.MAX_SAFE_INTEGER, 0, 6, {
         description: "Value in base currency",
       }),
     },

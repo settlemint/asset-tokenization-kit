@@ -4,7 +4,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { mint } from "@/lib/mutations/mint/mint-action";
 import { MintSchema } from "@/lib/mutations/mint/mint-schema";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

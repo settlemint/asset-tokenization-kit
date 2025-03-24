@@ -1,6 +1,6 @@
 import { DetailPageHeader } from "@/app/[locale]/(private)/_components/detail-page-header";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";

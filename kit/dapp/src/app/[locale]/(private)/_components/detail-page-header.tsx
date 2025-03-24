@@ -6,7 +6,7 @@ import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import type { Address } from "viem";

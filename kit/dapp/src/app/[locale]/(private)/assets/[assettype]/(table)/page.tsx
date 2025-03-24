@@ -1,6 +1,6 @@
 import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";

@@ -2,7 +2,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import {
   FixedYieldFragment,
@@ -35,11 +35,5 @@ export const getFixedYieldList = cache(async () => {
     return [];
   }
 
-  return data.fixedYields.map((fixedYield: unknown) =>
-    safeParseWithLogging(
-      FixedYieldFragmentSchema,
-      fixedYield,
-      "fixed yield list"
-    )
-  );
+  return safeParse(t.Array(FixedYieldFragmentSchema), data.fixedYields || []);
 });

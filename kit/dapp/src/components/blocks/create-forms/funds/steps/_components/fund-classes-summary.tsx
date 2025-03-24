@@ -1,4 +1,4 @@
-import type { fundClasses } from "@/lib/utils/zod";
+import type { fundClasses } from "@/lib/utils/typebox/fund-classes";
 import { useTranslations } from "next-intl";
 
 export function FundClassesSummary({

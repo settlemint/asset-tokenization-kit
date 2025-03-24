@@ -10,7 +10,7 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import { ROLES } from "@/lib/config/roles";
 import type { PermissionWithRoles } from "@/lib/queries/asset/asset-users-detail";
 import { formatDate } from "@/lib/utils/date";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 import type { Address } from "viem";

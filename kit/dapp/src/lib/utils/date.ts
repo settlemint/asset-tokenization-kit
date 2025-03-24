@@ -1,4 +1,3 @@
-import type { TimeUnit } from "@/lib/utils/zod";
 import {
   formatDistance,
   formatDuration as formatDurationFns,
@@ -9,6 +8,7 @@ import {
 } from "date-fns";
 import { ar, de, ja } from "date-fns/locale";
 import { createFormatter, type Locale, useFormatter } from "next-intl";
+import type { TimeUnit } from "./typebox/time-units";
 
 const NUMERIC_REGEX = /^\d+$/;
 const timeZone = "Europe/Brussels";
