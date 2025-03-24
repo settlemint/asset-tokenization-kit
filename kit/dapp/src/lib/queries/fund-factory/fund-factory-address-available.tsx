@@ -30,5 +30,5 @@ export const isAddressAvailable = cache(async (address: Address) => {
 
   const fundExists = safeParse(FundExistsSchema, data);
 
-  return !fundExists.fund;
+  return !fundExists?.fund;
 });
