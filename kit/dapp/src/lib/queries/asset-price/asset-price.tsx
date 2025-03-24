@@ -1,4 +1,3 @@
-import { getUser } from "@/lib/auth/utils";
 import { type CurrencyCode, SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import { getFundList } from "@/lib/queries/fund/fund-list";
@@ -9,7 +8,7 @@ import { getCryptoCurrencyList } from "../cryptocurrency/cryptocurrency-list";
 import { getEquityList } from "../equity/equity-list";
 import { getStableCoinList } from "../stablecoin/stablecoin-list";
 import { getTokenizedDepositList } from "../tokenizeddeposit/tokenizeddeposit-list";
-import { getUserDetail } from "../user/user-detail";
+import { getCurrentUserDetail } from "../user/user-detail";
 
 const Settings = hasuraGraphql(`
   query Settings {
@@ -27,11 +26,7 @@ export const getTotalAssetPrice = cache(async () => {
   const [settingsResult, targetCurrency, ...assetsResult] = await Promise.all([
     hasuraClient.request(Settings),
     (async () => {
-      const currentUser = await getUser();
-      const userDetails = await getUserDetail(
-        { currentUser },
-        { id: currentUser.id }
-      );
+      const userDetails = await getCurrentUserDetail();
       return userDetails?.currency;
     })(),
     await getBondList(),

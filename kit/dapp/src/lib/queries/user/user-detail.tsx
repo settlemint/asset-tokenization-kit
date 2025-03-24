@@ -1,3 +1,4 @@
+import { getUser } from "@/lib/auth/utils";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
@@ -73,6 +74,64 @@ export interface UserDetailProps {
   address?: Address;
 }
 
+const getUserDetailFromIdOrAddress = async ({
+  id,
+  address,
+}: UserDetailProps) => {
+  if (!id && !address) {
+    throw new Error("Either id or address must be provided");
+  }
+
+  // Fetch user data from Hasura
+  const user = await (async () => {
+    if (id) {
+      const result = await hasuraClient.request(UserDetail, { id });
+      if (!result.user_by_pk) {
+        throw new Error(`User not found with ID ${id}`);
+      }
+      return safeParse(UserSchema, result.user_by_pk);
+    } else if (address) {
+      const result = await hasuraClient.request(UserDetailByWallet, {
+        address: getAddress(address as string),
+      });
+      if (!result.user || result.user.length === 0) {
+        throw new Error(`User not found with wallet address ${address}`);
+      }
+      return safeParse(UserSchema, result.user[0]);
+    } else {
+      throw new Error("Either id or address must be provided");
+    }
+  })();
+
+  // Fetch blockchain account data if wallet address is available
+  const account = user.wallet
+    ? await (async () => {
+        try {
+          const result = await theGraphClientKit.request(UserActivity, {
+            id: user.wallet.toLowerCase(),
+          });
+          if (!result.account) {
+            return undefined;
+          }
+          return safeParse(AccountSchema, result.account);
+        } catch (error) {
+          console.error("Error fetching user activity:", error);
+          return undefined;
+        }
+      })()
+    : undefined;
+
+  // Calculate additional fields
+  const calculatedFields = userCalculateFields(user, account);
+
+  // Return combined data
+  return {
+    ...account,
+    ...user,
+    ...calculatedFields,
+  };
+};
+
 /**
  * Fetches and combines user data with blockchain activity
  *
@@ -83,59 +142,17 @@ export interface UserDetailProps {
 export const getUserDetail = cache(
   withAccessControl(
     { requiredPermissions: { user: ["list"] } },
-    async ({ id, address }: UserDetailProps) => {
-      if (!id && !address) {
-        throw new Error("Either id or address must be provided");
-      }
-
-      // Fetch user data from Hasura
-      const user = await (async () => {
-        if (id) {
-          const result = await hasuraClient.request(UserDetail, { id });
-          if (!result.user_by_pk) {
-            throw new Error(`User not found with ID ${id}`);
-          }
-          return safeParse(UserSchema, result.user_by_pk);
-        } else if (address) {
-          const result = await hasuraClient.request(UserDetailByWallet, {
-            address: getAddress(address as string),
-          });
-          if (!result.user || result.user.length === 0) {
-            throw new Error(`User not found with wallet address ${address}`);
-          }
-          return safeParse(UserSchema, result.user[0]);
-        } else {
-          throw new Error("Either id or address must be provided");
-        }
-      })();
-
-      // Fetch blockchain account data if wallet address is available
-      const account = user.wallet
-        ? await (async () => {
-            try {
-              const result = await theGraphClientKit.request(UserActivity, {
-                id: user.wallet.toLowerCase(),
-              });
-              if (!result.account) {
-                return undefined;
-              }
-              return safeParse(AccountSchema, result.account);
-            } catch (error) {
-              console.error("Error fetching user activity:", error);
-              return undefined;
-            }
-          })()
-        : undefined;
-
-      // Calculate additional fields
-      const calculatedFields = userCalculateFields(user, account);
-
-      // Return combined data
-      return {
-        ...account,
-        ...user,
-        ...calculatedFields,
-      };
-    }
+    getUserDetailFromIdOrAddress
   )
 );
+
+/**
+ * Fetches and combines user data with blockchain activity for the current user
+ *
+ * @returns Combined user data with additional calculated metrics
+ * @throws Error if fetching fails or if neither id nor address is provided
+ */
+export const getCurrentUserDetail = cache(async () => {
+  const user = await getUser();
+  return getUserDetailFromIdOrAddress({ id: user.id });
+});

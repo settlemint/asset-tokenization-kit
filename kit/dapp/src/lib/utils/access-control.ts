@@ -45,7 +45,7 @@ export function withAccessControl<
       permission: requiredPermissions,
       role: userRole,
     });
-    if (hasPermission) {
+    if (!hasPermission) {
       throw new AccessControlError("Forbidden", 403);
     }
     return fn(...(args as Parameters<T>));

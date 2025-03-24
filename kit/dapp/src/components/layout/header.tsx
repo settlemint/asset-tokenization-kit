@@ -1,16 +1,11 @@
 import { UserDropdown } from "@/components/layout/user-dropdown";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { getUser } from "@/lib/auth/utils";
-import { getUserDetail } from "@/lib/queries/user/user-detail";
+import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { Search } from "../blocks/search/search";
 
 export default async function Header() {
-  const currentUser = await getUser();
-  const userDetails = await getUserDetail(
-    { currentUser },
-    { id: currentUser.id }
-  );
+  const userDetails = await getCurrentUserDetail();
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 bg-sidebar transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       <div className="flex items-center gap-2 px-4">

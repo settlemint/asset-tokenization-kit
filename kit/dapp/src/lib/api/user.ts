@@ -1,5 +1,8 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
-import { getUserDetail } from "@/lib/queries/user/user-detail";
+import {
+  getCurrentUserDetail,
+  getUserDetail,
+} from "@/lib/queries/user/user-detail";
 import { getUserList } from "@/lib/queries/user/user-list";
 import { UserDetailSchema, UserSchema } from "@/lib/queries/user/user-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
@@ -45,6 +48,9 @@ export const UserApi = new Elysia({
   .get(
     "/:id",
     async ({ user, params: { id } }) => {
+      if (id === user.id) {
+        return await getCurrentUserDetail();
+      }
       return await getUserDetail(
         {
           currentUser: user,
