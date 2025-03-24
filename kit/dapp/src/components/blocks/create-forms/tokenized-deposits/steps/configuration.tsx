@@ -3,7 +3,7 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { CreateTokenizedDepositInput } from "@/lib/mutations/tokenized-deposit/create/create-schema";
-import { timeUnits } from "@/lib/utils/zod";
+import { timeUnits } from "@/lib/utils/typebox/time-units";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 

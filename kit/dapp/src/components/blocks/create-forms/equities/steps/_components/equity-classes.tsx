@@ -1,6 +1,6 @@
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
-import type { equityClasses } from "@/lib/utils/zod";
+import type { equityClasses } from "@/lib/utils/typebox/equity-classes";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 

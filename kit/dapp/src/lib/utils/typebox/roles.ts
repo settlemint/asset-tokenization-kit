@@ -39,9 +39,9 @@ export const Roles = (options?: SchemaOptions) =>
 export const RoleMap = (options?: SchemaOptions) =>
   t.Object(
     {
-      DEFAULT_ADMIN_ROLE: t.Optional(t.MaybeEmpty(t.Boolean())),
-      SUPPLY_MANAGEMENT_ROLE: t.Optional(t.MaybeEmpty(t.Boolean())),
-      USER_MANAGEMENT_ROLE: t.Optional(t.MaybeEmpty(t.Boolean())),
+      DEFAULT_ADMIN_ROLE: t.Boolean(),
+      SUPPLY_MANAGEMENT_ROLE: t.Boolean(),
+      USER_MANAGEMENT_ROLE: t.Boolean(),
     },
     {
       ...options,
