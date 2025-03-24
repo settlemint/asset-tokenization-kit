@@ -173,11 +173,14 @@ export const OffchainAssetSchema = t.Object(
       description: "Ethereum address of the asset contract",
     }),
     isin: t.Optional(
-      t.Isin({
-        description: "International Securities Identification Number",
-      })
+      t.MaybeEmpty(
+        t.Isin({
+          description: "International Securities Identification Number",
+        })
+      )
     ),
-    value_in_base_currency: t.FiatCurrency({
+    value_in_base_currency: t.Number({
+      minimum: 0,
       description: "Value of the asset in the base currency",
     }),
   },

@@ -458,7 +458,9 @@
       },
       "pincode-dialog": {
         "description": "To sign the transaction, please enter your pincode for verification and authorization.",
-        "title": "Enter your pincode to confirm"
+        "title": "Enter your pincode to confirm",
+        "cancel": "Cancel",
+        "confirm": " Yes, confirm"
       },
       "progress": {
         "completed-step": "Completed step",
