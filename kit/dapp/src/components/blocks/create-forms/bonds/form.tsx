@@ -16,6 +16,7 @@ interface CreateBondFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
+  className?: string;
 }
 
 export function CreateBondForm({
