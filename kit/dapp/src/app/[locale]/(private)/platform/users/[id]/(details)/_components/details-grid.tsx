@@ -2,6 +2,7 @@ import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { Badge } from "@/components/ui/badge";
+import { getUser } from "@/lib/auth/utils";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/date";
@@ -14,8 +15,9 @@ type DetailsGridProps = {
 };
 
 export async function DetailsGrid({ id }: DetailsGridProps) {
+  const currentUser = await getUser();
   const [user, t, locale] = await Promise.all([
-    getUserDetail({ id }),
+    getUserDetail({ currentUser }, { id }),
     getTranslations("private.users"),
     getLocale(),
   ]);

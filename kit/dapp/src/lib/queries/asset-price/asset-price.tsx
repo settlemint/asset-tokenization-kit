@@ -27,8 +27,11 @@ export const getTotalAssetPrice = cache(async () => {
   const [settingsResult, targetCurrency, ...assetsResult] = await Promise.all([
     hasuraClient.request(Settings),
     (async () => {
-      const user = await getUser();
-      const userDetails = await getUserDetail({ id: user.id });
+      const currentUser = await getUser();
+      const userDetails = await getUserDetail(
+        { currentUser },
+        { id: currentUser.id }
+      );
       return userDetails?.currency;
     })(),
     await getBondList(),

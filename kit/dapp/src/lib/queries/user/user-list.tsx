@@ -1,4 +1,3 @@
-import type { User } from "@/lib/auth/types";
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
@@ -54,10 +53,9 @@ const UserActivity = theGraphGraphqlKit(
  * This function fetches user data from Hasura and activity data from TheGraph,
  * then returns a combined list of users with their details and calculated fields.
  */
-export const getUserList = cache((currentUser: Omit<User, "wallet">) => {
-  return withAccessControl(
+export const getUserList = cache(
+  withAccessControl(
     {
-      currentUser,
       requiredPermissions: {
         user: ["list"],
       },
@@ -108,5 +106,5 @@ export const getUserList = cache((currentUser: Omit<User, "wallet">) => {
 
       return usersWithActivity;
     }
-  );
-});
+  )
+);

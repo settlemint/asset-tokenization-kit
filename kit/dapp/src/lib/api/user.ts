@@ -26,7 +26,7 @@ export const UserApi = new Elysia({
   .get(
     "",
     async ({ user }) => {
-      return await getUserList(user);
+      return await getUserList({ currentUser: user });
     },
     {
       auth: true,
@@ -44,10 +44,15 @@ export const UserApi = new Elysia({
   )
   .get(
     "/:id",
-    async ({ params: { id } }) => {
-      return await getUserDetail({
-        id,
-      });
+    async ({ user, params: { id } }) => {
+      return await getUserDetail(
+        {
+          currentUser: user,
+        },
+        {
+          id,
+        }
+      );
     },
     {
       auth: true,
@@ -70,10 +75,15 @@ export const UserApi = new Elysia({
   )
   .get(
     "/wallet/:address",
-    async ({ params: { address } }) => {
-      return await getUserDetail({
-        address: getAddress(address),
-      });
+    async ({ user, params: { address } }) => {
+      return await getUserDetail(
+        {
+          currentUser: user,
+        },
+        {
+          address: getAddress(address),
+        }
+      );
     },
     {
       auth: true,

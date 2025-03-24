@@ -1,5 +1,6 @@
 import { AssetDistribution } from "@/components/blocks/charts/assets/asset-distribution";
 import { TransactionsHistory } from "@/components/blocks/transactions-table/transactions-history";
+import { getUser } from "@/lib/auth/utils";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { startOfDay, subMonths, subYears } from "date-fns";
@@ -13,7 +14,8 @@ export default async function UserDetailPage({
 }) {
   const { id } = await params;
   const t = await getTranslations("private.users.detail.charts");
-  const user = await getUserDetail({ id });
+  const currentUser = await getUser();
+  const user = await getUserDetail({ currentUser }, { id });
   const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
   const oneYearAgo = startOfDay(subYears(new Date(), 1));
   const [dataOneMonth, dataOneYear] = await Promise.all([

@@ -6,8 +6,11 @@ import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { Search } from "../blocks/search/search";
 
 export default async function Header() {
-  const user = await getUser();
-  const userDetails = await getUserDetail({ id: user.id });
+  const currentUser = await getUser();
+  const userDetails = await getUserDetail(
+    { currentUser },
+    { id: currentUser.id }
+  );
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 bg-sidebar transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       <div className="flex items-center gap-2 px-4">

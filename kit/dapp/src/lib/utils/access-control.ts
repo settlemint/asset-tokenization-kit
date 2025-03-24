@@ -11,12 +11,12 @@ export class AccessControlError extends Error {
   }
 }
 
-export function withAccessControl<T>(
+export function withAccessControl<
+  T extends (...args: Parameters<T>) => ReturnType<T>,
+>(
   {
-    currentUser,
     requiredPermissions,
   }: {
-    currentUser: Omit<User, "wallet">;
     requiredPermissions: {
       user?: (
         | "create"
@@ -30,15 +30,24 @@ export function withAccessControl<T>(
       session?: ("list" | "revoke" | "delete")[];
     };
   },
-  fn: () => Promise<T>
+  fn: T
 ) {
-  const userRole = currentUser.role ?? "";
-  const hasPermission = authClient.admin.checkRolePermission({
-    permission: requiredPermissions,
-    role: userRole,
-  });
-  if (hasPermission) {
-    throw new AccessControlError("Forbidden", 403);
-  }
-  return fn();
+  return (
+    {
+      currentUser,
+    }: {
+      currentUser: Omit<User, "wallet">;
+    },
+    ...args: Parameters<T>
+  ) => {
+    const userRole = currentUser.role ?? "";
+    const hasPermission = authClient.admin.checkRolePermission({
+      permission: requiredPermissions,
+      role: userRole,
+    });
+    if (hasPermission) {
+      throw new AccessControlError("Forbidden", 403);
+    }
+    return fn(...(args as Parameters<T>));
+  };
 }

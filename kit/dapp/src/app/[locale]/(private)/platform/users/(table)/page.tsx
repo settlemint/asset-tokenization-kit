@@ -6,8 +6,8 @@ import { getTranslations } from "next-intl/server";
 import { Columns, icons } from "./_components/columns";
 
 export default async function UsersPage() {
-  const user = await getUser();
-  const users = await getUserList(user);
+  const currentUser = await getUser();
+  const users = await getUserList({ currentUser });
   const t = await getTranslations("private.users");
 
   return (

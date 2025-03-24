@@ -3,6 +3,7 @@ import { getUserDetail } from "@/lib/queries/user/user-detail";
 
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
+import { getUser } from "@/lib/auth/utils";
 import { getTranslations } from "next-intl/server";
 
 interface LatestTransactionsPageProps {
@@ -13,8 +14,9 @@ export default async function LatestEventsPage({
   params,
 }: LatestTransactionsPageProps) {
   const { id } = await params;
+  const currentUser = await getUser();
   const t = await getTranslations("private.users.latest-events");
-  const user = await getUserDetail({ id });
+  const user = await getUserDetail({ currentUser }, { id });
 
   return (
     <>
