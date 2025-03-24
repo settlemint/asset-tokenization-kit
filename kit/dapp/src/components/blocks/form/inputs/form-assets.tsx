@@ -46,6 +46,7 @@ type RecentAsset = {
 
 const MAX_RECENT_ASSETS = 5;
 const LOCAL_STORAGE_KEY = "recently-selected-assets";
+const INITIAL_RECENT_ASSETS: RecentAsset[] = [];
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
@@ -153,7 +154,7 @@ function FormAssetsList({
   // Get recently selected assets from local storage
   const [recentAssets, setRecentAssets] = useLocalStorage<RecentAsset[]>(
     LOCAL_STORAGE_KEY,
-    []
+    INITIAL_RECENT_ASSETS
   );
 
   // Use SWR for data fetching with caching
