@@ -184,7 +184,6 @@ export const getAssetEventsList = cache(
       .map((event) => {
         const eventName = event.__typename;
         let validatedEvent = null;
-        console.log(event);
         try {
           switch (eventName) {
             case "AssetCreatedEvent":

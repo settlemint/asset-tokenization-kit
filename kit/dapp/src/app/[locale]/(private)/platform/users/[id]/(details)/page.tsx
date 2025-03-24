@@ -20,10 +20,12 @@ export default async function UserDetailPage({
     getTransactionsTimeline({
       granularity: "DAY",
       timelineStartDate: oneMonthAgo,
+      from: user.wallet,
     }),
     getTransactionsTimeline({
       granularity: "MONTH",
       timelineStartDate: oneYearAgo,
+      from: user.wallet,
     }),
   ]);
 
