@@ -35,8 +35,8 @@ const StableCoinFactoryCreate = portalGraphql(`
  * Stores additional metadata about the stablecoin in Hasura
  */
 const CreateOffchainStablecoin = hasuraGraphql(`
-    mutation CreateOffchainStablecoin($id: String!, $isin: String, $value_in_base_currency: numeric) {
-      insert_asset_one(object: {id: $id, isin: $isin, value_in_base_currency: $value_in_base_currency}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
+    mutation CreateOffchainStablecoin($id: String!, $value_in_base_currency: numeric) {
+      insert_asset_one(object: {id: $id, value_in_base_currency: $value_in_base_currency}, on_conflict: {constraint: asset_pkey, update_columns: value_in_base_currency}) {
         id
       }
   }
@@ -52,7 +52,6 @@ export const createStablecoin = action
         symbol,
         decimals,
         pincode,
-        isin,
         collateralLivenessValue,
         collateralLivenessTimeUnit,
         predictedAddress,
@@ -62,7 +61,6 @@ export const createStablecoin = action
     }) => {
       await hasuraClient.request(CreateOffchainStablecoin, {
         id: predictedAddress,
-        isin,
         value_in_base_currency: String(valueInBaseCurrency),
       });
 

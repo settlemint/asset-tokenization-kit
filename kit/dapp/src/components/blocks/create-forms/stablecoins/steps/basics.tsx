@@ -27,12 +27,6 @@ export function Basics() {
             textOnly
             required
           />
-          <FormInput
-            control={control}
-            name="isin"
-            label={t("parameters.common.isin-label")}
-            placeholder={t("parameters.stablecoins.isin-placeholder")}
-          />
         </div>
         <FormInput
           control={control}
