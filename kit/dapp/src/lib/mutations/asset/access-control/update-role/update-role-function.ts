@@ -1,3 +1,4 @@
+import type { User } from "@/lib/auth/types";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { grantRole } from "../grant-role/grant-role-action";
 import { revokeRole } from "../revoke-role/revoke-role-action";
@@ -11,8 +12,10 @@ import type { UpdateRolesInput } from "./update-role-schema";
  */
 export async function updateRolesFunction({
   parsedInput: { address, roles, userAddress, pincode, assettype },
+  ctx: { user },
 }: {
   parsedInput: UpdateRolesInput;
+  ctx: { user: User };
 }) {
   // Separate roles to grant and revoke
   const rolesToEnable: Record<string, boolean> = {};
