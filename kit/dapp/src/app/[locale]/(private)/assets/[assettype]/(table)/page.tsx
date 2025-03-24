@@ -1,3 +1,4 @@
+import { AddButton } from "@/app/[locale]/(private)/assets/[assettype]/(table)/_components/add-button";
 import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
 import { metadata } from "@/lib/config/metadata";
@@ -27,6 +28,7 @@ export default async function AssetTypeTablePage({ params }: PageProps) {
       <PageHeader
         title={t(`page-title.${assettype}`)}
         section={t("asset-management")}
+        button={<AddButton assettype={assettype} />}
       />
       <TopInfo title={t(`topinfo-title.${assettype}`)}>
         <p>{t(`topinfo-description.${assettype}`)}</p>
