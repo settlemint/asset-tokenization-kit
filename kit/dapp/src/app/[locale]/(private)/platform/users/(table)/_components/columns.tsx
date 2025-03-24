@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { cn } from "@/lib/utils";
-import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   BadgeCheck,
@@ -19,7 +18,7 @@ import {
   ShieldCheck,
   User2,
 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { type ComponentType, Suspense } from "react";
 import { BanUserAction } from "./actions/ban-user-action";
 import { ChangeRoleAction } from "./actions/change-role-action";
@@ -38,12 +37,8 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
   notVerified: BadgeX,
 };
 
-export function columns() {
-  // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export function Columns() {
   const t = useTranslations("private.users");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const locale = useLocale();
 
   return [
     columnHelper.accessor("name", {
@@ -146,16 +141,6 @@ export function columns() {
             </span>
           </>
         );
-      },
-      enableColumnFilter: false,
-    }),
-    columnHelper.accessor("last_activity_at", {
-      header: t("columns.last_activity"),
-      cell: ({ getValue }) => {
-        const lastActivity = getValue();
-        return lastActivity
-          ? formatDate(lastActivity, { type: "distance", locale: locale })
-          : "-";
       },
       enableColumnFilter: false,
     }),

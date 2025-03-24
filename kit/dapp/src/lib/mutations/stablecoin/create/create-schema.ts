@@ -1,4 +1,4 @@
-import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/address-available";
+import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
@@ -16,7 +16,6 @@ export const CreateStablecoinSchema = z.object({
   assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
-  isin: z.isin().optional(),
   collateralLivenessValue: z
     .number()
     .or(z.string())

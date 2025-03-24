@@ -3,7 +3,7 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
-import { getPredictedAddress } from "@/lib/queries/equity-factory/predict-address";
+import { getPredictedAddress } from "@/lib/queries/equity-factory/equity-factory-predict-address";
 import { formatNumber } from "@/lib/utils/number";
 import type { equityCategories, equityClasses } from "@/lib/utils/zod";
 import { DollarSign, Settings } from "lucide-react";

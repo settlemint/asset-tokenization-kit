@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { exchangeRate } from "@/lib/db/schema-exchange-rates";
-import { type CurrencyCode, FiatCurrencies } from "@/lib/db/schema-settings";
+import type { CurrencyCode } from "@/lib/db/schema-settings";
+import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { z } from "@/lib/utils/zod";
 import { format } from "date-fns";
 import { and, eq } from "drizzle-orm";
@@ -61,8 +62,8 @@ async function calculateCrossRates(): Promise<Map<string, number>> {
   const usdRates = await fetchExchangeRates("USD");
 
   // Calculate cross rates for all currency pairs
-  for (const baseCurrency of FiatCurrencies) {
-    for (const quoteCurrency of FiatCurrencies) {
+  for (const baseCurrency of fiatCurrencies) {
+    for (const quoteCurrency of fiatCurrencies) {
       if (baseCurrency === quoteCurrency) {
         continue;
       }
@@ -86,8 +87,8 @@ export async function updateExchangeRates(today: string) {
   const ratesMap = await calculateCrossRates();
 
   // Update database
-  for (const baseCurrency of FiatCurrencies) {
-    for (const quoteCurrency of FiatCurrencies) {
+  for (const baseCurrency of fiatCurrencies) {
+    for (const quoteCurrency of fiatCurrencies) {
       if (baseCurrency === quoteCurrency) continue;
 
       const rate = ratesMap.get(`${baseCurrency}${quoteCurrency}`);

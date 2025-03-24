@@ -23,5 +23,5 @@ export function AssetStatusPill({
     );
   }
 
-  return <ActivePill paused={assetBalance.asset.paused} />;
+  return <ActivePill paused={assetBalance.asset.paused ?? false} />;
 }

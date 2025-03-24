@@ -1,4 +1,9 @@
-import { AuthCard } from "@daveyplate/better-auth-ui";
+import { authViewPaths } from "@daveyplate/better-auth-ui/server";
+import { AuthView } from "./view";
+
+export function generateStaticParams() {
+  return Object.values(authViewPaths).map((pathname) => ({ pathname }));
+}
 
 export default async function AuthPage({
   params,
@@ -7,9 +12,5 @@ export default async function AuthPage({
 }) {
   const { pathname } = await params;
 
-  return (
-    <div className="my-auto flex flex-col items-center">
-      <AuthCard pathname={pathname} />
-    </div>
-  );
+  return <AuthView pathname={pathname} />;
 }

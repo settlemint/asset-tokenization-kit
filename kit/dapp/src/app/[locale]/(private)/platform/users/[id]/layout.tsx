@@ -3,7 +3,7 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import { PageHeader } from "@/components/layout/page-header";
-import { type UserDetail, getUserDetail } from "@/lib/queries/user/user-detail";
+import { getUserDetail } from "@/lib/queries/user/user-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
@@ -27,7 +27,9 @@ export async function generateMetadata({
   };
 }
 
-const getTabs = async (user: UserDetail): Promise<TabItemProps[]> => {
+const getTabs = async (
+  user: Awaited<ReturnType<typeof getUserDetail>>
+): Promise<TabItemProps[]> => {
   const t = await getTranslations("private.users.detail.tabs");
   return [
     {

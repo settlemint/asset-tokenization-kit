@@ -21,6 +21,8 @@ const CURRENCY_NAMES: Record<CurrencyCode, string> = {
   AED: "AED (د.إ)",
   SGD: "SGD ($)",
   SAR: "SAR (﷼)",
+  GBP: "GBP (£)",
+  CHF: "CHF (₣)",
 };
 
 // Available currencies

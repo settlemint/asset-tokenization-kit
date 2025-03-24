@@ -5,55 +5,61 @@ import {
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { formatDate } from "@/lib/utils/date";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox";
 import { getLocale, getTranslations } from "next-intl/server";
 import { cache } from "react";
 import type { Address } from "viem";
 import {
   ApprovalEventFragment,
-  ApprovalEventFragmentSchema,
   AssetCreatedEventFragment,
-  AssetCreatedEventFragmentSchema,
   BondMaturedEventFragment,
-  BondMaturedEventFragmentSchema,
   BondRedeemedEventFragment,
-  BondRedeemedEventFragmentSchema,
   BurnEventFragment,
-  BurnEventFragmentSchema,
   CollateralUpdatedEventFragment,
-  CollateralUpdatedEventFragmentSchema,
   ManagementFeeCollectedEventFragment,
-  ManagementFeeCollectedEventFragmentSchema,
   MintEventFragment,
-  MintEventFragmentSchema,
-  type NormalizedEventsListItem,
   PausedEventFragment,
-  PausedEventFragmentSchema,
   PerformanceFeeCollectedEventFragment,
-  PerformanceFeeCollectedEventFragmentSchema,
   RoleAdminChangedEventFragment,
-  RoleAdminChangedEventFragmentSchema,
   RoleGrantedEventFragment,
-  RoleGrantedEventFragmentSchema,
   RoleRevokedEventFragment,
-  RoleRevokedEventFragmentSchema,
   TokenWithdrawnEventFragment,
-  TokenWithdrawnEventFragmentSchema,
   TokensFrozenEventFragment,
-  TokensFrozenEventFragmentSchema,
   TransferEventFragment,
-  TransferEventFragmentSchema,
   UnderlyingAssetTopUpEventFragment,
-  UnderlyingAssetTopUpEventFragmentSchema,
   UnderlyingAssetWithdrawnEventFragment,
-  UnderlyingAssetWithdrawnEventFragmentSchema,
   UnpausedEventFragment,
-  UnpausedEventFragmentSchema,
+  UserAllowedEventFragment,
   UserBlockedEventFragment,
-  UserBlockedEventFragmentSchema,
+  UserDisallowedEventFragment,
   UserUnblockedEventFragment,
-  UserUnblockedEventFragmentSchema,
 } from "./asset-events-fragments";
+import {
+  ApprovalEventSchema,
+  AssetCreatedEventSchema,
+  BondMaturedEventSchema,
+  BondRedeemedEventSchema,
+  BurnEventSchema,
+  CollateralUpdatedEventSchema,
+  ManagementFeeCollectedEventSchema,
+  MintEventSchema,
+  PausedEventSchema,
+  PerformanceFeeCollectedEventSchema,
+  RoleAdminChangedEventSchema,
+  RoleGrantedEventSchema,
+  RoleRevokedEventSchema,
+  TokenWithdrawnEventSchema,
+  TokensFrozenEventSchema,
+  TransferEventSchema,
+  UnderlyingAssetTopUpEventSchema,
+  UnderlyingAssetWithdrawnEventSchema,
+  UnpausedEventSchema,
+  UserAllowedEventSchema,
+  UserBlockedEventSchema,
+  UserDisallowedEventSchema,
+  UserUnblockedEventSchema,
+  type NormalizedEventsListItem,
+} from "./asset-events-schema";
 
 /**
  * GraphQL query to fetch asset events
@@ -88,6 +94,8 @@ query AssetEventsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
     ...UnpausedEventFragment
     ...UserBlockedEventFragment
     ...UserUnblockedEventFragment
+    ...UserAllowedEventFragment
+    ...UserDisallowedEventFragment
     ...UnderlyingAssetTopUpEventFragment
     ...UnderlyingAssetWithdrawnEventFragment
   }
@@ -114,6 +122,8 @@ query AssetEventsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
     UnpausedEventFragment,
     UserBlockedEventFragment,
     UserUnblockedEventFragment,
+    UserAllowedEventFragment,
+    UserDisallowedEventFragment,
     UnderlyingAssetTopUpEventFragment,
     UnderlyingAssetWithdrawnEventFragment,
   ]
@@ -173,200 +183,158 @@ export const getAssetEventsList = cache(
     const validatedEvents = events
       .map((event) => {
         const eventName = event.__typename;
-
-        switch (eventName) {
-          case "AssetCreatedEvent":
-            return {
-              ...safeParseWithLogging(
-                AssetCreatedEventFragmentSchema,
-                event,
-                "AssetCreatedEvent"
-              ),
-              prettyName: t("AssetCreatedEvent"),
-            };
-          case "ApprovalEvent":
-            return {
-              ...safeParseWithLogging(
-                ApprovalEventFragmentSchema,
-                event,
-                "ApprovalEvent"
-              ),
-              prettyName: t("ApprovalEvent"),
-            };
-          case "BondMaturedEvent":
-            return {
-              ...safeParseWithLogging(
-                BondMaturedEventFragmentSchema,
-                event,
-                "BondMaturedEvent"
-              ),
-              prettyName: t("BondMaturedEvent"),
-            };
-          case "BondRedeemedEvent":
-            return {
-              ...safeParseWithLogging(
-                BondRedeemedEventFragmentSchema,
-                event,
-                "BondRedeemedEvent"
-              ),
-              prettyName: t("BondRedeemedEvent"),
-            };
-          case "BurnEvent":
-            return {
-              ...safeParseWithLogging(
-                BurnEventFragmentSchema,
-                event,
-                "BurnEvent"
-              ),
-              prettyName: t("BurnEvent"),
-            };
-          case "CollateralUpdatedEvent":
-            return {
-              ...safeParseWithLogging(
-                CollateralUpdatedEventFragmentSchema,
-                event,
-                "CollateralUpdatedEvent"
-              ),
-              prettyName: t("CollateralUpdatedEvent"),
-            };
-          case "ManagementFeeCollectedEvent":
-            return {
-              ...safeParseWithLogging(
-                ManagementFeeCollectedEventFragmentSchema,
-                event,
-                "ManagementFeeCollectedEvent"
-              ),
-              prettyName: t("ManagementFeeCollectedEvent"),
-            };
-          case "MintEvent":
-            return {
-              ...safeParseWithLogging(
-                MintEventFragmentSchema,
-                event,
-                "MintEvent"
-              ),
-              prettyName: t("MintEvent"),
-            };
-          case "PausedEvent":
-            return {
-              ...safeParseWithLogging(
-                PausedEventFragmentSchema,
-                event,
-                "PausedEvent"
-              ),
-              prettyName: t("PausedEvent"),
-            };
-          case "PerformanceFeeCollectedEvent":
-            return {
-              ...safeParseWithLogging(
-                PerformanceFeeCollectedEventFragmentSchema,
-                event,
-                "PerformanceFeeCollectedEvent"
-              ),
-              prettyName: t("PerformanceFeeCollectedEvent"),
-            };
-          case "RoleAdminChangedEvent":
-            return {
-              ...safeParseWithLogging(
-                RoleAdminChangedEventFragmentSchema,
-                event,
-                "RoleAdminChangedEvent"
-              ),
-              prettyName: t("RoleAdminChangedEvent"),
-            };
-          case "RoleGrantedEvent":
-            return {
-              ...safeParseWithLogging(
-                RoleGrantedEventFragmentSchema,
-                event,
-                "RoleGrantedEvent"
-              ),
-              prettyName: t("RoleGrantedEvent"),
-            };
-          case "RoleRevokedEvent":
-            return {
-              ...safeParseWithLogging(
-                RoleRevokedEventFragmentSchema,
-                event,
-                "RoleRevokedEvent"
-              ),
-              prettyName: t("RoleRevokedEvent"),
-            };
-          case "TokenWithdrawnEvent":
-            return {
-              ...safeParseWithLogging(
-                TokenWithdrawnEventFragmentSchema,
-                event,
-                "TokenWithdrawnEvent"
-              ),
-              prettyName: t("TokenWithdrawnEvent"),
-            };
-          case "TokensFrozenEvent":
-            return {
-              ...safeParseWithLogging(
-                TokensFrozenEventFragmentSchema,
-                event,
-                "TokensFrozenEvent"
-              ),
-              prettyName: t("TokensFrozenEvent"),
-            };
-          case "TransferEvent":
-            return {
-              ...safeParseWithLogging(
-                TransferEventFragmentSchema,
-                event,
-                "TransferEvent"
-              ),
-              prettyName: t("TransferEvent"),
-            };
-          case "UnpausedEvent":
-            return {
-              ...safeParseWithLogging(
-                UnpausedEventFragmentSchema,
-                event,
-                "UnpausedEvent"
-              ),
-              prettyName: t("UnpausedEvent"),
-            };
-          case "UserBlockedEvent":
-            return {
-              ...safeParseWithLogging(
-                UserBlockedEventFragmentSchema,
-                event,
-                "UserBlockedEvent"
-              ),
-              prettyName: t("UserBlockedEvent"),
-            };
-          case "UserUnblockedEvent":
-            return {
-              ...safeParseWithLogging(
-                UserUnblockedEventFragmentSchema,
-                event,
-                "UserUnblockedEvent"
-              ),
-              prettyName: t("UserUnblockedEvent"),
-            };
-          case "UnderlyingAssetTopUpEvent":
-            return {
-              ...safeParseWithLogging(
-                UnderlyingAssetTopUpEventFragmentSchema,
-                event,
-                "UnderlyingAssetTopUpEvent"
-              ),
-              prettyName: t("UnderlyingAssetTopUpEvent"),
-            };
-          case "UnderlyingAssetWithdrawnEvent":
-            return {
-              ...safeParseWithLogging(
-                UnderlyingAssetWithdrawnEventFragmentSchema,
-                event,
-                "UnderlyingAssetWithdrawnEvent"
-              ),
-              prettyName: t("UnderlyingAssetWithdrawnEvent"),
-            };
-          default:
-            return null;
+        let validatedEvent = null;
+        console.log(event);
+        try {
+          switch (eventName) {
+            case "AssetCreatedEvent":
+              validatedEvent = {
+                ...safeParse(AssetCreatedEventSchema, event),
+                prettyName: t("AssetCreatedEvent"),
+              };
+              break;
+            case "ApprovalEvent":
+              validatedEvent = {
+                ...safeParse(ApprovalEventSchema, event),
+                prettyName: t("ApprovalEvent"),
+              };
+              break;
+            case "BondMaturedEvent":
+              validatedEvent = {
+                ...safeParse(BondMaturedEventSchema, event),
+                prettyName: t("BondMaturedEvent"),
+              };
+              break;
+            case "BondRedeemedEvent":
+              validatedEvent = {
+                ...safeParse(BondRedeemedEventSchema, event),
+                prettyName: t("BondRedeemedEvent"),
+              };
+              break;
+            case "BurnEvent":
+              validatedEvent = {
+                ...safeParse(BurnEventSchema, event),
+                prettyName: t("BurnEvent"),
+              };
+              break;
+            case "CollateralUpdatedEvent":
+              validatedEvent = {
+                ...safeParse(CollateralUpdatedEventSchema, event),
+                prettyName: t("CollateralUpdatedEvent"),
+              };
+              break;
+            case "ManagementFeeCollectedEvent":
+              validatedEvent = {
+                ...safeParse(ManagementFeeCollectedEventSchema, event),
+                prettyName: t("ManagementFeeCollectedEvent"),
+              };
+              break;
+            case "MintEvent":
+              validatedEvent = {
+                ...safeParse(MintEventSchema, event),
+                prettyName: t("MintEvent"),
+              };
+              break;
+            case "PausedEvent":
+              validatedEvent = {
+                ...safeParse(PausedEventSchema, event),
+                prettyName: t("PausedEvent"),
+              };
+              break;
+            case "PerformanceFeeCollectedEvent":
+              validatedEvent = {
+                ...safeParse(PerformanceFeeCollectedEventSchema, event),
+                prettyName: t("PerformanceFeeCollectedEvent"),
+              };
+              break;
+            case "RoleAdminChangedEvent":
+              validatedEvent = {
+                ...safeParse(RoleAdminChangedEventSchema, event),
+                prettyName: t("RoleAdminChangedEvent"),
+              };
+              break;
+            case "RoleGrantedEvent":
+              validatedEvent = {
+                ...safeParse(RoleGrantedEventSchema, event),
+                prettyName: t("RoleGrantedEvent"),
+              };
+              break;
+            case "RoleRevokedEvent":
+              validatedEvent = {
+                ...safeParse(RoleRevokedEventSchema, event),
+                prettyName: t("RoleRevokedEvent"),
+              };
+              break;
+            case "TokenWithdrawnEvent":
+              validatedEvent = {
+                ...safeParse(TokenWithdrawnEventSchema, event),
+                prettyName: t("TokenWithdrawnEvent"),
+              };
+              break;
+            case "TokensFrozenEvent":
+              validatedEvent = {
+                ...safeParse(TokensFrozenEventSchema, event),
+                prettyName: t("TokensFrozenEvent"),
+              };
+              break;
+            case "TransferEvent":
+              validatedEvent = {
+                ...safeParse(TransferEventSchema, event),
+                prettyName: t("TransferEvent"),
+              };
+              break;
+            case "UnpausedEvent":
+              validatedEvent = {
+                ...safeParse(UnpausedEventSchema, event),
+                prettyName: t("UnpausedEvent"),
+              };
+              break;
+            case "UserBlockedEvent":
+              validatedEvent = {
+                ...safeParse(UserBlockedEventSchema, event),
+                prettyName: t("UserBlockedEvent"),
+              };
+              break;
+            case "UserUnblockedEvent":
+              validatedEvent = {
+                ...safeParse(UserUnblockedEventSchema, event),
+                prettyName: t("UserUnblockedEvent"),
+              };
+              break;
+            case "UserAllowedEvent":
+              validatedEvent = {
+                ...safeParse(UserAllowedEventSchema, event),
+                prettyName: t("UserAllowedEvent"),
+              };
+              break;
+            case "UserDisallowedEvent":
+              validatedEvent = {
+                ...safeParse(UserDisallowedEventSchema, event),
+                prettyName: t("UserDisallowedEvent"),
+              };
+              break;
+            case "UnderlyingAssetTopUpEvent":
+              validatedEvent = {
+                ...safeParse(UnderlyingAssetTopUpEventSchema, event),
+                prettyName: t("UnderlyingAssetTopUpEvent"),
+              };
+              break;
+            case "UnderlyingAssetWithdrawnEvent":
+              validatedEvent = {
+                ...safeParse(UnderlyingAssetWithdrawnEventSchema, event),
+                prettyName: t("UnderlyingAssetWithdrawnEvent"),
+              };
+              break;
+            default:
+              console.error(`Unknown event type: ${eventName}`);
+              validatedEvent = null;
+          }
+        } catch (error) {
+          console.error(`Error validating ${eventName} event:`, error);
+          validatedEvent = null;
         }
+
+        return validatedEvent;
       })
       .filter((event) => event !== null);
 

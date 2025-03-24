@@ -2,7 +2,7 @@ import { DataTable } from "@/components/blocks/data-table/data-table";
 import { auth } from "@/lib/auth/auth";
 import { getUser } from "@/lib/auth/utils";
 import { headers } from "next/headers";
-import { columns, icons } from "./_components/api-key-columns";
+import { Columns, icons } from "./_components/api-key-columns";
 
 export default async function ApiKeysPage() {
   const user = await getUser();
@@ -15,7 +15,7 @@ export default async function ApiKeysPage() {
 
   return (
     <DataTable
-      columns={columns}
+      columns={Columns}
       data={apiKeys}
       icons={icons}
       name={"api-keys"}

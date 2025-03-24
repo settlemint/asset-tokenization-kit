@@ -3,15 +3,12 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import {
-  BondFragment,
-  BondFragmentSchema,
-  OffchainBondFragment,
-  OffchainBondFragmentSchema,
-} from "./bond-fragment";
+import { bondCalculateFields } from "./bond-calculated";
+import { BondFragment, OffchainBondFragment } from "./bond-fragment";
+import { OffChainBondSchema, OnChainBondSchema } from "./bond-schema";
 
 /**
  * GraphQL query to fetch on-chain bond details from The Graph
@@ -57,37 +54,32 @@ export interface BondDetailProps {
  * @throws Error if fetching or parsing fails
  */
 export const getBondDetail = cache(async ({ address }: BondDetailProps) => {
-  const normalizedAddress = getAddress(address);
-
-  const [data, dbBond] = await Promise.all([
-    theGraphClientKit.request(BondDetail, { id: address }),
-    hasuraClient.request(OffchainBondDetail, { id: normalizedAddress }),
+  const [onChainBond, offChainBond] = await Promise.all([
+    (async () => {
+      const response = await theGraphClientKit.request(BondDetail, {
+        id: address,
+      });
+      if (!response.bond) {
+        throw new Error("Bond not found");
+      }
+      return safeParse(OnChainBondSchema, response.bond);
+    })(),
+    (async () => {
+      const response = await hasuraClient.request(OffchainBondDetail, {
+        id: getAddress(address),
+      });
+      if (response.asset.length === 0) {
+        return undefined;
+      }
+      return safeParse(OffChainBondSchema, response.asset[0]);
+    })(),
   ]);
 
-  const bond = safeParseWithLogging(BondFragmentSchema, data.bond, "bond");
-  const offchainBond = dbBond.asset[0]
-    ? safeParseWithLogging(
-        OffchainBondFragmentSchema,
-        dbBond.asset[0],
-        "offchain bond"
-      )
-    : undefined;
-
-  const topHoldersSum = bond.holders.reduce(
-    (sum, holder) => sum + holder.valueExact,
-    0n
-  );
-  const concentration =
-    bond.totalSupplyExact === 0n
-      ? 0
-      : Number((topHoldersSum * 100n) / bond.totalSupplyExact);
+  const calculatedFields = bondCalculateFields(onChainBond, offChainBond);
 
   return {
-    ...bond,
-    ...{
-      private: false,
-      ...offchainBond,
-    },
-    concentration,
+    ...onChainBond,
+    ...offChainBond,
+    ...calculatedFields,
   };
 });

@@ -1,17 +1,14 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
-import {
-  type AssetBalance,
-  AssetBalanceFragment,
-  AssetBalanceFragmentSchema,
-} from "@/lib/queries/asset-balance/asset-balance-fragment";
+import { AssetBalanceFragment } from "@/lib/queries/asset-balance/asset-balance-fragment";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox";
 import BigNumber from "bignumber.js";
 import { cache } from "react";
-import { type Address, getAddress } from "viem";
+import { getAddress, type Address } from "viem";
+import { AssetBalanceSchema, type AssetBalance } from "./asset-balance-schema";
 
 const UserAssetsBalance = theGraphGraphqlKit(
   `
@@ -40,10 +37,17 @@ export const getUserAssetsBalance = cache(async (wallet: Address) => {
     return pageResult.account?.balances ?? [];
   });
 
-  // Parse and validate the data using Zod schemas
-  const validatedUserAssetsBalance = userAssetsBalance.map((asset) =>
-    safeParseWithLogging(AssetBalanceFragmentSchema, asset, "balance")
-  );
+  // Parse and validate the data using TypeBox schema
+  const validatedUserAssetsBalance = userAssetsBalance
+    .map((asset) => {
+      try {
+        return safeParse(AssetBalanceSchema, asset);
+      } catch (error) {
+        console.error("Error validating asset balance:", error);
+        return null;
+      }
+    })
+    .filter((balance): balance is AssetBalance => balance !== null);
 
   if (!validatedUserAssetsBalance.length) {
     return {

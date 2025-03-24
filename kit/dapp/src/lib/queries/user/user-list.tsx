@@ -1,16 +1,15 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
-import {
-  AccountFragment,
-  AccountFragmentSchema,
-} from "@/lib/queries/accounts/accounts-fragment";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
-import { UserFragment, UserFragmentSchema } from "./user-fragment";
+import { getAddress } from "viem";
+import { userCalculateFields } from "./user-calculated";
+import { AccountFragment, UserFragment } from "./user-fragment";
+import { AccountSchema, UserSchema } from "./user-schema";
 
 /**
  * GraphQL query to fetch user list from Hasura
@@ -51,7 +50,7 @@ const UserActivity = theGraphGraphqlKit(
  *
  * @remarks
  * This function fetches user data from Hasura and activity data from TheGraph,
- * then returns a combined list of users with their details and last activity.
+ * then returns a combined list of users with their details and calculated fields.
  */
 export const getUserList = cache(async () => {
   const [users, accounts] = await Promise.all([
@@ -60,43 +59,42 @@ export const getUserList = cache(async () => {
         limit: pageLimit,
         offset,
       });
-      return result.user || [];
+      return safeParse(t.Array(UserSchema), result.user || []);
     }),
     fetchAllTheGraphPages(async (first, skip) => {
       const result = await theGraphClientKit.request(UserActivity, {
         first,
         skip,
       });
-      return result.accounts || [];
+      return safeParse(t.Array(AccountSchema), result.accounts || []);
     }),
   ]);
 
-  // Validate each dataset with their respective schemas
-  const validatedUsers = users.map((user) =>
-    safeParseWithLogging(UserFragmentSchema, user, "user")
+  // Create a map of accounts by address for quick lookup
+  const accountsById = new Map(
+    accounts.map((account) => [getAddress(account.id), account])
   );
 
-  const validatedAccounts = accounts.map((account) =>
-    safeParseWithLogging(AccountFragmentSchema, account, "account")
-  );
-
-  // Combine validated user data with validated activity data
-  return validatedUsers.map((user) => {
-    const matchingAccount = validatedAccounts.find(
-      (account) => account.id.toLowerCase() === user.wallet?.toLowerCase()
-    );
-
-    if (matchingAccount) {
-      // Full merge of user and matching account
+  // Combine user data with account data and calculate fields
+  const usersWithActivity = users.map((user) => {
+    if (!user.wallet) {
+      // Return user with default calculated fields if no wallet
+      const calculatedFields = userCalculateFields(user);
       return {
-        ...matchingAccount,
         ...user,
-        assetCount: matchingAccount.balancesCount ?? 0,
-        transactionCount: matchingAccount.activityEventsCount ?? 0,
+        ...calculatedFields,
       };
     }
 
-    // Return original validated user if no match found
-    return user;
+    const account = accountsById.get(getAddress(user.wallet));
+    const calculatedFields = userCalculateFields(user, account);
+
+    return {
+      ...user,
+      ...account,
+      ...calculatedFields,
+    };
   });
+
+  return usersWithActivity;
 });

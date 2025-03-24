@@ -124,8 +124,7 @@ export function EventDetailSheet({
                   // These events don't have additional details to display
                   return null;
                 default: {
-                  const _exhaustiveCheck: never = details;
-                  return _exhaustiveCheck;
+                  throw new Error(`Unknown event type: ${details.__typename}`);
                 }
               }
             })()}

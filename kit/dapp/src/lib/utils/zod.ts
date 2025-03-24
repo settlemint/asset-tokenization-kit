@@ -10,7 +10,7 @@ import { fromUnixTime } from "date-fns";
 import type { Address, Hash } from "viem";
 import { getAddress, isAddress, isHash } from "viem";
 import { z } from "zod";
-import { FiatCurrencies } from "../db/schema-settings";
+import { fiatCurrencies } from "./typebox/fiat-currency";
 
 /**
  * Safely parses data with a Zod schema and provides standardized error logging
@@ -626,7 +626,7 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates a value in base currency
    */
-  fiatCurrency: () => z.enum(FiatCurrencies),
+  fiatCurrency: () => z.enum(fiatCurrencies),
 
   /**
    * Validates a currency amount with proper decimal handling
@@ -637,7 +637,6 @@ const extendedZod = {
     z
       .number()
       .or(z.string())
-      .nullish()
       .transform((val) => (val === null || val === undefined ? 0 : val))
       .pipe(z.coerce.number().min(0, { message: "negative-amount" })),
 

@@ -15,7 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { type CurrencyCode, FiatCurrencies } from "@/lib/db/schema-settings";
+import type { CurrencyCode } from "@/lib/db/schema-settings";
+import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { z } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
@@ -34,6 +35,8 @@ const currencyKeys = {
   AED: "currencies.aed",
   SGD: "currencies.sgd",
   SAR: "currencies.sar",
+  GBP: "currencies.gbp",
+  CHF: "currencies.chf",
 } as const;
 
 interface SettingsFormProps {
@@ -94,7 +97,7 @@ export function SettingsForm({ defaultBaseCurrency }: SettingsFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {FiatCurrencies.map((currency) => (
+                  {fiatCurrencies.map((currency) => (
                     <SelectItem key={currency} value={currency}>
                       {t(currencyKeys[currency])}
                     </SelectItem>

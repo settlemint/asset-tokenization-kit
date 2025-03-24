@@ -2,7 +2,7 @@ import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { columns, icons } from "./asset-events-columns";
+import { Columns, icons } from "./asset-events-columns";
 
 interface AssetEventsTableProps {
   asset?: Address;
@@ -24,7 +24,7 @@ export async function AssetEventsTable({
 
   return (
     <DataTable
-      columns={columns}
+      columns={Columns}
       data={events}
       icons={icons}
       name={t("events")}

@@ -1,5 +1,14 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+
+export const AccountFragment = theGraphGraphqlKit(`
+  fragment AccountFragment on Account {
+    id
+    lastActivity
+    balancesCount
+    activityEventsCount
+  }
+`);
 
 /**
  * GraphQL fragment for user data from Hasura
@@ -27,40 +36,13 @@ export const UserFragment = hasuraGraphql(`
 `);
 
 /**
- * Zod schema for validating user data
+ * GraphQL fragment for user count data from Hasura
  *
+ * @remarks
+ * Contains count information for user aggregates
  */
-export const UserFragmentSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  email: z.string().email(),
-  wallet: z.address(),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date().nullish(),
-  kyc_verified_at: z.string().nullish(),
-  role: z.string(),
-  banned: z.boolean().nullish(),
-  ban_reason: z.string().nullish(),
-  ban_expires: z.coerce.date().nullish(),
-  last_login_at: z.string().nullish(),
-  image: z.string().nullish(),
-  last_activity_at: z.string().nullish(),
-  currency: z.fiatCurrency(),
-});
-
-/**
- * Type definition for user data
- */
-export type User = ZodInfer<typeof UserFragmentSchema>;
-
 export const RecentUsersCountFragment = hasuraGraphql(`
   fragment RecentUsersCountFragment on user_aggregate_fields {
       count
   }
 `);
-
-export const RecentUsersCountFragmentSchema = z.object({
-  count: z.number().default(0),
-});
-
-export type RecentUsersCount = ZodInfer<typeof RecentUsersCountFragmentSchema>;
