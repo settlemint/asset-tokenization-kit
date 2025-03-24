@@ -88,10 +88,10 @@ export function FormOtpDialog<T extends FieldValues>({
               </div>
               <DialogFooter className="gap-2">
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
-                  Cancel
+                  {t("cancel")}
                 </Button>
                 <Button onClick={handleSubmit} disabled={!isValid}>
-                  Yes, confirm
+                  {t("confirm")}
                 </Button>
               </DialogFooter>
             </FormItem>

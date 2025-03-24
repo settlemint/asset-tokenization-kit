@@ -1,3 +1,5 @@
+import { ReceiptFragmentSchema } from "@/lib/queries/transactions/transaction-fragment";
+import { safeParse } from "@/lib/utils/typebox";
 import { describe, expect, mock, test } from "bun:test";
 import { waitForSingleTransaction } from "./wait-for-transaction";
 
@@ -115,15 +117,16 @@ describe("waitForTransactions", () => {
     const result = await waitForSingleTransaction(
       "0xbc1575575c842331ab270d299ee3e83e7300f02534cf7e43fbf17232a19689a6"
     );
+    const parsed = safeParse(ReceiptFragmentSchema, result);
 
     // Verify the parsed receipt data
-    expect(result.status).toBe("Success");
-    expect(result.blockNumber).toBe("4518");
-    expect(result.from).toBe("0xa0f4aedd6687427ca9e5a42c3b639fc99f34c209");
-    expect(result.to).toBe("0x5e771e1417100000000000000000000000000005");
-    expect(result.transactionHash).toBe(
+    expect(parsed.status).toBe("Success");
+    expect(parsed.blockNumber).toBe("4518");
+    expect(parsed.from).toBe("0xa0f4aedd6687427ca9e5a42c3b639fc99f34c209");
+    expect(parsed.to).toBe("0x5e771e1417100000000000000000000000000005");
+    expect(parsed.transactionHash).toBe(
       "0xbc1575575c842331ab270d299ee3e83e7300f02534cf7e43fbf17232a19689a6"
     );
-    expect(result.logs).toHaveLength(4);
+    expect(parsed.logs).toHaveLength(4);
   });
 });
