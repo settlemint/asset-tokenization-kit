@@ -12,7 +12,10 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  * @property {string} [initialSupply] - Initial supply of tokens (defaults to '0')
  * @property {Address} predictedAddress - Predicted address of the cryptocurrency
  */
-export function CreateCryptoCurrencySchema() {
+export function CreateCryptoCurrencySchema(
+  maxInitialSupply?: number,
+  decimals?: number
+) {
   return t.Object(
     {
       assetName: t.String({
@@ -28,7 +31,7 @@ export function CreateCryptoCurrencySchema() {
       pincode: t.Pincode({
         description: "The pincode for signing the transaction",
       }),
-      initialSupply: t.Number({
+      initialSupply: t.Amount(maxInitialSupply, 0, decimals, {
         description: "Initial supply of tokens",
         default: 0,
       }),
@@ -39,9 +42,8 @@ export function CreateCryptoCurrencySchema() {
           message: "cryptocurrency.duplicate",
         },
       }),
-      valueInBaseCurrency: t.Number({
+      valueInBaseCurrency: t.FiatCurrency({
         description: "Value in base currency",
-        minimum: 0,
       }),
     },
     {

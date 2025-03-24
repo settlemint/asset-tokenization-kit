@@ -15,7 +15,13 @@ import { isFuture } from "date-fns";
  * @property {string} maturityDate - Maturity date of the bond
  * @property {string} underlyingAsset - Underlying asset of the bond
  */
-export function CreateBondSchema() {
+export function CreateBondSchema(
+  maxCap?: number,
+  minCap?: number,
+  maxFaceValue?: number,
+  minFaceValue?: number,
+  decimals?: number
+) {
   return t.Object(
     {
       assetName: t.String({
@@ -36,14 +42,12 @@ export function CreateBondSchema() {
       pincode: t.Pincode({
         description: "The pincode for signing the transaction",
       }),
-      cap: t.Number({
+      cap: t.Amount(maxCap, minCap, decimals, {
         description: "Maximum issuance amount",
-        minimum: 1,
         errorMessage: "Must be at least 1",
       }),
-      faceValue: t.Number({
+      faceValue: t.Amount(maxFaceValue, minFaceValue, decimals, {
         description: "Face value of the bond",
-        minimum: 1,
         errorMessage: "Must be at least 1",
       }),
       maturityDate: t.String({
@@ -64,9 +68,8 @@ export function CreateBondSchema() {
           message: "bond.duplicate",
         },
       }),
-      valueInBaseCurrency: t.Number({
+      valueInBaseCurrency: t.FiatCurrency({
         description: "Value in base currency",
-        minimum: 0,
       }),
     },
     {

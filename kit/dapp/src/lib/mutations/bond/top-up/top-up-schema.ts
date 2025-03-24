@@ -8,7 +8,11 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  * @property {string} underlyingAssetAddress - The address of the underlying asset contract
  * @property {string} pincode - The pincode for signing the transaction
  */
-export function TopUpSchema() {
+export function TopUpSchema(
+  maxAmount?: number,
+  minAmount?: number,
+  decimals?: number
+) {
   return t.Object(
     {
       address: t.EthereumAddress({
@@ -17,9 +21,8 @@ export function TopUpSchema() {
       underlyingAssetAddress: t.EthereumAddress({
         description: "The address of the underlying asset contract",
       }),
-      amount: t.Number({
+      amount: t.Amount(maxAmount, minAmount, decimals, {
         description: "The amount of underlying asset to top up",
-        minimum: 0,
       }),
       pincode: t.Pincode({
         description: "The pincode for signing the transaction",

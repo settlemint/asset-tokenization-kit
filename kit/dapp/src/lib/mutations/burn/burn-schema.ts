@@ -8,16 +8,18 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  * @property {string} pincode - The pincode for signing the transaction
  * @property {string} assettype - The type of asset
  */
-export function BurnSchema(max?: number, decimals?: number) {
+export function BurnSchema(
+  maxAmount?: number,
+  minAmount?: number,
+  decimals?: number
+) {
   return t.Object(
     {
       address: t.EthereumAddress({
         description: "The contract address of the asset",
       }),
-      amount: t.Number({
+      amount: t.Amount(maxAmount, minAmount, decimals, {
         description: "The amount of tokens to burn",
-        minimum: 0,
-        maximum: max,
       }),
       pincode: t.Pincode({
         description: "The pincode for signing the transaction",
