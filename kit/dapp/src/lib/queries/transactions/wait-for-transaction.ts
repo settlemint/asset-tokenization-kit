@@ -66,10 +66,7 @@ export async function waitForSingleTransaction(
 
       if (result.getTransaction?.receipt) {
         // We have a receipt, means the transaction was mined
-        receipt = safeParse(
-          ReceiptFragmentSchema,
-          result.getTransaction.receipt
-        );
+        receipt = result.getTransaction.receipt;
         break;
       }
     } catch (error) {
