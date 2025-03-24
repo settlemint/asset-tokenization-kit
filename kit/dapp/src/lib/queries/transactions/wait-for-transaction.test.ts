@@ -118,7 +118,7 @@ describe("waitForTransactions", () => {
 
     // Verify the parsed receipt data
     expect(result.status).toBe("Success");
-    expect(result.blockNumber).toBe(4518);
+    expect(result.blockNumber).toBe("4518");
     expect(result.from).toBe("0xa0f4aedd6687427ca9e5a42c3b639fc99f34c209");
     expect(result.to).toBe("0x5e771e1417100000000000000000000000000005");
     expect(result.transactionHash).toBe(
