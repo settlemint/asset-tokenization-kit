@@ -47,4 +47,9 @@ export function Basics() {
   );
 }
 
-Basics.validatedFields = ["assetName", "symbol", "decimals", "isin"] as const;
+Basics.validatedFields = [
+  "assetName",
+  "symbol",
+  "decimals",
+  "isin",
+] satisfies (keyof CreateBondInput)[];

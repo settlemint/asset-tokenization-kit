@@ -3,6 +3,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { Role } from "@/lib/config/roles";
+import type { RevokeRoleInput } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-schema";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
@@ -39,4 +40,4 @@ export function Summary({
   );
 }
 
-Summary.validatedFields = [] as const;
+Summary.validatedFields = [] as (keyof RevokeRoleInput)[];
