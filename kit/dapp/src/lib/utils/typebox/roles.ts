@@ -4,7 +4,7 @@
  * This module provides TypeBox schemas for validating user roles,
  * ensuring they match predefined enumerations.
  */
-import type { SchemaOptions } from "@sinclair/typebox";
+import type { SchemaOptions, StaticDecode } from "@sinclair/typebox";
 import { t } from "elysia/type-system";
 /**
  * Enum of valid user roles
@@ -52,3 +52,5 @@ export const RoleMap = (options?: SchemaOptions) =>
       },
     }
   );
+
+export type RoleMap = StaticDecode<ReturnType<typeof RoleMap>>;
