@@ -31,7 +31,7 @@ export const AssetStatsSchema = t.Object(
       description:
         "The current total supply in a human-readable decimal format",
     }),
-    totalTransfers: t.BigDecimal({
+    totalTransfers: t.Number({
       description:
         "The total number of transfer transactions in a human-readable decimal format",
     }),

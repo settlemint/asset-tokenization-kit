@@ -38,11 +38,11 @@ export async function AssetActivity() {
   const chartData = data.map((asset) => ({
     id: asset.id,
     assetType: asset.assetType,
-    mintEventCount: Number(asset.mintEventCount),
-    burnEventCount: Number(asset.burnEventCount),
-    transferEventCount: Number(asset.transferEventCount),
-    frozenEventCount: Number(asset.frozenEventCount),
-    unfrozenEventCount: Number(asset.unfrozenEventCount),
+    mintEventCount: asset.mintEventCount,
+    burnEventCount: asset.burnEventCount,
+    transferEventCount: asset.transferEventCount,
+    frozenEventCount: asset.frozenEventCount,
+    unfrozenEventCount: asset.unfrozenEventCount,
   }));
 
   return (
