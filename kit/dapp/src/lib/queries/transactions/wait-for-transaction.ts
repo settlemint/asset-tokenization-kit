@@ -3,12 +3,9 @@
 import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
+import type { FragmentOf } from "gql.tada";
 import { revalidatePath, revalidateTag } from "next/cache";
-import {
-  ReceiptFragment,
-  ReceiptFragmentSchema,
-  type Receipt,
-} from "./transaction-fragment";
+import { ReceiptFragment, ReceiptFragmentSchema } from "./transaction-fragment";
 
 /**
  * Constants for transaction monitoring
@@ -33,6 +30,8 @@ const GetTransaction = portalGraphql(
   [ReceiptFragment]
 );
 
+type TransactionReceipt = FragmentOf<typeof ReceiptFragment>;
+
 /**
  * Configuration options for transaction monitoring
  */
@@ -50,14 +49,14 @@ interface TransactionMonitoringOptions {
 async function waitForSingleTransaction(
   transactionHash: string,
   options: TransactionMonitoringOptions = {}
-): Promise<Receipt> {
+): Promise<TransactionReceipt> {
   const timeoutMs = options.timeoutMs ?? POLLING_DEFAULTS.TIMEOUT_MS;
   const pollingIntervalMs =
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
   const startTime = Date.now();
 
-  let receipt: Receipt | null = null;
+  let receipt: TransactionReceipt | null = null;
 
   while (Date.now() - startTime < timeoutMs) {
     try {
@@ -67,10 +66,7 @@ async function waitForSingleTransaction(
 
       if (result.getTransaction?.receipt) {
         // We have a receipt, means the transaction was mined
-        receipt = safeParse(
-          ReceiptFragmentSchema,
-          result.getTransaction.receipt
-        );
+        receipt = result.getTransaction.receipt;
         break;
       }
     } catch (error) {
