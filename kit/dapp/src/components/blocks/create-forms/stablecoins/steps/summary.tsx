@@ -37,10 +37,6 @@ export function Summary() {
           label={t("parameters.common.decimals-label")}
           value={values.decimals}
         />
-        <FormSummaryDetailItem
-          label={t("parameters.common.isin-label")}
-          value={values.isin === "" ? "-" : values.isin}
-        />
       </FormSummaryDetailCard>
 
       <FormSummaryDetailCard

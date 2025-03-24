@@ -16,7 +16,6 @@ export const CreateStablecoinSchema = z.object({
   assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
-  isin: z.isin().optional(),
   collateralLivenessValue: z
     .number()
     .or(z.string())
