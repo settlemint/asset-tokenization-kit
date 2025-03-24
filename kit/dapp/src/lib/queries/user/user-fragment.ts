@@ -45,6 +45,7 @@ export const UserFragmentSchema = z.object({
   last_login_at: z.string().nullish(),
   image: z.string().nullish(),
   last_activity_at: z.string().nullish(),
+  currency: z.fiatCurrency(),
 });
 
 /**
