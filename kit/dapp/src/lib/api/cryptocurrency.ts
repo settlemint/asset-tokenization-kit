@@ -36,7 +36,7 @@ export const CryptoCurrencyApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async () => {
       return getCryptoCurrencyList();
     },
@@ -177,7 +177,7 @@ export const CryptoCurrencyApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/access-control/grant-role",
     async ({ body, user }) => {
       return grantRoleFunction({
@@ -203,7 +203,7 @@ export const CryptoCurrencyApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/access-control/revoke-role",
     async ({ body, user }) => {
       return revokeRoleFunction({
@@ -229,7 +229,7 @@ export const CryptoCurrencyApi = new Elysia({
       },
     }
   )
-  .post(
+  .patch(
     "/access-control/update-roles",
     async ({ body, user }) => {
       return updateRolesFunction({

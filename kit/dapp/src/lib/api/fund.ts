@@ -42,7 +42,7 @@ export const FundApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async () => {
       return getFundList();
     },
@@ -182,7 +182,7 @@ export const FundApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/access-control/grant-role",
     async ({ body, user }) => {
       return grantRoleFunction({
@@ -207,7 +207,7 @@ export const FundApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/access-control/revoke-role",
     async ({ body, user }) => {
       return revokeRoleFunction({
@@ -232,7 +232,7 @@ export const FundApi = new Elysia({
       },
     }
   )
-  .post(
+  .patch(
     "/access-control/update-roles",
     async ({ body, user }) => {
       return updateRolesFunction({
@@ -309,7 +309,7 @@ export const FundApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/burn",
     async ({ body, user }) => {
       return burnFunction({
@@ -334,7 +334,7 @@ export const FundApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/block-user",
     async ({ body, user }) => {
       return blockUserFunction({
@@ -359,7 +359,7 @@ export const FundApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/unblock-user",
     async ({ body, user }) => {
       return unblockUserFunction({

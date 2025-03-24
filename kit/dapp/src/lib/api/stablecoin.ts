@@ -50,7 +50,7 @@ export const StableCoinApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async () => {
       return getStableCoinList();
     },
@@ -191,7 +191,7 @@ export const StableCoinApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/access-control/grant-role",
     async ({ body, user }) => {
       return grantRoleFunction({
@@ -217,7 +217,7 @@ export const StableCoinApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/access-control/revoke-role",
     async ({ body, user }) => {
       return revokeRoleFunction({
@@ -243,7 +243,7 @@ export const StableCoinApi = new Elysia({
       },
     }
   )
-  .post(
+  .patch(
     "/access-control/update-roles",
     async ({ body, user }) => {
       return updateRolesFunction({
@@ -295,32 +295,7 @@ export const StableCoinApi = new Elysia({
       },
     }
   )
-  .post(
-    "/withdraw",
-    async ({ body, user }) => {
-      return withdrawFunction({
-        parsedInput: {
-          ...body,
-          assettype: "stablecoin",
-        },
-        ctx: { user },
-      });
-    },
-    {
-      auth: true,
-      detail: {
-        summary: "Withdraw token",
-        description: "Withdraws token from a stablecoin contract.",
-        tags: ["stablecoin"],
-      },
-      body: WithdrawSchema(),
-      response: {
-        200: t.Hashes(),
-        ...defaultErrorSchema,
-      },
-    }
-  )
-  .post(
+  .delete(
     "/burn",
     async ({ body, user }) => {
       return burnFunction({
@@ -346,7 +321,7 @@ export const StableCoinApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/freeze",
     async ({ body, user }) => {
       return freezeFunction({
@@ -372,7 +347,7 @@ export const StableCoinApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/pause",
     async ({ body, user }) => {
       return pauseFunction({
@@ -397,7 +372,7 @@ export const StableCoinApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/unpause",
     async ({ body, user }) => {
       return unpauseFunction({
@@ -423,7 +398,7 @@ export const StableCoinApi = new Elysia({
       },
     }
   )
-  .post(
+  .patch(
     "/update-collateral",
     async ({ body, user }) => {
       return updateCollateralFunction({
@@ -448,7 +423,7 @@ export const StableCoinApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/block-user",
     async ({ body, user }) => {
       return blockUserFunction({
@@ -474,7 +449,7 @@ export const StableCoinApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/unblock-user",
     async ({ body, user }) => {
       return unblockUserFunction({
@@ -494,6 +469,31 @@ export const StableCoinApi = new Elysia({
         tags: ["stablecoin"],
       },
       body: UnblockUserSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .post(
+    "/withdraw",
+    async ({ body, user }) => {
+      return withdrawFunction({
+        parsedInput: {
+          ...body,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Withdraw token",
+        description: "Withdraws token from a stablecoin contract.",
+        tags: ["stablecoin"],
+      },
+      body: WithdrawSchema(),
       response: {
         200: t.Hashes(),
         ...defaultErrorSchema,

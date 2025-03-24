@@ -50,7 +50,7 @@ export const TokenizedDepositApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async () => {
       return getTokenizedDepositList();
     },
@@ -191,7 +191,7 @@ export const TokenizedDepositApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/access-control/grant-role",
     async ({ body, user }) => {
       return grantRoleFunction({
@@ -217,7 +217,7 @@ export const TokenizedDepositApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/access-control/revoke-role",
     async ({ body, user }) => {
       return revokeRoleFunction({
@@ -243,7 +243,7 @@ export const TokenizedDepositApi = new Elysia({
       },
     }
   )
-  .post(
+  .patch(
     "/access-control/update-roles",
     async ({ body, user }) => {
       return updateRolesFunction({
@@ -295,32 +295,7 @@ export const TokenizedDepositApi = new Elysia({
       },
     }
   )
-  .post(
-    "/withdraw",
-    async ({ body, user }) => {
-      return withdrawFunction({
-        parsedInput: {
-          ...body,
-          assettype: "tokenizeddeposit",
-        },
-        ctx: { user },
-      });
-    },
-    {
-      auth: true,
-      detail: {
-        summary: "Withdraw token",
-        description: "Withdraws token from a tokenized deposit contract.",
-        tags: ["tokenized deposit"],
-      },
-      body: WithdrawSchema(),
-      response: {
-        200: t.Hashes(),
-        ...defaultErrorSchema,
-      },
-    }
-  )
-  .post(
+  .delete(
     "/burn",
     async ({ body, user }) => {
       return burnFunction({
@@ -346,7 +321,7 @@ export const TokenizedDepositApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/freeze",
     async ({ body, user }) => {
       return freezeFunction({
@@ -372,7 +347,7 @@ export const TokenizedDepositApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/pause",
     async ({ body, user }) => {
       return pauseFunction({
@@ -397,7 +372,7 @@ export const TokenizedDepositApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/unpause",
     async ({ body, user }) => {
       return unpauseFunction({
@@ -423,7 +398,7 @@ export const TokenizedDepositApi = new Elysia({
       },
     }
   )
-  .post(
+  .patch(
     "/update-collateral",
     async ({ body, user }) => {
       return updateCollateralFunction({
@@ -449,7 +424,7 @@ export const TokenizedDepositApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/allow-user",
     async ({ body, user }) => {
       return allowUserFunction({
@@ -474,7 +449,7 @@ export const TokenizedDepositApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/disallow-user",
     async ({ body, user }) => {
       return disallowUserFunction({
@@ -493,6 +468,31 @@ export const TokenizedDepositApi = new Elysia({
         tags: ["tokenized deposit"],
       },
       body: DisallowUserSchema(),
+      response: {
+        200: t.Hashes(),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .post(
+    "/withdraw",
+    async ({ body, user }) => {
+      return withdrawFunction({
+        parsedInput: {
+          ...body,
+          assettype: "tokenizeddeposit",
+        },
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Withdraw token",
+        description: "Withdraws token from a tokenized deposit contract.",
+        tags: ["tokenized deposit"],
+      },
+      body: WithdrawSchema(),
       response: {
         200: t.Hashes(),
         ...defaultErrorSchema,

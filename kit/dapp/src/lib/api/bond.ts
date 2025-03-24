@@ -50,7 +50,7 @@ export const BondApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async () => {
       return getBondList();
     },
@@ -190,7 +190,7 @@ export const BondApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/access-control/grant-role",
     async ({ body, user }) => {
       return grantRoleFunction({
@@ -215,7 +215,7 @@ export const BondApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/access-control/revoke-role",
     async ({ body, user }) => {
       return revokeRoleFunction({
@@ -240,7 +240,7 @@ export const BondApi = new Elysia({
       },
     }
   )
-  .post(
+  .patch(
     "/access-control/update-roles",
     async ({ body, user }) => {
       return updateRolesFunction({
@@ -336,7 +336,7 @@ export const BondApi = new Elysia({
       },
     }
   )
-  .post(
+  .patch(
     "/set-yield-schedule",
     async ({ body, user }) => {
       return setYieldScheduleFunction({
@@ -359,7 +359,7 @@ export const BondApi = new Elysia({
       },
     }
   )
-  .post(
+  .patch(
     "/top-up",
     async ({ body, user }) => {
       return topUpUnderlyingAssetFunction({
@@ -381,7 +381,7 @@ export const BondApi = new Elysia({
       },
     }
   )
-  .post(
+  .put(
     "/block-user",
     async ({ body, user }) => {
       return blockUserFunction({
@@ -406,7 +406,7 @@ export const BondApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/unblock-user",
     async ({ body, user }) => {
       return unblockUserFunction({
@@ -457,7 +457,7 @@ export const BondApi = new Elysia({
       },
     }
   )
-  .post(
+  .delete(
     "/burn",
     async ({ body, user }) => {
       return burnFunction({
