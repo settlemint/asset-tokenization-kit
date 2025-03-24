@@ -1,6 +1,5 @@
 "use client";
 
-import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,7 +9,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FormControl, FormField, FormItem } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   InputOTP,
   InputOTPGroup,
@@ -84,7 +88,7 @@ export function FormOtpDialog<T extends FieldValues>({
                     </InputOTPGroup>
                   </InputOTP>
                 </FormControl>
-                <TranslatableFormFieldMessage className="text-destructive" />
+                <FormMessage />
               </div>
               <DialogFooter className="gap-2">
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
