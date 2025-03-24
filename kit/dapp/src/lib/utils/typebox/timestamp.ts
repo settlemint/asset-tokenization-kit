@@ -69,11 +69,14 @@ export const Timestamp = (options?: SchemaOptions) =>
         }
         return new Date(value);
       } else if (typeof value === "number") {
-        // Check if it looks like seconds rather than milliseconds
+        // JavaScript Date can safely handle dates up to year 275760
+        // For reference: Year 2100 in milliseconds ~= 4.1 trillion
         if (value < 10000000000) {
-          return new Date(value * 1000);
+          return new Date(value * 1000); // Seconds to milliseconds
+        } else if (value >= 10000000000000) {
+          return new Date(value / 1000); // Microseconds to milliseconds
         }
-        return new Date(value);
+        return new Date(value); // Already in milliseconds
       } else if (value instanceof Date) {
         return value;
       }

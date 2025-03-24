@@ -444,6 +444,7 @@
         "default-placeholder": "Select an option",
         "loading": "Loading...",
         "no-asset-found": "No asset found.",
+        "recent-assets": "Recently selected",
         "search-placeholder": "Search for an asset..."
       },
       "button": {
@@ -479,6 +480,7 @@
         "default-placeholder": "Select an option",
         "loading": "Loading...",
         "no-user-found": "No user found.",
+        "recent-users": "Recently selected",
         "search-placeholder": "Search for a user..."
       }
     },
@@ -489,6 +491,8 @@
       "assets-section": "Assets",
       "no-results": "No results found",
       "placeholder": "Search for assets or users...",
+      "recent-assets": "Recent assets",
+      "recent-users": "Recent users",
       "users-section": "Users"
     },
     "transaction-details": {

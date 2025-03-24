@@ -419,6 +419,7 @@
         "default-placeholder": "Wählen Sie eine Option",
         "loading": "Lade...",
         "no-asset-found": "Kein Vermögenswert gefunden.",
+        "recent-assets": "Kürzlich ausgewählt",
         "search-placeholder": "Suchen Sie nach einem Vermögenswert..."
       },
       "button": {
@@ -454,6 +455,7 @@
         "default-placeholder": "Wählen Sie eine Option",
         "loading": "Lade...",
         "no-user-found": "Kein Benutzer gefunden.",
+        "recent-users": "Kürzlich ausgewählt",
         "search-placeholder": "Suchen Sie nach einem Benutzer..."
       }
     },
@@ -463,7 +465,9 @@
     "search": {
       "assets-section": "Vermögenswerte",
       "no-results": "Keine Ergebnisse gefunden",
-      "placeholder": "Suchen Sie nach Vermögenswerten oder Benutzern...",
+      "placeholder": "Suche nach Vermögenswerten oder Benutzern...",
+      "recent-assets": "Kürzlich gesuchte Vermögenswerte",
+      "recent-users": "Kürzlich gesuchte Benutzer",
       "users-section": "Benutzer"
     },
     "transaction-details": {

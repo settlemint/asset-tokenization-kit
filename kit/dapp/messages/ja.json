@@ -419,6 +419,7 @@
         "default-placeholder": "オプションを選択",
         "loading": "読み込み中...",
         "no-asset-found": "資産が見つかりません。",
+        "recent-assets": "最近選択したもの",
         "search-placeholder": "資産を検索..."
       },
       "button": {
@@ -454,6 +455,7 @@
         "default-placeholder": "オプションを選択",
         "loading": "読み込み中...",
         "no-user-found": "ユーザーが見つかりません。",
+        "recent-users": "最近選択したもの",
         "search-placeholder": "ユーザーを検索..."
       }
     },
@@ -464,6 +466,8 @@
       "assets-section": "資産",
       "no-results": "結果が見つかりません",
       "placeholder": "資産またはユーザーを検索...",
+      "recent-assets": "最近の資産",
+      "recent-users": "最近のユーザー",
       "users-section": "ユーザー"
     },
     "transaction-details": {

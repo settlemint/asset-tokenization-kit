@@ -20,11 +20,12 @@ import {
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
 import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, History } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { memo, useCallback, useMemo, useState } from "react";
 import type { FieldValues } from "react-hook-form";
@@ -36,6 +37,15 @@ import {
   type WithPlaceholderProps,
   getAriaAttributes,
 } from "./types";
+
+// Define a type for recently selected assets
+type RecentAsset = {
+  id: string;
+  selectedAt: number;
+};
+
+const MAX_RECENT_ASSETS = 5;
+const LOCAL_STORAGE_KEY = "recently-selected-assets";
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
@@ -140,6 +150,12 @@ function FormAssetsList({
   const debounced = useDebounce<string>(search, 250);
   const t = useTranslations("components.form.assets");
 
+  // Get recently selected assets from local storage
+  const [recentAssets, setRecentAssets] = useLocalStorage<RecentAsset[]>(
+    LOCAL_STORAGE_KEY,
+    []
+  );
+
   // Use SWR for data fetching with caching
   const { data: assets = [], isLoading } = useSWR(
     debounced ? [`asset-search`, debounced] : null,
@@ -153,6 +169,28 @@ function FormAssetsList({
     }
   );
 
+  // Function to add a selected asset to recent assets
+  const addToRecentAssets = useCallback(
+    (asset: AssetUsers) => {
+      setRecentAssets((currentRecentAssets) => {
+        // Remove the asset if already in the list
+        const filteredAssets = currentRecentAssets.filter(
+          (item) => item.id !== asset.id
+        );
+
+        // Add the asset to the beginning of the list
+        const newRecentAssets = [
+          { id: asset.id, selectedAt: Date.now() },
+          ...filteredAssets,
+        ];
+
+        // Limit the list to MAX_RECENT_ASSETS
+        return newRecentAssets.slice(0, MAX_RECENT_ASSETS);
+      });
+    },
+    [setRecentAssets]
+  );
+
   // Memoize the handler to prevent recreating it on every render
   const handleSelect = useCallback(
     (_currentValue: string, asset: AssetUsers) => {
@@ -160,10 +198,23 @@ function FormAssetsList({
         onSelect(asset);
       }
       onValueChange(asset);
+      addToRecentAssets(asset);
       setOpen(false);
     },
-    [onValueChange, setOpen, onSelect]
+    [onValueChange, setOpen, onSelect, addToRecentAssets]
   );
+
+  // Find recently selected assets in the assets list
+  const recentAssetItems = useMemo(() => {
+    if (!recentAssets.length) return [];
+
+    return recentAssets
+      .map((recent) => {
+        const asset = assets.find((a) => a.id === recent.id);
+        return asset ? { ...asset, selectedAt: recent.selectedAt } : null;
+      })
+      .filter(Boolean) as (AssetUsers & { selectedAt: number })[];
+  }, [recentAssets, assets]);
 
   // Memoized asset item component to prevent re-renders
   const AssetItem = memo(
@@ -171,10 +222,12 @@ function FormAssetsList({
       asset,
       value,
       onSelect,
+      showIcon = false,
     }: {
       asset: AssetUsers;
       value?: AssetUsers;
       onSelect: (currentValue: Address) => void;
+      showIcon?: boolean;
     }) => {
       const isSelected = value?.id === asset.id;
 
@@ -183,6 +236,7 @@ function FormAssetsList({
           key={asset.id}
           onSelect={(currentValue) => onSelect(currentValue as Address)}
         >
+          {showIcon && <History className="mr-2 h-4 w-4" />}
           <EvmAddress address={asset.id} hoverCard={false} />
           <Check
             className={cn("ml-auto", isSelected ? "opacity-100" : "opacity-0")}
@@ -193,20 +247,6 @@ function FormAssetsList({
   );
 
   AssetItem.displayName = "AssetItem";
-
-  // Memoize the asset list to prevent unnecessary re-renders
-  const memoizedAssetList = useMemo(
-    () =>
-      assets.map((asset) => (
-        <AssetItem
-          key={asset.id}
-          asset={asset}
-          value={value}
-          onSelect={(currentValue) => handleSelect(currentValue, asset)}
-        />
-      )),
-    [assets, value, handleSelect]
-  );
 
   return (
     <CommandList>
@@ -220,7 +260,33 @@ function FormAssetsList({
           t("no-asset-found")
         )}
       </CommandEmpty>
-      <CommandGroup>{memoizedAssetList}</CommandGroup>
+
+      {/* Show recent assets when no search is entered */}
+      {!debounced && recentAssetItems.length > 0 && (
+        <CommandGroup heading={t("recent-assets")}>
+          {recentAssetItems.map((asset) => (
+            <AssetItem
+              key={asset.id}
+              asset={asset}
+              value={value}
+              onSelect={(currentValue) => handleSelect(currentValue, asset)}
+              showIcon={true}
+            />
+          ))}
+        </CommandGroup>
+      )}
+
+      {/* Show search results */}
+      <CommandGroup>
+        {assets.map((asset) => (
+          <AssetItem
+            key={asset.id}
+            asset={asset}
+            value={value}
+            onSelect={(currentValue) => handleSelect(currentValue, asset)}
+          />
+        ))}
+      </CommandGroup>
     </CommandList>
   );
 }
