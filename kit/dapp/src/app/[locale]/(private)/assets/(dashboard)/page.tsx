@@ -45,7 +45,7 @@ export default async function AdminDashboard({
   return (
     <>
       <PageHeader title={t("title")} section={t("asset-management")} />
-      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-4 lg:divide-x lg:divide-y-0">
         <AssetsWidget />
         <TransactionsWidget />
         <UsersWidget />

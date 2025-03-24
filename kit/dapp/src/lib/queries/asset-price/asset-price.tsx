@@ -1,3 +1,4 @@
+import { getUser } from "@/lib/auth/utils";
 import { type CurrencyCode, SETTING_KEYS } from "@/lib/db/schema-settings";
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
@@ -5,10 +6,11 @@ import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { z } from "zod";
+import { getUserDetail } from "../user/user-detail";
 
 const AssetSchema = z.object({
   id: z.string(),
-  value_in_base_currency: z.string().nullable(),
+  value_in_base_currency: z.number().nullable(),
 });
 
 const AssetsResponseSchema = z.array(AssetSchema);
@@ -37,50 +39,54 @@ const Settings = hasuraGraphql(`
 /**
  * Gets the total price of all assets in the user's preferred currency
  */
-export const getTotalAssetPrice = cache(
-  async (targetCurrency: CurrencyCode) => {
-    const [dbAssets, settingsResult] = await Promise.all([
-      await fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(AssetPrices, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.asset || [];
-      }),
-      hasuraClient.request(Settings),
-    ]);
+export const getTotalAssetPrice = cache(async () => {
+  const [dbAssets, settingsResult, targetCurrency] = await Promise.all([
+    await fetchAllHasuraPages(async (pageLimit, offset) => {
+      const result = await hasuraClient.request(AssetPrices, {
+        limit: pageLimit,
+        offset,
+      });
+      return result.asset || [];
+    }),
+    hasuraClient.request(Settings),
+    (async () => {
+      const user = await getUser();
+      const userDetails = await getUserDetail({ id: user.id });
+      return userDetails?.currency;
+    })(),
+  ]);
 
-    console.log(dbAssets);
+  // Validate asset data
+  const validatedAssets = safeParseWithLogging(
+    AssetsResponseSchema,
+    dbAssets,
+    "asset prices"
+  );
 
-    // Validate asset data
-    const validatedAssets = safeParseWithLogging(
-      AssetsResponseSchema,
-      dbAssets,
-      "asset prices"
-    );
-
-    if (validatedAssets.length === 0) {
-      return 0;
-    }
-
-    const baseCurrency = settingsResult.settings.find(
-      (setting) => setting.key === SETTING_KEYS.BASE_CURRENCY
-    )?.value as CurrencyCode;
-
-    const totalPriceInBaseCurrency = validatedAssets.reduce(
-      (acc, asset) =>
-        asset.value_in_base_currency
-          ? acc + parseFloat(asset.value_in_base_currency)
-          : acc,
-      0
-    );
-
-    const exchangeRate = await getExchangeRate(baseCurrency, targetCurrency);
-    if (!exchangeRate) {
-      throw new Error(
-        `Exchange rate not found for base currency ${baseCurrency} and target currency ${targetCurrency}`
-      );
-    }
-    return totalPriceInBaseCurrency * exchangeRate;
+  if (validatedAssets.length === 0) {
+    return {
+      totalPrice: 0,
+      currency: targetCurrency,
+    };
   }
-);
+  const baseCurrency =
+    (settingsResult.settings.find(
+      (setting) => setting.key === SETTING_KEYS.BASE_CURRENCY
+    )?.value as CurrencyCode) ?? "EUR";
+
+  const totalPriceInBaseCurrency = validatedAssets.reduce(
+    (acc, asset) => acc + (asset.value_in_base_currency ?? 0),
+    0
+  );
+
+  const exchangeRate = await getExchangeRate(baseCurrency, targetCurrency);
+  if (!exchangeRate) {
+    throw new Error(
+      `Exchange rate not found for base currency ${baseCurrency} and target currency ${targetCurrency}`
+    );
+  }
+  return {
+    totalPrice: totalPriceInBaseCurrency * exchangeRate,
+    currency: targetCurrency,
+  };
+});

@@ -1,12 +1,13 @@
 import { BigNumber } from "bignumber.js";
 import { createFormatter, useFormatter, type Locale } from "next-intl";
+import type { CurrencyCode } from "../db/schema-settings";
 
 /**
  * Options for currency formatting
  */
 export interface FormatOptions {
   /** The currency code (e.g., 'USD', 'EUR') */
-  readonly currency?: string;
+  readonly currency?: CurrencyCode;
   /** The token symbol (e.g., 'USDC', 'USDT') */
   readonly token?: string;
   /** The locale to use for formatting (e.g., 'en-US') */
