@@ -12,10 +12,13 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  * @property {string} [initialSupply] - Initial supply of tokens (defaults to '0')
  * @property {Address} predictedAddress - Predicted address of the cryptocurrency
  */
-export function CreateCryptoCurrencySchema(
-  maxInitialSupply?: number,
-  decimals?: number
-) {
+export function CreateCryptoCurrencySchema({
+  maxInitialSupply,
+  decimals,
+}: {
+  maxInitialSupply?: number;
+  decimals?: number;
+} = {}) {
   return t.Object(
     {
       assetName: t.String({

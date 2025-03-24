@@ -15,13 +15,19 @@ import { isFuture } from "date-fns";
  * @property {string} maturityDate - Maturity date of the bond
  * @property {string} underlyingAsset - Underlying asset of the bond
  */
-export function CreateBondSchema(
-  maxCap?: number,
-  minCap?: number,
-  maxFaceValue?: number,
-  minFaceValue?: number,
-  decimals?: number
-) {
+export function CreateBondSchema({
+  maxCap,
+  minCap,
+  maxFaceValue,
+  minFaceValue,
+  decimals,
+}: {
+  maxCap?: number;
+  minCap?: number;
+  maxFaceValue?: number;
+  minFaceValue?: number;
+  decimals?: number;
+} = {}) {
   return t.Object(
     {
       assetName: t.String({

@@ -10,11 +10,15 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
  * @property {string} underlyingAssetAddress - The address of the underlying asset
  * @property {string} assettype - The type of asset
  */
-export function WithdrawSchema(
-  maxAmount?: number,
-  minAmount?: number,
-  decimals?: number
-) {
+export function WithdrawSchema({
+  maxAmount,
+  minAmount,
+  decimals,
+}: {
+  maxAmount?: number;
+  minAmount?: number;
+  decimals?: number;
+} = {}) {
   return t.Object(
     {
       address: t.EthereumAddress({

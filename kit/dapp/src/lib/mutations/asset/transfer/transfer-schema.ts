@@ -1,8 +1,16 @@
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
-export function getTransferFormSchema(balance?: string, decimals?: number) {
+export function getTransferFormSchema({
+  balance,
+  minAmount,
+  decimals,
+}: {
+  balance?: string;
+  minAmount?: number;
+  decimals?: number;
+} = {}) {
   const maxAmount = balance ? Number(balance) : undefined;
-  const minAmount = 1;
+  const min = minAmount ? minAmount : decimals ? 10 ** -decimals : 1;
 
   return t.Object(
     {
@@ -12,7 +20,7 @@ export function getTransferFormSchema(balance?: string, decimals?: number) {
       to: t.EthereumAddress({
         description: "The recipient address",
       }),
-      value: t.Amount(maxAmount, minAmount, decimals, {
+      value: t.Amount(maxAmount, min, decimals, {
         description: "The amount to transfer",
         errorMessage: balance
           ? `Amount cannot be greater than balance ${balance}`

@@ -9,11 +9,15 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  * @property {string} pincode - User's pincode for authentication
  * @property {string} assetType - The type of asset
  */
-export function MintSchema(
-  maxAmount?: number,
-  minAmount?: number,
-  decimals?: number
-) {
+export function MintSchema({
+  maxAmount,
+  minAmount,
+  decimals,
+}: {
+  maxAmount?: number;
+  minAmount?: number;
+  decimals?: number;
+} = {}) {
   return t.Object(
     {
       address: t.EthereumAddress({

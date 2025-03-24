@@ -8,11 +8,15 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
  * @property {string} pincode - The pincode for signing the transaction
  * @property {string} assettype - The type of asset (only stablecoin or tokenizeddeposit)
  */
-export function UpdateCollateralSchema(
-  maxAmount?: number,
-  minAmount?: number,
-  decimals?: number
-) {
+export function UpdateCollateralSchema({
+  maxAmount,
+  minAmount,
+  decimals,
+}: {
+  maxAmount?: number;
+  minAmount?: number;
+  decimals?: number;
+} = {}) {
   return t.Object(
     {
       address: t.EthereumAddress({
