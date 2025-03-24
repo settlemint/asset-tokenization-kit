@@ -33,11 +33,12 @@ export const PredictedAddressSchema = t.Object({
 export type PredictedAddress = StaticDecode<typeof PredictedAddressSchema>;
 
 export const CryptocurrencyExistsSchema = t.Object({
-  cryptocurrency: t.Optional(
+  cryptocurrency: t.Union([
     t.Object({
       id: t.String(),
-    })
-  ),
+    }),
+    t.Null(),
+  ]),
 });
 
 export type CryptocurrencyExists = StaticDecode<

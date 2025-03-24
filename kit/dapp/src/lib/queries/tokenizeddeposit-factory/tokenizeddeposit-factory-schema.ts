@@ -36,11 +36,12 @@ export const PredictedAddressSchema = t.Object({
 export type PredictedAddress = StaticDecode<typeof PredictedAddressSchema>;
 
 export const TokenizedDepositExistsSchema = t.Object({
-  tokenizedDeposit: t.Optional(
+  tokenizedDeposit: t.Union([
     t.Object({
       id: t.String(),
-    })
-  ),
+    }),
+    t.Null(),
+  ]),
 });
 
 export type TokenizedDepositExists = StaticDecode<
