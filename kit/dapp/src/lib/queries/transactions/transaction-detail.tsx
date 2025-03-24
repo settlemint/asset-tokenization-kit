@@ -1,4 +1,5 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { TransactionFragment } from "./transaction-fragment";
 import { TransactionSchema } from "./transaction-schema";
@@ -48,7 +49,7 @@ export const getTransactionDetail = cache(
 
     // Return null if transaction not found, otherwise parsed transaction
     return response.getTransaction
-      ? TransactionSchema.parse(response.getTransaction)
+      ? safeParse(TransactionSchema, response.getTransaction)
       : null;
   }
 );
