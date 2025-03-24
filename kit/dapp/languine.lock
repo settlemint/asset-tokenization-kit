@@ -91,6 +91,8 @@ files:
     admin.dashboard.widgets.transactions.subtext: 2fad55667c83a280f2147280d9351aaf
     admin.dashboard.widgets.users.label: f9aae5fda8d810a29f12d1e61b4ab25f
     admin.dashboard.widgets.users.subtext: ab1de1f85e9569bc8a08cb994779e3a9
+    admin.dashboard.widgets.price.label: 689202409e48743b914713f96d93947c
+    admin.dashboard.widgets.price.subtext: d8a6124e07757b089f596d8bf9a8da0c
     admin.platform.settings.base-currency-label: 58d5c14f81669ba2d7b24bd6664f7f87
     admin.platform.settings.base-currency-updated: 4b32d3465f9f29e0f14dda57d35a54ed
     admin.platform.settings.currencies.aed: 6a54d6830f82ea4ca08b5eaf2be8e668
@@ -370,13 +372,6 @@ files:
     components.transactions-table.columns.status: ec53a8c4f07baed5d8825072c89799be
     components.transactions-table.columns.transaction-hash: a0bd1db035c6e85fbe6f3cbbf3ff28ee
     creator-owner: 5439f356b537a6081aabf0ab5ead403d
-    error.error-id: 69e9e13ca4e079dd3d988bc404306884
-    error.go-home: 382c69628e6c1c196feec18cba47b6a9
-    error.sending: e4b0c2b6d59cb4cf3e169a9886008087
-    error.success: 505a83f220c02df2f85c3810cd9ceb38
-    error.title: c6701602de1528fd79d5eff3e8eb1edd
-    error.try-again: f915a95e609bbd517a8a1e7bdcceef37
-    error.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
     homepage.asset-tokenization: 09572338ab9b55d3fd3e8327f643961a
     homepage.bonds-funds-equities: d78c37b03915c31ee5c79d6353cc2ce1
     homepage.cryptocurrencies: 82d545659cf7ab6dd908094739a64fda
@@ -1242,56 +1237,75 @@ files:
     transactions.sending: e4b0c2b6d59cb4cf3e169a9886008087
     transactions.success: 505a83f220c02df2f85c3810cd9ceb38
     transactions.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
-    zod.error.amount-too-large: db26eafb55d93d6cc7277656c0ec96a1
-    zod.error.amount-too-small: 78c037cd4117ca335c7462a8b03bed45
-    zod.error.array_length_too_big.exclusive: 30538d25907414565f9c90f946d03f90
-    zod.error.array_length_too_big.inclusive: 43e3e22968c5622caf355ba84261a644
-    zod.error.array_length_too_small.exclusive: 10ce54b84f6edd902a55c4ac0643fc1c
-    zod.error.array_length_too_small.inclusive: 2d3581ec8a949f4b1915f239eed31941
-    zod.error.custom: 8ec99a7264620677dfdaba9785a62dc4
-    zod.error.decimals-max: 4e5ac57dc930821716b9fbe671d92757
-    zod.error.decimals-min: 5686ac4736200feefe8aabe0c1a74051
-    zod.error.invalid-decimal: 99d2a1a04c0cfe442fd26fb887c62db5
-    zod.error.invalid-ethereum-address: e065f97d89d2f49e5fd3782c7b73bf50
-    zod.error.invalid-hash-format: 559379eea65af76709553c36433b6094
-    zod.error.invalid-pincode: b4785851cf390a3b914ca0247aac11bb
-    zod.error.invalid-symbol: d56ac0fd2ee407ed241185cfe6c9d1a0
-    zod.error.invalid-timestamp: 73362e52de5c978b3e6331062ab242f1
-    zod.error.invalid_arguments: 79c3a6fc888aa8695ddbb0ea6ee869bb
-    zod.error.invalid_cuid: 97d067d5d1362f7b50443964a5eba9e0
-    zod.error.invalid_date: 6983e1dbaf645233e304a723271973a7
-    zod.error.invalid_datetime: 43ecb317ec284252ff8339d9ec5c610c
-    zod.error.invalid_email: e918b3646854ddfb97b67ebb40c8200f
-    zod.error.invalid_enum_value: fa390b278205d590d3e55634c5ae3031
-    zod.error.invalid_format: 704c1a051c035f12fc8588e70131ee61
-    zod.error.invalid_literal: 295ecce40d19ed58b0388248eb35d802
-    zod.error.invalid_return_type: 6a9660ce9b45ffc9d847afb5d51ea056
-    zod.error.invalid_string: e0bf26b4b64363083d77ce3ca569be31
-    zod.error.invalid_type: 988396946db1c1cd82bef11d47ddec9a
-    zod.error.invalid_union: 3581aa3e644a38502a7307a01a4a1557
-    zod.error.invalid_union_discriminator: 0f0e707b30bfa74b686f1bec8e239f3a
-    zod.error.invalid_url: 271177b03cb7fac355dfa12aca9be618
-    zod.error.invalid_uuid: e85d2b9f6362f2589531d5484e44653e
-    zod.error.isin-format: 1b4758c43402209ebe0f7b61981ab2e4
-    zod.error.isin-length: 3edcea4a92e61a1d24f255490984c36a
-    zod.error.must_be_array: 21a1f7977daea4cd549935ad9ff15a87
-    zod.error.must_be_bigint: 469143d42dbd257fc2edd8584b7f31f1
-    zod.error.must_be_boolean: c9e55284871729bb745a691ad2c65b6e
-    zod.error.must_be_date: f64ff571aad4db6c14a9e345d9dc0623
-    zod.error.must_be_number: 7293795ec32bf0608e80a789419bb55e
-    zod.error.must_be_object: 8e475babea156a65d364f79b38ee4079
-    zod.error.must_be_string: 984306778f29519f72fce3319b10391b
-    zod.error.negative-amount: 6a59488f8174f3a3b18fbee80cc80094
-    zod.error.number_too_big.exclusive: de4bfc97862436f8807a6027fb8f899d
-    zod.error.number_too_big.inclusive: 51914dee22eb0760952f98e070035e17
-    zod.error.number_too_small.exclusive: a5a863648f3621fbb844e3c141e6ad6b
-    zod.error.number_too_small.inclusive: dfa36bb42e25a2824a4ae171ccd45092
-    zod.error.required: 0511ee0d41117aa7b4abaaf102aa513d
-    zod.error.role-required: c535f2eb3fee2c263d3425f9b14e0284
-    zod.error.string_length_too_big.exclusive: 50ec7f087c166e20e2f05a007e6f3f8e
-    zod.error.string_length_too_big.inclusive: 96e77400755df23a0df86c751e577e82
-    zod.error.string_length_too_small.exclusive: 072837314a024226ca083b5629db0049
-    zod.error.string_length_too_small.inclusive: 196f22d84c6b185d415396f64a52b65a
-    zod.error.too_big: 41ea7c729a91b32192899be51397240c
-    zod.error.too_small: 98bfdb2cf420ebf668404ee68038da1c
-    zod.error.validation_failed: d10fb60c71d2c232120f9df29cbc7989
+    error.error-id: 69e9e13ca4e079dd3d988bc404306884
+    error.go-home: 382c69628e6c1c196feec18cba47b6a9
+    error.sending: e4b0c2b6d59cb4cf3e169a9886008087
+    error.success: 505a83f220c02df2f85c3810cd9ceb38
+    error.title: c6701602de1528fd79d5eff3e8eb1edd
+    error.try-again: f915a95e609bbd517a8a1e7bdcceef37
+    error.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
+    error.array-contains: 3e67040c90b80c828384745786c7ed9a
+    error.array-max-contains: 70c318ee77460a10df3183dbe1ed3063
+    error.array-min-contains: c20553612f7b5a755d7ec5feb277e021
+    error.array-max-items: 736fa9a47370aec6d32c8fd5994cf0ed
+    error.array-min-items: c2768cd157ae57d55eb1291349622d54
+    error.array-unique-items: 925de22e1354fb187e3fecd9c2dff489
+    error.array: 1c8c8151581701fa5b597ade2d5b4aea
+    error.async-iterator: 5634b0239204e864fd2b608103b7841a
+    error.bigint-exclusive-maximum: 9f1e866a96d1e4a8671b2de0976148b2
+    error.bigint-exclusive-minimum: 9213ceeee7875e4f57345ac49c64fd27
+    error.bigint-maximum: 5aaa5f0de263f4c05ab66c314c040429
+    error.bigint-minimum: 46d1845a12403ebe8a06c831a5552280
+    error.bigint-multiple-of: 65f2af8984fb4696a3edc859729787c6
+    error.bigint: 3e6b4500a1aa2a28c87308dd0f845b65
+    error.boolean: 8bd80a21aa314506e32c49bbdc9b539f
+    error.date-exclusive-minimum-timestamp: 7ef984a7aa3f93c2529826edfe9d31a8
+    error.date-exclusive-maximum-timestamp: 8eb5adf547f0215fde70a86220e96635
+    error.date-minimum-timestamp: a37e0392a040b55c495f50e56bf76a3d
+    error.date-maximum-timestamp: 6ea3a63d1eabda5ce4a49a8739a1c938
+    error.date-multiple-of-timestamp: c96280f76032df218d08eebbb62f8696
+    error.date: c96280f76032df218d08eebbb62f8696
+    error.function: 78ddaa33aa4e09d62959484df4ed5f5a
+    error.integer-exclusive-maximum: aaa297da8a1d23c403bbd74aab7479d7
+    error.integer-exclusive-minimum: c087b4e7dc9b6c14dffb56a488cb1326
+    error.integer-maximum: cdac6597b54f188a35d2316d58c14024
+    error.integer-minimum: 0ae237b70f0b9b74a74cdc1f11598726
+    error.integer-multiple-of: 0746df732113a93406db39b1ab31ef7b
+    error.integer: ee4438aa11b15ec7585ded050ee889cd
+    error.intersect-unevaluated-properties: a246c452a2b3744731f2cbab7006b302
+    error.intersect: 2cbee9ca1e9bb14c4b74dcc55e601bd6
+    error.iterator: 5634b0239204e864fd2b608103b7841a
+    error.literal: 9d83b1cce85ecf505084146c761acc37
+    error.never: fd75e3ed396cee5d9c52a3ce64233370
+    error.not: c693ae1c323983947bcb4fc9f62bc09b
+    error.null: b1d80863b3cc102de85a83a8c78c4ee2
+    error.number-exclusive-maximum: 66bd645226d8d5aab1ed98b1afce801a
+    error.number-exclusive-minimum: d7fcaf895736ba5bc82ad0b7f962d60a
+    error.number-maximum: 44386ba926929a98e0248e2148e431d3
+    error.number-minimum: a7440e8e1b7b78b92d4c02aca49e81a5
+    error.number-multiple-of: 674f8a7555327250d9b060eae8cfa4e7
+    error.number: 1d75af7ead4847536d75284ad31e0e9f
+    error.object: 08ffc92e46e02355a7f4553aa2b18615
+    error.object-additional-properties: de4936a9acf49994a31c872b51af7f33
+    error.object-max-properties: d1e42552c072fe7fefa6ec8f57c2da96
+    error.object-min-properties: add2eb05e3f8fe94172e03ae8bb45cf2
+    error.object-required-property: 0511ee0d41117aa7b4abaaf102aa513d
+    error.promise: 5634b0239204e864fd2b608103b7841a
+    error.regexp: 739b06c0dfeb8388aada5f1330645816
+    error.string-format-unknown: 8c77eb811f7be3ca1b8b4a6e379d8115
+    error.string-format: fe83c3f5bda6191d84177a49a53fd647
+    error.string-max-length: ff3d75ca62a4371adc7764f3973f713b
+    error.string-min-length: 8aa51203cd0a918cdaeb3e9705a9dc03
+    error.string-pattern: c4570cbe59e3fb42cfcf29bdaddc6e8a
+    error.string: 087bfafc45b86ce28faf6f6334562382
+    error.symbol: 78ddaa33aa4e09d62959484df4ed5f5a
+    error.tuple-length: 6a9d75fb8032021c89ebcdf7c2816842
+    error.tuple: 7e1255c3f0d1ab640200da6b4c2555ac
+    error.uint8array-max-byte-length: ec89c7fa06f1df12a2b43c7159e21119
+    error.uint8array-min-byte-length: 7694642c2923adc52fad9d9df064dba2
+    error.uint8array: 3aa09611c7c5ca24cdfdc2e51900c56e
+    error.undefined: b1d80863b3cc102de85a83a8c78c4ee2
+    error.union: f23738594f51d25753c0e679535529d5
+    error.void: b1d80863b3cc102de85a83a8c78c4ee2
+    error.kind: 78ddaa33aa4e09d62959484df4ed5f5a
+    error.unknown: 13e39826b98706157ee4ceb641c7199f
