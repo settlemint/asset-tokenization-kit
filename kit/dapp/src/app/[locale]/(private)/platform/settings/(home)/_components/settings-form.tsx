@@ -2,6 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Form,
   FormControl,
   FormField,
@@ -78,39 +85,49 @@ export function SettingsForm({ defaultBaseCurrency }: SettingsFormProps) {
   );
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={handleSubmitWithAction}
-        className="w-full max-w-2xl space-y-4"
-      >
-        <FormField
-          name="baseCurrency"
-          render={({ field }) => (
-            <FormItem className="grid grid-cols-[200px_1fr] items-center gap-4">
-              <FormLabel className="text-right">
-                {t("base-currency-label")}
-              </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("select-base-currency")} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {fiatCurrencies.map((currency) => (
-                    <SelectItem key={currency} value={currency}>
-                      {t(currencyKeys[currency])}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
-        <div className="flex gap-4 pt-4">
-          <Button type="submit">{t("save-changes")}</Button>
-        </div>
-      </form>
-    </Form>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("base-currency-label")}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={handleSubmitWithAction}>
+            <FormField
+              name="baseCurrency"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-[200px_1fr] items-center gap-4">
+                  <FormLabel className="text-right">
+                    {t("base-currency-label")}
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t("select-base-currency")} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {fiatCurrencies.map((currency) => (
+                        <SelectItem key={currency} value={currency}>
+                          {t(currencyKeys[currency])}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <CardFooter className="p-6 py-4 md:py-3 grid grid-cols-2 gap-4 bg-transparent border-none [&>*:first-child]:justify-self-start [&>*:last-child]:justify-self-end">
+              <div />
+              <Button type="submit" className="translate-x-6 translate-y-4">
+                {t("save-changes")}
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

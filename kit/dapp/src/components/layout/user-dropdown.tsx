@@ -35,6 +35,10 @@ import {
 } from "../ui/animated-icons/book-text";
 import { LogoutIcon, type LogoutIconHandle } from "../ui/animated-icons/logout";
 import {
+  SettingsGearIcon,
+  type SettingsGearIconHandle,
+} from "../ui/animated-icons/settings-gear";
+import {
   SquareStackIcon,
   type SquareStackIconHandle,
 } from "../ui/animated-icons/square-stack";
@@ -69,11 +73,17 @@ export function UserDropdown({ user }: { user: User }) {
 
   const router = useRouter();
   const t = useTranslations("layout.user-dropdown");
+  const portfolioT = useTranslations("admin.sidebar.portfolio-management");
 
   // Create refs for each icon
   const stackIconRef = useRef<SquareStackIconHandle>(null);
   const bookIconRef = useRef<BookTextIconHandle>(null);
   const logoutIconRef = useRef<LogoutIconHandle>(null);
+  const settingsIconRef = useRef<SettingsGearIconHandle>(null);
+
+  const handleSettingsClick = useCallback(async () => {
+    router.push("/portfolio/settings/profile");
+  }, [router]);
 
   const handleSignOut = useCallback(async () => {
     await authClient.signOut({
@@ -155,6 +165,14 @@ export function UserDropdown({ user }: { user: User }) {
               <Link href="/portfolio/my-activity" prefetch>
                 {t("pending-transactions")}
               </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => void handleSettingsClick()}
+              onMouseEnter={() => settingsIconRef.current?.startAnimation()}
+              onMouseLeave={() => settingsIconRef.current?.stopAnimation()}
+            >
+              <SettingsGearIcon ref={settingsIconRef} className="mr-2 size-4" />
+              <span>{portfolioT("settings")}</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />

@@ -11,9 +11,7 @@ export default async function SettingsPage() {
   return (
     <>
       <PageHeader title="Settings" section={t("platform-management")} />
-      <div className="container space-y-6 p-6">
-        <SettingsForm defaultBaseCurrency={baseCurrency} />
-      </div>
+      <SettingsForm defaultBaseCurrency={baseCurrency} />
     </>
   );
 }

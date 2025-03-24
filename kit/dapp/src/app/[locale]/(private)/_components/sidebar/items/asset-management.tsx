@@ -1,15 +1,14 @@
-import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
+"use client";
+
 import { AssetTypeIcon } from "@/components/blocks/asset-type-icon/asset-type-icon";
 import { type NavItem, NavMain } from "@/components/layout/nav-main";
 import { ActivityIcon } from "@/components/ui/animated-icons/activity";
 import { ChartScatterIcon } from "@/components/ui/animated-icons/chart-scatter";
-import { getSidebarAssets } from "@/lib/queries/sidebar-assets/sidebar-assets";
-import { EllipsisIcon } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
+import { Suspense } from "react";
 
-export async function AssetManagement() {
-  const t = await getTranslations("admin.sidebar.asset-management");
-  const data = await getSidebarAssets();
+export function AssetManagement() {
+  const t = useTranslations("admin.sidebar.asset-management");
 
   // Asset configuration defined inline
   const assetItems: NavItem[] = [
@@ -51,69 +50,28 @@ export async function AssetManagement() {
     },
   ];
 
-  const processedAssetItems = assetItems.reduce((acc, section) => {
-    if (!section.assetType) {
-      return acc;
-    }
-
-    const assetType = section.assetType;
-    const assetsOfSection = data[assetType];
-
-    const subItems = assetsOfSection.records.map((asset) => ({
-      id: asset.id,
-      label: asset.name,
-      badge: asset.symbol ?? asset.id,
-      path: `${section.path}/${asset.id}`,
-      icon: <AddressAvatar address={asset.id} size="tiny" />,
-    }));
-
-    // Create a predictable object structure to ensure consistent rendering between server and client
-    const sectionItem: NavItem = {
-      ...section,
-      label: section.label,
-      path: section.path,
-      badge: assetsOfSection.count.toString(),
-    };
-
-    // Only add subItems if there are any to prevent different rendering conditions
-    if (subItems.length > 0) {
-      sectionItem.subItems = [...subItems];
-
-      // Add the "View all" item only if there are assets
-      if (assetsOfSection.count > 0) {
-        sectionItem.subItems.push({
-          id: "view-all",
-          label: t("view-all"),
-          path: section.path,
-          icon: <EllipsisIcon className="size-4" />,
-        });
-      }
-    }
-
-    acc.push(sectionItem);
-    return acc;
-  }, [] as NavItem[]);
-
   return (
-    <NavMain
-      items={[
-        {
-          groupTitle: t("group-title"),
-          items: [
-            {
-              label: t("dashboard"),
-              icon: <ChartScatterIcon className="size-4" />,
-              path: "/assets",
-            },
-            ...processedAssetItems,
-            {
-              label: t("asset-activity"),
-              icon: <ActivityIcon className="size-4" />,
-              path: "/assets/activity",
-            },
-          ],
-        },
-      ]}
-    />
+    <Suspense>
+      <NavMain
+        items={[
+          {
+            groupTitle: t("group-title"),
+            items: [
+              {
+                label: t("dashboard"),
+                icon: <ChartScatterIcon className="size-4" />,
+                path: "/assets",
+              },
+              ...assetItems,
+              {
+                label: t("asset-activity"),
+                icon: <ActivityIcon className="size-4" />,
+                path: "/assets/activity",
+              },
+            ],
+          },
+        ]}
+      />
+    </Suspense>
   );
 }
