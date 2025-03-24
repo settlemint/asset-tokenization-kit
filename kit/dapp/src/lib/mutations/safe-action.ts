@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth/auth";
-import type { User } from "better-auth";
 import {
   type ValidationErrors,
   createSafeActionClient,
@@ -7,8 +6,8 @@ import {
 import { typeboxAdapter } from "next-safe-action/adapters/typebox";
 import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
-import type { Address } from "viem";
 import type { Schema } from "zod";
+import type { User } from "../auth/types";
 import { redactSensitiveFields } from "../utils/redaction";
 
 type ValidationError = Error & {
@@ -86,7 +85,7 @@ export const action = createSafeActionClient({
 
     return next({
       ctx: {
-        user: session.user as Omit<User, "wallet"> & { wallet: Address },
+        user: session.user as User,
       },
     });
   });

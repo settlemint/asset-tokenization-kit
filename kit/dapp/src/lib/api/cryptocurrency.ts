@@ -9,6 +9,8 @@ import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
+import { createCryptoCurrencyFunction } from "../mutations/cryptocurrency/create/create-function";
+import { CreateCryptoCurrencySchema } from "../mutations/cryptocurrency/create/create-schema";
 
 export const CryptoCurrencyApi = new Elysia({
   detail: {
@@ -110,6 +112,29 @@ export const CryptoCurrencyApi = new Elysia({
         200: t.EthereumAddress({
           description: "The predicted contract address",
         }),
+        ...defaultErrorSchema,
+      },
+    }
+  )
+  .post(
+    "/factory",
+    async ({ body, user }) => {
+      return createCryptoCurrencyFunction({
+        parsedInput: body,
+        ctx: { user },
+      });
+    },
+    {
+      auth: true,
+      detail: {
+        summary: "Create cryptocurrency",
+        description:
+          "Creates a new cryptocurrency token based on creation parameters.",
+        tags: ["cryptocurrency"],
+      },
+      body: CreateCryptoCurrencySchema(),
+      response: {
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
