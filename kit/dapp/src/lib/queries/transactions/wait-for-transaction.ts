@@ -46,7 +46,7 @@ interface TransactionMonitoringOptions {
  * Waits for a single transaction to be mined
  * @internal Use waitForTransactions for external calls
  */
-async function waitForSingleTransaction(
+export async function waitForSingleTransaction(
   transactionHash: string,
   options: TransactionMonitoringOptions = {}
 ): Promise<TransactionReceipt> {
@@ -66,7 +66,10 @@ async function waitForSingleTransaction(
 
       if (result.getTransaction?.receipt) {
         // We have a receipt, means the transaction was mined
-        receipt = result.getTransaction.receipt;
+        receipt = safeParse(
+          ReceiptFragmentSchema,
+          result.getTransaction.receipt
+        );
         break;
       }
     } catch (error) {

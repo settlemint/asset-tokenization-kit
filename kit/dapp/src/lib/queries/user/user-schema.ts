@@ -62,11 +62,9 @@ export const UserSchema = t.Object(
         description: "The URL of the user's profile image",
       })
     ),
-    currency: t.MaybeEmpty(
-      t.String({
-        description: "The preferred currency of the user",
-      })
-    ),
+    currency: t.FiatCurrency({
+      description: "The preferred currency of the user",
+    }),
   },
   {
     description:
