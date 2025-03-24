@@ -15,8 +15,6 @@ import { revokeRoleFunction } from "../mutations/asset/access-control/revoke-rol
 import { RevokeRoleSchema } from "../mutations/asset/access-control/revoke-role/revoke-role-schema";
 import { updateRolesFunction } from "../mutations/asset/access-control/update-role/update-role-function";
 import { UpdateRolesSchema } from "../mutations/asset/access-control/update-role/update-role-schema";
-import { transferAssetFunction } from "../mutations/asset/transfer/transfer-function";
-import { getTransferFormSchema } from "../mutations/asset/transfer/transfer-schema";
 import { blockUserFunction } from "../mutations/block-user/block-user-function";
 import { BlockUserSchema } from "../mutations/block-user/block-user-schema";
 import { burnFunction } from "../mutations/burn/burn-function";
@@ -29,6 +27,8 @@ import { pauseFunction } from "../mutations/pause/pause-function";
 import { PauseSchema } from "../mutations/pause/pause-schema";
 import { createStablecoinFunction } from "../mutations/stablecoin/create/create-function";
 import { CreateStablecoinSchema } from "../mutations/stablecoin/create/create-schema";
+import { transferAssetFunction } from "../mutations/transfer/transfer-function";
+import { TransferSchema } from "../mutations/transfer/transfer-schema";
 import { unblockUserFunction } from "../mutations/unblock-user/unblock-user-function";
 import { UnblockUserSchema } from "../mutations/unblock-user/unblock-user-schema";
 import { unpauseFunction } from "../mutations/unpause/unpause-function";
@@ -171,7 +171,7 @@ export const StableCoinApi = new Elysia({
       return transferAssetFunction({
         parsedInput: {
           ...body,
-          assetType: "stablecoin",
+          assettype: "stablecoin",
         },
         ctx: { user },
       });
@@ -184,7 +184,7 @@ export const StableCoinApi = new Elysia({
           "Transfers stablecoin tokens from the current user's account to another address.",
         tags: ["stablecoin"],
       },
-      body: getTransferFormSchema(),
+      body: TransferSchema(),
       response: {
         200: t.Hashes(),
         ...defaultErrorSchema,

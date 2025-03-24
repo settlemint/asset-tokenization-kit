@@ -16,8 +16,6 @@ import { revokeRoleFunction } from "../mutations/asset/access-control/revoke-rol
 import { RevokeRoleSchema } from "../mutations/asset/access-control/revoke-role/revoke-role-schema";
 import { updateRolesFunction } from "../mutations/asset/access-control/update-role/update-role-function";
 import { UpdateRolesSchema } from "../mutations/asset/access-control/update-role/update-role-schema";
-import { transferAssetFunction } from "../mutations/asset/transfer/transfer-function";
-import { getTransferFormSchema } from "../mutations/asset/transfer/transfer-schema";
 import { burnFunction } from "../mutations/burn/burn-function";
 import { BurnSchema } from "../mutations/burn/burn-schema";
 import { disallowUserFunction } from "../mutations/disallow-user/disallow-user-function";
@@ -30,6 +28,8 @@ import { pauseFunction } from "../mutations/pause/pause-function";
 import { PauseSchema } from "../mutations/pause/pause-schema";
 import { createTokenizedDepositFunction } from "../mutations/tokenized-deposit/create/create-function";
 import { CreateTokenizedDepositSchema } from "../mutations/tokenized-deposit/create/create-schema";
+import { transferAssetFunction } from "../mutations/transfer/transfer-function";
+import { TransferSchema } from "../mutations/transfer/transfer-schema";
 import { unpauseFunction } from "../mutations/unpause/unpause-function";
 import { UnpauseSchema } from "../mutations/unpause/unpause-schema";
 import { updateCollateralFunction } from "../mutations/update-collateral/update-collateral-function";
@@ -171,7 +171,7 @@ export const TokenizedDepositApi = new Elysia({
       return transferAssetFunction({
         parsedInput: {
           ...body,
-          assetType: "tokenizeddeposit",
+          assettype: "tokenizeddeposit",
         },
         ctx: { user },
       });
@@ -184,7 +184,7 @@ export const TokenizedDepositApi = new Elysia({
           "Transfers tokenized deposit tokens from the current user's account to another address.",
         tags: ["tokenized deposit"],
       },
-      body: getTransferFormSchema(),
+      body: TransferSchema(),
       response: {
         200: t.Hashes(),
         ...defaultErrorSchema,
