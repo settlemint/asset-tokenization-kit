@@ -31,9 +31,9 @@ export function stablecoinCalculateFields(
 
   // Calculate collateral proof validity date
   const collateralProofValidity =
-    Number(onChainStableCoin.lastCollateralUpdate) > 0
+    onChainStableCoin.lastCollateralUpdate.getTime() > 0
       ? addSeconds(
-          new Date(Number(onChainStableCoin.lastCollateralUpdate) * 1000),
+          onChainStableCoin.lastCollateralUpdate,
           Number(onChainStableCoin.liveness)
         )
       : undefined;
