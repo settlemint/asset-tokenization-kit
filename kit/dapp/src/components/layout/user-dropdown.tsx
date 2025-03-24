@@ -15,7 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
-import type { User } from "@/lib/queries/user/user-fragment";
+import type { User } from "@/lib/queries/user/user-schema";
 import { cn } from "@/lib/utils";
 import { shortHex } from "@/lib/utils/hex";
 import { ChevronDown } from "lucide-react";

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { updateCurrency } from "@/lib/mutations/user/update-currency";
-import type { User } from "@/lib/queries/user/user-fragment";
+import type { User } from "@/lib/queries/user/user-schema";
 import { Check, DollarSign } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
