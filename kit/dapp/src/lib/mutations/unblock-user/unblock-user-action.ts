@@ -2,7 +2,7 @@
 
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { action } from "../safe-action";
 import { UnblockUserSchema } from "./unblock-user-schema";
 
@@ -44,8 +44,8 @@ const FundUnblockUser = portalGraphql(`
 `);
 
 export const unblockUser = action
-  .schema(UnblockUserSchema)
-  .outputSchema(z.hashes())
+  .schema(UnblockUserSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, pincode, userAddress, assettype },
@@ -62,7 +62,7 @@ export const unblockUser = action
       switch (assettype) {
         case "bond": {
           const response = await portalClient.request(BondUnblockUser, params);
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.BondUnblockUser?.transactionHash,
           ]);
         }
@@ -71,13 +71,13 @@ export const unblockUser = action
             EquityUnblockUser,
             params
           );
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.EquityUnblockUser?.transactionHash,
           ]);
         }
         case "fund": {
           const response = await portalClient.request(FundUnblockUser, params);
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.FundUnblockUser?.transactionHash,
           ]);
         }
@@ -86,7 +86,7 @@ export const unblockUser = action
             StableCoinUnblockUser,
             params
           );
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.StableCoinUnblockUser?.transactionHash,
           ]);
         }

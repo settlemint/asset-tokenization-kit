@@ -4,10 +4,12 @@ import {
   type ValidationErrors,
   createSafeActionClient,
 } from "next-safe-action";
+import { typeboxAdapter } from "next-safe-action/adapters/typebox";
 import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
 import type { Address } from "viem";
 import type { Schema } from "zod";
+import { redactSensitiveFields } from "../utils/redaction";
 
 type ValidationError = Error & {
   validationErrors: ValidationErrors<Schema>;
@@ -27,6 +29,7 @@ function consoleErrorValidationErrors(error: Error) {
 }
 
 export const action = createSafeActionClient({
+  validationAdapter: typeboxAdapter(),
   throwValidationErrors: true,
   defaultValidationErrorsShape: "formatted",
   handleServerError: (error: Error, { clientInput, metadata }) => {
@@ -127,33 +130,11 @@ function getRevertReason(error: Error): string | undefined {
   const graphqlMatch = message.match(GRAPHQL_REVERT_REGEX);
   if (graphqlMatch) {
     // Convert camelCase to readable format and lowercase
-    return graphqlMatch[1].replace(/([A-Z])/g, ' $1').trim().toLowerCase();
+    return graphqlMatch[1]
+      .replace(/([A-Z])/g, " $1")
+      .trim()
+      .toLowerCase();
   }
 
   return undefined;
-}
-
-/**
- * Redacts sensitive fields in an object by replacing their values with asterisks
- */
-function redactSensitiveFields(obj: unknown): unknown {
-  if (typeof obj !== "object" || obj === null) {
-    return obj;
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map(redactSensitiveFields);
-  }
-
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => {
-      if (key === "pincode") {
-        return [key, "******"];
-      }
-      if (typeof value === "object" && value !== null) {
-        return [key, redactSensitiveFields(value)];
-      }
-      return [key, value];
-    })
-  );
 }

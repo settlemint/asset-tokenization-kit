@@ -1,22 +1,42 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 
-export const getTransferFormSchema = (balance?: string) =>
-  z.object({
-    address: z.address(),
-    to: z.address(),
-    value: balance
-      ? z
-          .number()
-          .min(1, { message: "Amount is required" })
-          .max(Number(balance), {
-            message: `Amount cannot be greater than balance ${balance}`,
+export function getTransferFormSchema(balance?: string) {
+  return t.Object(
+    {
+      address: t.EthereumAddress({
+        description: "The contract address of the asset",
+      }),
+      to: t.EthereumAddress({
+        description: "The recipient address",
+      }),
+      value: balance
+        ? t.Number({
+            description: "The amount to transfer",
+            minimum: 1,
+            maximum: Number(balance),
+            errorMessage: `Amount cannot be greater than balance ${balance}`,
           })
-      : z.amount(),
-    assetType: z.assetType(),
-    pincode: z.pincode(),
-    decimals: z.decimals(),
-  });
+        : t.Number({
+            description: "The amount to transfer",
+            minimum: 0,
+          }),
+      assetType: t.AssetType({
+        description: "The type of asset to transfer",
+      }),
+      pincode: t.Pincode({
+        description: "The pincode for signing the transaction",
+      }),
+      decimals: t.Decimals({
+        description: "The number of decimal places for the token",
+      }),
+    },
+    {
+      description: "Schema for validating transfer inputs",
+    }
+  );
+}
 
 export type TransferFormSchema = ReturnType<typeof getTransferFormSchema>;
-export type TransferFormType = ZodInfer<TransferFormSchema>;
-export type TransferFormAssetType = ZodInfer<TransferFormSchema>["assetType"];
+export type TransferFormType = StaticDecode<TransferFormSchema>;
+export type TransferFormAssetType =
+  StaticDecode<TransferFormSchema>["assetType"];

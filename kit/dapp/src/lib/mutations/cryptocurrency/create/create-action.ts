@@ -4,7 +4,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { CreateCryptoCurrencySchema } from "./create-schema";
@@ -43,8 +43,8 @@ const CreateOffchainCryptoCurrency = hasuraGraphql(`
 `);
 
 export const createCryptoCurrency = action
-  .schema(CreateCryptoCurrencySchema)
-  .outputSchema(z.hashes())
+  .schema(CreateCryptoCurrencySchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: {
@@ -71,14 +71,14 @@ export const createCryptoCurrency = action
         address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
-        symbol,
+        symbol: String(symbol),
         decimals,
         initialSupply: initialSupplyExact,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
-      return z
-        .hashes()
-        .parse([data.CryptoCurrencyFactoryCreate?.transactionHash]);
+      return safeParse(t.Hashes(), [
+        data.CryptoCurrencyFactoryCreate?.transactionHash,
+      ]);
     }
   );

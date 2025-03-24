@@ -4,7 +4,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { type Role, getRoleIdentifier } from "@/lib/config/roles";
 import { action } from "@/lib/mutations/safe-action";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { RevokeRoleSchema } from "./revoke-role-schema";
 
 /**
@@ -122,8 +122,8 @@ const TokenizedDepositRevokeRole = portalGraphql(`
 `);
 
 export const revokeRole = action
-  .schema(RevokeRoleSchema)
-  .outputSchema(z.hashes())
+  .schema(RevokeRoleSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, roles, userAddress, pincode, assettype },
@@ -188,6 +188,6 @@ export const revokeRole = action
       const revokePromises = selectedRoles.map((role) => revokeRoleFn(role));
       const results = await Promise.all(revokePromises);
 
-      return safeParseWithLogging(z.hashes(), results);
+      return safeParse(t.Hashes(), results);
     }
   );

@@ -17,11 +17,12 @@ import { t } from "elysia/type-system";
  */
 export const Amount = (
   max = Number.MAX_SAFE_INTEGER,
-  min = 0,
+  min?: number,
+  decimals?: number,
   options?: SchemaOptions
 ) =>
   t.Number({
-    minimum: min,
+    minimum: min ? min : decimals ? 10 ** -decimals : 0,
     maximum: max,
     title: "Amount",
     description: `A positive numerical amount between ${min} and ${max}`,

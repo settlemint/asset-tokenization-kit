@@ -3,7 +3,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { type Role, getRoleIdentifier } from "@/lib/config/roles";
 import { action } from "@/lib/mutations/safe-action";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { GrantRoleSchema } from "./grant-role-schema";
 
 /**
@@ -121,8 +121,8 @@ const TokenizedDepositGrantRole = portalGraphql(`
 `);
 
 export const grantRole = action
-  .schema(GrantRoleSchema)
-  .outputSchema(z.hashes())
+  .schema(GrantRoleSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, roles, userAddress, pincode, assettype },
@@ -187,6 +187,6 @@ export const grantRole = action
       const grantPromises = selectedRoles.map((role) => grantRoleFn(role));
       const results = await Promise.all(grantPromises);
 
-      return safeParseTransactionHash(results);
+      return safeParse(t.Hashes(), results);
     }
   );

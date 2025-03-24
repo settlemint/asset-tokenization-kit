@@ -2,7 +2,7 @@
 
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { action } from "../safe-action";
 import { PauseSchema } from "./pause-schema";
 
@@ -82,8 +82,8 @@ const TokenizedDepositPause = portalGraphql(`
 `);
 
 export const pause = action
-  .schema(PauseSchema)
-  .outputSchema(z.hashes())
+  .schema(PauseSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({ parsedInput: { address, pincode, assettype }, ctx: { user } }) => {
       // Common parameters for all mutations
@@ -96,28 +96,22 @@ export const pause = action
       switch (assettype) {
         case "bond": {
           const response = await portalClient.request(BondPause, params);
-          return safeParseTransactionHash([
-            response.BondPause?.transactionHash,
-          ]);
+          return safeParse(t.Hashes(), [response.BondPause?.transactionHash]);
         }
         case "cryptocurrency": {
           throw new Error("Cryptocurrency does not support pause operations");
         }
         case "equity": {
           const response = await portalClient.request(EquityPause, params);
-          return safeParseTransactionHash([
-            response.EquityPause?.transactionHash,
-          ]);
+          return safeParse(t.Hashes(), [response.EquityPause?.transactionHash]);
         }
         case "fund": {
           const response = await portalClient.request(FundPause, params);
-          return safeParseTransactionHash([
-            response.FundPause?.transactionHash,
-          ]);
+          return safeParse(t.Hashes(), [response.FundPause?.transactionHash]);
         }
         case "stablecoin": {
           const response = await portalClient.request(StableCoinPause, params);
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.StableCoinPause?.transactionHash,
           ]);
         }
@@ -126,9 +120,9 @@ export const pause = action
             TokenizedDepositPause,
             params
           );
-          return z
-            .hashes()
-            .parse([response.TokenizedDepositPause?.transactionHash]);
+          return safeParse(t.Hashes(), [
+            response.TokenizedDepositPause?.transactionHash,
+          ]);
         }
         default:
           throw new Error("Invalid asset type");

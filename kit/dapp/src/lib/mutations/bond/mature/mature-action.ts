@@ -2,7 +2,7 @@
 
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { action } from "../../safe-action";
 import { MatureFormSchema } from "./mature-schema";
 
@@ -29,8 +29,8 @@ const MatureBond = portalGraphql(`
 `);
 
 export const mature = action
-  .schema(MatureFormSchema)
-  .outputSchema(z.hashes())
+  .schema(MatureFormSchema())
+  .outputSchema(t.Hashes())
   .action(async ({ parsedInput: { address, pincode }, ctx: { user } }) => {
     const response = await portalClient.request(MatureBond, {
       address: address,
@@ -38,5 +38,5 @@ export const mature = action
       challengeResponse: await handleChallenge(user.wallet, pincode),
     });
 
-    return safeParseTransactionHash([response.BondMature?.transactionHash]);
+    return safeParse(t.Hashes(), [response.BondMature?.transactionHash]);
   });

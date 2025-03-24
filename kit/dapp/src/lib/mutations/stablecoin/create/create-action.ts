@@ -5,7 +5,7 @@ import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { action } from "../../safe-action";
 import { CreateStablecoinSchema } from "./create-schema";
 
@@ -43,8 +43,8 @@ const CreateOffchainStablecoin = hasuraGraphql(`
 `);
 
 export const createStablecoin = action
-  .schema(CreateStablecoinSchema)
-  .outputSchema(z.hashes())
+  .schema(CreateStablecoinSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: {
@@ -72,13 +72,13 @@ export const createStablecoin = action
         address: STABLE_COIN_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
-        symbol,
+        symbol: symbol.toString(),
         decimals,
         collateralLivenessSeconds,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
-      return safeParseTransactionHash([
+      return safeParse(t.Hashes(), [
         data.StableCoinFactoryCreate?.transactionHash,
       ]);
     }

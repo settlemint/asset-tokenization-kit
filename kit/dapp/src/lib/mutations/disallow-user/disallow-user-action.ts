@@ -2,7 +2,7 @@
 
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { action } from "../safe-action";
 import { DisallowUserSchema } from "./disallow-user-schema";
 
@@ -23,8 +23,8 @@ const TokenizedDepositDisallowUser = portalGraphql(`
 `);
 
 export const disallowUser = action
-  .schema(DisallowUserSchema)
-  .outputSchema(z.hashes())
+  .schema(DisallowUserSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, pincode, userAddress, assettype },
@@ -44,7 +44,7 @@ export const disallowUser = action
             TokenizedDepositDisallowUser,
             params
           );
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.TokenizedDepositDisallowUser?.transactionHash,
           ]);
         }

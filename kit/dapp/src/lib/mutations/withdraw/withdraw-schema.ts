@@ -1,7 +1,7 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 /**
- * Zod schema for validating withdraw underlying asset mutation inputs
+ * TypeBox schema for validating withdraw underlying asset mutation inputs
  *
  * @property {string} address - The contract address
  * @property {string} to - The recipient address
@@ -10,13 +10,37 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {string} underlyingAssetAddress - The address of the underlying asset
  * @property {string} assettype - The type of asset
  */
-export const WithdrawSchema = z.object({
-  address: z.address(),
-  to: z.address(),
-  amount: z.amount(),
-  underlyingAssetAddress: z.address(),
-  pincode: z.pincode(),
-  assettype: z.assetType(),
-});
+export function WithdrawSchema(
+  maxAmount?: number,
+  minAmount?: number,
+  decimals?: number
+) {
+  return t.Object(
+    {
+      address: t.EthereumAddress({
+        description: "The contract address",
+      }),
+      to: t.EthereumAddress({
+        description: "The recipient address",
+      }),
+      amount: t.Amount(maxAmount, minAmount, decimals, {
+        description: "The amount of underlying asset to withdraw",
+      }),
+      underlyingAssetAddress: t.EthereumAddress({
+        description: "The address of the underlying asset",
+      }),
+      pincode: t.Pincode({
+        description: "The pincode for signing the transaction",
+      }),
+      assettype: t.AssetType({
+        description: "The type of asset",
+      }),
+    },
+    {
+      description:
+        "Schema for validating withdraw underlying asset mutation inputs",
+    }
+  );
+}
 
-export type WithdrawInput = ZodInfer<typeof WithdrawSchema>;
+export type WithdrawInput = StaticDecode<ReturnType<typeof WithdrawSchema>>;

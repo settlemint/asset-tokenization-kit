@@ -5,15 +5,15 @@ import { TOKENIZED_DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
-import { z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { action } from "../../safe-action";
 import { CreateTokenizedDepositSchema } from "./create-schema";
 
 /**
- * GraphQL mutation for creating a new stablecoin
+ * GraphQL mutation for creating a new tokenized deposit
  *
  * @remarks
- * Creates a new stablecoin contract through the stablecoin factory
+ * Creates a new tokenized deposit contract through the tokenized deposit factory
  */
 const TokenizedDepositFactoryCreate = portalGraphql(`
   mutation TokenizedDepositFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!) {
@@ -29,10 +29,10 @@ const TokenizedDepositFactoryCreate = portalGraphql(`
 `);
 
 /**
- * GraphQL mutation for creating off-chain metadata for a stablecoin
+ * GraphQL mutation for creating off-chain metadata for a tokenized deposit
  *
  * @remarks
- * Stores additional metadata about the stablecoin in Hasura
+ * Stores additional metadata about the tokenized deposit in Hasura
  */
 const CreateOffchainTokenizedDeposit = hasuraGraphql(`
   mutation CreateOffchainTokenizedDeposit($id: String!, $isin: String, $value_in_base_currency: numeric) {
@@ -43,8 +43,8 @@ const CreateOffchainTokenizedDeposit = hasuraGraphql(`
 `);
 
 export const createTokenizedDeposit = action
-  .schema(CreateTokenizedDepositSchema)
-  .outputSchema(z.hashes())
+  .schema(CreateTokenizedDepositSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: {
@@ -74,14 +74,14 @@ export const createTokenizedDeposit = action
         address: TOKENIZED_DEPOSIT_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
-        symbol,
+        symbol: symbol.toString(),
         decimals,
         collateralLivenessSeconds,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
-      return z
-        .hashes()
-        .parse([data.TokenizedDepositFactoryCreate?.transactionHash]);
+      return safeParse(t.Hashes(), [
+        data.TokenizedDepositFactoryCreate?.transactionHash,
+      ]);
     }
   );

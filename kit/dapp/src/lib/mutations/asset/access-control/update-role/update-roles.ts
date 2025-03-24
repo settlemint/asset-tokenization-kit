@@ -2,7 +2,7 @@
 
 import type { Role } from "@/lib/config/roles";
 import { action } from "@/lib/mutations/safe-action";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { grantRole } from "../grant-role/grant-role-action";
 import { revokeRole } from "../revoke-role/revoke-role";
 import { UpdateRolesSchema } from "./update-role-schema";
@@ -33,8 +33,8 @@ import { UpdateRolesSchema } from "./update-role-schema";
  * ```
  */
 export const updateRoles = action
-  .schema(UpdateRolesSchema)
-  .outputSchema(z.hashes())
+  .schema(UpdateRolesSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, roles, userAddress, pincode, assettype },
@@ -82,6 +82,6 @@ export const updateRoles = action
         }
       }
 
-      return safeParseTransactionHash(txns);
+      return safeParse(t.Hashes(), txns);
     }
   );

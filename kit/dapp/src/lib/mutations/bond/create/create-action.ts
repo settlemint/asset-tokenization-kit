@@ -5,7 +5,7 @@ import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { CreateBondSchema } from "./create-schema";
@@ -44,8 +44,8 @@ const CreateOffchainBond = hasuraGraphql(`
 `);
 
 export const createBond = action
-  .schema(CreateBondSchema)
-  .outputSchema(z.hashes())
+  .schema(CreateBondSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: {
@@ -79,7 +79,7 @@ export const createBond = action
         address: BOND_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
-        symbol,
+        symbol: String(symbol),
         decimals,
         cap: capExact,
         faceValue: String(faceValue),
@@ -88,8 +88,6 @@ export const createBond = action
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
-      return safeParseTransactionHash([
-        data.BondFactoryCreate?.transactionHash,
-      ]);
+      return safeParse(t.Hashes(), [data.BondFactoryCreate?.transactionHash]);
     }
   );

@@ -1,9 +1,8 @@
 "use server";
 import { ContactFragment } from "@/lib/queries/contact/contact-fragment";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
+import { t } from "@/lib/utils/typebox";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { action } from "../safe-action";
 import { getAddContactFormSchema } from "./add-contact-schema";
 
@@ -23,22 +22,11 @@ const AddContact = hasuraGraphql(
   }
 `,
   [ContactFragment]
-) as TypedDocumentNode<
-  {
-    insert_contact_one: {
-      id: string;
-      wallet: string;
-      name: string;
-      user_id: string;
-      created_at: string;
-    };
-  },
-  { address: string; name: string; id: string; userId: string }
->;
+);
 
 export const addContact = action
   .schema(getAddContactFormSchema())
-  .outputSchema(z.array(z.string()))
+  .outputSchema(t.Array(t.String()))
   .action(
     async ({
       parsedInput: { address, firstName, lastName },

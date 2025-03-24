@@ -3,7 +3,7 @@
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { action } from "../safe-action";
 import { UpdateCollateralSchema } from "./update-collateral-schema";
@@ -41,8 +41,8 @@ const TokenizedDepositUpdateCollateral = portalGraphql(`
 `);
 
 export const updateCollateral = action
-  .schema(UpdateCollateralSchema)
-  .outputSchema(z.hashes())
+  .schema(UpdateCollateralSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, pincode, amount, assettype },
@@ -69,20 +69,18 @@ export const updateCollateral = action
             StableCoinUpdateCollateral,
             params
           );
-          return z
-            .hashes()
-            .parse([response.StableCoinUpdateCollateral?.transactionHash]);
+          return safeParse(t.Hashes(), [
+            response.StableCoinUpdateCollateral?.transactionHash,
+          ]);
         }
         case "tokenizeddeposit": {
           const response = await portalClient.request(
             TokenizedDepositUpdateCollateral,
             params
           );
-          return z
-            .hashes()
-            .parse([
-              response.TokenizedDepositUpdateCollateral?.transactionHash,
-            ]);
+          return safeParse(t.Hashes(), [
+            response.TokenizedDepositUpdateCollateral?.transactionHash,
+          ]);
         }
         default:
           throw new Error("Invalid asset type for collateral update");

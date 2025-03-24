@@ -3,7 +3,7 @@
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { action } from "../safe-action";
 import { WithdrawSchema } from "./withdraw-schema";
@@ -135,8 +135,8 @@ const TokenizedDepositWithdrawToken = portalGraphql(`
 `);
 
 export const withdraw = action
-  .schema(WithdrawSchema)
-  .outputSchema(z.hashes())
+  .schema(WithdrawSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: {
@@ -189,54 +189,54 @@ export const withdraw = action
             BondWithdrawUnderlyingAsset,
             bondParams
           );
-          return z
-            .hashes()
-            .parse([response.BondWithdrawUnderlyingAsset?.transactionHash]);
+          return safeParse(t.Hashes(), [
+            response.BondWithdrawUnderlyingAsset?.transactionHash,
+          ]);
         }
         case "cryptocurrency": {
           const response = await portalClient.request(
             CryptoCurrencyWithdrawToken,
             tokenParams
           );
-          return z
-            .hashes()
-            .parse([response.CryptoCurrencyWithdrawToken?.transactionHash]);
+          return safeParse(t.Hashes(), [
+            response.CryptoCurrencyWithdrawToken?.transactionHash,
+          ]);
         }
         case "equity": {
           const response = await portalClient.request(
             EquityWithdrawToken,
             tokenParams
           );
-          return z
-            .hashes()
-            .parse([response.EquityWithdrawToken?.transactionHash]);
+          return safeParse(t.Hashes(), [
+            response.EquityWithdrawToken?.transactionHash,
+          ]);
         }
         case "fund": {
           const response = await portalClient.request(
             FundWithdrawToken,
             tokenParams
           );
-          return z
-            .hashes()
-            .parse([response.FundWithdrawToken?.transactionHash]);
+          return safeParse(t.Hashes(), [
+            response.FundWithdrawToken?.transactionHash,
+          ]);
         }
         case "stablecoin": {
           const response = await portalClient.request(
             StableCoinWithdrawToken,
             tokenParams
           );
-          return z
-            .hashes()
-            .parse([response.StableCoinWithdrawToken?.transactionHash]);
+          return safeParse(t.Hashes(), [
+            response.StableCoinWithdrawToken?.transactionHash,
+          ]);
         }
         case "tokenizeddeposit": {
           const response = await portalClient.request(
             TokenizedDepositWithdrawToken,
             tokenParams
           );
-          return z
-            .hashes()
-            .parse([response.TokenizedDepositWithdrawToken?.transactionHash]);
+          return safeParse(t.Hashes(), [
+            response.TokenizedDepositWithdrawToken?.transactionHash,
+          ]);
         }
         default:
           throw new Error("Invalid asset type");

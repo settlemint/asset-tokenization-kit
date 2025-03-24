@@ -4,7 +4,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { EQUITY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { action } from "../../safe-action";
 import { CreateEquitySchema } from "./create-schema";
 
@@ -42,8 +42,8 @@ const CreateOffchainEquity = hasuraGraphql(`
 `);
 
 export const createEquity = action
-  .schema(CreateEquitySchema)
-  .outputSchema(z.hashes())
+  .schema(CreateEquitySchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: {
@@ -69,15 +69,13 @@ export const createEquity = action
         address: EQUITY_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
-        symbol,
+        symbol: symbol.toString(),
         decimals,
         challengeResponse: await handleChallenge(user.wallet, pincode),
         equityCategory,
         equityClass,
       });
 
-      return safeParseTransactionHash([
-        data.EquityFactoryCreate?.transactionHash,
-      ]);
+      return safeParse(t.Hashes(), [data.EquityFactoryCreate?.transactionHash]);
     }
   );

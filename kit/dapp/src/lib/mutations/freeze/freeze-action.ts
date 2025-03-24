@@ -3,7 +3,7 @@
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { action } from "../safe-action";
 import { FreezeSchema } from "./freeze-schema";
@@ -89,8 +89,8 @@ const TokenizedDepositFreeze = portalGraphql(`
 `);
 
 export const freeze = action
-  .schema(FreezeSchema)
-  .outputSchema(z.hashes())
+  .schema(FreezeSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, pincode, userAddress, amount, assettype },
@@ -114,28 +114,24 @@ export const freeze = action
       switch (assettype) {
         case "bond": {
           const response = await portalClient.request(BondFreeze, params);
-          return safeParseTransactionHash([
-            response.BondFreeze?.transactionHash,
-          ]);
+          return safeParse(t.Hashes(), [response.BondFreeze?.transactionHash]);
         }
         case "cryptocurrency": {
           throw new Error("Cryptocurrency does not support freeze operations");
         }
         case "equity": {
           const response = await portalClient.request(EquityFreeze, params);
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.EquityFreeze?.transactionHash,
           ]);
         }
         case "fund": {
           const response = await portalClient.request(FundFreeze, params);
-          return safeParseTransactionHash([
-            response.FundFreeze?.transactionHash,
-          ]);
+          return safeParse(t.Hashes(), [response.FundFreeze?.transactionHash]);
         }
         case "stablecoin": {
           const response = await portalClient.request(StableCoinFreeze, params);
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.StableCoinFreeze?.transactionHash,
           ]);
         }
@@ -144,7 +140,7 @@ export const freeze = action
             TokenizedDepositFreeze,
             params
           );
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.TokenizedDepositFreeze?.transactionHash,
           ]);
         }

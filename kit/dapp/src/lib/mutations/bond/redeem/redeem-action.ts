@@ -3,7 +3,7 @@
 import { handleChallenge } from "@/lib/challenge";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { RedeemBondSchema } from "./redeem-schema";
@@ -22,8 +22,8 @@ const BondRedeem = portalGraphql(`
   `);
 
 export const redeem = action
-  .schema(RedeemBondSchema)
-  .outputSchema(z.hashes())
+  .schema(RedeemBondSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({ parsedInput: { address, pincode, amount }, ctx: { user } }) => {
       const { decimals } = await getBondDetail({ address });
@@ -37,6 +37,6 @@ export const redeem = action
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
-      return safeParseTransactionHash([response.BondRedeem?.transactionHash]);
+      return safeParse(t.Hashes(), [response.BondRedeem?.transactionHash]);
     }
   );

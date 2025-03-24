@@ -1,8 +1,8 @@
 import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type StaticDecode } from "@/lib/utils/typebox";
 
 /**
- * Zod schema for validating stablecoin creation inputs
+ * TypeBox schema for validating stablecoin creation inputs
  *
  * @property {string} assetName - The name of the stablecoin
  * @property {string} symbol - The symbol of the stablecoin (ticker)
@@ -11,11 +11,14 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {number} collateralLivenessValue - The duration value for collateral validity
  * @property {string} collateralLivenessTimeUnit - The time unit for collateral validity duration
  * @property {string} pincode - The pincode for signing the transaction
+ * @property {string} predictedAddress - The predicted contract address
+ * @property {number} valueInBaseCurrency - The value in base currency
  */
 export const CreateStablecoinSchema = z.object({
   assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
+  isin: z.isin().optional(),
   collateralLivenessValue: z
     .number()
     .or(z.string())
@@ -28,4 +31,6 @@ export const CreateStablecoinSchema = z.object({
   valueInBaseCurrency: z.fiatCurrencyAmount(),
 });
 
-export type CreateStablecoinInput = ZodInfer<typeof CreateStablecoinSchema>;
+export type CreateStablecoinInput = StaticDecode<
+  ReturnType<typeof CreateStablecoinSchema>
+>;

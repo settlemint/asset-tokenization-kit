@@ -4,7 +4,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { action } from "../../safe-action";
 import { CreateFundSchema } from "./create-schema";
 
@@ -43,8 +43,8 @@ const CreateOffchainFund = hasuraGraphql(`
 `);
 
 export const createFund = action
-  .schema(CreateFundSchema)
-  .outputSchema(z.hashes())
+  .schema(CreateFundSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: {
@@ -71,7 +71,7 @@ export const createFund = action
         address: FUND_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
-        symbol,
+        symbol: symbol.toString(),
         decimals,
         challengeResponse: await handleChallenge(user.wallet, pincode),
         fundCategory,
@@ -79,8 +79,6 @@ export const createFund = action
         managementFeeBps,
       });
 
-      return safeParseTransactionHash([
-        data.FundFactoryCreate?.transactionHash,
-      ]);
+      return safeParse(t.Hashes(), [data.FundFactoryCreate?.transactionHash]);
     }
   );

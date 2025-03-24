@@ -3,7 +3,7 @@
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { action } from "../safe-action";
 import { BurnSchema } from "./burn-schema";
@@ -90,7 +90,7 @@ const TokenizedDepositBurn = portalGraphql(`
 
 export const burn = action
   .schema(BurnSchema())
-  .outputSchema(z.hashes())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, pincode, amount, assettype },
@@ -113,24 +113,22 @@ export const burn = action
       switch (assettype) {
         case "bond": {
           const response = await portalClient.request(BondBurn, params);
-          return safeParseTransactionHash([response.BondBurn?.transactionHash]);
+          return safeParse(t.Hashes(), [response.BondBurn?.transactionHash]);
         }
         case "cryptocurrency": {
           throw new Error("Cryptocurrency does not support burn operations");
         }
         case "equity": {
           const response = await portalClient.request(EquityBurn, params);
-          return safeParseTransactionHash([
-            response.EquityBurn?.transactionHash,
-          ]);
+          return safeParse(t.Hashes(), [response.EquityBurn?.transactionHash]);
         }
         case "fund": {
           const response = await portalClient.request(FundBurn, params);
-          return safeParseTransactionHash([response.FundBurn?.transactionHash]);
+          return safeParse(t.Hashes(), [response.FundBurn?.transactionHash]);
         }
         case "stablecoin": {
           const response = await portalClient.request(StableCoinBurn, params);
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.StableCoinBurn?.transactionHash,
           ]);
         }
@@ -139,9 +137,9 @@ export const burn = action
             TokenizedDepositBurn,
             params
           );
-          return z
-            .hashes()
-            .parse([response.TokenizedDepositBurn?.transactionHash]);
+          return safeParse(t.Hashes(), [
+            response.TokenizedDepositBurn?.transactionHash,
+          ]);
         }
         default:
           throw new Error("Invalid asset type");

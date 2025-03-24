@@ -2,7 +2,7 @@
 
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import {
@@ -90,7 +90,7 @@ const TransferTokenizedDeposit = portalGraphql(`
 
 export const transferAsset = action
   .schema(getTransferFormSchema())
-  .outputSchema(z.hashes())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, to, value, pincode, assetType, decimals },
@@ -104,12 +104,7 @@ export const transferAsset = action
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
-      const transactionHash = data?.Transfer?.transactionHash;
-      if (!transactionHash) {
-        throw new Error("Failed to send the transfer transaction");
-      }
-
-      return [transactionHash as `0x${string}`];
+      return safeParse(t.Hashes(), [data?.Transfer?.transactionHash]);
     }
   );
 

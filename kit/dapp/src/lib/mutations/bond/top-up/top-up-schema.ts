@@ -1,18 +1,34 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
- * Zod schema for validating top up underlying asset mutation inputs
+ * TypeBox schema for validating top up underlying asset mutation inputs
  *
  * @property {string} address - The bond contract address
  * @property {number} amount - The amount of underlying asset to top up
  * @property {string} underlyingAssetAddress - The address of the underlying asset contract
  * @property {string} pincode - The pincode for signing the transaction
  */
-export const TopUpSchema = z.object({
-  address: z.address(),
-  underlyingAssetAddress: z.address(),
-  amount: z.amount(),
-  pincode: z.pincode(),
-});
+export function TopUpSchema() {
+  return t.Object(
+    {
+      address: t.EthereumAddress({
+        description: "The bond contract address",
+      }),
+      underlyingAssetAddress: t.EthereumAddress({
+        description: "The address of the underlying asset contract",
+      }),
+      amount: t.Number({
+        description: "The amount of underlying asset to top up",
+        minimum: 0,
+      }),
+      pincode: t.Pincode({
+        description: "The pincode for signing the transaction",
+      }),
+    },
+    {
+      description: "Schema for validating top up underlying asset inputs",
+    }
+  );
+}
 
-export type TopUpInput = ZodInfer<typeof TopUpSchema>;
+export type TopUpInput = StaticDecode<ReturnType<typeof TopUpSchema>>;

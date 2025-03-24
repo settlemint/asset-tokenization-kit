@@ -2,12 +2,12 @@
 
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { action } from "../safe-action";
 import { AllowUserSchema } from "./allow-user-schema";
 
 /**
- * GraphQL mutation to disallow a user from a tokenized deposit
+ * GraphQL mutation to allow a user to a tokenized deposit
  */
 const TokenizedDepositAllowUser = portalGraphql(`
   mutation TokenizedDepositAllowUser($address: String!, $user: String!, $from: String!, $challengeResponse: String!) {
@@ -23,8 +23,8 @@ const TokenizedDepositAllowUser = portalGraphql(`
 `);
 
 export const allowUser = action
-  .schema(AllowUserSchema)
-  .outputSchema(z.hashes())
+  .schema(AllowUserSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, pincode, userAddress, assettype },
@@ -44,7 +44,7 @@ export const allowUser = action
             TokenizedDepositAllowUser,
             params
           );
-          return safeParseTransactionHash([
+          return safeParse(t.Hashes(), [
             response.TokenizedDepositAllowUser?.transactionHash,
           ]);
         }

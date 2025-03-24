@@ -3,7 +3,7 @@
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { TopUpSchema } from "./top-up-schema";
@@ -51,8 +51,8 @@ const BondTopUpUnderlyingAsset = portalGraphql(`
 `);
 
 export const topUpUnderlyingAsset = action
-  .schema(TopUpSchema)
-  .outputSchema(z.hashes())
+  .schema(TopUpSchema())
+  .outputSchema(t.Hashes())
   .action(
     async ({
       parsedInput: { address, pincode, amount, underlyingAssetAddress },
@@ -97,8 +97,8 @@ export const topUpUnderlyingAsset = action
         throw new Error("Failed to get transaction hash");
       }
 
-      return z
-        .hashes()
-        .parse([response.BondTopUpUnderlyingAsset.transactionHash]);
+      return safeParse(t.Hashes(), [
+        response.BondTopUpUnderlyingAsset.transactionHash,
+      ]);
     }
   );
