@@ -1,22 +1,48 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 
-export const getTransferFormSchema = (balance?: string) =>
-  z.object({
-    address: z.address(),
-    to: z.address(),
-    value: balance
-      ? z
-          .number()
-          .min(1, { message: "Amount is required" })
-          .max(Number(balance), {
-            message: `Amount cannot be greater than balance ${balance}`,
-          })
-      : z.amount(),
-    assetType: z.assetType(),
-    pincode: z.pincode(),
-    decimals: z.decimals(),
-  });
+export function getTransferFormSchema({
+  balance,
+  minAmount,
+  decimals,
+}: {
+  balance?: string;
+  minAmount?: number;
+  decimals?: number;
+} = {}) {
+  const maxAmount = balance ? Number(balance) : undefined;
+  const min = minAmount ? minAmount : decimals ? 10 ** -decimals : 1;
+
+  return t.Object(
+    {
+      address: t.EthereumAddress({
+        description: "The contract address of the asset",
+      }),
+      to: t.EthereumAddress({
+        description: "The recipient address",
+      }),
+      value: t.Amount(maxAmount, min, decimals, {
+        description: "The amount to transfer",
+        errorMessage: balance
+          ? `Amount cannot be greater than balance ${balance}`
+          : undefined,
+      }),
+      assetType: t.AssetType({
+        description: "The type of asset to transfer",
+      }),
+      pincode: t.Pincode({
+        description: "The pincode for signing the transaction",
+      }),
+      decimals: t.Decimals({
+        description: "The number of decimal places for the token",
+      }),
+    },
+    {
+      description: "Schema for validating transfer inputs",
+    }
+  );
+}
 
 export type TransferFormSchema = ReturnType<typeof getTransferFormSchema>;
-export type TransferFormType = ZodInfer<TransferFormSchema>;
-export type TransferFormAssetType = ZodInfer<TransferFormSchema>["assetType"];
+export type TransferFormType = StaticDecode<TransferFormSchema>;
+export type TransferFormAssetType =
+  StaticDecode<TransferFormSchema>["assetType"];

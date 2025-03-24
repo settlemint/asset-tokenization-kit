@@ -4,7 +4,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { addContact } from "@/lib/mutations/contact/add-contact-action";
 import { getAddContactFormSchema } from "@/lib/mutations/contact/add-contact-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { Contact } from "./steps/contact";
 
@@ -26,7 +26,7 @@ export function AddContactForm({
     >
       <Form
         action={addContact}
-        resolver={zodResolver(getAddContactFormSchema())}
+        resolver={typeboxResolver(getAddContactFormSchema())}
         onOpenChange={onCloseAction}
         buttonLabels={{
           label: t("contact.title"),

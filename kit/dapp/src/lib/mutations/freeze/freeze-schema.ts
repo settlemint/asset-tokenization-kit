@@ -1,7 +1,7 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
- * Zod schema for validating freeze account mutation inputs
+ * TypeBox schema for validating freeze account mutation inputs
  *
  * @property {string} address - The contract address
  * @property {string} userAddress - The address of the user to freeze
@@ -9,12 +9,37 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {string} pincode - The pincode for signing the transaction
  * @property {string} assettype - The type of asset
  */
-export const FreezeSchema = z.object({
-  address: z.address(),
-  userAddress: z.address(),
-  amount: z.amount(),
-  pincode: z.pincode(),
-  assettype: z.assetType(),
-});
+export function FreezeSchema({
+  maxAmount,
+  minAmount,
+  decimals,
+}: {
+  maxAmount?: number;
+  minAmount?: number;
+  decimals?: number;
+} = {}) {
+  return t.Object(
+    {
+      address: t.EthereumAddress({
+        description: "The contract address",
+      }),
+      userAddress: t.EthereumAddress({
+        description: "The address of the user to freeze",
+      }),
+      amount: t.Amount(maxAmount, minAmount, decimals, {
+        description: "The amount to freeze",
+      }),
+      pincode: t.Pincode({
+        description: "The pincode for signing the transaction",
+      }),
+      assettype: t.AssetType({
+        description: "The type of asset",
+      }),
+    },
+    {
+      description: "Schema for validating freeze account mutation inputs",
+    }
+  );
+}
 
-export type FreezeInput = ZodInfer<typeof FreezeSchema>;
+export type FreezeInput = StaticDecode<ReturnType<typeof FreezeSchema>>;

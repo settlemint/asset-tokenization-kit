@@ -1,7 +1,7 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
- * Zod schema for validating generic mint mutation inputs
+ * TypeBox schema for validating generic mint mutation inputs
  *
  * @property {string} address - The contract address
  * @property {number} amount - The amount of tokens to mint
@@ -9,13 +9,37 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {string} pincode - User's pincode for authentication
  * @property {string} assetType - The type of asset
  */
-export const MintSchema = (max?: number, decimals?: number) =>
-  z.object({
-    address: z.address(),
-    amount: z.amount(max, decimals),
-    to: z.address(),
-    pincode: z.pincode(),
-    assettype: z.assetType(),
-  });
+export function MintSchema({
+  maxAmount,
+  minAmount,
+  decimals,
+}: {
+  maxAmount?: number;
+  minAmount?: number;
+  decimals?: number;
+} = {}) {
+  return t.Object(
+    {
+      address: t.EthereumAddress({
+        description: "The contract address",
+      }),
+      amount: t.Amount(maxAmount, minAmount, decimals, {
+        description: "The amount of tokens to mint",
+      }),
+      to: t.EthereumAddress({
+        description: "The recipient address",
+      }),
+      pincode: t.Pincode({
+        description: "User's pincode for authentication",
+      }),
+      assettype: t.AssetType({
+        description: "The type of asset",
+      }),
+    },
+    {
+      description: "Schema for validating generic mint mutation inputs",
+    }
+  );
+}
 
-export type MintInput = ZodInfer<ReturnType<typeof MintSchema>>;
+export type MintInput = StaticDecode<ReturnType<typeof MintSchema>>;
