@@ -128,8 +128,8 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
 
   // Return combined data
   return {
-    ...user,
     ...account,
+    ...user,
     ...calculatedFields,
   };
 });

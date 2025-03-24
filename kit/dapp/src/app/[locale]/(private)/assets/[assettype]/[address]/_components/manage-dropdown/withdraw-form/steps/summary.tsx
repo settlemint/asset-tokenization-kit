@@ -37,4 +37,4 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = [] as const;
+Summary.validatedFields = [] as (keyof WithdrawInput)[];

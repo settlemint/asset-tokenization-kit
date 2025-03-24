@@ -26,7 +26,9 @@ import { RoleRevokedDetails } from "./details/role-revoked";
 import { TokenWithdrawnDetails } from "./details/token-withdrawn";
 import { TokensFrozenDetails } from "./details/tokens-frozen";
 import { TransferDetails } from "./details/transfer";
+import { UserAllowedDetails } from "./details/user-allowed";
 import { UserBlockedDetails } from "./details/user-blocked";
+import { UserDisallowedDetails } from "./details/user-disallowed";
 
 export function EventDetailSheet({
   event,
@@ -112,8 +114,12 @@ export function EventDetailSheet({
                   return <TokensFrozenDetails details={details} />;
                 case "TransferEvent":
                   return <TransferDetails details={details} />;
+                case "UserAllowedEvent":
+                  return <UserAllowedDetails details={details} />;
                 case "UserBlockedEvent":
                   return <UserBlockedDetails details={details} />;
+                case "UserDisallowedEvent":
+                  return <UserDisallowedDetails details={details} />;
                 case "AssetCreatedEvent":
                 case "BondMaturedEvent":
                 case "PausedEvent":

@@ -40,4 +40,4 @@ export function Roles({ disableEditAdminRole }: RolesProps) {
   );
 }
 
-Roles.validatedFields = ["roles"] as const;
+Roles.validatedFields = ["roles"] satisfies (keyof UpdateRolesInput)[];

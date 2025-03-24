@@ -25,7 +25,7 @@
       "charts": {
         "asset-activity": {
           "burn": "バーン",
-          "description": "資産アクティビティ",
+          "description": "異なる資産クラスに対して行われたアクションの量",
           "mint": "ミント",
           "title": "資産アクティビティ",
           "transfer": "転送"
@@ -39,17 +39,17 @@
           "tokenizeddeposit": "トークン化された預金"
         },
         "assets-supply": {
-          "description": "資産供給",
+          "description": "資産クラスごとのトークンの分布",
           "title": "資産供給"
         },
         "transaction-history": {
-          "description": "取引履歴",
+          "description": "先週の1日あたりの取引数",
           "title": "取引履歴"
         },
         "users-history": {
-          "description": "ユーザー履歴",
+          "description": "先週登録されたユーザー数",
           "label": "ユーザー",
-          "title": "ユーザー履歴"
+          "title": "登録ユーザー"
         }
       },
       "page": {
@@ -76,6 +76,10 @@
         "users": {
           "label": "ユーザー",
           "subtext": "{count} 件のユーザーが過去 {days} 日間にいます"
+        },
+        "price": {
+          "label": "値",
+          "subtext": "すべての資産の合計値"
         }
       }
     },
@@ -415,6 +419,7 @@
         "default-placeholder": "オプションを選択",
         "loading": "読み込み中...",
         "no-asset-found": "資産が見つかりません。",
+        "recent-assets": "最近選択したもの",
         "search-placeholder": "資産を検索..."
       },
       "button": {
@@ -433,7 +438,9 @@
       },
       "pincode-dialog": {
         "description": "トランザクションに署名するには、確認と承認のためにピンコードを入力してください。",
-        "title": "確認のためにピンコードを入力してください"
+        "title": "確認のためにピンコードを入力してください",
+        "cancel": "キャンセル",
+        "confirm": "はい、確認する"
       },
       "progress": {
         "completed-step": "ステップ完了",
@@ -448,6 +455,7 @@
         "default-placeholder": "オプションを選択",
         "loading": "読み込み中...",
         "no-user-found": "ユーザーが見つかりません。",
+        "recent-users": "最近選択したもの",
         "search-placeholder": "ユーザーを検索..."
       }
     },
@@ -458,6 +466,8 @@
       "assets-section": "資産",
       "no-results": "結果が見つかりません",
       "placeholder": "資産またはユーザーを検索...",
+      "recent-assets": "最近の資産",
+      "recent-users": "最近のユーザー",
       "users-section": "ユーザー"
     },
     "transaction-details": {
@@ -510,7 +520,72 @@
     "success": "成功",
     "title": "何かがうまくいきませんでした！",
     "try-again": "再試行",
-    "validation-errors": "検証エラー"
+    "validation-errors": "検証エラー",
+    "array-contains": "リストから少なくとも1つの項目を選択してください",
+    "array-max-contains": "最大で{maxContains}項目を選択してください",
+    "array-min-contains": "少なくとも{minContains}項目を選択してください",
+    "array-max-items": "最大で{maxItems}項目を選択してください",
+    "array-min-items": "少なくとも{minItems}項目を選択してください",
+    "array-unique-items": "選択したすべての項目がユニークであることを確認してください",
+    "array": "項目のリストを提供してください",
+    "async-iterator": "無効なデータ形式",
+    "bigint-exclusive-maximum": " {exclusiveMaximum}未満の数値を入力してください",
+    "bigint-exclusive-minimum": " {exclusiveMinimum}より大きい数値を入力してください",
+    "bigint-maximum": " {maximum}以下の数値を入力してください",
+    "bigint-minimum": " {minimum}以上の数値を入力してください",
+    "bigint-multiple-of": " {multipleOf}で割り切れる数値を入力してください",
+    "bigint": "整数を入力してください",
+    "boolean": "はいまたはいいえを選択してください",
+    "date-exclusive-minimum-timestamp": " {exclusiveMinimumTimestamp}以降の日付を選択してください",
+    "date-exclusive-maximum-timestamp": " {exclusiveMaximumTimestamp}以前の日付を選択してください",
+    "date-minimum-timestamp": " {minimumTimestamp}以降の日付を選択してください",
+    "date-maximum-timestamp": " {maximumTimestamp}以前の日付を選択してください",
+    "date-multiple-of-timestamp": "有効な日付を選択してください",
+    "date": "有効な日付を選択してください",
+    "function": "無効な形式",
+    "integer-exclusive-maximum": " {exclusiveMaximum}未満の整数を入力してください",
+    "integer-exclusive-minimum": " {exclusiveMinimum}より大きい整数を入力してください",
+    "integer-maximum": " {maximum}以下の整数を入力してください",
+    "integer-minimum": " {minimum}以上の整数を入力してください",
+    "integer-multiple-of": " {multipleOf}で割り切れる整数を入力してください",
+    "integer": "小数点なしの整数を入力してください",
+    "intersect-unevaluated-properties": "予期しない情報が提供されました",
+    "intersect": "すべての情報が有効であることを確認してください",
+    "iterator": "無効なデータ形式",
+    "literal": "正確に{const}を入力してください",
+    "never": "このフィールドは入力できません",
+    "not": "この値は受け入れられません",
+    "null": "このフィールドは空であるべきです",
+    "number-exclusive-maximum": " {exclusiveMaximum}未満の数値を入力してください",
+    "number-exclusive-minimum": " {exclusiveMinimum}より大きい数値を入力してください",
+    "number-maximum": " {maximum}以下の数値を入力してください",
+    "number-minimum": " {minimum}以上の数値を入力してください",
+    "number-multiple-of": " {multipleOf}で割り切れる数値を入力してください",
+    "number": "有効な数値を入力してください",
+    "object": "すべての必須情報を提供してください",
+    "object-additional-properties": "不明なフィールドが提供されました",
+    "object-max-properties": "フィールドが多すぎます（最大は{maxProperties}です）",
+    "object-min-properties": "少なくとも{minProperties}フィールドを記入してください",
+    "object-required-property": "このフィールドは必須です",
+    "promise": "無効なデータ形式",
+    "regexp": "正しい形式でテキストを入力してください",
+    "string-format-unknown": "不明な形式 '{format}'",
+    "string-format": "正しい{format}形式でテキストを入力してください",
+    "string-max-length": "最大{maxLength}文字以内で入力してください",
+    "string-min-length": "少なくとも{minLength}文字を入力してください",
+    "string-pattern": "必要なパターンに従ってください",
+    "string": "テキストを入力してください",
+    "symbol": "無効な形式",
+    "tuple-length": "正確に{maxItems}項目を提供してください",
+    "tuple": "正しい順序で必要なすべての項目を提供してください",
+    "uint8array-max-byte-length": "ファイルが大きすぎます",
+    "uint8array-min-byte-length": "ファイルが小さすぎます",
+    "uint8array": "無効なファイル形式",
+    "undefined": "このフィールドは空であるべきです",
+    "union": "有効な値を入力してください",
+    "void": "このフィールドは空であるべきです",
+    "kind": "無効な形式",
+    "unknown": "無効な値が入力されました"
   },
   "layout": {
     "header": {
@@ -522,7 +597,8 @@
       "admin": "発行者ポータル",
       "asset-management": "資産管理",
       "platform": "プラットフォーム管理",
-      "portfolio": "マイポートフォリオ"
+      "portfolio": "マイポートフォリオ",
+      "title": "プライベート"
     },
     "user-dropdown": {
       "documentation": "ドキュメント",
@@ -2044,74 +2120,5 @@
     "portfolio": "ポートフォリオ",
     "stablecoins": "ステーブルコイン",
     "tokenized-deposits": "トークン化された預金"
-  },
-  "zod": {
-    "error": {
-      "invalid-ethereum-address": "無効なイーサリアムアドレス形式",
-      "invalid-hash-format": "無効なハッシュ形式",
-      "invalid-pincode": "無効なピンコード、6桁の数字でなければなりません",
-      "decimals-min": "小数は少なくとも0でなければなりません",
-      "decimals-max": "小数は0から18の間でなければなりません",
-      "amount-too-small": "金額が小さすぎます",
-      "amount-too-large": "金額が許可されている最大値を超えています",
-      "role-required": "少なくとも1つの役割を選択する必要があります",
-      "invalid-symbol": "シンボルは大文字のアルファベットと数字のみを含む必要があります",
-      "isin-format": "ISINは大文字のアルファベットと数字のみを含む必要があります",
-      "isin-length": "ISINは正確に12文字でなければなりません",
-      "invalid-decimal": "無効な小数点数形式",
-      "invalid-timestamp": "タイムスタンプは正の数でなければなりません",
-      "negative-amount": "金額は正でなければなりません",
-      "required": "このフィールドは必須です",
-      "must_be_string": "このフィールドは文字列でなければなりません",
-      "must_be_number": "このフィールドは数値でなければなりません",
-      "must_be_boolean": "このフィールドはブール値でなければなりません",
-      "must_be_date": "このフィールドは日付でなければなりません",
-      "must_be_bigint": "このフィールドは大きな整数でなければなりません",
-      "must_be_array": "このフィールドは配列でなければなりません",
-      "must_be_object": "このフィールドはオブジェクトでなければなりません",
-      "invalid_type": "このフィールドの無効な型",
-      "invalid_url": "無効なURL形式",
-      "invalid_email": "無効なメール形式",
-      "invalid_uuid": "無効なUUID形式",
-      "invalid_cuid": "無効なCUID形式",
-      "invalid_format": "このフィールドの無効な形式",
-      "invalid_datetime": "無効な日付/時間形式",
-      "invalid_string": "無効な文字列形式",
-      "string_length_too_small": {
-        "inclusive": "テキストは少なくとも{minimum}文字でなければなりません",
-        "exclusive": "テキストは{minimum}文字より多くなければなりません"
-      },
-      "number_too_small": {
-        "inclusive": "数値は少なくとも{minimum}でなければなりません",
-        "exclusive": "数値は{minimum}より大きくなければなりません"
-      },
-      "array_length_too_small": {
-        "inclusive": "少なくとも{minimum}項目を含む必要があります",
-        "exclusive": "より多くの{minimum}項目を含む必要があります"
-      },
-      "too_small": "値が小さすぎます",
-      "string_length_too_big": {
-        "inclusive": "テキストは{maximum}文字を超えてはいけません",
-        "exclusive": "テキストは{maximum}文字未満でなければなりません"
-      },
-      "number_too_big": {
-        "inclusive": "数値は{maximum}を超えてはいけません",
-        "exclusive": "数値は{maximum}未満でなければなりません"
-      },
-      "array_length_too_big": {
-        "inclusive": "最大{maximum}項目を含んではいけません",
-        "exclusive": "最大{maximum}項目未満でなければなりません"
-      },
-      "too_big": "値が大きすぎます",
-      "invalid_literal": "無効なリテラル値",
-      "invalid_union": "この型の無効な入力",
-      "invalid_union_discriminator": "無効な識別子値",
-      "invalid_enum_value": "無効なオプションが選択されました",
-      "invalid_arguments": "無効な関数引数",
-      "invalid_return_type": "無効な戻り値の型",
-      "invalid_date": "無効な日付",
-      "custom": "無効な入力",
-      "validation_failed": "検証に失敗しました"
-    }
   }
 }

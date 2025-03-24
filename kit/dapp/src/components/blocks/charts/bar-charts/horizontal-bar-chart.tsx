@@ -121,7 +121,11 @@ export function BarChartComponent({
             {showYAxis && (
               <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} />
             )}
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent />}
+              wrapperStyle={{ minWidth: "200px", width: "auto" }}
+            />
             <defs>
               {dataKeys.map((key) => (
                 <linearGradient

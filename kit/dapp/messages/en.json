@@ -94,7 +94,7 @@
       "charts": {
         "asset-activity": {
           "burn": "Burn",
-          "description": "Asset activity",
+          "description": "The amount of actions taken on the different asset classes",
           "mint": "Mint",
           "title": "Asset activity",
           "transfer": "Transfer"
@@ -108,17 +108,17 @@
           "tokenizeddeposit": "Tokenized Deposits"
         },
         "assets-supply": {
-          "description": "Assets supply",
+          "description": "The distribution of tokens per asset class",
           "title": "Assets supply"
         },
         "transaction-history": {
-          "description": "Transaction history",
+          "description": "Number of transactions per day in the last week",
           "title": "Transaction history"
         },
         "users-history": {
-          "description": "Users history",
+          "description": "Number of users registered in the last week",
           "label": "Users",
-          "title": "Users history"
+          "title": "Registered users"
         }
       },
       "page": {
@@ -138,6 +138,10 @@
           "label": "Assets",
           "subtext": "{bonds} bonds | {cryptocurrencies} cryptocurrencies | {equities} equities | {funds} funds | {stableCoins} stablecoins | {tokenizedDeposits} tokenized deposits"
         },
+        "price": {
+          "label": "Value",
+          "subtext": "Total value across all assets"
+        },
         "transactions": {
           "label": "Transactions",
           "subtext": "{count} transactions processed in the last {days} days"
@@ -145,10 +149,6 @@
         "users": {
           "label": "Users",
           "subtext": "{count} users in the last {days} days"
-        },
-        "price": {
-          "label": "Value",
-          "subtext": "Total value across all assets"
         }
       }
     },
@@ -444,6 +444,7 @@
         "default-placeholder": "Select an option",
         "loading": "Loading...",
         "no-asset-found": "No asset found.",
+        "recent-assets": "Recently selected",
         "search-placeholder": "Search for an asset..."
       },
       "button": {
@@ -461,6 +462,8 @@
         "valid-number": "Please enter a valid number"
       },
       "pincode-dialog": {
+        "cancel": "Cancel",
+        "confirm": "Yes, confirm",
         "description": "To sign the transaction, please enter your pincode for verification and authorization.",
         "title": "Enter your pincode to confirm"
       },
@@ -477,6 +480,7 @@
         "default-placeholder": "Select an option",
         "loading": "Loading...",
         "no-user-found": "No user found.",
+        "recent-users": "Recently selected",
         "search-placeholder": "Search for a user..."
       }
     },
@@ -487,6 +491,8 @@
       "assets-section": "Assets",
       "no-results": "No results found",
       "placeholder": "Search for assets or users...",
+      "recent-assets": "Recent assets",
+      "recent-users": "Recent users",
       "users-section": "Users"
     },
     "transaction-details": {
@@ -533,13 +539,78 @@
   },
   "creator-owner": "Creator / Owner",
   "error": {
+    "array": "Please provide a list of items",
+    "array-contains": "Please select at least one item from the list",
+    "array-max-contains": "Please select no more than {maxContains} items",
+    "array-max-items": "Please select no more than {maxItems} items",
+    "array-min-contains": "Please select at least {minContains} items",
+    "array-min-items": "Please select at least {minItems} items",
+    "array-unique-items": "Please ensure all selected items are unique",
+    "async-iterator": "Invalid data format",
+    "bigint": "Please enter a whole number",
+    "bigint-exclusive-maximum": "Please enter a number smaller than {exclusiveMaximum}",
+    "bigint-exclusive-minimum": "Please enter a number larger than {exclusiveMinimum}",
+    "bigint-maximum": "Please enter a number no larger than {maximum}",
+    "bigint-minimum": "Please enter a number no smaller than {minimum}",
+    "bigint-multiple-of": "Please enter a number that is divisible by {multipleOf}",
+    "boolean": "Please select Yes or No",
+    "date": "Please select a valid date",
+    "date-exclusive-maximum-timestamp": "Please select a date before {exclusiveMaximumTimestamp}",
+    "date-exclusive-minimum-timestamp": "Please select a date after {exclusiveMinimumTimestamp}",
+    "date-maximum-timestamp": "Please select a date on or before {maximumTimestamp}",
+    "date-minimum-timestamp": "Please select a date on or after {minimumTimestamp}",
+    "date-multiple-of-timestamp": "Please select a valid date",
     "error-id": "Error ID",
+    "function": "Invalid format",
     "go-home": "Go home",
+    "integer": "Please enter a whole number (no decimals)",
+    "integer-exclusive-maximum": "Please enter a whole number less than {exclusiveMaximum}",
+    "integer-exclusive-minimum": "Please enter a whole number greater than {exclusiveMinimum}",
+    "integer-maximum": "Please enter a whole number no greater than {maximum}",
+    "integer-minimum": "Please enter a whole number no less than {minimum}",
+    "integer-multiple-of": "Please enter a whole number divisible by {multipleOf}",
+    "intersect": "Please ensure all information is valid",
+    "intersect-unevaluated-properties": "Unexpected information provided",
+    "iterator": "Invalid data format",
+    "kind": "Invalid format",
+    "literal": "Please enter exactly {const}",
+    "never": "This field cannot be filled",
+    "not": "This value is not accepted",
+    "null": "This field should be empty",
+    "number": "Please enter a valid number",
+    "number-exclusive-maximum": "Please enter a number less than {exclusiveMaximum}",
+    "number-exclusive-minimum": "Please enter a number greater than {exclusiveMinimum}",
+    "number-maximum": "Please enter a number no greater than {maximum}",
+    "number-minimum": "Please enter a number no less than {minimum}",
+    "number-multiple-of": "Please enter a number divisible by {multipleOf}",
+    "object": "Please provide all required information",
+    "object-additional-properties": "Unknown field provided",
+    "object-max-properties": "Too many fields provided (maximum is {maxProperties})",
+    "object-min-properties": "Please fill out at least {minProperties} fields",
+    "object-required-property": "This field is required",
+    "promise": "Invalid data format",
+    "regexp": "Please enter text in the correct format",
     "sending": "Sending",
+    "string": "Please enter text",
+    "string-format": "Please enter text in the correct {format} format",
+    "string-format-unknown": "Unknown format '{format}'",
+    "string-max-length": "Please enter no more than {maxLength} characters",
+    "string-min-length": "Please enter at least {minLength} characters",
+    "string-pattern": "Please follow the required pattern",
     "success": "Success",
+    "symbol": "Invalid format",
     "title": "Something went wrong!",
     "try-again": "Try again",
-    "validation-errors": "Validation error"
+    "tuple": "Please provide all required items in the correct order",
+    "tuple-length": "Please provide exactly {maxItems} items",
+    "uint8array": "Invalid file format",
+    "uint8array-max-byte-length": "File is too large",
+    "uint8array-min-byte-length": "File is too small",
+    "undefined": "This field should be empty",
+    "union": "Please enter a valid value",
+    "unknown": "Invalid value entered",
+    "validation-errors": "Validation error",
+    "void": "This field should be empty"
   },
   "homepage": {
     "asset-tokenization": "asset tokenization",
@@ -635,7 +706,8 @@
       "admin": "Issuer portal",
       "asset-management": "Asset management",
       "platform": "Platform management",
-      "portfolio": "My portfolio"
+      "portfolio": "My portfolio",
+      "title": "Private"
     },
     "user-dropdown": {
       "documentation": "Documentation",
@@ -1761,74 +1833,5 @@
     "sending": "Sending",
     "success": "Success",
     "validation-errors": "Validation error"
-  },
-  "zod": {
-    "error": {
-      "amount-too-large": "Amount exceeds the maximum allowed",
-      "amount-too-small": "Amount is too small",
-      "array_length_too_big": {
-        "exclusive": "Must contain less than {maximum} items",
-        "inclusive": "Must not contain more than {maximum} items"
-      },
-      "array_length_too_small": {
-        "exclusive": "Must contain more than {minimum} items",
-        "inclusive": "Must contain at least {minimum} items"
-      },
-      "custom": "Invalid input",
-      "decimals-max": "Decimals must be between 0 and 18",
-      "decimals-min": "Decimals must be at least 0",
-      "invalid-decimal": "Invalid decimal number format",
-      "invalid-ethereum-address": "Invalid Ethereum address format",
-      "invalid-hash-format": "Invalid hash format",
-      "invalid-pincode": "Invalid pincode, must be a 6-digit number",
-      "invalid-symbol": "Symbol must contain only uppercase letters and numbers",
-      "invalid-timestamp": "Timestamp must be a positive number",
-      "invalid_arguments": "Invalid function arguments",
-      "invalid_cuid": "Invalid CUID format",
-      "invalid_date": "Invalid date",
-      "invalid_datetime": "Invalid date/time format",
-      "invalid_email": "Invalid email format",
-      "invalid_enum_value": "Invalid option selected",
-      "invalid_format": "Invalid format for this field",
-      "invalid_literal": "Invalid literal value",
-      "invalid_return_type": "Invalid return type",
-      "invalid_string": "Invalid string format",
-      "invalid_type": "Invalid type for this field",
-      "invalid_union": "Invalid input for this type",
-      "invalid_union_discriminator": "Invalid discriminator value",
-      "invalid_url": "Invalid URL format",
-      "invalid_uuid": "Invalid UUID format",
-      "isin-format": "ISIN must contain only uppercase letters and numbers",
-      "isin-length": "ISIN must be exactly 12 characters",
-      "must_be_array": "This field must be an array",
-      "must_be_bigint": "This field must be a big integer",
-      "must_be_boolean": "This field must be a boolean",
-      "must_be_date": "This field must be a date",
-      "must_be_number": "This field must be a number",
-      "must_be_object": "This field must be an object",
-      "must_be_string": "This field must be a string",
-      "negative-amount": "Amount must be positive",
-      "number_too_big": {
-        "exclusive": "Number must be less than {maximum}",
-        "inclusive": "Number must not exceed {maximum}"
-      },
-      "number_too_small": {
-        "exclusive": "Number must be greater than {minimum}",
-        "inclusive": "Number must be at least {minimum}"
-      },
-      "required": "This field is required",
-      "role-required": "At least one role must be selected",
-      "string_length_too_big": {
-        "exclusive": "Text must be less than {maximum} characters",
-        "inclusive": "Text must not exceed {maximum} characters"
-      },
-      "string_length_too_small": {
-        "exclusive": "Text must be more than {minimum} characters",
-        "inclusive": "Text must be at least {minimum} characters"
-      },
-      "too_big": "Value is too large",
-      "too_small": "Value is too small",
-      "validation_failed": "Validation failed"
-    }
   }
 }

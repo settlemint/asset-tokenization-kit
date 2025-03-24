@@ -20,7 +20,7 @@ import { isBefore } from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 import { AllowForm } from "../allow-form/form";
 import { BlockForm } from "../block-form/form";
 import { DisallowForm } from "../disallow-form/form";
@@ -92,8 +92,8 @@ export function ManageDropdown({
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
   const userRoles =
-    assetUsersDetails.roles.find((role) => role.id === userAddress)?.roles ??
-    [];
+    assetUsersDetails.roles.find((role) => getAddress(role.id) === userAddress)
+      ?.roles ?? [];
   const userIsSupplyManager = userRoles.includes(
     ROLES.SUPPLY_MANAGEMENT_ROLE.contractRole
   );

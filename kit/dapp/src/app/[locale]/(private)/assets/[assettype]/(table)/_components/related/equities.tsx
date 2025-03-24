@@ -21,7 +21,9 @@ export async function EquitiesRelated() {
         description={t("equity.mechanics.description")}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/equity#contract-features-and-capabilities">
-          <Button variant="secondary">{t("equity.mechanics.button")}</Button>
+          <Button className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground">
+            {t("equity.mechanics.button")}
+          </Button>
         </Link>
       </RelatedGridItem>
       <RelatedGridItem
@@ -29,7 +31,9 @@ export async function EquitiesRelated() {
         description={t("equity.usecases.description")}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/equity#why-digital-fund-tokens">
-          <Button variant="secondary">{t("equity.usecases.button")}</Button>
+          <Button className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground">
+            {t("equity.usecases.button")}
+          </Button>
         </Link>
       </RelatedGridItem>
     </RelatedGrid>

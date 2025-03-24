@@ -4,6 +4,8 @@ import { Form as UIForm } from "@/components/ui/form";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { safeParse, t as tb } from "@/lib/utils/typebox";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
+import { Kind } from "@sinclair/typebox";
+import { SetErrorFunction, ValueErrorType } from "@sinclair/typebox/errors";
 import { useTranslations } from "next-intl";
 import type { Infer, Schema } from "next-safe-action/adapters/types";
 import type { HookSafeActionFn } from "next-safe-action/hooks";
@@ -66,10 +68,198 @@ export function Form<
   secureForm = true,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
-  const t = useTranslations("transactions");
+  const t = useTranslations();
   const totalSteps = Array.isArray(children) ? children.length : 1;
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
+
+  SetErrorFunction((error) => {
+    switch (error.errorType) {
+      case ValueErrorType.ArrayContains:
+        return t("error.array-contains");
+      case ValueErrorType.ArrayMaxContains:
+        return t("error.array-max-contains", {
+          maxContains: error.schema.maxContains,
+        });
+      case ValueErrorType.ArrayMinContains:
+        return t("error.array-min-contains", {
+          minContains: error.schema.minContains,
+        });
+      case ValueErrorType.ArrayMaxItems:
+        return t("error.array-max-items", { maxItems: error.schema.maxItems });
+      case ValueErrorType.ArrayMinItems:
+        return t("error.array-min-items", { minItems: error.schema.minItems });
+      case ValueErrorType.ArrayUniqueItems:
+        return t("error.array-unique-items");
+      case ValueErrorType.Array:
+        return t("error.array");
+      case ValueErrorType.AsyncIterator:
+        return t("error.async-iterator");
+      case ValueErrorType.BigIntExclusiveMaximum:
+        return t("error.bigint-exclusive-maximum", {
+          exclusiveMaximum: error.schema.exclusiveMaximum,
+        });
+      case ValueErrorType.BigIntExclusiveMinimum:
+        return t("error.bigint-exclusive-minimum", {
+          exclusiveMinimum: error.schema.exclusiveMinimum,
+        });
+      case ValueErrorType.BigIntMaximum:
+        return t("error.bigint-maximum", { maximum: error.schema.maximum });
+      case ValueErrorType.BigIntMinimum:
+        return t("error.bigint-minimum", { minimum: error.schema.minimum });
+      case ValueErrorType.BigIntMultipleOf:
+        return t("error.bigint-multiple-of", {
+          multipleOf: error.schema.multipleOf,
+        });
+      case ValueErrorType.BigInt:
+        return t("error.bigint");
+      case ValueErrorType.Boolean:
+        return t("error.boolean");
+      case ValueErrorType.DateExclusiveMinimumTimestamp:
+        return t("error.date-exclusive-minimum-timestamp", {
+          exclusiveMinimumTimestamp: error.schema.exclusiveMinimumTimestamp,
+        });
+      case ValueErrorType.DateExclusiveMaximumTimestamp:
+        return t("error.date-exclusive-maximum-timestamp", {
+          exclusiveMaximumTimestamp: error.schema.exclusiveMaximumTimestamp,
+        });
+      case ValueErrorType.DateMinimumTimestamp:
+        return t("error.date-minimum-timestamp", {
+          minimumTimestamp: error.schema.minimumTimestamp,
+        });
+      case ValueErrorType.DateMaximumTimestamp:
+        return t("error.date-maximum-timestamp", {
+          maximumTimestamp: error.schema.maximumTimestamp,
+        });
+      case ValueErrorType.DateMultipleOfTimestamp:
+        return t("error.date-multiple-of-timestamp", {
+          multipleOfTimestamp: error.schema.multipleOfTimestamp,
+        });
+      case ValueErrorType.Date:
+        return t("error.date");
+      case ValueErrorType.Function:
+        return t("error.function");
+      case ValueErrorType.IntegerExclusiveMaximum:
+        return t("error.integer-exclusive-maximum", {
+          exclusiveMaximum: error.schema.exclusiveMaximum,
+        });
+      case ValueErrorType.IntegerExclusiveMinimum:
+        return t("error.integer-exclusive-minimum", {
+          exclusiveMinimum: error.schema.exclusiveMinimum,
+        });
+      case ValueErrorType.IntegerMaximum:
+        return t("error.integer-maximum", { maximum: error.schema.maximum });
+      case ValueErrorType.IntegerMinimum:
+        return t("error.integer-minimum", { minimum: error.schema.minimum });
+      case ValueErrorType.IntegerMultipleOf:
+        return t("error.integer-multiple-of", {
+          multipleOf: error.schema.multipleOf,
+        });
+      case ValueErrorType.Integer:
+        return t("error.integer");
+      case ValueErrorType.IntersectUnevaluatedProperties:
+        return t("error.intersect-unevaluated-properties");
+      case ValueErrorType.Intersect:
+        return t("error.intersect");
+      case ValueErrorType.Iterator:
+        return t("error.iterator");
+      case ValueErrorType.Literal:
+        return t("error.literal", {
+          const:
+            typeof error.schema.const === "string"
+              ? `'${error.schema.const}'`
+              : error.schema.const,
+        });
+      case ValueErrorType.Never:
+        return t("error.never");
+      case ValueErrorType.Not:
+        return t("error.not");
+      case ValueErrorType.Null:
+        return t("error.null");
+      case ValueErrorType.NumberExclusiveMaximum:
+        return t("error.number-exclusive-maximum", {
+          exclusiveMaximum: error.schema.exclusiveMaximum,
+        });
+      case ValueErrorType.NumberExclusiveMinimum:
+        return t("error.number-exclusive-minimum", {
+          exclusiveMinimum: error.schema.exclusiveMinimum,
+        });
+      case ValueErrorType.NumberMaximum:
+        return t("error.number-maximum", { maximum: error.schema.maximum });
+      case ValueErrorType.NumberMinimum:
+        return t("error.number-minimum", { minimum: error.schema.minimum });
+      case ValueErrorType.NumberMultipleOf:
+        return t("error.number-multiple-of", {
+          multipleOf: error.schema.multipleOf,
+        });
+      case ValueErrorType.Number:
+        return t("error.number");
+      case ValueErrorType.Object:
+        return t("error.object");
+      case ValueErrorType.ObjectAdditionalProperties:
+        return t("error.object-additional-properties");
+      case ValueErrorType.ObjectMaxProperties:
+        return t("error.object-max-properties", {
+          maxProperties: error.schema.maxProperties,
+        });
+      case ValueErrorType.ObjectMinProperties:
+        return t("error.object-min-properties", {
+          minProperties: error.schema.minProperties,
+        });
+      case ValueErrorType.ObjectRequiredProperty:
+        return t("error.object-required-property");
+      case ValueErrorType.Promise:
+        return t("error.promise");
+      case ValueErrorType.RegExp:
+        return t("error.regexp");
+      case ValueErrorType.StringFormatUnknown:
+        return t("error.string-format-unknown", {
+          format: error.schema.format,
+        });
+      case ValueErrorType.StringFormat:
+        return t("error.string-format", { format: error.schema.format });
+      case ValueErrorType.StringMaxLength:
+        return t("error.string-max-length", {
+          maxLength: error.schema.maxLength,
+        });
+      case ValueErrorType.StringMinLength:
+        return t("error.string-min-length", {
+          minLength: error.schema.minLength,
+        });
+      case ValueErrorType.StringPattern:
+        return t("error.string-pattern", { pattern: error.schema.pattern });
+      case ValueErrorType.String:
+        return t("error.string");
+      case ValueErrorType.Symbol:
+        return t("error.symbol");
+      case ValueErrorType.TupleLength:
+        return t("error.tuple-length", {
+          maxItems: error.schema.maxItems || 0,
+        });
+      case ValueErrorType.Tuple:
+        return t("error.tuple");
+      case ValueErrorType.Uint8ArrayMaxByteLength:
+        return t("error.uint8array-max-byte-length", {
+          maxByteLength: error.schema.maxByteLength,
+        });
+      case ValueErrorType.Uint8ArrayMinByteLength:
+        return t("error.uint8array-min-byte-length", {
+          minByteLength: error.schema.minByteLength,
+        });
+      case ValueErrorType.Uint8Array:
+        return t("error.uint8array");
+      case ValueErrorType.Undefined:
+        return t("error.undefined");
+      case ValueErrorType.Union:
+        return t("error.union");
+      case ValueErrorType.Void:
+        return t("error.void");
+      case ValueErrorType.Kind:
+        return t("error.kind", { kind: error.schema[Kind] });
+      default:
+        return t("error.unknown");
+    }
+  });
 
   const { form, handleSubmitWithAction, resetFormAndAction } =
     useHookFormAction(
@@ -87,8 +277,8 @@ export function Form<
             const hashes = safeParse(tb.Hashes(), data);
             if (secureForm) {
               toast.promise(waitForTransactions(hashes), {
-                loading: toastMessages?.loading || t("sending"),
-                success: toastMessages?.success || t("success"),
+                loading: toastMessages?.loading || t("transactions.sending"),
+                success: toastMessages?.success || t("transactions.success"),
                 error: (error: Error) => `Failed to submit: ${error.message}`,
               });
             }
@@ -205,7 +395,7 @@ export function Form<
                   variant="destructive"
                   className="mb-4 border-destructive text-destructive"
                 >
-                  <AlertTitle>{t("validation-errors")}</AlertTitle>
+                  <AlertTitle>{t("transactions.validation-errors")}</AlertTitle>
                   <AlertDescription className="whitespace-pre-wrap">
                     {Object.entries(form.formState.errors)
                       .map(([key, error]) => {

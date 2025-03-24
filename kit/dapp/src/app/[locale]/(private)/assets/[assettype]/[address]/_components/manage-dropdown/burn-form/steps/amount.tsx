@@ -35,4 +35,4 @@ export function Amount({ max, decimals, symbol }: AmountProps) {
   );
 }
 
-Amount.validatedFields = ["amount"] as const;
+Amount.validatedFields = ["amount"] satisfies (keyof BurnInput)[];

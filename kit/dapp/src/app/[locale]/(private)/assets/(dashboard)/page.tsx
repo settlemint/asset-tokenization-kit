@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/layout/page-header";
+import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -26,7 +27,10 @@ export async function generateMetadata({
   });
 
   return {
-    title: t("title"),
+    title: {
+      ...metadata.title,
+      default: t("title"),
+    },
     description: t("description"),
   };
 }

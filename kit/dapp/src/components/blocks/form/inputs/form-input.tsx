@@ -1,12 +1,12 @@
 "use client";
 
-import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -178,7 +178,7 @@ export function FormInput<T extends FieldValues>({
                 {postfix && (
                   <span
                     className={cn(
-                      "flex items-center px-3 text-sm text-foreground border border-l-0 rounded-r-md",
+                      "flex items-center bg-transparent text-sm text-foreground rounded-r-md",
                       fieldState.error
                         ? "border-destructive bg-destructive/10"
                         : "bg-muted/50"
@@ -194,10 +194,7 @@ export function FormInput<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <TranslatableFormFieldMessage
-              id={`${field.name}-error`}
-              aria-live="polite"
-            />
+            <FormMessage />
           </FormItem>
         );
       }}

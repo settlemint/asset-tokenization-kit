@@ -41,4 +41,8 @@ export function Basics() {
   );
 }
 
-Basics.validatedFields = ["assetName", "symbol", "decimals", "isin"] as const;
+Basics.validatedFields = [
+  "assetName",
+  "symbol",
+  "decimals",
+] satisfies (keyof CreateStablecoinInput)[];

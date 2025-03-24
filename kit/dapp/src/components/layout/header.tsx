@@ -15,7 +15,7 @@ export default async function Header() {
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Search />
       </div>
-      <div className="ml-auto flex items-center gap-2 px-4">
+      <div className="ml-auto rtl:ml-0 rtl:mr-auto flex items-center gap-2 px-4">
         <UserDropdown user={userDetails} />
       </div>
     </header>

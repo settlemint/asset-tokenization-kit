@@ -313,6 +313,13 @@ h3: text-xl
   [dir="rtl"] [data-slot="collapsible-trigger"] {
     text-align: right;
   }
+  [dir="rtl"] [data-slot="sidebar-menu-item"] a {
+    text-align: right;
+  }
+
+  [dir="rtl"] [data-slot="collapsible-trigger"] > svg {
+    transform: rotate(180deg);
+  }
 
   [data-slot="sidebar-menu-sub-button"].font-bold,
   [data-slot="sidebar-menu-button"].font-bold {
