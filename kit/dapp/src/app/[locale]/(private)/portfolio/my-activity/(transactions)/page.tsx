@@ -2,11 +2,31 @@ import TransactionsTable from "@/components/blocks/transactions-table/transactio
 import { Link } from "@/i18n/routing";
 import { getUser } from "@/lib/auth/utils";
 import { getBlockExplorerAllTxUrl } from "@/lib/block-explorer";
+import { metadata } from "@/lib/config/metadata";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
 interface TransactionsPageProps {
   params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: TransactionsPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({
+    locale,
+    namespace: "portfolio.activity",
+  });
+
+  return {
+    title: {
+      ...metadata.title,
+      default: t("tabs.recent-transactions"),
+    },
+    description: t("page-description"),
+  };
 }
 
 export default async function TransactionsPage({

@@ -60,7 +60,8 @@ export function VerticalBarChartComponent<T extends BarChartData>({
             <XAxis dataKey={valueKey} type="number" hide />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
+              content={<ChartTooltipContent />}
+              wrapperStyle={{ minWidth: "200px", width: "auto" }}
             />
             <Bar dataKey={valueKey} layout="vertical" radius={4}>
               <LabelList
