@@ -25,9 +25,9 @@ export async function AssetActivity() {
 
   const isEmpty = data.every(
     (asset) =>
-      asset.mintEventCount === 0n &&
-      asset.burnEventCount === 0n &&
-      asset.transferEventCount === 0n
+      asset.mintEventCount === 0 &&
+      asset.burnEventCount === 0 &&
+      asset.transferEventCount === 0
   );
 
   if (isEmpty) {
@@ -38,11 +38,11 @@ export async function AssetActivity() {
   const chartData = data.map((asset) => ({
     id: asset.id,
     assetType: asset.assetType,
-    mintEventCount: Number(asset.mintEventCount),
-    burnEventCount: Number(asset.burnEventCount),
-    transferEventCount: Number(asset.transferEventCount),
-    frozenEventCount: Number(asset.frozenEventCount),
-    unfrozenEventCount: Number(asset.unfrozenEventCount),
+    mintEventCount: asset.mintEventCount,
+    burnEventCount: asset.burnEventCount,
+    transferEventCount: asset.transferEventCount,
+    frozenEventCount: asset.frozenEventCount,
+    unfrozenEventCount: asset.unfrozenEventCount,
   }));
 
   return (

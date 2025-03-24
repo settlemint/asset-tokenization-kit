@@ -1,8 +1,19 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 
-export const MatureFormSchema = z.object({
-  address: z.address(),
-  pincode: z.pincode(),
-});
+export function MatureFormSchema() {
+  return t.Object(
+    {
+      address: t.EthereumAddress({
+        description: "The bond contract address to mature",
+      }),
+      pincode: t.Pincode({
+        description: "The pincode for signing the transaction",
+      }),
+    },
+    {
+      description: "Schema for validating bond maturity inputs",
+    }
+  );
+}
 
-export type MatureFormInput = ZodInfer<typeof MatureFormSchema>;
+export type MatureFormInput = StaticDecode<ReturnType<typeof MatureFormSchema>>;

@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { useSettings } from "@/hooks/use-settings";
 import { createTokenizedDeposit } from "@/lib/mutations/tokenized-deposit/create/create-action";
 import { CreateTokenizedDepositSchema } from "@/lib/mutations/tokenized-deposit/create/create-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Basics } from "./steps/basics";
@@ -44,7 +44,7 @@ export function CreateTokenizedDepositForm({
     >
       <Form
         action={createTokenizedDeposit}
-        resolver={zodResolver(CreateTokenizedDepositSchema)}
+        resolver={typeboxResolver(CreateTokenizedDepositSchema())}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("trigger-label.tokenizeddeposits"),

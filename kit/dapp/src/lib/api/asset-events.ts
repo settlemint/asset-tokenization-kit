@@ -18,7 +18,7 @@ export const AssetEventsApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async ({ query }) => {
       const asset = query.asset ? getAddress(query.asset) : undefined;
       const sender = query.sender ? getAddress(query.sender) : undefined;

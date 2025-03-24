@@ -3,6 +3,7 @@
 import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { revalidatePath, revalidateTag } from "next/cache";
 import {
   ReceiptFragment,
@@ -47,7 +48,7 @@ interface TransactionMonitoringOptions {
  * Waits for a single transaction to be mined
  * @internal Use waitForTransactions for external calls
  */
-async function waitForSingleTransaction(
+export async function waitForSingleTransaction(
   transactionHash: string,
   options: TransactionMonitoringOptions = {}
 ): Promise<Receipt> {
@@ -67,7 +68,10 @@ async function waitForSingleTransaction(
 
       if (result.getTransaction?.receipt) {
         // We have a receipt, means the transaction was mined
-        receipt = ReceiptFragmentSchema.parse(result.getTransaction.receipt);
+        receipt = safeParse(
+          ReceiptFragmentSchema,
+          result.getTransaction.receipt
+        );
         break;
       }
     } catch (error) {
@@ -109,12 +113,12 @@ export async function waitForTransactions(
     transactionHashes.map((hash) => waitForSingleTransaction(hash, options))
   );
 
-  const response = WaitForTransactionsResponseSchema.parse({
+  const response = safeParse(WaitForTransactionsResponseSchema, {
     receipts: results,
     lastTransaction: results.at(-1),
   });
 
-  await waitForIndexing(response.lastTransaction.blockNumber);
+  await waitForIndexing(Number(response.lastTransaction.blockNumber));
 
   // Revalidate all cache tags
   revalidateTag("asset");

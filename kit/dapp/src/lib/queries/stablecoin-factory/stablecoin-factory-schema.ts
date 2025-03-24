@@ -36,7 +36,7 @@ export const PredictedAddressSchema = t.Object({
 export type PredictedAddress = StaticDecode<typeof PredictedAddressSchema>;
 
 export const StableCoinExistsSchema = t.Object({
-  stableCoin: t.Optional(
+  stableCoin: t.MaybeEmpty(
     t.Object({
       id: t.String(),
     })

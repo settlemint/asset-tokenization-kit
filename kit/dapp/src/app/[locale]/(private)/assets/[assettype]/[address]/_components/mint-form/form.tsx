@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { mint } from "@/lib/mutations/mint/mint-action";
 import { MintSchema } from "@/lib/mutations/mint/mint-schema";
 import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -68,7 +68,7 @@ export function MintForm({
     >
       <Form
         action={mint}
-        resolver={zodResolver(MintSchema(max, decimals))}
+        resolver={typeboxResolver(MintSchema({ maxAmount: max, decimals }))}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

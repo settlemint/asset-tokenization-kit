@@ -24,7 +24,7 @@ export const TransactionApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async () => {
       return getTransactionList();
     },

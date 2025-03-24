@@ -17,7 +17,7 @@ export const AssetActivityApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async ({ query }) => {
       const limit = query.limit ? parseInt(query.limit) : undefined;
 

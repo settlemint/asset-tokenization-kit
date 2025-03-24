@@ -4,7 +4,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { setYieldSchedule } from "@/lib/mutations/bond/set-yield-schedule/set-yield-schedule-action";
 import { SetYieldScheduleSchema } from "@/lib/mutations/bond/set-yield-schedule/set-yield-schedule-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -43,7 +43,7 @@ export function SetYieldScheduleForm({
     >
       <Form
         action={setYieldSchedule}
-        resolver={zodResolver(SetYieldScheduleSchema)}
+        resolver={typeboxResolver(SetYieldScheduleSchema())}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

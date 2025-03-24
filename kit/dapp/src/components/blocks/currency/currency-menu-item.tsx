@@ -7,7 +7,7 @@ import {
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
-import { updateCurrency } from "@/lib/mutations/user/update-currency";
+import { updateCurrency } from "@/lib/mutations/user/update-currency-action";
 import type { User } from "@/lib/queries/user/user-schema";
 import { Check, DollarSign } from "lucide-react";
 import { useCallback } from "react";

@@ -2,6 +2,7 @@ import { BigNumber } from "bignumber.js";
 import { Elysia } from "elysia";
 import SuperJSON from "superjson";
 import { auth } from "../auth/auth";
+import type { User } from "../auth/types";
 
 // Register BigNumber serializer
 SuperJSON.registerCustom<BigNumber, string>(
@@ -38,7 +39,7 @@ export const betterAuth = new Elysia({ name: "better-auth" })
         if (!session) return error(401);
 
         return {
-          user: session.user,
+          user: session.user as User,
           session: session.session,
         };
       },
