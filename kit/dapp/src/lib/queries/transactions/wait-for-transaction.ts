@@ -5,7 +5,11 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { ReceiptFragment, ReceiptFragmentSchema } from "./transaction-fragment";
+import {
+  ReceiptFragment,
+  ReceiptFragmentSchema,
+  type Receipt,
+} from "./transaction-fragment";
 
 /**
  * Constants for transaction monitoring
@@ -30,8 +34,6 @@ const GetTransaction = portalGraphql(
   [ReceiptFragment]
 );
 
-type TransactionReceipt = FragmentOf<typeof ReceiptFragment>;
-
 /**
  * Configuration options for transaction monitoring
  */
@@ -49,14 +51,14 @@ interface TransactionMonitoringOptions {
 export async function waitForSingleTransaction(
   transactionHash: string,
   options: TransactionMonitoringOptions = {}
-): Promise<TransactionReceipt> {
+): Promise<Receipt> {
   const timeoutMs = options.timeoutMs ?? POLLING_DEFAULTS.TIMEOUT_MS;
   const pollingIntervalMs =
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
   const startTime = Date.now();
 
-  let receipt: TransactionReceipt | null = null;
+  let receipt: Receipt | null = null;
 
   while (Date.now() - startTime < timeoutMs) {
     try {
