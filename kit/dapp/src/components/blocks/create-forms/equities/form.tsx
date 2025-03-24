@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { useSettings } from "@/hooks/use-settings";
 import { createEquity } from "@/lib/mutations/equity/create/create-action";
 import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Basics } from "./steps/basics";
@@ -42,7 +42,7 @@ export function CreateEquityForm({
     >
       <Form
         action={createEquity}
-        resolver={zodResolver(CreateEquitySchema)}
+        resolver={typeboxResolver(CreateEquitySchema())}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("trigger-label.equities"),

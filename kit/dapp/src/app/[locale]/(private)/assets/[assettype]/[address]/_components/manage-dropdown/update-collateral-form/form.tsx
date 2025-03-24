@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { updateCollateral } from "@/lib/mutations/update-collateral/update-collateral-action";
 import { UpdateCollateralSchema } from "@/lib/mutations/update-collateral/update-collateral-schema";
 import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -56,7 +56,7 @@ export function UpdateCollateralForm({
     >
       <Form
         action={updateCollateral}
-        resolver={zodResolver(UpdateCollateralSchema)}
+        resolver={typeboxResolver(UpdateCollateralSchema({ decimals }))}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

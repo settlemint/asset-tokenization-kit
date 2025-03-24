@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { useSettings } from "@/hooks/use-settings";
 import { createFund } from "@/lib/mutations/fund/create/create-action";
 import { CreateFundSchema } from "@/lib/mutations/fund/create/create-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Basics } from "./steps/basics";
@@ -42,7 +42,7 @@ export function CreateFundForm({
     >
       <Form
         action={createFund}
-        resolver={zodResolver(CreateFundSchema)}
+        resolver={typeboxResolver(CreateFundSchema())}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("trigger-label.funds"),

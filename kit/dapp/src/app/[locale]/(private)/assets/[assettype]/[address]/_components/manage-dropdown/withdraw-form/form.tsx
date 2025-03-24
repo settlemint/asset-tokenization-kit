@@ -4,7 +4,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { withdraw } from "@/lib/mutations/withdraw/withdraw-action";
 import { WithdrawSchema } from "@/lib/mutations/withdraw/withdraw-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -47,7 +47,7 @@ export function WithdrawForm({
     >
       <Form
         action={withdraw}
-        resolver={zodResolver(WithdrawSchema)}
+        resolver={typeboxResolver(WithdrawSchema())}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

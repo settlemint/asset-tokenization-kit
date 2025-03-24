@@ -94,7 +94,9 @@ files:
     admin.platform.settings.base-currency-label: 58d5c14f81669ba2d7b24bd6664f7f87
     admin.platform.settings.base-currency-updated: 4b32d3465f9f29e0f14dda57d35a54ed
     admin.platform.settings.currencies.aed: 6a54d6830f82ea4ca08b5eaf2be8e668
+    admin.platform.settings.currencies.chf: db95fbe0ad754438e6babfdeb2e38481
     admin.platform.settings.currencies.eur: 0cf01802f212f0ce5333a58faa85a663
+    admin.platform.settings.currencies.gbp: 19d5dc7c209f6bb11037312284b7b67c
     admin.platform.settings.currencies.jpy: bb7f3524fbb9290e36577f03dff33c75
     admin.platform.settings.currencies.sar: 41f8a574f5aa9f4e2e18866053945fcb
     admin.platform.settings.currencies.sgd: 24ab28f05a3bd2ff70801b3183806ce6
@@ -152,7 +154,9 @@ files:
     asset-events.UnderlyingAssetTopUpEvent: 1b25fcd2acf8f03e781eb8a90d526084
     asset-events.UnderlyingAssetWithdrawnEvent: 9d5dbce7d87cede9e0224bb3a48ca1d7
     asset-events.UnpausedEvent: 648ff76ea7617136d7a5e0cbff92606f
+    asset-events.UserAllowedEvent: 45f0fb72a0defdfdb01de4b5a5a6876b
     asset-events.UserBlockedEvent: e1e4c8c9ccd9fc39c391da4bcd093fb2
+    asset-events.UserDisallowedEvent: 21fd8b5eaad13b449b62b8103bb02a2e
     asset-events.UserUnblockedEvent: 193cb08a65f200adaa4f9c35f7e41154
     asset-info.admin: e3afed0047b08059d0fada10f400c1e5
     asset-info.creator-owner: 5439f356b537a6081aabf0ab5ead403d
