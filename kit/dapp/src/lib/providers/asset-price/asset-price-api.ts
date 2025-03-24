@@ -18,8 +18,11 @@ const AssetPriceResponseSchema = t.Object({
 });
 
 const AssetPriceUpdateRequestSchema = t.Object({
-  price: t.Number({
-    description: "The new price to set for the asset in base currency",
+  amount: t.Number({
+    description: "The amount of the price",
+  }),
+  currency: t.FiatCurrency({
+    description: "The currency of the price",
   }),
 });
 
@@ -69,7 +72,7 @@ export const AssetPriceApi = new Elysia()
     "/:assetId",
     async ({ params: { assetId }, body }) => {
       try {
-        await updateAssetPrice(assetId, body.price);
+        await updateAssetPrice(assetId, body.amount, body.currency);
         return {
           success: true,
           message: `Price for asset ${assetId} updated successfully`,

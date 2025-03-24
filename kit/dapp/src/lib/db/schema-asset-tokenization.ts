@@ -1,13 +1,27 @@
-import { numeric, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { numeric, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { fiatCurrencies } from "../utils/typebox/fiat-currency";
 import { user } from "./schema-auth";
 
 export const asset = pgTable("asset", {
   id: text("id").primaryKey(),
   isin: text("isin"),
-  valueInBaseCurrency: numeric("value_in_base_currency", {
+});
+
+export const currencyEnum = pgEnum("currency", fiatCurrencies);
+
+export const assetPrice = pgTable("asset-price", {
+  id: text("id").primaryKey(),
+  assetId: text("asset_id")
+    .notNull()
+    .references(() => asset.id),
+  amount: numeric("amount", {
     precision: 36,
     scale: 18,
   }),
+  currency: currencyEnum("currency").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 export const contact = pgTable("contact", {

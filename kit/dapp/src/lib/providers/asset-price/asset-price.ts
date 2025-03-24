@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
-import { asset } from "@/lib/db/schema-asset-tokenization";
+import { asset, assetPrice } from "@/lib/db/schema-asset-tokenization";
+import { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { eq } from "drizzle-orm";
 
 /**
@@ -7,7 +8,8 @@ import { eq } from "drizzle-orm";
  */
 export async function updateAssetPrice(
   assetId: string,
-  valueInBaseCurrency: number
+  amount: number,
+  currency: FiatCurrency
 ): Promise<boolean> {
   try {
     // Check if the asset exists
@@ -21,11 +23,12 @@ export async function updateAssetPrice(
 
     // Update the asset price
     await db
-      .update(asset)
+      .update(assetPrice)
       .set({
-        valueInBaseCurrency: valueInBaseCurrency.toString(),
+        amount: amount.toString(),
+        currency,
       })
-      .where(eq(asset.id, assetId));
+      .where(eq(assetPrice.id, assetId));
 
     return true;
   } catch (error) {
@@ -39,15 +42,16 @@ export async function updateAssetPrice(
  */
 export async function getAssetPrice(assetId: string): Promise<number | null> {
   try {
-    const assetData = await db.query.asset.findFirst({
-      where: eq(asset.id, assetId),
+    const latestPrice = await db.query.assetPrice.findFirst({
+      where: eq(assetPrice.assetId, assetId),
+      orderBy: (assetPrice, { desc }) => [desc(assetPrice.createdAt)],
     });
 
-    if (!assetData || !assetData.valueInBaseCurrency) {
+    if (!latestPrice || !latestPrice.amount) {
       return null;
     }
 
-    return Number.parseFloat(assetData.valueInBaseCurrency.toString());
+    return Number.parseFloat(latestPrice.amount);
   } catch (error) {
     console.error("Error getting asset price:", error);
     throw error;
