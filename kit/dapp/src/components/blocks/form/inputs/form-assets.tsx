@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
 import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
@@ -25,8 +26,9 @@ import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import type { FieldValues } from "react-hook-form";
+import useSWR from "swr";
 import type { Address } from "viem";
 import { EvmAddress } from "../../evm-address/evm-address";
 import {
@@ -136,43 +138,20 @@ function FormAssetsList({
 }) {
   const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
-  const [assets, setAssets] = useState<AssetUsers[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations("components.form.assets");
 
-  // Memoize the fetch function to prevent recreating it on every render
-  const fetchAssets = useCallback(async () => {
-    if (!debounced) {
-      setAssets([]);
-      return;
+  // Use SWR for data fetching with caching
+  const { data: assets = [], isLoading } = useSWR(
+    debounced ? [`asset-search`, debounced] : null,
+    async () => {
+      if (!debounced) return [];
+      return getAssetSearch({ searchTerm: debounced });
+    },
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 600000, // 10 minutes
     }
-
-    setIsLoading(true);
-    try {
-      const results = await getAssetSearch({ searchTerm: debounced });
-      setAssets(results);
-    } catch (error) {
-      console.error("Error fetching assets:", error);
-      setAssets([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [debounced]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function executeFetch() {
-      if (!isMounted) return;
-      await fetchAssets();
-    }
-
-    void executeFetch();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [fetchAssets]);
+  );
 
   // Memoize the handler to prevent recreating it on every render
   const handleSelect = useCallback(
@@ -226,13 +205,20 @@ function FormAssetsList({
           onSelect={(currentValue) => handleSelect(currentValue, asset)}
         />
       )),
-    [assets, value, handleSelect, AssetItem]
+    [assets, value, handleSelect]
   );
 
   return (
     <CommandList>
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
-        {isLoading ? t("loading") : t("no-asset-found")}
+        {isLoading ? (
+          <div className="flex flex-col space-y-2 px-2 py-1">
+            <Skeleton className="h-6 w-full bg-muted/50" />
+            <Skeleton className="h-6 w-full bg-muted/50" />
+          </div>
+        ) : (
+          t("no-asset-found")
+        )}
       </CommandEmpty>
       <CommandGroup>{memoizedAssetList}</CommandGroup>
     </CommandList>

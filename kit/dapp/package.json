@@ -25,6 +25,7 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "swr": "2.3.3",
     "@daveyplate/better-auth-ui": "1.2.42",
     "@elysiajs/server-timing": "1.2.1",
     "@elysiajs/swagger": "1.2.2",
