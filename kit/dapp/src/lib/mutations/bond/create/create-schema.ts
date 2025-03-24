@@ -1,10 +1,9 @@
-import { AssetUsersFragmentSchema } from "@/lib/queries/asset/asset-users-fragment";
 import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 import { isFuture } from "date-fns";
 
 /**
- * Zod schema for validating bond creation inputs
+ * TypeBox schema for validating bond creation inputs
  *
  * @property {string} assetName - The name of the bond
  * @property {string} symbol - The symbol of the bond (ticker)
@@ -16,28 +15,73 @@ import { isFuture } from "date-fns";
  * @property {string} maturityDate - Maturity date of the bond
  * @property {string} underlyingAsset - Underlying asset of the bond
  */
-export const CreateBondSchema = z.object({
-  assetName: z.string().nonempty(),
-  symbol: z.symbol(),
-  decimals: z.decimals(),
-  isin: z.isin().optional(),
-  pincode: z.pincode(),
-  cap: z
-    .number()
-    .or(z.string())
-    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
-  faceValue: z
-    .number()
-    .or(z.string())
-    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
-  maturityDate: z
-    .string()
-    .refine(isFuture, { message: "Maturity date must be in the future" }),
-  underlyingAsset: AssetUsersFragmentSchema,
-  predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "bond.duplicate",
-  }),
-  valueInBaseCurrency: z.fiatCurrencyAmount(),
-});
+export function CreateBondSchema({
+  maxCap,
+  minCap,
+  maxFaceValue,
+  minFaceValue,
+  decimals,
+}: {
+  maxCap?: number;
+  minCap?: number;
+  maxFaceValue?: number;
+  minFaceValue?: number;
+  decimals?: number;
+} = {}) {
+  return t.Object(
+    {
+      assetName: t.String({
+        description: "The name of the bond",
+        minLength: 1,
+      }),
+      symbol: t.AssetSymbol({
+        description: "The symbol of the bond (ticker)",
+      }),
+      decimals: t.Decimals({
+        description: "The number of decimal places for the token",
+      }),
+      isin: t.Optional(
+        t.Isin({
+          description: "International Securities Identification Number",
+        })
+      ),
+      pincode: t.Pincode({
+        description: "The pincode for signing the transaction",
+      }),
+      cap: t.Amount(maxCap, minCap, decimals, {
+        description: "Maximum issuance amount",
+        errorMessage: "Must be at least 1",
+      }),
+      faceValue: t.Amount(maxFaceValue, minFaceValue, decimals, {
+        description: "Face value of the bond",
+        errorMessage: "Must be at least 1",
+      }),
+      maturityDate: t.String({
+        description: "Maturity date of the bond",
+        format: "date-time",
+        refinement: {
+          predicate: (value: string) => isFuture(new Date(value)),
+          message: "Maturity date must be in the future",
+        },
+      }),
+      underlyingAsset: t.Any({
+        description: "Underlying asset of the bond",
+      }),
+      predictedAddress: t.EthereumAddress({
+        description: "Predicted address of the bond",
+        refinement: {
+          predicate: isAddressAvailable,
+          message: "bond.duplicate",
+        },
+      }),
+      valueInBaseCurrency: t.FiatCurrency({
+        description: "Value in base currency",
+      }),
+    },
+    {
+      description: "Schema for validating bond creation inputs",
+    }
+  );
+}
 
-export type CreateBondInput = ZodInfer<typeof CreateBondSchema>;
+export type CreateBondInput = StaticDecode<ReturnType<typeof CreateBondSchema>>;

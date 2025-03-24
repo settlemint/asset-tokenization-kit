@@ -20,7 +20,7 @@ export const FixedYieldApi = new Elysia({
   .use(betterAuth)
   .use(superJson)
   .get(
-    "/",
+    "",
     async () => {
       return getFixedYieldList();
     },

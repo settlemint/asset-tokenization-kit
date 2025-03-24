@@ -7,7 +7,7 @@ import { PauseSchema } from "@/lib/mutations/pause/pause-schema";
 import { unpause } from "@/lib/mutations/unpause/unpause-action";
 import { UnpauseSchema } from "@/lib/mutations/unpause/unpause-schema";
 import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
@@ -39,7 +39,7 @@ export function PauseForm({
       >
         <Form
           action={unpause}
-          resolver={zodResolver(UnpauseSchema)}
+          resolver={typeboxResolver(UnpauseSchema())}
           onOpenChange={onOpenChange}
           buttonLabels={{
             label: t("trigger-label.unpause"),
@@ -64,7 +64,7 @@ export function PauseForm({
     >
       <Form
         action={pause}
-        resolver={zodResolver(PauseSchema)}
+        resolver={typeboxResolver(PauseSchema())}
         onOpenChange={onOpenChange}
         buttonLabels={{
           label: t("trigger-label.pause"),

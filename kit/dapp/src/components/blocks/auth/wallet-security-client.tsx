@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/routing";
-import { setPinCode } from "@/lib/mutations/user/set-pincode";
+import { setPincode } from "@/lib/mutations/user/set-pincode-action";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { toast } from "sonner";
@@ -36,7 +36,7 @@ export function WalletSecurityClient({
   const onSubmit = async (data: PincodeFormValues) => {
     try {
       setShowDialog(false);
-      await setPinCode({
+      await setPincode({
         name: data.pincodeName,
         address: walletAddress,
         pincode: data.pincode,

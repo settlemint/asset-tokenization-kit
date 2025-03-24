@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { useSettings } from "@/hooks/use-settings";
 import { createCryptoCurrency } from "@/lib/mutations/cryptocurrency/create/create-action";
 import { CreateCryptoCurrencySchema } from "@/lib/mutations/cryptocurrency/create/create-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Basics } from "./steps/basics";
@@ -42,7 +42,7 @@ export function CreateCryptoCurrencyForm({
     >
       <Form
         action={createCryptoCurrency}
-        resolver={zodResolver(CreateCryptoCurrencySchema)}
+        resolver={typeboxResolver(CreateCryptoCurrencySchema())}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("trigger-label.cryptocurrencies"),

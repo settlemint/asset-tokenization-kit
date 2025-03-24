@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { grantRole } from "@/lib/mutations/asset/access-control/grant-role/grant-role-action";
 import { GrantRoleSchema } from "@/lib/mutations/asset/access-control/grant-role/grant-role-schema";
 import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { AdminAddress } from "./steps/address";
@@ -36,7 +36,7 @@ export function GrantRoleForm({
     >
       <Form
         action={grantRole}
-        resolver={zodResolver(GrantRoleSchema)}
+        resolver={typeboxResolver(GrantRoleSchema())}
         onOpenChange={onOpenChange}
         buttonLabels={{
           label: t("trigger-label.grant-role"),
