@@ -419,6 +419,7 @@
         "default-placeholder": "اختر خيارًا",
         "loading": "جارٍ التحميل...",
         "no-asset-found": "لم يتم العثور على أصل.",
+        "recent-assets": "المحددة مؤخرًا",
         "search-placeholder": "ابحث عن أصل..."
       },
       "button": {
@@ -454,6 +455,7 @@
         "default-placeholder": "اختر خيارًا",
         "loading": "جارٍ التحميل...",
         "no-user-found": "لم يتم العثور على مستخدم.",
+        "recent-users": "المحددة مؤخرًا",
         "search-placeholder": "ابحث عن مستخدم..."
       }
     },
@@ -463,8 +465,10 @@
     "search": {
       "assets-section": "الأصول",
       "no-results": "لم يتم العثور على نتائج",
-      "placeholder": "ابحث عن الأصول أو المستخدمين...",
-      "users-section": "المستخدمون"
+      "placeholder": "البحث عن الأصول أو المستخدمين...",
+      "recent-assets": "الأصول الحديثة",
+      "recent-users": "المستخدمين الأخيرين",
+      "users-section": "المستخدمين"
     },
     "transaction-details": {
       "blob-gas-price-label": "سعر غاز Blob",
