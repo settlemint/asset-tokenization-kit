@@ -126,6 +126,10 @@ export async function getExchangeRate(
   baseCurrency: CurrencyCode,
   quoteCurrency: CurrencyCode
 ): Promise<number | null> {
+  if (baseCurrency === quoteCurrency) {
+    return 1;
+  }
+
   const today = getTodayDateString();
 
   // Try to get today's rate first
