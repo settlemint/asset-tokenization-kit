@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { Role } from "@/lib/config/roles";
 import { revokeRole } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-action";
 import { RevokeRoleSchema } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-schema";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";

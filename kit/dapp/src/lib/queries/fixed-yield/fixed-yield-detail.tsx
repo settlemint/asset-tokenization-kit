@@ -2,7 +2,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
 import {
@@ -44,10 +44,6 @@ export const getFixedYieldDetail = cache(
       return null;
     }
 
-    return safeParseWithLogging(
-      FixedYieldFragmentSchema,
-      data.fixedYield,
-      "fixed yield detail"
-    );
+    return safeParse(FixedYieldFragmentSchema, data.fixedYield);
   }
 );

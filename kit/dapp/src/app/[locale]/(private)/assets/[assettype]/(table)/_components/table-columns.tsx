@@ -1,4 +1,4 @@
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { bondColumns } from "./columns/bonds";
 import { cryptocurrencyColumns } from "./columns/cryptocurrencies";
 import { equityColumns } from "./columns/equities";

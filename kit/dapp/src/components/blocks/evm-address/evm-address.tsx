@@ -11,7 +11,7 @@ import {
 import { Link } from "@/i18n/routing";
 import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
-import type { AssetUsers } from "@/lib/queries/asset/asset-users-fragment";
+import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
 import type { User } from "@/lib/queries/user/user-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { shortHex } from "@/lib/utils/hex";

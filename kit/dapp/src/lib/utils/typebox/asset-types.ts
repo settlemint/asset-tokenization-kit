@@ -4,7 +4,7 @@
  * This module provides TypeBox schemas for validating asset types,
  * ensuring they match predefined enumerations.
  */
-import type { SchemaOptions } from "@sinclair/typebox";
+import type { SchemaOptions, StaticDecode } from "@sinclair/typebox";
 import { t } from "elysia/type-system";
 
 /**
@@ -29,3 +29,5 @@ export const AssetType = (options?: SchemaOptions) =>
   t.UnionEnum(assetTypes, {
     ...options,
   });
+
+export type AssetType = StaticDecode<ReturnType<typeof AssetType>>;
