@@ -34,7 +34,7 @@ export function CreateBondSchema({
         description: "The name of the bond",
         minLength: 1,
       }),
-      symbol: t.Symbol({
+      symbol: t.AssetSymbol({
         description: "The symbol of the bond (ticker)",
       }),
       decimals: t.Decimals({

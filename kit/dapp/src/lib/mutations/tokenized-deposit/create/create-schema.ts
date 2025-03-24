@@ -21,7 +21,7 @@ export function CreateTokenizedDepositSchema() {
         description: "The name of the tokenized deposit",
         minLength: 1,
       }),
-      symbol: t.Symbol({
+      symbol: t.AssetSymbol({
         description: "The symbol of the tokenized deposit (ticker)",
       }),
       decimals: t.Decimals({

@@ -25,7 +25,7 @@ export function CreateCryptoCurrencySchema({
         description: "The name of the cryptocurrency",
         minLength: 1,
       }),
-      symbol: t.Symbol({
+      symbol: t.AssetSymbol({
         description: "The symbol of the cryptocurrency (ticker)",
       }),
       decimals: t.Decimals({

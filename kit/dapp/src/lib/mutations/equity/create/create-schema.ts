@@ -21,7 +21,7 @@ export function CreateEquitySchema() {
         description: "The name of the equity",
         minLength: 1,
       }),
-      symbol: t.Symbol({
+      symbol: t.AssetSymbol({
         description: "The symbol of the equity (ticker)",
       }),
       decimals: t.Decimals({

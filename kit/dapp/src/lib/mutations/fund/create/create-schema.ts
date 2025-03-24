@@ -22,7 +22,7 @@ export function CreateFundSchema() {
         description: "The name of the fund",
         minLength: 1,
       }),
-      symbol: t.Symbol({
+      symbol: t.AssetSymbol({
         description: "The symbol of the fund (ticker)",
       }),
       decimals: t.Decimals({
