@@ -99,7 +99,9 @@ export function handleTransfer(event: Transfer): void {
     // Update collateral calculated fields after supply change
     tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
 
-    if (!hasBalance(tokenizedDeposit.id, to.id)) {
+    if (
+      !hasBalance(tokenizedDeposit.id, to.id, tokenizedDeposit.decimals, false)
+    ) {
       tokenizedDeposit.totalHolders = tokenizedDeposit.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -280,7 +282,9 @@ export function handleTransfer(event: Transfer): void {
       ]
     );
 
-    if (!hasBalance(tokenizedDeposit.id, to.id)) {
+    if (
+      !hasBalance(tokenizedDeposit.id, to.id, tokenizedDeposit.decimals, false)
+    ) {
       tokenizedDeposit.totalHolders = tokenizedDeposit.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }

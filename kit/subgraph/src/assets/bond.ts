@@ -88,7 +88,7 @@ export function handleTransfer(event: Transfer): void {
     );
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
-    if (!hasBalance(bond.id, to.id)) {
+    if (!hasBalance(bond.id, to.id, bond.decimals, false)) {
       bond.totalHolders = bond.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -232,7 +232,7 @@ export function handleTransfer(event: Transfer): void {
       ]
     );
 
-    if (!hasBalance(bond.id, to.id)) {
+    if (!hasBalance(bond.id, to.id, bond.decimals, false)) {
       bond.totalHolders = bond.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -695,7 +695,7 @@ export function handlePaused(event: Paused): void {
   const holders = bond.holders.load();
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
-    if (hasBalance(bond.id, assetBalance.account)) {
+    if (hasBalance(bond.id, assetBalance.account, bond.decimals, false)) {
       const holderAccount =
         sender.id == assetBalance.account
           ? sender
@@ -757,7 +757,7 @@ export function handleUnpaused(event: Unpaused): void {
   const holders = bond.holders.load();
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
-    if (hasBalance(bond.id, assetBalance.account)) {
+    if (hasBalance(bond.id, assetBalance.account, bond.decimals, false)) {
       const holderAccount =
         sender.id == assetBalance.account
           ? sender
