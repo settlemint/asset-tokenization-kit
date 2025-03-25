@@ -1,5 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { authClient } from "../auth/client";
+import { getUser } from "../auth/utils";
 
 export class AccessControlError extends Error {
   public status: number;
@@ -11,8 +12,13 @@ export class AccessControlError extends Error {
   }
 }
 
+type UserContext = {
+  currentUser?: Omit<User, "wallet">;
+  [key: string]: unknown;
+};
+
 export function withAccessControl<
-  T extends (...args: Parameters<T>) => ReturnType<T>,
+  T extends (args: Parameters<T>[0]) => ReturnType<T>,
 >(
   {
     requiredPermissions,
@@ -32,15 +38,13 @@ export function withAccessControl<
   },
   fn: T
 ) {
-  return (
-    {
-      currentUser,
-    }: {
-      currentUser: Omit<User, "wallet">;
-    },
-    ...args: Parameters<T>
-  ) => {
-    const userRole = currentUser.role ?? "";
+  return async ({
+    currentUser,
+    ...args
+  }: UserContext &
+    (Parameters<T>[0] extends undefined ? unknown : Parameters<T>[0]) = {}) => {
+    const user = currentUser ?? (await getUser());
+    const userRole = user.role ?? "";
     const hasPermission = authClient.admin.checkRolePermission({
       permission: requiredPermissions,
       role: userRole,
@@ -48,6 +52,6 @@ export function withAccessControl<
     if (!hasPermission) {
       throw new AccessControlError("Forbidden", 403);
     }
-    return fn(...(args as Parameters<T>));
+    return fn(args) as Awaited<ReturnType<T>>;
   };
 }

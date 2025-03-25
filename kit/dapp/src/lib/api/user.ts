@@ -51,14 +51,10 @@ export const UserApi = new Elysia({
       if (id === user.id) {
         return await getCurrentUserDetail();
       }
-      return await getUserDetail(
-        {
-          currentUser: user,
-        },
-        {
-          id,
-        }
-      );
+      return await getUserDetail({
+        currentUser: user,
+        id,
+      });
     },
     {
       auth: true,
@@ -82,14 +78,10 @@ export const UserApi = new Elysia({
   .get(
     "/wallet/:address",
     async ({ user, params: { address } }) => {
-      return await getUserDetail(
-        {
-          currentUser: user,
-        },
-        {
-          address: getAddress(address),
-        }
-      );
+      return await getUserDetail({
+        currentUser: user,
+        address: getAddress(address),
+      });
     },
     {
       auth: true,

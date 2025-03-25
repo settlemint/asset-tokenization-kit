@@ -3,7 +3,6 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import { PageHeader } from "@/components/layout/page-header";
-import { getUser } from "@/lib/auth/utils";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -20,8 +19,7 @@ export async function generateMetadata({
   params,
 }: LayoutProps): Promise<Metadata> {
   const { id } = await params;
-  const currentUser = await getUser();
-  const user = await getUserDetail({ currentUser }, { id });
+  const user = await getUserDetail({ id });
 
   return {
     title: user?.name,
@@ -59,8 +57,7 @@ export default async function UserDetailLayout({
   params,
 }: LayoutProps) {
   const { id } = await params;
-  const currentUser = await getUser();
-  const user = await getUserDetail({ currentUser }, { id });
+  const user = await getUserDetail({ id });
   const t = await getTranslations("private.users.detail");
   const tabs = await getTabs(user);
 

@@ -1,5 +1,4 @@
 import UserAssetsTable from "@/components/blocks/user-assets-table/user-assets-table";
-import { getUser } from "@/lib/auth/utils";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { getTranslations } from "next-intl/server";
 
@@ -15,8 +14,7 @@ export default async function UserHoldingsPage({
     locale,
     namespace: "private.users.holdings",
   });
-  const currentUser = await getUser();
-  const user = await getUserDetail({ currentUser }, { id });
+  const user = await getUserDetail({ id });
 
   return <UserAssetsTable wallet={user.wallet} title={t("title")} />;
 }

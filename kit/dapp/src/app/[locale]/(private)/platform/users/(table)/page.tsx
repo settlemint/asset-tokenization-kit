@@ -1,13 +1,11 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { PageHeader } from "@/components/layout/page-header";
-import { getUser } from "@/lib/auth/utils";
 import { getUserList } from "@/lib/queries/user/user-list";
 import { getTranslations } from "next-intl/server";
 import { Columns, icons } from "./_components/columns";
 
 export default async function UsersPage() {
-  const currentUser = await getUser();
-  const users = await getUserList({ currentUser });
+  const users = await getUserList();
   const t = await getTranslations("private.users");
 
   return (
