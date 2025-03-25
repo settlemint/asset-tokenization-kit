@@ -5,6 +5,7 @@ import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { safeParse } from "@/lib/utils/typebox";
 import { AssetPriceFragment } from "./asset-price-fragment";
 import { AssetPriceSchema } from "./asset-price-schema";
+
 const AssetPrice = hasuraGraphql(
   `
   query AssetPrice($assetId: String!) {

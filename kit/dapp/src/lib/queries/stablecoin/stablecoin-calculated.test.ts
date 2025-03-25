@@ -1,9 +1,13 @@
 import type { OnChainStableCoin } from "@/lib/queries/stablecoin/stablecoin-schema";
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it, mock } from "bun:test";
 import { addSeconds } from "date-fns";
 import { stablecoinCalculateFields } from "./stablecoin-calculated";
 
 describe("stablecoinCalculateFields", () => {
+  mock.module("@/lib/queries/asset-price/asset-price", () => ({
+    getAssetPriceInUserCurrency: mock(() => Promise.resolve(1)),
+  }));
+
   it("should calculate concentration correctly when totalSupplyExact is non-zero", async () => {
     const onChainStableCoin: Partial<OnChainStableCoin> = {
       holders: [
@@ -83,5 +87,20 @@ describe("stablecoinCalculateFields", () => {
       onChainStableCoin as OnChainStableCoin
     );
     expect(result.concentration).toBe(0);
+  });
+
+  it("should include price in the result", async () => {
+    const onChainStableCoin: Partial<OnChainStableCoin> = {
+      id: "0x1234567890123456789012345678901234567890",
+      holders: [],
+      totalSupplyExact: 1000n,
+      lastCollateralUpdate: new Date(0),
+      liveness: 0n,
+    };
+
+    const result = await stablecoinCalculateFields(
+      onChainStableCoin as OnChainStableCoin
+    );
+    expect(result.price).toBe(1);
   });
 });

@@ -7,7 +7,6 @@ import type {
   OnChainStableCoin,
 } from "./stablecoin-schema";
 import { CalculatedStableCoinSchema } from "./stablecoin-schema";
-
 /**
  * Calculates additional fields for stablecoin tokens
  *

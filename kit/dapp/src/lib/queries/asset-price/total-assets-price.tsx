@@ -1,6 +1,5 @@
 import { getUser } from "@/lib/auth/utils";
 import { getFundList } from "@/lib/queries/fund/fund-list";
-import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { cache } from "react";
 import { getBondList } from "../bond/bond-list";
 import { getCryptoCurrencyList } from "../cryptocurrency/cryptocurrency-list";
@@ -9,17 +8,8 @@ import { getStableCoinList } from "../stablecoin/stablecoin-list";
 import { getTokenizedDepositList } from "../tokenizeddeposit/tokenizeddeposit-list";
 import { getUserDetail } from "../user/user-detail";
 
-const Settings = hasuraGraphql(`
-  query Settings {
-    settings {
-      key
-      value
-    }
-  }
-`);
-
 /**
- * Gets the total price of all assets in the user's preferred currency
+ * Gets the total price across all assets in the user's preferred currency
  */
 export const getTotalAssetPrice = cache(async () => {
   const [targetCurrency, ...assetsResult] = await Promise.all([
