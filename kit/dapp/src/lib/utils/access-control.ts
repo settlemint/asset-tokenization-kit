@@ -66,6 +66,6 @@ export function withAccessControl<
       }
       throw error;
     }
-    return fn(args) as Awaited<ReturnType<T>>;
+    return fn({ ctx, ...args }) as Awaited<ReturnType<T>>;
   };
 }
