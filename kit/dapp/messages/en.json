@@ -209,6 +209,12 @@
         "my-contacts": "My contacts",
         "profile": "Profile",
         "settings": "Settings"
+      },
+      "settings-management": {
+        "group-title": "Settings",
+        "settings": "Settings",
+        "profile": "Profile",
+        "api": "API"
       }
     }
   },

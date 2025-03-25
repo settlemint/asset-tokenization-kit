@@ -10,6 +10,7 @@ import {
 import { AssetManagement } from "./items/asset-management";
 import { PlatformManagement } from "./items/platform-management";
 import { PortfolioManagement } from "./items/portfolio-management";
+import { SettingsManagement } from "./items/settings-management";
 
 export function PrivateSidebar() {
   return (
@@ -28,6 +29,7 @@ export function PrivateSidebar() {
         <RoleGuard requiredRoles={["admin"]}>
           <PlatformManagement />
         </RoleGuard>
+        <SettingsManagement />
       </SidebarContent>
       <SidebarRail />
     </NavSidebar>
