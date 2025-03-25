@@ -56,7 +56,6 @@ export function TopUpForm({
     target: "bond" as const,
     targetAddress: address,
     underlyingAssetAddress: bondDetails.underlyingAsset.id,
-    targetType: bondDetails.underlyingAsset.type,
     underlyingAssetType: bondDetails.underlyingAsset.type,
   };
 

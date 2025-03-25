@@ -22,12 +22,10 @@ export function Target({ bondDetails }: TargetProps) {
     if (target === "bond") {
       setValue("targetAddress", address);
       setValue("underlyingAssetAddress", bondDetails.underlyingAsset.id);
-      setValue("targetType", bondDetails.underlyingAsset.type);
       setValue("underlyingAssetType", bondDetails.underlyingAsset.type);
     } else {
       setValue("targetAddress", bondDetails.yieldSchedule?.id ?? address);
       setValue("underlyingAssetAddress", bondDetails.yieldSchedule?.underlyingAsset?.id ?? bondDetails.underlyingAsset.id);
-      setValue("targetType", bondDetails.yieldSchedule?.underlyingAsset?.type ?? bondDetails.underlyingAsset.type);
       setValue("underlyingAssetType", bondDetails.yieldSchedule?.underlyingAsset?.type ?? bondDetails.underlyingAsset.type);
     }
   }, [target, address, bondDetails, setValue]);

@@ -174,7 +174,7 @@ const FixedYieldTopUpUnderlyingAsset = portalGraphql(`
  * @returns The transaction hash
  */
 export async function topUpUnderlyingAssetFunction({
-  parsedInput: { target, amount, pincode, targetAddress, underlyingAssetAddress, targetType, underlyingAssetType },
+  parsedInput: { target, amount, pincode, targetAddress, underlyingAssetAddress, underlyingAssetType },
   ctx: { user },
 }: {
   parsedInput: TopUpInput;
@@ -182,7 +182,7 @@ export async function topUpUnderlyingAssetFunction({
 }) {
   const asset = await getAssetDetail({
     address: targetAddress,
-    assettype: targetType
+    assettype: 'bond'
   });
 
   if (!asset) {
@@ -258,8 +258,12 @@ export async function topUpUnderlyingAssetFunction({
     );
   }
 
+  console.log("[Debug] Approval transaction hash:", approvalTxHash);
+
   // Wait for the approval transaction to be confirmed before proceeding
   await waitForTransactions([approvalTxHash]);
+
+  console.log("[Debug] Approval transaction confirmed");
 
   // Top up either the bond or the yield schedule
   if (target === "bond") {
