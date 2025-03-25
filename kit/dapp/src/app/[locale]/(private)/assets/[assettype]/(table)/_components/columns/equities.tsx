@@ -115,11 +115,11 @@ export function equityColumns({
       cell: ({ getValue }) => getValue(),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("value_in_base_currency", {
+    columnHelper.accessor("price", {
       header: t("price-header"),
       cell: ({ getValue }) =>
-        formatNumber(getValue(), {
-          currency: baseCurrency,
+        formatNumber(getValue().amount, {
+          currency: getValue().currency,
           decimals: 2,
           locale: locale,
         }),

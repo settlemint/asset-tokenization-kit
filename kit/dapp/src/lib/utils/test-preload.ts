@@ -13,3 +13,22 @@ mock.module("@/lib/settlemint/portal", () => {
     portalGraphql: mock(() => ({})),
   };
 });
+
+mock.module("@/lib/settlemint/hasura", () => {
+  return {
+    hasuraClient: mock(() => ({})),
+    hasuraGraphql: mock(() => ({})),
+  };
+});
+
+mock.module("@/lib/db", () => {
+  return {
+    db: mock(() => ({})),
+  };
+});
+
+mock.module("@/lib/auth/auth", () => {
+  return {
+    auth: mock(() => ({})),
+  };
+});

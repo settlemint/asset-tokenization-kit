@@ -1028,7 +1028,7 @@
                 "weeks": "week"
               }
             },
-            "value-in-base-currency-label": "Value in {baseCurrency}"
+            "price-label": "Price"
           },
           "cryptocurrencies": {
             "initial-supply-description": "Initial amount of tokens to be minted",
@@ -1264,7 +1264,8 @@
           "frozen-header": "Frozen",
           "holder-type-header": "Type",
           "last-activity-header": "Last activity",
-          "status-header": "Status"
+          "status-header": "Status",
+          "price-header": "Value"
         },
         "page-description": "Explore comprehensive data and metrics for {name}.",
         "page-title": "{name} Details",
@@ -1502,6 +1503,7 @@
         "ownership-concentration-info": "Percentage owned by the top 5 holders",
         "price": "Price",
         "price-header": "Price",
+        "total-value": "Total value",
         "proven-collateral": "Proven collateral",
         "proven-collateral-info": "The amount of collateral that has been proven to be held by the token",
         "redeemed": "Redeemed",

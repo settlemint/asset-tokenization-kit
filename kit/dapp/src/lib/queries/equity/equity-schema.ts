@@ -84,10 +84,6 @@ export const OffChainEquitySchema = t.Object(
         })
       )
     ),
-    value_in_base_currency: t.Number({
-      minimum: 0,
-      description: "The token's value in terms of the base fiat currency",
-    }),
   },
   {
     description:
@@ -95,6 +91,18 @@ export const OffChainEquitySchema = t.Object(
   }
 );
 export type OffChainEquity = StaticDecode<typeof OffChainEquitySchema>;
+
+export const CalculatedEquitySchema = t.Object(
+  {
+    price: t.Price({
+      description: "Price of the equity",
+    }),
+  },
+  {
+    description: "Calculated fields for equity tokens",
+  }
+);
+export type CalculatedEquity = StaticDecode<typeof CalculatedEquitySchema>;
 
 export const EquitySchema = t.Intersect(
   [OnChainEquitySchema, t.Partial(OffChainEquitySchema)],
