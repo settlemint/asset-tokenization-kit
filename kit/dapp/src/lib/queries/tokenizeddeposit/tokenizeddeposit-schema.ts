@@ -123,7 +123,7 @@ export const CalculatedTokenizedDepositSchema = t.Object(
   },
   {
     description:
-      "Calculated fields for tokenized deposit tokens including ownership concentration and collateral validity",
+      "Calculated fields for tokenized deposit tokens including collateral validity",
   }
 );
 export type CalculatedTokenizedDeposit = StaticDecode<

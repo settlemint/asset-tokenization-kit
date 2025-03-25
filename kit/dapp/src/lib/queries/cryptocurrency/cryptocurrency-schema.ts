@@ -86,8 +86,7 @@ export const CalculatedCryptoCurrencySchema = t.Object(
     }),
   },
   {
-    description:
-      "Calculated fields for cryptocurrency tokens including ownership concentration",
+    description: "Calculated fields for cryptocurrency tokens",
   }
 );
 export type CalculatedCryptoCurrency = StaticDecode<

@@ -99,7 +99,7 @@ export const CalculatedEquitySchema = t.Object(
     }),
   },
   {
-    description: "Calculated fields for equity tokens including price",
+    description: "Calculated fields for equity tokens",
   }
 );
 export type CalculatedEquity = StaticDecode<typeof CalculatedEquitySchema>;

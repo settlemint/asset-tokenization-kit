@@ -119,10 +119,6 @@ export type OffChainFund = StaticDecode<typeof OffChainFundSchema>;
 
 export const CalculatedFundSchema = t.Object(
   {
-    concentration: t.Number({
-      description:
-        "The percentage of total supply held by the top holders, indicating ownership concentration",
-    }),
     assetsUnderManagement: t.Number({
       description: "The total value of assets under management in the fund",
     }),
@@ -132,7 +128,7 @@ export const CalculatedFundSchema = t.Object(
   },
   {
     description:
-      "Calculated fields for fund tokens including ownership concentration and assets under management",
+      "Calculated fields for fund tokens including assets under management",
   }
 );
 export type CalculatedFund = StaticDecode<typeof CalculatedFundSchema>;

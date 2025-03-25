@@ -256,8 +256,7 @@ export const CalculatedBondSchema = t.Object(
     }),
   },
   {
-    description:
-      "Calculated fields for bond tokens including ownership concentration",
+    description: "Calculated fields for bond tokens",
   }
 );
 export type CalculatedBond = StaticDecode<typeof CalculatedBondSchema>;

@@ -1,6 +1,7 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { betterAuth, superJson } from "@/lib/utils/elysia";
-import { Elysia, t } from "elysia";
+import { t } from "@/lib/utils/typebox";
+import { Elysia } from "elysia";
 import { getAssetPrice, updateAssetPrice } from "./asset-price";
 
 const AssetPriceResponseSchema = t.Object({

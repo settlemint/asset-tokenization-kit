@@ -19,6 +19,7 @@ export const CryptoCurrencyFragment = theGraphGraphqlKit(`
     creator {
       id
     }
+    concentration
   }
 `);
 

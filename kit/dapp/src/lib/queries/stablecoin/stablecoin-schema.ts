@@ -118,7 +118,7 @@ export const CalculatedStableCoinSchema = t.Object(
   },
   {
     description:
-      "Calculated fields for stablecoin tokens including ownership concentration and collateral validity",
+      "Calculated fields for stablecoin tokens including collateral validity",
   }
 );
 export type CalculatedStableCoin = StaticDecode<
