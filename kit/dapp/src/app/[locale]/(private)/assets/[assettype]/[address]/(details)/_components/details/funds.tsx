@@ -1,8 +1,6 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { getSetting } from "@/lib/config/settings";
-import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { formatNumber } from "@/lib/utils/number";
@@ -19,19 +17,19 @@ interface FundsDetailsProps {
 export async function FundsDetails({
   address,
   showBalance = false,
-  userAddress
+  userAddress,
 }: FundsDetailsProps) {
-  const [fund, t, baseCurrency, locale] = await Promise.all([
+  const [fund, t, locale] = await Promise.all([
     getFundDetail({ address }),
     getTranslations("private.assets.fields"),
-    getSetting(SETTING_KEYS.BASE_CURRENCY),
     getLocale(),
   ]);
 
   // Conditionally fetch balance data only when needed
-  const balanceData = showBalance && userAddress
-    ? await getAssetBalanceDetail({ address, account: userAddress })
-    : null;
+  const balanceData =
+    showBalance && userAddress
+      ? await getAssetBalanceDetail({ address, account: userAddress })
+      : null;
 
   return (
     <Suspense>
@@ -65,9 +63,7 @@ export async function FundsDetails({
         </DetailGridItem>
         {/* Show balance only when requested and available */}
         {showBalance && balanceData && (
-          <DetailGridItem
-            label={t("balance")}
-          >
+          <DetailGridItem label={t("balance")}>
             {formatNumber(balanceData.value, {
               token: fund.symbol,
               locale: locale,
@@ -85,8 +81,8 @@ export async function FundsDetails({
           })}
         </DetailGridItem>
         <DetailGridItem label={t("price")}>
-          {formatNumber(fund.value_in_base_currency, {
-            currency: baseCurrency,
+          {formatNumber(fund.price.amount, {
+            currency: fund.price.currency,
             decimals: 2,
             locale: locale,
           })}

@@ -59,5 +59,5 @@ Configuration.validatedFields = [
   "fundCategory",
   "fundClass",
   "managementFeeBps",
-  "valueInBaseCurrency",
+  "price",
 ] satisfies (keyof CreateFundInput)[];

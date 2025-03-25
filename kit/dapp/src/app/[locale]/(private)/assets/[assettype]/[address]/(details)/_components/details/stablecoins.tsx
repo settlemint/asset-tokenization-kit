@@ -1,8 +1,6 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { getSetting } from "@/lib/config/settings";
-import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { formatNumber } from "@/lib/utils/number";
@@ -19,19 +17,19 @@ interface StablecoinsDetailsProps {
 export async function StablecoinsDetails({
   address,
   showBalance = false,
-  userAddress
+  userAddress,
 }: StablecoinsDetailsProps) {
-  const [stableCoin, t, baseCurrency, locale] = await Promise.all([
+  const [stableCoin, t, locale] = await Promise.all([
     getStableCoinDetail({ address }),
     getTranslations("private.assets.fields"),
-    getSetting(SETTING_KEYS.BASE_CURRENCY),
     getLocale(),
   ]);
 
   // Conditionally fetch balance data only when needed
-  const balanceData = showBalance && userAddress
-    ? await getAssetBalanceDetail({ address, account: userAddress })
-    : null;
+  const balanceData =
+    showBalance && userAddress
+      ? await getAssetBalanceDetail({ address, account: userAddress })
+      : null;
 
   return (
     <Suspense>
@@ -67,9 +65,7 @@ export async function StablecoinsDetails({
         </DetailGridItem>
         {/* Show balance only when requested and available */}
         {showBalance && balanceData && (
-          <DetailGridItem
-            label={t("balance")}
-          >
+          <DetailGridItem label={t("balance")}>
             {formatNumber(balanceData.value, {
               token: stableCoin.symbol,
               locale: locale,
@@ -102,8 +98,8 @@ export async function StablecoinsDetails({
           })}
         </DetailGridItem>
         <DetailGridItem label={t("price")}>
-          {formatNumber(stableCoin.value_in_base_currency, {
-            currency: baseCurrency,
+          {formatNumber(stableCoin.price.amount, {
+            currency: stableCoin.price.currency,
             decimals: 2,
             locale: locale,
           })}

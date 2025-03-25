@@ -1,8 +1,6 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { getSetting } from "@/lib/config/settings";
-import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getBondStatus } from "@/lib/utils/bond-status";
@@ -18,18 +16,22 @@ interface BondsDetailsProps {
   userAddress?: Address;
 }
 
-export async function BondsDetails({ address, showBalance = false, userAddress }: BondsDetailsProps) {
-  const [baseCurrency, bond, t, locale] = await Promise.all([
-    getSetting(SETTING_KEYS.BASE_CURRENCY),
+export async function BondsDetails({
+  address,
+  showBalance = false,
+  userAddress,
+}: BondsDetailsProps) {
+  const [bond, t, locale] = await Promise.all([
     getBondDetail({ address }),
     getTranslations("private.assets.fields"),
     getLocale(),
   ]);
 
   // Conditionally fetch balance data only when needed
-  const balanceData = showBalance && userAddress
-    ? await getAssetBalanceDetail({ address, account: userAddress })
-    : null;
+  const balanceData =
+    showBalance && userAddress
+      ? await getAssetBalanceDetail({ address, account: userAddress })
+      : null;
 
   return (
     <Suspense>
@@ -72,9 +74,7 @@ export async function BondsDetails({ address, showBalance = false, userAddress }
         </DetailGridItem>
         {/* Show balance only when requested and available */}
         {showBalance && balanceData && (
-          <DetailGridItem
-            label={t("balance")}
-          >
+          <DetailGridItem label={t("balance")}>
             {formatNumber(balanceData.value, {
               token: bond.symbol,
               locale: locale,
@@ -105,10 +105,10 @@ export async function BondsDetails({ address, showBalance = false, userAddress }
           />
         </DetailGridItem>
         <DetailGridItem label={t("underlying-asset-balance")}>
-        {formatNumber(bond.underlyingBalance, {
-          token: bond.underlyingAsset.symbol,
-          decimals: bond.underlyingAsset.decimals,
-          locale: locale,
+          {formatNumber(bond.underlyingBalance, {
+            token: bond.underlyingAsset.symbol,
+            decimals: bond.underlyingAsset.decimals,
+            locale: locale,
           })}
         </DetailGridItem>
         <DetailGridItem label={t("redemption-readiness")}>
@@ -128,8 +128,8 @@ export async function BondsDetails({ address, showBalance = false, userAddress }
           })}
         </DetailGridItem>
         <DetailGridItem label={t("price")}>
-          {formatNumber(bond.value_in_base_currency, {
-            currency: baseCurrency,
+          {formatNumber(bond.price.amount, {
+            currency: bond.price.currency,
             decimals: 2,
             locale: locale,
           })}

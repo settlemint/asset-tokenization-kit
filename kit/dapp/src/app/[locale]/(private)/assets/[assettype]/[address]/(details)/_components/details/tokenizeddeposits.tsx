@@ -1,8 +1,6 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { getSetting } from "@/lib/config/settings";
-import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
 import { formatNumber } from "@/lib/utils/number";
@@ -21,17 +19,17 @@ export async function TokenizedDepositsDetails({
   showBalance = false,
   userAddress,
 }: TokenizedDepositsDetailsProps) {
-  const [tokenizedDeposit, t, baseCurrency, locale] = await Promise.all([
+  const [tokenizedDeposit, t, locale] = await Promise.all([
     getTokenizedDepositDetail({ address }),
     getTranslations("private.assets.fields"),
-    getSetting(SETTING_KEYS.BASE_CURRENCY),
     getLocale(),
   ]);
 
   // Conditionally fetch balance data only when needed
-  const balanceData = showBalance && userAddress
-    ? await getAssetBalanceDetail({ address, account: userAddress })
-    : null;
+  const balanceData =
+    showBalance && userAddress
+      ? await getAssetBalanceDetail({ address, account: userAddress })
+      : null;
 
   return (
     <Suspense>
@@ -73,9 +71,7 @@ export async function TokenizedDepositsDetails({
         </DetailGridItem>
         {/* Show balance only when requested and available */}
         {showBalance && balanceData && (
-          <DetailGridItem
-            label={t("balance")}
-          >
+          <DetailGridItem label={t("balance")}>
             {formatNumber(balanceData.value, {
               token: tokenizedDeposit.symbol,
               locale: locale,
@@ -108,8 +104,8 @@ export async function TokenizedDepositsDetails({
           })}
         </DetailGridItem>
         <DetailGridItem label={t("price")}>
-          {formatNumber(tokenizedDeposit.value_in_base_currency, {
-            currency: baseCurrency,
+          {formatNumber(tokenizedDeposit.price.amount, {
+            currency: tokenizedDeposit.price.currency,
             decimals: 2,
             locale: locale,
           })}

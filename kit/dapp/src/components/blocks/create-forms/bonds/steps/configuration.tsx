@@ -76,5 +76,5 @@ Configuration.validatedFields = [
   "faceValue",
   "maturityDate",
   "underlyingAsset",
-  "valueInBaseCurrency",
+  "price",
 ] satisfies (keyof CreateBondInput)[];
