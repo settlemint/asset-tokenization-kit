@@ -1265,7 +1265,7 @@
           "holder-type-header": "Type",
           "last-activity-header": "Last activity",
           "status-header": "Status",
-          "price-header": "Price"
+          "price-header": "Value"
         },
         "page-description": "Explore comprehensive data and metrics for {name}.",
         "page-title": "{name} Details",
