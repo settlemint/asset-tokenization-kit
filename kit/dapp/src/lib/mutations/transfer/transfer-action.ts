@@ -2,7 +2,7 @@
 
 import { t } from "@/lib/utils/typebox";
 import { action } from "../safe-action";
-import { transferFunction } from "./transfer-function";
+import { transferAssetFunction } from "./transfer-function";
 import { TransferSchema } from "./transfer-schema";
 
 /**
@@ -11,4 +11,4 @@ import { TransferSchema } from "./transfer-schema";
 export const transfer = action
   .schema(TransferSchema())
   .outputSchema(t.Hashes())
-  .action(transferFunction);
+  .action(transferAssetFunction);
