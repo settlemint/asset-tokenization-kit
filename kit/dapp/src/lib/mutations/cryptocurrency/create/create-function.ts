@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
+import { AddAssetPrice } from "@/lib/mutations/asset/price/add-price";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -33,8 +34,8 @@ const CryptoCurrencyFactoryCreate = portalGraphql(`
  * Stores additional metadata about the cryptocurrency in Hasura
  */
 const CreateOffchainCryptoCurrency = hasuraGraphql(`
-  mutation CreateOffchainCryptoCurrency($id: String!, $value_in_base_currency: numeric) {
-    insert_asset_one(object: {id: $id, value_in_base_currency: $value_in_base_currency}) {
+  mutation CreateOffchainCryptoCurrency($id: String!) {
+    insert_asset_one(object: {id: $id}) {
       id
     }
   }
@@ -55,7 +56,7 @@ export async function createCryptoCurrencyFunction({
     pincode,
     initialSupply,
     predictedAddress,
-    valueInBaseCurrency,
+    price,
   },
   ctx: { user },
 }: {
@@ -68,7 +69,12 @@ export async function createCryptoCurrencyFunction({
 
   await hasuraClient.request(CreateOffchainCryptoCurrency, {
     id: predictedAddress,
-    value_in_base_currency: String(valueInBaseCurrency),
+  });
+
+  await hasuraClient.request(AddAssetPrice, {
+    assetId: predictedAddress,
+    amount: String(price.amount),
+    currency: price.currency,
   });
 
   const data = await portalClient.request(CryptoCurrencyFactoryCreate, {

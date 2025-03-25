@@ -69,10 +69,6 @@ export const OffChainCryptoCurrencySchema = t.Object(
         })
       )
     ),
-    value_in_base_currency: t.Number({
-      minimum: 0,
-      description: "The token's value in terms of the base fiat currency",
-    }),
   },
   {
     description:
@@ -81,6 +77,20 @@ export const OffChainCryptoCurrencySchema = t.Object(
 );
 export type OffChainCryptoCurrency = StaticDecode<
   typeof OffChainCryptoCurrencySchema
+>;
+
+export const CalculatedCryptoCurrencySchema = t.Object(
+  {
+    price: t.Price({
+      description: "Price of the cryptocurrency",
+    }),
+  },
+  {
+    description: "Calculated fields for cryptocurrency tokens",
+  }
+);
+export type CalculatedCryptoCurrency = StaticDecode<
+  typeof CalculatedCryptoCurrencySchema
 >;
 
 export const CryptoCurrencySchema = t.Intersect(

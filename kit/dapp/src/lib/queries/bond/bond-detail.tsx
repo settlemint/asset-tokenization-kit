@@ -6,6 +6,7 @@ import {
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
+import { bondCalculateFields } from "./bond-calculated";
 import { BondFragment, OffchainBondFragment } from "./bond-fragment";
 import { OffChainBondSchema, OnChainBondSchema } from "./bond-schema";
 
@@ -74,8 +75,11 @@ export const getBondDetail = cache(async ({ address }: BondDetailProps) => {
     })(),
   ]);
 
+  const calculatedFields = await bondCalculateFields(onChainBond, offChainBond);
+
   return {
     ...onChainBond,
     ...offChainBond,
+    ...calculatedFields,
   };
 });

@@ -100,10 +100,6 @@ export const OffChainTokenizedDepositSchema = t.Object(
         })
       )
     ),
-    value_in_base_currency: t.Number({
-      minimum: 0,
-      description: "The token's value in terms of the base fiat currency",
-    }),
   },
   {
     description:
@@ -121,10 +117,13 @@ export const CalculatedTokenizedDepositSchema = t.Object(
         description: "The date until which the collateral proof is valid",
       })
     ),
+    price: t.Price({
+      description: "Price of the tokenized deposit",
+    }),
   },
   {
     description:
-      "Calculated fields for tokenized deposit tokens including ownership concentration and collateral validity",
+      "Calculated fields for tokenized deposit tokens including collateral validity",
   }
 );
 export type CalculatedTokenizedDeposit = StaticDecode<

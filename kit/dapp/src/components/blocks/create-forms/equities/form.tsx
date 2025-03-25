@@ -2,32 +2,32 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useSettings } from "@/hooks/use-settings";
 import { createEquity } from "@/lib/mutations/equity/create/create-action";
 import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
-
 interface CreateEquityFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
+  userDetails: User;
 }
 
 export function CreateEquityForm({
   open,
   onOpenChange,
   asButton = false,
+  userDetails,
 }: CreateEquityFormProps) {
   const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
-  const baseCurrency = useSettings("baseCurrency");
 
   return (
     <FormSheet
@@ -48,14 +48,17 @@ export function CreateEquityForm({
           label: t("trigger-label.equities"),
         }}
         defaultValues={{
-          valueInBaseCurrency: 1,
+          price: {
+            amount: 1,
+            currency: userDetails.currency,
+          },
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}
       >
         <Basics />
-        <Configuration baseCurrency={baseCurrency} />
+        <Configuration />
         <Summary />
       </Form>
     </FormSheet>

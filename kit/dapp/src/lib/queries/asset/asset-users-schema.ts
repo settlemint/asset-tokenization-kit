@@ -179,10 +179,6 @@ export const OffchainAssetSchema = t.Object(
         })
       )
     ),
-    value_in_base_currency: t.Number({
-      minimum: 0,
-      description: "Value of the asset in the base currency",
-    }),
   },
   {
     description: "Off-chain metadata for assets stored in the database",

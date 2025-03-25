@@ -41,6 +41,5 @@ export const OffchainTokenizedDepositFragment = hasuraGraphql(`
   fragment OffchainTokenizedDepositFragment on asset {
     id
     isin
-    value_in_base_currency
   }
 `);

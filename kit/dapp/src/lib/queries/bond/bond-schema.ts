@@ -62,7 +62,8 @@ export const OnChainBondSchema = t.Object(
           description: "The symbol of the underlying asset",
         }),
         decimals: t.Decimals({
-          description: "The number of decimal places used by the underlying asset",
+          description:
+            "The number of decimal places used by the underlying asset",
         }),
         type: t.AssetType({
           description: "The type of the underlying asset",
@@ -240,10 +241,6 @@ export const OffChainBondSchema = t.Object(
         })
       )
     ),
-    value_in_base_currency: t.Number({
-      minimum: 0,
-      description: "The token's value in terms of the base fiat currency",
-    }),
   },
   {
     description:
@@ -251,6 +248,18 @@ export const OffChainBondSchema = t.Object(
   }
 );
 export type OffChainBond = StaticDecode<typeof OffChainBondSchema>;
+
+export const CalculatedBondSchema = t.Object(
+  {
+    price: t.Price({
+      description: "Price of the bond",
+    }),
+  },
+  {
+    description: "Calculated fields for bond tokens",
+  }
+);
+export type CalculatedBond = StaticDecode<typeof CalculatedBondSchema>;
 
 export const BondSchema = t.Intersect(
   [OnChainBondSchema, t.Partial(OffChainBondSchema)],

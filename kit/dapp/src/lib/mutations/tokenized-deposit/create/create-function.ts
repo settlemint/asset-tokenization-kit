@@ -5,6 +5,7 @@ import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateTokenizedDepositInput } from "./create-schema";
 
 /**
@@ -33,8 +34,8 @@ const TokenizedDepositFactoryCreate = portalGraphql(`
  * Stores additional metadata about the tokenized deposit in Hasura
  */
 const CreateOffchainTokenizedDeposit = hasuraGraphql(`
-  mutation CreateOffchainTokenizedDeposit($id: String!, $isin: String, $value_in_base_currency: numeric) {
-    insert_asset_one(object: {id: $id, isin: $isin, value_in_base_currency: $value_in_base_currency}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
+  mutation CreateOffchainTokenizedDeposit($id: String!, $isin: String) {
+    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
     }
   }
@@ -57,7 +58,7 @@ export async function createTokenizedDepositFunction({
     pincode,
     isin,
     predictedAddress,
-    valueInBaseCurrency,
+    price,
   },
   ctx: { user },
 }: {
@@ -67,7 +68,12 @@ export async function createTokenizedDepositFunction({
   await hasuraClient.request(CreateOffchainTokenizedDeposit, {
     id: predictedAddress,
     isin,
-    value_in_base_currency: String(valueInBaseCurrency),
+  });
+
+  await hasuraClient.request(AddAssetPrice, {
+    assetId: predictedAddress,
+    amount: String(price.amount),
+    currency: price.currency,
   });
 
   const collateralLivenessSeconds =
