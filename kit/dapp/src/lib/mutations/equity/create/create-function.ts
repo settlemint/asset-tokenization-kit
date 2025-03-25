@@ -57,7 +57,7 @@ export async function createEquityFunction({
     equityCategory,
     equityClass,
     predictedAddress,
-    valueInBaseCurrency,
+    price,
   },
   ctx: { user },
 }: {
@@ -70,9 +70,9 @@ export async function createEquityFunction({
   });
 
   await hasuraClient.request(AddAssetPrice, {
-    id: predictedAddress,
-    amount: String(valueInBaseCurrency),
-    currency: "EUR",
+    assetId: predictedAddress,
+    amount: String(price.amount),
+    currency: price.currency,
   });
 
   const data = await portalClient.request(EquityFactoryCreate, {

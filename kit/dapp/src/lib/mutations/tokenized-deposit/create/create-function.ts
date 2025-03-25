@@ -58,7 +58,7 @@ export async function createTokenizedDepositFunction({
     pincode,
     isin,
     predictedAddress,
-    valueInBaseCurrency,
+    price,
   },
   ctx: { user },
 }: {
@@ -71,9 +71,9 @@ export async function createTokenizedDepositFunction({
   });
 
   await hasuraClient.request(AddAssetPrice, {
-    id: predictedAddress,
-    amount: String(valueInBaseCurrency),
-    currency: "EUR",
+    assetId: predictedAddress,
+    amount: String(price.amount),
+    currency: price.currency,
   });
 
   const collateralLivenessSeconds =

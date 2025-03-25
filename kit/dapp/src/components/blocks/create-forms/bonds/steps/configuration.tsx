@@ -1,18 +1,24 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
+import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 interface ConfigurationProps {
-  baseCurrency: CurrencyCode;
+  userCurrency: CurrencyCode;
 }
 
-export function Configuration({ baseCurrency }: ConfigurationProps) {
+export function Configuration({ userCurrency }: ConfigurationProps) {
   const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
+  const currencyOptions = fiatCurrencies.map((currency) => ({
+    value: currency,
+    label: currency,
+  }));
 
   return (
     <FormStep
@@ -52,14 +58,19 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
         />
         <FormInput
           control={control}
-          name="valueInBaseCurrency"
-          min={0}
           type="number"
-          step={0.01}
-          label={t("parameters.common.value-in-base-currency-label", {
-            baseCurrency,
-          })}
+          name="price.amount"
           required
+          label={t("parameters.common.price-label")}
+          postfix={
+            <FormSelect
+              name="price.currency"
+              control={control}
+              options={currencyOptions}
+              defaultValue={userCurrency}
+              className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
+            />
+          }
         />
       </div>
     </FormStep>

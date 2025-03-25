@@ -1,4 +1,11 @@
-import { numeric, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  numeric,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { fiatCurrencies } from "../utils/typebox/fiat-currency";
 import { user } from "./schema-auth";
 
@@ -10,7 +17,7 @@ export const asset = pgTable("asset", {
 export const currencyEnum = pgEnum("currency", fiatCurrencies);
 
 export const assetPrice = pgTable("asset_price", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   assetId: text("asset_id")
     .notNull()
     .references(() => asset.id),
