@@ -101,6 +101,6 @@ describe("stablecoinCalculateFields", () => {
     const result = await stablecoinCalculateFields(
       onChainStableCoin as OnChainStableCoin
     );
-    expect(result.price).toBe(1);
+    expect(result.price).toEqual({ amount: 1, currency: "EUR" });
   });
 });

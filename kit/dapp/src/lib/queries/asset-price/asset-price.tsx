@@ -1,6 +1,3 @@
-import { getUser } from "@/lib/auth/utils";
-import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
-import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { safeParse } from "@/lib/utils/typebox";
 import { getAddress } from "viem";
@@ -30,19 +27,5 @@ export async function getAssetPriceInUserCurrency(assetIdParam: string) {
   if (asset_price.length === 0) {
     return 0;
   }
-  const validatedAssetPrice = safeParse(AssetPriceSchema, asset_price[0]);
-
-  const user = await getUser();
-  const userDetails = await getUserDetail({ id: user.id });
-  const userCurrency = userDetails?.currency;
-
-  const exchangeRate = await getExchangeRate(
-    validatedAssetPrice.currency,
-    userCurrency
-  );
-  if (!exchangeRate) {
-    throw new Error("Exchange rate not found");
-  }
-
-  return validatedAssetPrice.amount * exchangeRate;
+  return safeParse(AssetPriceSchema, asset_price[0]);
 }

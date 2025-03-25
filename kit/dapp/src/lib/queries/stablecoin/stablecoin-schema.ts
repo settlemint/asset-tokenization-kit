@@ -129,8 +129,8 @@ export const CalculatedStableCoinSchema = t.Object(
         description: "The date until which the collateral proof is valid",
       })
     ),
-    price: t.Number({
-      description: "The price of the stablecoin token in the user's currency",
+    price: t.Price({
+      description: "Price of the stablecoin",
     }),
   },
   {

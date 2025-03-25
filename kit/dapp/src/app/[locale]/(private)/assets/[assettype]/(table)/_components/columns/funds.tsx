@@ -97,8 +97,8 @@ export function fundColumns({ baseCurrency }: { baseCurrency: CurrencyCode }) {
     columnHelper.accessor("price", {
       header: t("price-header"),
       cell: ({ getValue }) =>
-        formatNumber(getValue(), {
-          currency: baseCurrency,
+        formatNumber(getValue().amount, {
+          currency: getValue().currency,
           decimals: 2,
           locale: locale,
         }),

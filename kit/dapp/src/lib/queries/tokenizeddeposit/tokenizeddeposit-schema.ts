@@ -134,9 +134,8 @@ export const CalculatedTokenizedDepositSchema = t.Object(
         description: "The date until which the collateral proof is valid",
       })
     ),
-    price: t.Number({
-      description:
-        "The price of the tokenized deposit token in the user's currency",
+    price: t.Price({
+      description: "Price of the tokenized deposit",
     }),
   },
   {

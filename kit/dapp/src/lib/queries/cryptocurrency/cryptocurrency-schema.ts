@@ -98,9 +98,8 @@ export const CalculatedCryptoCurrencySchema = t.Object(
       description:
         "The percentage of total supply held by the top holders, indicating ownership concentration",
     }),
-    price: t.Number({
-      description:
-        "The price of the cryptocurrency token in the user's currency",
+    price: t.Price({
+      description: "Price of the cryptocurrency",
     }),
   },
   {

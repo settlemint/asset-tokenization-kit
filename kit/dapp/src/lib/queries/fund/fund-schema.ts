@@ -139,8 +139,8 @@ export const CalculatedFundSchema = t.Object(
     assetsUnderManagement: t.Number({
       description: "The total value of assets under management in the fund",
     }),
-    price: t.Number({
-      description: "The price of the fund token in the user's currency",
+    price: t.Price({
+      description: "Price of the fund",
     }),
   },
   {
