@@ -178,7 +178,7 @@ export function FormInput<T extends FieldValues>({
                 {postfix && (
                   <span
                     className={cn(
-                      "flex items-center bg-transparent text-sm text-foreground rounded-r-md",
+                      "flex items-center bg-transparent text-sm text-foreground rounded-r-md px-3",
                       fieldState.error
                         ? "border-destructive bg-destructive/10"
                         : "bg-muted/50"

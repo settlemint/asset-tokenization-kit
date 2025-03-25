@@ -20,7 +20,7 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
       title={t("configuration.equities.title")}
       description={t("configuration.equities.description")}
     >
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <EquityClassesSelect
           label={t("parameters.equities.equity-class-label")}
         />
