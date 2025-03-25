@@ -1264,7 +1264,8 @@
           "frozen-header": "Frozen",
           "holder-type-header": "Type",
           "last-activity-header": "Last activity",
-          "status-header": "Status"
+          "status-header": "Status",
+          "price-header": "Price"
         },
         "page-description": "Explore comprehensive data and metrics for {name}.",
         "page-title": "{name} Details",
