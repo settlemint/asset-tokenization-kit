@@ -19,6 +19,7 @@ export const AssetStatsFragment = theGraphGraphqlKit(`
     totalUnfrozen
     totalVolume
     timestamp
+    assetType
   }
 `);
 

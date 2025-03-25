@@ -384,6 +384,9 @@
           "claimed-label": "Beansprucht",
           "no-data": "Keine Daten zur Ertragsverteilung verfügbar",
           "error": "Fehler beim Laden der Ertragsverteilungsdaten"
+        },
+        "total-collateral": {
+          "label": "Gesamtes Sicherheiten"
         }
       }
     },
@@ -466,8 +469,8 @@
       "assets-section": "Vermögenswerte",
       "no-results": "Keine Ergebnisse gefunden",
       "placeholder": "Suche nach Vermögenswerten oder Benutzern...",
-      "recent-assets": "Kürzlich gesuchte Vermögenswerte",
-      "recent-users": "Kürzlich gesuchte Benutzer",
+      "recent-assets": "Aktuelle Vermögenswerte",
+      "recent-users": "Aktuelle Benutzer",
       "users-section": "Benutzer"
     },
     "transaction-details": {
@@ -1157,14 +1160,14 @@
           },
           "form": {
             "description": {
-              "burn": "Bonds dauerhaft aus dem Umlauf entfernen, um das Angebot zu reduzieren.",
+              "burn": "Token dauerhaft aus dem Umlauf entfernen, um das Angebot zu reduzieren.",
               "grant-role": "Verwaltungsberechtigungen einem neuen Benutzer zuweisen.",
               "block": "Diesen Benutzer daran hindern, Transaktionen oder Interaktionen durchzuführen.",
               "mature": "Bonds fällig machen und den zugrunde liegenden Vermögenswert erhalten",
-              "mint": "Neue Token ausgeben, um das umlaufende Angebot des Bonds zu erhöhen.",
+              "mint": "Neue Token ausgeben, um das umlaufende Angebot des Vermögenswerts zu erhöhen.",
               "freeze": "Zugriff eines Benutzers auf seine Gelder vorübergehend einschränken.",
-              "pause": "Alle Transaktionen und Interaktionen für diesen Bond vorübergehend einstellen.",
-              "unpause": "Transaktionen und Interaktionen für diesen Bond wieder aufnehmen.",
+              "pause": "Alle Transaktionen und Interaktionen für diesen Vermögenswert vorübergehend einstellen.",
+              "unpause": "Transaktionen und Interaktionen für diesen Vermögenswert wieder aufnehmen.",
               "top-up": "Fügen Sie Ihrem Bond mehr zugrunde liegenden Vermögenswert hinzu",
               "update-collateral": "Passen Sie die Sicherheiten, die den Stablecoin unterstützen, an die aktuellen Anforderungen an.",
               "withdraw": "Zugrunde liegenden Vermögenswert von Ihrem Bond abheben",
@@ -2120,5 +2123,11 @@
     "portfolio": "Portfolio",
     "stablecoins": "Stablecoins",
     "tokenized-deposits": "Tokenisierte Einlagen"
+  },
+  "not-found": {
+    "description": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben.",
+    "go-back": "Zurückgehen",
+    "go-home": "Nach Hause gehen",
+    "title": "Seite nicht gefunden"
   }
 }
