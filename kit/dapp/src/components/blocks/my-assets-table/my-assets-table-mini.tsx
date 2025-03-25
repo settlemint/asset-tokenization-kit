@@ -1,8 +1,8 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import type { Address } from "viem";
-import { columns } from "./my-assets-table-columns";
-import { columnsSmall } from "./my-assets-table-columns-small";
+import { Columns } from "./my-assets-table-columns";
+import { ColumnsSmall } from "./my-assets-table-columns-small";
 
 interface MyAssetsTableProps {
   wallet: Address;
@@ -19,7 +19,7 @@ export default async function MyAssetsTable({
 
   return (
     <DataTable
-      columns={variant === "small" ? columnsSmall : columns}
+      columns={variant === "small" ? ColumnsSmall : Columns}
       data={userAssetsBalance.balances}
       name={title}
       pagination={{ enablePagination: false }}

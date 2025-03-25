@@ -60,8 +60,9 @@ files:
     admin.charts.asset-type-formatter.equities: f38992a52cef8611666b2db431b493a6
     admin.charts.asset-type-formatter.funds: d42b2bb7ac17fc34a099909c0a2f1de9
     admin.charts.asset-type-formatter.stablecoins: 2f7d136a5b9efb222650243b1d38b6ff
+    admin.charts.asset-type-formatter.tokenizeddeposit: 54e943a5918f140003ed964d64393d5d
     admin.dashboard.charts.asset-activity.burn: 11635778f116ce6922f6068638a39028
-    admin.dashboard.charts.asset-activity.description: 0af652d4c797a0c6b75cff690129f572
+    admin.dashboard.charts.asset-activity.description: d1eec278e81db448429fcdff184e9abc
     admin.dashboard.charts.asset-activity.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.dashboard.charts.asset-activity.title: 0af652d4c797a0c6b75cff690129f572
     admin.dashboard.charts.asset-activity.transfer: 6950810f0d2bba97a6f710c7b965b84e
@@ -71,13 +72,13 @@ files:
     admin.dashboard.charts.asset-types.funds: d42b2bb7ac17fc34a099909c0a2f1de9
     admin.dashboard.charts.asset-types.stablecoins: 2f7d136a5b9efb222650243b1d38b6ff
     admin.dashboard.charts.asset-types.tokenizeddeposit: 54e943a5918f140003ed964d64393d5d
-    admin.dashboard.charts.assets-supply.description: cebd7e01de0cd31b3c8f27428ab5ac76
+    admin.dashboard.charts.assets-supply.description: 82f28cfc1ff78797b53a54f75643669d
     admin.dashboard.charts.assets-supply.title: cebd7e01de0cd31b3c8f27428ab5ac76
-    admin.dashboard.charts.transaction-history.description: ed431c9f4d10a2ead0eb3643f5e33f33
+    admin.dashboard.charts.transaction-history.description: a6082e523f1363a320ccddd0750a784d
     admin.dashboard.charts.transaction-history.title: ed431c9f4d10a2ead0eb3643f5e33f33
-    admin.dashboard.charts.users-history.description: 44fb29646871b901dd1d53849d62a43e
+    admin.dashboard.charts.users-history.description: ab16f8ee557b3e48b90cb0dd72cc0ccb
     admin.dashboard.charts.users-history.label: f9aae5fda8d810a29f12d1e61b4ab25f
-    admin.dashboard.charts.users-history.title: 44fb29646871b901dd1d53849d62a43e
+    admin.dashboard.charts.users-history.title: 91890712853cc914d3b4bd64cdeca73b
     admin.dashboard.page.asset-management: 177512b9add0b40c38dad61838bf7d79
     admin.dashboard.page.description: 0205b0dd64032285b929ef0dd5c6ac11
     admin.dashboard.page.latest-events-heading: 8b0807a79d36ca9fece2ab62e26bdd9f
@@ -86,6 +87,8 @@ files:
     admin.dashboard.table.latest-events.view-all: 0b4db271fc4624853e634ef6882ea8be
     admin.dashboard.widgets.assets.label: 9aedeaf1f77b8642abe528503b8c5de8
     admin.dashboard.widgets.assets.subtext: 235881ad252944b7acca8b854cd5ca27
+    admin.dashboard.widgets.price.label: 689202409e48743b914713f96d93947c
+    admin.dashboard.widgets.price.subtext: d8a6124e07757b089f596d8bf9a8da0c
     admin.dashboard.widgets.transactions.label: 31112aca11d0e9e6eb7db96f317dda49
     admin.dashboard.widgets.transactions.subtext: 2fad55667c83a280f2147280d9351aaf
     admin.dashboard.widgets.users.label: f9aae5fda8d810a29f12d1e61b4ab25f
@@ -93,7 +96,9 @@ files:
     admin.platform.settings.base-currency-label: 58d5c14f81669ba2d7b24bd6664f7f87
     admin.platform.settings.base-currency-updated: 4b32d3465f9f29e0f14dda57d35a54ed
     admin.platform.settings.currencies.aed: 6a54d6830f82ea4ca08b5eaf2be8e668
+    admin.platform.settings.currencies.chf: db95fbe0ad754438e6babfdeb2e38481
     admin.platform.settings.currencies.eur: 0cf01802f212f0ce5333a58faa85a663
+    admin.platform.settings.currencies.gbp: 19d5dc7c209f6bb11037312284b7b67c
     admin.platform.settings.currencies.jpy: bb7f3524fbb9290e36577f03dff33c75
     admin.platform.settings.currencies.sar: 41f8a574f5aa9f4e2e18866053945fcb
     admin.platform.settings.currencies.sgd: 24ab28f05a3bd2ff70801b3183806ce6
@@ -151,7 +156,9 @@ files:
     asset-events.UnderlyingAssetTopUpEvent: 1b25fcd2acf8f03e781eb8a90d526084
     asset-events.UnderlyingAssetWithdrawnEvent: 9d5dbce7d87cede9e0224bb3a48ca1d7
     asset-events.UnpausedEvent: 648ff76ea7617136d7a5e0cbff92606f
+    asset-events.UserAllowedEvent: 45f0fb72a0defdfdb01de4b5a5a6876b
     asset-events.UserBlockedEvent: e1e4c8c9ccd9fc39c391da4bcd093fb2
+    asset-events.UserDisallowedEvent: 21fd8b5eaad13b449b62b8103bb02a2e
     asset-events.UserUnblockedEvent: 193cb08a65f200adaa4f9c35f7e41154
     asset-info.admin: e3afed0047b08059d0fada10f400c1e5
     asset-info.creator-owner: 5439f356b537a6081aabf0ab5ead403d
@@ -216,17 +223,33 @@ files:
     components.asset-type-icon.not-available-initials: d4cd0dabcf4caa22ad92fab40844c786
     components.asset-type-icon.stablecoin-initials: 6a65edb0cc17d66c677814115b1477f5
     components.asset-type-icon.tokenized-deposit-initials: fc089489555aee7519548ff7f589f384
-    components.charts.assets.asset-distribution: 1eec46c77577b5bc13860d676fef6804
+    components.charts.assets.asset-distribution: 0cbc5e89abc7c82c20deca8311b71030
     components.charts.assets.asset-distribution-description: f2f637627e48036150f1a99adbdf4397
     components.charts.assets.bond: 7a3b691731db2969498907b960183633
+    components.charts.assets.bond-issuance: fb8c1667abf6e14ad0ee035ea509926f
+    components.charts.assets.bond-issued: 76bfc7f2b681dbab03ac439f9a605a3d
+    components.charts.assets.bond-mature-readiness: 12733cc0299828a8e014f94041f4e06b
+    components.charts.assets.bond-mature-readiness-description: d086558341619d464101f979c44b261c
+    components.charts.assets.bond-mature-readiness-status: ea678cb2d2779d996e1906720db659f0
+    components.charts.assets.bond-matured: cddd8b8c35283f03dc0ed6702029247d
+    components.charts.assets.bond-pending: 2d13df6f8b5e4c5af9f87e0dc39df69d
+    components.charts.assets.bond-redeemable: cd5ece0fa94385037f3b6a45d3a22bc9
+    components.charts.assets.bond-redeemed: 4fd494accdc0f5e1c1e29ea42215d1f6
+    components.charts.assets.bond-redemption-assets: 1f1520faf6808809348502caccbc0a90
+    components.charts.assets.bond-status: ec53a8c4f07baed5d8825072c89799be
+    components.charts.assets.bond-status-description: 905e485d1e8aa3181d54cb5d946c5342
+    components.charts.assets.bond-status-progress: 4196256078f4be418f937b5e1be25f59
+    components.charts.assets.bond-total-underlying-asset-balance: 3d535ccbaeaff2e8bce87815d2e8c613
     components.charts.assets.collateral-ratio.description: 7c2b795ab5e7407ae5a5dbc2618c5b4f
     components.charts.assets.collateral-ratio.label: 402c0bb389fdb67267e5ced7921d5fbf
     components.charts.assets.collateral-ratio.no-data: a174e0686d26c92d56bf13366f54f84c
     components.charts.assets.cryptocurrency: 4c11904ee0b793fc10046d533cae723e
     components.charts.assets.equity: d9df825203724a2f3412de3fc7a7a2be
+    components.charts.assets.error-loading-data: 03427eb2d90a26fd11a0b44ab99f3920
     components.charts.assets.free-collateral-ratio.label: b24ce0cd392a5b0b8dedc66c25213594
     components.charts.assets.fund: c1098dd48f0fb20eeea79235055d02ca
     components.charts.assets.last-updated: ffbb3331182cbfda3ccea5bb0c3eea46
+    components.charts.assets.loading: 8524de963f07201e5c086830d370797f
     components.charts.assets.stablecoin: 0501a2e331bfc725e5ea1728a8de9098
     components.charts.assets.tokenizeddeposit: b76912a65edce9a71850a9e09b4f3fd3
     components.charts.assets.total-supply.description: 2c73005a0303bc52d3f4285cc4a71104
@@ -246,10 +269,24 @@ files:
     components.charts.assets.total-volume.label: ea4cacf786de47ee79720980514c48d5
     components.charts.assets.total-volume.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
     components.charts.assets.total-volume.title: ea4cacf786de47ee79720980514c48d5
+    components.charts.assets.units-over-time.description: e3b2e5d9ec6e0f3d9c68897ced3f0f45
+    components.charts.assets.units-over-time.label: e5771a362d88a71a657bfcd21ca54b3f
+    components.charts.assets.units-over-time.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
+    components.charts.assets.units-over-time.title: c118cc96ddabab4cca1ac976cff3ded2
     components.charts.assets.used-collateral-ratio.label: fd8f656590df4b2d2b217b060b7204d3
     components.charts.assets.wallet-distribution: 3b4a6eb75af26d63996b584c1650499a
     components.charts.assets.wallet-distribution-description: ebc7b0c11d01b59739f27b425e91a5a1
     components.charts.assets.wallet-distribution-no-data: 4721df9d7dc81aa627608bf42a932f83
+    components.charts.assets.yield-coverage.description: a2ae4456c9f4fcf89da2c8e7577ebefa
+    components.charts.assets.yield-coverage.error: c16aef533358001508ae81e9c27582d8
+    components.charts.assets.yield-coverage.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
+    components.charts.assets.yield-coverage.title: 8c8f1c58b026505a691dcdeafbdadf4f
+    components.charts.assets.yield-distribution.claimed-label: 9d8b15ef78357692564f5aced0c68eaf
+    components.charts.assets.yield-distribution.description: 30568b9a28f85ac49d9d2d962205950c
+    components.charts.assets.yield-distribution.error: fb91fddc0ac1c8aeb691afd8657fd7ee
+    components.charts.assets.yield-distribution.no-data: 1b961f5566f72f961babb94936c6c04d
+    components.charts.assets.yield-distribution.title: c550227d371e130c2d892d3b838d04b8
+    components.charts.assets.yield-distribution.total-yield-label: b30eafbf82345105003f2d2add7734ae
     components.data-table.clear-filters: 0b275442d6556cff30b75f37f1918899
     components.data-table.details: 3ec365dd533ddb7ef3d1c111186ce872
     components.data-table.export: 0095a9fa74d1713e43e370a7d7846224
@@ -287,6 +324,8 @@ files:
     components.form.input.min-value: 751d0dc7c145a5a07a4ddfc98250c6db
     components.form.input.valid-email: 6fc78ea6908a7cbd0b36f7bc468b4275
     components.form.input.valid-number: 1d75af7ead4847536d75284ad31e0e9f
+    components.form.pincode-dialog.cancel: ea4788705e6873b424c65e91c2846b19
+    components.form.pincode-dialog.confirm: 6297cdd34823b19402b792867ed42f70
     components.form.pincode-dialog.description: 270fcb334b1eca6a3475504fbebfd3b7
     components.form.pincode-dialog.title: 502e7d8e83097a1e726112cf13e842a8
     components.form.progress.completed-step: 11da564a254921897afcf5f9f1082860
@@ -335,13 +374,78 @@ files:
     components.transactions-table.columns.status: ec53a8c4f07baed5d8825072c89799be
     components.transactions-table.columns.transaction-hash: a0bd1db035c6e85fbe6f3cbbf3ff28ee
     creator-owner: 5439f356b537a6081aabf0ab5ead403d
+    error.array: 1c8c8151581701fa5b597ade2d5b4aea
+    error.array-contains: 3e67040c90b80c828384745786c7ed9a
+    error.array-max-contains: 70c318ee77460a10df3183dbe1ed3063
+    error.array-max-items: 736fa9a47370aec6d32c8fd5994cf0ed
+    error.array-min-contains: c20553612f7b5a755d7ec5feb277e021
+    error.array-min-items: c2768cd157ae57d55eb1291349622d54
+    error.array-unique-items: 925de22e1354fb187e3fecd9c2dff489
+    error.async-iterator: 5634b0239204e864fd2b608103b7841a
+    error.bigint: 3e6b4500a1aa2a28c87308dd0f845b65
+    error.bigint-exclusive-maximum: 9f1e866a96d1e4a8671b2de0976148b2
+    error.bigint-exclusive-minimum: 9213ceeee7875e4f57345ac49c64fd27
+    error.bigint-maximum: 5aaa5f0de263f4c05ab66c314c040429
+    error.bigint-minimum: 46d1845a12403ebe8a06c831a5552280
+    error.bigint-multiple-of: 65f2af8984fb4696a3edc859729787c6
+    error.boolean: 8bd80a21aa314506e32c49bbdc9b539f
+    error.date: c96280f76032df218d08eebbb62f8696
+    error.date-exclusive-maximum-timestamp: 8eb5adf547f0215fde70a86220e96635
+    error.date-exclusive-minimum-timestamp: 7ef984a7aa3f93c2529826edfe9d31a8
+    error.date-maximum-timestamp: 6ea3a63d1eabda5ce4a49a8739a1c938
+    error.date-minimum-timestamp: a37e0392a040b55c495f50e56bf76a3d
+    error.date-multiple-of-timestamp: c96280f76032df218d08eebbb62f8696
     error.error-id: 69e9e13ca4e079dd3d988bc404306884
+    error.function: 78ddaa33aa4e09d62959484df4ed5f5a
     error.go-home: 382c69628e6c1c196feec18cba47b6a9
+    error.integer: ee4438aa11b15ec7585ded050ee889cd
+    error.integer-exclusive-maximum: aaa297da8a1d23c403bbd74aab7479d7
+    error.integer-exclusive-minimum: c087b4e7dc9b6c14dffb56a488cb1326
+    error.integer-maximum: cdac6597b54f188a35d2316d58c14024
+    error.integer-minimum: 0ae237b70f0b9b74a74cdc1f11598726
+    error.integer-multiple-of: 0746df732113a93406db39b1ab31ef7b
+    error.intersect: 2cbee9ca1e9bb14c4b74dcc55e601bd6
+    error.intersect-unevaluated-properties: a246c452a2b3744731f2cbab7006b302
+    error.iterator: 5634b0239204e864fd2b608103b7841a
+    error.kind: 78ddaa33aa4e09d62959484df4ed5f5a
+    error.literal: 9d83b1cce85ecf505084146c761acc37
+    error.never: fd75e3ed396cee5d9c52a3ce64233370
+    error.not: c693ae1c323983947bcb4fc9f62bc09b
+    error.null: b1d80863b3cc102de85a83a8c78c4ee2
+    error.number: 1d75af7ead4847536d75284ad31e0e9f
+    error.number-exclusive-maximum: 66bd645226d8d5aab1ed98b1afce801a
+    error.number-exclusive-minimum: d7fcaf895736ba5bc82ad0b7f962d60a
+    error.number-maximum: 44386ba926929a98e0248e2148e431d3
+    error.number-minimum: a7440e8e1b7b78b92d4c02aca49e81a5
+    error.number-multiple-of: 674f8a7555327250d9b060eae8cfa4e7
+    error.object: 08ffc92e46e02355a7f4553aa2b18615
+    error.object-additional-properties: de4936a9acf49994a31c872b51af7f33
+    error.object-max-properties: d1e42552c072fe7fefa6ec8f57c2da96
+    error.object-min-properties: add2eb05e3f8fe94172e03ae8bb45cf2
+    error.object-required-property: 0511ee0d41117aa7b4abaaf102aa513d
+    error.promise: 5634b0239204e864fd2b608103b7841a
+    error.regexp: 739b06c0dfeb8388aada5f1330645816
     error.sending: e4b0c2b6d59cb4cf3e169a9886008087
+    error.string: 087bfafc45b86ce28faf6f6334562382
+    error.string-format: fe83c3f5bda6191d84177a49a53fd647
+    error.string-format-unknown: 8c77eb811f7be3ca1b8b4a6e379d8115
+    error.string-max-length: ff3d75ca62a4371adc7764f3973f713b
+    error.string-min-length: 8aa51203cd0a918cdaeb3e9705a9dc03
+    error.string-pattern: c4570cbe59e3fb42cfcf29bdaddc6e8a
     error.success: 505a83f220c02df2f85c3810cd9ceb38
+    error.symbol: 78ddaa33aa4e09d62959484df4ed5f5a
     error.title: c6701602de1528fd79d5eff3e8eb1edd
     error.try-again: f915a95e609bbd517a8a1e7bdcceef37
+    error.tuple: 7e1255c3f0d1ab640200da6b4c2555ac
+    error.tuple-length: 6a9d75fb8032021c89ebcdf7c2816842
+    error.uint8array: 3aa09611c7c5ca24cdfdc2e51900c56e
+    error.uint8array-max-byte-length: ec89c7fa06f1df12a2b43c7159e21119
+    error.uint8array-min-byte-length: 7694642c2923adc52fad9d9df064dba2
+    error.undefined: b1d80863b3cc102de85a83a8c78c4ee2
+    error.union: f23738594f51d25753c0e679535529d5
+    error.unknown: 13e39826b98706157ee4ceb641c7199f
     error.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
+    error.void: b1d80863b3cc102de85a83a8c78c4ee2
     homepage.asset-tokenization: 09572338ab9b55d3fd3e8327f643961a
     homepage.bonds-funds-equities: d78c37b03915c31ee5c79d6353cc2ce1
     homepage.cryptocurrencies: 82d545659cf7ab6dd908094739a64fda
@@ -397,6 +501,7 @@ files:
     layout.navigation.asset-management: 177512b9add0b40c38dad61838bf7d79
     layout.navigation.platform: bf6ba0d41ffdc7a03e03f87c569e0c3a
     layout.navigation.portfolio: 654b240dd044565e9ba2ff98858003c3
+    layout.navigation.title: 47f9082fc380ca62d531096aa1d110f1
     layout.user-dropdown.documentation: 5b6cf869265c13af8566f192b4ab3d2a
     layout.user-dropdown.logout: 4394c8d8e63c470de62ced3ae85de5ae
     layout.user-dropdown.pending-transactions: d20ab843371da5dfa95bb6212a9f6aeb
@@ -524,7 +629,10 @@ files:
     portfolio.transfer-form.amount.title: 034f1f16f32db94ee6659289fdcaa4e8
     portfolio.transfer-form.asset-types: 7a8f32058273f93cf158d8ce39ba40ad
     portfolio.transfer-form.description: ac6a6a8b4b60372d71aed84172ab9f31
+    portfolio.transfer-form.recipients.address-placeholder: 0b04832b113b2d7bcde8d214587f5879
     portfolio.transfer-form.recipients.description: 121576e6c032ae5dbfb878d1b91e14c7
+    portfolio.transfer-form.recipients.manual-entry-link: 9155c6f94f857b0d309c17621bcc128f
+    portfolio.transfer-form.recipients.search-user-link: 79a26d6aa989e2bc91a4adfe055a87ea
     portfolio.transfer-form.recipients.title: 8f419c48506f3cf74a150f1f5257d6e7
     portfolio.transfer-form.recipients.wallet-address-label: a45e5458e44f09f0c4b7682ce8e5b1cc
     portfolio.transfer-form.select-asset.asset-description: 39f9d35a12ea95fc93e7a53a3ae348b5
@@ -586,6 +694,16 @@ files:
     private.assets.create.parameters.common.name-label: 49ee3087348e8d44e1feda1917443987
     private.assets.create.parameters.common.seconds-unit-label: 783e8e29e6a8c3e22baa58a19420eb4f
     private.assets.create.parameters.common.symbol-label: 02c86eb2792f3262c21d030a87e19793
+    private.assets.create.parameters.common.time-units.plural.days: 44fdec47036f482b68b748f9d786801b
+    private.assets.create.parameters.common.time-units.plural.hours: 73cdddd7730abfc13a55efb9f5685a3b
+    private.assets.create.parameters.common.time-units.plural.months: da36cfaf48b9e19896e23e1207040d1e
+    private.assets.create.parameters.common.time-units.plural.seconds: 783e8e29e6a8c3e22baa58a19420eb4f
+    private.assets.create.parameters.common.time-units.plural.weeks: ae60f11ab51860bdb22794a943335a34
+    private.assets.create.parameters.common.time-units.singular.days: 628b7db04235f228d40adc671413a8c8
+    private.assets.create.parameters.common.time-units.singular.hours: 896c55cc5e46fab38ce9f51ebf7bfcd3
+    private.assets.create.parameters.common.time-units.singular.months: 7436f942d5ea836cb84f1bb2527d8286
+    private.assets.create.parameters.common.time-units.singular.seconds: a9f0e61a137d86aa9db53465e0801612
+    private.assets.create.parameters.common.time-units.singular.weeks: 172a8327fcd3685ab3c0f740d031da09
     private.assets.create.parameters.common.value-in-base-currency-label: c4a9cca23e1361496a12d21c034f19c0
     private.assets.create.parameters.cryptocurrencies.initial-supply-description: 1556496117b4664e4471904453587d0a
     private.assets.create.parameters.cryptocurrencies.initial-supply-label: 642a2cc0832a64da551484c62bbd7f8a
@@ -658,6 +776,7 @@ files:
     private.assets.details.forms.amount.description.top-up: fb422732c3a240a18ac4e95e9be2918c
     private.assets.details.forms.amount.description.update-collateral: 79a739dfe12982ffa4bc0b5a76c849bc
     private.assets.details.forms.amount.description.withdraw: 897caa4080abda4dad13f8d68be447cf
+    private.assets.details.forms.amount.label: b2f40690858b404ed10e62bdf422c704
     private.assets.details.forms.amount.max-limit.burn: b7f22f0f406cbf1fae57ebce5cdb7c7f
     private.assets.details.forms.amount.max-limit.freeze: e0d150dc6cd9802e36744f0799567059
     private.assets.details.forms.amount.max-limit.mint: 0b01c7d38443c779173adfb6be2f35a8
@@ -815,6 +934,7 @@ files:
     private.assets.fields.address-header: dd7bf230fde8d4836917806aff6a6b27
     private.assets.fields.allowed-since-header: 67a347d841fa68098e643d2106625b67
     private.assets.fields.assets-under-management-header: 4b99631227184f943addc7dbee1bd396
+    private.assets.fields.balance: 99a808d8d16122d70e44bd7f709d30fb
     private.assets.fields.balance-header: 99a808d8d16122d70e44bd7f709d30fb
     private.assets.fields.blocked-since-header: e994d62c4367fe593120e3853d828783
     private.assets.fields.category-header: 3adbdb3ac060038aa0e6e6c138ef9873

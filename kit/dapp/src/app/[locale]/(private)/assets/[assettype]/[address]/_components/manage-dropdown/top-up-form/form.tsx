@@ -6,7 +6,7 @@ import type { FormStepElement } from "@/components/blocks/form/types";
 import { topUpUnderlyingAsset } from "@/lib/mutations/bond/top-up/top-up-action";
 import { TopUpSchema } from "@/lib/mutations/bond/top-up/top-up-schema";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -73,7 +73,7 @@ export function TopUpForm({
     >
       <Form
         action={topUpUnderlyingAsset}
-        resolver={zodResolver(TopUpSchema)}
+        resolver={typeboxResolver(TopUpSchema())}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

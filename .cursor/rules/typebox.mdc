@@ -1,0 +1,21 @@
+---
+description: Best practices for schema validation with TypeBox
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+- Use TypeBox for JSON Schema generation with full TypeScript support
+- Create type-safe schemas with `t.Object()`, `t.String()`, `t.Number()`, etc.
+- Leverage TypeBox's TypeScript integration to get automatic type inference with `StaticDecode<typeof schema>`
+- Extend TypeBox with custom validators using module augmentation for domain-specific types
+- Add descriptive documentation to schema fields using the `description` property
+- Implement custom validation logic using TypeBox formats and additional properties
+- Create reusable schema components by composing smaller schemas with `t.Intersect()`
+- Use `t.Optional()` and `t.MaybeEmpty()` for handling optional fields properly
+- Implement robust error handling with custom `safeParse` functions
+- Organize related schemas in domain-specific files with proper exports
+- Utilize `t.Partial()` for making parts of a schema optional
+- Use `t.Array()` for defining collections with consistent item validation
+- Consider implementing sensitive data redaction for error logging
+- Take advantage of TypeBox's JSON Schema compatibility for integration with other tools
+- Prefer TypeBox's const assertions for fixed values using `t.Literal()`
+- Utilize TypeBox modifiers like `t.Optional()` and `t.Readonly()` for flexible schemas

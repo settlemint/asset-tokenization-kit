@@ -86,14 +86,15 @@
         "cryptocurrencies": "Cryptocurrencies",
         "equities": "Equities",
         "funds": "Funds",
-        "stablecoins": "Stablecoins"
+        "stablecoins": "Stablecoins",
+        "tokenizeddeposit": "Tokenized Deposits"
       }
     },
     "dashboard": {
       "charts": {
         "asset-activity": {
           "burn": "Burn",
-          "description": "Asset activity",
+          "description": "The amount of actions taken on the different asset classes",
           "mint": "Mint",
           "title": "Asset activity",
           "transfer": "Transfer"
@@ -107,17 +108,17 @@
           "tokenizeddeposit": "Tokenized Deposits"
         },
         "assets-supply": {
-          "description": "Assets supply",
+          "description": "The distribution of tokens per asset class",
           "title": "Assets supply"
         },
         "transaction-history": {
-          "description": "Transaction history",
+          "description": "Number of transactions per day in the last week",
           "title": "Transaction history"
         },
         "users-history": {
-          "description": "Users history",
+          "description": "Number of users registered in the last week",
           "label": "Users",
-          "title": "Users history"
+          "title": "Registered users"
         }
       },
       "page": {
@@ -137,6 +138,10 @@
           "label": "Assets",
           "subtext": "{bonds} bonds | {cryptocurrencies} cryptocurrencies | {equities} equities | {funds} funds | {stableCoins} stablecoins | {tokenizedDeposits} tokenized deposits"
         },
+        "price": {
+          "label": "Value",
+          "subtext": "Total value across all assets"
+        },
         "transactions": {
           "label": "Transactions",
           "subtext": "{count} transactions processed in the last {days} days"
@@ -153,7 +158,9 @@
         "base-currency-updated": "Base currency updated successfully",
         "currencies": {
           "aed": "UAE Dirham (AED)",
+          "chf": "Swiss Franc (CHF)",
           "eur": "Euro (EUR)",
+          "gbp": "British Pound (GBP)",
           "jpy": "Japanese Yen (JPY)",
           "sar": "Saudi Riyal (SAR)",
           "sgd": "Singapore Dollar (SGD)",
@@ -226,7 +233,9 @@
     "UnderlyingAssetTopUpEvent": "Top up",
     "UnderlyingAssetWithdrawnEvent": "Withdraw",
     "UnpausedEvent": "Unpause",
+    "UserAllowedEvent": "Allow",
     "UserBlockedEvent": "Block",
+    "UserDisallowedEvent": "Disallow",
     "UserUnblockedEvent": "Unblock"
   },
   "asset-info": {
@@ -321,21 +330,19 @@
         "asset-distribution-description": "Portfolio allocation by asset type",
         "bond": "Bond",
         "bond-issuance": "Bond issuance",
-        "bond-redemption-assets": "Redemption assets",
-        "bond-redeemed": "Bond redemption",
-        "bond-status": "Status",
-        "bond-status-progress": "Bond status",
-        "bond-status-description": "Current status of the bond",
         "bond-issued": "Issued",
-        "bond-pending": "Pending",
-        "bond-redeemable": "Redeemable",
-        "bond-total-underlying-asset-balance": "Total underlying asset balance",
-        "bond-matured": "Matured",
         "bond-mature-readiness": "Mature Readiness",
         "bond-mature-readiness-description": "Progress towards maturity readiness",
         "bond-mature-readiness-status": "Mature Ready",
-        "error-loading-data": "Error loading data",
-        "loading": "Loading...",
+        "bond-matured": "Matured",
+        "bond-pending": "Pending",
+        "bond-redeemable": "Redeemable",
+        "bond-redeemed": "Bond redemption",
+        "bond-redemption-assets": "Redemption assets",
+        "bond-status": "Status",
+        "bond-status-description": "Current status of the bond",
+        "bond-status-progress": "Bond status",
+        "bond-total-underlying-asset-balance": "Total underlying asset balance",
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
           "label": "Collateral Ratio",
@@ -343,11 +350,13 @@
         },
         "cryptocurrency": "Cryptocurrency",
         "equity": "Equity",
+        "error-loading-data": "Error loading data",
         "free-collateral-ratio": {
           "label": "Free"
         },
         "fund": "Fund",
         "last-updated": "Last updated",
+        "loading": "Loading...",
         "stablecoin": "Stablecoin",
         "tokenizeddeposit": "Tokenized Deposit",
         "total-supply": {
@@ -375,31 +384,31 @@
           "no-data": "No data available in this window",
           "title": "Total volume"
         },
-        "used-collateral-ratio": {
-          "label": "Committed"
-        },
-        "wallet-distribution": "Wallet distribution",
-        "wallet-distribution-description": "Amount of holders vs the amounts they hold",
-        "wallet-distribution-no-data": "No wallet data available",
         "units-over-time": {
           "description": "Showing the units in circulation over time",
           "label": "Units",
           "no-data": "No data available in this window",
           "title": "Units over time"
         },
+        "used-collateral-ratio": {
+          "label": "Committed"
+        },
+        "wallet-distribution": "Wallet distribution",
+        "wallet-distribution-description": "Amount of holders vs the amounts they hold",
+        "wallet-distribution-no-data": "No wallet data available",
         "yield-coverage": {
-          "title": "Yield coverage",
           "description": "Percentage of yield covered by underlying assets",
+          "error": "Error loading yield coverage data",
           "no-data": "No data available in this window",
-          "error": "Error loading yield coverage data"
+          "title": "Yield coverage"
         },
         "yield-distribution": {
-          "title": "Yield distribution",
-          "description": "Showing yield distribution over time",
-          "total-yield-label": "Total yield",
           "claimed-label": "Claimed",
+          "description": "Showing yield distribution over time",
+          "error": "Error loading yield distribution data",
           "no-data": "No yield distribution data available",
-          "error": "Error loading yield distribution data"
+          "title": "Yield distribution",
+          "total-yield-label": "Total yield"
         }
       }
     },
@@ -435,6 +444,7 @@
         "default-placeholder": "Select an option",
         "loading": "Loading...",
         "no-asset-found": "No asset found.",
+        "recent-assets": "Recently selected",
         "search-placeholder": "Search for an asset..."
       },
       "button": {
@@ -452,6 +462,8 @@
         "valid-number": "Please enter a valid number"
       },
       "pincode-dialog": {
+        "cancel": "Cancel",
+        "confirm": "Yes, confirm",
         "description": "To sign the transaction, please enter your pincode for verification and authorization.",
         "title": "Enter your pincode to confirm"
       },
@@ -468,6 +480,7 @@
         "default-placeholder": "Select an option",
         "loading": "Loading...",
         "no-user-found": "No user found.",
+        "recent-users": "Recently selected",
         "search-placeholder": "Search for a user..."
       }
     },
@@ -478,6 +491,8 @@
       "assets-section": "Assets",
       "no-results": "No results found",
       "placeholder": "Search for assets or users...",
+      "recent-assets": "Recent assets",
+      "recent-users": "Recent users",
       "users-section": "Users"
     },
     "transaction-details": {
@@ -524,13 +539,78 @@
   },
   "creator-owner": "Creator / Owner",
   "error": {
+    "array": "Please provide a list of items",
+    "array-contains": "Please select at least one item from the list",
+    "array-max-contains": "Please select no more than {maxContains} items",
+    "array-max-items": "Please select no more than {maxItems} items",
+    "array-min-contains": "Please select at least {minContains} items",
+    "array-min-items": "Please select at least {minItems} items",
+    "array-unique-items": "Please ensure all selected items are unique",
+    "async-iterator": "Invalid data format",
+    "bigint": "Please enter a whole number",
+    "bigint-exclusive-maximum": "Please enter a number smaller than {exclusiveMaximum}",
+    "bigint-exclusive-minimum": "Please enter a number larger than {exclusiveMinimum}",
+    "bigint-maximum": "Please enter a number no larger than {maximum}",
+    "bigint-minimum": "Please enter a number no smaller than {minimum}",
+    "bigint-multiple-of": "Please enter a number that is divisible by {multipleOf}",
+    "boolean": "Please select Yes or No",
+    "date": "Please select a valid date",
+    "date-exclusive-maximum-timestamp": "Please select a date before {exclusiveMaximumTimestamp}",
+    "date-exclusive-minimum-timestamp": "Please select a date after {exclusiveMinimumTimestamp}",
+    "date-maximum-timestamp": "Please select a date on or before {maximumTimestamp}",
+    "date-minimum-timestamp": "Please select a date on or after {minimumTimestamp}",
+    "date-multiple-of-timestamp": "Please select a valid date",
     "error-id": "Error ID",
+    "function": "Invalid format",
     "go-home": "Go home",
+    "integer": "Please enter a whole number (no decimals)",
+    "integer-exclusive-maximum": "Please enter a whole number less than {exclusiveMaximum}",
+    "integer-exclusive-minimum": "Please enter a whole number greater than {exclusiveMinimum}",
+    "integer-maximum": "Please enter a whole number no greater than {maximum}",
+    "integer-minimum": "Please enter a whole number no less than {minimum}",
+    "integer-multiple-of": "Please enter a whole number divisible by {multipleOf}",
+    "intersect": "Please ensure all information is valid",
+    "intersect-unevaluated-properties": "Unexpected information provided",
+    "iterator": "Invalid data format",
+    "kind": "Invalid format",
+    "literal": "Please enter exactly {const}",
+    "never": "This field cannot be filled",
+    "not": "This value is not accepted",
+    "null": "This field should be empty",
+    "number": "Please enter a valid number",
+    "number-exclusive-maximum": "Please enter a number less than {exclusiveMaximum}",
+    "number-exclusive-minimum": "Please enter a number greater than {exclusiveMinimum}",
+    "number-maximum": "Please enter a number no greater than {maximum}",
+    "number-minimum": "Please enter a number no less than {minimum}",
+    "number-multiple-of": "Please enter a number divisible by {multipleOf}",
+    "object": "Please provide all required information",
+    "object-additional-properties": "Unknown field provided",
+    "object-max-properties": "Too many fields provided (maximum is {maxProperties})",
+    "object-min-properties": "Please fill out at least {minProperties} fields",
+    "object-required-property": "This field is required",
+    "promise": "Invalid data format",
+    "regexp": "Please enter text in the correct format",
     "sending": "Sending",
+    "string": "Please enter text",
+    "string-format": "Please enter text in the correct {format} format",
+    "string-format-unknown": "Unknown format '{format}'",
+    "string-max-length": "Please enter no more than {maxLength} characters",
+    "string-min-length": "Please enter at least {minLength} characters",
+    "string-pattern": "Please follow the required pattern",
     "success": "Success",
+    "symbol": "Invalid format",
     "title": "Something went wrong!",
     "try-again": "Try again",
-    "validation-errors": "Validation error"
+    "tuple": "Please provide all required items in the correct order",
+    "tuple-length": "Please provide exactly {maxItems} items",
+    "uint8array": "Invalid file format",
+    "uint8array-max-byte-length": "File is too large",
+    "uint8array-min-byte-length": "File is too small",
+    "undefined": "This field should be empty",
+    "union": "Please enter a valid value",
+    "unknown": "Invalid value entered",
+    "validation-errors": "Validation error",
+    "void": "This field should be empty"
   },
   "homepage": {
     "asset-tokenization": "asset tokenization",
@@ -626,13 +706,20 @@
       "admin": "Issuer portal",
       "asset-management": "Asset management",
       "platform": "Platform management",
-      "portfolio": "My portfolio"
+      "portfolio": "My portfolio",
+      "title": "Private"
     },
     "user-dropdown": {
       "documentation": "Documentation",
       "logout": "Log out",
       "pending-transactions": "Pending Transactions"
     }
+  },
+  "not-found": {
+    "title": "Page not found",
+    "description": "The page you are looking for doesn't exist or has been moved.",
+    "go-back": "Go back",
+    "go-home": "Go home"
   },
   "paused": "Paused",
   "portfolio": {
@@ -819,12 +906,12 @@
       "asset-types": "{type} {name} ({symbol})",
       "description": "Easily transfer an amount of {name} ({symbol}) by selecting a recipient and specifying the amount.",
       "recipients": {
-        "description": "Enter a wallet address to send tokens directly.",
-        "title": "Select Recipients",
-        "wallet-address-label": "Wallet Address",
         "address-placeholder": "Search for a user",
+        "description": "Enter a wallet address to send tokens directly.",
         "manual-entry-link": "Enter address manually...",
-        "search-user-link": "Search for a user instead..."
+        "search-user-link": "Search for a user instead...",
+        "title": "Select Recipients",
+        "wallet-address-label": "Wallet Address"
       },
       "select-asset": {
         "asset-description": "Select an asset from your portfolio",
@@ -922,23 +1009,23 @@
             "name-label": "Name",
             "seconds-unit-label": "seconds",
             "symbol-label": "Symbol",
-            "value-in-base-currency-label": "Value in {baseCurrency}",
             "time-units": {
-              "singular": {
-                "seconds": "second",
-                "hours": "hour",
-                "days": "day",
-                "weeks": "week",
-                "months": "month"
-              },
               "plural": {
-                "seconds": "seconds",
-                "hours": "hours",
                 "days": "days",
-                "weeks": "weeks",
-                "months": "months"
+                "hours": "hours",
+                "months": "months",
+                "seconds": "seconds",
+                "weeks": "weeks"
+              },
+              "singular": {
+                "days": "day",
+                "hours": "hour",
+                "months": "month",
+                "seconds": "second",
+                "weeks": "week"
               }
-            }
+            },
+            "value-in-base-currency-label": "Value in {baseCurrency}"
           },
           "cryptocurrencies": {
             "initial-supply-description": "Initial amount of tokens to be minted",
@@ -1044,6 +1131,7 @@
               "update-collateral": "Input the amount you wish to update the collateral to. Ensure the amount is bigger or equal to the current supply.",
               "withdraw": "Input the amount you wish to withdraw."
             },
+            "label": "Amount",
             "max-limit": {
               "burn": "Balance available to burn: {limit}",
               "freeze": "Balance available to freeze: {limit}",
@@ -1066,16 +1154,16 @@
             "description": {
               "allow": "Allow this user to perform transactions and interactions.",
               "block": "Prevent this user from performing any transactions or interactions.",
-              "burn": "Permanently remove bond tokens from circulation to reduce supply.",
+              "burn": "Permanently remove tokens from circulation to reduce supply.",
               "disallow": "Prevent this user from performing any transactions or interactions.",
               "freeze": "Temporarily restrict a user's access to their funds.",
               "grant-role": "Assign administrative permissions to a new user.",
               "mature": "Mature your bond and receive the underlying asset",
-              "mint": "Issue new tokens to increase the bond's circulating supply.",
-              "pause": "Temporarily halt all transactions and interactions for this bond.",
+              "mint": "Issue new tokens to increase the asset's circulating supply.",
+              "pause": "Temporarily halt all transactions and interactions for this asset.",
               "top-up": "Add more underlying asset to your bond",
               "unblock": "Allow this user to perform transactions and interactions again.",
-              "unpause": "Resume transactions and interactions for this bond.",
+              "unpause": "Resume transactions and interactions for this asset.",
               "update-collateral": "Adjust the collateral backing the stablecoin to reflect current requirements.",
               "withdraw": "Withdraw underlying asset from your bond"
             },
@@ -1273,6 +1361,7 @@
         "address-header": "Address",
         "allowed-since-header": "Allowed since",
         "assets-under-management-header": "AuM",
+        "balance": "Balance",
         "balance-header": "Balance",
         "blocked-since-header": "Blocked since",
         "category-header": "Category",
@@ -1288,7 +1377,6 @@
         "creator": "Creator",
         "decimals": "Decimals",
         "deployed-on": "Deployed on",
-        "balance": "Balance",
         "edit-roles-form": {
           "trigger-label": "Edit permissions"
         },

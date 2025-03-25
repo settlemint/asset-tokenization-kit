@@ -3,9 +3,10 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
-import { getPredictedAddress } from "@/lib/queries/fund-factory/predict-address";
+import { getPredictedAddress } from "@/lib/queries/fund-factory/fund-factory-predict-address";
 import { formatNumber } from "@/lib/utils/number";
-import type { fundCategories, fundClasses } from "@/lib/utils/zod";
+import type { fundCategories } from "@/lib/utils/typebox/fund-categories";
+import type { fundClasses } from "@/lib/utils/typebox/fund-classes";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
@@ -97,7 +98,9 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = ["predictedAddress"] as const;
+Summary.validatedFields = [
+  "predictedAddress",
+] satisfies (keyof CreateFundInput)[];
 Summary.beforeValidate = [
   async ({ setValue, getValues }: UseFormReturn<CreateFundInput>) => {
     const values = getValues();

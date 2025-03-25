@@ -30,4 +30,4 @@ export function AdminRoles() {
   );
 }
 
-AdminRoles.validatedFields = ["roles"] as const;
+AdminRoles.validatedFields = ["roles"] satisfies (keyof GrantRoleInput)[];

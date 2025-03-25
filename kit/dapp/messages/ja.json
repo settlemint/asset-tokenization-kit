@@ -17,14 +17,15 @@
         "cryptocurrencies": "暗号通貨",
         "equities": "株式",
         "funds": "ファンド",
-        "stablecoins": "ステーブルコイン"
+        "stablecoins": "ステーブルコイン",
+        "tokenizeddeposit": "トークン化された預金"
       }
     },
     "dashboard": {
       "charts": {
         "asset-activity": {
           "burn": "バーン",
-          "description": "資産アクティビティ",
+          "description": "異なる資産クラスに対して行われたアクションの量",
           "mint": "ミント",
           "title": "資産アクティビティ",
           "transfer": "転送"
@@ -38,17 +39,17 @@
           "tokenizeddeposit": "トークン化された預金"
         },
         "assets-supply": {
-          "description": "資産供給",
+          "description": "資産クラスごとのトークンの分布",
           "title": "資産供給"
         },
         "transaction-history": {
-          "description": "取引履歴",
+          "description": "先週の1日あたりの取引数",
           "title": "取引履歴"
         },
         "users-history": {
-          "description": "ユーザー履歴",
+          "description": "先週登録されたユーザー数",
           "label": "ユーザー",
-          "title": "ユーザー履歴"
+          "title": "登録ユーザー"
         }
       },
       "page": {
@@ -75,6 +76,10 @@
         "users": {
           "label": "ユーザー",
           "subtext": "{count} 件のユーザーが過去 {days} 日間にいます"
+        },
+        "price": {
+          "label": "値",
+          "subtext": "すべての資産の合計値"
         }
       }
     },
@@ -88,7 +93,9 @@
           "jpy": "日本円 (JPY)",
           "sar": "サウジリヤル (SAR)",
           "sgd": "シンガポールドル (SGD)",
-          "usd": "米ドル (USD)"
+          "usd": "米ドル (USD)",
+          "chf": "スイスフラン (CHF)",
+          "gbp": "イギリスポンド (GBP)"
         },
         "platform-management": "プラットフォーム管理",
         "save": "保存",
@@ -294,7 +301,7 @@
     },
     "charts": {
       "assets": {
-        "asset-distribution": "資産分配",
+        "asset-distribution": "資産の分配",
         "asset-distribution-description": "資産タイプによるポートフォリオ配分",
         "bond": "債券",
         "collateral-ratio": {
@@ -341,7 +348,43 @@
         },
         "wallet-distribution": "ウォレット分配",
         "wallet-distribution-description": "保有者の数と保有量",
-        "wallet-distribution-no-data": "ウォレットデータは利用できません"
+        "wallet-distribution-no-data": "ウォレットデータは利用できません",
+        "bond-issuance": "債券の発行",
+        "bond-redemption-assets": "償還資産",
+        "bond-redeemed": "債券の償還",
+        "bond-status": "ステータス",
+        "bond-status-progress": "債券のステータス",
+        "bond-status-description": "債券の現在のステータス",
+        "bond-issued": "発行済み",
+        "bond-pending": "保留中",
+        "bond-redeemable": "償還可能",
+        "bond-total-underlying-asset-balance": "総基礎資産残高",
+        "bond-matured": "満期",
+        "bond-mature-readiness": "満期準備状況",
+        "bond-mature-readiness-description": "満期準備状況への進捗",
+        "bond-mature-readiness-status": "満期準備完了",
+        "error-loading-data": "データの読み込みエラー",
+        "loading": "読み込み中...",
+        "units-over-time": {
+          "description": "時間の経過に伴う流通ユニットの表示",
+          "label": "ユニット",
+          "no-data": "このウィンドウにデータはありません",
+          "title": "時間の経過に伴うユニット"
+        },
+        "yield-coverage": {
+          "title": "利回りカバレッジ",
+          "description": "基礎資産によってカバーされる利回りの割合",
+          "no-data": "このウィンドウにデータはありません",
+          "error": "利回りカバレッジデータの読み込みエラー"
+        },
+        "yield-distribution": {
+          "title": "利回り分配",
+          "description": "時間の経過に伴う利回り分配の表示",
+          "total-yield-label": "総利回り",
+          "claimed-label": "請求済み",
+          "no-data": "利回り分配データは利用できません",
+          "error": "利回り分配データの読み込みエラー"
+        }
       }
     },
     "data-table": {
@@ -376,6 +419,7 @@
         "default-placeholder": "オプションを選択",
         "loading": "読み込み中...",
         "no-asset-found": "資産が見つかりません。",
+        "recent-assets": "最近選択したもの",
         "search-placeholder": "資産を検索..."
       },
       "button": {
@@ -394,7 +438,9 @@
       },
       "pincode-dialog": {
         "description": "トランザクションに署名するには、確認と承認のためにピンコードを入力してください。",
-        "title": "確認のためにピンコードを入力してください"
+        "title": "確認のためにピンコードを入力してください",
+        "cancel": "キャンセル",
+        "confirm": "はい、確認する"
       },
       "progress": {
         "completed-step": "ステップ完了",
@@ -409,6 +455,7 @@
         "default-placeholder": "オプションを選択",
         "loading": "読み込み中...",
         "no-user-found": "ユーザーが見つかりません。",
+        "recent-users": "最近選択したもの",
         "search-placeholder": "ユーザーを検索..."
       }
     },
@@ -419,6 +466,8 @@
       "assets-section": "資産",
       "no-results": "結果が見つかりません",
       "placeholder": "資産またはユーザーを検索...",
+      "recent-assets": "最近の資産",
+      "recent-users": "最近のユーザー",
       "users-section": "ユーザー"
     },
     "transaction-details": {
@@ -471,7 +520,72 @@
     "success": "成功",
     "title": "何かがうまくいきませんでした！",
     "try-again": "再試行",
-    "validation-errors": "検証エラー"
+    "validation-errors": "検証エラー",
+    "array-contains": "リストから少なくとも1つの項目を選択してください",
+    "array-max-contains": "最大で{maxContains}項目を選択してください",
+    "array-min-contains": "少なくとも{minContains}項目を選択してください",
+    "array-max-items": "最大で{maxItems}項目を選択してください",
+    "array-min-items": "少なくとも{minItems}項目を選択してください",
+    "array-unique-items": "選択したすべての項目がユニークであることを確認してください",
+    "array": "項目のリストを提供してください",
+    "async-iterator": "無効なデータ形式",
+    "bigint-exclusive-maximum": " {exclusiveMaximum}未満の数値を入力してください",
+    "bigint-exclusive-minimum": " {exclusiveMinimum}より大きい数値を入力してください",
+    "bigint-maximum": " {maximum}以下の数値を入力してください",
+    "bigint-minimum": " {minimum}以上の数値を入力してください",
+    "bigint-multiple-of": " {multipleOf}で割り切れる数値を入力してください",
+    "bigint": "整数を入力してください",
+    "boolean": "はいまたはいいえを選択してください",
+    "date-exclusive-minimum-timestamp": " {exclusiveMinimumTimestamp}以降の日付を選択してください",
+    "date-exclusive-maximum-timestamp": " {exclusiveMaximumTimestamp}以前の日付を選択してください",
+    "date-minimum-timestamp": " {minimumTimestamp}以降の日付を選択してください",
+    "date-maximum-timestamp": " {maximumTimestamp}以前の日付を選択してください",
+    "date-multiple-of-timestamp": "有効な日付を選択してください",
+    "date": "有効な日付を選択してください",
+    "function": "無効な形式",
+    "integer-exclusive-maximum": " {exclusiveMaximum}未満の整数を入力してください",
+    "integer-exclusive-minimum": " {exclusiveMinimum}より大きい整数を入力してください",
+    "integer-maximum": " {maximum}以下の整数を入力してください",
+    "integer-minimum": " {minimum}以上の整数を入力してください",
+    "integer-multiple-of": " {multipleOf}で割り切れる整数を入力してください",
+    "integer": "小数点なしの整数を入力してください",
+    "intersect-unevaluated-properties": "予期しない情報が提供されました",
+    "intersect": "すべての情報が有効であることを確認してください",
+    "iterator": "無効なデータ形式",
+    "literal": "正確に{const}を入力してください",
+    "never": "このフィールドは入力できません",
+    "not": "この値は受け入れられません",
+    "null": "このフィールドは空であるべきです",
+    "number-exclusive-maximum": " {exclusiveMaximum}未満の数値を入力してください",
+    "number-exclusive-minimum": " {exclusiveMinimum}より大きい数値を入力してください",
+    "number-maximum": " {maximum}以下の数値を入力してください",
+    "number-minimum": " {minimum}以上の数値を入力してください",
+    "number-multiple-of": " {multipleOf}で割り切れる数値を入力してください",
+    "number": "有効な数値を入力してください",
+    "object": "すべての必須情報を提供してください",
+    "object-additional-properties": "不明なフィールドが提供されました",
+    "object-max-properties": "フィールドが多すぎます（最大は{maxProperties}です）",
+    "object-min-properties": "少なくとも{minProperties}フィールドを記入してください",
+    "object-required-property": "このフィールドは必須です",
+    "promise": "無効なデータ形式",
+    "regexp": "正しい形式でテキストを入力してください",
+    "string-format-unknown": "不明な形式 '{format}'",
+    "string-format": "正しい{format}形式でテキストを入力してください",
+    "string-max-length": "最大{maxLength}文字以内で入力してください",
+    "string-min-length": "少なくとも{minLength}文字を入力してください",
+    "string-pattern": "必要なパターンに従ってください",
+    "string": "テキストを入力してください",
+    "symbol": "無効な形式",
+    "tuple-length": "正確に{maxItems}項目を提供してください",
+    "tuple": "正しい順序で必要なすべての項目を提供してください",
+    "uint8array-max-byte-length": "ファイルが大きすぎます",
+    "uint8array-min-byte-length": "ファイルが小さすぎます",
+    "uint8array": "無効なファイル形式",
+    "undefined": "このフィールドは空であるべきです",
+    "union": "有効な値を入力してください",
+    "void": "このフィールドは空であるべきです",
+    "kind": "無効な形式",
+    "unknown": "無効な値が入力されました"
   },
   "layout": {
     "header": {
@@ -483,7 +597,8 @@
       "admin": "発行者ポータル",
       "asset-management": "資産管理",
       "platform": "プラットフォーム管理",
-      "portfolio": "マイポートフォリオ"
+      "portfolio": "マイポートフォリオ",
+      "title": "プライベート"
     },
     "user-dropdown": {
       "documentation": "ドキュメント",
@@ -677,7 +792,10 @@
       "recipients": {
         "description": "トークンを直接送信するためのウォレットアドレスを入力してください。",
         "title": "受取人を選択",
-        "wallet-address-label": "ウォレットアドレス"
+        "wallet-address-label": "ウォレットアドレス",
+        "address-placeholder": "ユーザーを検索",
+        "manual-entry-link": "アドレスを手動で入力...",
+        "search-user-link": "代わりにユーザーを検索..."
       },
       "select-asset": {
         "asset-description": "ポートフォリオから資産を選択",
@@ -776,7 +894,23 @@
             "name-label": "名前",
             "seconds-unit-label": "秒",
             "symbol-label": "シンボル",
-            "value-in-base-currency-label": "値 {baseCurrency} で"
+            "value-in-base-currency-label": "値 {baseCurrency} で",
+            "time-units": {
+              "singular": {
+                "seconds": "秒",
+                "hours": "時間",
+                "days": "日",
+                "weeks": "週",
+                "months": "月"
+              },
+              "plural": {
+                "seconds": "秒",
+                "hours": "時間",
+                "days": "日",
+                "weeks": "週",
+                "months": "月"
+              }
+            }
           },
           "cryptocurrencies": {
             "initial-supply-description": "鋳造されるトークンの初期数量",
@@ -1117,7 +1251,8 @@
               "mint": "ミント可能な担保: {limit}",
               "burn": "燃やすために利用可能な残高: {limit}",
               "freeze": "凍結するために利用可能な残高: {limit}"
-            }
+            },
+            "label": "金額"
           },
           "roles": {
             "title": "役割を選択",
@@ -1549,7 +1684,8 @@
         "price": "価格",
         "price-header": "価格",
         "allowed-since-header": "許可された日",
-        "blocked-since-header": "ブロックされた日"
+        "blocked-since-header": "ブロックされた日",
+        "balance": "残高"
       },
       "table": {
         "asset-management": "資産管理",
@@ -1901,7 +2037,9 @@
     "UnderlyingAssetWithdrawnEvent": "引き出し",
     "UnpausedEvent": "再開",
     "UserBlockedEvent": "ブロック",
-    "UserUnblockedEvent": "ブロック解除"
+    "UserUnblockedEvent": "ブロック解除",
+    "UserAllowedEvent": "許可",
+    "UserDisallowedEvent": "不許可"
   },
   "homepage": {
     "asset-tokenization": "資産トークン化",

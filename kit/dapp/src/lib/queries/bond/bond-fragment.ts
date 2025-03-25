@@ -1,14 +1,54 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+
+export const YieldPeriodFragment = theGraphGraphqlKit(`
+  fragment YieldPeriodFragment on YieldPeriod {
+    id
+    periodId
+    startDate
+    endDate
+    rate
+    totalClaimed
+    totalClaimedExact
+  }
+`);
+
+export const YieldScheduleFragment = theGraphGraphqlKit(
+  `
+  fragment YieldScheduleFragment on FixedYield {
+    id
+      startDate
+      endDate
+      rate
+      interval
+      totalClaimed
+      totalClaimedExact
+      unclaimedYield
+      unclaimedYieldExact
+      underlyingAsset {
+        id
+        symbol
+        decimals
+        type
+      }
+      underlyingBalance
+      underlyingBalanceExact
+      periods {
+        ...YieldPeriodFragment
+      }
+  }
+`,
+  [YieldPeriodFragment]
+);
 
 /**
- * GraphQL fragment for on-chain stablecoin data from The Graph
+ * GraphQL fragment for on-chain bond data from The Graph
  *
  * @remarks
- * Contains core stablecoin properties including ID, name, symbol, supply, and holders
+ * Contains core bond properties including ID, name, symbol, supply, and holders
  */
-export const BondFragment = theGraphGraphqlKit(`
+export const BondFragment = theGraphGraphqlKit(
+  `
   fragment BondFragment on Bond {
     id
     name
@@ -36,32 +76,7 @@ export const BondFragment = theGraphGraphqlKit(`
     isMatured
     hasSufficientUnderlying
     yieldSchedule {
-      id
-      startDate
-      endDate
-      rate
-      interval
-      totalClaimed
-      totalClaimedExact
-      unclaimedYield
-      unclaimedYieldExact
-      underlyingAsset {
-        id
-        symbol
-        decimals
-        type
-      }
-      underlyingBalance
-      underlyingBalanceExact
-      periods {
-        id
-        periodId
-        startDate
-        endDate
-        rate
-        totalClaimed
-        totalClaimedExact
-      }
+      ...YieldScheduleFragment
     }
     redeemedAmount
     faceValue
@@ -71,89 +86,15 @@ export const BondFragment = theGraphGraphqlKit(`
     cap
     deployedOn
   }
-`);
+`,
+  [YieldScheduleFragment]
+);
 
 /**
- * Zod schema for validating on-chain stablecoin data
- *
- */
-export const BondFragmentSchema = z.object({
-  id: z.address(),
-  name: z.string(),
-  symbol: z.symbol(),
-  decimals: z.decimals(),
-  totalSupply: z.bigDecimal(),
-  totalSupplyExact: z.bigInt(),
-  totalBurned: z.bigDecimal(),
-  totalBurnedExact: z.bigInt(),
-  totalHolders: z.number(),
-  paused: z.boolean(),
-  creator: z.object({
-    id: z.address(),
-  }),
-  holders: z.array(
-    z.object({
-      valueExact: z.bigInt(),
-    })
-  ),
-  underlyingAsset: z.object({
-    id: z.address(),
-    symbol: z.string(),
-    decimals: z.decimals(),
-    type: z.string()
-  }),
-  maturityDate: z.bigInt().optional(),
-  isMatured: z.boolean(),
-  hasSufficientUnderlying: z.boolean(),
-  yieldSchedule: z.object({
-    id: z.address(),
-    startDate: z.bigInt(),
-    endDate: z.bigInt(),
-    rate: z.bigInt(),
-    interval: z.bigInt(),
-    totalClaimed: z.bigDecimal(),
-    totalClaimedExact: z.bigInt(),
-    unclaimedYield: z.bigDecimal(),
-    unclaimedYieldExact: z.bigInt(),
-    underlyingAsset: z.object({
-      id: z.address(),
-      symbol: z.string(),
-      decimals: z.decimals(),
-      type: z.string(),
-    }),
-    underlyingBalance: z.bigDecimal(),
-    underlyingBalanceExact: z.bigInt(),
-    periods: z.array(
-      z.object({
-        id: z.string(),
-        periodId: z.bigInt(),
-        startDate: z.bigInt(),
-        endDate: z.bigInt(),
-        rate: z.bigInt(),
-        totalClaimed: z.bigDecimal(),
-        totalClaimedExact: z.bigInt(),
-      })
-    ),
-  }).nullable(),
-  redeemedAmount: z.bigInt(),
-  faceValue: z.bigInt(),
-  underlyingBalance: z.bigInt(),
-  totalUnderlyingNeeded: z.bigDecimal(),
-  totalUnderlyingNeededExact: z.bigInt(),
-  cap: z.bigInt(),
-  deployedOn: z.bigInt(),
-});
-
-/**
- * Type definition for on-chain stablecoin data
- */
-export type Bond = ZodInfer<typeof BondFragmentSchema>;
-
-/**
- * GraphQL fragment for off-chain stablecoin data from Hasura
+ * GraphQL fragment for off-chain bond data from Hasura
  *
  * @remarks
- * Contains additional metadata about stablecoins stored in the database
+ * Contains additional metadata about bonds stored in the database
  */
 export const OffchainBondFragment = hasuraGraphql(`
   fragment OffchainBondFragment on asset {
@@ -162,18 +103,3 @@ export const OffchainBondFragment = hasuraGraphql(`
     value_in_base_currency
   }
 `);
-
-/**
- * Zod schema for validating off-chain stablecoin data
- *
- */
-export const OffchainBondFragmentSchema = z.object({
-  id: z.address(),
-  isin: z.isin().nullish(),
-  value_in_base_currency: z.fiatCurrencyAmount(),
-});
-
-/**
- * Type definition for off-chain stablecoin data
- */
-export type OffchainBond = ZodInfer<typeof OffchainBondFragmentSchema>;

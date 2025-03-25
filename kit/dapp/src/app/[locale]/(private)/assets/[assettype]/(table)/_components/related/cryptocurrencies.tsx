@@ -21,7 +21,7 @@ export async function CryptocurrenciesRelated() {
         description={t("cryptocurrency.mechanics.description")}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/cryptocurrency#contract-features-and-capabilities">
-          <Button variant="secondary">
+          <Button className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground">
             {t("cryptocurrency.mechanics.button")}
           </Button>
         </Link>
@@ -31,7 +31,7 @@ export async function CryptocurrenciesRelated() {
         description={t("cryptocurrency.usecases.description")}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/cryptocurrency#why-digital-fund-tokens">
-          <Button variant="secondary">
+          <Button className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground">
             {t("cryptocurrency.usecases.button")}
           </Button>
         </Link>

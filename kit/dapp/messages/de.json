@@ -17,14 +17,15 @@
         "cryptocurrencies": "Kryptowährungen",
         "equities": "Aktien",
         "funds": "Fonds",
-        "stablecoins": "Stablecoins"
+        "stablecoins": "Stablecoins",
+        "tokenizeddeposit": "Tokenisierte Einlagen"
       }
     },
     "dashboard": {
       "charts": {
         "asset-activity": {
           "burn": "Verbrennen",
-          "description": "Vermögensaktivität",
+          "description": "Die Anzahl der durchgeführten Aktionen in den verschiedenen Anlageklassen",
           "mint": "Prägen",
           "title": "Vermögensaktivität",
           "transfer": "Übertragen"
@@ -38,17 +39,17 @@
           "tokenizeddeposit": "Tokenisierte Einlagen"
         },
         "assets-supply": {
-          "description": "Vermögensangebot",
+          "description": "Die Verteilung der Token pro Anlageklasse",
           "title": "Vermögensangebot"
         },
         "transaction-history": {
-          "description": "Transaktionsverlauf",
+          "description": "Anzahl der Transaktionen pro Tag in der letzten Woche",
           "title": "Transaktionsverlauf"
         },
         "users-history": {
-          "description": "Benutzerverlauf",
+          "description": "Anzahl der in der letzten Woche registrierten Benutzer",
           "label": "Benutzer",
-          "title": "Benutzerverlauf"
+          "title": "Registrierte Benutzer"
         }
       },
       "page": {
@@ -75,6 +76,10 @@
         "users": {
           "label": "Benutzer",
           "subtext": "{count} Benutzer in den letzten {days} Tagen"
+        },
+        "price": {
+          "label": "Wert",
+          "subtext": "Gesamtwert aller Vermögenswerte"
         }
       }
     },
@@ -88,7 +93,9 @@
           "jpy": "Japanischer Yen (JPY)",
           "sar": "Saudi-Riyal (SAR)",
           "sgd": "Singapur-Dollar (SGD)",
-          "usd": "US-Dollar (USD)"
+          "usd": "US-Dollar (USD)",
+          "chf": "Schweizer Franken (CHF)",
+          "gbp": "Britisches Pfund (GBP)"
         },
         "platform-management": "Plattformverwaltung",
         "save": "Speichern",
@@ -341,7 +348,43 @@
         },
         "wallet-distribution": "Wallet-Verteilung",
         "wallet-distribution-description": "Anzahl der Inhaber vs. die Beträge, die sie halten",
-        "wallet-distribution-no-data": "Keine Wallet-Daten verfügbar"
+        "wallet-distribution-no-data": "Keine Wallet-Daten verfügbar",
+        "bond-issuance": "Anleiheausgabe",
+        "bond-redemption-assets": "Einlösungsvermögen",
+        "bond-redeemed": "Anleiheeinlösung",
+        "bond-status": "Status",
+        "bond-status-progress": "Anleihestatus",
+        "bond-status-description": "Aktueller Status der Anleihe",
+        "bond-issued": "Ausgegeben",
+        "bond-pending": "Ausstehend",
+        "bond-redeemable": "Einlösbar",
+        "bond-total-underlying-asset-balance": "Gesamtbetrag des zugrunde liegenden Vermögens",
+        "bond-matured": "Fällig",
+        "bond-mature-readiness": "Bereitschaft zur Fälligkeit",
+        "bond-mature-readiness-description": "Fortschritt zur Fälligkeit",
+        "bond-mature-readiness-status": "Bereit zur Fälligkeit",
+        "error-loading-data": "Fehler beim Laden der Daten",
+        "loading": "Laden...",
+        "units-over-time": {
+          "description": "Anzeigen der im Umlauf befindlichen Einheiten über die Zeit",
+          "label": "Einheiten",
+          "no-data": "Keine Daten in diesem Fenster verfügbar",
+          "title": "Einheiten über die Zeit"
+        },
+        "yield-coverage": {
+          "title": "Ertragsabdeckung",
+          "description": "Prozentsatz des Ertrags, der durch zugrunde liegende Vermögenswerte gedeckt ist",
+          "no-data": "Keine Daten in diesem Fenster verfügbar",
+          "error": "Fehler beim Laden der Ertragsabdeckungsdaten"
+        },
+        "yield-distribution": {
+          "title": "Ertragsverteilung",
+          "description": "Anzeigen der Ertragsverteilung über die Zeit",
+          "total-yield-label": "Gesamtertrag",
+          "claimed-label": "Beansprucht",
+          "no-data": "Keine Daten zur Ertragsverteilung verfügbar",
+          "error": "Fehler beim Laden der Ertragsverteilungsdaten"
+        }
       }
     },
     "data-table": {
@@ -376,6 +419,7 @@
         "default-placeholder": "Wählen Sie eine Option",
         "loading": "Lade...",
         "no-asset-found": "Kein Vermögenswert gefunden.",
+        "recent-assets": "Kürzlich ausgewählt",
         "search-placeholder": "Suchen Sie nach einem Vermögenswert..."
       },
       "button": {
@@ -394,7 +438,9 @@
       },
       "pincode-dialog": {
         "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Verifizierung und Autorisierung ein.",
-        "title": "Geben Sie Ihren PIN-Code zur Bestätigung ein"
+        "title": "Geben Sie Ihren PIN-Code zur Bestätigung ein",
+        "cancel": "Abbrechen",
+        "confirm": "Ja, bestätigen"
       },
       "progress": {
         "completed-step": "Abgeschlossener Schritt",
@@ -409,6 +455,7 @@
         "default-placeholder": "Wählen Sie eine Option",
         "loading": "Lade...",
         "no-user-found": "Kein Benutzer gefunden.",
+        "recent-users": "Kürzlich ausgewählt",
         "search-placeholder": "Suchen Sie nach einem Benutzer..."
       }
     },
@@ -418,7 +465,9 @@
     "search": {
       "assets-section": "Vermögenswerte",
       "no-results": "Keine Ergebnisse gefunden",
-      "placeholder": "Suchen Sie nach Vermögenswerten oder Benutzern...",
+      "placeholder": "Suche nach Vermögenswerten oder Benutzern...",
+      "recent-assets": "Kürzlich gesuchte Vermögenswerte",
+      "recent-users": "Kürzlich gesuchte Benutzer",
       "users-section": "Benutzer"
     },
     "transaction-details": {
@@ -471,7 +520,72 @@
     "success": "Erfolg",
     "title": "Etwas ist schiefgelaufen!",
     "try-again": "Versuchen Sie es erneut",
-    "validation-errors": "Validierungsfehler"
+    "validation-errors": "Validierungsfehler",
+    "array-contains": "Bitte wählen Sie mindestens einen Artikel aus der Liste aus",
+    "array-max-contains": "Bitte wählen Sie nicht mehr als {maxContains} Artikel aus",
+    "array-min-contains": "Bitte wählen Sie mindestens {minContains} Artikel aus",
+    "array-max-items": "Bitte wählen Sie nicht mehr als {maxItems} Artikel aus",
+    "array-min-items": "Bitte wählen Sie mindestens {minItems} Artikel aus",
+    "array-unique-items": "Bitte stellen Sie sicher, dass alle ausgewählten Artikel einzigartig sind",
+    "array": "Bitte geben Sie eine Liste von Artikeln an",
+    "async-iterator": "Ungültiges Datenformat",
+    "bigint-exclusive-maximum": "Bitte geben Sie eine Zahl kleiner als {exclusiveMaximum} ein",
+    "bigint-exclusive-minimum": "Bitte geben Sie eine Zahl größer als {exclusiveMinimum} ein",
+    "bigint-maximum": "Bitte geben Sie eine Zahl nicht größer als {maximum} ein",
+    "bigint-minimum": "Bitte geben Sie eine Zahl nicht kleiner als {minimum} ein",
+    "bigint-multiple-of": "Bitte geben Sie eine Zahl ein, die durch {multipleOf} teilbar ist",
+    "bigint": "Bitte geben Sie eine ganze Zahl ein",
+    "boolean": "Bitte wählen Sie Ja oder Nein",
+    "date-exclusive-minimum-timestamp": "Bitte wählen Sie ein Datum nach {exclusiveMinimumTimestamp} aus",
+    "date-exclusive-maximum-timestamp": "Bitte wählen Sie ein Datum vor {exclusiveMaximumTimestamp} aus",
+    "date-minimum-timestamp": "Bitte wählen Sie ein Datum am oder nach {minimumTimestamp} aus",
+    "date-maximum-timestamp": "Bitte wählen Sie ein Datum am oder vor {maximumTimestamp} aus",
+    "date-multiple-of-timestamp": "Bitte wählen Sie ein gültiges Datum aus",
+    "date": "Bitte wählen Sie ein gültiges Datum aus",
+    "function": "Ungültiges Format",
+    "integer-exclusive-maximum": "Bitte geben Sie eine ganze Zahl kleiner als {exclusiveMaximum} ein",
+    "integer-exclusive-minimum": "Bitte geben Sie eine ganze Zahl größer als {exclusiveMinimum} ein",
+    "integer-maximum": "Bitte geben Sie eine ganze Zahl nicht größer als {maximum} ein",
+    "integer-minimum": "Bitte geben Sie eine ganze Zahl nicht kleiner als {minimum} ein",
+    "integer-multiple-of": "Bitte geben Sie eine ganze Zahl ein, die durch {multipleOf} teilbar ist",
+    "integer": "Bitte geben Sie eine ganze Zahl (keine Dezimalzahlen) ein",
+    "intersect-unevaluated-properties": "Unerwartete Informationen bereitgestellt",
+    "intersect": "Bitte stellen Sie sicher, dass alle Informationen gültig sind",
+    "iterator": "Ungültiges Datenformat",
+    "literal": "Bitte geben Sie genau {const} ein",
+    "never": "Dieses Feld kann nicht ausgefüllt werden",
+    "not": "Dieser Wert wird nicht akzeptiert",
+    "null": "Dieses Feld sollte leer sein",
+    "number-exclusive-maximum": "Bitte geben Sie eine Zahl kleiner als {exclusiveMaximum} ein",
+    "number-exclusive-minimum": "Bitte geben Sie eine Zahl größer als {exclusiveMinimum} ein",
+    "number-maximum": "Bitte geben Sie eine Zahl nicht größer als {maximum} ein",
+    "number-minimum": "Bitte geben Sie eine Zahl nicht kleiner als {minimum} ein",
+    "number-multiple-of": "Bitte geben Sie eine Zahl ein, die durch {multipleOf} teilbar ist",
+    "number": "Bitte geben Sie eine gültige Zahl ein",
+    "object": "Bitte geben Sie alle erforderlichen Informationen an",
+    "object-additional-properties": "Unbekanntes Feld bereitgestellt",
+    "object-max-properties": "Zu viele Felder bereitgestellt (maximal {maxProperties})",
+    "object-min-properties": "Bitte füllen Sie mindestens {minProperties} Felder aus",
+    "object-required-property": "Dieses Feld ist erforderlich",
+    "promise": "Ungültiges Datenformat",
+    "regexp": "Bitte geben Sie Text im richtigen Format ein",
+    "string-format-unknown": "Unbekanntes Format '{format}'",
+    "string-format": "Bitte geben Sie Text im richtigen {format}-Format ein",
+    "string-max-length": "Bitte geben Sie nicht mehr als {maxLength} Zeichen ein",
+    "string-min-length": "Bitte geben Sie mindestens {minLength} Zeichen ein",
+    "string-pattern": "Bitte folgen Sie dem erforderlichen Muster",
+    "string": "Bitte geben Sie Text ein",
+    "symbol": "Ungültiges Format",
+    "tuple-length": "Bitte geben Sie genau {maxItems} Artikel an",
+    "tuple": "Bitte geben Sie alle erforderlichen Artikel in der richtigen Reihenfolge an",
+    "uint8array-max-byte-length": "Datei ist zu groß",
+    "uint8array-min-byte-length": "Datei ist zu klein",
+    "uint8array": "Ungültiges Dateiformat",
+    "undefined": "Dieses Feld sollte leer sein",
+    "union": "Bitte geben Sie einen gültigen Wert ein",
+    "void": "Dieses Feld sollte leer sein",
+    "kind": "Ungültiges Format",
+    "unknown": "Ungültiger Wert eingegeben"
   },
   "layout": {
     "header": {
@@ -483,7 +597,8 @@
       "admin": "Aussteller-Portal",
       "asset-management": "Vermögensverwaltung",
       "platform": "Plattformverwaltung",
-      "portfolio": "Mein Portfolio"
+      "portfolio": "Mein Portfolio",
+      "title": "Privat"
     },
     "user-dropdown": {
       "documentation": "Dokumentation",
@@ -677,7 +792,10 @@
       "recipients": {
         "description": "Geben Sie eine Brieftaschenadresse ein, um Tokens direkt zu senden.",
         "title": "Empfänger auswählen",
-        "wallet-address-label": "Brieftaschenadresse"
+        "wallet-address-label": "Brieftaschenadresse",
+        "address-placeholder": "Nach einem Benutzer suchen",
+        "manual-entry-link": "Adresse manuell eingeben...",
+        "search-user-link": "Stattdessen nach einem Benutzer suchen..."
       },
       "select-asset": {
         "asset-description": "Wählen Sie einen Vermögenswert aus Ihrem Portfolio",
@@ -776,7 +894,23 @@
             "name-label": "Name",
             "seconds-unit-label": "Sekunden",
             "symbol-label": "Symbol",
-            "value-in-base-currency-label": "Wert in {baseCurrency}"
+            "value-in-base-currency-label": "Wert in {baseCurrency}",
+            "time-units": {
+              "singular": {
+                "seconds": "Sekunde",
+                "hours": "Stunde",
+                "days": "Tag",
+                "weeks": "Woche",
+                "months": "Monat"
+              },
+              "plural": {
+                "seconds": "Sekunden",
+                "hours": "Stunden",
+                "days": "Tage",
+                "weeks": "Wochen",
+                "months": "Monate"
+              }
+            }
           },
           "cryptocurrencies": {
             "initial-supply-description": "Anfängliche Menge an Token, die geprägt werden sollen",
@@ -1117,7 +1251,8 @@
               "mint": "Verfügbare Sicherheiten zum Minten: {limit}",
               "burn": "Verfügbares Guthaben zum Verbrennen: {limit}",
               "freeze": "Verfügbares Guthaben zum Einfrieren: {limit}"
-            }
+            },
+            "label": "Betrag"
           },
           "roles": {
             "title": "Rollen auswählen",
@@ -1549,7 +1684,8 @@
         "price": "Preis",
         "price-header": "Preis",
         "allowed-since-header": "Erlaubt seit",
-        "blocked-since-header": "Blockiert seit"
+        "blocked-since-header": "Blockiert seit",
+        "balance": "Guthaben"
       },
       "table": {
         "asset-management": "Vermögensverwaltung",
@@ -1901,7 +2037,9 @@
     "UnderlyingAssetWithdrawnEvent": "Abheben",
     "UnpausedEvent": "Wieder aktivieren",
     "UserBlockedEvent": "Blockieren",
-    "UserUnblockedEvent": "Entblockieren"
+    "UserUnblockedEvent": "Entblockieren",
+    "UserAllowedEvent": "Erlauben",
+    "UserDisallowedEvent": "Nicht erlauben"
   },
   "homepage": {
     "asset-tokenization": "Vermögens-Tokenisierung",

@@ -189,8 +189,8 @@ bun addresses
 bun dev
 ```
 
-Browse to http://localhost:3000 to access the application. Create an account by
-clicking "Sign up" - the first account created will have admin privileges.
+Browse to <http://localhost:3000> to access the application. Create an account
+by clicking "Sign up" - the first account created will have admin privileges.
 
 ### Customized Setup
 
@@ -235,5 +235,51 @@ bun db:push
 bun dev
 ```
 
-Browse to http://localhost:3000 to access the application. Create an account by
-clicking "Sign up" - the first account created will have admin privileges.
+Browse to <http://localhost:3000> to access the application. Create an account
+by clicking "Sign up" - the first account created will have admin privileges.
+
+### Database Customization
+
+To modify database schema:
+
+1. Update your schema definitions in the schema folder:
+
+   ```bash
+   # Navigate to schema directory
+   cd kit/dapp/src/lib/db
+   ```
+
+2. Apply your changes to the database:
+
+   ```bash
+   # Run in the kit/dapp directory
+   cd kit/dapp
+   bun db:push
+   ```
+
+3. Ensure your updates are registered with Hasura by executing:
+
+   ```bash
+   settlemint hasura track -a
+   ```
+
+4. Regenerate GraphQL types by running the following command in the root
+   directory. It is important to use the `--force` flag to ensure the types are
+   regenerated:
+
+   ```bash
+   bun codegen --force
+   ```
+
+5. Launch the application to verify your changes:
+
+   ```bash
+   bun dev
+   ```
+
+> **Note**: When modifying tables managed by Better Auth (user, session,
+> account, verification), you may need to update `additionalFields` in
+> `kit/dapp/src/lib/auth/auth.ts`. If user object field changes aren't reflected
+> in the `useSession` hook, try clearing cookies and signing in again. See
+> [Better Auth database core schema](https://www.better-auth.com/docs/concepts/database#core-schema)
+> for more information.

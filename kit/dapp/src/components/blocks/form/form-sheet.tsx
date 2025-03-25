@@ -33,7 +33,11 @@ export function FormSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       {triggerLabel && asButton && (
         <SheetTrigger asChild>
-          <Button variant="secondary" disabled={disabled}>
+          <Button
+            variant="secondary"
+            disabled={disabled}
+            className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground"
+          >
             {triggerLabel}
           </Button>
         </SheetTrigger>

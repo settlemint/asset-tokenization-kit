@@ -4,8 +4,8 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { burn } from "@/lib/mutations/burn/burn-action";
 import { BurnSchema } from "@/lib/mutations/burn/burn-schema";
-import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -15,7 +15,9 @@ import { Summary } from "./steps/summary";
 interface BurnFormProps {
   address: Address;
   assettype: AssetType;
-  maxLimit?: number;
+  max: number;
+  decimals: number;
+  symbol: string;
   disabled?: boolean;
   asButton?: boolean;
   open?: boolean;
@@ -25,7 +27,9 @@ interface BurnFormProps {
 export function BurnForm({
   address,
   assettype,
-  maxLimit,
+  max,
+  decimals,
+  symbol,
   disabled = false,
   asButton = false,
   open,
@@ -52,7 +56,7 @@ export function BurnForm({
     >
       <Form
         action={burn}
-        resolver={zodResolver(BurnSchema)}
+        resolver={typeboxResolver(BurnSchema({ maxAmount: max, decimals }))}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
@@ -64,7 +68,7 @@ export function BurnForm({
           assettype,
         }}
       >
-        <Amount maxLimit={maxLimit} />
+        <Amount max={max} decimals={decimals} symbol={symbol} />
         <Summary address={address} />
       </Form>
     </FormSheet>

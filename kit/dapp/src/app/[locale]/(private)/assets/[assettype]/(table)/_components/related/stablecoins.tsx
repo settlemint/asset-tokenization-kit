@@ -21,7 +21,7 @@ export async function StablecoinsRelated() {
         description={t("stablecoin.mechanics.description")}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/stablecoin#contract-features-and-capabilities">
-          <Button variant="secondary">
+          <Button className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground">
             {t("stablecoin.mechanics.button")}
           </Button>
         </Link>
@@ -31,7 +31,9 @@ export async function StablecoinsRelated() {
         description={t("stablecoin.usecases.description")}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/stablecoin#why-digital-fund-tokens">
-          <Button variant="secondary">{t("stablecoin.usecases.button")}</Button>
+          <Button className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground">
+            {t("stablecoin.usecases.button")}
+          </Button>
         </Link>
       </RelatedGridItem>
     </RelatedGrid>

@@ -21,24 +21,27 @@ export async function YieldDetails({ address }: DetailsProps) {
   const t = await getTranslations("admin.bonds.yield");
   const locale = await getLocale();
 
-  const yieldPerPeriod =  yieldSchedule.periods[0]?.totalClaimed ?? "0";
+  const yieldPerPeriod = yieldSchedule.periods[0]?.totalClaimed ?? "0";
   const ratePercentage = Number(yieldSchedule.rate) / 100;
   const periodCount = Math.floor(
-    (Number(yieldSchedule.endDate) - Number(yieldSchedule.startDate)) /
+    (Number(yieldSchedule.endDate) -
+      Number(yieldSchedule.startDate)) /
       Number(yieldSchedule.interval)
   );
 
-  const intervalPeriod = secondsToInterval(yieldSchedule.interval.toString());
+  const intervalPeriod = secondsToInterval(
+    yieldSchedule.interval.toString()
+  );
   // Use the translation from the interval options section
   // The translation keys are in admin.bonds.yield.set-schedule.interval.options.[period]
-  const intervalDisplay = intervalPeriod ? t(`set-schedule.interval.options.${intervalPeriod}`) : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
+  const intervalDisplay = intervalPeriod
+    ? t(`set-schedule.interval.options.${intervalPeriod}`)
+    : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
 
   return (
     <Suspense>
       <DetailGrid>
-        <DetailGridItem label={t("type")}>
-          {t("type-fixed")}
-        </DetailGridItem>
+        <DetailGridItem label={t("type")}>{t("type-fixed")}</DetailGridItem>
         <DetailGridItem label={t("contract-address")}>
           <EvmAddress
             address={yieldSchedule.id}
@@ -58,7 +61,7 @@ export async function YieldDetails({ address }: DetailsProps) {
           {formatNumber(ratePercentage, {
             percentage: true,
             decimals: 0,
-            locale
+            locale,
           })}
         </DetailGridItem>
         <DetailGridItem label={t("start-date")}>
@@ -104,7 +107,7 @@ export async function YieldDetails({ address }: DetailsProps) {
                 {
                   percentage: true,
                   decimals: 0,
-                  locale
+                  locale,
                 }
               )}
         </DetailGridItem>

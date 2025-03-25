@@ -17,14 +17,15 @@
         "cryptocurrencies": "العملات المشفرة",
         "equities": "الأسهم",
         "funds": "الصناديق",
-        "stablecoins": "العملات المستقرة"
+        "stablecoins": "العملات المستقرة",
+        "tokenizeddeposit": "ودائع مجزأة"
       }
     },
     "dashboard": {
       "charts": {
         "asset-activity": {
           "burn": "حرق",
-          "description": "نشاط الأصول",
+          "description": "عدد الإجراءات المتخذة على فئات الأصول المختلفة",
           "mint": "سك",
           "title": "نشاط الأصول",
           "transfer": "نقل"
@@ -38,17 +39,17 @@
           "tokenizeddeposit": "الودائع المرمزة"
         },
         "assets-supply": {
-          "description": "إمداد الأصول",
+          "description": "توزيع الرموز لكل فئة من فئات الأصول",
           "title": "إمداد الأصول"
         },
         "transaction-history": {
-          "description": "سجل المعاملات",
+          "description": "عدد المعاملات في اليوم خلال الأسبوع الماضي",
           "title": "سجل المعاملات"
         },
         "users-history": {
-          "description": "سجل المستخدمين",
+          "description": "عدد المستخدمين المسجلين في الأسبوع الماضي",
           "label": "المستخدمون",
-          "title": "سجل المستخدمين"
+          "title": "المستخدمون المسجلون"
         }
       },
       "page": {
@@ -75,6 +76,10 @@
         "users": {
           "label": "المستخدمون",
           "subtext": "{count} مستخدمين في آخر {days} أيام"
+        },
+        "price": {
+          "label": "القيمة",
+          "subtext": "إجمالي القيمة عبر جميع الأصول"
         }
       }
     },
@@ -88,7 +93,9 @@
           "jpy": "ين ياباني (JPY)",
           "sar": "ريال سعودي (SAR)",
           "sgd": "دولار سنغافوري (SGD)",
-          "usd": "دولار أمريكي (USD)"
+          "usd": "دولار أمريكي (USD)",
+          "chf": "فرنك سويسري (CHF)",
+          "gbp": "جنيه إسترليني (GBP)"
         },
         "platform-management": "إدارة المنصة",
         "save": "حفظ",
@@ -341,7 +348,43 @@
         },
         "wallet-distribution": "توزيع المحفظة",
         "wallet-distribution-description": "عدد المالكين مقابل المبالغ التي يمتلكونها",
-        "wallet-distribution-no-data": "لا توجد بيانات محفظة متاحة"
+        "wallet-distribution-no-data": "لا توجد بيانات محفظة متاحة",
+        "bond-issuance": "إصدار السندات",
+        "bond-redemption-assets": "أصول الاسترداد",
+        "bond-redeemed": "استرداد السندات",
+        "bond-status": "الحالة",
+        "bond-status-progress": "حالة السند",
+        "bond-status-description": "الحالة الحالية للسند",
+        "bond-issued": "تم الإصدار",
+        "bond-pending": "قيد الانتظار",
+        "bond-redeemable": "قابل للاسترداد",
+        "bond-total-underlying-asset-balance": "إجمالي رصيد الأصول الأساسية",
+        "bond-matured": "استحق",
+        "bond-mature-readiness": "جاهزية الاستحقاق",
+        "bond-mature-readiness-description": "التقدم نحو جاهزية الاستحقاق",
+        "bond-mature-readiness-status": "جاهز للاستحقاق",
+        "error-loading-data": "خطأ في تحميل البيانات",
+        "loading": "جارٍ التحميل...",
+        "units-over-time": {
+          "description": "عرض الوحدات المتداولة على مر الزمن",
+          "label": "الوحدات",
+          "no-data": "لا توجد بيانات متاحة في هذه النافذة",
+          "title": "الوحدات على مر الزمن"
+        },
+        "yield-coverage": {
+          "title": "تغطية العائد",
+          "description": "نسبة العائد المغطاة بالأصول الأساسية",
+          "no-data": "لا توجد بيانات متاحة في هذه النافذة",
+          "error": "خطأ في تحميل بيانات تغطية العائد"
+        },
+        "yield-distribution": {
+          "title": "توزيع العائد",
+          "description": "عرض توزيع العائد على مر الزمن",
+          "total-yield-label": "إجمالي العائد",
+          "claimed-label": "تم المطالبة",
+          "no-data": "لا توجد بيانات لتوزيع العائد متاحة",
+          "error": "خطأ في تحميل بيانات توزيع العائد"
+        }
       }
     },
     "data-table": {
@@ -376,6 +419,7 @@
         "default-placeholder": "اختر خيارًا",
         "loading": "جارٍ التحميل...",
         "no-asset-found": "لم يتم العثور على أصل.",
+        "recent-assets": "المحددة مؤخرًا",
         "search-placeholder": "ابحث عن أصل..."
       },
       "button": {
@@ -394,7 +438,9 @@
       },
       "pincode-dialog": {
         "description": "لتوقيع المعاملة، يرجى إدخال الرقم السري الخاص بك للتحقق والتفويض.",
-        "title": "أدخل الرقم السري الخاص بك للتأكيد"
+        "title": "أدخل الرقم السري الخاص بك للتأكيد",
+        "cancel": "إلغاء",
+        "confirm": "نعم، تأكيد"
       },
       "progress": {
         "completed-step": "تم إكمال الخطوة",
@@ -409,6 +455,7 @@
         "default-placeholder": "اختر خيارًا",
         "loading": "جارٍ التحميل...",
         "no-user-found": "لم يتم العثور على مستخدم.",
+        "recent-users": "المحددة مؤخرًا",
         "search-placeholder": "ابحث عن مستخدم..."
       }
     },
@@ -418,8 +465,10 @@
     "search": {
       "assets-section": "الأصول",
       "no-results": "لم يتم العثور على نتائج",
-      "placeholder": "ابحث عن الأصول أو المستخدمين...",
-      "users-section": "المستخدمون"
+      "placeholder": "البحث عن الأصول أو المستخدمين...",
+      "recent-assets": "الأصول الحديثة",
+      "recent-users": "المستخدمين الأخيرين",
+      "users-section": "المستخدمين"
     },
     "transaction-details": {
       "blob-gas-price-label": "سعر غاز Blob",
@@ -471,7 +520,72 @@
     "success": "نجاح",
     "title": "حدث خطأ ما!",
     "try-again": "حاول مرة أخرى",
-    "validation-errors": "خطأ في التحقق"
+    "validation-errors": "خطأ في التحقق",
+    "array-contains": "يرجى اختيار عنصر واحد على الأقل من القائمة",
+    "array-max-contains": "يرجى اختيار ما لا يزيد عن {maxContains} عناصر",
+    "array-min-contains": "يرجى اختيار ما لا يقل عن {minContains} عناصر",
+    "array-max-items": "يرجى اختيار ما لا يزيد عن {maxItems} عناصر",
+    "array-min-items": "يرجى اختيار ما لا يقل عن {minItems} عناصر",
+    "array-unique-items": "يرجى التأكد من أن جميع العناصر المختارة فريدة",
+    "array": "يرجى تقديم قائمة بالعناصر",
+    "async-iterator": "تنسيق البيانات غير صالح",
+    "bigint-exclusive-maximum": "يرجى إدخال رقم أقل من {exclusiveMaximum}",
+    "bigint-exclusive-minimum": "يرجى إدخال رقم أكبر من {exclusiveMinimum}",
+    "bigint-maximum": "يرجى إدخال رقم لا يزيد عن {maximum}",
+    "bigint-minimum": "يرجى إدخال رقم لا يقل عن {minimum}",
+    "bigint-multiple-of": "يرجى إدخال رقم قابل للقسمة على {multipleOf}",
+    "bigint": "يرجى إدخال رقم صحيح",
+    "boolean": "يرجى اختيار نعم أو لا",
+    "date-exclusive-minimum-timestamp": "يرجى اختيار تاريخ بعد {exclusiveMinimumTimestamp}",
+    "date-exclusive-maximum-timestamp": "يرجى اختيار تاريخ قبل {exclusiveMaximumTimestamp}",
+    "date-minimum-timestamp": "يرجى اختيار تاريخ في أو بعد {minimumTimestamp}",
+    "date-maximum-timestamp": "يرجى اختيار تاريخ في أو قبل {maximumTimestamp}",
+    "date-multiple-of-timestamp": "يرجى اختيار تاريخ صالح",
+    "date": "يرجى اختيار تاريخ صالح",
+    "function": "تنسيق غير صالح",
+    "integer-exclusive-maximum": "يرجى إدخال رقم صحيح أقل من {exclusiveMaximum}",
+    "integer-exclusive-minimum": "يرجى إدخال رقم صحيح أكبر من {exclusiveMinimum}",
+    "integer-maximum": "يرجى إدخال رقم صحيح لا يزيد عن {maximum}",
+    "integer-minimum": "يرجى إدخال رقم صحيح لا يقل عن {minimum}",
+    "integer-multiple-of": "يرجى إدخال رقم صحيح قابل للقسمة على {multipleOf}",
+    "integer": "يرجى إدخال رقم صحيح (بدون كسور)",
+    "intersect-unevaluated-properties": "تم تقديم معلومات غير متوقعة",
+    "intersect": "يرجى التأكد من أن جميع المعلومات صالحة",
+    "iterator": "تنسيق البيانات غير صالح",
+    "literal": "يرجى إدخال بالضبط {const}",
+    "never": "لا يمكن ملء هذا الحقل",
+    "not": "هذه القيمة غير مقبولة",
+    "null": "يجب أن يكون هذا الحقل فارغًا",
+    "number-exclusive-maximum": "يرجى إدخال رقم أقل من {exclusiveMaximum}",
+    "number-exclusive-minimum": "يرجى إدخال رقم أكبر من {exclusiveMinimum}",
+    "number-maximum": "يرجى إدخال رقم لا يزيد عن {maximum}",
+    "number-minimum": "يرجى إدخال رقم لا يقل عن {minimum}",
+    "number-multiple-of": "يرجى إدخال رقم قابل للقسمة على {multipleOf}",
+    "number": "يرجى إدخال رقم صالح",
+    "object": "يرجى تقديم جميع المعلومات المطلوبة",
+    "object-additional-properties": "تم تقديم حقل غير معروف",
+    "object-max-properties": "تم تقديم عدد كبير جدًا من الحقول (الحد الأقصى هو {maxProperties})",
+    "object-min-properties": "يرجى ملء ما لا يقل عن {minProperties} حقول",
+    "object-required-property": "هذا الحقل مطلوب",
+    "promise": "تنسيق البيانات غير صالح",
+    "regexp": "يرجى إدخال نص بالتنسيق الصحيح",
+    "string-format-unknown": "تنسيق غير معروف '{format}'",
+    "string-format": "يرجى إدخال نص بالتنسيق الصحيح {format}",
+    "string-max-length": "يرجى إدخال ما لا يزيد عن {maxLength} حرفًا",
+    "string-min-length": "يرجى إدخال ما لا يقل عن {minLength} حرفًا",
+    "string-pattern": "يرجى اتباع النمط المطلوب",
+    "string": "يرجى إدخال نص",
+    "symbol": "تنسيق غير صالح",
+    "tuple-length": "يرجى تقديم بالضبط {maxItems} عناصر",
+    "tuple": "يرجى تقديم جميع العناصر المطلوبة بالترتيب الصحيح",
+    "uint8array-max-byte-length": "الملف كبير جدًا",
+    "uint8array-min-byte-length": "الملف صغير جدًا",
+    "uint8array": "تنسيق الملف غير صالح",
+    "undefined": "يجب أن يكون هذا الحقل فارغًا",
+    "union": "يرجى إدخال قيمة صالحة",
+    "void": "يجب أن يكون هذا الحقل فارغًا",
+    "kind": "تنسيق غير صالح",
+    "unknown": "تم إدخال قيمة غير صالحة"
   },
   "layout": {
     "header": {
@@ -483,7 +597,8 @@
       "admin": "بوابة المُصدر",
       "asset-management": "إدارة الأصول",
       "platform": "إدارة المنصة",
-      "portfolio": "محفظتي"
+      "portfolio": "محفظتي",
+      "title": "خاص"
     },
     "user-dropdown": {
       "documentation": "التوثيق",
@@ -677,7 +792,10 @@
       "recipients": {
         "description": "أدخل عنوان محفظة لإرسال الرموز مباشرة.",
         "title": "اختر المستلمين",
-        "wallet-address-label": "عنوان المحفظة"
+        "wallet-address-label": "عنوان المحفظة",
+        "address-placeholder": "ابحث عن مستخدم",
+        "manual-entry-link": "أدخل العنوان يدويًا...",
+        "search-user-link": "ابحث عن مستخدم بدلاً من ذلك..."
       },
       "select-asset": {
         "asset-description": "اختر أصلًا من محفظتك",
@@ -776,7 +894,23 @@
             "name-label": "الاسم",
             "seconds-unit-label": "ثواني",
             "symbol-label": "الرمز",
-            "value-in-base-currency-label": "القيمة بـ {baseCurrency}"
+            "value-in-base-currency-label": "القيمة بـ {baseCurrency}",
+            "time-units": {
+              "singular": {
+                "seconds": "ثانية",
+                "hours": "ساعة",
+                "days": "يوم",
+                "weeks": "أسبوع",
+                "months": "شهر"
+              },
+              "plural": {
+                "seconds": "ثواني",
+                "hours": "ساعات",
+                "days": "أيام",
+                "weeks": "أسابيع",
+                "months": "أشهر"
+              }
+            }
           },
           "cryptocurrencies": {
             "initial-supply-description": "الكمية الأولية من الرموز التي سيتم سكها",
@@ -1117,7 +1251,8 @@
               "mint": "الضمان المتاح للتعدين: {limit}",
               "burn": "الرصيد المتاح للحرق: {limit}",
               "freeze": "الرصيد المتاح للتجميد: {limit}"
-            }
+            },
+            "label": "المبلغ"
           },
           "roles": {
             "title": "اختر الأدوار",
@@ -1549,7 +1684,8 @@
         "price": "السعر",
         "price-header": "السعر",
         "allowed-since-header": "مسموح منذ",
-        "blocked-since-header": "محظور منذ"
+        "blocked-since-header": "محظور منذ",
+        "balance": "الرصيد"
       },
       "table": {
         "asset-management": "إدارة الأصول",
@@ -1901,7 +2037,9 @@
     "UnderlyingAssetWithdrawnEvent": "سحب",
     "UnpausedEvent": "إلغاء التوقف",
     "UserBlockedEvent": "حظر",
-    "UserUnblockedEvent": "إلغاء الحظر"
+    "UserUnblockedEvent": "إلغاء الحظر",
+    "UserAllowedEvent": "السماح",
+    "UserDisallowedEvent": "عدم السماح"
   },
   "homepage": {
     "asset-tokenization": "تشفير الأصول",

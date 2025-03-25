@@ -1,5 +1,31 @@
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import type {
+  ApprovalEvent,
+  AssetCreatedEvent,
+  AssetEvent,
+  BondMaturedEvent,
+  BondRedeemedEvent,
+  BurnEvent,
+  CollateralUpdatedEvent,
+  ManagementFeeCollectedEvent,
+  MintEvent,
+  NormalizedEventsListItem,
+  PausedEvent,
+  PerformanceFeeCollectedEvent,
+  RoleAdminChangedEvent,
+  RoleGrantedEvent,
+  RoleRevokedEvent,
+  TokenWithdrawnEvent,
+  TokensFrozenEvent,
+  TransferEvent,
+  UnderlyingAssetTopUpEvent,
+  UnderlyingAssetWithdrawnEvent,
+  UnpausedEvent,
+  UserAllowedEvent,
+  UserBlockedEvent,
+  UserDisallowedEvent,
+  UserUnblockedEvent,
+} from "./asset-events-schema";
 
 /**
  * Base GraphQL fragment for asset events
@@ -20,20 +46,6 @@ export const AssetEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating base asset event data
- *
- */
-export const AssetEventFragmentSchema = z.object({
-  id: z.string(),
-  emitter: z.object({
-    id: z.address(),
-  }),
-  eventName: z.string(),
-  timestamp: z.timestamp(),
-  assetType: z.assetType(),
-});
-
-/**
  * GraphQL fragment for asset creation events
  */
 export const AssetCreatedEventFragment = theGraphGraphqlKit(`
@@ -44,17 +56,6 @@ export const AssetCreatedEventFragment = theGraphGraphqlKit(`
     }
   }
 `);
-
-/**
- * Zod schema for validating asset creation events
- *
- */
-export const AssetCreatedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("AssetCreatedEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-});
 
 /**
  * GraphQL fragment for approval events
@@ -76,24 +77,6 @@ export const ApprovalEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating approval events
- *
- */
-export const ApprovalEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("ApprovalEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-  owner: z.object({
-    id: z.address(),
-  }),
-  spender: z.object({
-    id: z.address(),
-  }),
-  value: z.string(),
-});
-
-/**
  * GraphQL fragment for bond matured events
  */
 export const BondMaturedEventFragment = theGraphGraphqlKit(`
@@ -104,17 +87,6 @@ export const BondMaturedEventFragment = theGraphGraphqlKit(`
     }
   }
 `);
-
-/**
- * Zod schema for validating bond matured events
- *
- */
-export const BondMaturedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("BondMaturedEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-});
 
 /**
  * GraphQL fragment for bond redemption events
@@ -134,22 +106,6 @@ export const BondRedeemedEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating bond redemption events
- *
- */
-export const BondRedeemedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("BondRedeemedEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-  bondAmount: z.string(),
-  holder: z.object({
-    id: z.address(),
-  }),
-  underlyingAmount: z.string(),
-});
-
-/**
  * GraphQL fragment for burn events
  */
 export const BurnEventFragment = theGraphGraphqlKit(`
@@ -166,21 +122,6 @@ export const BurnEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating burn events
- *
- */
-export const BurnEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("BurnEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-  from: z.object({
-    id: z.address(),
-  }),
-  value: z.string(),
-});
-
-/**
  * GraphQL fragment for collateral update events
  */
 export const CollateralUpdatedEventFragment = theGraphGraphqlKit(`
@@ -195,20 +136,6 @@ export const CollateralUpdatedEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating collateral update events
- *
- */
-export const CollateralUpdatedEventFragmentSchema =
-  AssetEventFragmentSchema.extend({
-    __typename: z.literal("CollateralUpdatedEvent"),
-    sender: z.object({
-      id: z.address(),
-    }),
-    newAmount: z.string(),
-    oldAmount: z.string(),
-  });
-
-/**
  * GraphQL fragment for management fee collection events
  */
 export const ManagementFeeCollectedEventFragment = theGraphGraphqlKit(`
@@ -220,19 +147,6 @@ export const ManagementFeeCollectedEventFragment = theGraphGraphqlKit(`
     amount
   }
 `);
-
-/**
- * Zod schema for validating management fee collection events
- *
- */
-export const ManagementFeeCollectedEventFragmentSchema =
-  AssetEventFragmentSchema.extend({
-    __typename: z.literal("ManagementFeeCollectedEvent"),
-    sender: z.object({
-      id: z.address(),
-    }),
-    amount: z.string(),
-  });
 
 /**
  * GraphQL fragment for mint events
@@ -251,21 +165,6 @@ export const MintEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating mint events
- *
- */
-export const MintEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("MintEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-  to: z.object({
-    id: z.address(),
-  }),
-  value: z.string(),
-});
-
-/**
  * GraphQL fragment for paused events
  */
 export const PausedEventFragment = theGraphGraphqlKit(`
@@ -276,17 +175,6 @@ export const PausedEventFragment = theGraphGraphqlKit(`
     }
   }
 `);
-
-/**
- * Zod schema for validating paused events
- *
- */
-export const PausedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("PausedEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-});
 
 /**
  * GraphQL fragment for performance fee collection events
@@ -302,19 +190,6 @@ export const PerformanceFeeCollectedEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating performance fee collection events
- *
- */
-export const PerformanceFeeCollectedEventFragmentSchema =
-  AssetEventFragmentSchema.extend({
-    __typename: z.literal("PerformanceFeeCollectedEvent"),
-    sender: z.object({
-      id: z.address(),
-    }),
-    amount: z.string(),
-  });
-
-/**
  * GraphQL fragment for role admin change events
  */
 export const RoleAdminChangedEventFragment = theGraphGraphqlKit(`
@@ -328,21 +203,6 @@ export const RoleAdminChangedEventFragment = theGraphGraphqlKit(`
     role
   }
 `);
-
-/**
- * Zod schema for validating role admin change events
- *
- */
-export const RoleAdminChangedEventFragmentSchema =
-  AssetEventFragmentSchema.extend({
-    __typename: z.literal("RoleAdminChangedEvent"),
-    sender: z.object({
-      id: z.address(),
-    }),
-    newAdminRole: z.string(),
-    previousAdminRole: z.string(),
-    role: z.string(),
-  });
 
 /**
  * GraphQL fragment for role granted events
@@ -361,21 +221,6 @@ export const RoleGrantedEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating role granted events
- *
- */
-export const RoleGrantedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("RoleGrantedEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-  role: z.string(),
-  account: z.object({
-    id: z.address(),
-  }),
-});
-
-/**
  * GraphQL fragment for role revoked events
  */
 export const RoleRevokedEventFragment = theGraphGraphqlKit(`
@@ -390,21 +235,6 @@ export const RoleRevokedEventFragment = theGraphGraphqlKit(`
     role
   }
 `);
-
-/**
- * Zod schema for validating role revoked events
- *
- */
-export const RoleRevokedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("RoleRevokedEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-  account: z.object({
-    id: z.address(),
-  }),
-  role: z.string(),
-});
 
 /**
  * GraphQL fragment for token withdrawal events
@@ -428,27 +258,6 @@ export const TokenWithdrawnEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating token withdrawal events
- *
- */
-export const TokenWithdrawnEventFragmentSchema =
-  AssetEventFragmentSchema.extend({
-    __typename: z.literal("TokenWithdrawnEvent"),
-    sender: z.object({
-      id: z.address(),
-    }),
-    amount: z.string(),
-    to: z.object({
-      id: z.address(),
-    }),
-    token: z.object({
-      id: z.address(),
-      name: z.string(),
-      symbol: z.symbol(),
-    }),
-  });
-
-/**
  * GraphQL fragment for token freezing events
  */
 export const TokensFrozenEventFragment = theGraphGraphqlKit(`
@@ -463,21 +272,6 @@ export const TokensFrozenEventFragment = theGraphGraphqlKit(`
     }
   }
 `);
-
-/**
- * Zod schema for validating token freezing events
- *
- */
-export const TokensFrozenEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("TokensFrozenEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-  amount: z.string(),
-  user: z.object({
-    id: z.address(),
-  }),
-});
 
 /**
  * GraphQL fragment for transfer events
@@ -499,24 +293,6 @@ export const TransferEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating transfer events
- *
- */
-export const TransferEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("TransferEvent"),
-  to: z.object({
-    id: z.address(),
-  }),
-  sender: z.object({
-    id: z.address(),
-  }),
-  from: z.object({
-    id: z.address(),
-  }),
-  value: z.string(),
-});
-
-/**
  * GraphQL fragment for unpaused events
  */
 export const UnpausedEventFragment = theGraphGraphqlKit(`
@@ -527,17 +303,6 @@ export const UnpausedEventFragment = theGraphGraphqlKit(`
     }
   }
 `);
-
-/**
- * Zod schema for validating unpaused events
- *
- */
-export const UnpausedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("UnpausedEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-});
 
 /**
  * GraphQL fragment for user blocked events
@@ -555,20 +320,6 @@ export const UserBlockedEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating user blocked events
- *
- */
-export const UserBlockedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal("UserBlockedEvent"),
-  sender: z.object({
-    id: z.address(),
-  }),
-  user: z.object({
-    id: z.address(),
-  }),
-});
-
-/**
  * GraphQL fragment for user unblocked events
  */
 export const UserUnblockedEventFragment = theGraphGraphqlKit(`
@@ -584,20 +335,34 @@ export const UserUnblockedEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating user unblocked events
- *
+ * GraphQL fragment for user allowed events
  */
-export const UserUnblockedEventFragmentSchema = AssetEventFragmentSchema.extend(
-  {
-    __typename: z.literal("UserUnblockedEvent"),
-    sender: z.object({
-      id: z.address(),
-    }),
-    user: z.object({
-      id: z.address(),
-    }),
+export const UserAllowedEventFragment = theGraphGraphqlKit(`
+  fragment UserAllowedEventFragment on UserAllowedEvent {
+    __typename
+    sender {
+      id
+    }
+    user {
+      id
+    }
   }
-);
+`);
+
+/**
+ * GraphQL fragment for user disallowed events
+ */
+export const UserDisallowedEventFragment = theGraphGraphqlKit(`
+  fragment UserDisallowedEventFragment on UserDisallowedEvent {
+    __typename
+    sender {
+      id
+    }
+    user {
+      id
+    }
+  }
+`);
 
 /**
  * GraphQL fragment for underlying asset top-up events
@@ -612,18 +377,6 @@ export const UnderlyingAssetTopUpEventFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating underlying asset top-up events
- *
- */
-export const UnderlyingAssetTopUpEventFragmentSchema =
-  AssetEventFragmentSchema.extend({
-    __typename: z.literal("UnderlyingAssetTopUpEvent"),
-    sender: z.object({
-      id: z.address(),
-    }),
-  });
-
-/**
  * GraphQL fragment for underlying asset withdrawal events
  */
 export const UnderlyingAssetWithdrawnEventFragment = theGraphGraphqlKit(`
@@ -635,118 +388,31 @@ export const UnderlyingAssetWithdrawnEventFragment = theGraphGraphqlKit(`
   }
 `);
 
-/**
- * Zod schema for validating underlying asset withdrawal events
- *
- */
-export const UnderlyingAssetWithdrawnEventFragmentSchema =
-  AssetEventFragmentSchema.extend({
-    __typename: z.literal("UnderlyingAssetWithdrawnEvent"),
-    sender: z.object({
-      id: z.address(),
-    }),
-    prettyName: z.string().optional(),
-  });
-
-/**
- * Type definitions for each specific event type
- */
-// Types for each fragment
-export type AssetCreatedEvent = ZodInfer<
-  typeof AssetCreatedEventFragmentSchema
->;
-export type ApprovalEvent = ZodInfer<typeof ApprovalEventFragmentSchema>;
-export type BondMaturedEvent = ZodInfer<typeof BondMaturedEventFragmentSchema>;
-export type BondRedeemedEvent = ZodInfer<
-  typeof BondRedeemedEventFragmentSchema
->;
-export type BurnEvent = ZodInfer<typeof BurnEventFragmentSchema>;
-export type CollateralUpdatedEvent = ZodInfer<
-  typeof CollateralUpdatedEventFragmentSchema
->;
-export type ManagementFeeCollectedEvent = ZodInfer<
-  typeof ManagementFeeCollectedEventFragmentSchema
->;
-export type MintEvent = ZodInfer<typeof MintEventFragmentSchema>;
-export type PausedEvent = ZodInfer<typeof PausedEventFragmentSchema>;
-export type PerformanceFeeCollectedEvent = ZodInfer<
-  typeof PerformanceFeeCollectedEventFragmentSchema
->;
-export type RoleAdminChangedEvent = ZodInfer<
-  typeof RoleAdminChangedEventFragmentSchema
->;
-export type RoleGrantedEvent = ZodInfer<typeof RoleGrantedEventFragmentSchema>;
-export type RoleRevokedEvent = ZodInfer<typeof RoleRevokedEventFragmentSchema>;
-export type TokenWithdrawnEvent = ZodInfer<
-  typeof TokenWithdrawnEventFragmentSchema
->;
-export type TokensFrozenEvent = ZodInfer<
-  typeof TokensFrozenEventFragmentSchema
->;
-export type TransferEvent = ZodInfer<typeof TransferEventFragmentSchema>;
-export type UnpausedEvent = ZodInfer<typeof UnpausedEventFragmentSchema>;
-export type UserBlockedEvent = ZodInfer<typeof UserBlockedEventFragmentSchema>;
-export type UserUnblockedEvent = ZodInfer<
-  typeof UserUnblockedEventFragmentSchema
->;
-export type UnderlyingAssetTopUpEvent = ZodInfer<
-  typeof UnderlyingAssetTopUpEventFragmentSchema
->;
-export type UnderlyingAssetWithdrawnEvent = ZodInfer<
-  typeof UnderlyingAssetWithdrawnEventFragmentSchema
->;
-
-/**
- * Union type representing all possible asset events
- *
- * @remarks
- * This type is used for discriminated union pattern with the __typename field
- */
-// Union type of all events
-export type AssetEvent =
-  | AssetCreatedEvent
-  | ApprovalEvent
-  | BondMaturedEvent
-  | BondRedeemedEvent
-  | BurnEvent
-  | CollateralUpdatedEvent
-  | ManagementFeeCollectedEvent
-  | MintEvent
-  | PausedEvent
-  | PerformanceFeeCollectedEvent
-  | RoleAdminChangedEvent
-  | RoleGrantedEvent
-  | RoleRevokedEvent
-  | TokenWithdrawnEvent
-  | TokensFrozenEvent
-  | TransferEvent
-  | UnpausedEvent
-  | UserBlockedEvent
-  | UserUnblockedEvent
-  | UnderlyingAssetTopUpEvent
-  | UnderlyingAssetWithdrawnEvent;
-
-/**
- * Interface for normalized asset event list items
- *
- */
-export interface NormalizedEventsListItem {
-  event: string;
-  timestamp: string;
-  asset: string;
-  assetType:
-    | "bond"
-    | "cryptocurrency"
-    | "equity"
-    | "fund"
-    | "stablecoin"
-    | "tokenizeddeposit";
-  sender: string;
-  details: AssetEvent;
-  transactionHash: string;
-}
-
-/**
- * Type definition for the base asset event fragment
- */
-export type AssetEventFrag = ZodInfer<typeof AssetEventFragmentSchema>;
+// Re-export all types
+export type {
+  ApprovalEvent,
+  AssetCreatedEvent,
+  AssetEvent,
+  BondMaturedEvent,
+  BondRedeemedEvent,
+  BurnEvent,
+  CollateralUpdatedEvent,
+  ManagementFeeCollectedEvent,
+  MintEvent,
+  NormalizedEventsListItem,
+  PausedEvent,
+  PerformanceFeeCollectedEvent,
+  RoleAdminChangedEvent,
+  RoleGrantedEvent,
+  RoleRevokedEvent,
+  TokenWithdrawnEvent,
+  TokensFrozenEvent,
+  TransferEvent,
+  UnderlyingAssetTopUpEvent,
+  UnderlyingAssetWithdrawnEvent,
+  UnpausedEvent,
+  UserAllowedEvent,
+  UserBlockedEvent,
+  UserDisallowedEvent,
+  UserUnblockedEvent,
+};

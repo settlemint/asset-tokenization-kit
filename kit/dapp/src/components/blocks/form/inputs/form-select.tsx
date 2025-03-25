@@ -1,12 +1,12 @@
 "use client";
 
-import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
@@ -79,7 +79,7 @@ export function FormSelect<T extends FieldValues>({
       defaultValue={defaultValue}
       render={({ field, fieldState }) => {
         return (
-          <FormItem className="flex flex-col space-y-1">
+          <FormItem className="flex flex-col">
             {label && (
               <FormLabel
                 className={cn(disabled && "cursor-not-allowed opacity-70")}
@@ -128,10 +128,7 @@ export function FormSelect<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <TranslatableFormFieldMessage
-              id={`${field.name}-error`}
-              aria-live="polite"
-            />
+            <FormMessage />
           </FormItem>
         );
       }}

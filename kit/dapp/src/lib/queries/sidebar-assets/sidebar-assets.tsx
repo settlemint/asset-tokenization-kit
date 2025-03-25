@@ -2,26 +2,21 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { type ZodInfer, safeParseWithLogging, z } from "@/lib/utils/zod";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
+import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
-import { BondFragment, BondFragmentSchema } from "../bond/bond-fragment";
-import {
-  CryptoCurrencyFragment,
-  CryptoCurrencyFragmentSchema,
-} from "../cryptocurrency/cryptocurrency-fragment";
-import {
-  EquityFragment,
-  EquityFragmentSchema,
-} from "../equity/equity-fragment";
-import { FundFragment, FundFragmentSchema } from "../fund/fund-fragment";
-import {
-  StableCoinFragment,
-  StableCoinFragmentSchema,
-} from "../stablecoin/stablecoin-fragment";
-import {
-  TokenizedDepositFragment,
-  TokenizedDepositFragmentSchema,
-} from "../tokenizeddeposit/tokenizeddeposit-fragment";
+import { BondFragment } from "../bond/bond-fragment";
+import { OnChainBondSchema } from "../bond/bond-schema";
+import { CryptoCurrencyFragment } from "../cryptocurrency/cryptocurrency-fragment";
+import { OnChainCryptoCurrencySchema } from "../cryptocurrency/cryptocurrency-schema";
+import { EquityFragment } from "../equity/equity-fragment";
+import { OnChainEquitySchema } from "../equity/equity-schema";
+import { FundFragment } from "../fund/fund-fragment";
+import { OnChainFundSchema } from "../fund/fund-schema";
+import { StableCoinFragment } from "../stablecoin/stablecoin-fragment";
+import { OnChainStableCoinSchema } from "../stablecoin/stablecoin-schema";
+import { TokenizedDepositFragment } from "../tokenizeddeposit/tokenizeddeposit-fragment";
+import { OnChainTokenizedDepositSchema } from "../tokenizeddeposit/tokenizeddeposit-schema";
 
 /**
  * GraphQL query to fetch sidebar asset data
@@ -64,17 +59,26 @@ const SidebarAssets = theGraphGraphqlKit(
 );
 
 /**
- * Zod schema for asset count entries
+ * TypeBox schema for asset count entries
  */
-const AssetCountSchema = z.object({
-  assetType: z.assetType(),
-  count: z.number(),
-});
+const AssetCountSchema = t.Object(
+  {
+    assetType: t.AssetType({
+      description: "The type of asset being counted",
+    }),
+    count: t.Number({
+      description: "The total number of assets of this type",
+    }),
+  },
+  {
+    description: "Counter for the number of assets of a specific type",
+  }
+);
 
 /**
  * Type for asset count entries
  */
-export type AssetCount = ZodInfer<typeof AssetCountSchema>;
+export type AssetCount = StaticDecode<typeof AssetCountSchema>;
 
 /**
  * Options interface for sidebar assets queries
@@ -95,44 +99,40 @@ export const getSidebarAssets = cache(
     const result = await theGraphClientKit.request(SidebarAssets);
     const { limit = 10 } = options || {};
 
-    // Validate stableCoins with Zod schema
-    const validatedStableCoins = (result.stableCoins || []).map((coin) =>
-      safeParseWithLogging(StableCoinFragmentSchema, coin, "stablecoin")
+    const validatedStableCoins = safeParse(
+      t.Array(OnChainStableCoinSchema),
+      result.stableCoins || []
     );
 
-    const validatedBonds = (result.bonds || []).map((bond) =>
-      safeParseWithLogging(BondFragmentSchema, bond, "bond")
+    const validatedBonds = safeParse(
+      t.Array(OnChainBondSchema),
+      result.bonds || []
     );
 
-    const validatedEquities = (result.equities || []).map((equity) =>
-      safeParseWithLogging(EquityFragmentSchema, equity, "equity")
+    const validatedEquities = safeParse(
+      t.Array(OnChainEquitySchema),
+      result.equities || []
     );
 
-    const validatedFunds = (result.funds || []).map((fund) =>
-      safeParseWithLogging(FundFragmentSchema, fund, "fund")
+    const validatedFunds = safeParse(
+      t.Array(OnChainFundSchema),
+      result.funds || []
     );
 
-    const validatedCryptoCurrencies = (result.cryptoCurrencies || []).map(
-      (currency) =>
-        safeParseWithLogging(
-          CryptoCurrencyFragmentSchema,
-          currency,
-          "cryptocurrency"
-        )
+    const validatedCryptoCurrencies = safeParse(
+      t.Array(OnChainCryptoCurrencySchema),
+      result.cryptoCurrencies || []
     );
 
-    const validatedTokenizedDeposits = (result.tokenizedDeposits || []).map(
-      (deposit) =>
-        safeParseWithLogging(
-          TokenizedDepositFragmentSchema,
-          deposit,
-          "tokenizeddeposit"
-        )
+    const validatedTokenizedDeposits = safeParse(
+      t.Array(OnChainTokenizedDepositSchema),
+      result.tokenizedDeposits || []
     );
 
-    // Validate assetCounts with Zod schema
-    const validatedAssetCounts = (result.assetCounts || []).map((count) =>
-      safeParseWithLogging(AssetCountSchema, count, "assetCount")
+    // Validate assetCounts with TypeBox schema
+    const validatedAssetCounts = safeParse(
+      t.Array(AssetCountSchema),
+      result.assetCounts || []
     );
 
     // Limit the number of records if requested

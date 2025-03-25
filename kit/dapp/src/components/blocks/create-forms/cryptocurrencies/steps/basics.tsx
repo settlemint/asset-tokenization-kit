@@ -39,4 +39,8 @@ export function Basics() {
   );
 }
 
-Basics.validatedFields = ["assetName", "symbol", "decimals"] as const;
+Basics.validatedFields = [
+  "assetName",
+  "symbol",
+  "decimals",
+] satisfies (keyof CreateCryptoCurrencyInput)[];

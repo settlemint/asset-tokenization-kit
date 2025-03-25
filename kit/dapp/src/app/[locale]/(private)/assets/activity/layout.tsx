@@ -1,6 +1,7 @@
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import { PageHeader } from "@/components/layout/page-header";
+import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -32,7 +33,10 @@ export async function generateMetadata({
   });
 
   return {
-    title: t("page-title"),
+    title: {
+      ...metadata.title,
+      default: t("page-title"),
+    },
     description: t("page-description"),
   };
 }

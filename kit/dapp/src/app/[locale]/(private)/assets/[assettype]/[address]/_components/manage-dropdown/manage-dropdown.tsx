@@ -15,11 +15,12 @@ import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import { isBefore } from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 import { AllowForm } from "../allow-form/form";
 import { BlockForm } from "../block-form/form";
 import { DisallowForm } from "../disallow-form/form";
@@ -80,20 +81,19 @@ export function ManageDropdown({
     );
   }
 
-  let mintMaxLimit: number | undefined = undefined;
+  let mintMax: number | undefined = undefined;
   if (assettype === "stablecoin" || assettype === "tokenizeddeposit") {
     const tokenizedDeposit = assetDetails as Awaited<
       ReturnType<typeof getTokenizedDepositDetail>
     >;
-    const freeCollateral = tokenizedDeposit.freeCollateral;
-    mintMaxLimit = freeCollateral;
+    mintMax = tokenizedDeposit.freeCollateral;
   }
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
   const userRoles =
-    assetUsersDetails.roles.find((role) => role.id === userAddress)?.roles ??
-    [];
+    assetUsersDetails.roles.find((role) => getAddress(role.id) === userAddress)
+      ?.roles ?? [];
   const userIsSupplyManager = userRoles.includes(
     ROLES.SUPPLY_MANAGEMENT_ROLE.contractRole
   );
@@ -102,13 +102,18 @@ export function ManageDropdown({
   );
   const userIsAdmin = userRoles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole);
   const hasYieldSchedule = 'yieldSchedule' in assetDetails && assetDetails.yieldSchedule !== null;
+  const collateralIsExpired =
+    "collateralProofValidity" in assetDetails &&
+    assetDetails.collateralProofValidity !== undefined &&
+    isBefore(assetDetails.collateralProofValidity, new Date());
 
   const contractActions = [
     {
       id: "mint",
       label: t("actions.mint"),
       hidden: false,
-      disabled: isBlocked || isPaused || !userIsSupplyManager,
+      disabled:
+        isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired,
       form: (
         <MintForm
           key="mint"
@@ -116,7 +121,9 @@ export function ManageDropdown({
           assettype={assettype}
           open={openMenuItem === "mint"}
           onOpenChange={onFormOpenChange}
-          maxLimit={mintMaxLimit}
+          max={mintMax}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
         />
       ),
     },
@@ -128,13 +135,16 @@ export function ManageDropdown({
         isBlocked ||
         isPaused ||
         !userIsSupplyManager ||
-        (userBalance?.available ?? 0) > 0,
+        (userBalance?.available ?? 0) === 0 ||
+        collateralIsExpired,
       form: (
         <BurnForm
           key="burn"
           address={address}
           assettype={assettype}
-          maxLimit={userBalance?.available}
+          max={userBalance?.available ?? 0}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           open={openMenuItem === "burn"}
           onOpenChange={onFormOpenChange}
         />
@@ -198,6 +208,8 @@ export function ManageDropdown({
           address={address}
           open={openMenuItem === "update-collateral"}
           onOpenChange={onFormOpenChange}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
         />
       ),
     },

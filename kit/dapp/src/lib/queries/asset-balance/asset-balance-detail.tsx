@@ -2,15 +2,11 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { formatNumber } from "@/lib/utils/number";
-import { safeParseWithLogging } from "@/lib/utils/zod";
-import { getLocale } from "next-intl/server";
+import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import {
-  AssetBalanceFragment,
-  AssetBalanceFragmentSchema,
-} from "./asset-balance-fragment";
+import { AssetBalanceFragment } from "./asset-balance-fragment";
+import { AssetBalanceSchema } from "./asset-balance-schema";
 
 /**
  * GraphQL query to fetch a specific asset balance
@@ -44,8 +40,6 @@ export interface AssetBalanceDetailProps {
  */
 export const getAssetBalanceDetail = cache(
   async ({ address, account }: AssetBalanceDetailProps) => {
-    const locale = await getLocale();
-
     if (!account) {
       return undefined;
     }
@@ -64,21 +58,14 @@ export const getAssetBalanceDetail = cache(
     }
 
     // Parse and validate the balance data
-    const validatedBalance = safeParseWithLogging(
-      AssetBalanceFragmentSchema,
-      result.assetBalances[0],
-      "asset balance"
+    const validatedBalance = safeParse(
+      AssetBalanceSchema,
+      result.assetBalances[0]
     );
 
     // Format BigDecimal values
     return {
       ...validatedBalance,
-      value: formatNumber(validatedBalance.value, {
-        locale,
-      }),
-      frozen: formatNumber(validatedBalance.frozen, {
-        locale,
-      }),
       available: validatedBalance.value - validatedBalance.frozen,
     };
   }

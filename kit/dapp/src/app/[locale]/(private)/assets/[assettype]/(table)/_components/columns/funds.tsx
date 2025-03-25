@@ -8,7 +8,8 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { getFundList } from "@/lib/queries/fund/fund-list";
 import { formatNumber } from "@/lib/utils/number";
-import type { fundCategories, fundClasses } from "@/lib/utils/zod";
+import type { fundCategories } from "@/lib/utils/typebox/fund-categories";
+import type { fundClasses } from "@/lib/utils/typebox/fund-classes";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 

@@ -4,8 +4,8 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { mint } from "@/lib/mutations/mint/mint-action";
 import { MintSchema } from "@/lib/mutations/mint/mint-schema";
-import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -17,7 +17,9 @@ interface MintFormProps {
   address: Address;
   assettype: AssetType;
   recipient?: Address;
-  maxLimit?: number;
+  max?: number;
+  decimals: number;
+  symbol: string;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -28,7 +30,9 @@ export function MintForm({
   address,
   assettype,
   recipient,
-  maxLimit,
+  max,
+  decimals,
+  symbol,
   asButton = false,
   open,
   onOpenChange,
@@ -40,11 +44,11 @@ export function MintForm({
   const [internalOpenState, setInternalOpenState] = useState(false);
   const steps = recipient
     ? [
-        <Amount key="amount" maxLimit={maxLimit} />,
+        <Amount key="amount" max={max} decimals={decimals} symbol={symbol} />,
         <Summary key="summary" address={address} />,
       ]
     : [
-        <Amount key="amount" maxLimit={maxLimit} />,
+        <Amount key="amount" max={max} decimals={decimals} symbol={symbol} />,
         <Recipients key="recipients" />,
         <Summary key="summary" address={address} />,
       ];
@@ -64,7 +68,7 @@ export function MintForm({
     >
       <Form
         action={mint}
-        resolver={zodResolver(MintSchema)}
+        resolver={typeboxResolver(MintSchema({ maxAmount: max, decimals }))}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

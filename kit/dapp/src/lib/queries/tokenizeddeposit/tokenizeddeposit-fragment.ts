@@ -1,12 +1,11 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
- * GraphQL fragment for on-chain stablecoin data from The Graph
+ * GraphQL fragment for on-chain tokenized deposit data from The Graph
  *
  * @remarks
- * Contains core stablecoin properties including ID, name, symbol, supply, and holders
+ * Contains core tokenized deposit properties including ID, name, symbol, supply, and holders
  */
 export const TokenizedDepositFragment = theGraphGraphqlKit(`
   fragment TokenizedDepositFragment on TokenizedDeposit {
@@ -35,45 +34,10 @@ export const TokenizedDepositFragment = theGraphGraphqlKit(`
 `);
 
 /**
- * Zod schema for validating on-chain stablecoin data
- *
- */
-export const TokenizedDepositFragmentSchema = z.object({
-  id: z.address(),
-  name: z.string(),
-  symbol: z.symbol(),
-  decimals: z.decimals(),
-  totalSupply: z.bigDecimal(),
-  totalSupplyExact: z.bigInt(),
-  totalBurned: z.bigDecimal(),
-  totalBurnedExact: z.bigInt(),
-  totalHolders: z.number(),
-  collateral: z.bigDecimal(),
-  collateralRatio: z.bigDecimal(),
-  freeCollateral: z.bigDecimal(),
-  lastCollateralUpdate: z.timestamp(),
-  liveness: z.coerce.number(),
-  paused: z.boolean(),
-  creator: z.object({
-    id: z.address(),
-  }),
-  holders: z.array(
-    z.object({
-      valueExact: z.bigInt(),
-    })
-  ),
-});
-
-/**
- * Type definition for on-chain stablecoin data
- */
-export type TokenizedDeposit = ZodInfer<typeof TokenizedDepositFragmentSchema>;
-
-/**
- * GraphQL fragment for off-chain stablecoin data from Hasura
+ * GraphQL fragment for off-chain tokenized deposit data from Hasura
  *
  * @remarks
- * Contains additional metadata about stablecoins stored in the database
+ * Contains additional metadata about tokenized deposits stored in the database
  */
 export const OffchainTokenizedDepositFragment = hasuraGraphql(`
   fragment OffchainTokenizedDepositFragment on asset {
@@ -82,20 +46,3 @@ export const OffchainTokenizedDepositFragment = hasuraGraphql(`
     value_in_base_currency
   }
 `);
-
-/**
- * Zod schema for validating off-chain stablecoin data
- *
- */
-export const OffchainTokenizedDepositFragmentSchema = z.object({
-  id: z.address(),
-  isin: z.isin().nullish(),
-  value_in_base_currency: z.fiatCurrencyAmount(),
-});
-
-/**
- * Type definition for off-chain stablecoin data
- */
-export type OffchainTokenizedDeposit = ZodInfer<
-  typeof OffchainTokenizedDepositFragmentSchema
->;

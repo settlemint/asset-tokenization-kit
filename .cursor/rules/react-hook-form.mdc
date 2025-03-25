@@ -4,6 +4,52 @@ globs: *.ts,*.tsx
 alwaysApply: false
 ---
 - Use `useForm` hook for form state management.
-- Implement validation using `zod` with `@hookform/resolvers`.
+- Implement validation using TypeBox with `@hookform/resolvers/typebox`.
+- Import TypeBox utilities with `import { t, type StaticDecode } from "@/lib/utils/typebox"`.
+- Define schemas with TypeBox's type-safe approach:
+  ```typescript
+  const formSchema = t.Object(
+    {
+      field: t.String({ minLength: 1, error: "Field is required" }),
+      numericField: t.Number({ minimum: 0, maximum: 100 }),
+      optionalField: t.Optional(t.String())
+    },
+    { $id: "FormName" }
+  );
+  ```
+- Use `StaticDecode` for type inference with TypeBox:
+  ```typescript
+  type FormValues = StaticDecode<typeof formSchema>;
+  ```
+- Specify the resolver with `typeboxResolver`:
+  ```typescript
+  const form = useForm<FormValues>({
+    resolver: typeboxResolver(formSchema),
+    defaultValues: {
+      field: "",
+      numericField: 0,
+      optionalField: ""
+    }
+  });
+  ```
+- Take advantage of TypeBox's built-in validation messages with the `error` property.
+- Use custom TypeBox validators for domain-specific validations.
 - Utilize `Controller` component for controlled inputs.
 - Leverage `useFormContext` for sharing form state across components.
+- For complex forms, organize in steps and use the project's form components.
+- Use form elements from UI components library:
+  ```tsx
+  <FormField
+    control={form.control}
+    name="field"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Label</FormLabel>
+        <FormControl>
+          <Input {...field} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+  ```

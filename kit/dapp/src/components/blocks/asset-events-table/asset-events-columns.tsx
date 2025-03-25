@@ -19,9 +19,7 @@ export const icons = {
   public: Unlock,
 };
 
-export function columns() {
-  // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export function Columns() {
   const t = useTranslations("components.asset-events-table");
 
   return [

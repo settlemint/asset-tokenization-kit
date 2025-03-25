@@ -15,16 +15,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { type CurrencyCode, FiatCurrencies } from "@/lib/db/schema-settings";
-import { z } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import type { CurrencyCode } from "@/lib/db/schema-settings";
+import { t as tb } from "@/lib/utils/typebox";
+import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { updateSettings } from "./settings-action";
 
-const schema = z.object({
-  baseCurrency: z.fiatCurrency(),
+const schema = tb.Object({
+  baseCurrency: tb.FiatCurrency(),
 });
 
 const currencyKeys = {
@@ -34,6 +35,8 @@ const currencyKeys = {
   AED: "currencies.aed",
   SGD: "currencies.sgd",
   SAR: "currencies.sar",
+  GBP: "currencies.gbp",
+  CHF: "currencies.chf",
 } as const;
 
 interface SettingsFormProps {
@@ -45,7 +48,7 @@ export function SettingsForm({ defaultBaseCurrency }: SettingsFormProps) {
 
   const { form, handleSubmitWithAction } = useHookFormAction(
     updateSettings,
-    zodResolver(schema),
+    typeboxResolver(schema),
     {
       formProps: {
         mode: "onSubmit",
@@ -94,7 +97,7 @@ export function SettingsForm({ defaultBaseCurrency }: SettingsFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {FiatCurrencies.map((currency) => (
+                  {fiatCurrencies.map((currency) => (
                     <SelectItem key={currency} value={currency}>
                       {t(currencyKeys[currency])}
                     </SelectItem>

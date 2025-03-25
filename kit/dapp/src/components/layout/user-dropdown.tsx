@@ -15,6 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
+import type { User } from "@/lib/queries/user/user-schema";
 import { cn } from "@/lib/utils";
 import { shortHex } from "@/lib/utils/hex";
 import { ChevronDown } from "lucide-react";
@@ -27,6 +28,7 @@ import {
   useRef,
 } from "react";
 import type { Address } from "viem";
+import { CurrencyMenuItem } from "../blocks/currency/currency-menu-item";
 import {
   BookTextIcon,
   type BookTextIconHandle,
@@ -62,9 +64,8 @@ function TextOrSkeleton({
   );
 }
 
-export function UserDropdown() {
-  const { data, error, isPending, refetch } = authClient.useSession();
-  const user = data?.user;
+export function UserDropdown({ user }: { user: User }) {
+  const { error, isPending, refetch } = authClient.useSession();
 
   const router = useRouter();
   const t = useTranslations("layout.user-dropdown");
@@ -117,7 +118,7 @@ export function UserDropdown() {
               <Skeleton className="size-8 rounded-lg" />
             )}
           </Suspense>
-          <div className="grid flex-1 text-left text-sm leading-tight">
+          <div className="grid flex-1 text-left rtl:text-right text-sm leading-tight">
             <TextOrSkeleton
               condition={Boolean(user?.name || user?.email)}
               className="truncate font-semibold"
@@ -160,6 +161,7 @@ export function UserDropdown() {
           <DropdownMenuGroup>
             <ThemeMenuItem />
             <LanguageMenuItem />
+            <CurrencyMenuItem user={user} />
             <DropdownMenuItem
               onMouseEnter={() => bookIconRef.current?.startAnimation()}
               onMouseLeave={() => bookIconRef.current?.stopAnimation()}

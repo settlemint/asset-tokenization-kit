@@ -4,6 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
+import type { SetYieldScheduleInput } from "@/lib/mutations/bond/set-yield-schedule/set-yield-schedule-schema";
 import { formatDate } from "@/lib/utils/date";
 import { IntervalPeriod, getIntervalLabel } from "@/lib/utils/yield";
 import { Percent } from "lucide-react";
@@ -16,7 +17,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext();
+  const { control } = useFormContext<SetYieldScheduleInput>();
   const t = useTranslations("admin.bonds.yield.set-schedule");
   const locale = useLocale();
   const values = useWatch({
@@ -36,11 +37,11 @@ export function Summary({ address }: SummaryProps) {
         />
         <FormSummaryDetailItem
           label={t("summary.start-time")}
-          value={formatDate(values.startTime, { locale })}
+          value={formatDate(values.startTime ?? new Date(), { locale })}
         />
         <FormSummaryDetailItem
           label={t("summary.end-time")}
-          value={formatDate(values.endTime, { locale })}
+          value={formatDate(values.endTime ?? new Date(), { locale })}
         />
         <FormSummaryDetailItem
           label={t("summary.rate")}
@@ -48,11 +49,13 @@ export function Summary({ address }: SummaryProps) {
         />
         <FormSummaryDetailItem
           label={t("summary.interval")}
-          value={getIntervalLabel(values.interval as IntervalPeriod, (key) => t(key))}
+          value={getIntervalLabel(values.interval as IntervalPeriod, (key) =>
+            t(key)
+          )}
         />
       </FormSummaryDetailCard>
     </FormStep>
   );
 }
 
-Summary.validatedFields = [] as const;
+Summary.validatedFields = [] as (keyof SetYieldScheduleInput)[];

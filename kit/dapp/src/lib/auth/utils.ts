@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
+import type { User } from "./types";
 
 /**
  * Get the currently authenticated user
@@ -13,8 +14,8 @@ export async function getUser() {
   });
 
   if (!session?.user) {
-    return unauthorized();
+    unauthorized();
   }
 
-  return session.user;
+  return session.user as User;
 }

@@ -46,12 +46,9 @@
     "test:e2e": "bun run --cwd kit/e2e test:e2e",
     "test:e2e:ui": "bun run --cwd kit/e2e test:e2e:ui"
   },
-  "dependencies": {
-    "framer-motion": "12.5.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "1.2.3",
-    "@types/rtl-detect": "1.0.3",
+    "@settlemint/sdk-cli": "1.2.5",
     "prettier": "3.5.3",
     "turbo": "2.4.4",
     "typescript": "5.8.2"

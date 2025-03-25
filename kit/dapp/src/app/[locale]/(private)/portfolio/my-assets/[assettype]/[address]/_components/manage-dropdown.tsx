@@ -9,19 +9,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
+import { TransferForm } from "../../../../_components/transfer-form/form";
 import { RedeemForm } from "./redeem-form/form";
-import { TransferForm } from "./transfer-form/form";
 
 interface ManageDropdownProps {
   address: Address;
   assettype: AssetType;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
+  userAddress: Address;
 }
 
 export function ManageDropdown({
@@ -29,6 +30,7 @@ export function ManageDropdown({
   assettype,
   assetDetails,
   userBalance,
+  userAddress,
 }: ManageDropdownProps) {
   const t = useTranslations("portfolio.my-assets.detail");
 
@@ -90,6 +92,9 @@ export function ManageDropdown({
         open={openMenuItem === "transfer"}
         onOpenChange={onFormOpenChange}
         disabled={isBlocked || isPaused || (userBalance?.available ?? 0) === 0}
+        userAddress={userAddress}
+        decimals={assetDetails.decimals}
+        symbol={assetDetails.symbol}
       />
       {assettype === "bond" && (
         <RedeemForm

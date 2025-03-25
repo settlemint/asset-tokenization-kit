@@ -3,12 +3,10 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
-import {
-  AssetActivityFragment,
-  AssetActivityFragmentSchema,
-} from "./asset-activity-fragment";
+import { AssetActivityFragment } from "./asset-activity-fragment";
+import { AssetActivitySchema } from "./asset-activity-schema";
 
 /**
  * GraphQL query to fetch asset activity data
@@ -56,11 +54,12 @@ export const getAssetActivity = cache(
       return activityData;
     }, limit);
 
-    // Validate data using Zod schema
-    const validatedData = rawData.map((data) =>
-      safeParseWithLogging(AssetActivityFragmentSchema, data, "asset activity")
-    );
-
-    return validatedData;
+    // Validate data using TypeBox schema
+    try {
+      return safeParse(t.Array(AssetActivitySchema), rawData);
+    } catch (error) {
+      console.error("Error validating asset activity data:", error);
+      return [];
+    }
   }
 );

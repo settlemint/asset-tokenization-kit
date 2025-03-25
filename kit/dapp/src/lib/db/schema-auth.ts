@@ -21,6 +21,7 @@ export const user = pgTable("user", {
   wallet: text("wallet").unique(),
   kycVerifiedAt: timestamp("kyc_verified_at", { withTimezone: true }),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  currency: text("currency").notNull().default("EUR"),
 });
 
 export const session = pgTable("session", {

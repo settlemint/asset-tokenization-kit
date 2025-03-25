@@ -1,8 +1,8 @@
-import { isAddressAvailable } from "@/lib/queries/fund-factory/address-available";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { isAddressAvailable } from "@/lib/queries/fund-factory/fund-factory-address-available";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
- * Zod schema for validating fund creation inputs
+ * TypeBox schema for validating fund creation inputs
  *
  * @property {string} assetName - The name of the fund
  * @property {string} symbol - The symbol of the fund (ticker)
@@ -12,46 +12,57 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {string} fundCategory - The category of the fund
  * @property {string} fundClass - The class of the fund
  * @property {number} managementFeeBps - Management fee in basis points
+ * @property {string} predictedAddress - The predicted contract address
+ * @property {number} valueInBaseCurrency - The value in base currency
  */
-export const CreateFundSchema = z.object({
-  assetName: z.string().nonempty(),
-  symbol: z.symbol(),
-  decimals: z.decimals(),
-  isin: z.isin().optional(),
-  pincode: z.pincode(),
-  fundCategory: z.string().nonempty(),
-  fundClass: z.string().nonempty(),
-  managementFeeBps: z
-    .number()
-    .or(z.string())
-    .pipe(
-      z.coerce
-        .number()
-        .min(0)
-        .max(100 * 100) // 100 bps = 1%,
-        .refine(
-          (val) => {
-            // Check if the value is a valid positive number that doesn't start with 0
-            // unless it's a decimal less than 1 (e.g., 0.5 is valid)
-            const strVal = String(val);
-            return (
-              val === 0 || // Allow exactly 0
-              (val > 0 &&
-                (strVal.indexOf(".") !== 1 ||
-                  strVal.charAt(0) !== "0" ||
-                  val < 1))
-            );
-          },
-          {
-            message:
-              "Value cannot start with 0 unless it's a decimal less than 1",
-          }
-        )
-    ),
-  predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "fund.duplicate",
-  }),
-  valueInBaseCurrency: z.fiatCurrencyAmount(),
-});
+export function CreateFundSchema() {
+  return t.Object(
+    {
+      assetName: t.String({
+        description: "The name of the fund",
+        minLength: 1,
+      }),
+      symbol: t.AssetSymbol({
+        description: "The symbol of the fund (ticker)",
+      }),
+      decimals: t.Decimals({
+        description: "The number of decimal places for the token",
+      }),
+      isin: t.Optional(
+        t.Isin({
+          description:
+            "Optional International Securities Identification Number",
+        })
+      ),
+      pincode: t.Pincode({
+        description: "The pincode for signing the transaction",
+      }),
+      fundCategory: t.String({
+        description: "The category of the fund",
+        minLength: 1,
+      }),
+      fundClass: t.String({
+        description: "The class of the fund",
+        minLength: 1,
+      }),
+      managementFeeBps: t.Integer({
+        description: "Management fee in basis points (1% = 100 bps)",
+        minimum: 0,
+        maximum: 10000, // 100%
+      }),
+      predictedAddress: t.EthereumAddress({
+        description: "The predicted contract address",
+        refine: isAddressAvailable,
+        error: "fund.duplicate",
+      }),
+      valueInBaseCurrency: t.Amount(Number.MAX_SAFE_INTEGER, 0, 6, {
+        description: "Value in base currency",
+      }),
+    },
+    {
+      description: "Schema for validating fund creation inputs",
+    }
+  );
+}
 
-export type CreateFundInput = ZodInfer<typeof CreateFundSchema>;
+export type CreateFundInput = StaticDecode<ReturnType<typeof CreateFundSchema>>;

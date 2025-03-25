@@ -2,8 +2,8 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { allowUser } from "@/lib/mutations/allow-user/allow-user-action";
 import { AllowUserSchema } from "@/lib/mutations/allow-user/allow-user-schema";
-import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
@@ -39,7 +39,7 @@ export function AllowForm({
     >
       <Form
         action={allowUser}
-        resolver={zodResolver(AllowUserSchema)}
+        resolver={typeboxResolver(AllowUserSchema())}
         buttonLabels={{
           label: t("form.trigger-label.allow"),
         }}

@@ -1,17 +1,14 @@
-import {
-  AccountFragment,
-  AccountFragmentSchema,
-} from "@/lib/queries/accounts/accounts-fragment";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
-import { unstable_cache } from "next/cache";
+import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import { type User, UserFragment, UserFragmentSchema } from "./user-fragment";
+import { userCalculateFields } from "./user-calculated";
+import { AccountFragment, UserFragment } from "./user-fragment";
+import { AccountSchema, UserSchema } from "./user-schema";
 
 /**
  * GraphQL query to fetch a single user by ID from Hasura
@@ -31,7 +28,7 @@ const UserDetail = hasuraGraphql(
 );
 
 /**
- * GraphQL query to fetch a single user by ID from Hasura
+ * GraphQL query to fetch a single user by wallet address from Hasura
  *
  * @remarks
  * Returns user details like name, email, wallet address, and timestamps
@@ -76,103 +73,71 @@ export interface UserDetailProps {
 }
 
 /**
- * Fetches a user by ID
+ * Fetches and combines user data with blockchain activity
  *
- * @param params - Object containing the user ID
- * @throws Will throw an error if the user is not found
+ * @param params - Object containing either the user ID or address
+ * @returns Combined user data with additional calculated metrics
+ * @throws Error if fetching fails or if neither id nor address is provided
  */
 export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
   if (!id && !address) {
     throw new Error("Either id or address must be provided");
   }
 
-  let userData: User;
-
-  if (id) {
-    const result = await unstable_cache(
-      () => hasuraClient.request(UserDetail, { id }),
-      ["user", "user-detail", id],
-      {
-        revalidate: 60 * 60 * 24, // 24 hours
-        tags: ["user"],
+  // Fetch user data from Hasura
+  const user = await (async () => {
+    if (id) {
+      const result = await hasuraClient.request(UserDetail, { id });
+      if (!result.user_by_pk) {
+        throw new Error(`User not found with ID ${id}`);
       }
-    )();
-    if (!result.user_by_pk) {
-      throw new Error(`User not found with ID ${id}`);
-    }
-    userData = UserFragmentSchema.parse(result.user_by_pk);
-  } else if (address) {
-    const result = await unstable_cache(
-      () =>
-        hasuraClient.request(UserDetailByWallet, {
-          address: getAddress(address),
-        }),
-      ["user", "user-detail-by-wallet", address],
-      {
-        revalidate: 60 * 60 * 24, // 24 hours
-        tags: ["user"],
+      return safeParse(UserSchema, result.user_by_pk);
+    } else if (address) {
+      const result = await hasuraClient.request(UserDetailByWallet, {
+        address: getAddress(address as string),
+      });
+      if (!result.user || result.user.length === 0) {
+        throw new Error(`User not found with wallet address ${address}`);
       }
-    )();
-    if (!result.user || result.user.length === 0) {
-      throw new Error(`User not found with wallet address ${address}`);
+      return safeParse(UserSchema, result.user[0]);
+    } else {
+      throw new Error("Either id or address must be provided");
     }
-    userData = UserFragmentSchema.parse(result.user[0]);
-  } else {
-    throw new Error("Either id or address must be provided");
-  }
+  })();
 
-  // Fetch activity data if user has wallet address
-  if (userData.wallet) {
-    try {
-      const activityResult = await unstable_cache(
-        () =>
-          theGraphClientKit.request(UserActivity, {
-            id: userData.wallet.toLowerCase(),
-          }),
-        ["user", "user-activity", userData.wallet.toLowerCase()],
-        {
-          revalidate: 60 * 60 * 24, // 24 hours
-          tags: ["user-activity"],
+  // Fetch blockchain account data if wallet address is available
+  const account = user.wallet
+    ? await (async () => {
+        try {
+          const result = await theGraphClientKit.request(UserActivity, {
+            id: user.wallet.toLowerCase(),
+          });
+          if (!result.account) {
+            return undefined;
+          }
+          return safeParse(AccountSchema, result.account);
+        } catch (error) {
+          console.error("Error fetching user activity:", error);
+          return undefined;
         }
-      )();
+      })()
+    : undefined;
 
-      if (activityResult.account) {
-        // Validate account data
-        const validatedAccount = safeParseWithLogging(
-          AccountFragmentSchema,
-          activityResult.account,
-          "account detail"
-        );
+  // Calculate additional fields
+  const calculatedFields = userCalculateFields(user, account);
 
-        // Combine validated user data with validated activity data
-        return {
-          ...validatedAccount,
-          ...userData,
-          assetCount: validatedAccount.balancesCount ?? 0,
-          transactionCount: validatedAccount.activityEventsCount ?? 0,
-        };
-      }
-    } catch (error) {
-      console.error("Error fetching user activity:", error);
-    }
-  }
-
+  // Return combined data
   return {
-    ...userData,
-    assetCount: 0,
-    transactionCount: 0,
+    ...account,
+    ...user,
+    ...calculatedFields,
   };
 });
 
 /**
- * Type definition for user detail data
- */
-export type UserDetail = Awaited<ReturnType<typeof getUserDetail>>;
-
-/**
  * Fetches a user by ID, returning null if not found
  *
- * @param params - Object containing the user ID
+ * @param params - Object containing the user ID or address
  */
 export const getOptionalUserDetail = cache(
   async ({ id, address }: UserDetailProps) => {

@@ -1,6 +1,8 @@
+import { AddButton } from "@/app/[locale]/(private)/assets/[assettype]/(table)/_components/add-button";
 import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
-import type { AssetType } from "@/lib/utils/zod";
+import { metadata } from "@/lib/config/metadata";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -26,6 +28,7 @@ export default async function AssetTypeTablePage({ params }: PageProps) {
       <PageHeader
         title={t(`page-title.${assettype}`)}
         section={t("asset-management")}
+        button={<AddButton assettype={assettype} />}
       />
       <TopInfo title={t(`topinfo-title.${assettype}`)}>
         <p>{t(`topinfo-description.${assettype}`)}</p>
@@ -46,7 +49,10 @@ export async function generateMetadata({
   });
 
   return {
-    title: t(`page-title.${assettype}`),
+    title: {
+      ...metadata.title,
+      default: t(`page-title.${assettype}`),
+    },
     description: t(`topinfo-title.${assettype}`),
   };
 }

@@ -1,11 +1,11 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
-import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
+import type { CreateTokenizedDepositInput } from "@/lib/mutations/tokenized-deposit/create/create-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 export function Basics() {
-  const { control } = useFormContext<CreateStablecoinInput>();
+  const { control } = useFormContext<CreateTokenizedDepositInput>();
   const t = useTranslations("private.assets.create");
 
   return (
@@ -47,4 +47,9 @@ export function Basics() {
   );
 }
 
-Basics.validatedFields = ["assetName", "symbol", "decimals", "isin"] as const;
+Basics.validatedFields = [
+  "assetName",
+  "symbol",
+  "decimals",
+  "isin",
+] satisfies (keyof CreateTokenizedDepositInput)[];

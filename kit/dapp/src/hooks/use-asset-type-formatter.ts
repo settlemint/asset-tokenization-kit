@@ -18,6 +18,8 @@ export function useAssetTypeFormatter() {
         return t("funds");
       case "stablecoin":
         return t("stablecoins");
+      case "tokenizeddeposit":
+        return t("tokenizeddeposit");
       default:
         return type;
     }

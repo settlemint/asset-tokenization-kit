@@ -4,7 +4,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { redeem } from "@/lib/mutations/bond/redeem/redeem-action";
 import { RedeemBondSchema } from "@/lib/mutations/bond/redeem/redeem-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
@@ -49,7 +49,7 @@ export function RedeemForm({
     >
       <Form
         action={redeem}
-        resolver={zodResolver(RedeemBondSchema)}
+        resolver={typeboxResolver(RedeemBondSchema())}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

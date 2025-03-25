@@ -3,7 +3,7 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
-import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/predict-address";
+import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -36,10 +36,6 @@ export function Summary() {
         <FormSummaryDetailItem
           label={t("parameters.common.decimals-label")}
           value={values.decimals}
-        />
-        <FormSummaryDetailItem
-          label={t("parameters.common.isin-label")}
-          value={values.isin === "" ? "-" : values.isin}
         />
       </FormSummaryDetailCard>
 
@@ -78,7 +74,9 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = ["predictedAddress"] as const;
+Summary.validatedFields = [
+  "predictedAddress",
+] satisfies (keyof CreateStablecoinInput)[];
 Summary.beforeValidate = [
   async ({ setValue, getValues }: UseFormReturn<CreateStablecoinInput>) => {
     const values = getValues();

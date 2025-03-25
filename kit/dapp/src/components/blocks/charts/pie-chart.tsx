@@ -50,14 +50,15 @@ export function PieChartComponent({
           <PieChart>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent />}
+              wrapperStyle={{ minWidth: "200px", width: "auto" }}
             />
             <Pie
               data={data}
               dataKey={dataKey}
               nameKey={nameKey}
               strokeWidth={1}
-              innerRadius={25}
+              innerRadius={15}
             >
               {data.map((entry, index) => {
                 const color = config[entry[nameKey]]?.color;
@@ -73,7 +74,7 @@ export function PieChartComponent({
             </Pie>
             <ChartLegend
               content={<ChartLegendContent />}
-              className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
+              className="-translate-y-2 flex flex-wrap gap-3 *:whitespace-nowrap *:justify-center"
             />
           </PieChart>
         </ChartContainer>

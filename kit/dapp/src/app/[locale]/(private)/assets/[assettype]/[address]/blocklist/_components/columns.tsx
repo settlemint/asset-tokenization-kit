@@ -4,9 +4,9 @@ import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import type { BlockedUser } from "@/lib/queries/asset/asset-users-fragment";
+import type { BlockedUser } from "@/lib/queries/asset/asset-users-schema";
 import { formatDate } from "@/lib/utils/date";
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";

@@ -6,30 +6,33 @@ import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
-  maxLimit?: number;
+  max?: number;
+  decimals?: number;
+  symbol: string;
 }
 
-export function Amount({ maxLimit }: AmountProps) {
+export function Amount({ max, decimals, symbol }: AmountProps) {
   const { control } = useFormContext<MintInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();
-  const maxLimitDescription = maxLimit
-    ? t("max-limit.mint", { limit: formatNumber(maxLimit, { locale }) })
+  const description = max
+    ? t("max-limit.mint", { limit: formatNumber(max, { locale }) })
     : undefined;
   return (
     <FormStep title={t("title")} description={t("description.mint")}>
       <FormInput
         control={control}
+        label={t("label")}
         name="amount"
         type="number"
-        min={1}
-        max={maxLimit}
-        step={0.000001}
-        description={maxLimitDescription}
+        max={max}
+        step={decimals ? 10 ** -decimals : 1}
+        description={description}
         required
+        postfix={symbol}
       />
     </FormStep>
   );
 }
 
-Amount.validatedFields = ["amount"] as const;
+Amount.validatedFields = ["amount"] satisfies (keyof MintInput)[];

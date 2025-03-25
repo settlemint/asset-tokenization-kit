@@ -2,7 +2,7 @@
 
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
-import type { Bond } from "@/lib/queries/bond/bond-fragment";
+import type { Bond } from "@/lib/queries/bond/bond-schema";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -13,7 +13,7 @@ export interface PeriodTableProps {
   bond: Bond;
 }
 
-type YieldPeriod = NonNullable<Bond['yieldSchedule']>['periods'][number];
+type YieldPeriod = NonNullable<Bond["yieldSchedule"]>["periods"][number];
 
 export function YieldPeriodTable({ bond }: PeriodTableProps) {
   const t = useTranslations("admin.bonds.yield.period-table");
@@ -24,8 +24,8 @@ export function YieldPeriodTable({ bond }: PeriodTableProps) {
       return [];
     }
 
-    return bond.yieldSchedule.periods.sort(
-      (a, b) => Number(a.periodId - b.periodId)
+    return bond.yieldSchedule.periods.sort((a, b) =>
+      Number(a.periodId - b.periodId)
     );
   }, [bond]);
 
@@ -35,21 +35,29 @@ export function YieldPeriodTable({ bond }: PeriodTableProps) {
         accessorKey: "periodId",
         header: t("period-id"),
         cell: ({ row }) => {
-          return <div className="font-medium">{row.original.periodId.toString()}</div>;
+          return (
+            <div className="font-medium">
+              {row.original.periodId.toString()}
+            </div>
+          );
         },
       },
       {
         accessorKey: "startDate",
         header: t("start-date"),
         cell: ({ row }) => {
-          return formatDate(new Date(Number(row.original.startDate) * 1000), { locale });
+          return formatDate(new Date(Number(row.original.startDate) * 1000), {
+            locale,
+          });
         },
       },
       {
         accessorKey: "endDate",
         header: t("end-date"),
         cell: ({ row }) => {
-          return formatDate(new Date(Number(row.original.endDate) * 1000), { locale } );
+          return formatDate(new Date(Number(row.original.endDate) * 1000), {
+            locale,
+          });
         },
       },
       {
@@ -61,7 +69,8 @@ export function YieldPeriodTable({ bond }: PeriodTableProps) {
 
           return (
             <div>
-              {formatNumber(totalClaimed, { locale })} / {formatNumber(totalSupply, { locale })}
+              {formatNumber(totalClaimed, { locale })} /{" "}
+              {formatNumber(totalSupply, { locale })}
             </div>
           );
         },
@@ -72,15 +81,10 @@ export function YieldPeriodTable({ bond }: PeriodTableProps) {
         cell: ({ row }) => {
           const totalClaimed = Number(row.original.totalClaimed);
           const totalSupply = Number(bond.totalSupply);
-          const percentage = totalSupply > 0
-            ? (totalClaimed / totalSupply) * 100
-            : 0;
+          const percentage =
+            totalSupply > 0 ? (totalClaimed / totalSupply) * 100 : 0;
 
-          return (
-            <PercentageProgressBar
-              percentage={percentage}
-            />
-          );
+          return <PercentageProgressBar percentage={percentage} />;
         },
       },
     ],

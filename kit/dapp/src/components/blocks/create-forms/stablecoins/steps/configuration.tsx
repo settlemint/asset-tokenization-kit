@@ -3,7 +3,7 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
-import { timeUnits } from "@/lib/utils/zod";
+import { timeUnits } from "@/lib/utils/typebox/time-units";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -44,7 +44,7 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
               control={control}
               options={timeUnitOptions}
               defaultValue="months"
-              className="border-l-0 rounded-l-none w-26"
+              className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
             />
           }
         />
@@ -67,4 +67,5 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
 Configuration.validatedFields = [
   "collateralLivenessValue",
   "collateralLivenessTimeUnit",
-] as const;
+  "valueInBaseCurrency",
+] satisfies (keyof CreateStablecoinInput)[];

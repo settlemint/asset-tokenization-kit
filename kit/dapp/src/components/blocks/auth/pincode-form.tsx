@@ -1,9 +1,8 @@
-"use client";
-
-import { zodResolver } from "@hookform/resolvers/zod";
+import type { StaticDecode } from "@/lib/utils/typebox";
+import { t } from "@/lib/utils/typebox";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,13 +20,16 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
-// Zod schema for the pincode form
-const pincodeSchema = z.object({
-  pincodeName: z.string().min(1, "Name is required"),
-  pincode: z.string().length(6, "Pincode must be 6 digits"),
-});
+// TypeBox schema for the pincode form
+const pincodeSchema = t.Object(
+  {
+    pincodeName: t.String({ minLength: 1, error: "Name is required" }),
+    pincode: t.String({ length: 6, error: "Pincode must be 6 digits" }),
+  },
+  { $id: "PincodeForm" }
+);
 
-export type PincodeFormValues = z.infer<typeof pincodeSchema>;
+export type PincodeFormValues = StaticDecode<typeof pincodeSchema>;
 
 interface PincodeFormProps {
   onSubmit: (data: PincodeFormValues) => Promise<void>;
@@ -37,7 +39,7 @@ export function PincodeForm({ onSubmit }: PincodeFormProps) {
   const t = useTranslations("private.auth.pincode-form");
 
   const form = useForm<PincodeFormValues>({
-    resolver: zodResolver(pincodeSchema),
+    resolver: typeboxResolver(pincodeSchema),
     defaultValues: {
       pincodeName: "Default PIN",
       pincode: "",

@@ -1,4 +1,4 @@
-import type { AssetType } from "@/lib/utils/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 
 export const hasBlocklist = (assettype: AssetType) =>
   assettype !== "cryptocurrency" && assettype !== "tokenizeddeposit";

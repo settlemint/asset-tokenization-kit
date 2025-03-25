@@ -1,10 +1,10 @@
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { Role } from "@/lib/config/roles";
+import { updateRoles } from "@/lib/mutations/asset/access-control/update-role/update-role-action";
 import { UpdateRolesSchema } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
-import { updateRoles } from "@/lib/mutations/asset/access-control/update-role/update-roles";
-import type { AssetType } from "@/lib/utils/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { EvmAddress } from "../evm-address/evm-address";
@@ -47,7 +47,7 @@ export function EditPermissionsForm({
     >
       <Form
         action={updateRoles}
-        resolver={zodResolver(UpdateRolesSchema)}
+        resolver={typeboxResolver(UpdateRolesSchema())}
         onOpenChange={onOpenChange}
         buttonLabels={{
           label: t("button-label"),
