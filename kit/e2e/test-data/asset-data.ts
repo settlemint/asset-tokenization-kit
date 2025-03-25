@@ -309,7 +309,6 @@ export const stablecoinData = {
   assetType: "Stablecoin",
   name: generateStablecoinName(),
   symbol: generateSymbol(generateStablecoinName()),
-  isin: `US${getRandomInt(1000000000, 9999999999)}`,
   decimals: "16",
   validityPeriod: "600",
   valueInEur: "3",
