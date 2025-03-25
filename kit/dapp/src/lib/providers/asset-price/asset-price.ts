@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { asset, assetPrice } from "@/lib/db/schema-asset-tokenization";
 import { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { eq } from "drizzle-orm";
+import { getAddress } from "viem";
 
 /**
  * Updates the price of an asset in the database
@@ -28,7 +29,7 @@ export async function updateAssetPrice(
         amount: amount.toString(),
         currency,
       })
-      .where(eq(assetPrice.id, assetId));
+      .where(eq(assetPrice.assetId, getAddress(assetId)));
 
     return true;
   } catch (error) {
@@ -43,7 +44,7 @@ export async function updateAssetPrice(
 export async function getAssetPrice(assetId: string): Promise<number | null> {
   try {
     const latestPrice = await db.query.assetPrice.findFirst({
-      where: eq(assetPrice.assetId, assetId),
+      where: eq(assetPrice.assetId, getAddress(assetId)),
       orderBy: (assetPrice, { desc }) => [desc(assetPrice.createdAt)],
     });
 
