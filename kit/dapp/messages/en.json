@@ -1757,6 +1757,18 @@
         "status": "Status",
         "wallet": "Wallet"
       },
+      "change-role": {
+        "actions": {
+          "cancel": "Cancel",
+          "change": "Change role",
+          "loading": "Updating..."
+        },
+        "description": "Select a new role for {userName}. This will change their permissions in the system.",
+        "error": "Failed to update role: {error}",
+        "select-role": "Select role",
+        "success": "User role updated successfully",
+        "title": "Change user role"
+      },
       "detail": {
         "charts": {
           "transaction-history-last-month": {

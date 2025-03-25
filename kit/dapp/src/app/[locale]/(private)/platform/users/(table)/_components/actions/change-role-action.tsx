@@ -17,6 +17,8 @@ import {
 import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import type { getUserList } from "@/lib/queries/user/user-list";
+import { userRoles } from "@/lib/utils/typebox/user-roles";
+import { useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
 import { toast } from "sonner";
 
@@ -29,6 +31,7 @@ export function ChangeRoleAction({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("private.users");
   const [selectedRole, setSelectedRole] = useState<string>(user.role || "user");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -43,14 +46,16 @@ export function ChangeRoleAction({
       setIsLoading(true);
       await authClient.admin.setRole({
         userId: user.id,
-        role: selectedRole as "user" | "issuer" | "admin",
+        role: selectedRole,
       });
-      toast.success("User role updated successfully");
+      toast.success(t("change-role.success"));
       onOpenChange(false);
       router.refresh();
     } catch (error) {
       toast.error(
-        `Failed to update role: ${error instanceof Error ? error.message : "Unknown error"}`
+        t("change-role.error", {
+          error: error instanceof Error ? error.message : "Unknown error",
+        })
       );
     } finally {
       setIsLoading(false);
@@ -62,10 +67,11 @@ export function ChangeRoleAction({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Change User Role</DialogTitle>
+            <DialogTitle>{t("change-role.title")}</DialogTitle>
             <DialogDescription>
-              Select a new role for {user.name}. This will change their
-              permissions in the system.
+              {t("change-role.description", {
+                userName: user.name,
+              })}
             </DialogDescription>
           </DialogHeader>
 
@@ -75,12 +81,14 @@ export function ChangeRoleAction({
             disabled={isLoading}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select role" />
+              <SelectValue placeholder={t("change-role.select-role")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="user">User</SelectItem>
-              <SelectItem value="issuer">Issuer</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
+              {userRoles.map((role) => (
+                <SelectItem key={role} value={role}>
+                  {t(`roles.${role}`)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -91,20 +99,16 @@ export function ChangeRoleAction({
                 onOpenChange(false);
               }}
             >
-              Cancel
+              {t("change-role.actions.cancel")}
             </Button>
             <Button
               variant="default"
-              onClick={(e) => {
-                handleRoleChange(e).catch((error) => {
-                  toast.error(
-                    `Failed to update role: ${error instanceof Error ? error.message : "Unknown error"}`
-                  );
-                });
-              }}
+              onClick={handleRoleChange}
               disabled={selectedRole === user.role || isLoading}
             >
-              {isLoading ? "Updating..." : "Update Role"}
+              {isLoading
+                ? t("change-role.actions.loading")
+                : t("change-role.actions.change")}
             </Button>
           </DialogFooter>
         </DialogContent>
