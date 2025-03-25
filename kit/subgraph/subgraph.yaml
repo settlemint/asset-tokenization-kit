@@ -481,6 +481,10 @@ templates:
       eventHandlers:
         - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
+        - event: UnderlyingAssetTopUp(indexed address,uint256)
+          handler: handleUnderlyingAssetTopUp
+        - event: UnderlyingAssetWithdrawn(indexed address,uint256)
+          handler: handleUnderlyingAssetWithdrawn
       file: ./src/assets/fixedyield.ts
   - kind: ethereum/contract
     name: Fund
