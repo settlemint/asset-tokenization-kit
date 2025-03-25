@@ -87,6 +87,13 @@ export async function EquitiesDetails({
             locale: locale,
           })}
         </DetailGridItem>
+        <DetailGridItem label={t("total-value")}>
+          {formatNumber(equity.price.amount * equity.totalSupply, {
+            currency: equity.price.currency,
+            decimals: 2,
+            locale: locale,
+          })}
+        </DetailGridItem>
       </DetailGrid>
     </Suspense>
   );

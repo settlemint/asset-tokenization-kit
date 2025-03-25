@@ -110,6 +110,16 @@ export async function TokenizedDepositsDetails({
             locale: locale,
           })}
         </DetailGridItem>
+        <DetailGridItem label={t("total-value")}>
+          {formatNumber(
+            tokenizedDeposit.price.amount * tokenizedDeposit.totalSupply,
+            {
+              currency: tokenizedDeposit.price.currency,
+              decimals: 2,
+              locale: locale,
+            }
+          )}
+        </DetailGridItem>
       </DetailGrid>
     </Suspense>
   );

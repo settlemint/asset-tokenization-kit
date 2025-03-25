@@ -87,6 +87,13 @@ export async function FundsDetails({
             locale: locale,
           })}
         </DetailGridItem>
+        <DetailGridItem label={t("total-value")}>
+          {formatNumber(fund.price.amount * fund.totalSupply, {
+            currency: fund.price.currency,
+            decimals: 2,
+            locale: locale,
+          })}
+        </DetailGridItem>
       </DetailGrid>
     </Suspense>
   );

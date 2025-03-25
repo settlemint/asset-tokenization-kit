@@ -104,6 +104,13 @@ export async function StablecoinsDetails({
             locale: locale,
           })}
         </DetailGridItem>
+        <DetailGridItem label={t("total-value")}>
+          {formatNumber(stableCoin.price.amount * stableCoin.totalSupply, {
+            currency: stableCoin.price.currency,
+            decimals: 2,
+            locale: locale,
+          })}
+        </DetailGridItem>
       </DetailGrid>
     </Suspense>
   );

@@ -88,6 +88,16 @@ export async function CryptocurrenciesDetails({
             locale: locale,
           })}
         </DetailGridItem>
+        <DetailGridItem label={t("total-value")}>
+          {formatNumber(
+            cryptocurrency.price.amount * cryptocurrency.totalSupply,
+            {
+              currency: cryptocurrency.price.currency,
+              decimals: 2,
+              locale: locale,
+            }
+          )}
+        </DetailGridItem>
       </DetailGrid>
     </Suspense>
   );
