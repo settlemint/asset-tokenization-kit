@@ -3,7 +3,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { safeParse } from "@/lib/utils/typebox";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { getUnixTime, startOfDay, subDays } from "date-fns";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
@@ -71,16 +71,6 @@ export const getAssetStats = cache(
       return response.assetStats_collection || [];
     });
 
-    // Validate data using TypeBox schema
-    const validatedStats = result.map((item) => {
-      try {
-        return safeParse(AssetStatsSchema, item);
-      } catch (error) {
-        console.error("Failed to validate asset stats:", error);
-        throw new Error("Invalid asset stats data");
-      }
-    });
-
-    return validatedStats;
+    return safeParse(t.Array(AssetStatsSchema), result);
   }
 );

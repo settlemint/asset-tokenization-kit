@@ -73,7 +73,7 @@ export async function Collateral({ address, assettype }: CollateralProps) {
           label={t("collateral-proof-validity")}
           info={t("collateral-proof-validity-info")}
         >
-          {formatDuration(asset.liveness)}
+          {formatDuration(asset.liveness.toString())}
         </DetailGridItem>
       </DetailGrid>
     </Suspense>

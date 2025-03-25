@@ -17,24 +17,25 @@ export const YieldScheduleFragment = theGraphGraphqlKit(
   `
   fragment YieldScheduleFragment on FixedYield {
     id
-    startDate
-    endDate
-    rate
-    interval
-    totalClaimed
-    totalClaimedExact
-    unclaimedYield
-    unclaimedYieldExact
-    underlyingAsset {
-      id
-      symbol
-      decimals
-    }
-    underlyingBalance
-    underlyingBalanceExact
-    periods {
-      ...YieldPeriodFragment
-    }
+      startDate
+      endDate
+      rate
+      interval
+      totalClaimed
+      totalClaimedExact
+      unclaimedYield
+      unclaimedYieldExact
+      underlyingAsset {
+        id
+        symbol
+        decimals
+        type
+      }
+      underlyingBalance
+      underlyingBalanceExact
+      periods {
+        ...YieldPeriodFragment
+      }
   }
 `,
   [YieldPeriodFragment]
@@ -65,7 +66,12 @@ export const BondFragment = theGraphGraphqlKit(
     holders(first: 5, orderBy: valueExact, orderDirection: desc) {
       valueExact
     }
-    underlyingAsset
+    underlyingAsset {
+      id
+      symbol
+      decimals
+      type
+    }
     maturityDate
     isMatured
     hasSufficientUnderlying

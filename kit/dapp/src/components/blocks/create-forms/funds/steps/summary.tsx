@@ -96,7 +96,9 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = ["predictedAddress"] as const;
+Summary.validatedFields = [
+  "predictedAddress",
+] satisfies (keyof CreateFundInput)[];
 Summary.beforeValidate = [
   async ({ setValue, getValues }: UseFormReturn<CreateFundInput>) => {
     const values = getValues();

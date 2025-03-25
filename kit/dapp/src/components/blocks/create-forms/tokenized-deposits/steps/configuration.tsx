@@ -71,4 +71,5 @@ export function Configuration() {
 Configuration.validatedFields = [
   "collateralLivenessValue",
   "collateralLivenessTimeUnit",
-] as const;
+  "valueInBaseCurrency",
+] satisfies (keyof CreateTokenizedDepositInput)[];

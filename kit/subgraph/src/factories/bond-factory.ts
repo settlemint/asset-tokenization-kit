@@ -12,9 +12,8 @@ import { fetchFactory } from "./fetch/factory";
 export function handleBondCreated(event: BondCreated): void {
   fetchFactory(event.address, FactoryType.bond);
   const creator = fetchAccount(event.params.creator);
-  const asset = fetchBond(event.params.token);
+  const asset = fetchBond(event.params.token, event.block.timestamp);
   asset.creator = creator.id;
-  asset.deployedOn = event.block.timestamp;
   asset.save();
 
   const assetCount = fetchAssetCount(AssetType.bond);

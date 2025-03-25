@@ -51,5 +51,5 @@ export function Configuration() {
 Configuration.validatedFields = [
   "equityCategory",
   "equityClass",
-  "managementFeeBps",
-] as const;
+  "valueInBaseCurrency",
+] satisfies (keyof CreateEquityInput)[];

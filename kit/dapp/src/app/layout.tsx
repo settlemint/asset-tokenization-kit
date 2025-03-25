@@ -5,13 +5,14 @@ import { routing } from "@/i18n/routing";
 import { getServerEnvironment } from "@/lib/config/environment";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
-import { type Locale, NextIntlClientProvider } from "next-intl";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { Figtree, Roboto_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { getLangDir } from "rtl-detect";
 import { Toaster } from "sonner";
-import "../globals.css";
+import "./globals.css";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -40,12 +41,10 @@ const robotoMono = Roboto_Mono({
 
 export default async function RootLayout({
   children,
-  params,
 }: Readonly<{
   children: ReactNode;
-  params: Promise<{ locale: Locale }>;
 }>) {
-  const { locale } = await params;
+  const locale = await getLocale();
   const direction = getLangDir(locale);
   const env = getServerEnvironment();
 

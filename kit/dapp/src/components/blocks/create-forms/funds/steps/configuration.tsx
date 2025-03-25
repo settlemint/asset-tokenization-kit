@@ -59,4 +59,5 @@ Configuration.validatedFields = [
   "fundCategory",
   "fundClass",
   "managementFeeBps",
-] as const;
+  "valueInBaseCurrency",
+] satisfies (keyof CreateFundInput)[];
