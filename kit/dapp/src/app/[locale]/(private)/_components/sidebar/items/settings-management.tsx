@@ -16,7 +16,7 @@ export async function SettingsManagement() {
             {
               label: t("settings"),
               icon: <SettingsGearIcon className="size-4" />,
-              path: "/portfolio/settings",
+              path: "/settings",
               subItems: [
                 {
                   label: t("profile"),
