@@ -2,7 +2,6 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useUserCurrency } from "@/hooks/use-user-currency";
 import { createCryptoCurrency } from "@/lib/mutations/cryptocurrency/create/create-action";
 import { CreateCryptoCurrencySchema } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
@@ -27,7 +26,6 @@ export function CreateCryptoCurrencyForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
-  const { userCurrency } = useUserCurrency();
 
   return (
     <FormSheet
@@ -47,18 +45,13 @@ export function CreateCryptoCurrencyForm({
         buttonLabels={{
           label: t("trigger-label.cryptocurrencies"),
         }}
-        defaultValues={{
-          price: {
-            amount: 1,
-            currency: userCurrency,
-          },
-        }}
+        defaultValues={{}}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}
       >
         <Basics />
-        <Configuration userCurrency={userCurrency} />
+        <Configuration />
         <Summary />
       </Form>
     </FormSheet>
