@@ -61,8 +61,6 @@ export interface CryptoCurrencyDetailProps {
  */
 export const getCryptoCurrencyDetail = cache(
   async ({ address }: CryptoCurrencyDetailProps) => {
-    console.log("[Debug] Fetching cryptocurrency details for address:", address);
-
     const [onChainCryptoCurrency, offChainCryptoCurrency] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(CryptoCurrencyDetail, {
