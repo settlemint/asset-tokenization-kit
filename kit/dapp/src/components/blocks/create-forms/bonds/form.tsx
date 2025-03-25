@@ -2,9 +2,9 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useUserCurrency } from "@/hooks/use-user-currency";
 import { createBond } from "@/lib/mutations/bond/create/create-action";
 import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -15,19 +15,19 @@ interface CreateBondFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
-  className?: string;
+  userDetails: User;
 }
 
 export function CreateBondForm({
   open,
   onOpenChange,
   asButton = false,
+  userDetails,
 }: CreateBondFormProps) {
   const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
-  const { userCurrency } = useUserCurrency();
 
   return (
     <FormSheet
@@ -50,7 +50,7 @@ export function CreateBondForm({
         defaultValues={{
           price: {
             amount: 1,
-            currency: userCurrency,
+            currency: userDetails.currency,
           },
         }}
         onAnyFieldChange={({ clearErrors }) => {
@@ -58,7 +58,7 @@ export function CreateBondForm({
         }}
       >
         <Basics />
-        <Configuration userCurrency={userCurrency} />
+        <Configuration />
         <Summary />
       </Form>
     </FormSheet>

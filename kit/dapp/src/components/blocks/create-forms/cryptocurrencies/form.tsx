@@ -4,6 +4,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { createCryptoCurrency } from "@/lib/mutations/cryptocurrency/create/create-action";
 import { CreateCryptoCurrencySchema } from "@/lib/mutations/cryptocurrency/create/create-schema";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -15,12 +16,14 @@ interface CreateCryptoCurrencyFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
+  userDetails: User;
 }
 
 export function CreateCryptoCurrencyForm({
   open,
   onOpenChange,
   asButton = false,
+  userDetails,
 }: CreateCryptoCurrencyFormProps) {
   const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
@@ -45,7 +48,12 @@ export function CreateCryptoCurrencyForm({
         buttonLabels={{
           label: t("trigger-label.cryptocurrencies"),
         }}
-        defaultValues={{}}
+        defaultValues={{
+          price: {
+            amount: 1,
+            currency: userDetails.currency,
+          },
+        }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}

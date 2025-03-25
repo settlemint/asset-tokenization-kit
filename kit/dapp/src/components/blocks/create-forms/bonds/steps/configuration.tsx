@@ -2,17 +2,12 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
-import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-interface ConfigurationProps {
-  userCurrency: CurrencyCode;
-}
-
-export function Configuration({ userCurrency }: ConfigurationProps) {
+export function Configuration() {
   const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
   const currencyOptions = fiatCurrencies.map((currency) => ({
@@ -67,7 +62,6 @@ export function Configuration({ userCurrency }: ConfigurationProps) {
               name="price.currency"
               control={control}
               options={currencyOptions}
-              defaultValue={userCurrency}
               className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
             />
           }

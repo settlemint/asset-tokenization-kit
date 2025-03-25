@@ -2,9 +2,9 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useUserCurrency } from "@/hooks/use-user-currency";
 import { createTokenizedDeposit } from "@/lib/mutations/tokenized-deposit/create/create-action";
 import { CreateTokenizedDepositSchema } from "@/lib/mutations/tokenized-deposit/create/create-schema";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -15,18 +15,19 @@ interface CreateTokenizedDepositFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
+  userDetails: User;
 }
 
 export function CreateTokenizedDepositForm({
   open,
   onOpenChange,
   asButton = false,
+  userDetails,
 }: CreateTokenizedDepositFormProps) {
   const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
-  const { userCurrency } = useUserCurrency();
 
   return (
     <FormSheet
@@ -56,12 +57,12 @@ export function CreateTokenizedDepositForm({
           collateralLivenessTimeUnit: "months",
           price: {
             amount: 1,
-            currency: userCurrency,
+            currency: userDetails.currency,
           },
         }}
       >
         <Basics />
-        <Configuration userCurrency={userCurrency} />
+        <Configuration />
         <Summary />
       </Form>
     </FormSheet>
