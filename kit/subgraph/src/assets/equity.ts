@@ -25,6 +25,7 @@ import { blockUser, unblockUser } from "../fetch/block-user";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
+import { calculateConcentration } from "./calculations/concentration";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { burnEvent } from "./events/burn";
@@ -84,7 +85,7 @@ export function handleTransfer(event: Transfer): void {
     );
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
-    if (!hasBalance(equity.id, to.id)) {
+    if (!hasBalance(equity.id, to.id, equity.decimals, false)) {
       equity.totalHolders = equity.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -233,7 +234,7 @@ export function handleTransfer(event: Transfer): void {
       ]
     );
 
-    if (!hasBalance(equity.id, to.id)) {
+    if (!hasBalance(equity.id, to.id, equity.decimals, false)) {
       equity.totalHolders = equity.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -322,6 +323,10 @@ export function handleTransfer(event: Transfer): void {
   }
 
   equity.lastActivity = event.block.timestamp;
+  equity.concentration = calculateConcentration(
+    equity.holders.load(),
+    equity.totalSupplyExact
+  );
   equity.save();
 
   assetStats.supply = equity.totalSupply;
@@ -621,7 +626,7 @@ export function handlePaused(event: Paused): void {
   const holders = equity.holders.load();
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
-    if (hasBalance(equity.id, assetBalance.account)) {
+    if (hasBalance(equity.id, assetBalance.account, equity.decimals, false)) {
       const holderAccount =
         sender.id == assetBalance.account
           ? sender
@@ -682,7 +687,7 @@ export function handleUnpaused(event: Unpaused): void {
   const holders = equity.holders.load();
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
-    if (hasBalance(equity.id, assetBalance.account)) {
+    if (hasBalance(equity.id, assetBalance.account, equity.decimals, false)) {
       const holderAccount =
         sender.id == assetBalance.account
           ? sender

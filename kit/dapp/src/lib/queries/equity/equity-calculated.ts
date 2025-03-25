@@ -17,21 +17,9 @@ export async function equityCalculateFields(
   onChainEquity: OnChainEquity,
   _offChainEquity?: OffChainEquity
 ): Promise<CalculatedEquity> {
-  // Calculate ownership concentration from top holders
-  const topHoldersSum = onChainEquity.holders.reduce(
-    (sum, holder) => sum + holder.valueExact,
-    0n
-  );
-
-  const concentration =
-    onChainEquity.totalSupplyExact === 0n
-      ? 0
-      : Number((topHoldersSum * 100n) / onChainEquity.totalSupplyExact);
-
   const price = await getAssetPriceInUserCurrency(onChainEquity.id);
 
   return safeParse(CalculatedEquitySchema, {
-    concentration,
     price,
   });
 }

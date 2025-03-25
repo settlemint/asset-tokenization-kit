@@ -19,9 +19,6 @@ export const CryptoCurrencyFragment = theGraphGraphqlKit(`
     creator {
       id
     }
-    holders(first: 5, orderBy: valueExact, orderDirection: desc) {
-      valueExact
-    }
   }
 `);
 

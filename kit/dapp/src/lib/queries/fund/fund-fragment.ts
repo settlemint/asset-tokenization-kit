@@ -25,9 +25,7 @@ export const FundFragment = theGraphGraphqlKit(`
     creator {
       id
     }
-    holders(first: 5, orderBy: valueExact, orderDirection: desc) {
-      valueExact
-    }
+    concentration
     asAccount {
       balances {
         value

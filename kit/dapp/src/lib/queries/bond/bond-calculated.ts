@@ -14,21 +14,9 @@ export async function bondCalculateFields(
   onChainBond: OnChainBond,
   _offChainBond?: OffChainBond
 ): Promise<CalculatedBond> {
-  // Calculate ownership concentration from top holders
-  const topHoldersSum = onChainBond.holders.reduce(
-    (sum, holder) => sum + holder.valueExact,
-    0n
-  );
-
-  const concentration =
-    onChainBond.totalSupplyExact === 0n
-      ? 0
-      : Number((topHoldersSum * 100n) / onChainBond.totalSupplyExact);
-
   const price = await getAssetPriceInUserCurrency(onChainBond.id);
 
   return safeParse(CalculatedBondSchema, {
-    concentration,
     price,
   });
 }

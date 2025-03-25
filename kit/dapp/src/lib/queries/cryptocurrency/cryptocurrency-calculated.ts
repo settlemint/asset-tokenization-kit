@@ -16,19 +16,9 @@ export async function cryptoCurrencyCalculateFields(
   cryptocurrency: OnChainCryptoCurrency,
   _offchainCryptocurrency?: OffChainCryptoCurrency
 ) {
-  const topHoldersSum = cryptocurrency.holders.reduce(
-    (sum, holder) => sum + holder.valueExact,
-    0n
-  );
-  const concentration =
-    cryptocurrency.totalSupplyExact === 0n
-      ? 0
-      : Number((topHoldersSum * 100n) / cryptocurrency.totalSupplyExact);
-
   const price = await getAssetPriceInUserCurrency(cryptocurrency.id);
 
   return safeParse(CalculatedCryptoCurrencySchema, {
-    concentration,
     price,
   });
 }
