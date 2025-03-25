@@ -15,8 +15,6 @@ import { revokeRoleFunction } from "../mutations/asset/access-control/revoke-rol
 import { RevokeRoleSchema } from "../mutations/asset/access-control/revoke-role/revoke-role-schema";
 import { updateRolesFunction } from "../mutations/asset/access-control/update-role/update-role-function";
 import { UpdateRolesSchema } from "../mutations/asset/access-control/update-role/update-role-schema";
-import { transferAssetFunction } from "../mutations/asset/transfer/transfer-function";
-import { getTransferFormSchema } from "../mutations/asset/transfer/transfer-schema";
 import { blockUserFunction } from "../mutations/block-user/block-user-function";
 import { BlockUserSchema } from "../mutations/block-user/block-user-schema";
 import { burnFunction } from "../mutations/burn/burn-function";
@@ -25,6 +23,8 @@ import { createFundFunction } from "../mutations/fund/create/create-function";
 import { CreateFundSchema } from "../mutations/fund/create/create-schema";
 import { mintFunction } from "../mutations/mint/mint-function";
 import { MintSchema } from "../mutations/mint/mint-schema";
+import { transferAssetFunction } from "../mutations/transfer/transfer-function";
+import { TransferSchema } from "../mutations/transfer/transfer-schema";
 import { unblockUserFunction } from "../mutations/unblock-user/unblock-user-function";
 import { UnblockUserSchema } from "../mutations/unblock-user/unblock-user-schema";
 import { withdrawFunction } from "../mutations/withdraw/withdraw-function";
@@ -162,7 +162,7 @@ export const FundApi = new Elysia({
       return transferAssetFunction({
         parsedInput: {
           ...body,
-          assetType: "fund",
+          assettype: "fund",
         },
         ctx: { user },
       });
@@ -175,7 +175,7 @@ export const FundApi = new Elysia({
           "Transfers fund tokens from the current user's account to another address.",
         tags: ["fund"],
       },
-      body: getTransferFormSchema(),
+      body: TransferSchema(),
       response: {
         200: t.Hashes(),
         ...defaultErrorSchema,

@@ -109,7 +109,7 @@ const TokenizedDepositTransfer = portalGraphql(`
  * @param user - The user executing the transfer operation
  * @returns Array of transaction hashes
  */
-export async function transferFunction({
+export async function transferAssetFunction({
   parsedInput: { address, pincode, value, to, assettype },
   ctx: { user },
 }: {
