@@ -78,7 +78,7 @@ export function handleTransfer(event: Transfer): void {
     );
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
-    if (!hasBalance(cryptoCurrency.id, to.id)) {
+    if (!hasBalance(cryptoCurrency.id, to.id, cryptoCurrency.decimals, false)) {
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -245,7 +245,7 @@ export function handleTransfer(event: Transfer): void {
       ]
     );
 
-    if (!hasBalance(cryptoCurrency.id, to.id)) {
+    if (!hasBalance(cryptoCurrency.id, to.id, cryptoCurrency.decimals, false)) {
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }

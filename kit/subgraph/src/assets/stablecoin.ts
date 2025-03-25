@@ -96,7 +96,7 @@ export function handleTransfer(event: Transfer): void {
 
     collateralCalculatedFields(stableCoin);
 
-    if (!hasBalance(stableCoin.id, to.id)) {
+    if (!hasBalance(stableCoin.id, to.id, stableCoin.decimals, false)) {
       stableCoin.totalHolders = stableCoin.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -266,7 +266,7 @@ export function handleTransfer(event: Transfer): void {
       ]
     );
 
-    if (!hasBalance(stableCoin.id, to.id)) {
+    if (!hasBalance(stableCoin.id, to.id, stableCoin.decimals, false)) {
       stableCoin.totalHolders = stableCoin.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -662,7 +662,14 @@ export function handlePaused(event: Paused): void {
   const holders = stableCoin.holders.load();
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
-    if (hasBalance(stableCoin.id, assetBalance.account)) {
+    if (
+      hasBalance(
+        stableCoin.id,
+        assetBalance.account,
+        stableCoin.decimals,
+        false
+      )
+    ) {
       const holderAccount =
         sender.id == assetBalance.account
           ? sender
@@ -723,7 +730,14 @@ export function handleUnpaused(event: Unpaused): void {
   const holders = stableCoin.holders.load();
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
-    if (hasBalance(stableCoin.id, assetBalance.account)) {
+    if (
+      hasBalance(
+        stableCoin.id,
+        assetBalance.account,
+        stableCoin.decimals,
+        false
+      )
+    ) {
       const holderAccount =
         sender.id == assetBalance.account
           ? sender
