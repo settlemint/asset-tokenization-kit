@@ -157,17 +157,18 @@ export function ManageDropdown({
     {
       id: "top-up",
       label: t("actions.top-up"),
-      hidden: !hasUnderlyingAsset,
+      hidden: !hasUnderlyingAsset || assettype !== "bond",
       disabled: isBlocked || isPaused || !userIsSupplyManager,
-      form: (
+      form: assettype === "bond" ? (
         <TopUpForm
           key="top-up"
           address={address}
           showTarget={hasYieldSchedule}
           open={openMenuItem === "top-up"}
           onOpenChange={onFormOpenChange}
+          bondDetails={assetDetails as Awaited<ReturnType<typeof getBondDetail>>}
         />
-      ),
+      ) : null,
     },
     {
       id: "withdraw",

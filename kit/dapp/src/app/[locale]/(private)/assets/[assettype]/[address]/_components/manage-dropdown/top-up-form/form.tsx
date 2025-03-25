@@ -5,6 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { FormStepElement } from "@/components/blocks/form/types";
 import { topUpUnderlyingAsset } from "@/lib/mutations/bond/top-up/top-up-action";
 import { TopUpSchema } from "@/lib/mutations/bond/top-up/top-up-schema";
+import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -19,6 +20,7 @@ interface TopUpFormProps {
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  bondDetails: Awaited<ReturnType<typeof getBondDetail>>;
 }
 
 export function TopUpForm({
@@ -27,6 +29,7 @@ export function TopUpForm({
   asButton = false,
   open,
   onOpenChange,
+  bondDetails,
 }: TopUpFormProps) {
   const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
@@ -45,6 +48,14 @@ export function TopUpForm({
     steps.push(<Summary key="summary" />);
 
     return steps;
+  };
+
+  // Get initial values based on bond details
+  const initialValues = {
+    address,
+    target: "bond" as const,
+    targetAddress: address,
+    underlyingAssetAddress: bondDetails.underlyingAsset.id,
   };
 
   return (
@@ -69,10 +80,7 @@ export function TopUpForm({
         buttonLabels={{
           label: t("trigger-label.top-up"),
         }}
-        defaultValues={{
-          address,
-          target: "bond",
-        }}
+        defaultValues={initialValues}
       >
         {renderFormSteps()}
       </Form>

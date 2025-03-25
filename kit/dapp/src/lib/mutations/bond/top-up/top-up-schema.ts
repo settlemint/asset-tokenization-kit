@@ -5,6 +5,8 @@ export const TopUpSchema = z.object({
   amount: z.amount(),
   pincode: z.pincode(),
   target: z.enum(["bond", "yield"]),
+  targetAddress: z.address(),
+  underlyingAssetAddress: z.address(),
 });
 
 export type TopUpInput = ZodInfer<typeof TopUpSchema>;
