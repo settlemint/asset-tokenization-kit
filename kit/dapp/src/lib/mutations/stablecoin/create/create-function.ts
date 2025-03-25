@@ -3,6 +3,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { CreateStablecoinInput } from "./create-schema";
@@ -47,39 +48,48 @@ const CreateOffchainStablecoin = hasuraGraphql(`
  * @param user - The user creating the stablecoin
  * @returns Array of transaction hashes
  */
-export async function createStablecoinFunction({
-  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    pincode,
-    collateralLivenessValue,
-    collateralLivenessTimeUnit,
-    predictedAddress,
-    valueInBaseCurrency,
+export const createStablecoinFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
   },
-  ctx: { user },
-}: {
-  parsedInput: CreateStablecoinInput;
-  ctx: { user: User };
-}) {
-  await hasuraClient.request(CreateOffchainStablecoin, {
-    id: predictedAddress,
-    value_in_base_currency: String(valueInBaseCurrency),
-  });
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      pincode,
+      collateralLivenessValue,
+      collateralLivenessTimeUnit,
+      predictedAddress,
+      valueInBaseCurrency,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateStablecoinInput;
+    ctx: { user: User };
+  }) => {
+    await hasuraClient.request(CreateOffchainStablecoin, {
+      id: predictedAddress,
+      value_in_base_currency: String(valueInBaseCurrency),
+    });
 
-  const collateralLivenessSeconds =
-    collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
+    const collateralLivenessSeconds =
+      collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
 
-  const data = await portalClient.request(StableCoinFactoryCreate, {
-    address: STABLE_COIN_FACTORY_ADDRESS,
-    from: user.wallet,
-    name: assetName,
-    symbol: symbol.toString(),
-    decimals,
-    collateralLivenessSeconds,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  });
+    const data = await portalClient.request(StableCoinFactoryCreate, {
+      address: STABLE_COIN_FACTORY_ADDRESS,
+      from: user.wallet,
+      name: assetName,
+      symbol: symbol.toString(),
+      decimals,
+      collateralLivenessSeconds,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    });
 
-  return safeParse(t.Hashes(), [data.StableCoinFactoryCreate?.transactionHash]);
-}
+    return safeParse(t.Hashes(), [
+      data.StableCoinFactoryCreate?.transactionHash,
+    ]);
+  }
+);

@@ -4,6 +4,7 @@ import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
+import { withAccessControl } from "../../utils/access-control";
 import type { BurnInput } from "./burn-schema";
 
 /**
@@ -93,54 +94,66 @@ const TokenizedDepositBurn = portalGraphql(`
  * @param user - The user initiating the burn operation
  * @returns The transaction hash
  */
-export async function burnFunction({
-  parsedInput: { address, pincode, amount, assettype },
-  ctx: { user },
-}: {
-  parsedInput: BurnInput;
-  ctx: { user: User };
-}) {
-  // Get token details based on asset type
-  const { decimals } = await getAssetDetail({
-    address,
-    assettype,
-  });
+export const burnFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({
+    parsedInput: { address, pincode, amount, assettype },
+    ctx: { user },
+  }: {
+    parsedInput: BurnInput;
+    ctx: { user: User };
+  }) => {
+    // Get token details based on asset type
+    const { decimals } = await getAssetDetail({
+      address,
+      assettype,
+    });
 
-  // Common parameters for all mutations
-  const params = {
-    address,
-    from: user.wallet,
-    amount: parseUnits(amount.toString(), decimals).toString(),
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  };
+    // Common parameters for all mutations
+    const params = {
+      address,
+      from: user.wallet,
+      amount: parseUnits(amount.toString(), decimals).toString(),
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    };
 
-  switch (assettype) {
-    case "bond": {
-      const response = await portalClient.request(BondBurn, params);
-      return safeParse(t.Hashes(), [response.BondBurn?.transactionHash]);
+    switch (assettype) {
+      case "bond": {
+        const response = await portalClient.request(BondBurn, params);
+        return safeParse(t.Hashes(), [response.BondBurn?.transactionHash]);
+      }
+      case "cryptocurrency": {
+        throw new Error("Cryptocurrency does not support burn operations");
+      }
+      case "equity": {
+        const response = await portalClient.request(EquityBurn, params);
+        return safeParse(t.Hashes(), [response.EquityBurn?.transactionHash]);
+      }
+      case "fund": {
+        const response = await portalClient.request(FundBurn, params);
+        return safeParse(t.Hashes(), [response.FundBurn?.transactionHash]);
+      }
+      case "stablecoin": {
+        const response = await portalClient.request(StableCoinBurn, params);
+        return safeParse(t.Hashes(), [
+          response.StableCoinBurn?.transactionHash,
+        ]);
+      }
+      case "tokenizeddeposit": {
+        const response = await portalClient.request(
+          TokenizedDepositBurn,
+          params
+        );
+        return safeParse(t.Hashes(), [
+          response.TokenizedDepositBurn?.transactionHash,
+        ]);
+      }
+      default:
+        throw new Error("Invalid asset type");
     }
-    case "cryptocurrency": {
-      throw new Error("Cryptocurrency does not support burn operations");
-    }
-    case "equity": {
-      const response = await portalClient.request(EquityBurn, params);
-      return safeParse(t.Hashes(), [response.EquityBurn?.transactionHash]);
-    }
-    case "fund": {
-      const response = await portalClient.request(FundBurn, params);
-      return safeParse(t.Hashes(), [response.FundBurn?.transactionHash]);
-    }
-    case "stablecoin": {
-      const response = await portalClient.request(StableCoinBurn, params);
-      return safeParse(t.Hashes(), [response.StableCoinBurn?.transactionHash]);
-    }
-    case "tokenizeddeposit": {
-      const response = await portalClient.request(TokenizedDepositBurn, params);
-      return safeParse(t.Hashes(), [
-        response.TokenizedDepositBurn?.transactionHash,
-      ]);
-    }
-    default:
-      throw new Error("Invalid asset type");
   }
-}
+);

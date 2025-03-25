@@ -8,6 +8,7 @@ import type { Schema } from "next-safe-action/adapters/types";
 import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
 import type { User } from "../auth/types";
+import { AccessControlError } from "../utils/access-control";
 import { redactSensitiveFields } from "../utils/redaction";
 
 type ValidationError = Error & {
@@ -96,6 +97,10 @@ export const action = createSafeActionClient({
 function getErrorMessage(error: Error): string {
   if (!(error instanceof Error)) {
     return "An unexpected error occurred";
+  }
+
+  if (error instanceof AccessControlError) {
+    return error.message;
   }
 
   if (error.message.includes("Invalid challenge response")) {

@@ -3,6 +3,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
@@ -48,49 +49,56 @@ const CreateOffchainBond = hasuraGraphql(`
  * @param user - The user creating the bond
  * @returns The transaction hash
  */
-export async function createBondFunction({
-  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    pincode,
-    isin,
-    cap,
-    faceValue,
-    maturityDate,
-    underlyingAsset,
-    predictedAddress,
-    valueInBaseCurrency,
+export const createBondFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
   },
-  ctx: { user },
-}: {
-  parsedInput: CreateBondInput;
-  ctx: { user: User };
-}) {
-  const capExact = String(parseUnits(String(cap), decimals));
-  const maturityDateTimestamp = formatDate(maturityDate, {
-    type: "unixSeconds",
-    locale: "en",
-  });
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      pincode,
+      isin,
+      cap,
+      faceValue,
+      maturityDate,
+      underlyingAsset,
+      predictedAddress,
+      valueInBaseCurrency,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateBondInput;
+    ctx: { user: User };
+  }) => {
+    const capExact = String(parseUnits(String(cap), decimals));
+    const maturityDateTimestamp = formatDate(maturityDate, {
+      type: "unixSeconds",
+      locale: "en",
+    });
 
-  await hasuraClient.request(CreateOffchainBond, {
-    id: predictedAddress,
-    isin: isin,
-    value_in_base_currency: String(valueInBaseCurrency),
-  });
+    await hasuraClient.request(CreateOffchainBond, {
+      id: predictedAddress,
+      isin: isin,
+      value_in_base_currency: String(valueInBaseCurrency),
+    });
 
-  const data = await portalClient.request(BondFactoryCreate, {
-    address: BOND_FACTORY_ADDRESS,
-    from: user.wallet,
-    name: assetName,
-    symbol: String(symbol),
-    decimals,
-    cap: capExact,
-    faceValue: String(faceValue),
-    maturityDate: maturityDateTimestamp,
-    underlyingAsset: underlyingAsset.id,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  });
+    const data = await portalClient.request(BondFactoryCreate, {
+      address: BOND_FACTORY_ADDRESS,
+      from: user.wallet,
+      name: assetName,
+      symbol: String(symbol),
+      decimals,
+      cap: capExact,
+      faceValue: String(faceValue),
+      maturityDate: maturityDateTimestamp,
+      underlyingAsset: underlyingAsset.id,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    });
 
-  return safeParse(t.Hashes(), [data.BondFactoryCreate?.transactionHash]);
-}
+    return safeParse(t.Hashes(), [data.BondFactoryCreate?.transactionHash]);
+  }
+);

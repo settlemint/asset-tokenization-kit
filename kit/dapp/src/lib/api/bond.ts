@@ -146,7 +146,7 @@ export const BondApi = new Elysia({
     async ({ body, user }) => {
       return createBondFunction({
         parsedInput: body,
-        ctx: { user },
+        ctx: { user, throwCustomError: true },
       });
     },
     {

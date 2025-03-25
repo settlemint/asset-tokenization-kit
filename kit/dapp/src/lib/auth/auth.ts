@@ -16,6 +16,7 @@ import { revalidateTag } from "next/cache";
 import { getServerEnvironment } from "../config/environment";
 import { metadata } from "../config/metadata";
 import { db } from "../db";
+import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
 import { createUserWallet } from "./portal";
 
 const env = getServerEnvironment();
@@ -149,7 +150,14 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    admin(),
+    admin({
+      ac: accessControl,
+      roles: {
+        admin: adminRole,
+        user: userRole,
+        issuer: issuerRole,
+      },
+    }),
     apiKey({
       defaultKeyLength: 16,
       defaultPrefix: "sm_atk_",

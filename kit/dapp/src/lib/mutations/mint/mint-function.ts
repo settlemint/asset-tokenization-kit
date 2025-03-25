@@ -2,6 +2,7 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import type { MintInput } from "./mint-schema";
@@ -109,58 +110,70 @@ const TokenizedDepositMint = portalGraphql(`
  * @param user - The user executing the mint operation
  * @returns Array of transaction hashes
  */
-export async function mintFunction({
-  parsedInput: { address, pincode, amount, to, assettype },
-  ctx: { user },
-}: {
-  parsedInput: MintInput;
-  ctx: { user: User };
-}) {
-  // Get token details based on asset type
-  const { decimals } = await getAssetDetail({
-    address,
-    assettype,
-  });
+export const mintFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({
+    parsedInput: { address, pincode, amount, to, assettype },
+    ctx: { user },
+  }: {
+    parsedInput: MintInput;
+    ctx: { user: User };
+  }) => {
+    // Get token details based on asset type
+    const { decimals } = await getAssetDetail({
+      address,
+      assettype,
+    });
 
-  // Common parameters for all mutations
-  const params = {
-    address,
-    from: user.wallet,
-    amount: parseUnits(amount.toString(), decimals).toString(),
-    to,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  };
+    // Common parameters for all mutations
+    const params = {
+      address,
+      from: user.wallet,
+      amount: parseUnits(amount.toString(), decimals).toString(),
+      to,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    };
 
-  switch (assettype) {
-    case "bond": {
-      const response = await portalClient.request(BondMint, params);
-      return safeParse(t.Hashes(), [response.BondMint?.transactionHash]);
+    switch (assettype) {
+      case "bond": {
+        const response = await portalClient.request(BondMint, params);
+        return safeParse(t.Hashes(), [response.BondMint?.transactionHash]);
+      }
+      case "cryptocurrency": {
+        const response = await portalClient.request(CryptoCurrencyMint, params);
+        return safeParse(t.Hashes(), [
+          response.CryptoCurrencyMint?.transactionHash,
+        ]);
+      }
+      case "equity": {
+        const response = await portalClient.request(EquityMint, params);
+        return safeParse(t.Hashes(), [response.EquityMint?.transactionHash]);
+      }
+      case "fund": {
+        const response = await portalClient.request(FundMint, params);
+        return safeParse(t.Hashes(), [response.FundMint?.transactionHash]);
+      }
+      case "stablecoin": {
+        const response = await portalClient.request(StableCoinMint, params);
+        return safeParse(t.Hashes(), [
+          response.StableCoinMint?.transactionHash,
+        ]);
+      }
+      case "tokenizeddeposit": {
+        const response = await portalClient.request(
+          TokenizedDepositMint,
+          params
+        );
+        return safeParse(t.Hashes(), [
+          response.TokenizedDepositMint?.transactionHash,
+        ]);
+      }
+      default:
+        throw new Error("Invalid asset type");
     }
-    case "cryptocurrency": {
-      const response = await portalClient.request(CryptoCurrencyMint, params);
-      return safeParse(t.Hashes(), [
-        response.CryptoCurrencyMint?.transactionHash,
-      ]);
-    }
-    case "equity": {
-      const response = await portalClient.request(EquityMint, params);
-      return safeParse(t.Hashes(), [response.EquityMint?.transactionHash]);
-    }
-    case "fund": {
-      const response = await portalClient.request(FundMint, params);
-      return safeParse(t.Hashes(), [response.FundMint?.transactionHash]);
-    }
-    case "stablecoin": {
-      const response = await portalClient.request(StableCoinMint, params);
-      return safeParse(t.Hashes(), [response.StableCoinMint?.transactionHash]);
-    }
-    case "tokenizeddeposit": {
-      const response = await portalClient.request(TokenizedDepositMint, params);
-      return safeParse(t.Hashes(), [
-        response.TokenizedDepositMint?.transactionHash,
-      ]);
-    }
-    default:
-      throw new Error("Invalid asset type");
   }
-}
+);
