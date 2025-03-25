@@ -62,7 +62,7 @@ const app = new Elysia({
     if (error instanceof AccessControlError) {
       return elysiaError(error.status, error.message);
     }
-    // TODO: handle specific errors (hasura, postgress, thegraph, portal, etc)
+    // TODO: handle specific errors (hasura, postgres, thegraph, portal, etc)
     console.error(
       `Unexpected error: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
       error

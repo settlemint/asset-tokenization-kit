@@ -84,7 +84,7 @@ export const getUserList = cache(
       );
 
       // Combine user data with account data and calculate fields
-      const usersWithActivity = users.map((user) => {
+      return users.map((user) => {
         if (!user.wallet) {
           // Return user with default calculated fields if no wallet
           const calculatedFields = userCalculateFields(user);
@@ -103,8 +103,6 @@ export const getUserList = cache(
           ...calculatedFields,
         };
       });
-
-      return usersWithActivity;
     }
   )
 );
