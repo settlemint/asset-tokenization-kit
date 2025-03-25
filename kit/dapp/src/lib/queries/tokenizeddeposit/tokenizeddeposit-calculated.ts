@@ -18,19 +18,6 @@ export function tokenizedDepositCalculateFields(
   onChainTokenizedDeposit: OnChainTokenizedDeposit,
   _offChainTokenizedDeposit?: OffChainTokenizedDeposit
 ): CalculatedTokenizedDeposit {
-  // Calculate ownership concentration from top holders
-  const topHoldersSum = onChainTokenizedDeposit.holders.reduce(
-    (sum, holder) => sum + BigInt(holder.valueExact),
-    0n
-  );
-
-  const concentration =
-    onChainTokenizedDeposit.totalSupplyExact === 0n
-      ? 0
-      : Number(
-          (topHoldersSum * 100n) / onChainTokenizedDeposit.totalSupplyExact
-        );
-
   // Calculate collateral proof validity date
   const collateralProofValidity =
     Number(onChainTokenizedDeposit.lastCollateralUpdate) > 0
@@ -41,7 +28,6 @@ export function tokenizedDepositCalculateFields(
       : undefined;
 
   return safeParse(CalculatedTokenizedDepositSchema, {
-    concentration,
     collateralProofValidity,
   });
 }

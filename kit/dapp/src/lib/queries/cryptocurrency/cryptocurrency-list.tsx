@@ -12,7 +12,6 @@ import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { getAddress } from "viem";
-import { cryptoCurrencyCalculateFields } from "./cryptocurrency-calculated";
 import {
   CryptoCurrencyFragment,
   OffchainCryptoCurrencyFragment,
@@ -97,15 +96,9 @@ export const getCryptoCurrencyList = cache(async () => {
       getAddress(cryptocurrency.id)
     );
 
-    const calculatedFields = cryptoCurrencyCalculateFields(
-      cryptocurrency,
-      offChainCryptoCurrency
-    );
-
     return {
       ...cryptocurrency,
       ...offChainCryptoCurrency,
-      ...calculatedFields,
     };
   });
 

@@ -27,6 +27,7 @@ import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { collateralCalculatedFields } from "./calculations/collateral";
+import { calculateConcentration } from "./calculations/concentration";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { burnEvent } from "./events/burn";
@@ -95,6 +96,10 @@ export function handleTransfer(event: Transfer): void {
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
     collateralCalculatedFields(stableCoin);
+    stableCoin.concentration = calculateConcentration(
+      stableCoin.holders.load(),
+      stableCoin.totalSupplyExact
+    );
 
     if (!hasBalance(stableCoin.id, to.id, stableCoin.decimals, false)) {
       stableCoin.totalHolders = stableCoin.totalHolders + 1;
@@ -188,6 +193,10 @@ export function handleTransfer(event: Transfer): void {
     );
     assetActivity.totalSupply = assetActivity.totalSupply.minus(burn.value);
     collateralCalculatedFields(stableCoin);
+    stableCoin.concentration = calculateConcentration(
+      stableCoin.holders.load(),
+      stableCoin.totalSupplyExact
+    );
 
     const balance = fetchAssetBalance(
       stableCoin.id,
@@ -356,6 +365,10 @@ export function handleTransfer(event: Transfer): void {
   }
 
   stableCoin.lastActivity = event.block.timestamp;
+  stableCoin.concentration = calculateConcentration(
+    stableCoin.holders.load(),
+    stableCoin.totalSupplyExact
+  );
   stableCoin.save();
 
   assetStats.supply = stableCoin.totalSupply;
@@ -964,6 +977,10 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.lastCollateralUpdate = event.block.timestamp;
   collateralCalculatedFields(stableCoin);
+  stableCoin.concentration = calculateConcentration(
+    stableCoin.holders.load(),
+    stableCoin.totalSupplyExact
+  );
   stableCoin.save();
 
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);

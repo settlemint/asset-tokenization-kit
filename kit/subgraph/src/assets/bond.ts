@@ -30,6 +30,7 @@ import { blockUser, unblockUser } from "../fetch/block-user";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
+import { calculateConcentration } from "./calculations/concentration";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { bondMaturedEvent } from "./events/bondmatured";
@@ -1056,5 +1057,10 @@ export function updateDerivedFields(bond: Bond): void {
   // Compare using exact values
   bond.hasSufficientUnderlying = bond.underlyingBalance.ge(
     bond.totalUnderlyingNeededExact
+  );
+  // Calculate concentration
+  bond.concentration = calculateConcentration(
+    bond.holders.load(),
+    bond.totalSupplyExact
   );
 }

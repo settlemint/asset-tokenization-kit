@@ -18,17 +18,6 @@ export function stablecoinCalculateFields(
   onChainStableCoin: OnChainStableCoin,
   _offChainStableCoin?: OffChainStableCoin
 ): CalculatedStableCoin {
-  // Calculate ownership concentration from top holders
-  const topHoldersSum = onChainStableCoin.holders.reduce(
-    (sum, holder) => sum + BigInt(holder.valueExact),
-    0n
-  );
-
-  const concentration =
-    onChainStableCoin.totalSupplyExact === 0n
-      ? 0
-      : Number((topHoldersSum * 100n) / onChainStableCoin.totalSupplyExact);
-
   // Calculate collateral proof validity date
   const collateralProofValidity =
     onChainStableCoin.lastCollateralUpdate.getTime() > 0
@@ -39,7 +28,6 @@ export function stablecoinCalculateFields(
       : undefined;
 
   return safeParse(CalculatedStableCoinSchema, {
-    concentration,
     collateralProofValidity,
   });
 }

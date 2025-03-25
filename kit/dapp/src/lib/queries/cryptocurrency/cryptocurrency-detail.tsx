@@ -6,7 +6,6 @@ import {
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import { cryptoCurrencyCalculateFields } from "./cryptocurrency-calculated";
 import {
   CryptoCurrencyFragment,
   OffchainCryptoCurrencyFragment,
@@ -85,15 +84,9 @@ export const getCryptoCurrencyDetail = cache(
       })(),
     ]);
 
-    const calculatedFields = cryptoCurrencyCalculateFields(
-      onChainCryptoCurrency,
-      offChainCryptoCurrency
-    );
-
     return {
       ...onChainCryptoCurrency,
       ...offChainCryptoCurrency,
-      ...calculatedFields,
     };
   }
 );
