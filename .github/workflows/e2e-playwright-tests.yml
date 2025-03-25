@@ -16,7 +16,10 @@ jobs:
     runs-on: namespace-profile-atk
     environment: staging
     timeout-minutes: 60 # 1 hour maximum runtime
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'run-playwright-tests') }}
+    if:
+      ${{ github.ref == 'refs/heads/main' ||
+      contains(github.event.pull_request.labels.*.name, 'run-playwright-tests')
+      }}
     strategy:
       fail-fast: false
 
@@ -109,10 +112,27 @@ jobs:
         working-directory: kit/dapp
 
       - name: Run Playwright tests
+        id: playwright
         run: bun playwright test tests --retries 2 --reporter=html
         working-directory: kit/e2e
         env:
           CI: true
+
+      - name: Load secrets
+        uses: 1password/load-secrets-action@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        env:
+          SLACK_WEBHOOK_URL: op://platform/slack-webhooks/e2e-report
+
+      - name: Send Slack notification
+        if: ${{ !cancelled() }}
+        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
+        with:
+          webhook: ${{ env.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "${{ steps.playwright.outcome == 'success' && ':white_check_mark: Asset Tokenization E2E Tests Passed' || ':x: Asset Tokenization E2E Tests Failed' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
+            }
 
       - name: Stop dev server
         if: always()
