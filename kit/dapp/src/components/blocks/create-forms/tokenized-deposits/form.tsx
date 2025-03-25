@@ -26,7 +26,7 @@ export function CreateTokenizedDepositForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
-  const userCurrency = useUserCurrency();
+  const { userCurrency } = useUserCurrency();
 
   return (
     <FormSheet
