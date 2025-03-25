@@ -38,4 +38,4 @@ export function Amount({ balance, decimals, symbol }: AmountProps) {
   );
 }
 
-Amount.validatedFields = ["value"] as const;
+Amount.validatedFields = ["value"] satisfies (keyof TransferInput)[];

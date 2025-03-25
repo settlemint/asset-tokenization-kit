@@ -39,4 +39,4 @@ export function Amount({ balance, symbol, decimals }: AmountProps) {
   );
 }
 
-Amount.validatedFields = ["amount"] as const;
+Amount.validatedFields = ["amount"] satisfies (keyof FreezeInput)[];

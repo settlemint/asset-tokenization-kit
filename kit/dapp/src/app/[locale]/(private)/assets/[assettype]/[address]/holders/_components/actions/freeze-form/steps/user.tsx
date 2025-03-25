@@ -41,4 +41,4 @@ export function User() {
   );
 }
 
-User.validatedFields = ["user"] as const;
+User.validatedFields = ["userAddress"] satisfies (keyof BlockUserInput)[];

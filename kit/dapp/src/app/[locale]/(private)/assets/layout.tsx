@@ -1,3 +1,4 @@
+import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -17,7 +18,10 @@ export async function generateMetadata({
   });
 
   return {
-    title: t("asset-management"),
+    title: {
+      ...metadata.title,
+      default: t("asset-management"),
+    },
   };
 }
 

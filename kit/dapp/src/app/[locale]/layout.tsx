@@ -32,7 +32,7 @@ const figTree = Figtree({
   variable: "--font-sans",
 });
 
-const geistMono = Roboto_Mono({
+const robotoMono = Roboto_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
@@ -58,7 +58,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={direction}
-      className={cn(figTree.variable, geistMono.variable)}
+      className={cn(figTree.variable, robotoMono.variable)}
       suppressHydrationWarning
     >
       {/* Can be used to debug rerenders using react-scan

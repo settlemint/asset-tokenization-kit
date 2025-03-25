@@ -15,8 +15,6 @@ import { revokeRoleFunction } from "../mutations/asset/access-control/revoke-rol
 import { RevokeRoleSchema } from "../mutations/asset/access-control/revoke-role/revoke-role-schema";
 import { updateRolesFunction } from "../mutations/asset/access-control/update-role/update-role-function";
 import { UpdateRolesSchema } from "../mutations/asset/access-control/update-role/update-role-schema";
-import { transferAssetFunction } from "../mutations/asset/transfer/transfer-function";
-import { getTransferFormSchema } from "../mutations/asset/transfer/transfer-schema";
 import { blockUserFunction } from "../mutations/block-user/block-user-function";
 import { BlockUserSchema } from "../mutations/block-user/block-user-schema";
 import { burnFunction } from "../mutations/burn/burn-function";
@@ -25,11 +23,12 @@ import { createEquityFunction } from "../mutations/equity/create/create-function
 import { CreateEquitySchema } from "../mutations/equity/create/create-schema";
 import { mintFunction } from "../mutations/mint/mint-function";
 import { MintSchema } from "../mutations/mint/mint-schema";
+import { transferAssetFunction } from "../mutations/transfer/transfer-function";
+import { TransferSchema } from "../mutations/transfer/transfer-schema";
 import { unblockUserFunction } from "../mutations/unblock-user/unblock-user-function";
 import { UnblockUserSchema } from "../mutations/unblock-user/unblock-user-schema";
 import { withdrawFunction } from "../mutations/withdraw/withdraw-function";
 import { WithdrawSchema } from "../mutations/withdraw/withdraw-schema";
-
 export const EquityApi = new Elysia({
   detail: {
     security: [
@@ -162,7 +161,7 @@ export const EquityApi = new Elysia({
       return transferAssetFunction({
         parsedInput: {
           ...body,
-          assetType: "equity",
+          assettype: "equity",
         },
         ctx: { user },
       });
@@ -175,7 +174,7 @@ export const EquityApi = new Elysia({
           "Transfers equity tokens from the current user's account to another address.",
         tags: ["equity"],
       },
-      body: getTransferFormSchema(),
+      body: TransferSchema(),
       response: {
         200: t.Hashes(),
         ...defaultErrorSchema,

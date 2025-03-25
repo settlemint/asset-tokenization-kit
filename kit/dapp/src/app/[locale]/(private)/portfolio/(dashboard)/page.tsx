@@ -3,14 +3,36 @@ import MyAssetsTable from "@/components/blocks/my-assets-table/my-assets-table-m
 import { TransactionsHistory } from "@/components/blocks/transactions-table/transactions-history";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
+import { metadata } from "@/lib/config/metadata";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { startOfDay, subMonths } from "date-fns";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { LatestEvents } from "../../assets/(dashboard)/_components/table/latest-events";
 import { Greeting } from "./_components/greeting/greeting";
 import { MyAssetsHeader } from "./_components/header/my-assets-header";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({
+    locale,
+    namespace: "portfolio",
+  });
+
+  return {
+    title: {
+      ...metadata.title,
+      default: t("dashboard.page-title"),
+    },
+    description: t("dashboard.portfolio-management"),
+  };
+}
 
 export default async function PortfolioDashboard({
   params,

@@ -18,14 +18,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, History } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { FieldValues } from "react-hook-form";
+import useSWR from "swr";
 import type { Address } from "viem";
 import { EvmAddress } from "../../evm-address/evm-address";
 import {
@@ -33,6 +36,15 @@ import {
   type WithPlaceholderProps,
   getAriaAttributes,
 } from "./types";
+
+// Define a type for recently selected users
+type RecentUser = {
+  wallet: string;
+  selectedAt: number;
+};
+
+const MAX_RECENT_USERS = 5;
+const LOCAL_STORAGE_KEY = "recently-selected-users";
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
@@ -135,75 +147,109 @@ function FormUsersList({
 }) {
   const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
-  const [users, setUsers] = useState<Awaited<ReturnType<typeof getUserSearch>>>(
-    []
-  );
-  const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations("components.form.users");
 
-  useEffect(() => {
-    let isMounted = true;
+  // Get recently selected users from local storage
+  const [recentUsers, setRecentUsers] = useLocalStorage<RecentUser[]>(
+    LOCAL_STORAGE_KEY,
+    []
+  );
 
-    async function fetchUsers() {
-      if (!debounced) {
-        setUsers([]);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const results = await getUserSearch({ searchTerm: debounced });
-        if (isMounted) {
-          // Filter users by role if specified
-          const filteredUsers = role
-            ? results.filter((user) => user.role === role)
-            : results;
-          setUsers(filteredUsers);
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        if (isMounted) {
-          setUsers([]);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
+  const { data: users = [], isLoading } = useSWR(
+    debounced ? [`user-search`, debounced, role] : null,
+    async () => {
+      const results = await getUserSearch({ searchTerm: debounced });
+      return role ? results.filter((user) => user.role === role) : results;
+    },
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 600000, // 10 minutes
     }
+  );
 
-    void fetchUsers();
+  // Function to add a selected user to recent users
+  const addToRecentUsers = (wallet: string) => {
+    setRecentUsers((currentRecentUsers) => {
+      // Remove the user if already in the list
+      const filteredUsers = currentRecentUsers.filter(
+        (user) => user.wallet !== wallet
+      );
 
-    return () => {
-      isMounted = false;
-    };
-  }, [debounced, role]);
+      // Add the user to the beginning of the list
+      const newRecentUsers = [
+        { wallet, selectedAt: Date.now() },
+        ...filteredUsers,
+      ];
+
+      // Limit the list to MAX_RECENT_USERS
+      return newRecentUsers.slice(0, MAX_RECENT_USERS);
+    });
+  };
+
+  // Handle selection of a user
+  const handleSelect = (wallet: string) => {
+    onValueChange(wallet);
+    addToRecentUsers(wallet);
+    setOpen(false);
+  };
 
   return (
     <CommandList>
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
-        {isLoading ? t("loading") : t("no-user-found")}
+        {isLoading ? (
+          <>
+            <div className="flex flex-col space-y-2 px-2 py-1">
+              <Skeleton className="h-6 w-full bg-muted/50" />
+              <Skeleton className="h-6 w-full bg-muted/50" />
+            </div>
+          </>
+        ) : (
+          t("no-user-found")
+        )}
       </CommandEmpty>
-      <CommandGroup>
-        {users.map((user) => (
-          <CommandItem
-            key={user.wallet}
-            value={user.wallet}
-            onSelect={(currentValue) => {
-              onValueChange(currentValue);
-              setOpen(false);
-            }}
-          >
-            <EvmAddress address={user.wallet} hoverCard={false} />
-            <Check
-              className={cn(
-                "ml-auto",
-                value === user.wallet ? "opacity-100" : "opacity-0"
-              )}
-            />
-          </CommandItem>
-        ))}
-      </CommandGroup>
+
+      {/* Show recent users when no search is entered */}
+      {!debounced && recentUsers.length > 0 && (
+        <CommandGroup heading={t("recent-users")}>
+          {recentUsers.map((user) => (
+            <CommandItem
+              key={user.wallet}
+              value={user.wallet}
+              onSelect={handleSelect}
+            >
+              <History className="mr-2 h-4 w-4" />
+              <EvmAddress address={user.wallet as Address} hoverCard={false} />
+              <Check
+                className={cn(
+                  "ml-auto",
+                  value === user.wallet ? "opacity-100" : "opacity-0"
+                )}
+              />
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      )}
+
+      {/* Show search results */}
+      {(debounced || (!debounced && recentUsers.length === 0)) && (
+        <CommandGroup>
+          {users.map((user) => (
+            <CommandItem
+              key={user.wallet}
+              value={user.wallet}
+              onSelect={handleSelect}
+            >
+              <EvmAddress address={user.wallet} hoverCard={false} />
+              <Check
+                className={cn(
+                  "ml-auto",
+                  value === user.wallet ? "opacity-100" : "opacity-0"
+                )}
+              />
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      )}
     </CommandList>
   );
 }

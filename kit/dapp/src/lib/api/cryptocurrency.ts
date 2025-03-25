@@ -15,12 +15,12 @@ import { revokeRoleFunction } from "../mutations/asset/access-control/revoke-rol
 import { RevokeRoleSchema } from "../mutations/asset/access-control/revoke-role/revoke-role-schema";
 import { updateRolesFunction } from "../mutations/asset/access-control/update-role/update-role-function";
 import { UpdateRolesSchema } from "../mutations/asset/access-control/update-role/update-role-schema";
-import { transferAssetFunction } from "../mutations/asset/transfer/transfer-function";
-import { getTransferFormSchema } from "../mutations/asset/transfer/transfer-schema";
 import { createCryptoCurrencyFunction } from "../mutations/cryptocurrency/create/create-function";
 import { CreateCryptoCurrencySchema } from "../mutations/cryptocurrency/create/create-schema";
 import { mintFunction } from "../mutations/mint/mint-function";
 import { MintSchema } from "../mutations/mint/mint-schema";
+import { transferAssetFunction } from "../mutations/transfer/transfer-function";
+import { TransferSchema } from "../mutations/transfer/transfer-schema";
 import { withdrawFunction } from "../mutations/withdraw/withdraw-function";
 import { WithdrawSchema } from "../mutations/withdraw/withdraw-schema";
 
@@ -157,7 +157,7 @@ export const CryptoCurrencyApi = new Elysia({
       return transferAssetFunction({
         parsedInput: {
           ...body,
-          assetType: "cryptocurrency",
+          assettype: "cryptocurrency",
         },
         ctx: { user },
       });
@@ -170,7 +170,7 @@ export const CryptoCurrencyApi = new Elysia({
           "Transfers cryptocurrency tokens from the current user's account to another address.",
         tags: ["cryptocurrency"],
       },
-      body: getTransferFormSchema(),
+      body: TransferSchema(),
       response: {
         200: t.Hashes(),
         ...defaultErrorSchema,

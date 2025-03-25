@@ -1,6 +1,7 @@
 import { DetailPageHeader } from "@/app/[locale]/(private)/_components/detail-page-header";
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { metadata } from "@/lib/config/metadata";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
@@ -145,9 +146,12 @@ export async function generateMetadata({
   const detailData = await getAssetDetail({ assettype, address });
 
   return {
-    title: t("page-title", {
-      name: detailData?.name,
-    }),
+    title: {
+      ...metadata.title,
+      default: t("page-title", {
+        name: detailData?.name,
+      }),
+    },
     description: t("page-description", {
       name: detailData?.name,
     }),

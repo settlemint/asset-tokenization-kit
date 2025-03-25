@@ -50,4 +50,4 @@ export function Recipient() {
   );
 }
 
-Recipient.validatedFields = ["to"] as const;
+Recipient.validatedFields = ["to"] satisfies (keyof WithdrawInput)[];

@@ -20,7 +20,7 @@ const UserCount = hasuraGraphql(
         ...RecentUsersCountFragment
       }
     }
-    user(limit: 3, order_by: { created_at: desc }) {
+    user(order_by: { created_at: asc }) {
       ...UserFragment
     }
   }
@@ -40,7 +40,7 @@ export interface UserCountProps {
  * Type for user count results
  */
 export type UserCountResult = {
-  /** Array of users with their timestamps */
+  /** Array of daily user counts with cumulative totals */
   users: { timestamp: Date; users: number }[];
   /** Count of recent users */
   recentUsersCount: number;
@@ -49,10 +49,43 @@ export type UserCountResult = {
 };
 
 /**
- * Fetches user count statistics
+ * Groups users by date and calculates cumulative count
+ *
+ * @param users - Array of users with creation timestamps
+ * @returns Array of daily cumulative user counts
+ */
+function calculateCumulativeUsersByDay(users: { created_at: Date }[]) {
+  if (!users.length) return [];
+
+  const dailyCounts = new Map<string, number>();
+
+  // Group users by day
+  users.forEach((user) => {
+    const dateStr = user.created_at.toISOString().split("T")[0];
+    dailyCounts.set(dateStr, (dailyCounts.get(dateStr) || 0) + 1);
+  });
+
+  // Convert to array and sort by date
+  const sortedDays = Array.from(dailyCounts.entries()).sort(
+    ([dateA], [dateB]) => dateA.localeCompare(dateB)
+  );
+
+  // Calculate cumulative count
+  let cumulativeCount = 0;
+  return sortedDays.map(([dateStr, count]) => {
+    cumulativeCount += count;
+    return {
+      timestamp: new Date(dateStr),
+      users: cumulativeCount,
+    };
+  });
+}
+
+/**
+ * Fetches user count statistics with cumulative daily totals
  *
  * @param params - Optional param to specify a date from which to count recent users
- * @returns Object containing user data with timestamps, recent user count, and total user count
+ * @returns Object containing daily cumulative user data, recent user count, and total user count
  */
 export const getUserCount = cache(async ({ since }: UserCountProps = {}) => {
   // Default to 30 days ago if no date is provided
@@ -80,10 +113,7 @@ export const getUserCount = cache(async ({ since }: UserCountProps = {}) => {
   );
 
   return {
-    users: validatedUsers.map((user) => ({
-      timestamp: user.created_at,
-      users: 1, // Each entry represents a single user
-    })),
+    users: calculateCumulativeUsersByDay(validatedUsers),
     recentUsersCount: recentUsersCount.count,
     totalUsersCount: totalUsersCount.count,
   };

@@ -62,7 +62,9 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = ["predictedAddress"] as const;
+Summary.validatedFields = [
+  "predictedAddress",
+] satisfies (keyof CreateCryptoCurrencyInput)[];
 Summary.beforeValidate = [
   async ({ setValue, getValues }: UseFormReturn<CreateCryptoCurrencyInput>) => {
     const values = getValues();

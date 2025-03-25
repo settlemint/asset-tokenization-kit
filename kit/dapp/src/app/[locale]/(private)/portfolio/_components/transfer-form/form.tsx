@@ -50,7 +50,9 @@ export function TransferForm({
   const assetType = assettype ?? selectedAsset?.type;
   const userBalance =
     balance ??
-    selectedAsset?.holders?.find((h) => h.account.id === userAddress)?.value ??
+    selectedAsset?.holders?.find(
+      (h) => h.account.id === userAddress.toLowerCase()
+    )?.value ??
     0;
 
   const handleSheetOpenChange = (isOpen: boolean) => {

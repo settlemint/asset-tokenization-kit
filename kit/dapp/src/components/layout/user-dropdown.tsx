@@ -118,7 +118,7 @@ export function UserDropdown({ user }: { user: User }) {
               <Skeleton className="size-8 rounded-lg" />
             )}
           </Suspense>
-          <div className="grid flex-1 text-left text-sm leading-tight">
+          <div className="grid flex-1 text-left rtl:text-right text-sm leading-tight">
             <TextOrSkeleton
               condition={Boolean(user?.name || user?.email)}
               className="truncate font-semibold"

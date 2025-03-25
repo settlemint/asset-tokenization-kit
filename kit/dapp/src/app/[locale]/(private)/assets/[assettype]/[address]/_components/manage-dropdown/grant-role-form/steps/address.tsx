@@ -46,4 +46,6 @@ export function AdminAddress() {
   );
 }
 
-AdminAddress.validatedFields = ["userAddress"] as const;
+AdminAddress.validatedFields = [
+  "userAddress",
+] satisfies (keyof GrantRoleInput)[];

@@ -25,7 +25,7 @@
       "charts": {
         "asset-activity": {
           "burn": "Verbrennen",
-          "description": "Vermögensaktivität",
+          "description": "Die Anzahl der durchgeführten Aktionen in den verschiedenen Anlageklassen",
           "mint": "Prägen",
           "title": "Vermögensaktivität",
           "transfer": "Übertragen"
@@ -39,17 +39,17 @@
           "tokenizeddeposit": "Tokenisierte Einlagen"
         },
         "assets-supply": {
-          "description": "Vermögensangebot",
+          "description": "Die Verteilung der Token pro Anlageklasse",
           "title": "Vermögensangebot"
         },
         "transaction-history": {
-          "description": "Transaktionsverlauf",
+          "description": "Anzahl der Transaktionen pro Tag in der letzten Woche",
           "title": "Transaktionsverlauf"
         },
         "users-history": {
-          "description": "Benutzerverlauf",
+          "description": "Anzahl der in der letzten Woche registrierten Benutzer",
           "label": "Benutzer",
-          "title": "Benutzerverlauf"
+          "title": "Registrierte Benutzer"
         }
       },
       "page": {
@@ -419,6 +419,7 @@
         "default-placeholder": "Wählen Sie eine Option",
         "loading": "Lade...",
         "no-asset-found": "Kein Vermögenswert gefunden.",
+        "recent-assets": "Kürzlich ausgewählt",
         "search-placeholder": "Suchen Sie nach einem Vermögenswert..."
       },
       "button": {
@@ -437,7 +438,9 @@
       },
       "pincode-dialog": {
         "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Verifizierung und Autorisierung ein.",
-        "title": "Geben Sie Ihren PIN-Code zur Bestätigung ein"
+        "title": "Geben Sie Ihren PIN-Code zur Bestätigung ein",
+        "cancel": "Abbrechen",
+        "confirm": "Ja, bestätigen"
       },
       "progress": {
         "completed-step": "Abgeschlossener Schritt",
@@ -452,6 +455,7 @@
         "default-placeholder": "Wählen Sie eine Option",
         "loading": "Lade...",
         "no-user-found": "Kein Benutzer gefunden.",
+        "recent-users": "Kürzlich ausgewählt",
         "search-placeholder": "Suchen Sie nach einem Benutzer..."
       }
     },
@@ -461,7 +465,9 @@
     "search": {
       "assets-section": "Vermögenswerte",
       "no-results": "Keine Ergebnisse gefunden",
-      "placeholder": "Suchen Sie nach Vermögenswerten oder Benutzern...",
+      "placeholder": "Suche nach Vermögenswerten oder Benutzern...",
+      "recent-assets": "Kürzlich gesuchte Vermögenswerte",
+      "recent-users": "Kürzlich gesuchte Benutzer",
       "users-section": "Benutzer"
     },
     "transaction-details": {
@@ -591,7 +597,8 @@
       "admin": "Aussteller-Portal",
       "asset-management": "Vermögensverwaltung",
       "platform": "Plattformverwaltung",
-      "portfolio": "Mein Portfolio"
+      "portfolio": "Mein Portfolio",
+      "title": "Privat"
     },
     "user-dropdown": {
       "documentation": "Dokumentation",
@@ -2113,74 +2120,5 @@
     "portfolio": "Portfolio",
     "stablecoins": "Stablecoins",
     "tokenized-deposits": "Tokenisierte Einlagen"
-  },
-  "zod": {
-    "error": {
-      "invalid-ethereum-address": "Ungültiges Ethereum-Adressenformat",
-      "invalid-hash-format": "Ungültiges Hash-Format",
-      "invalid-pincode": "Ungültiger PIN-Code, muss eine 6-stellige Zahl sein",
-      "decimals-min": "Dezimalstellen müssen mindestens 0 sein",
-      "decimals-max": "Dezimalstellen müssen zwischen 0 und 18 liegen",
-      "amount-too-small": "Betrag ist zu klein",
-      "amount-too-large": "Betrag überschreitet das maximal erlaubte",
-      "role-required": "Mindestens eine Rolle muss ausgewählt werden",
-      "invalid-symbol": "Symbol darf nur Großbuchstaben und Zahlen enthalten",
-      "isin-format": "ISIN darf nur Großbuchstaben und Zahlen enthalten",
-      "isin-length": "ISIN muss genau 12 Zeichen lang sein",
-      "invalid-decimal": "Ungültiges Dezimalzahlformat",
-      "invalid-timestamp": "Zeitstempel muss eine positive Zahl sein",
-      "negative-amount": "Betrag muss positiv sein",
-      "required": "Dieses Feld ist erforderlich",
-      "must_be_string": "Dieses Feld muss eine Zeichenkette sein",
-      "must_be_number": "Dieses Feld muss eine Zahl sein",
-      "must_be_boolean": "Dieses Feld muss ein Boolean sein",
-      "must_be_date": "Dieses Feld muss ein Datum sein",
-      "must_be_bigint": "Dieses Feld muss eine große Ganzzahl sein",
-      "must_be_array": "Dieses Feld muss ein Array sein",
-      "must_be_object": "Dieses Feld muss ein Objekt sein",
-      "invalid_type": "Ungültiger Typ für dieses Feld",
-      "invalid_url": "Ungültiges URL-Format",
-      "invalid_email": "Ungültiges E-Mail-Format",
-      "invalid_uuid": "Ungültiges UUID-Format",
-      "invalid_cuid": "Ungültiges CUID-Format",
-      "invalid_format": "Ungültiges Format für dieses Feld",
-      "invalid_datetime": "Ungültiges Datum/Zeit-Format",
-      "invalid_string": "Ungültiges Zeichenkettenformat",
-      "string_length_too_small": {
-        "inclusive": "Text muss mindestens {minimum} Zeichen lang sein",
-        "exclusive": "Text muss mehr als {minimum} Zeichen lang sein"
-      },
-      "number_too_small": {
-        "inclusive": "Zahl muss mindestens {minimum} sein",
-        "exclusive": "Zahl muss größer als {minimum} sein"
-      },
-      "array_length_too_small": {
-        "inclusive": "Muss mindestens {minimum} Elemente enthalten",
-        "exclusive": "Muss mehr als {minimum} Elemente enthalten"
-      },
-      "too_small": "Wert ist zu klein",
-      "string_length_too_big": {
-        "inclusive": "Text darf {maximum} Zeichen nicht überschreiten",
-        "exclusive": "Text muss weniger als {maximum} Zeichen lang sein"
-      },
-      "number_too_big": {
-        "inclusive": "Zahl darf {maximum} nicht überschreiten",
-        "exclusive": "Zahl muss weniger als {maximum} sein"
-      },
-      "array_length_too_big": {
-        "inclusive": "Darf nicht mehr als {maximum} Elemente enthalten",
-        "exclusive": "Muss weniger als {maximum} Elemente enthalten"
-      },
-      "too_big": "Wert ist zu groß",
-      "invalid_literal": "Ungültiger literaler Wert",
-      "invalid_union": "Ungültige Eingabe für diesen Typ",
-      "invalid_union_discriminator": "Ungültiger Diskriminatorwert",
-      "invalid_enum_value": "Ungültige Auswahl getroffen",
-      "invalid_arguments": "Ungültige Funktionsargumente",
-      "invalid_return_type": "Ungültiger Rückgabewert",
-      "invalid_date": "Ungültiges Datum",
-      "custom": "Ungültige Eingabe",
-      "validation_failed": "Validierung fehlgeschlagen"
-    }
   }
 }
