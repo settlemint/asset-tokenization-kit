@@ -44,6 +44,5 @@ export const OffchainFundFragment = hasuraGraphql(`
   fragment OffchainFundFragment on asset {
     id
     isin
-    value_in_base_currency
   }
 `);

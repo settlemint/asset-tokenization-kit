@@ -92,22 +92,24 @@ export const getTokenizedDepositList = cache(async () => {
     offChainTokenizedDeposits.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const tokenizedDeposits = onChainTokenizedDeposits.map((tokenizedDeposit) => {
-    const offChainTokenizedDeposit = assetsById.get(
-      getAddress(tokenizedDeposit.id)
-    );
+  const tokenizedDeposits = await Promise.all(
+    onChainTokenizedDeposits.map(async (tokenizedDeposit) => {
+      const offChainTokenizedDeposit = assetsById.get(
+        getAddress(tokenizedDeposit.id)
+      );
 
-    const calculatedFields = tokenizedDepositCalculateFields(
-      tokenizedDeposit,
-      offChainTokenizedDeposit
-    );
+      const calculatedFields = await tokenizedDepositCalculateFields(
+        tokenizedDeposit,
+        offChainTokenizedDeposit
+      );
 
-    return {
-      ...tokenizedDeposit,
-      ...offChainTokenizedDeposit,
-      ...calculatedFields,
-    };
-  });
+      return {
+        ...tokenizedDeposit,
+        ...offChainTokenizedDeposit,
+        ...calculatedFields,
+      };
+    })
+  );
 
   return tokenizedDeposits;
 });

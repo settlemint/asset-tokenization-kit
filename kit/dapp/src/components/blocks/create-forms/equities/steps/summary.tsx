@@ -78,11 +78,9 @@ export function Summary() {
           }
         />
         <FormSummaryDetailItem
-          label={t("parameters.common.value-in-base-currency-label", {
-            baseCurrency,
-          })}
-          value={formatNumber(values.valueInBaseCurrency || 0, {
-            currency: baseCurrency,
+          label={t("parameters.common.price-label")}
+          value={formatNumber(values.price?.amount || 0, {
+            currency: values.price?.currency || baseCurrency,
             locale: locale,
           })}
         />

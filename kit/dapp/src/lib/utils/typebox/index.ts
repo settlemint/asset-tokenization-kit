@@ -18,6 +18,7 @@ import { FundClass } from "./fund-classes";
 import { Hash, Hashes } from "./hash";
 import { Isin } from "./isin";
 import { Pincode } from "./pincode";
+import { Price } from "./price";
 import { RoleMap, Roles } from "./roles";
 import { TimeUnit } from "./time-units";
 import { Timestamp } from "./timestamp";
@@ -45,6 +46,7 @@ declare module "@sinclair/typebox" {
     TimeUnit: typeof TimeUnit;
     Timestamp: typeof Timestamp;
     StringifiedBigInt: typeof StringifiedBigInt;
+    Price: typeof Price;
   }
 }
 
@@ -71,6 +73,7 @@ t.AssetSymbol = AssetSymbol;
 t.TimeUnit = TimeUnit;
 t.Timestamp = Timestamp;
 t.StringifiedBigInt = StringifiedBigInt;
+t.Price = Price;
 
 export function safeParse<T extends TSchema>(
   schema: T,

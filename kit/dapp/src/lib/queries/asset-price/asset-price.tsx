@@ -1,67 +1,57 @@
-import { getUser } from "@/lib/auth/utils";
-import { type CurrencyCode, SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
-import { getFundList } from "@/lib/queries/fund/fund-list";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { cache } from "react";
-import { getBondList } from "../bond/bond-list";
-import { getCryptoCurrencyList } from "../cryptocurrency/cryptocurrency-list";
-import { getEquityList } from "../equity/equity-list";
-import { getStableCoinList } from "../stablecoin/stablecoin-list";
-import { getTokenizedDepositList } from "../tokenizeddeposit/tokenizeddeposit-list";
-import { getUserDetail } from "../user/user-detail";
+import { safeParse } from "@/lib/utils/typebox";
+import type { Price } from "@/lib/utils/typebox/price";
+import { getAddress } from "viem";
+import { getCurrentUserDetail } from "../user/current-user-detail";
+import { AssetPriceFragment } from "./asset-price-fragment";
+import { AssetPriceSchema } from "./asset-price-schema";
 
-const Settings = hasuraGraphql(`
-  query Settings {
-    settings {
-      key
-      value
+const AssetPrice = hasuraGraphql(
+  `
+  query AssetPrice($assetId: String!) {
+    asset_price(
+      where: { asset_id: { _eq: $assetId } }
+      order_by: { created_at: desc }
+      limit: 1
+    ) {
+      ...AssetPriceFragment
     }
   }
-`);
+`,
+  [AssetPriceFragment]
+);
 
-/**
- * Gets the total price of all assets in the user's preferred currency
- */
-export const getTotalAssetPrice = cache(async () => {
-  const [settingsResult, targetCurrency, ...assetsResult] = await Promise.all([
-    hasuraClient.request(Settings),
-    (async () => {
-      const user = await getUser();
-      const userDetails = await getUserDetail({ id: user.id });
-      return userDetails?.currency;
-    })(),
-    await getBondList(),
-    await getCryptoCurrencyList(),
-    await getEquityList(),
-    await getFundList(),
-    await getStableCoinList(),
-    await getTokenizedDepositList(),
+export async function getAssetPriceInUserCurrency(
+  assetIdParam: string
+): Promise<Price> {
+  const assetId = getAddress(assetIdParam);
+
+  const [{ asset_price }, userDetails] = await Promise.all([
+    hasuraClient.request(AssetPrice, {
+      assetId,
+    }),
+    getCurrentUserDetail(),
   ]);
 
-  const baseCurrency =
-    (settingsResult.settings.find(
-      (setting) => setting.key === SETTING_KEYS.BASE_CURRENCY
-    )?.value as CurrencyCode) ?? "EUR";
-  const exchangeRate = await getExchangeRate(baseCurrency, targetCurrency);
-  if (!exchangeRate) {
-    throw new Error(
-      `Exchange rate not found for base currency ${baseCurrency} and target currency ${targetCurrency}`
-    );
+  if (asset_price.length === 0) {
+    return {
+      amount: 0,
+      currency: userDetails.currency,
+    };
   }
 
-  const assets = assetsResult.flat();
-
-  // Calculate total price by summing (totalSupply * value_in_base_currency * exchangeRate) for each asset
-  const totalPrice = assets.reduce((sum, asset) => {
-    const totalSupply = Number(asset.totalSupply);
-    return (
-      sum + totalSupply * (asset.value_in_base_currency || 0) * exchangeRate
-    );
-  }, 0);
+  const validatedPrice = safeParse(AssetPriceSchema, asset_price[0]);
+  const exchangeRate = await getExchangeRate(
+    validatedPrice.currency,
+    userDetails.currency
+  );
+  if (!exchangeRate) {
+    throw new Error("Exchange rate not found");
+  }
 
   return {
-    totalPrice,
-    currency: targetCurrency,
+    amount: validatedPrice.amount * exchangeRate,
+    currency: userDetails.currency,
   };
-});
+}

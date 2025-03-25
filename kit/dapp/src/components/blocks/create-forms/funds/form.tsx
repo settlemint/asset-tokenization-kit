@@ -2,9 +2,9 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useSettings } from "@/hooks/use-settings";
 import { createFund } from "@/lib/mutations/fund/create/create-action";
 import { CreateFundSchema } from "@/lib/mutations/fund/create/create-schema";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -16,18 +16,19 @@ interface CreateFundFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
+  userDetails: User;
 }
 
 export function CreateFundForm({
   open,
   onOpenChange,
   asButton = false,
+  userDetails,
 }: CreateFundFormProps) {
   const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
-  const baseCurrency = useSettings("baseCurrency");
 
   return (
     <FormSheet
@@ -49,14 +50,17 @@ export function CreateFundForm({
         }}
         defaultValues={{
           managementFeeBps: 100, // Default 1% management fee
-          valueInBaseCurrency: 1,
+          price: {
+            amount: 1,
+            currency: userDetails.currency,
+          },
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}
       >
         <Basics />
-        <Configuration baseCurrency={baseCurrency} />
+        <Configuration />
         <Summary />
       </Form>
     </FormSheet>

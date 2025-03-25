@@ -4,26 +4,27 @@ import { CreateEquityForm } from "@/components/blocks/create-forms/equities/form
 import { CreateFundForm } from "@/components/blocks/create-forms/funds/form";
 import { CreateStablecoinForm } from "@/components/blocks/create-forms/stablecoins/form";
 import { CreateTokenizedDepositForm } from "@/components/blocks/create-forms/tokenized-deposits/form";
+import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-
 interface RelatedProps {
   assettype: AssetType;
 }
 
-export function AddButton({ assettype }: RelatedProps) {
+export async function AddButton({ assettype }: RelatedProps) {
+  const userDetails = await getCurrentUserDetail();
   switch (assettype) {
     case "bond":
-      return <CreateBondForm asButton />;
+      return <CreateBondForm asButton userDetails={userDetails} />;
     case "cryptocurrency":
-      return <CreateCryptoCurrencyForm asButton />;
+      return <CreateCryptoCurrencyForm asButton userDetails={userDetails} />;
     case "stablecoin":
-      return <CreateStablecoinForm asButton />;
+      return <CreateStablecoinForm asButton userDetails={userDetails} />;
     case "tokenizeddeposit":
-      return <CreateTokenizedDepositForm asButton />;
+      return <CreateTokenizedDepositForm asButton userDetails={userDetails} />;
     case "equity":
-      return <CreateEquityForm asButton />;
+      return <CreateEquityForm asButton userDetails={userDetails} />;
     case "fund":
-      return <CreateFundForm asButton />;
+      return <CreateFundForm asButton userDetails={userDetails} />;
     default:
       throw new Error("Invalid asset type");
   }

@@ -55,8 +55,8 @@ export function CreateFundSchema() {
         refine: isAddressAvailable,
         error: "fund.duplicate",
       }),
-      valueInBaseCurrency: t.Amount(Number.MAX_SAFE_INTEGER, 0, 6, {
-        description: "Value in base currency",
+      price: t.Price({
+        description: "Price of the fund",
       }),
     },
     {

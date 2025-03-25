@@ -8,6 +8,7 @@ import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { getAddress } from "viem";
+import { bondCalculateFields } from "./bond-calculated";
 import { BondFragment, OffchainBondFragment } from "./bond-fragment";
 import { OffChainBondSchema, OnChainBondSchema } from "./bond-schema";
 
@@ -81,14 +82,19 @@ export const getBondList = cache(async () => {
     offChainBonds.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const bonds = onChainBonds.map((bond) => {
-    const offChainBond = assetsById.get(getAddress(bond.id));
+  const bonds = await Promise.all(
+    onChainBonds.map(async (bond) => {
+      const offChainBond = assetsById.get(getAddress(bond.id));
 
-    return {
-      ...bond,
-      ...offChainBond,
-    };
-  });
+      const calculatedFields = await bondCalculateFields(bond, offChainBond);
+
+      return {
+        ...bond,
+        ...offChainBond,
+        ...calculatedFields,
+      };
+    })
+  );
 
   return bonds;
 });

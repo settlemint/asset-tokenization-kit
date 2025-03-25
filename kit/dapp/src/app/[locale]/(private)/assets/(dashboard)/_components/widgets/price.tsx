@@ -1,4 +1,4 @@
-import { getTotalAssetPrice } from "@/lib/queries/asset-price/asset-price";
+import { getTotalAssetPrice } from "@/lib/queries/asset-price/total-assets-price";
 import { formatNumber } from "@/lib/utils/number";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Widget } from "./widget";

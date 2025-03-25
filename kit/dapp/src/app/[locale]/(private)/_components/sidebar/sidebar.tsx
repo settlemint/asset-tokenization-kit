@@ -7,11 +7,13 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
 import { AssetManagement } from "./items/asset-management";
 import { PlatformManagement } from "./items/platform-management";
 import { PortfolioManagement } from "./items/portfolio-management";
 
-export function PrivateSidebar() {
+export async function PrivateSidebar() {
+  const userDetails = await getCurrentUserDetail();
   return (
     <NavSidebar>
       <SidebarHeader className="h-16">
@@ -19,7 +21,7 @@ export function PrivateSidebar() {
       </SidebarHeader>
       <SidebarContent className="pt-4">
         <RoleGuard requiredRoles={["admin", "issuer"]}>
-          <DesignerButton />
+          <DesignerButton userDetails={userDetails} />
         </RoleGuard>
         <PortfolioManagement />
         <RoleGuard requiredRoles={["admin", "issuer"]}>

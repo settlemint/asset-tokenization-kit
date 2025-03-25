@@ -32,6 +32,7 @@ export default async function BondHoldersPage({ params }: PageProps) {
       columnParams={{
         maxMint,
         decimals: assetDetails.decimals,
+        price: assetDetails.price,
       }}
       columns={columns}
       data={balances}

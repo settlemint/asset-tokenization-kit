@@ -75,7 +75,7 @@ export const getFundDetail = cache(async ({ address }: FundDetailProps) => {
     })(),
   ]);
 
-  const calculatedFields = fundCalculateFields(onChainFund, offChainFund);
+  const calculatedFields = await fundCalculateFields(onChainFund, offChainFund);
 
   return {
     ...onChainFund,

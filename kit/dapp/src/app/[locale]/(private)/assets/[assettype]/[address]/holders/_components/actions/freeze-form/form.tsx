@@ -1,5 +1,3 @@
-"use client";
-
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { freeze } from "@/lib/mutations/freeze/freeze-action";

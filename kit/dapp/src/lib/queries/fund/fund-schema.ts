@@ -109,10 +109,6 @@ export const OffChainFundSchema = t.Object(
         })
       )
     ),
-    value_in_base_currency: t.Number({
-      minimum: 0,
-      description: "The token's value in terms of the base fiat currency",
-    }),
   },
   {
     description:
@@ -123,17 +119,16 @@ export type OffChainFund = StaticDecode<typeof OffChainFundSchema>;
 
 export const CalculatedFundSchema = t.Object(
   {
-    concentration: t.Number({
-      description:
-        "The percentage of total supply held by the top holders, indicating ownership concentration",
-    }),
     assetsUnderManagement: t.Number({
       description: "The total value of assets under management in the fund",
+    }),
+    price: t.Price({
+      description: "Price of the fund",
     }),
   },
   {
     description:
-      "Calculated fields for fund tokens including ownership concentration and assets under management",
+      "Calculated fields for fund tokens including assets under management",
   }
 );
 export type CalculatedFund = StaticDecode<typeof CalculatedFundSchema>;

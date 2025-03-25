@@ -6,6 +6,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "@/i18n/routing";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { updateCurrency } from "@/lib/mutations/user/update-currency-action";
 import type { User } from "@/lib/queries/user/user-schema";
@@ -33,6 +34,7 @@ interface CurrencyMenuItemProps {
 }
 
 export function CurrencyMenuItem({ user }: CurrencyMenuItemProps) {
+  const router = useRouter();
   const handleCurrencyChange = useCallback(
     async (currency: CurrencyCode) => {
       if (currency === user.currency) return;
@@ -40,7 +42,7 @@ export function CurrencyMenuItem({ user }: CurrencyMenuItemProps) {
       try {
         // Call the server action to update currency
         await updateCurrency({ currency });
-
+        router.refresh();
         toast.success(
           `Default currency changed to ${CURRENCY_NAMES[currency]}`
         );
@@ -49,7 +51,7 @@ export function CurrencyMenuItem({ user }: CurrencyMenuItemProps) {
         console.error("Error updating default currency:", error);
       }
     },
-    [user.currency]
+    [user.currency, router]
   );
 
   return (

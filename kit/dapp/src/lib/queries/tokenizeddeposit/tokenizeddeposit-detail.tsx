@@ -92,7 +92,7 @@ export const getTokenizedDepositDetail = cache(
         })(),
       ]);
 
-    const calculatedFields = tokenizedDepositCalculateFields(
+    const calculatedFields = await tokenizedDepositCalculateFields(
       onChainTokenizedDeposit,
       offChainTokenizedDeposit
     );
