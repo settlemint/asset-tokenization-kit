@@ -1,12 +1,100 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
-import { Bond } from "../../../generated/schema";
+import {
+  Bond,
+  CryptoCurrency,
+  Equity,
+  Fund,
+  StableCoin,
+  TokenizedDeposit,
+} from "../../../generated/schema";
 import { Bond as BondContract } from "../../../generated/templates/Bond/Bond";
+import { CryptoCurrency as CryptoCurrencyContract } from "../../../generated/templates/CryptoCurrency/CryptoCurrency";
+import { Equity as EquityContract } from "../../../generated/templates/Equity/Equity";
+import { Fund as FundContract } from "../../../generated/templates/Fund/Fund";
+import { StableCoin as StableCoinContract } from "../../../generated/templates/StableCoin/StableCoin";
+import { TokenizedDeposit as TokenizedDepositContract } from "../../../generated/templates/TokenizedDeposit/TokenizedDeposit";
 import { fetchAccount } from "../../fetch/account";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
 import { updateDerivedFields } from "../bond";
+import { fetchCryptoCurrency } from "./cryptocurrency";
+import { fetchEquity } from "./equity";
+import { fetchFund } from "./fund";
+import { fetchStableCoin } from "./stablecoin";
+import { fetchTokenizedDeposit } from "./tokenizeddeposit";
 
-export function fetchBond(address: Address, timestamp: BigInt = BigInt.zero()): Bond {
+function determineAssetType(address: Address): string {
+  // Try to determine the asset type by calling unique functions for each type
+  let stableCoinContract = StableCoinContract.bind(address);
+  let cryptoCurrencyContract = CryptoCurrencyContract.bind(address);
+  let equityContract = EquityContract.bind(address);
+  let fundContract = FundContract.bind(address);
+  let tokenizedDepositContract = TokenizedDepositContract.bind(address);
+
+  // Try StableCoin-specific function
+  let liveness = stableCoinContract.try_liveness();
+  if (!liveness.reverted) {
+    return AssetType.stablecoin;
+  }
+
+  // Try CryptoCurrency-specific function
+  let totalSupply = cryptoCurrencyContract.try_totalSupply();
+  if (!totalSupply.reverted) {
+    return AssetType.cryptocurrency;
+  }
+
+  // Try Equity-specific function
+  let delegates = equityContract.try_delegates(Address.zero());
+  if (!delegates.reverted) {
+    return AssetType.equity;
+  }
+
+  // Try Fund-specific function
+  let managementFeeBps = fundContract.try_managementFeeBps();
+  if (!managementFeeBps.reverted) {
+    return AssetType.fund;
+  }
+
+  // Try TokenizedDeposit-specific function
+  let tokenizedDepositLiveness = tokenizedDepositContract.try_liveness();
+  if (!tokenizedDepositLiveness.reverted) {
+    return AssetType.tokenizeddeposit;
+  }
+
+  // Default to stablecoin if we can't determine the type
+  // This is a reasonable default since most underlying assets will be stablecoins
+  return AssetType.stablecoin;
+}
+
+function fetchUnderlyingAsset(
+  address: Address
+): StableCoin | CryptoCurrency | Equity | Fund | TokenizedDeposit | null {
+  if (address == Address.zero()) {
+    return null;
+  }
+
+  let assetType = determineAssetType(address);
+
+  switch (assetType) {
+    case AssetType.stablecoin:
+      return fetchStableCoin(address);
+    case AssetType.cryptocurrency:
+      return fetchCryptoCurrency(address);
+    case AssetType.equity:
+      return fetchEquity(address);
+    case AssetType.fund:
+      return fetchFund(address);
+    case AssetType.tokenizeddeposit:
+      return fetchTokenizedDeposit(address);
+    default:
+      return fetchStableCoin(address);
+  }
+}
+
+export function fetchBond(
+  address: Address,
+  timestamp: BigInt = BigInt.zero()
+): Bond {
   let bond = Bond.load(address);
   if (!bond) {
     let endpoint = BondContract.bind(address);
@@ -51,7 +139,39 @@ export function fetchBond(address: Address, timestamp: BigInt = BigInt.zero()): 
     bond.paused = paused.reverted ? false : paused.value;
     bond.faceValue = faceValue.reverted ? BigInt.zero() : faceValue.value;
 
-    bond.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
+    // Fetch the underlying asset entity
+    let underlyingAssetAddress = underlyingAsset.reverted
+      ? Address.zero()
+      : underlyingAsset.value;
+    if (underlyingAssetAddress != Address.zero()) {
+      let assetType = determineAssetType(underlyingAssetAddress);
+      let underlyingAssetEntity = null;
+
+      switch (assetType) {
+        case AssetType.stablecoin:
+          underlyingAssetEntity = fetchStableCoin(underlyingAssetAddress);
+          break;
+        case AssetType.cryptocurrency:
+          underlyingAssetEntity = fetchCryptoCurrency(underlyingAssetAddress);
+          break;
+        case AssetType.equity:
+          underlyingAssetEntity = fetchEquity(underlyingAssetAddress);
+          break;
+        case AssetType.fund:
+          underlyingAssetEntity = fetchFund(underlyingAssetAddress);
+          break;
+        case AssetType.tokenizeddeposit:
+          underlyingAssetEntity = fetchTokenizedDeposit(underlyingAssetAddress);
+          break;
+        default:
+          underlyingAssetEntity = fetchStableCoin(underlyingAssetAddress);
+      }
+
+      if (underlyingAssetEntity) {
+        bond.underlyingAsset = underlyingAssetEntity;
+      }
+    }
+
     bond.redeemedAmount = BigInt.zero();
     bond.underlyingBalance = BigInt.zero();
     bond.yieldSchedule = yieldSchedule.reverted ? null : yieldSchedule.value;
