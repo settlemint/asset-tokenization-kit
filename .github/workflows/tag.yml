@@ -138,6 +138,15 @@ jobs:
         run: bunx drizzle-kit push --force
         working-directory: kit/dapp
 
+      - name: Update Hasura
+        uses: settlemint/settlemint-action@main
+        with:
+          auto-connect: false
+          access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
+          dotEnvFile: ${{ secrets.ENV_FILE }}
+          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+          command: hasura track -a
+
       - name: Update Custom Deployment
         uses: settlemint/settlemint-action@main
         with:
