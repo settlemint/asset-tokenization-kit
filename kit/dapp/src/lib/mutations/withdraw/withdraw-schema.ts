@@ -27,6 +27,9 @@ export function WithdrawSchema({
       address: t.EthereumAddress({
         description: "The contract address",
       }),
+      assettype: t.AssetType({
+        description: "The type of asset",
+      }),
       targetAddress: t.EthereumAddress({
         description: "The target contract address",
       }),

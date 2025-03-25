@@ -49,6 +49,111 @@ const FixedYieldWithdrawUnderlyingAsset = portalGraphql(`
 `);
 
 /**
+ * GraphQL mutation for withdrawing token from an equity
+ */
+const EquityWithdrawToken = portalGraphql(`
+  mutation EquityWithdrawToken(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: EquityWithdrawTokenInput!
+  ) {
+    EquityWithdrawToken(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+/**
+ * GraphQL mutation for withdrawing token from a fund
+ */
+const FundWithdrawToken = portalGraphql(`
+  mutation FundWithdrawToken(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: FundWithdrawTokenInput!
+  ) {
+    FundWithdrawToken(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+/**
+ * GraphQL mutation for withdrawing token from a cryptocurrency
+ */
+const CryptoCurrencyWithdrawToken = portalGraphql(`
+  mutation CryptoCurrencyWithdrawToken(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: CryptoCurrencyWithdrawTokenInput!
+  ) {
+    CryptoCurrencyWithdrawToken(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+/**
+ * GraphQL mutation for withdrawing token from a stablecoin
+ */
+const StableCoinWithdrawToken = portalGraphql(`
+  mutation StableCoinWithdrawToken(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: StableCoinWithdrawTokenInput!
+  ) {
+    StableCoinWithdrawToken(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+/**
+ * GraphQL mutation for withdrawing token from a tokenized deposit
+ */
+const TokenizedDepositWithdrawToken = portalGraphql(`
+  mutation TokenizedDepositWithdrawToken(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: TokenizedDepositWithdrawTokenInput!
+  ) {
+    TokenizedDepositWithdrawToken(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+/**
  * Function to withdraw tokens or underlying assets from a contract
  *
  * @param input - Validated input containing address, pincode, amount, to, underlyingAssetAddress, and assettype
@@ -57,6 +162,7 @@ const FixedYieldWithdrawUnderlyingAsset = portalGraphql(`
  */
 export async function withdrawFunction({
   parsedInput: {
+    assettype,
     target,
     targetAddress,
     pincode,
@@ -70,67 +176,124 @@ export async function withdrawFunction({
   parsedInput: WithdrawInput;
   ctx: { user: User };
 }) {
-  // Get asset details
   const asset = await getAssetDetail({
-    address: targetAddress,
-    assettype: "bond"
-  });
-
-  if (!asset) {
-    throw new Error("Missing asset details");
-  }
-
-  // Get underlying asset details
-  const underlyingAsset = await getAssetDetail({
     address: underlyingAssetAddress,
-    assettype: underlyingAssetType
+    assettype: "cryptocurrency", // Underlying asset is typically a cryptocurrency
   });
 
-  if (!underlyingAsset) {
-    throw new Error(`Missing underlying asset details for ${underlyingAssetType} with address: ${underlyingAssetAddress}`);
-  }
+  // Token input format (for tokens)
+  const tokenInput = {
+    token: underlyingAssetAddress,
+    to,
+    amount: parseUnits(amount.toString(), asset.decimals).toString(),
+  };
 
-  // Format amount with proper decimals
-  const formattedAmount = parseUnits(
-    amount.toString(),
-    underlyingAsset.decimals
-  ).toString();
+  // Common parameters for token mutations
+  const tokenParams = {
+    address: targetAddress,
+    from: user.wallet,
+    input: tokenInput,
+    challengeResponse: await handleChallenge(user.wallet, pincode),
+  };
 
-  // Get challenge response
-  const challengeResponse = await handleChallenge(user.wallet, pincode);
+  switch (assettype) {
+    case "bond": {
+      // Get underlying asset details
+      const underlyingAsset = await getAssetDetail({
+        address: underlyingAssetAddress,
+        assettype: underlyingAssetType
+      });
 
-  // Withdraw based on target type
-  if (target === "bond") {
-    const response = await portalClient.request(BondWithdrawUnderlyingAsset, {
-      address: targetAddress,
-      from: user.wallet,
-      input: {
-        to,
-        amount: formattedAmount,
-      },
-      challengeResponse,
-    });
+      if (!underlyingAsset) {
+        throw new Error(`Missing underlying asset details for ${underlyingAssetType} with address: ${underlyingAssetAddress}`);
+      }
 
-    if (!response.BondWithdrawUnderlyingAsset?.transactionHash) {
-      throw new Error("Failed to get bond withdrawal transaction hash");
+      const bondFormattedAmount = parseUnits(
+        amount.toString(),
+        underlyingAsset.decimals
+      ).toString();
+
+
+      if (target === "bond") {
+        const response = await portalClient.request(BondWithdrawUnderlyingAsset, {
+          address: targetAddress,
+          from: user.wallet,
+          input: {
+            to,
+            amount: bondFormattedAmount,
+          },
+          challengeResponse: await handleChallenge(user.wallet, pincode),
+        });
+
+        if (!response.BondWithdrawUnderlyingAsset?.transactionHash) {
+          throw new Error("Failed to get bond withdrawal transaction hash");
+        }
+
+        return safeParse(t.Hashes(), [response.BondWithdrawUnderlyingAsset.transactionHash]);
+      } else {
+        const response = await portalClient.request(FixedYieldWithdrawUnderlyingAsset, {
+          address: targetAddress,
+          from: user.wallet,
+          input: {
+            to,
+            amount: bondFormattedAmount,
+          },
+          challengeResponse: await handleChallenge(user.wallet, pincode),
+        });
+
+        if (!response.FixedYieldWithdrawUnderlyingAsset?.transactionHash) {
+          throw new Error("Failed to get yield schedule withdrawal transaction hash");
+        }
+
+        return safeParse(t.Hashes(), [response.FixedYieldWithdrawUnderlyingAsset.transactionHash]);
+      }
     }
-
-    return safeParse(t.Hashes(), [response.BondWithdrawUnderlyingAsset.transactionHash]);
-  } else {
-    const response = await portalClient.request(FixedYieldWithdrawUnderlyingAsset, {
-      address: targetAddress,
-      from: user.wallet,
-      input: {
-        to,
-        amount: formattedAmount,
-      },
-      challengeResponse,
-    });
-
-    if (!response.FixedYieldWithdrawUnderlyingAsset?.transactionHash) {
-      throw new Error("Failed to get yield schedule withdrawal transaction hash");
+    case "cryptocurrency": {
+      const response = await portalClient.request(
+        CryptoCurrencyWithdrawToken,
+        tokenParams
+      );
+      return safeParse(t.Hashes(), [
+        response.CryptoCurrencyWithdrawToken?.transactionHash,
+      ]);
     }
-
-    return safeParse(t.Hashes(), [response.FixedYieldWithdrawUnderlyingAsset.transactionHash]);
+    case "equity": {
+      const response = await portalClient.request(
+        EquityWithdrawToken,
+        tokenParams
+      );
+      return safeParse(t.Hashes(), [
+        response.EquityWithdrawToken?.transactionHash,
+      ]);
+    }
+    case "fund": {
+      const response = await portalClient.request(
+        FundWithdrawToken,
+        tokenParams
+      );
+      return safeParse(t.Hashes(), [
+        response.FundWithdrawToken?.transactionHash,
+      ]);
+    }
+    case "stablecoin": {
+      const response = await portalClient.request(
+        StableCoinWithdrawToken,
+        tokenParams
+      );
+      return safeParse(t.Hashes(), [
+        response.StableCoinWithdrawToken?.transactionHash,
+      ]);
+    }
+    case "tokenizeddeposit": {
+      const response = await portalClient.request(
+        TokenizedDepositWithdrawToken,
+        tokenParams
+      );
+      return safeParse(t.Hashes(), [
+        response.TokenizedDepositWithdrawToken?.transactionHash,
+      ]);
+    }
+    default:
+      throw new Error("Invalid asset type");
   }
 }
