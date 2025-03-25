@@ -3,6 +3,7 @@ import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { safeParse } from "@/lib/utils/typebox";
+import { getAddress } from "viem";
 import { AssetPriceFragment } from "./asset-price-fragment";
 import { AssetPriceSchema } from "./asset-price-schema";
 
@@ -21,11 +22,15 @@ const AssetPrice = hasuraGraphql(
   [AssetPriceFragment]
 );
 
-export async function getAssetPriceInUserCurrency(assetId: string) {
+export async function getAssetPriceInUserCurrency(assetIdParam: string) {
+  const assetId = getAddress(assetIdParam);
   const { asset_price } = await hasuraClient.request(AssetPrice, {
     assetId,
   });
-  const validatedAssetPrice = safeParse(AssetPriceSchema, asset_price);
+  if (asset_price.length === 0) {
+    return 0;
+  }
+  const validatedAssetPrice = safeParse(AssetPriceSchema, asset_price[0]);
 
   const user = await getUser();
   const userDetails = await getUserDetail({ id: user.id });

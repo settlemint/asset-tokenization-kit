@@ -1,4 +1,5 @@
 import { getUser } from "@/lib/auth/utils";
+import { DEFAULT_SETTINGS, SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getFundList } from "@/lib/queries/fund/fund-list";
 import { cache } from "react";
 import { getBondList } from "../bond/bond-list";
@@ -13,11 +14,7 @@ import { getUserDetail } from "../user/user-detail";
  */
 export const getTotalAssetPrice = cache(async () => {
   const [targetCurrency, ...assetsResult] = await Promise.all([
-    (async () => {
-      const user = await getUser();
-      const userDetails = await getUserDetail({ id: user.id });
-      return userDetails?.currency;
-    })(),
+    await currentUserCurrency(),
     await getBondList(),
     await getCryptoCurrencyList(),
     await getEquityList(),
@@ -38,3 +35,13 @@ export const getTotalAssetPrice = cache(async () => {
     currency: targetCurrency,
   };
 });
+
+async function currentUserCurrency() {
+  try {
+    const user = await getUser();
+    const userDetails = await getUserDetail({ id: user.id });
+    return userDetails?.currency;
+  } catch {
+    return DEFAULT_SETTINGS[SETTING_KEYS.BASE_CURRENCY];
+  }
+}
