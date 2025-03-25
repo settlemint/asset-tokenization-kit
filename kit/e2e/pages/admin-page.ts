@@ -21,8 +21,7 @@ export class AdminPage extends BasePage {
     await this.page.getByLabel("Symbol").fill(symbol);
   }
 
-  private async completeAssetCreation(pincode: string, assetType: string) {
-    const buttonName = `Issue a new ${assetType?.toLowerCase()}`;
+  public async completeAssetCreation(buttonName: string, pincode: string) {
     const button = this.page.getByRole("button", { name: buttonName });
 
     await button.waitFor({ state: "attached" });
@@ -76,7 +75,8 @@ export class AdminPage extends BasePage {
       .click();
     await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
-    await this.completeAssetCreation(options.pincode, options.assetType);
+    const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
+    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   async createCryptocurrency(options: {
@@ -97,7 +97,8 @@ export class AdminPage extends BasePage {
     await this.page.getByLabel("Initial supply").fill(options.initialSupply);
     await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
-    await this.completeAssetCreation(options.pincode, options.assetType);
+    const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
+    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   async createEquity(options: {
@@ -133,7 +134,8 @@ export class AdminPage extends BasePage {
       .click();
     await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
-    await this.completeAssetCreation(options.pincode, options.assetType);
+    const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
+    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   async createFund(options: {
@@ -169,14 +171,14 @@ export class AdminPage extends BasePage {
     await this.page.getByLabel("Management fee").fill(options.managementFee);
     await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
-    await this.completeAssetCreation(options.pincode, options.assetType);
+    const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
+    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   async createStablecoin(options: {
     assetType: string;
     name: string;
     symbol: string;
-    isin: string;
     decimals: string;
     validityPeriod: string;
     valueInEur: string;
@@ -187,7 +189,6 @@ export class AdminPage extends BasePage {
       options.name,
       options.symbol
     );
-    await this.page.getByLabel("ISIN").fill(options.isin);
     await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.page
@@ -195,7 +196,8 @@ export class AdminPage extends BasePage {
       .fill(options.validityPeriod);
     await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
-    await this.completeAssetCreation(options.pincode, options.assetType);
+    const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
+    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   async createTokenizedDeposit(options: {
@@ -222,14 +224,7 @@ export class AdminPage extends BasePage {
     await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = "Issue a new tokenized deposit";
-    const button = this.page.getByRole("button", { name: buttonName });
-
-    await button.waitFor({ state: "attached" });
-    await button.scrollIntoViewIfNeeded();
-    await button.click();
-    await this.page.getByRole("dialog").waitFor({ state: "visible" });
-    await this.page.locator('[data-input-otp="true"]').fill(options.pincode);
-    await this.page.getByRole("button", { name: "Yes, confirm" }).click();
+    await this.completeAssetCreation(buttonName, options.pincode);
   }
 
   private async getColumnIndices() {
@@ -554,12 +549,9 @@ export class AdminPage extends BasePage {
 
     await updateCollateralOption.waitFor({ state: "visible" });
     await updateCollateralOption.click();
-    await this.page.getByLabel("Amount").fill(options.amount);
+    await this.page.locator("#amount").fill(options.amount);
     await this.page.getByRole("button", { name: "Next" }).click();
-    await this.page.locator('[data-input-otp="true"]').fill(options.pincode);
-    await this.page
-      .getByRole("button", { name: "Update Collateral Amount" })
-      .click();
+    await this.completeAssetCreation("Update collateral", options.pincode);
   }
 
   private formatAmount(amount: string): string {
@@ -628,18 +620,24 @@ export class AdminPage extends BasePage {
     });
     await mintTokensOption.waitFor({ state: "visible" });
     await mintTokensOption.click();
-    await this.page.getByLabel("Amount").fill(options.amount);
+    await this.page.locator("#amount").fill(options.amount);
     await this.page.getByRole("button", { name: "Next" }).click();
-    await this.page.getByRole("button", { name: "Search for a user" }).click();
-    await this.page.getByPlaceholder("Search for a user...").click();
-    await this.page.getByPlaceholder("Search for a user...").fill(options.user);
     await this.page
-      .getByRole("option", { name: `Avatar ${options.user}` })
+      .getByRole("button", { name: "Enter an address, name or email" })
+      .click();
+    await this.page.waitForSelector('[role="dialog"][data-state="open"]');
+    const searchInput = this.page.locator(
+      '[role="dialog"][data-state="open"] input'
+    );
+    await searchInput.waitFor({ state: "visible" });
+    await searchInput.fill(options.user);
+    await this.page
+      .locator(`[role="option"]`)
+      .filter({ hasText: options.user })
+      .first()
       .click();
     await this.page.getByRole("button", { name: "Next" }).click();
-    await this.page.getByRole("textbox").click();
-    await this.page.getByRole("textbox").fill(options.pincode);
-    await this.page.getByRole("button", { name: "Mint Assets" }).click();
+    await this.completeAssetCreation("Mint", options.pincode);
   }
 
   async verifyTotalSupply(expectedAmount: string) {
@@ -715,25 +713,25 @@ export class AdminPage extends BasePage {
       .toBe(true);
   }
 
+  private getSingularForm(type: string): string {
+    const pluralToSingular: Record<string, string> = {
+      Cryptocurrencies: "cryptocurrency",
+      Stablecoins: "stablecoin",
+      Bonds: "bond",
+      Equities: "equity",
+      Funds: "fund",
+      "Tokenized Deposits": "tokenizeddeposit",
+    };
+    return pluralToSingular[type] || type.toLowerCase();
+  }
+
   async chooseAssetTypeFromSidebar(options: { sidebarAssetTypes: string }) {
     const assetTypeButton = this.page.getByRole("button", {
       name: options.sidebarAssetTypes,
     });
     await assetTypeButton.click();
 
-    const getSingularForm = (type: string): string => {
-      const pluralToSingular: Record<string, string> = {
-        Cryptocurrencies: "cryptocurrency",
-        Stablecoins: "stablecoin",
-        Bonds: "bond",
-        Equities: "equity",
-        Funds: "fund",
-        "Tokenized Deposits": "tokenizeddeposit",
-      };
-      return pluralToSingular[type] || type.toLowerCase();
-    };
-
-    const singularForm = getSingularForm(options.sidebarAssetTypes);
+    const singularForm = this.getSingularForm(options.sidebarAssetTypes);
 
     const viewAllLink = this.page
       .locator(
@@ -767,10 +765,9 @@ export class AdminPage extends BasePage {
       .getByRole("link", { name: "Details" });
 
     await detailsLink.click();
+    const singularForm = this.getSingularForm(options.sidebarAssetTypes);
     await this.page.waitForURL(
-      new RegExp(
-        `.*/${options.sidebarAssetTypes.toLowerCase()}/0x[a-fA-F0-9]{40}`
-      )
+      new RegExp(`.*\/assets\/${singularForm}\/0x[a-fA-F0-9]{40}`)
     );
   }
 }
