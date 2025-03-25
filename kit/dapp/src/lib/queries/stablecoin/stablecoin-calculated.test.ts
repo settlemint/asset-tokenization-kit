@@ -4,8 +4,12 @@ import { addSeconds } from "date-fns";
 import { stablecoinCalculateFields } from "./stablecoin-calculated";
 
 describe("stablecoinCalculateFields", () => {
+  const mockAssetPrice = {
+    amount: 1,
+    currency: "EUR" as const,
+  };
   mock.module("@/lib/queries/asset-price/asset-price", () => ({
-    getAssetPriceInUserCurrency: mock(() => Promise.resolve(1)),
+    getAssetPriceInUserCurrency: mock(() => Promise.resolve(mockAssetPrice)),
   }));
 
   it("should calculate concentration correctly when totalSupplyExact is non-zero", async () => {
@@ -101,6 +105,6 @@ describe("stablecoinCalculateFields", () => {
     const result = await stablecoinCalculateFields(
       onChainStableCoin as OnChainStableCoin
     );
-    expect(result.price).toEqual({ amount: 1, currency: "EUR" });
+    expect(result.price).toEqual(mockAssetPrice);
   });
 });
