@@ -14,7 +14,7 @@ export async function getUser() {
   });
 
   if (!session?.user) {
-    return unauthorized();
+    unauthorized();
   }
 
   return session.user as User;
