@@ -5,6 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { FormStepElement } from "@/components/blocks/form/types";
 import { withdraw } from "@/lib/mutations/withdraw/withdraw-action";
 import { WithdrawSchema } from "@/lib/mutations/withdraw/withdraw-schema";
+import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -20,6 +21,7 @@ interface WithdrawFormProps {
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  bondDetails: Awaited<ReturnType<typeof getBondDetail>>;
 }
 
 export function WithdrawForm({
@@ -28,6 +30,7 @@ export function WithdrawForm({
   asButton = false,
   open,
   onOpenChange,
+  bondDetails,
 }: WithdrawFormProps) {
   const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
@@ -36,19 +39,28 @@ export function WithdrawForm({
 
   // Generate form steps based on yield schedule availability
   const renderFormSteps = () => {
-    const steps: FormStepElement<typeof WithdrawSchema>[] = [];
+    const steps: FormStepElement<ReturnType<typeof WithdrawSchema>>[] = [];
 
     // Only show the target selection if there's a yield schedule
     if (showTarget) {
-      steps.push(<Target key="target" />);
+      steps.push(<Target key="target" bondDetails={bondDetails} />);
     }
 
     // Always show recipient and amount steps
     steps.push(<Recipient key="recipient" />);
     steps.push(<Amount key="amount" />);
-    steps.push(<Summary key="summary" />);
+    steps.push(<Summary key="summary" bondDetails={bondDetails} />);
 
     return steps;
+  };
+
+  // Get initial values based on bond details
+  const initialValues = {
+    address,
+    target: "bond" as const,
+    targetAddress: address,
+    underlyingAssetAddress: bondDetails.underlyingAsset.id,
+    underlyingAssetType: bondDetails.underlyingAsset.type,
   };
 
   return (
@@ -73,10 +85,7 @@ export function WithdrawForm({
         buttonLabels={{
           label: t("trigger-label.withdraw"),
         }}
-        defaultValues={{
-          address,
-          target: "bond",
-        }}
+        defaultValues={initialValues}
       >
         {renderFormSteps()}
       </Form>

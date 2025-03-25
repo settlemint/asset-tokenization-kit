@@ -258,12 +258,9 @@ export async function topUpUnderlyingAssetFunction({
     );
   }
 
-  console.log("[Debug] Approval transaction hash:", approvalTxHash);
 
   // Wait for the approval transaction to be confirmed before proceeding
   await waitForTransactions([approvalTxHash]);
-
-  console.log("[Debug] Approval transaction confirmed");
 
   // Top up either the bond or the yield schedule
   if (target === "bond") {

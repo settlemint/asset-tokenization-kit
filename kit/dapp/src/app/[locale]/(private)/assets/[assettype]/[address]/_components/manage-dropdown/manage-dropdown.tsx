@@ -192,6 +192,7 @@ export function ManageDropdown({
           showTarget={hasYieldSchedule}
           open={openMenuItem === "withdraw"}
           onOpenChange={onFormOpenChange}
+          bondDetails={assetDetails as Awaited<ReturnType<typeof getBondDetail>>}
         />
       ),
     },
