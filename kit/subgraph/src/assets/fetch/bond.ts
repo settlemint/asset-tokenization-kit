@@ -1,16 +1,15 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
-import { Bond, FixedYield } from "../../../generated/schema";
+import { Bond } from "../../../generated/schema";
 import { Bond as BondContract } from "../../../generated/templates/Bond/Bond";
 import { fetchAccount } from "../../fetch/account";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
 import { updateDerivedFields } from "../bond";
 
-export function fetchBond(address: Address): Bond {
+export function fetchBond(address: Address, timestamp: BigInt = BigInt.zero()): Bond {
   let bond = Bond.load(address);
   if (!bond) {
     let endpoint = BondContract.bind(address);
-
     let name = endpoint.try_name();
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
@@ -40,6 +39,7 @@ export function fetchBond(address: Address): Bond {
     bond.totalBurned = BigDecimal.zero();
     bond.totalBurnedExact = BigInt.zero();
     bond.totalHolders = 0;
+    bond.deployedOn = timestamp;
 
     // Bond-specific fields
     bond.capExact = cap.reverted ? BigInt.zero() : cap.value;
@@ -50,28 +50,14 @@ export function fetchBond(address: Address): Bond {
     bond.isMatured = isMatured.reverted ? false : isMatured.value;
     bond.paused = paused.reverted ? false : paused.value;
     bond.faceValue = faceValue.reverted ? BigInt.zero() : faceValue.value;
-    bond.underlyingAsset = underlyingAsset.reverted
-      ? Address.zero()
-      : underlyingAsset.value;
+
+    bond.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
     bond.redeemedAmount = BigInt.zero();
     bond.underlyingBalance = BigInt.zero();
-
-    // Check for assigning the yield schedule
-    if (!yieldSchedule.reverted && !yieldSchedule.value.equals(Address.zero())) {
-      let yieldScheduleEntity = FixedYield.load(yieldSchedule.value);
-      if (yieldScheduleEntity) {
-        bond.yieldSchedule = yieldSchedule.value;
-      } else {
-        bond.yieldSchedule = null;
-      }
-    } else {
-      bond.yieldSchedule = null;
-    }
-
+    bond.yieldSchedule = yieldSchedule.reverted ? null : yieldSchedule.value;
     bond.totalUnderlyingNeededExact = BigInt.zero();
     bond.totalUnderlyingNeeded = BigDecimal.zero();
     bond.hasSufficientUnderlying = false;
-    bond.deployedOn = BigInt.zero();
     updateDerivedFields(bond);
     bond.save();
 
