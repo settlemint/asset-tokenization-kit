@@ -47,4 +47,5 @@ export function Configuration({ baseCurrency }: ConfigurationProps) {
 
 Configuration.validatedFields = [
   "initialSupply",
+  "valueInBaseCurrency",
 ] satisfies (keyof CreateCryptoCurrencyInput)[];

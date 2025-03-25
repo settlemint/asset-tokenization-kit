@@ -93,6 +93,7 @@ export function Summary() {
 Summary.validatedFields = [
   "predictedAddress",
 ] satisfies (keyof CreateBondInput)[];
+
 Summary.beforeValidate = [
   async ({ setValue, getValues }: UseFormReturn<CreateBondInput>) => {
     const values = getValues();

@@ -78,7 +78,9 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = ["predictedAddress"] as const;
+Summary.validatedFields = [
+  "predictedAddress",
+] satisfies (keyof CreateTokenizedDepositInput)[];
 Summary.beforeValidate = [
   async ({
     setValue,
