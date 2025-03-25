@@ -59,23 +59,10 @@ export const OnChainEquitySchema = t.Object(
         description: "Information about the token creator",
       }
     ),
-    holders: t.Array(
-      t.Object(
-        {
-          valueExact: t.StringifiedBigInt({
-            type: "string",
-            description:
-              "The exact amount of tokens held by this holder as a raw big integer",
-          }),
-        },
-        {
-          description: "Information about a single token holder",
-        }
-      ),
-      {
-        description: "Array of top token holders, ordered by amount held",
-      }
-    ),
+    concentration: t.BigDecimal({
+      description:
+        "The percentage of total supply held by the top holders, indicating ownership concentration",
+    }),
   },
   {
     description:
@@ -109,26 +96,8 @@ export const OffChainEquitySchema = t.Object(
 );
 export type OffChainEquity = StaticDecode<typeof OffChainEquitySchema>;
 
-export const CalculatedEquitySchema = t.Object(
-  {
-    concentration: t.Number({
-      description:
-        "The percentage of total supply held by the top holders, indicating ownership concentration",
-    }),
-  },
-  {
-    description:
-      "Calculated fields for equity tokens including ownership concentration",
-  }
-);
-export type CalculatedEquity = StaticDecode<typeof CalculatedEquitySchema>;
-
 export const EquitySchema = t.Intersect(
-  [
-    OnChainEquitySchema,
-    t.Partial(OffChainEquitySchema),
-    CalculatedEquitySchema,
-  ],
+  [OnChainEquitySchema, t.Partial(OffChainEquitySchema)],
   {
     description:
       "Combined schema for complete equity details including on-chain data, off-chain data, and calculated fields",

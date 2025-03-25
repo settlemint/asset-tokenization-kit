@@ -53,23 +53,6 @@ export const OnChainBondSchema = t.Object(
         description: "Information about the token creator",
       }
     ),
-    holders: t.Array(
-      t.Object(
-        {
-          valueExact: t.StringifiedBigInt({
-            type: "string",
-            description:
-              "The exact amount of tokens held by this holder as a raw big integer",
-          }),
-        },
-        {
-          description: "Information about a single token holder",
-        }
-      ),
-      {
-        description: "Array of top token holders, ordered by amount held",
-      }
-    ),
     underlyingAsset: t.EthereumAddress({
       description: "The address of the underlying asset",
     }),
@@ -213,6 +196,10 @@ export const OnChainBondSchema = t.Object(
     deployedOn: t.StringifiedBigInt({
       description: "The timestamp when the bond was deployed",
     }),
+    concentration: t.BigDecimal({
+      description:
+        "The percentage of total supply held by the top holders, indicating ownership concentration",
+    }),
   },
   {
     description:
@@ -246,22 +233,8 @@ export const OffChainBondSchema = t.Object(
 );
 export type OffChainBond = StaticDecode<typeof OffChainBondSchema>;
 
-export const CalculatedBondSchema = t.Object(
-  {
-    concentration: t.Number({
-      description:
-        "The percentage of total supply held by the top holders, indicating ownership concentration",
-    }),
-  },
-  {
-    description:
-      "Calculated fields for bond tokens including ownership concentration",
-  }
-);
-export type CalculatedBond = StaticDecode<typeof CalculatedBondSchema>;
-
 export const BondSchema = t.Intersect(
-  [OnChainBondSchema, t.Partial(OffChainBondSchema), CalculatedBondSchema],
+  [OnChainBondSchema, t.Partial(OffChainBondSchema)],
   {
     description:
       "Combined schema for complete bond details including on-chain data, off-chain data, and calculated fields",

@@ -72,23 +72,10 @@ export const OnChainStableCoinSchema = t.Object(
         description: "Information about the token creator",
       }
     ),
-    holders: t.Array(
-      t.Object(
-        {
-          valueExact: t.StringifiedBigInt({
-            type: "string",
-            description:
-              "The exact amount of tokens held by this holder as a raw big integer",
-          }),
-        },
-        {
-          description: "Information about a single token holder",
-        }
-      ),
-      {
-        description: "Array of top token holders, ordered by amount held",
-      }
-    ),
+    concentration: t.BigDecimal({
+      description:
+        "The percentage of total supply held by the top holders, indicating ownership concentration",
+    }),
   },
   {
     description:
@@ -124,10 +111,6 @@ export type OffChainStableCoin = StaticDecode<typeof OffChainStableCoinSchema>;
 
 export const CalculatedStableCoinSchema = t.Object(
   {
-    concentration: t.Number({
-      description:
-        "The percentage of total supply held by the top holders, indicating ownership concentration",
-    }),
     collateralProofValidity: t.Optional(
       t.Date({
         description: "The date until which the collateral proof is valid",

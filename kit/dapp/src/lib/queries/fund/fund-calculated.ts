@@ -13,17 +13,6 @@ export function fundCalculateFields(
   onChainFund: OnChainFund,
   _offChainFund?: OffChainFund
 ): CalculatedFund {
-  // Calculate ownership concentration from top holders
-  const topHoldersSum = onChainFund.holders.reduce(
-    (sum, holder) => sum + holder.valueExact,
-    0n
-  );
-
-  const concentration =
-    onChainFund.totalSupplyExact === 0n
-      ? 0
-      : Number((topHoldersSum * 100n) / onChainFund.totalSupplyExact);
-
   // Calculate assets under management from balances
   const assetsUnderManagement = onChainFund.asAccount.balances.reduce(
     (acc, balance) => acc + balance.value,
@@ -31,7 +20,6 @@ export function fundCalculateFields(
   );
 
   return safeParse(CalculatedFundSchema, {
-    concentration,
     assetsUnderManagement,
   });
 }

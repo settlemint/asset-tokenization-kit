@@ -8,7 +8,6 @@ import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { getAddress } from "viem";
-import { bondCalculateFields } from "./bond-calculated";
 import { BondFragment, OffchainBondFragment } from "./bond-fragment";
 import { OffChainBondSchema, OnChainBondSchema } from "./bond-schema";
 
@@ -85,12 +84,9 @@ export const getBondList = cache(async () => {
   const bonds = onChainBonds.map((bond) => {
     const offChainBond = assetsById.get(getAddress(bond.id));
 
-    const calculatedFields = bondCalculateFields(bond, offChainBond);
-
     return {
       ...bond,
       ...offChainBond,
-      ...calculatedFields,
     };
   });
 
