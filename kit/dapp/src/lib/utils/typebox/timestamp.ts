@@ -14,6 +14,11 @@ type TimestampInput = string | number | Date;
 if (!FormatRegistry.Has("timestamp")) {
   FormatRegistry.Set("timestamp", (value: any) => {
     if (typeof value === "string") {
+      // Check if it's a numeric string that could be a timestamp
+      if (/^\d+$/.test(value)) {
+        const num = Number(value);
+        return !isNaN(num);
+      }
       // Validate ISO string
       return !isNaN(Date.parse(value));
     } else if (typeof value === "number") {
@@ -56,6 +61,7 @@ export const Timestamp = (options?: SchemaOptions) =>
         examples: [
           "2023-04-01T12:00:00Z",
           1680354000000,
+          "1742547600000000", // Microsecond timestamp as string
           new Date("2023-04-01T12:00:00Z"),
         ],
         ...options,
@@ -63,10 +69,26 @@ export const Timestamp = (options?: SchemaOptions) =>
     )
     .Decode((value: TimestampInput) => {
       if (typeof value === "string") {
-        // Check if it looks like a Unix timestamp (seconds)
-        if (/^\d{10}$/.test(value)) {
-          return new Date(parseInt(value) * 1000);
+        // Handle numeric strings that could be timestamps
+        if (/^\d+$/.test(value)) {
+          const num = Number(value);
+          if (!isNaN(num)) {
+            // Unix seconds (10 digits)
+            if (value.length === 10) {
+              return new Date(num * 1000);
+            }
+            // Milliseconds (13 digits)
+            else if (value.length === 13) {
+              return new Date(num);
+            }
+            // Microseconds (16 digits) or nanoseconds (19 digits)
+            else if (value.length >= 16) {
+              return new Date(num / Math.pow(10, value.length - 13));
+            }
+            return new Date(num);
+          }
         }
+        // Try as ISO string
         return new Date(value);
       } else if (typeof value === "number") {
         // JavaScript Date can safely handle dates up to year 275760
