@@ -82,17 +82,19 @@ export const getFundList = cache(async () => {
     offChainFunds.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const funds = onChainFunds.map((fund) => {
-    const offChainFund = assetsById.get(getAddress(fund.id));
+  const funds = await Promise.all(
+    onChainFunds.map(async (fund) => {
+      const offChainFund = assetsById.get(getAddress(fund.id));
 
-    const calculatedFields = fundCalculateFields(fund, offChainFund);
+      const calculatedFields = await fundCalculateFields(fund, offChainFund);
 
-    return {
-      ...fund,
-      ...offChainFund,
-      ...calculatedFields,
-    };
-  });
+      return {
+        ...fund,
+        ...offChainFund,
+        ...calculatedFields,
+      };
+    })
+  );
 
   return funds;
 });

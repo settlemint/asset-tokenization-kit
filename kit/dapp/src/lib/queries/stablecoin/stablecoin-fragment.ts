@@ -42,6 +42,5 @@ export const StableCoinFragment = theGraphGraphqlKit(`
 export const OffchainStableCoinFragment = hasuraGraphql(`
   fragment OffchainStableCoinFragment on asset {
     id
-    value_in_base_currency
   }
 `);

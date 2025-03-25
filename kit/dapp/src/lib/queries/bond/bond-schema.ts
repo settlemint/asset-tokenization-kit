@@ -252,6 +252,9 @@ export const CalculatedBondSchema = t.Object(
       description:
         "The percentage of total supply held by the top holders, indicating ownership concentration",
     }),
+    price: t.Number({
+      description: "The price of the bond token in the user's currency",
+    }),
   },
   {
     description:

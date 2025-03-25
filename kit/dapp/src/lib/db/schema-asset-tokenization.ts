@@ -9,7 +9,7 @@ export const asset = pgTable("asset", {
 
 export const currencyEnum = pgEnum("currency", fiatCurrencies);
 
-export const assetPrice = pgTable("asset-price", {
+export const assetPrice = pgTable("asset_price", {
   id: text("id").primaryKey(),
   assetId: text("asset_id")
     .notNull()

@@ -122,10 +122,6 @@ export const OffChainFundSchema = t.Object(
         })
       )
     ),
-    value_in_base_currency: t.Number({
-      minimum: 0,
-      description: "The token's value in terms of the base fiat currency",
-    }),
   },
   {
     description:
@@ -142,6 +138,9 @@ export const CalculatedFundSchema = t.Object(
     }),
     assetsUnderManagement: t.Number({
       description: "The total value of assets under management in the fund",
+    }),
+    price: t.Number({
+      description: "The price of the fund token in the user's currency",
     }),
   },
   {

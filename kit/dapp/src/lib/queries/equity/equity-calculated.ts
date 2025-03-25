@@ -1,9 +1,11 @@
+import { safeParse } from "@/lib/utils/typebox";
+import { getAssetPriceInUserCurrency } from "../asset-price/asset-price";
 import type {
   CalculatedEquity,
   OffChainEquity,
   OnChainEquity,
 } from "./equity-schema";
-
+import { CalculatedEquitySchema } from "./equity-schema";
 /**
  * Calculates additional fields for equity tokens
  *
@@ -11,10 +13,10 @@ import type {
  * @param offChainEquity - Off-chain equity data (optional)
  * @returns Calculated fields for the equity token
  */
-export function equityCalculateFields(
+export async function equityCalculateFields(
   onChainEquity: OnChainEquity,
   _offChainEquity?: OffChainEquity
-): CalculatedEquity {
+): Promise<CalculatedEquity> {
   // Calculate ownership concentration from top holders
   const topHoldersSum = onChainEquity.holders.reduce(
     (sum, holder) => sum + holder.valueExact,
@@ -26,7 +28,10 @@ export function equityCalculateFields(
       ? 0
       : Number((topHoldersSum * 100n) / onChainEquity.totalSupplyExact);
 
-  return {
+  const price = await getAssetPriceInUserCurrency(onChainEquity.id);
+
+  return safeParse(CalculatedEquitySchema, {
     concentration,
-  };
+    price,
+  });
 }

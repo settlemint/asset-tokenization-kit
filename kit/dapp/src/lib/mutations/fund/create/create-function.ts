@@ -4,6 +4,7 @@ import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateFundInput } from "./create-schema";
 
 /**
@@ -32,8 +33,8 @@ const FundFactoryCreate = portalGraphql(`
  * Stores additional metadata about the fund in Hasura
  */
 const CreateOffchainFund = hasuraGraphql(`
-  mutation CreateOffchainFund($id: String!, $isin: String, $value_in_base_currency: numeric) {
-    insert_asset_one(object: {id: $id, isin: $isin, value_in_base_currency: $value_in_base_currency}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
+  mutation CreateOffchainFund($id: String!, $isin: String) {
+    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
       isin
     }
@@ -68,7 +69,12 @@ export async function createFundFunction({
   await hasuraClient.request(CreateOffchainFund, {
     id: predictedAddress,
     isin,
-    value_in_base_currency: String(valueInBaseCurrency),
+  });
+
+  await hasuraClient.request(AddAssetPrice, {
+    id: predictedAddress,
+    amount: String(valueInBaseCurrency),
+    currency: "EUR",
   });
 
   const data = await portalClient.request(FundFactoryCreate, {

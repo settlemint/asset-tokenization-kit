@@ -113,10 +113,6 @@ export const OffChainTokenizedDepositSchema = t.Object(
         })
       )
     ),
-    value_in_base_currency: t.Number({
-      minimum: 0,
-      description: "The token's value in terms of the base fiat currency",
-    }),
   },
   {
     description:
@@ -138,6 +134,10 @@ export const CalculatedTokenizedDepositSchema = t.Object(
         description: "The date until which the collateral proof is valid",
       })
     ),
+    price: t.Number({
+      description:
+        "The price of the tokenized deposit token in the user's currency",
+    }),
   },
   {
     description:

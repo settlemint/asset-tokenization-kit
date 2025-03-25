@@ -97,10 +97,6 @@ export const OffChainEquitySchema = t.Object(
         })
       )
     ),
-    value_in_base_currency: t.Number({
-      minimum: 0,
-      description: "The token's value in terms of the base fiat currency",
-    }),
   },
   {
     description:
@@ -114,6 +110,9 @@ export const CalculatedEquitySchema = t.Object(
     concentration: t.Number({
       description:
         "The percentage of total supply held by the top holders, indicating ownership concentration",
+    }),
+    price: t.Number({
+      description: "The price of the equity token in the user's currency",
     }),
   },
   {

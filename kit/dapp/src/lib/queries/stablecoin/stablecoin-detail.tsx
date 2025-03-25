@@ -82,7 +82,7 @@ export const getStableCoinDetail = cache(
       })(),
     ]);
 
-    const calculatedFields = stablecoinCalculateFields(
+    const calculatedFields = await stablecoinCalculateFields(
       onChainStableCoin,
       offChainStableCoin
     );

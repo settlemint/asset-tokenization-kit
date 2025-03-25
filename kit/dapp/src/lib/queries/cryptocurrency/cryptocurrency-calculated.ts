@@ -4,6 +4,7 @@ import {
   type OnChainCryptoCurrency,
 } from "@/lib/queries/cryptocurrency/cryptocurrency-schema";
 import { safeParse } from "@/lib/utils/typebox";
+import { getAssetPriceInUserCurrency } from "../asset-price/asset-price";
 /**
  * Calculates additional fields for a cryptocurrency
  *
@@ -11,7 +12,7 @@ import { safeParse } from "@/lib/utils/typebox";
  * @param offchainCryptocurrency - The off-chain cryptocurrency data
  * @returns An object containing the calculated fields
  */
-export function cryptoCurrencyCalculateFields(
+export async function cryptoCurrencyCalculateFields(
   cryptocurrency: OnChainCryptoCurrency,
   _offchainCryptocurrency?: OffChainCryptoCurrency
 ) {
@@ -24,7 +25,10 @@ export function cryptoCurrencyCalculateFields(
       ? 0
       : Number((topHoldersSum * 100n) / cryptocurrency.totalSupplyExact);
 
+  const price = await getAssetPriceInUserCurrency(cryptocurrency.id);
+
   return safeParse(CalculatedCryptoCurrencySchema, {
     concentration,
+    price,
   });
 }

@@ -4,7 +4,7 @@ import { addSeconds } from "date-fns";
 import { stablecoinCalculateFields } from "./stablecoin-calculated";
 
 describe("stablecoinCalculateFields", () => {
-  it("should calculate concentration correctly when totalSupplyExact is non-zero", () => {
+  it("should calculate concentration correctly when totalSupplyExact is non-zero", async () => {
     const onChainStableCoin: Partial<OnChainStableCoin> = {
       holders: [
         { valueExact: 500n },
@@ -16,13 +16,13 @@ describe("stablecoinCalculateFields", () => {
       liveness: 0n,
     };
 
-    const result = stablecoinCalculateFields(
+    const result = await stablecoinCalculateFields(
       onChainStableCoin as OnChainStableCoin
     );
     expect(result.concentration).toBe(100); // (500 + 300 + 200) / 1000 * 100 = 100%
   });
 
-  it("should calculate concentration as 0 when totalSupplyExact is zero", () => {
+  it("should calculate concentration as 0 when totalSupplyExact is zero", async () => {
     const onChainStableCoin: Partial<OnChainStableCoin> = {
       holders: [{ valueExact: 500n }, { valueExact: 300n }],
       totalSupplyExact: 0n,
@@ -30,13 +30,13 @@ describe("stablecoinCalculateFields", () => {
       liveness: 0n,
     };
 
-    const result = stablecoinCalculateFields(
+    const result = await stablecoinCalculateFields(
       onChainStableCoin as OnChainStableCoin
     );
     expect(result.concentration).toBe(0);
   });
 
-  it("should calculate collateralProofValidity correctly when lastCollateralUpdate is non-zero", () => {
+  it("should calculate collateralProofValidity correctly when lastCollateralUpdate is non-zero", async () => {
     const timestamp = Math.floor(Date.now() / 1000).toString();
     const liveness = "86400"; // 24 hours in seconds
     const onChainStableCoin: Partial<OnChainStableCoin> = {
@@ -46,7 +46,7 @@ describe("stablecoinCalculateFields", () => {
       liveness: BigInt(liveness),
     };
 
-    const result = stablecoinCalculateFields(
+    const result = await stablecoinCalculateFields(
       onChainStableCoin as OnChainStableCoin
     );
     const expectedDate = addSeconds(
@@ -57,7 +57,7 @@ describe("stablecoinCalculateFields", () => {
     expect(result.collateralProofValidity).toEqual(expectedDate);
   });
 
-  it("should set collateralProofValidity to undefined when lastCollateralUpdate is set to zero", () => {
+  it("should set collateralProofValidity to undefined when lastCollateralUpdate is set to zero", async () => {
     const onChainStableCoin: Partial<OnChainStableCoin> = {
       holders: [],
       totalSupplyExact: 1000n,
@@ -65,13 +65,13 @@ describe("stablecoinCalculateFields", () => {
       liveness: 86400n,
     };
 
-    const result = stablecoinCalculateFields(
+    const result = await stablecoinCalculateFields(
       onChainStableCoin as OnChainStableCoin
     );
     expect(result.collateralProofValidity).toBeUndefined();
   });
 
-  it("should handle empty holders array", () => {
+  it("should handle empty holders array", async () => {
     const onChainStableCoin: Partial<OnChainStableCoin> = {
       holders: [],
       totalSupplyExact: 1000n,
@@ -79,7 +79,7 @@ describe("stablecoinCalculateFields", () => {
       liveness: 0n,
     };
 
-    const result = stablecoinCalculateFields(
+    const result = await stablecoinCalculateFields(
       onChainStableCoin as OnChainStableCoin
     );
     expect(result.concentration).toBe(0);

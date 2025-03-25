@@ -1,5 +1,6 @@
 import { safeParse } from "@/lib/utils/typebox";
 import { addSeconds } from "date-fns";
+import { getAssetPriceInUserCurrency } from "../asset-price/asset-price";
 import type {
   CalculatedStableCoin,
   OffChainStableCoin,
@@ -14,10 +15,10 @@ import { CalculatedStableCoinSchema } from "./stablecoin-schema";
  * @param offChainStableCoin - Off-chain stablecoin data (optional)
  * @returns Calculated fields for the stablecoin token
  */
-export function stablecoinCalculateFields(
+export async function stablecoinCalculateFields(
   onChainStableCoin: OnChainStableCoin,
   _offChainStableCoin?: OffChainStableCoin
-): CalculatedStableCoin {
+): Promise<CalculatedStableCoin> {
   // Calculate ownership concentration from top holders
   const topHoldersSum = onChainStableCoin.holders.reduce(
     (sum, holder) => sum + BigInt(holder.valueExact),
@@ -38,8 +39,11 @@ export function stablecoinCalculateFields(
         )
       : undefined;
 
+  const price = await getAssetPriceInUserCurrency(onChainStableCoin.id);
+
   return safeParse(CalculatedStableCoinSchema, {
     concentration,
     collateralProofValidity,
+    price,
   });
 }
