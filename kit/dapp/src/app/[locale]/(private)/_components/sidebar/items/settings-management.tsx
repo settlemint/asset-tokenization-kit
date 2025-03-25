@@ -28,6 +28,11 @@ export async function SettingsManagement() {
                   icon: <ConnectIcon className="size-4" />,
                   path: "/portfolio/settings/api",
                 },
+                {
+                  label: t("platform"),
+                  icon: <SettingsGearIcon className="size-4" />,
+                  path: "/platform/settings",
+                },
               ],
             },
           ],

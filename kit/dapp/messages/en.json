@@ -197,7 +197,7 @@
       },
       "platform-management": {
         "group-title": "Platform management",
-        "settings": "Settings",
+        "settings": "Platform",
         "user-management": "User management"
       },
       "portfolio-management": {
@@ -214,7 +214,8 @@
         "group-title": "Settings",
         "settings": "Settings",
         "profile": "Profile",
-        "api": "API"
+        "api": "API",
+        "platform": "Platform"
       }
     }
   },
