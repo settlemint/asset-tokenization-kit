@@ -126,8 +126,6 @@ export async function getExchangeRate(
     return 1;
   }
 
-  // TODO: caching because we fetch this exchange rate when processing the price for each asset, too many calls to the db
-
   const today = getTodayDateString();
 
   // Try to get today's rate first
