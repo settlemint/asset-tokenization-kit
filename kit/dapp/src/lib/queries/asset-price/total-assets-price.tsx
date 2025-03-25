@@ -15,14 +15,7 @@ import { getCurrentUserDetail } from "../user/current-user-detail";
  * Gets the total price across all assets in the user's preferred currency
  *
  * This function fetches all asset types, then calculates their total value in the user's
- * preferred currency. For improved performance, it optimizes database access by:
- *
- * 1. Fetching all exchange rates for the target currency at once with getExchangeRatesForBase
- * 2. Creating a cached map of rates for quick lookups during conversion
- * 3. Only falling back to individual rate lookups when necessary
- *
- * This approach reduces database calls from O(n) to O(1) where n is the number of
- * different currencies in the asset list.
+ * preferred currency.
  */
 export const getTotalAssetPrice = cache(async () => {
   const [userDetails, ...assetsResult] = await Promise.all([
@@ -54,36 +47,38 @@ export const getTotalAssetPrice = cache(async () => {
 
   // Calculate the total price by converting each asset's price to the user's currency
   for (const asset of assets) {
-    if (asset.price && asset.price.amount > 0) {
-      // For assets, we typically calculate the total supply × price
-      // If totalSupply is available, use it; otherwise, use 1 as default amount
-      const assetAmount = asset.totalSupply ? Number(asset.totalSupply) : 1;
+    // Skip assets with no price or zero price
+    if (!asset.price || asset.price.amount <= 0) continue;
 
-      // Calculate the value in the asset's currency
-      const assetValue = asset.price.amount * assetAmount;
+    // For assets, we typically calculate the total supply × price
+    const assetAmount = asset.totalSupply ? Number(asset.totalSupply) : 0;
 
-      if (asset.price.currency === targetCurrency) {
-        // No conversion needed if the asset is already in the target currency
-        totalPrice += assetValue;
-      } else {
-        // Look up the exchange rate for this currency
-        const rate = rateMap.get(asset.price.currency);
-        if (rate !== undefined) {
-          // targetCurrency is the base, asset.price.currency is the quote
-          // To convert from quote to base currency, we divide by the rate
-          // e.g., if 1 EUR = 1.1 USD, to convert 100 USD to EUR: 100 / 1.1 = 90.91 EUR
-          totalPrice += assetValue / rate;
-        } else {
-          // Fall back to single exchange rate lookup if not in map
-          const exchangeRate = await getExchangeRate(
-            asset.price.currency,
-            targetCurrency
-          );
-          if (exchangeRate !== null) {
-            totalPrice += assetValue * exchangeRate;
-          }
-        }
-      }
+    // Calculate the value in the asset's currency
+    const assetValue = asset.price.amount * assetAmount;
+
+    // No conversion needed if the asset is already in the target currency
+    if (asset.price.currency === targetCurrency) {
+      totalPrice += assetValue;
+      continue;
+    }
+
+    // Look up the exchange rate for this currency
+    const rate = rateMap.get(asset.price.currency);
+    if (rate !== undefined) {
+      // targetCurrency is the base, asset.price.currency is the quote
+      // To convert from quote to base currency, we divide by the rate
+      totalPrice += assetValue / rate;
+      continue;
+    }
+
+    // Fall back to single exchange rate lookup if not in map
+    const exchangeRate = await getExchangeRate(
+      asset.price.currency,
+      targetCurrency
+    );
+
+    if (exchangeRate !== null) {
+      totalPrice += assetValue * exchangeRate;
     }
   }
 
