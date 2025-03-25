@@ -1,14 +1,87 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
-import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
+import { getAssetDetail } from '@/lib/queries/asset-detail';
+import { waitForTransactions } from '@/lib/queries/transactions/wait-for-transaction';
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import type { TopUpInput } from "./top-up-schema";
 
 /**
- * GraphQL mutation for approving a token for spending
+ * GraphQL mutations for approving token spending for each asset type
  */
+const BondApprove = portalGraphql(`
+  mutation BondApprove(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: BondApproveInput!
+  ) {
+    BondApprove(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const CryptoCurrencyApprove = portalGraphql(`
+  mutation CryptoCurrencyApprove(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: CryptoCurrencyApproveInput!
+  ) {
+    CryptoCurrencyApprove(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const EquityApprove = portalGraphql(`
+  mutation EquityApprove(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: EquityApproveInput!
+  ) {
+    EquityApprove(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const FundApprove = portalGraphql(`
+  mutation FundApprove(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: FundApproveInput!
+  ) {
+    FundApprove(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
 const StableCoinApprove = portalGraphql(`
   mutation StableCoinApprove(
     $address: String!,
@@ -17,6 +90,24 @@ const StableCoinApprove = portalGraphql(`
     $input: StableCoinApproveInput!
   ) {
     StableCoinApprove(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const TokenizedDepositApprove = portalGraphql(`
+  mutation TokenizedDepositApprove(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: TokenizedDepositApproveInput!
+  ) {
+    TokenizedDepositApprove(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
@@ -52,6 +143,30 @@ const BondTopUpUnderlyingAsset = portalGraphql(`
 `);
 
 /**
+ * GraphQL mutation for topping up the underlying asset of a yield schedule
+ *
+ * @remarks
+ * This mutation requires authentication via challenge response
+ */
+const FixedYieldTopUpUnderlyingAsset = portalGraphql(`
+  mutation FixedYieldTopUpUnderlyingAsset(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String!,
+    $input: FixedYieldTopUpUnderlyingAssetInput!
+  ) {
+    FixedYieldTopUpUnderlyingAsset(
+      address: $address
+      from: $from
+      challengeResponse: $challengeResponse
+      input: $input
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+/**
  * Function to top up the underlying asset of a bond
  *
  * @param input - Validated input for topping up the bond
@@ -59,50 +174,128 @@ const BondTopUpUnderlyingAsset = portalGraphql(`
  * @returns The transaction hash
  */
 export async function topUpUnderlyingAssetFunction({
-  parsedInput: { address, pincode, amount, underlyingAssetAddress },
+  parsedInput: { target, amount, pincode, targetAddress, underlyingAssetAddress, underlyingAssetType },
   ctx: { user },
 }: {
   parsedInput: TopUpInput;
   ctx: { user: User };
 }) {
-  const asset = await getAssetUsersDetail({
-    address: underlyingAssetAddress,
+  const asset = await getAssetDetail({
+    address: targetAddress,
+    assettype: 'bond'
   });
+
+  if (!asset) {
+    throw new Error("Missing asset details");
+  }
+
+  const underlyingAsset = await getAssetDetail({
+    address: underlyingAssetAddress,
+    assettype: underlyingAssetType
+  });
+
+  if (!underlyingAsset) {
+    throw new Error(`Missing underlying asset details for ${underlyingAssetType} with address: ${underlyingAssetAddress}`);
+  }
 
   const formattedAmount = parseUnits(
     amount.toString(),
-    asset.decimals
+    underlyingAsset.decimals
   ).toString();
 
-  const approvalData = await portalClient.request(StableCoinApprove, {
+  // Common parameters for all approve mutations
+  const approveParams = {
     address: underlyingAssetAddress,
     from: user.wallet,
     challengeResponse: await handleChallenge(user.wallet, pincode),
     input: {
-      spender: address,
+      spender: targetAddress,
       value: formattedAmount,
     },
-  });
+  };
 
-  const approvalTxHash = approvalData.StableCoinApprove?.transactionHash;
+  // Approve spending of the underlying asset based on asset type
+  let approvalTxHash;
+
+  switch (underlyingAssetType) {
+    case "bond": {
+      const response = await portalClient.request(BondApprove, approveParams);
+      approvalTxHash = response.BondApprove?.transactionHash;
+      break;
+    }
+    case "cryptocurrency": {
+      const response = await portalClient.request(CryptoCurrencyApprove, approveParams);
+      approvalTxHash = response.CryptoCurrencyApprove?.transactionHash;
+      break;
+    }
+    case "equity": {
+      const response = await portalClient.request(EquityApprove, approveParams);
+      approvalTxHash = response.EquityApprove?.transactionHash;
+      break;
+    }
+    case "fund": {
+      const response = await portalClient.request(FundApprove, approveParams);
+      approvalTxHash = response.FundApprove?.transactionHash;
+      break;
+    }
+    case "stablecoin": {
+      const response = await portalClient.request(StableCoinApprove, approveParams);
+      approvalTxHash = response.StableCoinApprove?.transactionHash;
+      break;
+    }
+    case "tokenizeddeposit": {
+      const response = await portalClient.request(TokenizedDepositApprove, approveParams);
+      approvalTxHash = response.TokenizedDepositApprove?.transactionHash;
+      break;
+    }
+    default:
+      throw new Error("Invalid asset type");
+  }
+
   if (!approvalTxHash) {
-    throw new Error("Failed to approve the bond to spend the underlying asset");
+    throw new Error(
+      "Failed to approve spending of the underlying asset"
+    );
   }
 
-  const response = await portalClient.request(BondTopUpUnderlyingAsset, {
-    address,
-    from: user.wallet,
-    input: {
-      amount: parseUnits(amount.toString(), asset.decimals).toString(),
-    },
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  });
 
-  if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
-    throw new Error("Failed to get transaction hash");
+  // Wait for the approval transaction to be confirmed before proceeding
+  await waitForTransactions([approvalTxHash]);
+
+  // Top up either the bond or the yield schedule
+  if (target === "bond") {
+    const response = await portalClient.request(BondTopUpUnderlyingAsset, {
+      address: targetAddress,
+      from: user.wallet,
+      input: {
+        amount: formattedAmount,
+      },
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    });
+
+    if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
+      throw new Error("Failed to get transaction hash");
+    }
+
+    return safeParse(t.Hashes(), [
+      response.BondTopUpUnderlyingAsset.transactionHash,
+    ]);
+  } else {
+    const response = await portalClient.request(FixedYieldTopUpUnderlyingAsset, {
+      address: targetAddress,
+      from: user.wallet,
+      input: {
+        amount: formattedAmount,
+      },
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    });
+
+    if (!response.FixedYieldTopUpUnderlyingAsset?.transactionHash) {
+      throw new Error("Failed to get transaction hash");
+    }
+
+    return safeParse(t.Hashes(), [
+      response.FixedYieldTopUpUnderlyingAsset.transactionHash,
+    ]);
   }
-
-  return safeParse(t.Hashes(), [
-    response.BondTopUpUnderlyingAsset.transactionHash,
-  ]);
 }

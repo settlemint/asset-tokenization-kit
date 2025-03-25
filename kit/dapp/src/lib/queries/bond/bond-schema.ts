@@ -53,9 +53,25 @@ export const OnChainBondSchema = t.Object(
         description: "Information about the token creator",
       }
     ),
-    underlyingAsset: t.EthereumAddress({
-      description: "The address of the underlying asset",
-    }),
+    underlyingAsset: t.Object(
+      {
+        id: t.EthereumAddress({
+          description: "The address of the underlying asset",
+        }),
+        symbol: t.String({
+          description: "The symbol of the underlying asset",
+        }),
+        decimals: t.Decimals({
+          description: "The number of decimal places used by the underlying asset",
+        }),
+        type: t.AssetType({
+          description: "The type of the underlying asset",
+        }),
+      },
+      {
+        description: "Information about the underlying asset",
+      }
+    ),
     maturityDate: t.Optional(
       t.StringifiedBigInt({
         description: "The maturity date of the bond as a timestamp",
@@ -114,6 +130,9 @@ export const OnChainBondSchema = t.Object(
                 decimals: t.Decimals({
                   description:
                     "The number of decimal places used by the underlying asset",
+                }),
+                type: t.AssetType({
+                  description: "The type of the underlying asset",
                 }),
               },
               {

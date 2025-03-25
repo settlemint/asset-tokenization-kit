@@ -69,7 +69,7 @@ type Bond implements Asset @entity {
   isMatured: Boolean!
   paused: Boolean!
   faceValue: BigInt!
-  underlyingAsset: Bytes!
+  underlyingAsset: Asset!
   redeemedAmount: BigInt!
   underlyingBalance: BigInt!
   yieldSchedule: FixedYield

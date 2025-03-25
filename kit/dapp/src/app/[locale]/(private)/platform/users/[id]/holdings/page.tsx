@@ -1,9 +1,10 @@
 import UserAssetsTable from "@/components/blocks/user-assets-table/user-assets-table";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 interface UserHoldingsPageProps {
-  params: Promise<{ locale: string; id: string }>;
+  params: Promise<{ locale: Locale; id: string }>;
 }
 
 export default async function UserHoldingsPage({

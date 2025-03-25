@@ -4,11 +4,12 @@ import { getUser } from "@/lib/auth/utils";
 import { getBlockExplorerAllTxUrl } from "@/lib/block-explorer";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
 interface TransactionsPageProps {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }
 
 export async function generateMetadata({
