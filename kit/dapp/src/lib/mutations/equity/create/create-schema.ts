@@ -50,7 +50,7 @@ export function CreateEquitySchema() {
         error: "equity.duplicate",
       }),
       price: t.Price({
-        description: "Price of the cryptocurrency",
+        description: "Price of the equity",
       }),
     },
     {
