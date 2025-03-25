@@ -252,6 +252,7 @@ files:
     components.charts.assets.loading: 8524de963f07201e5c086830d370797f
     components.charts.assets.stablecoin: 0501a2e331bfc725e5ea1728a8de9098
     components.charts.assets.tokenizeddeposit: b76912a65edce9a71850a9e09b4f3fd3
+    components.charts.assets.total-collateral.label: 412a97b3900a6749e168a9d078c33969
     components.charts.assets.total-supply.description: 2c73005a0303bc52d3f4285cc4a71104
     components.charts.assets.total-supply.label: 1ecae95c3c8f236721cce5b740b2deaa
     components.charts.assets.total-supply.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
@@ -313,6 +314,7 @@ files:
     components.form.assets.default-placeholder: 59d5d61e9e9b2dc33a0211623cc4fe11
     components.form.assets.loading: 8524de963f07201e5c086830d370797f
     components.form.assets.no-asset-found: 244c9fb877941479e9505f2c6b536b4e
+    components.form.assets.recent-assets: b2056a7da1cf49d659de78a863312faa
     components.form.assets.search-placeholder: 071ed23daa1c788c05da3586ecc2f7b2
     components.form.button.next: 10ac3d04253ef7e1ddc73e6091c0cd55
     components.form.button.previous: dd1f775e443ff3b9a89270713580a51b
@@ -336,11 +338,14 @@ files:
     components.form.users.default-placeholder: 59d5d61e9e9b2dc33a0211623cc4fe11
     components.form.users.loading: 8524de963f07201e5c086830d370797f
     components.form.users.no-user-found: 60290ae81e1a542e7ac5b7d87846deac
+    components.form.users.recent-users: b2056a7da1cf49d659de78a863312faa
     components.form.users.search-placeholder: dc17b447650377fa087e1237ed452c34
     components.logo.alt-text: 0ca5471816725ad71ffdeca830e37eb0
     components.search.assets-section: 9aedeaf1f77b8642abe528503b8c5de8
     components.search.no-results: e576c23d915755d83e2d1f47bd9f6c22
     components.search.placeholder: ddb5fad6d85b5b6a32faa3012cd3b981
+    components.search.recent-assets: d46ed58e8bf25e803326e0a0c0b6092b
+    components.search.recent-users: cb5dc04e2833eab679b1f194f386fc6c
     components.search.users-section: f9aae5fda8d810a29f12d1e61b4ab25f
     components.transaction-details.blob-gas-price-label: d1b6efe73a5f82be48fac142a002c2d5
     components.transaction-details.blob-gas-used-label: 8c5a1f00dd1fff4ff27d906c76388b98
@@ -505,6 +510,10 @@ files:
     layout.user-dropdown.documentation: 5b6cf869265c13af8566f192b4ab3d2a
     layout.user-dropdown.logout: 4394c8d8e63c470de62ced3ae85de5ae
     layout.user-dropdown.pending-transactions: d20ab843371da5dfa95bb6212a9f6aeb
+    not-found.description: 8517fb41be07961f6133d467452ddba7
+    not-found.go-back: 22b653bd8d2edcebb9e0036b4ac79262
+    not-found.go-home: 382c69628e6c1c196feec18cba47b6a9
+    not-found.title: d0fbda9855d118740f1105334305c126
     paused: e99180abf47a8b3a856e0bcb2656990a
     portfolio.activity.page-description: bd7b3322b15dd585fb1b8a886fbb608c
     portfolio.activity.page-title: ecfc2dffe568c10a67dbc6d3724cfde2
@@ -784,16 +793,16 @@ files:
     private.assets.details.forms.amount.wallet-balance: 717a40aa02381f5202a0757d529546fc
     private.assets.details.forms.form.description.allow: a5901d50fdc3a5d38eb3df932c5a6710
     private.assets.details.forms.form.description.block: ca195616f62f784f0e86968609da8597
-    private.assets.details.forms.form.description.burn: 4135df08bf718f0ddd26882c0af91f82
+    private.assets.details.forms.form.description.burn: eaf555f302974fd462f7302492d52a23
     private.assets.details.forms.form.description.disallow: ca195616f62f784f0e86968609da8597
     private.assets.details.forms.form.description.freeze: 10691e514d0c89e51ec69078c012f6ba
     private.assets.details.forms.form.description.grant-role: e470b2493fd45aa303f48dd8babf8ca5
     private.assets.details.forms.form.description.mature: f6c210387a1f441e007cb4f1b2a16b5e
-    private.assets.details.forms.form.description.mint: 2211849262ac534b3a9fe5293a913a74
-    private.assets.details.forms.form.description.pause: 30ab74766762fff4c3ca0aed20a5cd39
+    private.assets.details.forms.form.description.mint: 1fc8b93dd4a116f775de782dd3c32f20
+    private.assets.details.forms.form.description.pause: faf11b3bf6b46d75c08dd5472d084340
     private.assets.details.forms.form.description.top-up: 9093934e1686ad126e32e39451ea9084
     private.assets.details.forms.form.description.unblock: a86c25e810d0d65ea5fe4c1c3455326f
-    private.assets.details.forms.form.description.unpause: 9d6d0992343d378e035f0714bd4c4778
+    private.assets.details.forms.form.description.unpause: 183ceaa17cb3824e999414ed3e919b43
     private.assets.details.forms.form.description.update-collateral: e4a73a6a6ebac6950c9c8ccb7f0c7dab
     private.assets.details.forms.form.description.withdraw: 2dc13824b46ead3e09350ef66a3ae6a5
     private.assets.details.forms.form.title.allow: 0c302ec9275ad612fa14bd24fa397dcf

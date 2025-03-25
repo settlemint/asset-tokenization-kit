@@ -359,6 +359,9 @@
         "loading": "Loading...",
         "stablecoin": "Stablecoin",
         "tokenizeddeposit": "Tokenized Deposit",
+        "total-collateral": {
+          "label": "Total Collateral"
+        },
         "total-supply": {
           "description": "Showing the total supply of the token",
           "label": "Total supply",
@@ -716,10 +719,10 @@
     }
   },
   "not-found": {
-    "title": "Page not found",
     "description": "The page you are looking for doesn't exist or has been moved.",
     "go-back": "Go back",
-    "go-home": "Go home"
+    "go-home": "Go home",
+    "title": "Page not found"
   },
   "paused": "Paused",
   "portfolio": {
