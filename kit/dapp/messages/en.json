@@ -612,6 +612,20 @@
     "validation-errors": "Validation error",
     "void": "This field should be empty"
   },
+  "error-pages": {
+    "forbidden": {
+      "title": "Forbidden",
+      "description": "You are not authorized to access this page.",
+      "go-back": "Go back",
+      "go-home": "Go home"
+    },
+    "not-found": {
+      "title": "Page not found",
+      "description": "The page you are looking for doesn't exist or has been moved.",
+      "go-back": "Go back",
+      "go-home": "Go home"
+    }
+  },
   "homepage": {
     "asset-tokenization": "asset tokenization",
     "bonds-funds-equities": "bonds, funds, equities",
@@ -714,12 +728,6 @@
       "logout": "Log out",
       "pending-transactions": "Pending Transactions"
     }
-  },
-  "not-found": {
-    "title": "Page not found",
-    "description": "The page you are looking for doesn't exist or has been moved.",
-    "go-back": "Go back",
-    "go-home": "Go home"
   },
   "paused": "Paused",
   "portfolio": {

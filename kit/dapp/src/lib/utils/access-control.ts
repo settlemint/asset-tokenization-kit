@@ -1,7 +1,14 @@
 import type { User } from "@/lib/auth/types";
+import { forbidden } from "next/navigation";
 import { authClient } from "../auth/client";
 import { getUser } from "../auth/utils";
 
+/**
+ * The error thrown when the user does not have the required permissions
+ * @remarks
+ * This is used to determine if the user is authenticated and has the required permissions
+ * to access the resource.
+ */
 export class AccessControlError extends Error {
   public status: number;
 
@@ -12,9 +19,14 @@ export class AccessControlError extends Error {
   }
 }
 
+/**
+ * The context of the user, should be omitted if the function is called from a Next.js page
+ * @remarks
+ * This is used to determine if the user is authenticated and has the required permissions
+ * to access the resource.
+ */
 type UserContext = {
   currentUser?: Omit<User, "wallet">;
-  [key: string]: unknown;
 };
 
 export function withAccessControl<
@@ -50,6 +62,10 @@ export function withAccessControl<
       role: userRole,
     });
     if (!hasPermission) {
+      const isNextJs = !currentUser;
+      if (isNextJs) {
+        forbidden();
+      }
       throw new AccessControlError("Forbidden", 403);
     }
     return fn(args) as Awaited<ReturnType<T>>;
