@@ -1,14 +1,5 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 
-<<<<<<< HEAD
-export const WithdrawSchema = z.object({
-  address: z.address(),
-  to: z.address(),
-  amount: z.amount(),
-  pincode: z.pincode(),
-  target: z.enum(["bond", "yield"]),
-})
-=======
 /**
  * TypeBox schema for validating withdraw underlying asset mutation inputs
  *
@@ -55,6 +46,5 @@ export function WithdrawSchema({
     }
   );
 }
->>>>>>> origin/main
 
 export type WithdrawInput = StaticDecode<ReturnType<typeof WithdrawSchema>>;

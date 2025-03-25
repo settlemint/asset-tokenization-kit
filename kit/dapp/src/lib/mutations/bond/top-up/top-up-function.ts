@@ -174,20 +174,28 @@ const FixedYieldTopUpUnderlyingAsset = portalGraphql(`
  * @returns The transaction hash
  */
 export async function topUpUnderlyingAssetFunction({
-  parsedInput: { target, amount, pincode, targetAddress, underlyingAssetAddress },
+  parsedInput: { target, amount, pincode, targetAddress, underlyingAssetAddress, targetType, underlyingAssetType },
   ctx: { user },
 }: {
   parsedInput: TopUpInput;
   ctx: { user: User };
 }) {
-  // Get the underlying asset details to determine its type
+  const asset = await getAssetDetail({
+    address: targetAddress,
+    assettype: targetType
+  });
+
+  if (!asset) {
+    throw new Error("Missing asset details");
+  }
+
   const underlyingAsset = await getAssetDetail({
     address: underlyingAssetAddress,
-    assettype: 'bond'
+    assettype: underlyingAssetType
   });
 
   if (!underlyingAsset) {
-    throw new Error("Missing underlying asset details");
+    throw new Error(`Missing underlying asset details for ${underlyingAssetType} with address: ${underlyingAssetAddress}`);
   }
 
   const formattedAmount = parseUnits(
@@ -209,7 +217,7 @@ export async function topUpUnderlyingAssetFunction({
   // Approve spending of the underlying asset based on asset type
   let approvalTxHash;
 
-  switch (underlyingAsset.type) {
+  switch (underlyingAssetType) {
     case "bond": {
       const response = await portalClient.request(BondApprove, approveParams);
       approvalTxHash = response.BondApprove?.transactionHash;

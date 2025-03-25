@@ -33,6 +33,12 @@ export function TopUpSchema({
       underlyingAssetAddress: t.EthereumAddress({
         description: "The address of the underlying asset contract",
       }),
+      targetType: t.AssetType({
+        description: "The type of the target (bond or yield schedule)",
+      }),
+      underlyingAssetType: t.AssetType({
+        description: "The type of the underlying asset (bond or yield schedule)",
+      }),
       amount: t.Amount(maxAmount, minAmount, decimals, {
         description: "The amount of underlying asset to top up",
       }),

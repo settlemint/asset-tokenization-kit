@@ -38,14 +38,14 @@ export function TopUpForm({
 
   // Generate form steps based on yield schedule availability
   const renderFormSteps = () => {
-    const steps: FormStepElement<typeof TopUpSchema>[] = [];
+    const steps: FormStepElement<ReturnType<typeof TopUpSchema>>[] = [];
 
     if (showTarget) {
-      steps.push(<Target key="target"/>);
+      steps.push(<Target key="target" bondDetails={bondDetails}/>);
     }
 
     steps.push(<Amount key="amount" />);
-    steps.push(<Summary key="summary" />);
+    steps.push(<Summary key="summary" bondDetails={bondDetails} />);
 
     return steps;
   };
@@ -56,6 +56,8 @@ export function TopUpForm({
     target: "bond" as const,
     targetAddress: address,
     underlyingAssetAddress: bondDetails.underlyingAsset.id,
+    targetType: bondDetails.underlyingAsset.type,
+    underlyingAssetType: bondDetails.underlyingAsset.type,
   };
 
   return (

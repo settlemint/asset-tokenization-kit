@@ -21,7 +21,7 @@ export async function YieldDetails({ address }: DetailsProps) {
   const t = await getTranslations("admin.bonds.yield");
   const locale = await getLocale();
 
-  const yieldPerPeriod = yieldSchedule.periods[0]?.totalClaimed ?? "0";
+  const yieldPerPeriod =  yieldSchedule.periods[0]?.totalClaimed ?? "0";
   const ratePercentage = Number(yieldSchedule.rate) / 100;
   const periodCount = Math.floor(
     (Number(yieldSchedule.endDate) -
