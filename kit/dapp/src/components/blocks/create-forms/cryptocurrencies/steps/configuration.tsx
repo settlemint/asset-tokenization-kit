@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 export function Configuration() {
-  const { control } = useFormContext<CreateCryptoCurrencyInput>();
+  const { control, setValue } = useFormContext<CreateCryptoCurrencyInput>();
   const { data } = authClient.useSession();
   const t = useTranslations("private.assets.create");
   const currencyOptions = fiatCurrencies.map((currency) => ({
@@ -29,10 +29,13 @@ export function Configuration() {
     if (!data?.user) return;
     const setCurrency = async () => {
       const userDetails = await getUserDetail({ id: data.user.id });
-      setUserCurrency(userDetails?.currency);
+      if (userDetails?.currency) {
+        setUserCurrency(userDetails.currency);
+        setValue("price.currency", userDetails.currency);
+      }
     };
     void setCurrency();
-  }, [data?.user]);
+  }, [data?.user, setValue]);
 
   return (
     <FormStep
