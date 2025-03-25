@@ -1,8 +1,6 @@
 import { getUser } from "@/lib/auth/utils";
-import { type CurrencyCode, SETTING_KEYS } from "@/lib/db/schema-settings";
-import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import { getFundList } from "@/lib/queries/fund/fund-list";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { cache } from "react";
 import { getBondList } from "../bond/bond-list";
 import { getCryptoCurrencyList } from "../cryptocurrency/cryptocurrency-list";
@@ -24,8 +22,7 @@ const Settings = hasuraGraphql(`
  * Gets the total price of all assets in the user's preferred currency
  */
 export const getTotalAssetPrice = cache(async () => {
-  const [settingsResult, targetCurrency, ...assetsResult] = await Promise.all([
-    hasuraClient.request(Settings),
+  const [targetCurrency, ...assetsResult] = await Promise.all([
     (async () => {
       const user = await getUser();
       const userDetails = await getUserDetail({ id: user.id });
@@ -38,17 +35,6 @@ export const getTotalAssetPrice = cache(async () => {
     await getStableCoinList(),
     await getTokenizedDepositList(),
   ]);
-
-  const baseCurrency =
-    (settingsResult.settings.find(
-      (setting) => setting.key === SETTING_KEYS.BASE_CURRENCY
-    )?.value as CurrencyCode) ?? "EUR";
-  const exchangeRate = await getExchangeRate(baseCurrency, targetCurrency);
-  if (!exchangeRate) {
-    throw new Error(
-      `Exchange rate not found for base currency ${baseCurrency} and target currency ${targetCurrency}`
-    );
-  }
 
   const assets = assetsResult.flat();
 
