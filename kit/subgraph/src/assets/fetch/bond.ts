@@ -40,6 +40,7 @@ export function fetchBond(address: Address): Bond {
     bond.totalBurned = BigDecimal.zero();
     bond.totalBurnedExact = BigInt.zero();
     bond.totalHolders = 0;
+    bond.concentration = BigDecimal.zero();
 
     // Bond-specific fields
     bond.capExact = cap.reverted ? BigInt.zero() : cap.value;
@@ -57,7 +58,10 @@ export function fetchBond(address: Address): Bond {
     bond.underlyingBalance = BigInt.zero();
 
     // Check for assigning the yield schedule
-    if (!yieldSchedule.reverted && !yieldSchedule.value.equals(Address.zero())) {
+    if (
+      !yieldSchedule.reverted &&
+      !yieldSchedule.value.equals(Address.zero())
+    ) {
       let yieldScheduleEntity = FixedYield.load(yieldSchedule.value);
       if (yieldScheduleEntity) {
         bond.yieldSchedule = yieldSchedule.value;

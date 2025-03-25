@@ -28,6 +28,7 @@ import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { tokenizedDepositCollateralCalculatedFields } from "./calculations/collateral";
+import { calculateConcentration } from "./calculations/concentration";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { burnEvent } from "./events/burn";
@@ -99,6 +100,10 @@ export function handleTransfer(event: Transfer): void {
 
     // Update collateral calculated fields after supply change
     tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
+    tokenizedDeposit.concentration = calculateConcentration(
+      tokenizedDeposit.holders.load(),
+      tokenizedDeposit.totalSupplyExact
+    );
 
     if (
       !hasBalance(tokenizedDeposit.id, to.id, tokenizedDeposit.decimals, false)
@@ -201,6 +206,10 @@ export function handleTransfer(event: Transfer): void {
 
     // Update collateral calculated fields after supply change
     tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
+    tokenizedDeposit.concentration = calculateConcentration(
+      tokenizedDeposit.holders.load(),
+      tokenizedDeposit.totalSupplyExact
+    );
 
     const balance = fetchAssetBalance(
       tokenizedDeposit.id,
@@ -383,6 +392,10 @@ export function handleTransfer(event: Transfer): void {
   }
 
   tokenizedDeposit.lastActivity = event.block.timestamp;
+  tokenizedDeposit.concentration = calculateConcentration(
+    tokenizedDeposit.holders.load(),
+    tokenizedDeposit.totalSupplyExact
+  );
   tokenizedDeposit.save();
 
   // Update supply in asset stats
@@ -1065,6 +1078,10 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   tokenizedDeposit.lastActivity = event.block.timestamp;
   tokenizedDeposit.lastCollateralUpdate = event.block.timestamp;
   tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
+  tokenizedDeposit.concentration = calculateConcentration(
+    tokenizedDeposit.holders.load(),
+    tokenizedDeposit.totalSupplyExact
+  );
   tokenizedDeposit.save();
 
   const assetStats = newAssetStatsData(
