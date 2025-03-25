@@ -42,6 +42,7 @@ import { transferEvent } from "./events/transfer";
 import { unpausedEvent } from "./events/unpaused";
 import { userAllowedEvent } from "./events/userallowed";
 import { userDisallowedEvent } from "./events/userdisallowed";
+import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchTokenizedDeposit } from "./fetch/tokenizeddeposit";
 import {
@@ -462,22 +463,64 @@ export function handlePaused(event: Paused): void {
   const tokenizedDeposit = fetchTokenizedDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
 
-  const paused = pausedEvent(
+  log.info("TokenizedDeposit paused event: sender={}, token={}", [
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  tokenizedDeposit.paused = true;
+  tokenizedDeposit.lastActivity = event.block.timestamp;
+  tokenizedDeposit.save();
+
+  const assetCount = fetchAssetCount(AssetType.tokenizeddeposit);
+  assetCount.countPaused = assetCount.countPaused + 1;
+  assetCount.save();
+
+  const holders = tokenizedDeposit.holders.load();
+  for (let i = 0; i < holders.length; i++) {
+    const assetBalance = holders[i];
+    if (
+      hasBalance(
+        tokenizedDeposit.id,
+        assetBalance.account,
+        tokenizedDeposit.decimals,
+        true
+      )
+    ) {
+      const holderAccount =
+        sender.id == assetBalance.account
+          ? sender
+          : fetchAccount(Address.fromBytes(assetBalance.account));
+      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount + 1;
+      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.plus(
+        assetBalance.valueExact
+      );
+      holderAccount.pausedBalance = toDecimals(
+        holderAccount.pausedBalanceExact,
+        18
+      );
+      log.info(
+        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
+        [
+          holderAccount.id.toHexString(),
+          holderAccount.pausedBalancesCount.toString(),
+          holderAccount.pausedBalance.toString(),
+        ]
+      );
+      holderAccount.save();
+    }
+  }
+
+  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  assetActivity.save();
+
+  pausedEvent(
     eventId(event),
     event.block.timestamp,
     event.address,
     sender.id,
     AssetType.tokenizeddeposit
   );
-
-  log.info("TokenizedDeposit paused event: sender={}, token={}", [
-    paused.sender.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  tokenizedDeposit.paused = true;
-  tokenizedDeposit.save();
-
   accountActivityEvent(
     sender,
     EventName.Paused,
@@ -491,22 +534,64 @@ export function handleUnpaused(event: Unpaused): void {
   const tokenizedDeposit = fetchTokenizedDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
 
-  const unpaused = unpausedEvent(
+  log.info("TokenizedDeposit unpaused event: sender={}, token={}", [
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  tokenizedDeposit.paused = false;
+  tokenizedDeposit.lastActivity = event.block.timestamp;
+  tokenizedDeposit.save();
+
+  const assetCount = fetchAssetCount(AssetType.tokenizeddeposit);
+  assetCount.countPaused = assetCount.countPaused - 1;
+  assetCount.save();
+
+  const holders = tokenizedDeposit.holders.load();
+  for (let i = 0; i < holders.length; i++) {
+    const assetBalance = holders[i];
+    if (
+      hasBalance(
+        tokenizedDeposit.id,
+        assetBalance.account,
+        tokenizedDeposit.decimals,
+        true
+      )
+    ) {
+      const holderAccount =
+        sender.id == assetBalance.account
+          ? sender
+          : fetchAccount(Address.fromBytes(assetBalance.account));
+      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount - 1;
+      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.minus(
+        assetBalance.valueExact
+      );
+      holderAccount.pausedBalance = toDecimals(
+        holderAccount.pausedBalanceExact,
+        18
+      );
+      log.info(
+        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
+        [
+          holderAccount.id.toHexString(),
+          holderAccount.pausedBalancesCount.toString(),
+          holderAccount.pausedBalance.toString(),
+        ]
+      );
+      holderAccount.save();
+    }
+  }
+
+  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  assetActivity.save();
+
+  unpausedEvent(
     eventId(event),
     event.block.timestamp,
     event.address,
     sender.id,
     AssetType.tokenizeddeposit
   );
-
-  log.info("TokenizedDeposit unpaused event: sender={}, token={}", [
-    unpaused.sender.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  tokenizedDeposit.paused = false;
-  tokenizedDeposit.save();
-
   accountActivityEvent(
     sender,
     EventName.Unpaused,
@@ -521,23 +606,12 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   const sender = fetchAccount(event.transaction.from);
   const user = fetchAccount(event.params.user);
 
-  const frozen = tokensFrozenEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.tokenizeddeposit,
-    user.id,
-    event.params.amount,
-    tokenizedDeposit.decimals
-  );
-
   log.info(
     "TokenizedDeposit tokens frozen event: amount={}, user={}, sender={}, token={}",
     [
-      frozen.amount.toString(),
-      frozen.user.toHexString(),
-      frozen.sender.toHexString(),
+      event.params.amount.toString(),
+      user.id.toHexString(),
+      sender.id.toHexString(),
       event.address.toHexString(),
     ]
   );
@@ -564,6 +638,23 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.frozenExact = event.params.amount;
   assetStats.save();
 
+  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  assetActivity.frozenEventCount = assetActivity.frozenEventCount + 1;
+  assetActivity.save();
+
+  tokenizedDeposit.lastActivity = event.block.timestamp;
+  tokenizedDeposit.save();
+
+  tokensFrozenEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.tokenizeddeposit,
+    user.id,
+    event.params.amount,
+    tokenizedDeposit.decimals
+  );
   accountActivityEvent(
     sender,
     EventName.TokensFrozen,
@@ -585,23 +676,18 @@ export function handleUserAllowed(event: UserAllowed): void {
   const sender = fetchAccount(event.transaction.from);
   const user = fetchAccount(event.params.user);
 
-  const allowedEvent = userAllowedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.tokenizeddeposit,
-    user.id
-  );
-
   log.info(
     "TokenizedDeposit user allowed event: user={}, sender={}, token={}",
     [
-      allowedEvent.user.toHexString(),
-      allowedEvent.sender.toHexString(),
+      user.id.toHexString(),
+      sender.id.toHexString(),
       event.address.toHexString(),
     ]
   );
+
+  tokenizedDeposit.lastActivity = event.block.timestamp;
+  allowUser(tokenizedDeposit.id, user.id, event.block.timestamp);
+  tokenizedDeposit.save();
 
   const balance = fetchAssetBalance(
     tokenizedDeposit.id,
@@ -619,7 +705,17 @@ export function handleUserAllowed(event: UserAllowed): void {
   );
   assetStats.save();
 
-  allowUser(tokenizedDeposit.id, user.id, event.block.timestamp);
+  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  assetActivity.save();
+
+  userAllowedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.tokenizeddeposit,
+    user.id
+  );
   accountActivityEvent(
     sender,
     EventName.UserAllowed,
@@ -641,23 +737,18 @@ export function handleUserDisallowed(event: UserDisallowed): void {
   const sender = fetchAccount(event.transaction.from);
   const user = fetchAccount(event.params.user);
 
-  const disallowedEvent = userDisallowedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.tokenizeddeposit,
-    user.id
-  );
-
   log.info(
     "TokenizedDeposit user disallowed event: user={}, sender={}, token={}",
     [
-      disallowedEvent.user.toHexString(),
-      disallowedEvent.sender.toHexString(),
+      user.id.toHexString(),
+      sender.id.toHexString(),
       event.address.toHexString(),
     ]
   );
+
+  tokenizedDeposit.lastActivity = event.block.timestamp;
+  disallowUser(tokenizedDeposit.id, user.id);
+  tokenizedDeposit.save();
 
   const balance = fetchAssetBalance(
     tokenizedDeposit.id,
@@ -675,7 +766,17 @@ export function handleUserDisallowed(event: UserDisallowed): void {
   );
   assetStats.save();
 
-  disallowUser(tokenizedDeposit.id, user.id);
+  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  assetActivity.save();
+
+  userDisallowedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.tokenizeddeposit,
+    user.id
+  );
   accountActivityEvent(
     sender,
     EventName.UserDisallowed,
