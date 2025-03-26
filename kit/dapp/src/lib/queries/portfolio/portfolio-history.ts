@@ -67,6 +67,7 @@ const PortfolioHistoryQuery = theGraphGraphqlKit(
         name
         symbol
         decimals
+        type
       }
       totalBalance
       totalBalanceExact
@@ -99,7 +100,7 @@ export const getPortfolioHistory = cache(
       startTime: startTime.toString(),
     });
 
-    return data.portfolioStats_collection.map((stat: any) => ({
+    return data.portfolioStats_collection.map((stat) => ({
       timestamp: stat.timestamp,
       account: {
         id: stat.account.id,
@@ -109,6 +110,7 @@ export const getPortfolioHistory = cache(
         name: stat.asset.name,
         symbol: stat.asset.symbol,
         decimals: stat.asset.decimals,
+        type: stat.asset.type,
       },
       balance: stat.totalBalance,
       balanceExact: stat.totalBalanceExact,

@@ -39,7 +39,7 @@ interface XAxisConfig {
 interface AreaChartProps {
   data: AreaChartData[];
   config: ChartConfig;
-  title: string;
+  title: ReactNode;
   description?: string;
   xAxis: XAxisConfig;
   className?: string;
