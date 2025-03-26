@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
+import { getAssetPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
 import { startOfDay, subMonths } from "date-fns";
@@ -61,6 +62,18 @@ export default async function PortfolioDashboard({
     getCurrentUserDetail(),
   ]);
 
+  const assetValues = await Promise.all(
+    myAssetsBalance.balances.map(async (balance) => {
+      const price = await getAssetPriceInUserCurrency(balance.asset.id);
+      return price.amount * balance.value;
+    })
+  );
+
+  const totalUserAssetsValue = assetValues.reduce(
+    (acc, value) => acc + value,
+    0
+  );
+
   return (
     <>
       <PageHeader
@@ -69,7 +82,14 @@ export default async function PortfolioDashboard({
       />
       <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:divide-x lg:divide-y-0">
         <Greeting />
-        <MyAssetsHeader data={myAssetsBalance} userDetails={userDetails} />
+        <MyAssetsHeader
+          data={myAssetsBalance}
+          userDetails={userDetails}
+          totalValue={{
+            amount: totalUserAssetsValue,
+            currency: userDetails.currency,
+          }}
+        />
         <PortfolioValue address={user.wallet as Address} />
       </div>
 

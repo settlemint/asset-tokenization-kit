@@ -8,8 +8,6 @@ import { safeParse } from "@/lib/utils/typebox";
 import BigNumber from "bignumber.js";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
-import { getAssetPriceInUserCurrency } from "../asset-price/asset-price";
-import { getAssetStats } from "../asset-stats/asset-stats";
 import { AssetBalanceSchema, type AssetBalance } from "./asset-balance-schema";
 
 const UserAssetsBalance = theGraphGraphqlKit(
@@ -40,32 +38,16 @@ export const getUserAssetsBalance = cache(async (wallet: Address) => {
   });
 
   // Parse and validate the data using TypeBox schema
-  const validatedUserAssetsBalance = (
-    await Promise.all(
-      userAssetsBalance.map(async (asset) => {
-        try {
-          const [price, stats] = await Promise.all([
-            getAssetPriceInUserCurrency(asset.asset.id),
-            getAssetStats({
-              address: getAddress(asset.asset.id),
-              days: 30,
-            }),
-          ]);
-          return safeParse(AssetBalanceSchema, {
-            ...asset,
-            asset: {
-              ...asset.asset,
-              price,
-              stats,
-            },
-          });
-        } catch (error) {
-          console.error("Error validating asset balance:", error);
-          return null;
-        }
-      })
-    )
-  ).filter((balance): balance is AssetBalance => balance !== null);
+  const validatedUserAssetsBalance = userAssetsBalance
+    .map((asset) => {
+      try {
+        return safeParse(AssetBalanceSchema, asset);
+      } catch (error) {
+        console.error("Error validating asset balance:", error);
+        return null;
+      }
+    })
+    .filter((balance): balance is AssetBalance => balance !== null);
 
   if (!validatedUserAssetsBalance.length) {
     return {
@@ -74,6 +56,7 @@ export const getUserAssetsBalance = cache(async (wallet: Address) => {
       total: "0",
     };
   }
+
   // Group and sum balances by asset type
   const assetTypeBalances = validatedUserAssetsBalance.reduce<
     Partial<Record<AssetType, BigNumber>>

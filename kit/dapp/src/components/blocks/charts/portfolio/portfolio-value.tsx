@@ -16,7 +16,7 @@ export async function PortfolioValue({ address }: PortfolioValueProps) {
   const portfolioHistory = await getPortfolioHistory({
     address,
     days: 30,
-    interval: "day",
+    interval: "hour",
   });
 
   if (!portfolioHistory || portfolioHistory.length === 0) {
