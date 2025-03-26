@@ -8,7 +8,6 @@ import type { Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { Figtree, Roboto_Mono } from "next/font/google";
-import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { getLangDir } from "rtl-detect";
 import { Toaster } from "sonner";
@@ -44,46 +43,54 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  const locale = await getLocale();
-  const direction = getLangDir(locale);
-  const env = getServerEnvironment();
+  try {
+    const locale = await getLocale();
+    const direction = getLangDir(locale);
+    const env = getServerEnvironment();
 
-  // Ensure that the incoming `locale` is valid
-  if (!routing.locales.includes(locale)) {
-    notFound();
-  }
+    // Ensure that the incoming `locale` is valid
+    if (!routing.locales.includes(locale)) {
+      //notFound();
+    }
 
-  return (
-    <html
-      lang={locale}
-      dir={direction}
-      className={cn(figTree.variable, robotoMono.variable)}
-      suppressHydrationWarning
-    >
-      {/* Can be used to debug rerenders using react-scan
+    return (
+      <html
+        lang={locale}
+        dir={direction}
+        className={cn(figTree.variable, robotoMono.variable)}
+        suppressHydrationWarning
+      >
+        {/* Can be used to debug rerenders using react-scan
       <head>
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head> */}
-      <body className="min-h-screen antialiased">
-        <NextIntlClientProvider timeZone={timeZone}>
-          <ThemeProvider attribute="class" enableColorScheme enableSystem>
-            <TransitionProvider>
-              <AuthProvider
-                emailEnabled={!!env.RESEND_API_KEY}
-                googleEnabled={
-                  !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)
-                }
-                githubEnabled={
-                  !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET)
-                }
-              >
-                {children}
-              </AuthProvider>
-            </TransitionProvider>
-          </ThemeProvider>
-          <Toaster richColors />
-        </NextIntlClientProvider>
-      </body>
-    </html>
-  );
+        <body className="min-h-screen antialiased">
+          <NextIntlClientProvider timeZone={timeZone}>
+            <ThemeProvider attribute="class" enableColorScheme enableSystem>
+              <TransitionProvider>
+                <AuthProvider
+                  emailEnabled={!!env.RESEND_API_KEY}
+                  googleEnabled={
+                    !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)
+                  }
+                  githubEnabled={
+                    !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET)
+                  }
+                >
+                  {children}
+                </AuthProvider>
+              </TransitionProvider>
+            </ThemeProvider>
+            <Toaster richColors />
+          </NextIntlClientProvider>
+        </body>
+      </html>
+    );
+  } catch (error) {
+    const isServer = typeof window === "undefined";
+    if (isServer) {
+      console.error(error);
+    }
+    throw error;
+  }
 }
