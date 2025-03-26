@@ -27,9 +27,7 @@ export const TokenizedDepositFragment = theGraphGraphqlKit(`
     creator {
       id
     }
-    holders(first: 5, orderBy: valueExact, orderDirection: desc) {
-      valueExact
-    }
+    concentration
   }
 `);
 
@@ -43,6 +41,5 @@ export const OffchainTokenizedDepositFragment = hasuraGraphql(`
   fragment OffchainTokenizedDepositFragment on asset {
     id
     isin
-    value_in_base_currency
   }
 `);

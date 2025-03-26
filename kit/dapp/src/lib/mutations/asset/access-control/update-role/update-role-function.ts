@@ -13,7 +13,6 @@ import type { UpdateRolesInput } from "./update-role-schema";
  */
 export async function updateRolesFunction({
   parsedInput: { address, roles, userAddress, pincode, assettype },
-  ctx: { user },
 }: {
   parsedInput: UpdateRolesInput;
   ctx: { user: User };

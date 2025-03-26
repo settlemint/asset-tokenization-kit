@@ -8,6 +8,7 @@ import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { startOfDay, subMonths } from "date-fns";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { LatestEvents } from "../../assets/(dashboard)/_components/table/latest-events";
@@ -17,7 +18,7 @@ import { MyAssetsHeader } from "./_components/header/my-assets-header";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({
@@ -37,7 +38,7 @@ export async function generateMetadata({
 export default async function PortfolioDashboard({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
   const t = await getTranslations({

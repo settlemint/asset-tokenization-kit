@@ -17,24 +17,25 @@ export const YieldScheduleFragment = theGraphGraphqlKit(
   `
   fragment YieldScheduleFragment on FixedYield {
     id
-    startDate
-    endDate
-    rate
-    interval
-    totalClaimed
-    totalClaimedExact
-    unclaimedYield
-    unclaimedYieldExact
-    underlyingAsset {
-      id
-      symbol
-      decimals
-    }
-    underlyingBalance
-    underlyingBalanceExact
-    periods {
-      ...YieldPeriodFragment
-    }
+      startDate
+      endDate
+      rate
+      interval
+      totalClaimed
+      totalClaimedExact
+      unclaimedYield
+      unclaimedYieldExact
+      underlyingAsset {
+        id
+        symbol
+        decimals
+        type
+      }
+      underlyingBalance
+      underlyingBalanceExact
+      periods {
+        ...YieldPeriodFragment
+      }
   }
 `,
   [YieldPeriodFragment]
@@ -62,10 +63,12 @@ export const BondFragment = theGraphGraphqlKit(
     creator {
       id
     }
-    holders(first: 5, orderBy: valueExact, orderDirection: desc) {
-      valueExact
+    underlyingAsset {
+      id
+      symbol
+      decimals
+      type
     }
-    underlyingAsset
     maturityDate
     isMatured
     hasSufficientUnderlying
@@ -79,6 +82,7 @@ export const BondFragment = theGraphGraphqlKit(
     totalUnderlyingNeededExact
     cap
     deployedOn
+    concentration
   }
 `,
   [YieldScheduleFragment]
@@ -94,6 +98,5 @@ export const OffchainBondFragment = hasuraGraphql(`
   fragment OffchainBondFragment on asset {
     id
     isin
-    value_in_base_currency
   }
 `);

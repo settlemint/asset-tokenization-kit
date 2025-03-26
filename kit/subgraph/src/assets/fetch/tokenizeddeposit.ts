@@ -37,6 +37,7 @@ export function fetchTokenizedDeposit(address: Address): TokenizedDeposit {
     tokenizedDeposit.totalBurnedExact = BigInt.zero();
     tokenizedDeposit.totalBurned = BigDecimal.zero();
     tokenizedDeposit.totalHolders = 0;
+    tokenizedDeposit.concentration = BigDecimal.zero();
     tokenizedDeposit.deployedOn = BigInt.zero();
     tokenizedDeposit.paused = paused.reverted ? false : paused.value;
     tokenizedDeposit.liveness = liveness.reverted

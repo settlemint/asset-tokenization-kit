@@ -1,6 +1,7 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { betterAuth, superJson } from "@/lib/utils/elysia";
-import { Elysia, t } from "elysia";
+import { t } from "@/lib/utils/typebox";
+import { Elysia } from "elysia";
 import { getAssetPrice, updateAssetPrice } from "./asset-price";
 
 const AssetPriceResponseSchema = t.Object({
@@ -18,8 +19,11 @@ const AssetPriceResponseSchema = t.Object({
 });
 
 const AssetPriceUpdateRequestSchema = t.Object({
-  price: t.Number({
-    description: "The new price to set for the asset in base currency",
+  amount: t.Number({
+    description: "The amount of the price",
+  }),
+  currency: t.FiatCurrency({
+    description: "The currency of the price",
   }),
 });
 
@@ -69,7 +73,7 @@ export const AssetPriceApi = new Elysia()
     "/:assetId",
     async ({ params: { assetId }, body }) => {
       try {
-        await updateAssetPrice(assetId, body.price);
+        await updateAssetPrice(assetId, body.amount, body.currency);
         return {
           success: true,
           message: `Price for asset ${assetId} updated successfully`,

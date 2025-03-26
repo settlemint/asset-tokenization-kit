@@ -32,6 +32,7 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.totalBurned = BigDecimal.zero();
     stableCoin.totalBurnedExact = BigInt.zero();
     stableCoin.totalHolders = 0;
+    stableCoin.concentration = BigDecimal.zero();
 
     // StableCoin-specific fields
     stableCoin.collateralExact = BigInt.zero();

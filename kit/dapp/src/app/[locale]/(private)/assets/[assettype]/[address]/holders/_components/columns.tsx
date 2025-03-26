@@ -9,6 +9,7 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
+import type { Price } from "@/lib/utils/typebox/price";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 import { getAddress } from "viem";
@@ -23,9 +24,11 @@ const columnHelper =
 export function columns({
   maxMint,
   decimals,
+  price,
 }: {
   maxMint?: number;
   decimals: number;
+  price: Price;
 }) {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -55,6 +58,20 @@ export function columns({
         }),
       enableColumnFilter: false,
       meta: {
+        variant: "numeric",
+      },
+    }),
+    columnHelper.display({
+      id: "price",
+      header: t("holders.price-header"),
+      cell: ({ row }) => {
+        return formatNumber(row.original.value * price.amount, {
+          currency: price.currency,
+          locale: locale,
+        });
+      },
+      meta: {
+        enableCsvExport: false,
         variant: "numeric",
       },
     }),
@@ -94,6 +111,7 @@ export function columns({
       },
       enableColumnFilter: false,
     }),
+
     columnHelper.display({
       id: "actions",
       header: t("holders.actions-header"),

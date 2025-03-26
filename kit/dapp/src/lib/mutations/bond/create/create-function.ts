@@ -6,6 +6,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
+import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateBondInput } from "./create-schema";
 
 /**
@@ -34,8 +35,8 @@ const BondFactoryCreate = portalGraphql(`
  * Stores additional metadata about the bond in Hasura
  */
 const CreateOffchainBond = hasuraGraphql(`
-  mutation CreateOffchainBond($id: String!, $isin: String, $value_in_base_currency: numeric) {
-    insert_asset_one(object: {id: $id, isin: $isin, value_in_base_currency: $value_in_base_currency}) {
+  mutation CreateOffchainBond($id: String!, $isin: String) {
+    insert_asset_one(object: {id: $id, isin: $isin}) {
       id
     }
   }
@@ -60,7 +61,7 @@ export async function createBondFunction({
     maturityDate,
     underlyingAsset,
     predictedAddress,
-    valueInBaseCurrency,
+    price,
   },
   ctx: { user },
 }: {
@@ -76,7 +77,12 @@ export async function createBondFunction({
   await hasuraClient.request(CreateOffchainBond, {
     id: predictedAddress,
     isin: isin,
-    value_in_base_currency: String(valueInBaseCurrency),
+  });
+
+  await hasuraClient.request(AddAssetPrice, {
+    assetId: predictedAddress,
+    amount: String(price.amount),
+    currency: price.currency,
   });
 
   const data = await portalClient.request(BondFactoryCreate, {

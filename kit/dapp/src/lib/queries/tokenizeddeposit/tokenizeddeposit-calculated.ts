@@ -1,12 +1,12 @@
 import { safeParse } from "@/lib/utils/typebox";
 import { addSeconds } from "date-fns";
+import { getAssetPriceInUserCurrency } from "../asset-price/asset-price";
 import type {
   CalculatedTokenizedDeposit,
   OffChainTokenizedDeposit,
   OnChainTokenizedDeposit,
 } from "./tokenizeddeposit-schema";
 import { CalculatedTokenizedDepositSchema } from "./tokenizeddeposit-schema";
-
 /**
  * Calculates additional fields for tokenized deposit tokens
  *
@@ -14,23 +14,10 @@ import { CalculatedTokenizedDepositSchema } from "./tokenizeddeposit-schema";
  * @param offChainTokenizedDeposit - Off-chain tokenized deposit data (optional)
  * @returns Calculated fields for the tokenized deposit token
  */
-export function tokenizedDepositCalculateFields(
+export async function tokenizedDepositCalculateFields(
   onChainTokenizedDeposit: OnChainTokenizedDeposit,
   _offChainTokenizedDeposit?: OffChainTokenizedDeposit
-): CalculatedTokenizedDeposit {
-  // Calculate ownership concentration from top holders
-  const topHoldersSum = onChainTokenizedDeposit.holders.reduce(
-    (sum, holder) => sum + BigInt(holder.valueExact),
-    0n
-  );
-
-  const concentration =
-    onChainTokenizedDeposit.totalSupplyExact === 0n
-      ? 0
-      : Number(
-          (topHoldersSum * 100n) / onChainTokenizedDeposit.totalSupplyExact
-        );
-
+): Promise<CalculatedTokenizedDeposit> {
   // Calculate collateral proof validity date
   const collateralProofValidity =
     Number(onChainTokenizedDeposit.lastCollateralUpdate) > 0
@@ -40,8 +27,10 @@ export function tokenizedDepositCalculateFields(
         )
       : undefined;
 
+  const price = await getAssetPriceInUserCurrency(onChainTokenizedDeposit.id);
+
   return safeParse(CalculatedTokenizedDepositSchema, {
-    concentration,
     collateralProofValidity,
+    price,
   });
 }
