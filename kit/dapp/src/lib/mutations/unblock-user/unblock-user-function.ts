@@ -104,7 +104,7 @@ export async function unblockUserFunction({
         "Cryptocurrency does not support unblock user operations"
       );
     }
-    case "tokenizeddeposit": {
+    case "deposit": {
       throw new Error(
         "Tokenized deposit does not support unblock user operations"
       );

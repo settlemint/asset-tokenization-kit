@@ -88,7 +88,7 @@ export async function blockUserFunction({
     case "cryptocurrency": {
       throw new Error("Cryptocurrency does not support block user operations");
     }
-    case "tokenizeddeposit": {
+    case "deposit": {
       throw new Error(
         "Tokenized deposit does not support block user operations"
       );

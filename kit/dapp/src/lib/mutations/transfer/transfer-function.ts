@@ -89,9 +89,9 @@ const StableCoinTransfer = portalGraphql(`
 /**
  * GraphQL mutation to transfer tokenized deposit tokens
  */
-const TokenizedDepositTransfer = portalGraphql(`
-  mutation TokenizedDepositTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
-    Transfer: TokenizedDepositTransfer(
+const DepositTransfer = portalGraphql(`
+  mutation DepositTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
+    Transfer: DepositTransfer(
       address: $address
       from: $from
       input: { to: $to, value: $value }
@@ -155,11 +155,8 @@ export async function transferAssetFunction({
       const response = await portalClient.request(StableCoinTransfer, params);
       return safeParse(t.Hashes(), [response.Transfer?.transactionHash]);
     }
-    case "tokenizeddeposit": {
-      const response = await portalClient.request(
-        TokenizedDepositTransfer,
-        params
-      );
+    case "deposit": {
+      const response = await portalClient.request(DepositTransfer, params);
       return safeParse(t.Hashes(), [response.Transfer?.transactionHash]);
     }
     default:

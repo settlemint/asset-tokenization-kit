@@ -3,10 +3,10 @@ import { Pages } from "../pages/pages";
 import {
   bondData,
   cryptocurrencyData,
+  depositData,
   equityData,
   fundData,
   stablecoinData,
-  tokenizedDepositData,
 } from "../test-data/asset-data";
 import { assetMessage } from "../test-data/success-msg-data";
 import { adminUser } from "../test-data/user-data";
@@ -103,14 +103,14 @@ test.describe("Create assets", () => {
       });
     });
     test("Create Tokenized Deposit asset", async () => {
-      await adminPages.adminPage.createTokenizedDeposit(tokenizedDepositData);
+      await adminPages.adminPage.createDeposit(depositData);
       await adminPages.adminPage.verifySuccessMessage(
         assetMessage.successMessage
       );
       await adminPages.adminPage.checkIfAssetExists({
-        sidebarAssetTypes: tokenizedDepositData.sidebarAssetTypes,
-        name: tokenizedDepositData.name,
-        totalSupply: tokenizedDepositData.initialSupply,
+        sidebarAssetTypes: depositData.sidebarAssetTypes,
+        name: depositData.name,
+        totalSupply: depositData.initialSupply,
       });
     });
   });

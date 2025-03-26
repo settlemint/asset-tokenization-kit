@@ -20,12 +20,12 @@ import {
 import type { User } from "@/lib/queries/user/user-schema";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
-import { CreateBondForm } from "./bonds/form";
-import { CreateCryptoCurrencyForm } from "./cryptocurrencies/form";
-import { CreateEquityForm } from "./equities/form";
-import { CreateFundForm } from "./funds/form";
-import { CreateStablecoinForm } from "./stablecoins/form";
-import { CreateTokenizedDepositForm } from "./tokenized-deposits/form";
+import { CreateBondForm } from "./bond/form";
+import { CreateCryptoCurrencyForm } from "./cryptocurrency/form";
+import { CreateDepositForm } from "./deposit/form";
+import { CreateEquityForm } from "./equity/form";
+import { CreateFundForm } from "./fund/form";
+import { CreateStablecoinForm } from "./stablecoin/form";
 
 export function DesignerButton({ userDetails }: { userDetails: User }) {
   const t = useTranslations("admin.sidebar");
@@ -116,7 +116,7 @@ export function DesignerButton({ userDetails }: { userDetails: User }) {
         onOpenChange={onFormOpenChange}
         userDetails={userDetails}
       />
-      <CreateTokenizedDepositForm
+      <CreateDepositForm
         open={tokenType === "tokenized-deposit"}
         onOpenChange={onFormOpenChange}
         userDetails={userDetails}

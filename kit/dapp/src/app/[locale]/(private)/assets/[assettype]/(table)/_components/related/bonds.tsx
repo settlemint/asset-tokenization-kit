@@ -1,4 +1,4 @@
-import { CreateBondForm } from "@/components/blocks/create-forms/bonds/form";
+import { CreateBondForm } from "@/components/blocks/create-forms/bond/form";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";

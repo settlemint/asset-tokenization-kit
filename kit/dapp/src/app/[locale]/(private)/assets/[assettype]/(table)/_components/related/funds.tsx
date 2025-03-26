@@ -1,4 +1,4 @@
-import { CreateFundForm } from "@/components/blocks/create-forms/funds/form";
+import { CreateFundForm } from "@/components/blocks/create-forms/fund/form";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";

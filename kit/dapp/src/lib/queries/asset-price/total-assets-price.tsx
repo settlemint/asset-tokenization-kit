@@ -2,9 +2,9 @@ import { getFundList } from "@/lib/queries/fund/fund-list";
 import { cache } from "react";
 import { getBondList } from "../bond/bond-list";
 import { getCryptoCurrencyList } from "../cryptocurrency/cryptocurrency-list";
+import { getDepositList } from "../deposit/deposit-list";
 import { getEquityList } from "../equity/equity-list";
 import { getStableCoinList } from "../stablecoin/stablecoin-list";
-import { getTokenizedDepositList } from "../tokenizeddeposit/tokenizeddeposit-list";
 import { getCurrentUserDetail } from "../user/current-user-detail";
 
 /**
@@ -21,7 +21,7 @@ export const getTotalAssetPrice = cache(async () => {
     await getEquityList(),
     await getFundList(),
     await getStableCoinList(),
-    await getTokenizedDepositList(),
+    await getDepositList(),
   ]);
 
   const assets = assetsResult.flat();

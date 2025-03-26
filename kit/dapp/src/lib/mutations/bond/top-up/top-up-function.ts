@@ -1,7 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
-import { getAssetDetail } from '@/lib/queries/asset-detail';
-import { waitForTransactions } from '@/lib/queries/transactions/wait-for-transaction';
+import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
@@ -100,14 +100,14 @@ const StableCoinApprove = portalGraphql(`
   }
 `);
 
-const TokenizedDepositApprove = portalGraphql(`
-  mutation TokenizedDepositApprove(
+const DepositApprove = portalGraphql(`
+  mutation DepositApprove(
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
-    $input: TokenizedDepositApproveInput!
+    $input: DepositApproveInput!
   ) {
-    TokenizedDepositApprove(
+    DepositApprove(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
@@ -174,7 +174,14 @@ const FixedYieldTopUpUnderlyingAsset = portalGraphql(`
  * @returns The transaction hash
  */
 export async function topUpUnderlyingAssetFunction({
-  parsedInput: { target, amount, pincode, targetAddress, underlyingAssetAddress, underlyingAssetType },
+  parsedInput: {
+    target,
+    amount,
+    pincode,
+    targetAddress,
+    underlyingAssetAddress,
+    underlyingAssetType,
+  },
   ctx: { user },
 }: {
   parsedInput: TopUpInput;
@@ -182,7 +189,7 @@ export async function topUpUnderlyingAssetFunction({
 }) {
   const asset = await getAssetDetail({
     address: targetAddress,
-    assettype: 'bond'
+    assettype: "bond",
   });
 
   if (!asset) {
@@ -191,11 +198,13 @@ export async function topUpUnderlyingAssetFunction({
 
   const underlyingAsset = await getAssetDetail({
     address: underlyingAssetAddress,
-    assettype: underlyingAssetType
+    assettype: underlyingAssetType,
   });
 
   if (!underlyingAsset) {
-    throw new Error(`Missing underlying asset details for ${underlyingAssetType} with address: ${underlyingAssetAddress}`);
+    throw new Error(
+      `Missing underlying asset details for ${underlyingAssetType} with address: ${underlyingAssetAddress}`
+    );
   }
 
   const formattedAmount = parseUnits(
@@ -224,7 +233,10 @@ export async function topUpUnderlyingAssetFunction({
       break;
     }
     case "cryptocurrency": {
-      const response = await portalClient.request(CryptoCurrencyApprove, approveParams);
+      const response = await portalClient.request(
+        CryptoCurrencyApprove,
+        approveParams
+      );
       approvalTxHash = response.CryptoCurrencyApprove?.transactionHash;
       break;
     }
@@ -239,13 +251,19 @@ export async function topUpUnderlyingAssetFunction({
       break;
     }
     case "stablecoin": {
-      const response = await portalClient.request(StableCoinApprove, approveParams);
+      const response = await portalClient.request(
+        StableCoinApprove,
+        approveParams
+      );
       approvalTxHash = response.StableCoinApprove?.transactionHash;
       break;
     }
-    case "tokenizeddeposit": {
-      const response = await portalClient.request(TokenizedDepositApprove, approveParams);
-      approvalTxHash = response.TokenizedDepositApprove?.transactionHash;
+    case "deposit": {
+      const response = await portalClient.request(
+        DepositApprove,
+        approveParams
+      );
+      approvalTxHash = response.DepositApprove?.transactionHash;
       break;
     }
     default:
@@ -253,11 +271,8 @@ export async function topUpUnderlyingAssetFunction({
   }
 
   if (!approvalTxHash) {
-    throw new Error(
-      "Failed to approve spending of the underlying asset"
-    );
+    throw new Error("Failed to approve spending of the underlying asset");
   }
-
 
   // Wait for the approval transaction to be confirmed before proceeding
   await waitForTransactions([approvalTxHash]);
@@ -281,14 +296,17 @@ export async function topUpUnderlyingAssetFunction({
       response.BondTopUpUnderlyingAsset.transactionHash,
     ]);
   } else {
-    const response = await portalClient.request(FixedYieldTopUpUnderlyingAsset, {
-      address: targetAddress,
-      from: user.wallet,
-      input: {
-        amount: formattedAmount,
-      },
-      challengeResponse: await handleChallenge(user.wallet, pincode),
-    });
+    const response = await portalClient.request(
+      FixedYieldTopUpUnderlyingAsset,
+      {
+        address: targetAddress,
+        from: user.wallet,
+        input: {
+          amount: formattedAmount,
+        },
+        challengeResponse: await handleChallenge(user.wallet, pincode),
+      }
+    );
 
     if (!response.FixedYieldTopUpUnderlyingAsset?.transactionHash) {
       throw new Error("Failed to get transaction hash");

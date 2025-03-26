@@ -1,5 +1,5 @@
 import { BigDecimal } from "@graphprotocol/graph-ts";
-import { StableCoin, TokenizedDeposit } from "../../../generated/schema";
+import { Deposit, StableCoin } from "../../../generated/schema";
 import { toDecimals } from "../../utils/decimals";
 
 export function collateralCalculatedFields(stableCoin: StableCoin): StableCoin {
@@ -19,19 +19,19 @@ export function collateralCalculatedFields(stableCoin: StableCoin): StableCoin {
   return stableCoin;
 }
 
-export function tokenizedDepositCollateralCalculatedFields(tokenizedDeposit: TokenizedDeposit): TokenizedDeposit {
-  tokenizedDeposit.collateralRatio = tokenizedDeposit.collateral.equals(BigDecimal.zero())
+export function depositCollateralCalculatedFields(deposit: Deposit): Deposit {
+  deposit.collateralRatio = deposit.collateral.equals(BigDecimal.zero())
     ? BigDecimal.fromString("100")
-    : tokenizedDeposit.totalSupply
-        .div(tokenizedDeposit.collateral)
+    : deposit.totalSupply
+        .div(deposit.collateral)
         .times(BigDecimal.fromString("100"));
 
-  tokenizedDeposit.freeCollateralExact = tokenizedDeposit.collateralExact.minus(
-    tokenizedDeposit.totalSupplyExact
+  deposit.freeCollateralExact = deposit.collateralExact.minus(
+    deposit.totalSupplyExact
   );
-  tokenizedDeposit.freeCollateral = toDecimals(
-    tokenizedDeposit.freeCollateralExact,
-    tokenizedDeposit.decimals
+  deposit.freeCollateral = toDecimals(
+    deposit.freeCollateralExact,
+    deposit.decimals
   );
-  return tokenizedDeposit;
+  return deposit;
 }

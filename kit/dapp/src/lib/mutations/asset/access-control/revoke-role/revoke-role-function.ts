@@ -106,9 +106,9 @@ const EquityRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the tokenized deposit
  */
-const TokenizedDepositRevokeRole = portalGraphql(`
-  mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: TokenizedDepositRevokeRoleInput!) {
-    TokenizedDepositRevokeRole(
+const DepositRevokeRole = portalGraphql(`
+  mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: DepositRevokeRoleInput!) {
+    DepositRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -171,12 +171,9 @@ export async function revokeRoleFunction({
         const response = await portalClient.request(EquityRevokeRole, params);
         return response.EquityRevokeRole?.transactionHash;
       }
-      case "tokenizeddeposit": {
-        const response = await portalClient.request(
-          TokenizedDepositRevokeRole,
-          params
-        );
-        return response.TokenizedDepositRevokeRole?.transactionHash;
+      case "deposit": {
+        const response = await portalClient.request(DepositRevokeRole, params);
+        return response.DepositRevokeRole?.transactionHash;
       }
       default:
         throw new Error("Unsupported asset type");

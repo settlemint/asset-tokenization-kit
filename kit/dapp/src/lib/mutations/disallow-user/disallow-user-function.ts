@@ -7,9 +7,9 @@ import type { DisallowUserInput } from "./disallow-user-schema";
 /**
  * GraphQL mutation to disallow a user from a tokenized deposit
  */
-const TokenizedDepositDisallowUser = portalGraphql(`
-  mutation TokenizedDepositDisallowUser($address: String!, $user: String!, $from: String!, $challengeResponse: String!) {
-    TokenizedDepositDisallowUser(
+const DepositDisallowUser = portalGraphql(`
+  mutation DepositDisallowUser($address: String!, $user: String!, $from: String!, $challengeResponse: String!) {
+    DepositDisallowUser(
       address: $address
       input: { user: $user }
       from: $from
@@ -43,13 +43,10 @@ export async function disallowUserFunction({
   };
 
   switch (assettype) {
-    case "tokenizeddeposit": {
-      const response = await portalClient.request(
-        TokenizedDepositDisallowUser,
-        params
-      );
+    case "deposit": {
+      const response = await portalClient.request(DepositDisallowUser, params);
       return safeParse(t.Hashes(), [
-        response.TokenizedDepositDisallowUser?.transactionHash,
+        response.DepositDisallowUser?.transactionHash,
       ]);
     }
     default:
