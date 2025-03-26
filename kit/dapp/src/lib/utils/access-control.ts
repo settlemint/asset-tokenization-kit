@@ -1,6 +1,7 @@
 import type { Permissions } from "@/lib/auth/permissions";
 import type { User } from "@/lib/auth/types";
 import { authClient } from "../auth/client";
+import { handleAccessControlError } from "../auth/next-error-handling";
 import { getUser } from "../auth/utils";
 
 /**
@@ -26,7 +27,6 @@ type AccessControlOptions = {
   ctx?: {
     user: Omit<User, "wallet">;
   };
-  onError?: (error: AccessControlError) => never;
 };
 
 /**
@@ -47,7 +47,6 @@ export function withAccessControl<
 ) {
   return async ({
     ctx,
-    onError,
     ...args
   }: AccessControlOptions &
     (Parameters<T>[0] extends undefined
@@ -61,8 +60,9 @@ export function withAccessControl<
     });
     if (!hasPermission) {
       const error = new AccessControlError("Forbidden", 403);
-      if (typeof onError === "function") {
-        onError(error);
+      const isNextJsPage = !ctx?.user;
+      if (isNextJsPage) {
+        handleAccessControlError(error);
       }
       throw error;
     }

@@ -24,6 +24,7 @@ export const adminRole = accessControl.newRole({
 
 export const issuerRole = accessControl.newRole({
   asset: ["transfer", "manage"],
+  user: ["list"],
 });
 
 export const userRole = accessControl.newRole({

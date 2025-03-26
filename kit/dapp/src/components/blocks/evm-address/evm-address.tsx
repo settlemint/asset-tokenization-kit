@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/routing";
+import { searchUser } from "@/lib/api-client/user/user-search";
 import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
-import { getUserSearch } from "@/lib/queries/user/user-search";
 import { shortHex } from "@/lib/utils/hex";
 import type { FC, PropsWithChildren } from "react";
 import useSWR from "swr";
@@ -59,9 +59,7 @@ export function EvmAddress({
   const { data: user, isLoading: isLoadingUser } = useSWR(
     [`user-search`, address],
     async () => {
-      const userResult = await getUserSearch({
-        searchTerm: getAddress(address),
-      });
+      const userResult = await searchUser(getAddress(address));
       return userResult.length > 0 ? userResult[0] : null;
     },
     {
