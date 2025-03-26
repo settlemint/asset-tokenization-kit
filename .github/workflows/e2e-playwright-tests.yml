@@ -34,6 +34,16 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Configure 1Password
+        uses: 1password/load-secrets-action/configure@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load secrets
+        uses: 1password/load-secrets-action@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        env:
+          SLACK_WEBHOOK_URL: op://platform/slack-webhooks/e2e-report
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -117,16 +127,6 @@ jobs:
         working-directory: kit/e2e
         env:
           CI: true
-
-      - name: Configure 1Password
-        uses: 1password/load-secrets-action/configure@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
-        with:
-          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-      - name: Load secrets
-        uses: 1password/load-secrets-action@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
-        env:
-          SLACK_WEBHOOK_URL: op://platform/slack-webhooks/e2e-report
 
       - name: Send Slack notification
         if: ${{ !cancelled() }}

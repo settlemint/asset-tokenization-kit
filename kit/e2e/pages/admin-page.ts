@@ -42,7 +42,7 @@ export class AdminPage extends BasePage {
     maximumSupply: string;
     faceValue: string;
     underlyingAsset: string;
-    valueInEur: string;
+    price: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -73,7 +73,7 @@ export class AdminPage extends BasePage {
     await this.page
       .getByRole("option", { name: `Avatar ${options.underlyingAsset}` })
       .click();
-    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
+    await this.page.getByLabel("Price").fill(options.price);
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
@@ -85,7 +85,7 @@ export class AdminPage extends BasePage {
     symbol: string;
     decimals: string;
     initialSupply: string;
-    valueInEur: string;
+    price: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -95,7 +95,7 @@ export class AdminPage extends BasePage {
     );
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByLabel("Initial supply").fill(options.initialSupply);
-    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
+    await this.page.getByLabel("Price").fill(options.price);
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
@@ -109,7 +109,7 @@ export class AdminPage extends BasePage {
     decimals: string;
     equityClass: string;
     equityCategory: string;
-    valueInEur: string;
+    price: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -132,7 +132,7 @@ export class AdminPage extends BasePage {
     await this.page
       .getByRole("option", { name: options.equityCategory })
       .click();
-    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
+    await this.page.getByLabel("Price").fill(options.price);
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
@@ -147,7 +147,7 @@ export class AdminPage extends BasePage {
     fundCategory: string;
     fundClass: string;
     managementFee: string;
-    valueInEur: string;
+    price: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -169,7 +169,7 @@ export class AdminPage extends BasePage {
       .waitFor({ state: "visible" });
     await this.page.getByRole("option", { name: options.fundClass }).click();
     await this.page.getByLabel("Management fee").fill(options.managementFee);
-    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
+    await this.page.getByLabel("Price").fill(options.price);
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
@@ -181,7 +181,7 @@ export class AdminPage extends BasePage {
     symbol: string;
     decimals: string;
     validityPeriod: string;
-    valueInEur: string;
+    price: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -194,7 +194,7 @@ export class AdminPage extends BasePage {
     await this.page
       .getByLabel("Collateral Proof Validity")
       .fill(options.validityPeriod);
-    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
+    await this.page.getByLabel("Price").fill(options.price);
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
@@ -207,7 +207,7 @@ export class AdminPage extends BasePage {
     isin: string;
     decimals: string;
     validityPeriod: string;
-    valueInEur: string;
+    price: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -221,9 +221,9 @@ export class AdminPage extends BasePage {
     await this.page
       .getByLabel("Collateral Proof Validity")
       .fill(options.validityPeriod);
-    await this.page.getByLabel("Value in EUR").fill(options.valueInEur);
+    await this.page.getByLabel("Price").fill(options.price);
     await this.page.getByRole("button", { name: "Next" }).click();
-    const buttonName = "Issue a new tokenized deposit";
+    const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
