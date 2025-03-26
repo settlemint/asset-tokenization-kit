@@ -1,5 +1,6 @@
 "use client";
 
+import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import type { User } from "@/lib/queries/user/user-schema";
@@ -71,47 +72,46 @@ export function TokenAdmins({ userDetails }: { userDetails: User }) {
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium">{t("title")}</h3>
-      <p className="text-muted-foreground">{t("description")}</p>
+    <FormStep title={t("title")} description={t("description")}>
+      <div className="space-y-4">
+        <SelectedAdminsList
+          admins={tokenAdmins}
+          onRemove={handleRemoveAdmin}
+          onChangeRoles={handleChangeRoles}
+          onAddAnother={() => setShowUserSelector(true)}
+          userDetails={userDetails}
+        />
 
-      <SelectedAdminsList
-        admins={tokenAdmins}
-        onRemove={handleRemoveAdmin}
-        onChangeRoles={handleChangeRoles}
-        onAddAnother={() => setShowUserSelector(true)}
-        userDetails={userDetails}
-      />
-
-      {(showUserSelector) && (
-        <div className="space-y-1">
-          {isManualEntry ? (
-            <FormInput
-              control={form.control}
-              name="selectedWallet"
-              placeholder={commonT("enter-wallet-address-placeholder")}
-            />
-          ) : (
-            <FormUsers
-              control={form.control}
-              name="selectedWallet"
-              placeholder={t("select-user-placeholder")}
-              role="admin"
-            />
-          )}
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={() => setIsManualEntry(!isManualEntry)}
-              className="text-muted-foreground text-xs transition-colors hover:text-foreground"
-            >
-              {isManualEntry
-                ? commonT("search-user-instead")
-                : commonT("enter-user-address-manually")}
-            </button>
+        {(showUserSelector) && (
+          <div className="space-y-1">
+            {isManualEntry ? (
+              <FormInput
+                control={form.control}
+                name="selectedWallet"
+                placeholder={commonT("enter-wallet-address-placeholder")}
+              />
+            ) : (
+              <FormUsers
+                control={form.control}
+                name="selectedWallet"
+                placeholder={t("select-user-placeholder")}
+                role="admin"
+              />
+            )}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsManualEntry(!isManualEntry)}
+                className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+              >
+                {isManualEntry
+                  ? commonT("search-user-instead")
+                  : commonT("enter-user-address-manually")}
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </FormStep>
   );
 }
