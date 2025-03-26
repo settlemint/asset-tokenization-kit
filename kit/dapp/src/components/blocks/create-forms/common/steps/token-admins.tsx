@@ -1,30 +1,29 @@
 "use client";
 
+import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
-import { FormField, FormItem } from "@/components/ui/form";
+import type { User } from "@/lib/queries/user/user-schema";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { AdminRole, SelectedAdminsList, TokenAdmin } from "./selected-admins-list";
+import { type AdminRole, SelectedAdminsList, type TokenAdmin } from "./selected-admins-list";
 
-export function TokenAdmins() {
+export function TokenAdmins({ userDetails }: { userDetails: User }) {
   const t = useTranslations("private.assets.create.form.steps.token-admins");
+  const commonT = useTranslations("private.assets.details.forms.account");
   const form = useFormContext();
   const [showUserSelector, setShowUserSelector] = useState(false);
+  const [isManualEntry, setIsManualEntry] = useState(false);
 
   // Get current token admins from form state or initialize empty array
   const tokenAdmins = form.watch("tokenAdmins") || [];
+  const selectedWallet = form.watch("selectedWallet");
 
-  const handleAddAdmin = (wallet: string) => {
-    // Check if the admin already exists
-    if (tokenAdmins.some((admin: TokenAdmin) => admin.wallet === wallet)) {
-      return;
-    }
-
-    // Add the new admin with default roles
+  // Watch for changes to selectedWallet and add as admin when selected
+  if (selectedWallet && !tokenAdmins.some((admin: TokenAdmin) => admin.wallet === selectedWallet)) {
     const updatedAdmins = [
       ...tokenAdmins,
-      { wallet, roles: ["admin"] as AdminRole[] }
+      { wallet: selectedWallet, roles: ["admin"] as AdminRole[] }
     ];
 
     form.setValue("tokenAdmins", updatedAdmins, {
@@ -32,8 +31,13 @@ export function TokenAdmins() {
       shouldDirty: true
     });
 
+    // Reset the selector
+    form.setValue("selectedWallet", "", {
+      shouldValidate: false
+    });
+
     setShowUserSelector(false);
-  };
+  }
 
   const handleRemoveAdmin = (wallet: string) => {
     const updatedAdmins = tokenAdmins.filter(
@@ -57,37 +61,68 @@ export function TokenAdmins() {
     });
   };
 
+  // Set the current user as the default token admin
+  useEffect(() => {
+    if (userDetails?.wallet && tokenAdmins.length === 0) {
+      form.setValue(
+        "tokenAdmins",
+        [
+          {
+            wallet: userDetails.wallet,
+            roles: ["admin", "mint", "burn", "pause", "transfer"] as AdminRole[]
+          }
+        ],
+        {
+          shouldValidate: true,
+          shouldDirty: true
+        }
+      );
+    }
+  }, [userDetails?.wallet, form, tokenAdmins.length]);
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">{t("title")}</h3>
       <p className="text-muted-foreground">{t("description")}</p>
 
-      <FormField
-        control={form.control}
-        name="tokenAdmins"
-        render={() => (
-          <FormItem>
-            {tokenAdmins.length > 0 && (
-              <SelectedAdminsList
-                admins={tokenAdmins}
-                onRemove={handleRemoveAdmin}
-                onChangeRoles={handleChangeRoles}
-                onAddAnother={() => setShowUserSelector(true)}
-              />
-            )}
+      {tokenAdmins.length > 0 && (
+        <SelectedAdminsList
+          admins={tokenAdmins}
+          onRemove={handleRemoveAdmin}
+          onChangeRoles={handleChangeRoles}
+          onAddAnother={() => setShowUserSelector(true)}
+        />
+      )}
 
-            {(showUserSelector || tokenAdmins.length === 0) && (
-              <FormUsers
-                control={form.control}
-                name="_tempAdminSelector"
-                label={tokenAdmins.length === 0 ? t("add-first-admin") : t("add-another-admin")}
-                placeholder={t("select-user-placeholder")}
-                onChange={handleAddAdmin}
-              />
-            )}
-          </FormItem>
-        )}
-      />
+      {(showUserSelector || tokenAdmins.length === 0) && (
+        <div className="space-y-1">
+          {isManualEntry ? (
+            <FormInput
+              control={form.control}
+              name="selectedWallet"
+              placeholder={commonT("enter-wallet-address-placeholder")}
+            />
+          ) : (
+            <FormUsers
+              control={form.control}
+              name="selectedWallet"
+              placeholder={t("select-user-placeholder")}
+              role="admin"
+            />
+          )}
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => setIsManualEntry(!isManualEntry)}
+              className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+            >
+              {isManualEntry
+                ? commonT("search-user-instead")
+                : commonT("enter-user-address-manually")}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

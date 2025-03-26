@@ -1,3 +1,4 @@
+import { TokenAdminsSchemaFragment } from "@/lib/mutations/common/token-admins-schema";
 import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
@@ -13,44 +14,48 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  * @property {string} pincode - The pincode for signing the transaction
  * @property {string} predictedAddress - The predicted contract address
  * @property {number} valueInBaseCurrency - The value in base currency
+ * @property {Array} tokenAdmins - List of admin users with their roles
  */
 export function CreateStablecoinSchema() {
-  return t.Object(
-    {
-      assetName: t.String({
-        description: "The name of the stablecoin",
-        minLength: 1,
-      }),
-      symbol: t.AssetSymbol({
-        description: "The symbol of the stablecoin (ticker)",
-      }),
-      decimals: t.Decimals({
-        description: "The number of decimal places for the token",
-      }),
-      collateralLivenessValue: t.Number({
-        description: "The duration value for collateral validity",
-        minimum: 1,
-      }),
-      collateralLivenessTimeUnit: t.TimeUnit({
-        description: "The time unit for collateral validity duration",
-        default: "months",
-      }),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
-      }),
-      predictedAddress: t.EthereumAddress({
-        description: "The predicted contract address",
-        refine: isAddressAvailable,
-        error: "stablecoin.duplicate",
-      }),
-      price: t.Price({
-        description: "Price of the stablecoin",
-      }),
-    },
-    {
-      description: "Schema for validating stablecoin creation inputs",
-    }
-  );
+  return t.Intersect([
+    t.Object(
+      {
+        assetName: t.String({
+          description: "The name of the stablecoin",
+          minLength: 1,
+        }),
+        symbol: t.AssetSymbol({
+          description: "The symbol of the stablecoin (ticker)",
+        }),
+        decimals: t.Decimals({
+          description: "The number of decimal places for the token",
+        }),
+        collateralLivenessValue: t.Number({
+          description: "The duration value for collateral validity",
+          minimum: 1,
+        }),
+        collateralLivenessTimeUnit: t.TimeUnit({
+          description: "The time unit for collateral validity duration",
+          default: "months",
+        }),
+        pincode: t.Pincode({
+          description: "The pincode for signing the transaction",
+        }),
+        predictedAddress: t.EthereumAddress({
+          description: "The predicted contract address",
+          refine: isAddressAvailable,
+          error: "stablecoin.duplicate",
+        }),
+        price: t.Price({
+          description: "Price of the stablecoin",
+        }),
+        tokenAdmins: TokenAdminsSchemaFragment(),
+      },
+      {
+        description: "Schema for validating stablecoin creation inputs",
+      }
+    ),
+  ]);
 }
 
 export type CreateStablecoinInput = StaticDecode<

@@ -30,6 +30,12 @@ export function SelectedAdminsList({
 }: SelectedAdminsListProps) {
   const t = useTranslations("private.assets.create.form.steps.token-admins");
 
+  const getRoleTranslation = (role: AdminRole) => {
+    if (role === "admin") return t("roles.admin");
+    if (role === "user-manager") return t("roles.user-manager");
+    return t("roles.issuer");
+  };
+
   return (
     <div className="space-y-3">
       {admins.map((admin) => (
@@ -54,7 +60,7 @@ export function SelectedAdminsList({
                         onChangeRoles(admin.wallet, newRoles);
                       }}
                     >
-                      {t(`roles.${role}`)}
+                      {getRoleTranslation(role as AdminRole)}
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent>
