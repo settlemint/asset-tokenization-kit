@@ -16,7 +16,7 @@ const UpdateUserCurrency = hasuraGraphql(`
 `);
 
 /**
- * Function to update a user's preferred currency
+ * Function to update the current user's preferred currency
  *
  * @param input - Validated input containing currency
  * @param user - The user executing the update operation
