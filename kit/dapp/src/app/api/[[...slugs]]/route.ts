@@ -59,9 +59,12 @@ const app = new Elysia({
       },
     })
   )
-  .onError(({ error }) => {
+  .onError(({ code, error }) => {
+    if (code === "NOT_FOUND") {
+      return elysiaError(404, "Not Found");
+    }
     if (error instanceof AccessControlError) {
-      return elysiaError(error.status, error.message);
+      return elysiaError(error.statusCode, error.message);
     }
     // TODO: handle specific errors (hasura, postgres, thegraph, portal, etc)
     console.error(
