@@ -3,6 +3,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { AddAssetPrice } from "../../asset/price/add-price";
@@ -48,46 +49,49 @@ const CreateOffchainDeposit = hasuraGraphql(`
  * @param user - The user creating the tokenized deposit
  * @returns Array of transaction hashes
  */
-export async function createDepositFunction({
-  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    collateralLivenessValue,
-    collateralLivenessTimeUnit,
-    pincode,
-    isin,
-    predictedAddress,
-    price,
-  },
-  ctx: { user },
-}: {
-  parsedInput: CreateDepositInput;
-  ctx: { user: User };
-}) {
-  await hasuraClient.request(CreateOffchainDeposit, {
-    id: predictedAddress,
-    isin,
-  });
+export const createDepositFunction = withAccessControl(
+  { requiredPermissions: { asset: ["manage"] } },
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      collateralLivenessValue,
+      collateralLivenessTimeUnit,
+      pincode,
+      isin,
+      predictedAddress,
+      price,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateDepositInput;
+    ctx: { user: User };
+  }) => {
+    await hasuraClient.request(CreateOffchainDeposit, {
+      id: predictedAddress,
+      isin,
+    });
 
-  await hasuraClient.request(AddAssetPrice, {
-    assetId: predictedAddress,
-    amount: String(price.amount),
-    currency: price.currency,
-  });
+    await hasuraClient.request(AddAssetPrice, {
+      assetId: predictedAddress,
+      amount: String(price.amount),
+      currency: price.currency,
+    });
 
-  const collateralLivenessSeconds =
-    collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
+    const collateralLivenessSeconds =
+      collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
 
-  const data = await portalClient.request(DepositFactoryCreate, {
-    address: DEPOSIT_FACTORY_ADDRESS,
-    from: user.wallet,
-    name: assetName,
-    symbol: symbol.toString(),
-    decimals,
-    collateralLivenessSeconds,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  });
+    const data = await portalClient.request(DepositFactoryCreate, {
+      address: DEPOSIT_FACTORY_ADDRESS,
+      from: user.wallet,
+      name: assetName,
+      symbol: symbol.toString(),
+      decimals,
+      collateralLivenessSeconds,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    });
 
-  return safeParse(t.Hashes(), [data.DepositFactoryCreate?.transactionHash]);
-}
+    return safeParse(t.Hashes(), [data.DepositFactoryCreate?.transactionHash]);
+  }
+);

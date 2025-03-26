@@ -34,7 +34,7 @@ export const UserSchema = t.Object(
         description: "The timestamp when the user's KYC was verified",
       })
     ),
-    role: t.String({
+    role: t.UserRoles({
       description: "The role of the user in the system",
     }),
     banned: t.MaybeEmpty(

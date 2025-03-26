@@ -4,7 +4,7 @@ import { CreateDepositForm } from "@/components/blocks/create-forms/deposit/form
 import { CreateEquityForm } from "@/components/blocks/create-forms/equity/form";
 import { CreateFundForm } from "@/components/blocks/create-forms/fund/form";
 import { CreateStablecoinForm } from "@/components/blocks/create-forms/stablecoin/form";
-import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
+import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 interface RelatedProps {
   assettype: AssetType;

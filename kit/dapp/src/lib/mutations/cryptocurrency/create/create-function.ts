@@ -4,6 +4,7 @@ import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { AddAssetPrice } from "@/lib/mutations/asset/price/add-price";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import type { CreateCryptoCurrencyInput } from "./create-schema";
@@ -48,46 +49,53 @@ const CreateOffchainCryptoCurrency = hasuraGraphql(`
  * @param user - The user creating the cryptocurrency
  * @returns The transaction hash
  */
-export async function createCryptoCurrencyFunction({
-  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    pincode,
-    initialSupply,
-    predictedAddress,
-    price,
+export const createCryptoCurrencyFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
   },
-  ctx: { user },
-}: {
-  parsedInput: CreateCryptoCurrencyInput;
-  ctx: { user: User };
-}) {
-  const initialSupplyExact = String(
-    parseUnits(String(initialSupply), decimals)
-  );
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      pincode,
+      initialSupply,
+      predictedAddress,
+      price,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateCryptoCurrencyInput;
+    ctx: { user: User };
+  }) => {
+    const initialSupplyExact = String(
+      parseUnits(String(initialSupply), decimals)
+    );
 
-  await hasuraClient.request(CreateOffchainCryptoCurrency, {
-    id: predictedAddress,
-  });
+    await hasuraClient.request(CreateOffchainCryptoCurrency, {
+      id: predictedAddress,
+    });
 
-  await hasuraClient.request(AddAssetPrice, {
-    assetId: predictedAddress,
-    amount: String(price.amount),
-    currency: price.currency,
-  });
+    await hasuraClient.request(AddAssetPrice, {
+      assetId: predictedAddress,
+      amount: String(price.amount),
+      currency: price.currency,
+    });
 
-  const data = await portalClient.request(CryptoCurrencyFactoryCreate, {
-    address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-    from: user.wallet,
-    name: assetName,
-    symbol: String(symbol),
-    decimals,
-    initialSupply: initialSupplyExact,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  });
+    const data = await portalClient.request(CryptoCurrencyFactoryCreate, {
+      address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
+      from: user.wallet,
+      name: assetName,
+      symbol: String(symbol),
+      decimals,
+      initialSupply: initialSupplyExact,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    });
 
-  const transactionHash = data.CryptoCurrencyFactoryCreate?.transactionHash;
+    const transactionHash = data.CryptoCurrencyFactoryCreate?.transactionHash;
 
-  return safeParse(t.Hashes(), [transactionHash]);
-}
+    return safeParse(t.Hashes(), [transactionHash]);
+  }
+);

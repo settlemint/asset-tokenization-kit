@@ -22,6 +22,7 @@ import { Price } from "./price";
 import { RoleMap, Roles } from "./roles";
 import { TimeUnit } from "./time-units";
 import { Timestamp } from "./timestamp";
+import { UserRoles } from "./user-roles";
 
 // Extend TypeBox types with module augmentation
 declare module "@sinclair/typebox" {
@@ -47,6 +48,7 @@ declare module "@sinclair/typebox" {
     Timestamp: typeof Timestamp;
     StringifiedBigInt: typeof StringifiedBigInt;
     Price: typeof Price;
+    UserRoles: typeof UserRoles;
   }
 }
 
@@ -74,6 +76,7 @@ t.TimeUnit = TimeUnit;
 t.Timestamp = Timestamp;
 t.StringifiedBigInt = StringifiedBigInt;
 t.Price = Price;
+t.UserRoles = UserRoles;
 
 export function safeParse<T extends TSchema>(
   schema: T,

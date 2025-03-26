@@ -3,6 +3,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { EQUITY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateEquityInput } from "./create-schema";
@@ -47,44 +48,51 @@ const CreateOffchainEquity = hasuraGraphql(`
  * @param user - The user creating the equity
  * @returns Array of transaction hashes
  */
-export async function createEquityFunction({
-  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    pincode,
-    isin,
-    equityCategory,
-    equityClass,
-    predictedAddress,
-    price,
+export const createEquityFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
   },
-  ctx: { user },
-}: {
-  parsedInput: CreateEquityInput;
-  ctx: { user: User };
-}) {
-  await hasuraClient.request(CreateOffchainEquity, {
-    id: predictedAddress,
-    isin: isin,
-  });
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      pincode,
+      isin,
+      equityCategory,
+      equityClass,
+      predictedAddress,
+      price,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateEquityInput;
+    ctx: { user: User };
+  }) => {
+    await hasuraClient.request(CreateOffchainEquity, {
+      id: predictedAddress,
+      isin: isin,
+    });
 
-  await hasuraClient.request(AddAssetPrice, {
-    assetId: predictedAddress,
-    amount: String(price.amount),
-    currency: price.currency,
-  });
+    await hasuraClient.request(AddAssetPrice, {
+      assetId: predictedAddress,
+      amount: String(price.amount),
+      currency: price.currency,
+    });
 
-  const data = await portalClient.request(EquityFactoryCreate, {
-    address: EQUITY_FACTORY_ADDRESS,
-    from: user.wallet,
-    name: assetName,
-    symbol: symbol.toString(),
-    decimals,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-    equityCategory,
-    equityClass,
-  });
+    const data = await portalClient.request(EquityFactoryCreate, {
+      address: EQUITY_FACTORY_ADDRESS,
+      from: user.wallet,
+      name: assetName,
+      symbol: symbol.toString(),
+      decimals,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+      equityCategory,
+      equityClass,
+    });
 
-  return safeParse(t.Hashes(), [data.EquityFactoryCreate?.transactionHash]);
-}
+    return safeParse(t.Hashes(), [data.EquityFactoryCreate?.transactionHash]);
+  }
+);

@@ -1,5 +1,8 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
-import { getUserDetail } from "@/lib/queries/user/user-detail";
+import {
+  getCurrentUserDetail,
+  getUserDetail,
+} from "@/lib/queries/user/user-detail";
 import { getUserList } from "@/lib/queries/user/user-list";
 import { UserDetailSchema, UserSchema } from "@/lib/queries/user/user-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
@@ -25,8 +28,8 @@ export const UserApi = new Elysia({
   .use(superJson)
   .get(
     "",
-    async () => {
-      return await getUserList();
+    async ({ user }) => {
+      return await getUserList({ ctx: { user } });
     },
     {
       auth: true,
@@ -44,8 +47,12 @@ export const UserApi = new Elysia({
   )
   .get(
     "/:id",
-    async ({ params: { id } }) => {
+    async ({ user, params: { id } }) => {
+      if (id === user.id) {
+        return await getCurrentUserDetail();
+      }
       return await getUserDetail({
+        ctx: { user },
         id,
       });
     },
@@ -70,8 +77,9 @@ export const UserApi = new Elysia({
   )
   .get(
     "/wallet/:address",
-    async ({ params: { address } }) => {
+    async ({ user, params: { address } }) => {
       return await getUserDetail({
+        ctx: { user },
         address: getAddress(address),
       });
     },
@@ -96,9 +104,10 @@ export const UserApi = new Elysia({
   )
   .get(
     "/search",
-    async ({ query: { term } }) => {
+    async ({ query: { term }, user }) => {
       return await getUserSearch({
         searchTerm: term,
+        ctx: { user },
       });
     },
     {
