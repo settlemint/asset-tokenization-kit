@@ -26,12 +26,6 @@ interface PortfolioValueProps {
 
 type AggregationType = "individual" | "type" | "total";
 
-const AGGREGATION_OPTIONS = [
-  { value: "individual", label: "By Asset" },
-  { value: "type", label: "By Asset Type" },
-  { value: "total", label: "Total Value" },
-] as const;
-
 export function PortfolioValue({
   portfolioStats,
   assetPriceMap,
@@ -40,6 +34,12 @@ export function PortfolioValue({
   const t = useTranslations("components.charts.portfolio");
   const [aggregationType, setAggregationType] =
     useState<AggregationType>("individual");
+
+  const AGGREGATION_OPTIONS = [
+    { value: "individual", label: t("aggregation-options.by-asset") },
+    { value: "type", label: t("aggregation-options.by-type") },
+    { value: "total", label: t("aggregation-options.total") },
+  ] as const;
 
   if (!portfolioStats || portfolioStats.length === 0) {
     return (

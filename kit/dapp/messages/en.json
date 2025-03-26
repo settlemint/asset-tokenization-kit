@@ -419,7 +419,12 @@
         "portfolio-value-description": "Your portfolio value over time (based on current prices)",
         "portfolio-value-error": "Error loading portfolio value data",
         "portfolio-value-no-data": "No portfolio data available",
-        "portfolio-value-title": "Portfolio value"
+        "portfolio-value-title": "Portfolio value",
+        "aggregation-options": {
+          "by-asset": "By asset",
+          "by-type": "By asset type",
+          "total": "Total value"
+        }
       }
     },
     "data-table": {
