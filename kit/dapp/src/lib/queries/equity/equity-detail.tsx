@@ -1,3 +1,5 @@
+"use server";
+
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
