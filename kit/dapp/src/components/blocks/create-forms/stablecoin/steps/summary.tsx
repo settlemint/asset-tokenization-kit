@@ -1,13 +1,16 @@
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
+import { Badge } from "@/components/ui/badge";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
 import { formatNumber } from "@/lib/utils/number";
-import { DollarSign, Settings } from "lucide-react";
+import { DollarSign, Settings, Users } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
+import type { Address } from "viem";
 
 export function Summary() {
   const { control } = useFormContext<CreateStablecoinInput>();
@@ -67,6 +70,28 @@ export function Summary() {
             locale: locale,
           })}
         />
+      </FormSummaryDetailCard>
+
+      <FormSummaryDetailCard
+        title={t("summary.token-admins-title")}
+        description={t("summary.token-admins-description")}
+        icon={<Users className="size-3 text-primary-foreground" />}
+      >
+        {values.tokenAdmins?.map((admin) => (
+          <FormSummaryDetailItem
+            key={admin.wallet}
+            label={<EvmAddress address={admin.wallet as Address} prettyNames />}
+            value={
+              <div className="flex flex-wrap gap-1">
+                {admin.roles?.map((role) => (
+                  <Badge key={role} className="text-xs">
+                    {t(`form.steps.token-admins.roles.${role}`)}
+                  </Badge>
+                ))}
+              </div>
+            }
+          />
+        ))}
       </FormSummaryDetailCard>
     </FormStep>
   );

@@ -1086,7 +1086,9 @@
           "configuration-description": "Specific parameters for your asset.",
           "configuration-title": "Configuration",
           "description": "This is the final step before creating your asset. Please review all the details you have entered.",
-          "title": "Summary"
+          "title": "Summary",
+          "token-admins-description": "Administrative roles and permissions for managing this token.",
+          "token-admins-title": "Token permissions"
         }
       },
       "detail": {

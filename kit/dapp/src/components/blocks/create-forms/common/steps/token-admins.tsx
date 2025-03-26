@@ -91,6 +91,7 @@ export function TokenAdmins({ userDetails }: { userDetails: User }) {
           onRemove={handleRemoveAdmin}
           onChangeRoles={handleChangeRoles}
           onAddAnother={() => setShowUserSelector(true)}
+          userDetails={userDetails}
         />
       )}
 

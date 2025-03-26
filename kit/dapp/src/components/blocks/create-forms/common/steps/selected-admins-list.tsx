@@ -4,6 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import type { User } from "@/lib/queries/user/user-schema";
 import { Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
@@ -20,13 +21,15 @@ interface SelectedAdminsListProps {
   onRemove: (wallet: string) => void;
   onChangeRoles: (wallet: string, roles: AdminRole[]) => void;
   onAddAnother: () => void;
+  userDetails: User;
 }
 
 export function SelectedAdminsList({
   admins,
   onRemove,
   onChangeRoles,
-  onAddAnother
+  onAddAnother,
+  userDetails
 }: SelectedAdminsListProps) {
   const t = useTranslations("private.assets.create.form.steps.token-admins");
 
@@ -72,13 +75,17 @@ export function SelectedAdminsList({
               ))}
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onRemove(admin.wallet)}
-            >
-              <X className="size-4" />
-            </Button>
+            {admin.wallet !== userDetails.wallet ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onRemove(admin.wallet)}
+              >
+                <X className="size-4" />
+              </Button>
+            ) : (
+              <div className="h-9 w-9" /> /* Same size as the button */
+            )}
           </div>
         </div>
       ))}
