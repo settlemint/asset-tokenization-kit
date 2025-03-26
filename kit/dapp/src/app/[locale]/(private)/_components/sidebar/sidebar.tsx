@@ -7,7 +7,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
+import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { AssetManagement } from "./items/asset-management";
 import { PlatformManagement } from "./items/platform-management";
 import { PortfolioManagement } from "./items/portfolio-management";
