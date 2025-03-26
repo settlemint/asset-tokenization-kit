@@ -18,11 +18,6 @@ import { useTranslations, type Locale } from "next-intl";
 import { useState } from "react";
 import { AreaChartComponent } from "../area-chart";
 
-interface TimeseriesEntry {
-  timestamp: string;
-  [key: string]: string | number;
-}
-
 interface PortfolioValueProps {
   portfolioStats: PortfolioStatsCollection;
   assetPriceMap: Map<string, Price>;
@@ -98,7 +93,7 @@ export function PortfolioValue({
           (item) => item.asset.id === assetId
         );
 
-        const processedData: TimeseriesEntry[] = assetHistory.map((item) => ({
+        const processedData = assetHistory.map((item) => ({
           timestamp: item.timestamp,
           [assetId]:
             Number(item.balance) *
@@ -120,42 +115,41 @@ export function PortfolioValue({
         );
       });
 
-      // Combine all time series data
-      const allTimestamps = new Set<string>();
-      timeseriesPerAsset.forEach((series) => {
-        series.forEach((item) => allTimestamps.add(item.timestamp));
-      });
+      // Combine all time series data using a Map
+      const timeseriesMap = new Map<string, Record<string, number>>();
 
-      return Array.from(allTimestamps)
-        .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-        .map((timestamp) => {
-          const entry: TimeseriesEntry = {
-            timestamp,
+      // Process each asset's time series
+      for (const series of timeseriesPerAsset) {
+        for (const item of series) {
+          // Get or create values for this timestamp
+          const timestampValues = timeseriesMap.get(item.timestamp) || {
             ...Object.fromEntries(uniqueAssets.map((id) => [id, 0])),
           };
 
-          timeseriesPerAsset.forEach((series) => {
-            const dataPoint = series.find(
-              (item) => item.timestamp === timestamp
-            );
-            if (dataPoint) {
-              Object.entries(dataPoint).forEach(([key, value]) => {
-                if (key !== "timestamp") {
-                  entry[key] = value as number;
-                }
-              });
-            }
-          });
+          // Update values for this timestamp
+          for (const [key, value] of Object.entries(item)) {
+            timestampValues[key] = Number(value);
+          }
 
-          return entry;
-        });
+          timeseriesMap.set(item.timestamp, timestampValues);
+        }
+      }
+
+      // Convert map to sorted array
+      const entries = Array.from(timeseriesMap.entries());
+      entries.sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime());
+
+      return entries.map(([timestamp, values]) => ({
+        timestamp,
+        ...values,
+      }));
     } else if (aggregationType === "type") {
       const timeseriesPerType = assetTypes.map((type) => {
         const typeHistory = portfolioStats.filter(
           (item) => item.asset.type === type
         );
 
-        const processedData: TimeseriesEntry[] = typeHistory.map((item) => ({
+        const processedData = typeHistory.map((item) => ({
           timestamp: item.timestamp,
           [type]:
             Number(item.balance) *
@@ -177,38 +171,37 @@ export function PortfolioValue({
         );
       });
 
-      // Combine all time series data
-      const allTimestamps = new Set<string>();
-      timeseriesPerType.forEach((series) => {
-        series.forEach((item) => allTimestamps.add(item.timestamp));
-      });
+      // Combine all time series data using a Map
+      const timeseriesMap = new Map<string, Record<string, number>>();
 
-      return Array.from(allTimestamps)
-        .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-        .map((timestamp) => {
-          const entry: TimeseriesEntry = {
-            timestamp,
+      // Process each type's time series
+      for (const series of timeseriesPerType) {
+        for (const item of series) {
+          // Get or create values for this timestamp
+          const timestampValues = timeseriesMap.get(item.timestamp) || {
             ...Object.fromEntries(assetTypes.map((type) => [type, 0])),
           };
 
-          timeseriesPerType.forEach((series) => {
-            const dataPoint = series.find(
-              (item) => item.timestamp === timestamp
-            );
-            if (dataPoint) {
-              Object.entries(dataPoint).forEach(([key, value]) => {
-                if (key !== "timestamp") {
-                  entry[key] = value as number;
-                }
-              });
-            }
-          });
+          // Update values for this timestamp
+          for (const [key, value] of Object.entries(item)) {
+            timestampValues[key] = Number(value);
+          }
 
-          return entry;
-        });
+          timeseriesMap.set(item.timestamp, timestampValues);
+        }
+      }
+
+      // Convert map to sorted array
+      const entries = Array.from(timeseriesMap.entries());
+      entries.sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime());
+
+      return entries.map(([timestamp, values]) => ({
+        timestamp,
+        ...values,
+      }));
     } else {
       // Total value
-      const processedData: TimeseriesEntry[] = portfolioStats.map((item) => ({
+      const processedData = portfolioStats.map((item) => ({
         timestamp: item.timestamp,
         total:
           Number(item.balance) *
@@ -238,35 +231,32 @@ export function PortfolioValue({
       <AreaChartComponent
         data={timeseries}
         config={chartConfig}
-        title={
-          <div className="flex items-center justify-between w-full space-x-4">
-            <span>{t("portfolio-value-title")}</span>
-
-            <Select
-              value={aggregationType}
-              onValueChange={(value) =>
-                setAggregationType(value as AggregationType)
-              }
-            >
-              <SelectTrigger className="bg-background border-input hover:bg-accent">
-                <SelectValue placeholder="View by" defaultValue="individual" />
-              </SelectTrigger>
-              <SelectContent>
-                {AGGREGATION_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        }
+        title={t("portfolio-value-title")}
         description={t("portfolio-value-description")}
         xAxis={{ key: "timestamp" }}
         showYAxis={true}
         stacked={aggregationType !== "individual"}
         info={`Last updated: ${timeseries.at(-1)?.timestamp}`}
         chartContainerClassName="h-[14rem] w-full"
+        options={
+          <Select
+            value={aggregationType}
+            onValueChange={(value) =>
+              setAggregationType(value as AggregationType)
+            }
+          >
+            <SelectTrigger className="bg-background border-input hover:bg-accent">
+              <SelectValue placeholder="View by" defaultValue="individual" />
+            </SelectTrigger>
+            <SelectContent>
+              {AGGREGATION_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        }
       />
     </div>
   );
