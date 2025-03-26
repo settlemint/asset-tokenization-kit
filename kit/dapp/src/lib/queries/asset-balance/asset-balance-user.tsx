@@ -9,6 +9,7 @@ import BigNumber from "bignumber.js";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import { getAssetPriceInUserCurrency } from "../asset-price/asset-price";
+import { getAssetStats } from "../asset-stats/asset-stats";
 import { AssetBalanceSchema, type AssetBalance } from "./asset-balance-schema";
 
 const UserAssetsBalance = theGraphGraphqlKit(
@@ -43,12 +44,19 @@ export const getUserAssetsBalance = cache(async (wallet: Address) => {
     await Promise.all(
       userAssetsBalance.map(async (asset) => {
         try {
-          const price = await getAssetPriceInUserCurrency(asset.asset.id);
+          const [price, stats] = await Promise.all([
+            getAssetPriceInUserCurrency(asset.asset.id),
+            getAssetStats({
+              address: getAddress(asset.asset.id),
+              days: 30,
+            }),
+          ]);
           return safeParse(AssetBalanceSchema, {
             ...asset,
             asset: {
               ...asset.asset,
               price,
+              stats,
             },
           });
         } catch (error) {

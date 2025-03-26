@@ -1,5 +1,6 @@
 import { PermissionSchema } from "@/lib/queries/asset/asset-users-schema";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
+import { AssetStatsSchema } from "../asset-stats/asset-stats-schema";
 
 /**
  * TypeBox schema for validating asset balance data
@@ -76,6 +77,9 @@ export const AssetBalanceSchema = t.Object(
         ),
         price: t.Price({
           description: "Price of the asset in the user's currency",
+        }),
+        stats: t.Array(AssetStatsSchema, {
+          description: "Stats of the asset",
         }),
       },
       {
