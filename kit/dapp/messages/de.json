@@ -18,7 +18,8 @@
         "equities": "Aktien",
         "funds": "Fonds",
         "stablecoins": "Stablecoins",
-        "tokenizeddeposit": "Tokenisierte Einlagen"
+        "tokenizeddeposit": "Tokenisierte Einlagen",
+        "deposit": "Einzahlungen"
       }
     },
     "dashboard": {
@@ -36,7 +37,8 @@
           "equities": "Aktien",
           "funds": "Fonds",
           "stablecoins": "Stablecoins",
-          "tokenizeddeposit": "Tokenisierte Einlagen"
+          "tokenizeddeposit": "Tokenisierte Einlagen",
+          "deposit": "Einzahlungen"
         },
         "assets-supply": {
           "description": "Die Verteilung der Token pro Anlageklasse",
@@ -67,7 +69,7 @@
       "widgets": {
         "assets": {
           "label": "Vermögenswerte",
-          "subtext": "{bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds | {stableCoins} Stablecoins | {tokenizedDeposits} tokenisierte Einlagen"
+          "subtext": "{bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds | {stableCoins} Stablecoins | {deposits} Einzahlungen"
         },
         "transactions": {
           "label": "Transaktionen",
@@ -115,7 +117,7 @@
         "funds": "Fonds",
         "group-title": "Vermögensverwaltung",
         "stablecoins": "Stablecoins",
-        "tokenized-deposits": "Tokenisierte Einlagen",
+        "tokenized-deposits": "Einzahlungen",
         "view-all": "Alle anzeigen"
       },
       "asset-types": {
@@ -124,7 +126,7 @@
         "equity": "Aktie",
         "fund": "Fonds",
         "stablecoin": "Stablecoin",
-        "tokenized-deposit": "Tokenisierte Einlagen"
+        "tokenized-deposit": "Einzahlungen"
       },
       "platform-management": {
         "group-title": "Plattformverwaltung",
@@ -237,7 +239,9 @@
     "stablecoins-plural": "Stablecoins",
     "tokenizeddeposits": "Tokenisierte Einlage",
     "tokenizeddeposits-plural": "Tokenisierte Einlagen",
-    "unknown": "Unbekannt"
+    "unknown": "Unbekannt",
+    "deposits": "Einzahlung",
+    "deposits-plural": "Einzahlungen"
   },
   "blocked": "Blockiert",
   "components": {
@@ -387,7 +391,8 @@
         },
         "total-collateral": {
           "label": "Gesamtes Sicherheiten"
-        }
+        },
+        "deposit": "Einzahlung"
       }
     },
     "data-table": {
@@ -849,6 +854,10 @@
           "tokenizeddeposits": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre tokenisierte Einzahlung sind.",
             "title": "Tokenisierte Einzahlungs-Konfiguration"
+          },
+          "deposits": {
+            "description": "Legen Sie parameter fest, die spezifisch für Ihre einzahlung sind.",
+            "title": "Einzahlungs konfiguration"
           }
         },
         "form": {
@@ -858,7 +867,8 @@
             "equities": "Vermögenswerte, die Eigentum an einem Unternehmen repräsentieren.",
             "funds": "Anlagevehikel, die von professionellen Managern gebündelt werden.",
             "stablecoins": "Digitale Vermögenswerte, die an einen stabilen Vermögenswert wie USD gekoppelt sind.",
-            "tokenizeddeposits": "Digitale Vermögenswerte, die eine Einzahlung eines traditionellen Vermögenswerts repräsentieren."
+            "tokenizeddeposits": "Digitale Vermögenswerte, die eine Einzahlung eines traditionellen Vermögenswerts repräsentieren.",
+            "deposits": "Digitale Vermögenswerte, die eine Einzahlung eines traditionellen Vermögenswerts darstellen."
           },
           "title": {
             "bonds": "Gestalten Sie eine neue Anleihe",
@@ -866,7 +876,8 @@
             "equities": "Gestalten Sie ein neues Eigenkapital",
             "funds": "Gestalten Sie einen neuen Fonds",
             "stablecoins": "Gestalten Sie eine neue Stable Coin",
-            "tokenizeddeposits": "Gestalten Sie eine neue tokenisierte Einzahlung"
+            "tokenizeddeposits": "Gestalten Sie eine neue tokenisierte Einzahlung",
+            "deposits": "Gestalten Sie eine neue einzahlung"
           },
           "trigger-label": {
             "bonds": "Geben Sie eine neue Anleihe aus",
@@ -874,7 +885,8 @@
             "equities": "Geben Sie ein neues Eigenkapital aus",
             "funds": "Geben Sie einen neuen Fonds aus",
             "stablecoins": "Geben Sie eine neue Stablecoin aus",
-            "tokenizeddeposits": "Geben Sie eine neue tokenisierte Einzahlung aus"
+            "tokenizeddeposits": "Geben Sie eine neue tokenisierte Einzahlung aus",
+            "deposits": "Geben Sie eine neue einzahlung aus"
           }
         },
         "parameters": {
@@ -913,7 +925,8 @@
                 "weeks": "Wochen",
                 "months": "Monate"
               }
-            }
+            },
+            "price-label": "Preis"
           },
           "cryptocurrencies": {
             "initial-supply-description": "Anfängliche Menge an Token, die geprägt werden sollen",
@@ -947,6 +960,11 @@
             "isin-placeholder": "EU1234567890",
             "name-placeholder": "Tokenisierter Euro",
             "symbol-placeholder": "TEUR"
+          },
+          "deposits": {
+            "isin-placeholder": "EU1234567890",
+            "name-placeholder": "Eingezahlter Euro",
+            "symbol-placeholder": "EURD"
           }
         },
         "summary": {
@@ -1304,6 +1322,18 @@
               "allow": "Überprüfen Sie die Details Ihrer Erlaubnis, bevor Sie fortfahren.",
               "disallow": "Überprüfen Sie die Details Ihrer Nicht-Erlaubnis, bevor Sie fortfahren.",
               "unblock": "Überprüfen Sie die Details Ihres Entsperrens, bevor Sie fortfahren."
+            },
+            "target-label": "Ziel",
+            "yield-schedule-label": "Renditeplan"
+          },
+          "target": {
+            "title": "Ziel für Aufladung auswählen",
+            "description": "Wählen Sie, welches Vermögen Sie aufladen möchten",
+            "placeholder": "Ziel auswählen",
+            "options": {
+              "bond": "Anleihe",
+              "fund": "Fonds",
+              "yield": "Rendite"
             }
           }
         },
@@ -1360,7 +1390,8 @@
           "frozen-header": "Eingefroren",
           "holder-type-header": "Typ",
           "last-activity-header": "Letzte Aktivität",
-          "status-header": "Status"
+          "status-header": "Status",
+          "price-header": "Wert"
         },
         "page-description": "Erforschen Sie umfassende Daten und Kennzahlen für {name}.",
         "page-title": "{name} Einzelheiten",
@@ -1471,14 +1502,16 @@
               "equities": "Angebotsmenge der Anteile reduzieren",
               "funds": "Anleihen einlösen",
               "stablecoins": "Die Menge reduzieren",
-              "tokenizeddeposits": "Angebotsmenge der tokenisierten Einlagen reduzieren"
+              "tokenizeddeposits": "Angebotsmenge der tokenisierten Einlagen reduzieren",
+              "deposits": "Einzahlungsangebot reduzieren"
             },
             "description": {
               "bonds": "Ein Anleihemanager kann die Gesamtmenge durch Anleiheneinlösung bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
               "equities": "Ein Aktienmanager kann die Gesamtmenge der Anteile durch ein Rückkaufprogramm oder eine Kapitalherabsetzung reduzieren.",
               "funds": "Ein Fondsmanager kann die Gesamtmenge durch Fondsrücknahme bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
               "stablecoins": "Ein Angebotsmanager kann bestehende Stablecoins verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
-              "tokenizeddeposits": "Ein Angebotsmanager kann bestehende tokenisierte Einlagen verbrennen, sofern ausreichende Sicherheiten vorhanden sind."
+              "tokenizeddeposits": "Ein Angebotsmanager kann bestehende tokenisierte Einlagen verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
+              "deposits": "Ein Supply-Manager kann bestehende Einzahlungen verbrennen, sofern ausreichende Sicherheiten vorhanden sind."
             }
           },
           "increase-supply": {
@@ -1488,7 +1521,8 @@
               "equities": "Neue Anteile ausgeben",
               "funds": "Anleihen ausgeben",
               "stablecoins": "Die Menge erhöhen",
-              "tokenizeddeposits": "Die Menge erhöhen"
+              "tokenizeddeposits": "Die Menge erhöhen",
+              "deposits": "Das Angebot erhöhen"
             },
             "description": {
               "bonds": "Ein Anleihemanager kann neue Anleihen durch Primärausgabe oder Tap-Ausgabe mit festgelegtem Nennwert und Fälligkeit ausgeben.",
@@ -1496,14 +1530,16 @@
               "equities": "Ein Aktienmanager kann neue Anteile durch verschiedene Mechanismen wie Bezugsrechte, Privatplatzierungen oder Aktiensplits ausgeben.",
               "funds": "Ein Fondsmanager kann neue Fonds durch Primärausgabe oder Tap-Ausgabe mit festgelegtem Nennwert und Fälligkeit ausgeben.",
               "stablecoins": "Ein Angebotsmanager kann neue Stablecoins minten, sofern ausreichende Sicherheiten vorhanden sind.",
-              "tokenizeddeposits": "Ein Angebotsmanager kann neue tokenisierte Einlagen minten, sofern ausreichende Sicherheiten vorhanden sind."
+              "tokenizeddeposits": "Ein Angebotsmanager kann neue tokenisierte Einlagen minten, sofern ausreichende Sicherheiten vorhanden sind.",
+              "deposits": "Ein Supply-Manager kann neue Einzahlungen prägen, sofern ausreichende Sicherheiten vorhanden sind."
             }
           },
           "update-collateral": {
             "title": "Sicherheiten aktualisieren",
             "description": {
               "stablecoins": "Ein Angebotsmanager muss die Sicherheiten, die den Stablecoin unterstützen, aktualisieren und überprüfen. Dies stellt sicher, dass das Asset jederzeit vollständig besichert bleibt.",
-              "tokenizeddeposits": "Ein Angebotsmanager muss die Sicherheiten, die die tokenisierte Einlage unterstützen, aktualisieren und überprüfen. Dies stellt sicher, dass das Asset jederzeit vollständig besichert bleibt."
+              "tokenizeddeposits": "Ein Angebotsmanager muss die Sicherheiten, die die tokenisierte Einlage unterstützen, aktualisieren und überprüfen. Dies stellt sicher, dass das Asset jederzeit vollständig besichert bleibt.",
+              "deposits": "Ein Supply-Manager muss die Sicherheiten, die die Einzahlung unterstützen, aktualisieren und überprüfen. Dies stellt sicher, dass das Vermögen jederzeit vollständig besichert bleibt."
             }
           }
         },
@@ -1681,14 +1717,15 @@
         "total-supply-header": "Gesamtangebot",
         "total-supply-info": "Das Gesamtangebot des Vermögenswerts",
         "underlying-asset": "Unterliegender Vermögenswert",
-        "underlying-asset-balance": "Saldo der zugrunde liegenden Vermögenswerte",
+        "underlying-asset-balance": "Saldo des zugrunde liegenden Vermögenswerts",
         "wallet-header": "Wallet",
         "yield-type": "Ertragsart",
         "price": "Preis",
         "price-header": "Preis",
         "allowed-since-header": "Erlaubt seit",
         "blocked-since-header": "Blockiert seit",
-        "balance": "Guthaben"
+        "balance": "Guthaben",
+        "total-value": "Gesamtwert"
       },
       "table": {
         "asset-management": "Vermögensverwaltung",
@@ -1698,7 +1735,8 @@
           "equity": "Aktien",
           "fund": "Fonds",
           "stablecoin": "Stablecoins",
-          "tokenizeddeposit": "Tokenisierte Einlagen"
+          "tokenizeddeposit": "Tokenisierte Einlagen",
+          "deposit": "Einzahlungen"
         },
         "related": {
           "bond": {
@@ -1797,6 +1835,22 @@
               "description": "Erforschen Sie die praktischen Anwendungen und Integrationen von tokenisierten Einlagen.",
               "title": "Anwendungsfälle"
             }
+          },
+          "deposit": {
+            "issue-new": {
+              "description": "Erstellen und starten Sie eine neue einzahlung mit definierten parametern. Optimieren Sie die Token-Bereitstellung zur Unterstützung neuer Projekte und Marktsegmente.",
+              "title": "Geben Sie eine neue einzahlung aus"
+            },
+            "mechanics": {
+              "button": "Erfahren Sie mehr",
+              "description": "Erfahren Sie, wie Sie wichtige einzahlungsparameter anpassen können.",
+              "title": "Einzahlungsmechanik"
+            },
+            "usecases": {
+              "button": "Erforschen",
+              "description": "Erforschen Sie die praktischen Anwendungen und Integrationen von einzahlungen.",
+              "title": "Anwendungsfälle"
+            }
           }
         },
         "topinfo-description": {
@@ -1805,7 +1859,8 @@
           "equity": "Eigenkapital-Assets digitalisieren traditionelle Eigenkapitalwertpapiere und kombinieren fortschrittliche Blockchain-Funktionen mit robusten Governance- und Compliance-Tools. Sie sind für institutionelle Investoren konzipiert und bieten eine sichere Eigenkapitalemission, Stimmrechte der Aktionäre, detaillierte Zugriffskontrollen und Mechanismen zur Einhaltung von Vorschriften. Dieses Asset vereinfacht das Eigenkapitalmanagement, erhöht die Transparenz und gewährleistet eine sichere Teilnahme der Investoren.",
           "fund": "Fonds-Assets digitalisieren Anteile an Investmentfonds und bieten automatisierte Verwaltung von Verwaltungsgebühren, Investoren-Governance und umfassende regulatorische Compliance. Ideal für Finanzinstitute optimieren sie administrative Prozesse, gewährleisten eine transparente Gebührenverwaltung und ermöglichen eine sichere Abstimmung der Investoren. Der Vertrag bietet starke Sicherheit, anpassbare Fondsattribute und verbesserte betriebliche Effizienz.",
           "stablecoin": "Stablecoins sind digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert zu erhalten, indem sie durch reale Vermögenswerte oder Reserven gedeckt sind. Sie bieten die Vorteile digitaler Vermögenswerte – wie Geschwindigkeit, Transparenz und Programmierbarkeit – und vermeiden gleichzeitig die Preisschwankungen, die typischerweise mit Kryptowährungen verbunden sind. Dieser StableCoin-Vertrag stellt sicher, dass jeder ausgegebene Token vollständig besichert ist und den Institutionen eine sichere, prüfbare und zuverlässige Verwaltung digitaler Gelder bietet. Zu den Hauptmerkmalen gehören besicherte Emissionen, umfassende rollenbasierte Kontrollen, robuste Pausierungsmechanismen und Compliance-Fähigkeiten.",
-          "tokenizeddeposit": "Tokenisierte Einlagen repräsentieren digital traditionelle Bankeinlagen und bieten Finanzinstituten verbesserte Sicherheit, Echtzeit-Transparenz und strenge Compliance-Fähigkeiten. Zu den Hauptmerkmalen gehören anpassbare Zulassungslisten, treuhänderische Aufsicht, robustes rollenbasiertes Management und integrierte Meta-Transaktionen, die die Verwaltung institutioneller Einlagen vereinfachen."
+          "tokenizeddeposit": "Tokenisierte Einlagen repräsentieren digital traditionelle Bankeinlagen und bieten Finanzinstituten verbesserte Sicherheit, Echtzeit-Transparenz und strenge Compliance-Fähigkeiten. Zu den Hauptmerkmalen gehören anpassbare Zulassungslisten, treuhänderische Aufsicht, robustes rollenbasiertes Management und integrierte Meta-Transaktionen, die die Verwaltung institutioneller Einlagen vereinfachen.",
+          "deposit": "Einzahlungen stellen digital traditionelle Bankeinlagen dar und bieten Finanzinstituten verbesserte Sicherheit, Echtzeit-Transparenz und strenge Compliance-Fähigkeiten. Zu den Hauptmerkmalen gehören anpassbare Zulassungslisten, treuhänderische Aufsicht, robustes rollenbasiertes Management und integrierte Meta-Transaktionen, die die Verwaltung institutioneller Einzahlungen vereinfachen."
         },
         "topinfo-title": {
           "bond": "Ein digitales festverzinsliches Wertpapier-Asset",
@@ -1813,7 +1868,8 @@
           "equity": "Digitale Eigenkapitalverwaltung auf institutionellem Niveau",
           "fund": "Digitales Asset für das institutionelle Fondsmanagement",
           "stablecoin": "Eine sichere und besicherte digitale Währung",
-          "tokenizeddeposit": "Sichere und konforme digitale Einlagenverwaltung"
+          "tokenizeddeposit": "Sichere und konforme digitale Einlagenverwaltung",
+          "deposit": "Sichere und konforme digitale einzahlungsverwaltung"
         }
       }
     },
@@ -2122,7 +2178,7 @@
     "issuer-portal": "Emittentenportal",
     "portfolio": "Portfolio",
     "stablecoins": "Stablecoins",
-    "tokenized-deposits": "Tokenisierte Einlagen"
+    "tokenized-deposits": "einzahlungen"
   },
   "not-found": {
     "description": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben.",

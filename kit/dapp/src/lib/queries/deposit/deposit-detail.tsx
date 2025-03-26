@@ -61,7 +61,7 @@ export const getDepositDetail = cache(
           id: address,
         });
         if (!response.deposit) {
-          throw new Error("Tokenized deposit not found");
+          throw new Error("Deposit not found");
         }
         return safeParse(OnChainDepositSchema, response.deposit);
       })(),

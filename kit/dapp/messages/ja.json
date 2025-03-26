@@ -18,7 +18,8 @@
         "equities": "株式",
         "funds": "ファンド",
         "stablecoins": "ステーブルコイン",
-        "tokenizeddeposit": "トークン化された預金"
+        "tokenizeddeposit": "トークン化された預金",
+        "deposit": "預金"
       }
     },
     "dashboard": {
@@ -36,7 +37,8 @@
           "equities": "株式",
           "funds": "ファンド",
           "stablecoins": "ステーブルコイン",
-          "tokenizeddeposit": "トークン化された預金"
+          "tokenizeddeposit": "トークン化された預金",
+          "deposit": "預金"
         },
         "assets-supply": {
           "description": "資産クラスごとのトークンの分布",
@@ -67,7 +69,7 @@
       "widgets": {
         "assets": {
           "label": "資産",
-          "subtext": "{bonds} 債券 | {cryptocurrencies} 暗号通貨 | {equities} 株式 | {funds} ファンド | {stableCoins} ステーブルコイン | {tokenizedDeposits} トークン化された預金"
+          "subtext": "{bonds} 債券 | {cryptocurrencies} 暗号通貨 | {equities} 株式 | {funds} ファンド | {stableCoins} ステーブルコイン | {deposits} 預金"
         },
         "transactions": {
           "label": "取引",
@@ -115,7 +117,7 @@
         "funds": "ファンド",
         "group-title": "資産管理",
         "stablecoins": "ステーブルコイン",
-        "tokenized-deposits": "トークン化された預金",
+        "tokenized-deposits": "預金",
         "view-all": "すべて表示"
       },
       "asset-types": {
@@ -124,7 +126,7 @@
         "equity": "株式",
         "fund": "ファンド",
         "stablecoin": "ステーブルコイン",
-        "tokenized-deposit": "トークン化された預金"
+        "tokenized-deposit": "預金"
       },
       "platform-management": {
         "group-title": "プラットフォーム管理",
@@ -237,7 +239,9 @@
     "stablecoins-plural": "ステーブルコイン",
     "tokenizeddeposits": "トークン化された預金",
     "tokenizeddeposits-plural": "トークン化された預金",
-    "unknown": "不明"
+    "unknown": "不明",
+    "deposits": "預金",
+    "deposits-plural": "預金"
   },
   "blocked": "ブロック",
   "components": {
@@ -387,7 +391,8 @@
         },
         "total-collateral": {
           "label": "総担保"
-        }
+        },
+        "deposit": "預金"
       }
     },
     "data-table": {
@@ -849,6 +854,10 @@
           "tokenizeddeposits": {
             "description": "トークン化された預金に特有のパラメータを設定します。",
             "title": "トークン化された預金の設定"
+          },
+          "deposits": {
+            "description": "特定の預金に関するパラメータを設定します。",
+            "title": "預金設定"
           }
         },
         "form": {
@@ -858,7 +867,8 @@
             "equities": "企業の所有権を表す資産。",
             "funds": "専門のマネージャーによってプールされた投資ビークル。",
             "stablecoins": "USDのような安定した資産にペッグされたデジタル資産。",
-            "tokenizeddeposits": "従来の資産の預金を表すデジタル資産。"
+            "tokenizeddeposits": "従来の資産の預金を表すデジタル資産。",
+            "deposits": "従来の資産の預金を表すデジタル資産。"
           },
           "title": {
             "bonds": "新しい債券を設計する",
@@ -866,7 +876,8 @@
             "equities": "新しい株式を設計する",
             "funds": "新しいファンドを設計する",
             "stablecoins": "新しいステーブルコインを設計する",
-            "tokenizeddeposits": "新しいトークン化された預金を設計する"
+            "tokenizeddeposits": "新しいトークン化された預金を設計する",
+            "deposits": "新しい預金を設計する"
           },
           "trigger-label": {
             "bonds": "新しい債券を発行する",
@@ -874,7 +885,8 @@
             "equities": "新しい株式を発行する",
             "funds": "新しいファンドを発行する",
             "stablecoins": "新しいステーブルコインを発行する",
-            "tokenizeddeposits": "新しいトークン化された預金を発行する"
+            "tokenizeddeposits": "新しいトークン化された預金を発行する",
+            "deposits": "新しい預金を発行する"
           }
         },
         "parameters": {
@@ -913,7 +925,8 @@
                 "weeks": "週",
                 "months": "月"
               }
-            }
+            },
+            "price-label": "価格"
           },
           "cryptocurrencies": {
             "initial-supply-description": "鋳造されるトークンの初期数量",
@@ -947,6 +960,11 @@
             "isin-placeholder": "EU1234567890",
             "name-placeholder": "トークン化されたユーロ",
             "symbol-placeholder": "TEUR"
+          },
+          "deposits": {
+            "isin-placeholder": "EU1234567890",
+            "name-placeholder": "預金されたユーロ",
+            "symbol-placeholder": "EURD"
           }
         },
         "summary": {
@@ -1304,6 +1322,18 @@
               "allow": "進む前に許可の詳細を確認してください。",
               "disallow": "進む前に拒否の詳細を確認してください。",
               "unblock": "進む前にブロック解除の詳細を確認してください。"
+            },
+            "target-label": "ターゲット",
+            "yield-schedule-label": "利回りスケジュール"
+          },
+          "target": {
+            "title": "チャージ対象を選択",
+            "description": "チャージしたい資産を選択してください",
+            "placeholder": "対象を選択",
+            "options": {
+              "bond": "債券",
+              "fund": "ファンド",
+              "yield": "利回り"
             }
           }
         },
@@ -1360,7 +1390,8 @@
           "frozen-header": "凍結済み",
           "holder-type-header": "タイプ",
           "last-activity-header": "最終活動",
-          "status-header": "ステータス"
+          "status-header": "ステータス",
+          "price-header": "価値"
         },
         "page-description": "{name}の包括的なデータと指標を探索します。",
         "page-title": "{name}の詳細",
@@ -1471,14 +1502,16 @@
               "equities": "株式供給を減少させる",
               "funds": "債券を償還する",
               "stablecoins": "供給を減少させる",
-              "tokenizeddeposits": "トークン化された預金供給を減少させる"
+              "tokenizeddeposits": "トークン化された預金供給を減少させる",
+              "deposits": "預金供給を減少させる"
             },
             "description": {
               "bonds": "債券マネージャーは、満期時の債券償還や早期買戻しプログラムを通じて総供給を減少させることができます。",
               "equities": "株式マネージャーは、買戻しプログラムや資本削減を通じて株式の総供給を減少させることができます。",
               "funds": "ファンドマネージャーは、満期時のファンド償還や早期買戻しプログラムを通じて総供給を減少させることができます。",
               "stablecoins": "供給マネージャーは、十分な担保がある場合に既存のステーブルコインをバーンすることができます。",
-              "tokenizeddeposits": "供給マネージャーは、十分な担保がある場合に既存のトークン化された預金をバーンすることができます。"
+              "tokenizeddeposits": "供給マネージャーは、十分な担保がある場合に既存のトークン化された預金をバーンすることができます。",
+              "deposits": "供給マネージャーは、十分な担保がある場合に既存の預金を焼却できます。"
             }
           },
           "increase-supply": {
@@ -1488,7 +1521,8 @@
               "equities": "新しい株式を発行する",
               "funds": "債券を発行する",
               "stablecoins": "供給を増加させる",
-              "tokenizeddeposits": "供給を増加させる"
+              "tokenizeddeposits": "供給を増加させる",
+              "deposits": "供給を増加させる"
             },
             "description": {
               "bonds": "債券マネージャーは、定義された額面と満期を持つプライマリー発行またはタップ発行を通じて新しい債券を発行することができます。",
@@ -1496,14 +1530,16 @@
               "equities": "株式マネージャーは、権利発行、プライベートプレースメント、または株式分割などのさまざまなメカニズムを通じて新しい株式を発行することができます。",
               "funds": "ファンドマネージャーは、定義された額面と満期を持つプライマリー発行またはタップ発行を通じて新しいファンドを発行することができます。",
               "stablecoins": "供給マネージャーは、十分な担保がある場合に新しいステーブルコインをミントすることができます。",
-              "tokenizeddeposits": "供給マネージャーは、十分な担保がある場合に新しいトークン化された預金をミントすることができます。"
+              "tokenizeddeposits": "供給マネージャーは、十分な担保がある場合に新しいトークン化された預金をミントすることができます。",
+              "deposits": "供給マネージャーは、十分な担保がある場合に新しい預金を発行できます。"
             }
           },
           "update-collateral": {
             "title": "担保を更新する",
             "description": {
               "stablecoins": "供給マネージャーは、ステーブルコインを支える担保を更新し、確認する必要があります。これにより、資産が常に完全に担保されていることが保証されます。",
-              "tokenizeddeposits": "供給マネージャーは、トークン化された預金を支える担保を更新し、確認する必要があります。これにより、資産が常に完全に担保されていることが保証されます。"
+              "tokenizeddeposits": "供給マネージャーは、トークン化された預金を支える担保を更新し、確認する必要があります。これにより、資産が常に完全に担保されていることが保証されます。",
+              "deposits": "供給マネージャーは、預金を支える担保を更新し、確認する必要があります。これにより、資産が常に完全に担保されていることが保証されます。"
             }
           }
         },
@@ -1688,7 +1724,8 @@
         "price-header": "価格",
         "allowed-since-header": "許可された日",
         "blocked-since-header": "ブロックされた日",
-        "balance": "残高"
+        "balance": "残高",
+        "total-value": "総価値"
       },
       "table": {
         "asset-management": "資産管理",
@@ -1698,7 +1735,8 @@
           "equity": "株式",
           "fund": "ファンド",
           "stablecoin": "ステーブルコイン",
-          "tokenizeddeposit": "トークン化された預金"
+          "tokenizeddeposit": "トークン化された預金",
+          "deposit": "預金"
         },
         "related": {
           "bond": {
@@ -1797,6 +1835,22 @@
               "description": "トークン化された預金の実用的なアプリケーションと統合を探ります。",
               "title": "ユースケース"
             }
+          },
+          "deposit": {
+            "issue-new": {
+              "description": "定義されたパラメータで新しい預金を作成し、開始します。新しいプロジェクトや市場セグメントをサポートするためにトークンの展開を合理化します。",
+              "title": "新しい預金を発行する"
+            },
+            "mechanics": {
+              "button": "詳細を学ぶ",
+              "description": "主要な預金パラメータを調整する方法を学びます。",
+              "title": "預金メカニクス"
+            },
+            "usecases": {
+              "button": "探る",
+              "description": "預金の実用的なアプリケーションと統合を探ります。",
+              "title": "ユースケース"
+            }
           }
         },
         "topinfo-description": {
@@ -1805,7 +1859,8 @@
           "equity": "株式資産は、伝統的な株式証券をデジタル化し、先進的なブロックチェーン機能と堅牢なガバナンスおよびコンプライアンスツールを組み合わせています。機関投資家向けに設計されており、安全な株式発行、株主投票権、詳細なアクセス制御、規制遵守メカニズムを提供します。この資産は、株式管理を簡素化し、透明性を高め、安全な投資家参加を保証します。",
           "fund": "ファンド資産は、投資ファンドの持分をデジタル化し、自動化された管理手数料の徴収、投資家ガバナンス、包括的な規制遵守を提供します。金融機関に最適で、管理プロセスを合理化し、透明な手数料管理を確保し、安全な投資家投票を可能にします。この契約は、強力なセキュリティ、カスタマイズ可能なファンド属性、強化された運用効率を提供します。",
           "stablecoin": "ステーブルコインは、実世界の資産または準備金によって裏付けられ、安定した価値を維持するように設計されたデジタル通貨です。価格の変動性を回避しながら、デジタル資産の利点（スピード、透明性、プログラム可能性など）を提供します。このStableCoin契約は、発行されるすべてのトークンが完全に担保されていることを保証し、機関に安全で監査可能、信頼性の高いデジタルマネー管理を提供します。主な機能には、担保に裏付けられた発行、包括的な役割ベースの制御、堅牢な一時停止メカニズム、規制遵守機能が含まれます。",
-          "tokenizeddeposit": "トークン化された預金は、伝統的な銀行預金をデジタルで表現し、金融機関に強化されたセキュリティ、リアルタイムの透明性、厳格なコンプライアンス機能を提供します。主な機能には、カスタマイズ可能な許可リスト、保管監視、堅牢な役割ベースの管理、統合メタトランザクションが含まれ、機関の預金管理を簡素化します。"
+          "tokenizeddeposit": "トークン化された預金は、伝統的な銀行預金をデジタルで表現し、金融機関に強化されたセキュリティ、リアルタイムの透明性、厳格なコンプライアンス機能を提供します。主な機能には、カスタマイズ可能な許可リスト、保管監視、堅牢な役割ベースの管理、統合メタトランザクションが含まれ、機関の預金管理を簡素化します。",
+          "deposit": "預金は従来の銀行預金をデジタルで表現し、金融機関に対して強化されたセキュリティ、リアルタイムの透明性、および厳格なコンプライアンス機能を提供します。主な機能には、カスタマイズ可能な許可リスト、保管監視、堅牢な役割ベースの管理、および統合されたメタトランザクションが含まれ、機関の預金管理を簡素化します。"
         },
         "topinfo-title": {
           "bond": "デジタル固定収入証券資産",
@@ -1813,7 +1868,8 @@
           "equity": "機関グレードのデジタル株式管理",
           "fund": "機関ファンド管理のためのデジタル資産",
           "stablecoin": "安全で担保されたデジタル通貨",
-          "tokenizeddeposit": "安全でコンプライアンスに準拠したデジタル預金管理"
+          "tokenizeddeposit": "安全でコンプライアンスに準拠したデジタル預金管理",
+          "deposit": "安全でコンプライアンスに準拠したデジタル預金管理"
         }
       }
     },
@@ -2122,7 +2178,7 @@
     "issuer-portal": "発行者ポータル",
     "portfolio": "ポートフォリオ",
     "stablecoins": "ステーブルコイン",
-    "tokenized-deposits": "トークン化された預金"
+    "tokenized-deposits": "預金"
   },
   "not-found": {
     "description": "お探しのページは存在しないか、移動されました。",

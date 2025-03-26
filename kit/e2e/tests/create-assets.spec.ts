@@ -102,7 +102,7 @@ test.describe("Create assets", () => {
         totalSupply: fundData.initialSupply,
       });
     });
-    test("Create Tokenized Deposit asset", async () => {
+    test("Create Deposit asset", async () => {
       await adminPages.adminPage.createDeposit(depositData);
       await adminPages.adminPage.verifySuccessMessage(
         assetMessage.successMessage

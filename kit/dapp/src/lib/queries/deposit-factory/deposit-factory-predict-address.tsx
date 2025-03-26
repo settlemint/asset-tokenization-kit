@@ -1,6 +1,6 @@
 "use server";
 import { getUser } from "@/lib/auth/utils";
-import { TOKENIZED_DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
+import { DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse } from "@/lib/utils/typebox";
@@ -53,7 +53,7 @@ export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
     collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
 
   const data = await portalClient.request(CreateDepositPredictAddress, {
-    address: TOKENIZED_DEPOSIT_FACTORY_ADDRESS,
+    address: DEPOSIT_FACTORY_ADDRESS,
     sender: user.wallet as Address,
     decimals,
     name: assetName,

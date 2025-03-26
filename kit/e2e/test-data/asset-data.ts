@@ -233,7 +233,7 @@ export const generateDepositName = (): string => {
   const currency = getRandomElement(depositCurrencies);
   const uniqueId = getUniqueId();
 
-  return `${prefix}${currency} Tokenized Deposit-${uniqueId}`;
+  return `${prefix}${currency} Deposit-${uniqueId}`;
 };
 
 const generateSymbol = (name: string): string => {
@@ -318,7 +318,7 @@ export const stablecoinData = {
 };
 
 export const depositData = {
-  assetType: "Tokenized Deposits",
+  assetType: "Deposit",
   name: generateDepositName(),
   symbol: generateSymbol(generateDepositName()),
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
@@ -326,7 +326,7 @@ export const depositData = {
   validityPeriod: "600",
   valueInEur: "3",
   pincode: pincode,
-  sidebarAssetTypes: "Tokenized Deposits",
+  sidebarAssetTypes: "Deposits",
   initialSupply: "0",
 };
 

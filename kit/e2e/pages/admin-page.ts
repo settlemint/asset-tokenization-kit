@@ -720,7 +720,7 @@ export class AdminPage extends BasePage {
       Bonds: "bond",
       Equities: "equity",
       Funds: "fund",
-      "Tokenized Deposits": "deposit",
+      Deposits: "deposit",
     };
     return pluralToSingular[type] || type.toLowerCase();
   }
