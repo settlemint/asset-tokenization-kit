@@ -7,6 +7,7 @@ import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getAssetPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
+import { getPortfolioHistory } from "@/lib/queries/portfolio/portfolio-history";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
 import { startOfDay, subMonths } from "date-fns";
@@ -62,6 +63,27 @@ export default async function PortfolioDashboard({
     getCurrentUserDetail(),
   ]);
 
+  // Get portfolio history and asset prices
+  const portfolioHistory = await getPortfolioHistory({
+    address: user.wallet as Address,
+    days: 30,
+  });
+
+  // Get unique assets and their prices
+  const uniqueAssets = Array.from(
+    new Set(portfolioHistory?.map((item) => item.asset.id) ?? [])
+  );
+
+  const assetPrices = await Promise.all(
+    uniqueAssets.map((assetId) => getAssetPriceInUserCurrency(assetId))
+  );
+
+  // Create asset price map
+  const assetPriceMap = new Map<string, number>();
+  uniqueAssets.forEach((assetId, index) => {
+    assetPriceMap.set(assetId, assetPrices[index].amount);
+  });
+
   const assetValues = await Promise.all(
     myAssetsBalance.balances.map(async (balance) => {
       const price = await getAssetPriceInUserCurrency(balance.asset.id);
@@ -90,7 +112,18 @@ export default async function PortfolioDashboard({
             currency: userDetails.currency,
           }}
         />
-        <PortfolioValue address={user.wallet as Address} />
+        <PortfolioValue
+          portfolioHistory={portfolioHistory?.map((item) => ({
+            timestamp: item.timestamp,
+            balance: item.balance,
+            asset: {
+              id: item.asset.id,
+              name: item.asset.name,
+              type: item.asset.type,
+            },
+          }))}
+          assetPriceMap={assetPriceMap}
+        />
       </div>
 
       <PageHeader title={t("dashboard.my-assets")} className="mt-8" />
