@@ -3,12 +3,12 @@ pragma solidity ^0.8.27;
 
 import { Test } from "forge-std/Test.sol";
 import { VmSafe } from "forge-std/Vm.sol";
-import { TokenizedDepositFactory } from "../contracts/TokenizedDepositFactory.sol";
-import { TokenizedDeposit } from "../contracts/TokenizedDeposit.sol";
+import { DepositFactory } from "../contracts/DepositFactory.sol";
+import { Deposit } from "../contracts/Deposit.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
 
-contract TokenizedDepositFactoryTest is Test {
-    TokenizedDepositFactory public factory;
+contract DepositFactoryTest is Test {
+    DepositFactory public factory;
     Forwarder public forwarder;
     address public owner;
     uint8 public constant DECIMALS = 8;
@@ -19,7 +19,7 @@ contract TokenizedDepositFactoryTest is Test {
         // Deploy forwarder first
         forwarder = new Forwarder();
         // Then deploy factory with forwarder address
-        factory = new TokenizedDepositFactory(address(forwarder));
+        factory = new DepositFactory(address(forwarder));
     }
 
     function test_CreateToken() public {
@@ -32,7 +32,7 @@ contract TokenizedDepositFactoryTest is Test {
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
-        TokenizedDeposit token = TokenizedDeposit(tokenAddress);
+        Deposit token = Deposit(tokenAddress);
         assertEq(token.name(), name, "Token name should match");
         assertEq(token.symbol(), symbol, "Token symbol should match");
         assertEq(token.decimals(), DECIMALS, "Token decimals should match");
@@ -56,7 +56,7 @@ contract TokenizedDepositFactoryTest is Test {
             address tokenAddress = factory.create(name, symbol, decimalValues[i], COLLATERAL_LIVENESS);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
-            TokenizedDeposit token = TokenizedDeposit(tokenAddress);
+            Deposit token = Deposit(tokenAddress);
             assertEq(token.decimals(), decimalValues[i], "Token decimals should match");
         }
     }
@@ -68,7 +68,7 @@ contract TokenizedDepositFactoryTest is Test {
         address token1 = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
 
         // Create a new factory instance
-        TokenizedDepositFactory newFactory = new TokenizedDepositFactory(address(forwarder));
+        DepositFactory newFactory = new DepositFactory(address(forwarder));
 
         // Create a token with the same parameters
         address token2 = newFactory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
@@ -82,7 +82,7 @@ contract TokenizedDepositFactoryTest is Test {
         string memory symbol = "TDEP";
 
         address tokenAddress = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
-        TokenizedDeposit token = TokenizedDeposit(tokenAddress);
+        Deposit token = Deposit(tokenAddress);
 
         // Test initial state
         assertEq(token.decimals(), DECIMALS, "Decimals should match");
@@ -96,7 +96,7 @@ contract TokenizedDepositFactoryTest is Test {
 
         vm.startPrank(owner);
         address tokenAddress = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
-        TokenizedDeposit token = TokenizedDeposit(tokenAddress);
+        Deposit token = Deposit(tokenAddress);
 
         // Test minting with supply management role
         uint256 amount = 1000 ether;
@@ -238,7 +238,7 @@ contract TokenizedDepositFactoryTest is Test {
         vm.startPrank(owner);
         factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
 
-        vm.expectRevert(abi.encodeWithSelector(TokenizedDepositFactory.AddressAlreadyDeployed.selector));
+        vm.expectRevert(abi.encodeWithSelector(DepositFactory.AddressAlreadyDeployed.selector));
         factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
         vm.stopPrank();
     }

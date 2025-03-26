@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.27;
 
-import { TokenizedDeposit } from "./TokenizedDeposit.sol";
+import { Deposit } from "./Deposit.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
@@ -13,7 +13,7 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 /// meta-transaction support. Uses CREATE2 for deterministic deployment addresses and maintains a registry
 /// of deployed tokens.
 /// @custom:security-contact support@settlemint.com
-contract TokenizedDepositFactory is ReentrancyGuard, ERC2771Context {
+contract DepositFactory is ReentrancyGuard, ERC2771Context {
     /// @notice Custom errors for the TokenizedDepositFactory contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error AddressAlreadyDeployed();
@@ -24,7 +24,7 @@ contract TokenizedDepositFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Emitted when a new tokenized deposit is created
     /// @param token The address of the newly created token
-    event TokenizedDepositCreated(address indexed token, address indexed creator);
+    event DepositCreated(address indexed token, address indexed creator);
 
     /// @notice Deploys a new TokenizedDepositFactory contract
     /// @dev Sets up the factory with meta-transaction support
@@ -55,14 +55,14 @@ contract TokenizedDepositFactory is ReentrancyGuard, ERC2771Context {
 
         bytes32 salt = _calculateSalt(name, symbol, decimals);
 
-        TokenizedDeposit newToken = new TokenizedDeposit{ salt: salt }(
+        Deposit newToken = new Deposit{ salt: salt }(
             name, symbol, decimals, _msgSender(), collateralLivenessSeconds, trustedForwarder()
         );
 
         token = address(newToken);
         isFactoryToken[token] = true;
 
-        emit TokenizedDepositCreated(token, _msgSender());
+        emit DepositCreated(token, _msgSender());
     }
 
     /// @notice Predicts the address where a token would be deployed
@@ -97,7 +97,7 @@ contract TokenizedDepositFactory is ReentrancyGuard, ERC2771Context {
                             salt,
                             keccak256(
                                 abi.encodePacked(
-                                    type(TokenizedDeposit).creationCode,
+                                    type(Deposit).creationCode,
                                     abi.encode(
                                         name, symbol, decimals, sender, collateralLivenessSeconds, trustedForwarder()
                                     )

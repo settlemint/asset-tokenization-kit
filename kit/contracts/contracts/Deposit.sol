@@ -21,7 +21,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 /// @dev Inherits from multiple OpenZeppelin contracts to provide comprehensive stablecoin functionality with
 /// advanced control features, meta-transactions support, and collateral tracking.
 /// @custom:security-contact support@settlemint.com
-contract TokenizedDeposit is
+contract Deposit is
     ERC20,
     ERC20Burnable,
     ERC20Pausable,
