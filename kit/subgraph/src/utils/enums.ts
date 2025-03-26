@@ -5,7 +5,7 @@ export class AssetType {
   static stablecoin: string = "stablecoin";
   static cryptocurrency: string = "cryptocurrency";
   static fund: string = "fund";
-  static tokenizeddeposit: string = "tokenizeddeposit";
+  static deposit: string = "deposit";
 }
 
 export class FactoryType {
@@ -15,7 +15,7 @@ export class FactoryType {
   static cryptocurrency: string = "cryptocurrency";
   static fund: string = "fund";
   static fixedyield: string = "fixedyield";
-  static tokenizeddeposit: string = "tokenizeddeposit";
+  static deposit: string = "deposit";
 }
 
 export class EventName {

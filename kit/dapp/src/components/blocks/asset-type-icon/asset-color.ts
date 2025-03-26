@@ -1,13 +1,6 @@
-export function getAssetColor(
-  type:
-    | "bond"
-    | "cryptocurrency"
-    | "equity"
-    | "fund"
-    | "stablecoin"
-    | "tokenizeddeposit",
-  as?: "class" | "color"
-): string {
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
+
+export function getAssetColor(type: AssetType, as?: "class" | "color"): string {
   switch (type) {
     case "bond":
       return as === "color" ? "var(--chart-1)" : "bg-chart-1";
@@ -19,7 +12,7 @@ export function getAssetColor(
       return as === "color" ? "var(--chart-4)" : "bg-chart-4";
     case "stablecoin":
       return as === "color" ? "var(--chart-5)" : "bg-chart-5";
-    case "tokenizeddeposit":
+    case "deposit":
       return as === "color" ? "var(--chart-6)" : "bg-chart-6";
     default:
       return as === "color" ? "var(--chart-5)" : "bg-chart-5";

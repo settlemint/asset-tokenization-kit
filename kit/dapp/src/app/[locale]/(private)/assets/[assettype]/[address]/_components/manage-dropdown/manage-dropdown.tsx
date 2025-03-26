@@ -14,7 +14,7 @@ import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-ba
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import type { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
+import type { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { isBefore } from "date-fns";
 import { ChevronDown } from "lucide-react";
@@ -82,11 +82,11 @@ export function ManageDropdown({
   }
 
   let mintMax: number | undefined = undefined;
-  if (assettype === "stablecoin" || assettype === "tokenizeddeposit") {
-    const tokenizedDeposit = assetDetails as Awaited<
-      ReturnType<typeof getTokenizedDepositDetail>
+  if (assettype === "stablecoin" || assettype === "deposit") {
+    const deposit = assetDetails as Awaited<
+      ReturnType<typeof getDepositDetail>
     >;
-    mintMax = tokenizedDeposit.freeCollateral;
+    mintMax = deposit.freeCollateral;
   }
 
   const isBlocked = userBalance?.blocked ?? false;
@@ -206,7 +206,7 @@ export function ManageDropdown({
     {
       id: "update-collateral",
       label: t("actions.update-collateral"),
-      hidden: !["stablecoin", "tokenizeddeposit"].includes(assettype),
+      hidden: !["stablecoin", "deposit"].includes(assettype),
       disabled: isBlocked || isPaused || !userIsSupplyManager,
       form: (
         <UpdateCollateralForm

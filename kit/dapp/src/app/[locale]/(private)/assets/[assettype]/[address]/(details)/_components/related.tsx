@@ -4,10 +4,10 @@ import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Address } from "viem";
 import { BondsRelated } from "./related/bonds";
 import { CryptocurrenciesRelated } from "./related/cryptocurrencies";
+import { DepositsRelated } from "./related/deposits";
 import { EquitiesRelated } from "./related/equities";
 import { FundsRelated } from "./related/funds";
 import { StablecoinsRelated } from "./related/stablecoins";
-import { TokenizedDepositsRelated } from "./related/tokenizeddeposits";
 
 interface RelatedProps {
   assettype: AssetType;
@@ -47,9 +47,9 @@ export function Related({
           userBalance={userBalance}
         />
       );
-    case "tokenizeddeposit":
+    case "deposit":
       return (
-        <TokenizedDepositsRelated
+        <DepositsRelated
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}

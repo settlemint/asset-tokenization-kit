@@ -1,9 +1,9 @@
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
+import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
 import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
-import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
 import type { Address } from "viem";
 import type { AssetType } from "../utils/typebox/asset-types";
 
@@ -19,7 +19,7 @@ export function getAssetDetail({
   | ReturnType<typeof getBondDetail>
   | ReturnType<typeof getCryptoCurrencyDetail>
   | ReturnType<typeof getStableCoinDetail>
-  | ReturnType<typeof getTokenizedDepositDetail>
+  | ReturnType<typeof getDepositDetail>
   | ReturnType<typeof getEquityDetail>
   | ReturnType<typeof getFundDetail> {
   switch (assettype) {
@@ -29,8 +29,8 @@ export function getAssetDetail({
       return getCryptoCurrencyDetail({ address });
     case "stablecoin":
       return getStableCoinDetail({ address });
-    case "tokenizeddeposit":
-      return getTokenizedDepositDetail({ address });
+    case "deposit":
+      return getDepositDetail({ address });
     case "equity":
       return getEquityDetail({ address });
     case "fund":

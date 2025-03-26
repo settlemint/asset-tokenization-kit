@@ -1,7 +1,7 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
+import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import type { Address } from "viem";
@@ -19,11 +19,11 @@ export default async function BondHoldersPage({ params }: PageProps) {
   ]);
 
   let maxMint: number | undefined = undefined;
-  if (assettype === "stablecoin" || assettype === "tokenizeddeposit") {
-    const tokenizedDeposit = assetDetails as Awaited<
-      ReturnType<typeof getTokenizedDepositDetail>
+  if (assettype === "stablecoin" || assettype === "deposit") {
+    const deposit = assetDetails as Awaited<
+      ReturnType<typeof getDepositDetail>
     >;
-    const freeCollateral = tokenizedDeposit.freeCollateral;
+    const freeCollateral = deposit.freeCollateral;
     maxMint = freeCollateral;
   }
 

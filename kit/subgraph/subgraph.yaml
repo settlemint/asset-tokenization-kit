@@ -141,27 +141,27 @@ dataSources:
           handler: handleFixedYieldCreated
       file: ./src/factories/fixedyield-factory.ts
   - kind: ethereum/contract
-    name: TokenizedDepositFactory
+    name: DepositFactory
     network: settlemint
     source:
       address: "0x5e771e1417100000000000000000000000000007"
-      abi: TokenizedDepositFactory
+      abi: DepositFactory
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
         - Factory
-        - TokenizedDepositCreatedEvent
+        - DepositCreatedEvent
       abis:
-        - name: TokenizedDepositFactory
-          file: ../contracts/artifacts/contracts/TokenizedDepositFactory.sol/TokenizedDepositFactory.json
-        - name: TokenizedDeposit
-          file: ../contracts/artifacts/contracts/TokenizedDeposit.sol/TokenizedDeposit.json
+        - name: DepositFactory
+          file: ../contracts/artifacts/contracts/DepositFactory.sol/DepositFactory.json
+        - name: Deposit
+          file: ../contracts/artifacts/contracts/Deposit.sol/Deposit.json
       eventHandlers:
-        - event: TokenizedDepositCreated(indexed address,indexed address)
-          handler: handleTokenizedDepositCreated
-      file: ./src/factories/tokenizeddeposit-factory.ts
+        - event: DepositCreated(indexed address,indexed address)
+          handler: handleDepositCreated
+      file: ./src/factories/deposit-factory.ts
 templates:
   - kind: ethereum/contract
     name: Bond
@@ -181,7 +181,7 @@ templates:
         - Equity
         - StableCoin
         - Fund
-        - TokenizedDeposit
+        - Deposit
         - AssetEvent
         - FactoryEvent
         - BondCreatedEvent
@@ -266,7 +266,7 @@ templates:
         - Equity
         - StableCoin
         - Fund
-        - TokenizedDeposit
+        - Deposit
         - AssetEvent
         - FactoryEvent
         - CryptoCurrencyCreatedEvent
@@ -329,7 +329,7 @@ templates:
         - CryptoCurrency
         - StableCoin
         - Fund
-        - TokenizedDeposit
+        - Deposit
         - AssetEvent
         - FactoryEvent
         - EquityCreatedEvent
@@ -402,7 +402,7 @@ templates:
         - CryptoCurrency
         - Equity
         - Fund
-        - TokenizedDeposit
+        - Deposit
         - AssetEvent
         - FactoryEvent
         - StableCoinCreatedEvent
@@ -504,7 +504,7 @@ templates:
         - CryptoCurrency
         - Equity
         - StableCoin
-        - TokenizedDeposit
+        - Deposit
         - AssetEvent
         - FactoryEvent
         - FundCreatedEvent
@@ -567,10 +567,10 @@ templates:
           handler: handleTokenWithdrawn
       file: ./src/assets/fund.ts
   - kind: ethereum/contract
-    name: TokenizedDeposit
+    name: Deposit
     network: settlemint
     source:
-      abi: TokenizedDeposit
+      abi: Deposit
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -579,10 +579,10 @@ templates:
         - Asset
         - Account
         - Factory
-        - TokenizedDeposit
+        - Deposit
         - AssetEvent
         - FactoryEvent
-        - TokenizedDepositCreatedEvent
+        - DepositCreatedEvent
         - ApprovalEvent
         - PausedEvent
         - TokensFrozenEvent
@@ -597,20 +597,20 @@ templates:
         - AssetStatsData
         - PortfolioStats
         - PortfolioStatsData
-        - TokenizedDepositStats
-        - TokenizedDepositStatsData
+        - DepositStats
+        - DepositStatsData
         - TransferData
         - AccountActivityData
         - RoleActivityData
-        - TokenizedDepositActivityData
+        - DepositActivityData
         - TransferStats
         - AccountActivityStats
         - RoleActivityStats
-        - TokenizedDepositActivityStats
+        - DepositActivityStats
         - CollateralUpdatedEvent
       abis:
-        - name: TokenizedDeposit
-          file: ../contracts/artifacts/contracts/TokenizedDeposit.sol/TokenizedDeposit.json
+        - name: Deposit
+          file: ../contracts/artifacts/contracts/Deposit.sol/Deposit.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -636,4 +636,4 @@ templates:
           handler: handleTokenWithdrawn
         - event: CollateralUpdated(uint256,uint256,uint256)
           handler: handleCollateralUpdated
-      file: ./src/assets/tokenizeddeposit.ts
+      file: ./src/assets/deposit.ts

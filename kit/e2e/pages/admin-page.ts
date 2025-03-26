@@ -200,7 +200,7 @@ export class AdminPage extends BasePage {
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
-  async createTokenizedDeposit(options: {
+  async createDeposit(options: {
     assetType: string;
     name: string;
     symbol: string;
@@ -720,7 +720,7 @@ export class AdminPage extends BasePage {
       Bonds: "bond",
       Equities: "equity",
       Funds: "fund",
-      "Tokenized Deposits": "tokenizeddeposit",
+      "Tokenized Deposits": "deposit",
     };
     return pluralToSingular[type] || type.toLowerCase();
   }
