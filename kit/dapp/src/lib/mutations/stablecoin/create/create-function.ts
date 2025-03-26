@@ -37,7 +37,7 @@ const StableCoinFactoryCreate = portalGraphql(`
  */
 const CreateOffchainStablecoin = hasuraGraphql(`
     mutation CreateOffchainStablecoin($id: String!) {
-      insert_asset_one(object: {id: $id}) {
+      insert_asset_one(object: {id: $id}, on_conflict: {constraint: asset_pkey, update_columns: []}) {
         id
       }
   }

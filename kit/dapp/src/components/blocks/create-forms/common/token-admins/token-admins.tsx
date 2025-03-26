@@ -95,7 +95,6 @@ export function TokenAdmins({ userDetails }: { userDetails: User }) {
                 control={form.control}
                 name="selectedWallet"
                 placeholder={t("select-user-placeholder")}
-                role="admin"
               />
             )}
             <div className="flex justify-end">
