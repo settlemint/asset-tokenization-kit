@@ -46,15 +46,6 @@ export async function PortfolioValue({ address }: PortfolioValueProps) {
     assetPriceMap.set(assetId, assetPrices[index].amount);
   });
 
-  // Process data for time series
-  const processedData = portfolioHistory.map((item) => {
-    const assetPrice = assetPriceMap.get(item.asset.id) || 0;
-    return {
-      timestamp: item.timestamp,
-      [item.asset.id]: Number(item.balance) * assetPrice,
-    };
-  });
-
   // Create chart config for each asset
   const chartConfig: ChartConfig = {};
   uniqueAssets.forEach((assetId, index) => {
@@ -69,20 +60,61 @@ export async function PortfolioValue({ address }: PortfolioValueProps) {
     }
   });
 
-  // Create time series with consistent intervals
-  const timeseries = createTimeSeries(
-    processedData,
-    uniqueAssets,
-    {
-      granularity: "day",
-      intervalType: "month",
-      intervalLength: 1,
-      accumulation: "max",
-      aggregation: "first",
-      historical: true,
-    },
-    "en"
-  );
+  const timeseriesPerAsset = uniqueAssets.map((assetId) => {
+    const assetHistory = portfolioHistory.filter(
+      (item) => item.asset.id === assetId
+    );
+
+    const processedData = assetHistory.map((item) => ({
+      timestamp: item.timestamp,
+      [assetId]: item.balance * (assetPriceMap.get(item.asset.id) || 0),
+    }));
+
+    return createTimeSeries(
+      processedData,
+      [assetId],
+      {
+        granularity: "day",
+        intervalType: "month",
+        intervalLength: 1,
+        accumulation: "max",
+        aggregation: "first",
+        historical: true,
+      },
+      "en"
+    );
+  });
+
+  // Combine all time series data
+  const allTimestamps = new Set<string>();
+  timeseriesPerAsset.forEach((series) => {
+    series.forEach((item) => allTimestamps.add(item.timestamp));
+  });
+
+  // Create merged time series
+  const timeseries = Array.from(allTimestamps)
+    .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
+    .map((timestamp) => {
+      // Start with timestamp and zero values for all assets
+      const entry = {
+        timestamp,
+        ...Object.fromEntries(uniqueAssets.map((id) => [id, 0])),
+      };
+
+      // Add values from each asset's time series
+      timeseriesPerAsset.forEach((series) => {
+        const dataPoint = series.find((item) => item.timestamp === timestamp);
+        if (dataPoint) {
+          Object.entries(dataPoint).forEach(([key, value]) => {
+            if (key !== "timestamp") {
+              entry[key] = value as number;
+            }
+          });
+        }
+      });
+
+      return entry;
+    });
 
   return (
     <AreaChartComponent
