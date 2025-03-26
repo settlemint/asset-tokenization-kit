@@ -181,4 +181,4 @@ export const IndexingFragmentSchema = t.Object({
   }),
 });
 
-export type IndexingFragment = StaticDecode<typeof IndexingFragmentSchema>;
+export type IndexingFragmentType = StaticDecode<typeof IndexingFragmentSchema>;

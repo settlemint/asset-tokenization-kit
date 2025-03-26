@@ -4,7 +4,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import {
   IndexingFragment,
-  type IndexingFragment as IndexingFragmentType,
+  type IndexingFragmentType,
 } from "./transaction-fragment";
 
 /**
