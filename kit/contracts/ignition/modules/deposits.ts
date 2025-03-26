@@ -22,11 +22,11 @@ const DepositsModule = buildModule("DepositsModule", (m) => {
   );
   const readTokenizedEURAddress = m.readEventArgument(
     createTokenizedEUR,
-    "TokenizedDepositCreated",
+    "DepositCreated",
     "token",
     { id: "readTokenizedEURAddress" }
   );
-  const EURD = m.contractAt("TokenizedDeposit", readTokenizedEURAddress, {
+  const EURD = m.contractAt("Deposit", readTokenizedEURAddress, {
     id: "EURD",
   });
 
