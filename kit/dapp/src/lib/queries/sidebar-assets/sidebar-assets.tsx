@@ -9,14 +9,14 @@ import { BondFragment } from "../bond/bond-fragment";
 import { OnChainBondSchema } from "../bond/bond-schema";
 import { CryptoCurrencyFragment } from "../cryptocurrency/cryptocurrency-fragment";
 import { OnChainCryptoCurrencySchema } from "../cryptocurrency/cryptocurrency-schema";
+import { DepositFragment } from "../deposit/deposit-fragment";
+import { OnChainDepositSchema } from "../deposit/deposit-schema";
 import { EquityFragment } from "../equity/equity-fragment";
 import { OnChainEquitySchema } from "../equity/equity-schema";
 import { FundFragment } from "../fund/fund-fragment";
 import { OnChainFundSchema } from "../fund/fund-schema";
 import { StableCoinFragment } from "../stablecoin/stablecoin-fragment";
 import { OnChainStableCoinSchema } from "../stablecoin/stablecoin-schema";
-import { TokenizedDepositFragment } from "../tokenizeddeposit/tokenizeddeposit-fragment";
-import { OnChainTokenizedDepositSchema } from "../tokenizeddeposit/tokenizeddeposit-schema";
 
 /**
  * GraphQL query to fetch sidebar asset data
@@ -39,8 +39,8 @@ const SidebarAssets = theGraphGraphqlKit(
     cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
       ...CryptoCurrencyFragment
     }
-    tokenizedDeposits(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
-      ...TokenizedDepositFragment
+    deposits(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+      ...DepositFragment
     }
     assetCounts {
       assetType
@@ -54,7 +54,7 @@ const SidebarAssets = theGraphGraphqlKit(
     EquityFragment,
     FundFragment,
     CryptoCurrencyFragment,
-    TokenizedDepositFragment,
+    DepositFragment,
   ]
 );
 
@@ -124,9 +124,9 @@ export const getSidebarAssets = cache(
       result.cryptoCurrencies || []
     );
 
-    const validatedTokenizedDeposits = safeParse(
-      t.Array(OnChainTokenizedDepositSchema),
-      result.tokenizedDeposits || []
+    const validatedDeposits = safeParse(
+      t.Array(OnChainDepositSchema),
+      result.deposits || []
     );
 
     // Validate assetCounts with TypeBox schema
@@ -156,9 +156,9 @@ export const getSidebarAssets = cache(
       ? validatedCryptoCurrencies.slice(0, limit)
       : validatedCryptoCurrencies;
 
-    const limitedTokenizedDeposits = limit
-      ? validatedTokenizedDeposits.slice(0, limit)
-      : validatedTokenizedDeposits;
+    const limitedDeposits = limit
+      ? validatedDeposits.slice(0, limit)
+      : validatedDeposits;
 
     /**
      * Helper function to get the count for a specific asset type
@@ -170,7 +170,7 @@ export const getSidebarAssets = cache(
         | "equity"
         | "fund"
         | "stablecoin"
-        | "tokenizeddeposit"
+        | "deposit"
     ) =>
       validatedAssetCounts.find((asset) => asset.assetType === assetType)
         ?.count ?? 0;
@@ -196,9 +196,9 @@ export const getSidebarAssets = cache(
         records: limitedCryptoCurrencies,
         count: getCount("cryptocurrency"),
       },
-      tokenizeddeposit: {
-        records: limitedTokenizedDeposits,
-        count: getCount("tokenizeddeposit"),
+      deposit: {
+        records: limitedDeposits,
+        count: getCount("deposit"),
       },
     };
   }

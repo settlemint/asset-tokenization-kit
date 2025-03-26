@@ -6,17 +6,15 @@ import { DataTableRowActions } from "@/components/blocks/data-table/data-table-r
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
-import type { getTokenizedDepositList } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-list";
+import type { getDepositList } from "@/lib/queries/deposit/deposit-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 
 const columnHelper =
-  createColumnHelper<
-    Awaited<ReturnType<typeof getTokenizedDepositList>>[number]
-  >();
+  createColumnHelper<Awaited<ReturnType<typeof getDepositList>>[number]>();
 
-export function tokenizedDepositColumns({
+export function depositColumns({
   baseCurrency,
 }: {
   baseCurrency: CurrencyCode;
@@ -76,7 +74,7 @@ export function tokenizedDepositColumns({
       cell: ({ row }) => {
         return (
           <DataTableRowActions
-            detailUrl={`/assets/tokenizeddeposit/${row.original.id}`}
+            detailUrl={`/assets/deposit/${row.original.id}`}
           />
         );
       },

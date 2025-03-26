@@ -1,9 +1,9 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
-import { isAddressAvailable } from "@/lib/queries/tokenizeddeposit-factory/tokenizeddeposit-factory-address-available";
-import { getPredictedAddress } from "@/lib/queries/tokenizeddeposit-factory/tokenizeddeposit-factory-predict-address";
-import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
-import { getTokenizedDepositList } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-list";
-import { TokenizedDepositSchema } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-schema";
+import { isAddressAvailable } from "@/lib/queries/deposit-factory/deposit-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/deposit-factory/deposit-factory-predict-address";
+import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
+import { getDepositList } from "@/lib/queries/deposit/deposit-list";
+import { DepositSchema } from "@/lib/queries/deposit/deposit-schema";
 import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
@@ -18,6 +18,8 @@ import { updateRolesFunction } from "../mutations/asset/access-control/update-ro
 import { UpdateRolesSchema } from "../mutations/asset/access-control/update-role/update-role-schema";
 import { burnFunction } from "../mutations/burn/burn-function";
 import { BurnSchema } from "../mutations/burn/burn-schema";
+import { createDepositFunction } from "../mutations/deposit/create/create-function";
+import { CreateDepositSchema } from "../mutations/deposit/create/create-schema";
 import { disallowUserFunction } from "../mutations/disallow-user/disallow-user-function";
 import { DisallowUserSchema } from "../mutations/disallow-user/disallow-user-schema";
 import { freezeFunction } from "../mutations/freeze/freeze-function";
@@ -26,8 +28,6 @@ import { mintFunction } from "../mutations/mint/mint-function";
 import { MintSchema } from "../mutations/mint/mint-schema";
 import { pauseFunction } from "../mutations/pause/pause-function";
 import { PauseSchema } from "../mutations/pause/pause-schema";
-import { createTokenizedDepositFunction } from "../mutations/tokenized-deposit/create/create-function";
-import { CreateTokenizedDepositSchema } from "../mutations/tokenized-deposit/create/create-schema";
 import { transferAssetFunction } from "../mutations/transfer/transfer-function";
 import { TransferSchema } from "../mutations/transfer/transfer-schema";
 import { unpauseFunction } from "../mutations/unpause/unpause-function";
@@ -36,9 +36,9 @@ import { updateCollateralFunction } from "../mutations/update-collateral/update-
 import { UpdateCollateralSchema } from "../mutations/update-collateral/update-collateral-schema";
 import { withdrawFunction } from "../mutations/withdraw/withdraw-function";
 import { WithdrawSchema } from "../mutations/withdraw/withdraw-schema";
-import { PredictAddressInputSchema } from "../queries/tokenizeddeposit-factory/tokenizeddeposit-factory-schema";
+import { PredictAddressInputSchema } from "../queries/deposit-factory/deposit-factory-schema";
 
-export const TokenizedDepositApi = new Elysia({
+export const DepositApi = new Elysia({
   detail: {
     security: [
       {
@@ -52,7 +52,7 @@ export const TokenizedDepositApi = new Elysia({
   .get(
     "",
     async () => {
-      return getTokenizedDepositList();
+      return getDepositList();
     },
     {
       auth: true,
@@ -60,10 +60,10 @@ export const TokenizedDepositApi = new Elysia({
         summary: "List",
         description:
           "Retrieves a list of all stablecoin tokens in the system with their details including supply, collateral, and holder information.",
-        tags: ["tokenized deposit"],
+        tags: ["deposit"],
       },
       response: {
-        200: t.Array(TokenizedDepositSchema),
+        200: t.Array(DepositSchema),
         ...defaultErrorSchema,
       },
     }
@@ -71,7 +71,7 @@ export const TokenizedDepositApi = new Elysia({
   .get(
     "/:address",
     ({ params: { address } }) => {
-      return getTokenizedDepositDetail({
+      return getDepositDetail({
         address: getAddress(address),
       });
     },
@@ -81,7 +81,7 @@ export const TokenizedDepositApi = new Elysia({
         summary: "Details",
         description:
           "Retrieves a stablecoin by address with details including supply, collateral, and holder information.",
-        tags: ["tokenized deposit"],
+        tags: ["deposit"],
       },
       params: t.Object({
         address: t.String({
@@ -89,7 +89,7 @@ export const TokenizedDepositApi = new Elysia({
         }),
       }),
       response: {
-        200: TokenizedDepositSchema,
+        200: DepositSchema,
         ...defaultErrorSchema,
       },
     }
@@ -104,8 +104,8 @@ export const TokenizedDepositApi = new Elysia({
       detail: {
         summary: "Check if address is available",
         description:
-          "Checks if the given address is available for deploying a new tokenized deposit contract.",
-        tags: ["tokenized deposit"],
+          "Checks if the given address is available for deploying a new deposit contract.",
+        tags: ["deposit"],
       },
       params: t.Object({
         address: t.String({
@@ -130,8 +130,8 @@ export const TokenizedDepositApi = new Elysia({
       detail: {
         summary: "Predict contract address",
         description:
-          "Predicts the contract address for a new tokenized deposit based on creation parameters.",
-        tags: ["tokenized deposit"],
+          "Predicts the contract address for a new deposit based on creation parameters.",
+        tags: ["deposit"],
       },
       body: PredictAddressInputSchema,
       response: {
@@ -145,7 +145,7 @@ export const TokenizedDepositApi = new Elysia({
   .post(
     "/factory",
     async ({ body, user }) => {
-      return createTokenizedDepositFunction({
+      return createDepositFunction({
         parsedInput: body,
         ctx: { user },
       });
@@ -153,12 +153,12 @@ export const TokenizedDepositApi = new Elysia({
     {
       auth: true,
       detail: {
-        summary: "Create tokenized deposit",
+        summary: "Create deposit",
         description:
-          "Creates a new tokenized deposit token based on creation parameters.",
-        tags: ["tokenized deposit"],
+          "Creates a new deposit token based on creation parameters.",
+        tags: ["deposit"],
       },
-      body: CreateTokenizedDepositSchema(),
+      body: CreateDepositSchema(),
       response: {
         200: t.Hashes(),
         ...defaultErrorSchema,
@@ -171,7 +171,7 @@ export const TokenizedDepositApi = new Elysia({
       return transferAssetFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -179,10 +179,10 @@ export const TokenizedDepositApi = new Elysia({
     {
       auth: true,
       detail: {
-        summary: "Transfer tokenized deposit",
+        summary: "Transfer deposit",
         description:
-          "Transfers tokenized deposit tokens from the current user's account to another address.",
-        tags: ["tokenized deposit"],
+          "Transfers deposit tokens from the current user's account to another address.",
+        tags: ["deposit"],
       },
       body: TransferSchema(),
       response: {
@@ -197,7 +197,7 @@ export const TokenizedDepositApi = new Elysia({
       return grantRoleFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -206,9 +206,8 @@ export const TokenizedDepositApi = new Elysia({
       auth: true,
       detail: {
         summary: "Grant role",
-        description:
-          "Grants a specific role to a user for a tokenized deposit contract.",
-        tags: ["tokenized deposit"],
+        description: "Grants a specific role to a user for a deposit contract.",
+        tags: ["deposit"],
       },
       body: GrantRoleSchema(),
       response: {
@@ -223,7 +222,7 @@ export const TokenizedDepositApi = new Elysia({
       return revokeRoleFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -233,8 +232,8 @@ export const TokenizedDepositApi = new Elysia({
       detail: {
         summary: "Revoke role",
         description:
-          "Revokes a specific role from a user for a tokenized deposit contract.",
-        tags: ["tokenized deposit"],
+          "Revokes a specific role from a user for a deposit contract.",
+        tags: ["deposit"],
       },
       body: RevokeRoleSchema(),
       response: {
@@ -249,7 +248,7 @@ export const TokenizedDepositApi = new Elysia({
       return updateRolesFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -259,8 +258,8 @@ export const TokenizedDepositApi = new Elysia({
       detail: {
         summary: "Update roles",
         description:
-          "Updates the roles assigned to a user for a tokenized deposit contract.",
-        tags: ["tokenized deposit"],
+          "Updates the roles assigned to a user for a deposit contract.",
+        tags: ["deposit"],
       },
       body: UpdateRolesSchema(),
       response: {
@@ -275,7 +274,7 @@ export const TokenizedDepositApi = new Elysia({
       return mintFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -283,10 +282,10 @@ export const TokenizedDepositApi = new Elysia({
     {
       auth: true,
       detail: {
-        summary: "Mint new tokenized deposit tokens",
+        summary: "Mint new deposit tokens",
         description:
-          "Creates new tokenized deposit tokens and assigns them to the specified address.",
-        tags: ["tokenized deposit"],
+          "Creates new deposit tokens and assigns them to the specified address.",
+        tags: ["deposit"],
       },
       body: MintSchema(),
       response: {
@@ -301,7 +300,7 @@ export const TokenizedDepositApi = new Elysia({
       return burnFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -309,10 +308,10 @@ export const TokenizedDepositApi = new Elysia({
     {
       auth: true,
       detail: {
-        summary: "Burn tokenized deposit tokens",
+        summary: "Burn deposit tokens",
         description:
-          "Burns the specified amount of tokenized deposit tokens from the user's account.",
-        tags: ["tokenized deposit"],
+          "Burns the specified amount of deposit tokens from the user's account.",
+        tags: ["deposit"],
       },
       body: BurnSchema(),
       response: {
@@ -327,7 +326,7 @@ export const TokenizedDepositApi = new Elysia({
       return freezeFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -337,8 +336,8 @@ export const TokenizedDepositApi = new Elysia({
       detail: {
         summary: "Freeze user account",
         description:
-          "Freezes a specified amount of tokenized deposit tokens in a user's account.",
-        tags: ["tokenized deposit"],
+          "Freezes a specified amount of deposit tokens in a user's account.",
+        tags: ["deposit"],
       },
       body: FreezeSchema(),
       response: {
@@ -353,7 +352,7 @@ export const TokenizedDepositApi = new Elysia({
       return pauseFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -362,8 +361,8 @@ export const TokenizedDepositApi = new Elysia({
       auth: true,
       detail: {
         summary: "Pause contract",
-        description: "Pauses all operations on the tokenized deposit contract.",
-        tags: ["tokenized deposit"],
+        description: "Pauses all operations on the deposit contract.",
+        tags: ["deposit"],
       },
       body: PauseSchema(),
       response: {
@@ -378,7 +377,7 @@ export const TokenizedDepositApi = new Elysia({
       return unpauseFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -388,8 +387,8 @@ export const TokenizedDepositApi = new Elysia({
       detail: {
         summary: "Unpause contract",
         description:
-          "Resumes all operations on a previously paused tokenized deposit contract.",
-        tags: ["tokenized deposit"],
+          "Resumes all operations on a previously paused deposit contract.",
+        tags: ["deposit"],
       },
       body: UnpauseSchema(),
       response: {
@@ -404,7 +403,7 @@ export const TokenizedDepositApi = new Elysia({
       return updateCollateralFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -413,9 +412,8 @@ export const TokenizedDepositApi = new Elysia({
       auth: true,
       detail: {
         summary: "Update collateral",
-        description:
-          "Updates the collateral amount for a tokenized deposit contract.",
-        tags: ["tokenized deposit"],
+        description: "Updates the collateral amount for a deposit contract.",
+        tags: ["deposit"],
       },
       body: UpdateCollateralSchema(),
       response: {
@@ -430,7 +428,7 @@ export const TokenizedDepositApi = new Elysia({
       return allowUserFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -439,8 +437,8 @@ export const TokenizedDepositApi = new Elysia({
       auth: true,
       detail: {
         summary: "Allow user",
-        description: "Allows a user to access a tokenized deposit contract.",
-        tags: ["tokenized deposit"],
+        description: "Allows a user to access a deposit contract.",
+        tags: ["deposit"],
       },
       body: AllowUserSchema(),
       response: {
@@ -455,7 +453,7 @@ export const TokenizedDepositApi = new Elysia({
       return disallowUserFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -464,8 +462,8 @@ export const TokenizedDepositApi = new Elysia({
       auth: true,
       detail: {
         summary: "Disallow user",
-        description: "Removes a user's access to a tokenized deposit contract.",
-        tags: ["tokenized deposit"],
+        description: "Removes a user's access to a deposit contract.",
+        tags: ["deposit"],
       },
       body: DisallowUserSchema(),
       response: {
@@ -480,7 +478,7 @@ export const TokenizedDepositApi = new Elysia({
       return withdrawFunction({
         parsedInput: {
           ...body,
-          assettype: "tokenizeddeposit",
+          assettype: "deposit",
         },
         ctx: { user },
       });
@@ -489,8 +487,8 @@ export const TokenizedDepositApi = new Elysia({
       auth: true,
       detail: {
         summary: "Withdraw token",
-        description: "Withdraws token from a tokenized deposit contract.",
-        tags: ["tokenized deposit"],
+        description: "Withdraws token from a deposit contract.",
+        tags: ["deposit"],
       },
       body: WithdrawSchema(),
       response: {

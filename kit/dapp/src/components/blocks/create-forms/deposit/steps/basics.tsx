@@ -1,11 +1,11 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
-import type { CreateTokenizedDepositInput } from "@/lib/mutations/tokenized-deposit/create/create-schema";
+import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 export function Basics() {
-  const { control } = useFormContext<CreateTokenizedDepositInput>();
+  const { control } = useFormContext<CreateDepositInput>();
   const t = useTranslations("private.assets.create");
 
   return (
@@ -15,7 +15,7 @@ export function Basics() {
           control={control}
           name="assetName"
           label={t("parameters.common.name-label")}
-          placeholder={t("parameters.tokenizeddeposits.name-placeholder")}
+          placeholder={t("parameters.deposits.name-placeholder")}
           required
         />
         <div className="grid grid-cols-2 gap-6">
@@ -23,7 +23,7 @@ export function Basics() {
             control={control}
             name="symbol"
             label={t("parameters.common.symbol-label")}
-            placeholder={t("parameters.tokenizeddeposits.symbol-placeholder")}
+            placeholder={t("parameters.deposits.symbol-placeholder")}
             textOnly
             required
           />
@@ -31,7 +31,7 @@ export function Basics() {
             control={control}
             name="isin"
             label={t("parameters.common.isin-label")}
-            placeholder={t("parameters.tokenizeddeposits.isin-placeholder")}
+            placeholder={t("parameters.deposits.isin-placeholder")}
           />
         </div>
         <FormInput
@@ -52,4 +52,4 @@ Basics.validatedFields = [
   "symbol",
   "decimals",
   "isin",
-] satisfies (keyof CreateTokenizedDepositInput)[];
+] satisfies (keyof CreateDepositInput)[];

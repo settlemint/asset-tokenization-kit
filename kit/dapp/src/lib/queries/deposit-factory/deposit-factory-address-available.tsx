@@ -7,7 +7,7 @@ import {
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
-import { TokenizedDepositExistsSchema } from "./tokenizeddeposit-factory-schema";
+import { DepositExistsSchema } from "./deposit-factory-schema";
 
 /**
  * GraphQL query for checking if an address is deployed
@@ -15,20 +15,20 @@ import { TokenizedDepositExistsSchema } from "./tokenizeddeposit-factory-schema"
  * @remarks
  * Checks if a token address is already deployed through the stablecoin factory
  */
-const TokenizedDepositExists = theGraphGraphqlKit(`
-  query TokenizedDepositExists($token: ID!) {
-    tokenizedDeposit(id: $token) {
+const DepositExists = theGraphGraphqlKit(`
+  query DepositExists($token: ID!) {
+    deposit(id: $token) {
       id
     }
   }
 `);
 
 export const isAddressAvailable = cache(async (address: Address) => {
-  const data = await theGraphClientKit.request(TokenizedDepositExists, {
+  const data = await theGraphClientKit.request(DepositExists, {
     token: address,
   });
 
-  const tokenizedDepositExists = safeParse(TokenizedDepositExistsSchema, data);
+  const depositExists = safeParse(DepositExistsSchema, data);
 
-  return !tokenizedDepositExists.tokenizedDeposit;
+  return !depositExists.deposit;
 });

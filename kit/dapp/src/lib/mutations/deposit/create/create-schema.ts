@@ -1,4 +1,4 @@
-import { isAddressAvailable } from "@/lib/queries/tokenizeddeposit-factory/tokenizeddeposit-factory-address-available";
+import { isAddressAvailable } from "@/lib/queries/deposit-factory/deposit-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
@@ -14,7 +14,7 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  * @property {string} predictedAddress - The predicted contract address
  * @property {number} valueInBaseCurrency - The value in base currency
  */
-export function CreateTokenizedDepositSchema() {
+export function CreateDepositSchema() {
   return t.Object(
     {
       assetName: t.String({
@@ -59,6 +59,6 @@ export function CreateTokenizedDepositSchema() {
   );
 }
 
-export type CreateTokenizedDepositInput = StaticDecode<
-  ReturnType<typeof CreateTokenizedDepositSchema>
+export type CreateDepositInput = StaticDecode<
+  ReturnType<typeof CreateDepositSchema>
 >;

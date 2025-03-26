@@ -26,7 +26,7 @@ export type PredictAddressInput = StaticDecode<
 >;
 
 export const PredictedAddressSchema = t.Object({
-  TokenizedDepositFactory: t.Object({
+  DepositFactory: t.Object({
     predictAddress: t.Object({
       predicted: t.EthereumAddress(),
     }),
@@ -35,14 +35,12 @@ export const PredictedAddressSchema = t.Object({
 
 export type PredictedAddress = StaticDecode<typeof PredictedAddressSchema>;
 
-export const TokenizedDepositExistsSchema = t.Object({
-  tokenizedDeposit: t.MaybeEmpty(
+export const DepositExistsSchema = t.Object({
+  deposit: t.MaybeEmpty(
     t.Object({
       id: t.String(),
     })
   ),
 });
 
-export type TokenizedDepositExists = StaticDecode<
-  typeof TokenizedDepositExistsSchema
->;
+export type DepositExists = StaticDecode<typeof DepositExistsSchema>;

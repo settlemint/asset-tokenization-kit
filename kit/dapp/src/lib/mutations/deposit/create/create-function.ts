@@ -6,7 +6,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { AddAssetPrice } from "../../asset/price/add-price";
-import type { CreateTokenizedDepositInput } from "./create-schema";
+import type { CreateDepositInput } from "./create-schema";
 
 /**
  * GraphQL mutation for creating a new tokenized deposit
@@ -14,9 +14,9 @@ import type { CreateTokenizedDepositInput } from "./create-schema";
  * @remarks
  * Creates a new tokenized deposit contract through the tokenized deposit factory
  */
-const TokenizedDepositFactoryCreate = portalGraphql(`
-  mutation TokenizedDepositFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!) {
-    TokenizedDepositFactoryCreate(
+const DepositFactoryCreate = portalGraphql(`
+  mutation DepositFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!) {
+    DepositFactoryCreate(
       address: $address
       from: $from
       input: { name: $name, symbol: $symbol, decimals: $decimals, collateralLivenessSeconds: $collateralLivenessSeconds}
@@ -33,8 +33,8 @@ const TokenizedDepositFactoryCreate = portalGraphql(`
  * @remarks
  * Stores additional metadata about the tokenized deposit in Hasura
  */
-const CreateOffchainTokenizedDeposit = hasuraGraphql(`
-  mutation CreateOffchainTokenizedDeposit($id: String!, $isin: String) {
+const CreateOffchainDeposit = hasuraGraphql(`
+  mutation CreateOffchainDeposit($id: String!, $isin: String) {
     insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
     }
@@ -48,7 +48,7 @@ const CreateOffchainTokenizedDeposit = hasuraGraphql(`
  * @param user - The user creating the tokenized deposit
  * @returns Array of transaction hashes
  */
-export async function createTokenizedDepositFunction({
+export async function createDepositFunction({
   parsedInput: {
     assetName,
     symbol,
@@ -62,10 +62,10 @@ export async function createTokenizedDepositFunction({
   },
   ctx: { user },
 }: {
-  parsedInput: CreateTokenizedDepositInput;
+  parsedInput: CreateDepositInput;
   ctx: { user: User };
 }) {
-  await hasuraClient.request(CreateOffchainTokenizedDeposit, {
+  await hasuraClient.request(CreateOffchainDeposit, {
     id: predictedAddress,
     isin,
   });
@@ -79,7 +79,7 @@ export async function createTokenizedDepositFunction({
   const collateralLivenessSeconds =
     collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
 
-  const data = await portalClient.request(TokenizedDepositFactoryCreate, {
+  const data = await portalClient.request(DepositFactoryCreate, {
     address: TOKENIZED_DEPOSIT_FACTORY_ADDRESS,
     from: user.wallet,
     name: assetName,
@@ -89,7 +89,5 @@ export async function createTokenizedDepositFunction({
     challengeResponse: await handleChallenge(user.wallet, pincode),
   });
 
-  return safeParse(t.Hashes(), [
-    data.TokenizedDepositFactoryCreate?.transactionHash,
-  ]);
+  return safeParse(t.Hashes(), [data.DepositFactoryCreate?.transactionHash]);
 }

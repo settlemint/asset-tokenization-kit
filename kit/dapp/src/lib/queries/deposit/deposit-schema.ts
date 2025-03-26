@@ -6,7 +6,7 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
  * Provides validation for tokenized deposit token information including:
  * contract address, name, symbol, supply metrics, holders, and deposit-specific properties
  */
-export const OnChainTokenizedDepositSchema = t.Object(
+export const OnChainDepositSchema = t.Object(
   {
     id: t.EthereumAddress({
       description: "The contract address of the tokenized deposit token",
@@ -83,11 +83,9 @@ export const OnChainTokenizedDepositSchema = t.Object(
       "On-chain data for tokenized deposit tokens including contract address, name, symbol, supply metrics, holders, and deposit-specific information",
   }
 );
-export type OnChainTokenizedDeposit = StaticDecode<
-  typeof OnChainTokenizedDepositSchema
->;
+export type OnChainDeposit = StaticDecode<typeof OnChainDepositSchema>;
 
-export const OffChainTokenizedDepositSchema = t.Object(
+export const OffChainDepositSchema = t.Object(
   {
     id: t.EthereumAddress({
       description: "The contract address of the tokenized deposit token",
@@ -106,11 +104,9 @@ export const OffChainTokenizedDepositSchema = t.Object(
       "Off-chain data for tokenized deposit tokens including financial identifiers and market value information",
   }
 );
-export type OffChainTokenizedDeposit = StaticDecode<
-  typeof OffChainTokenizedDepositSchema
->;
+export type OffChainDeposit = StaticDecode<typeof OffChainDepositSchema>;
 
-export const CalculatedTokenizedDepositSchema = t.Object(
+export const CalculatedDepositSchema = t.Object(
   {
     collateralProofValidity: t.Optional(
       t.Date({
@@ -126,19 +122,17 @@ export const CalculatedTokenizedDepositSchema = t.Object(
       "Calculated fields for tokenized deposit tokens including collateral validity",
   }
 );
-export type CalculatedTokenizedDeposit = StaticDecode<
-  typeof CalculatedTokenizedDepositSchema
->;
+export type CalculatedDeposit = StaticDecode<typeof CalculatedDepositSchema>;
 
-export const TokenizedDepositSchema = t.Intersect(
+export const DepositSchema = t.Intersect(
   [
-    OnChainTokenizedDepositSchema,
-    t.Partial(OffChainTokenizedDepositSchema),
-    CalculatedTokenizedDepositSchema,
+    OnChainDepositSchema,
+    t.Partial(OffChainDepositSchema),
+    CalculatedDepositSchema,
   ],
   {
     description:
       "Combined schema for complete tokenized deposit details including on-chain data, off-chain data, and calculated fields",
   }
 );
-export type TokenizedDeposit = StaticDecode<typeof TokenizedDepositSchema>;
+export type Deposit = StaticDecode<typeof DepositSchema>;

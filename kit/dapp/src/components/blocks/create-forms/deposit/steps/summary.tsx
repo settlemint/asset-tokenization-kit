@@ -2,15 +2,15 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
-import type { CreateTokenizedDepositInput } from "@/lib/mutations/tokenized-deposit/create/create-schema";
-import { getPredictedAddress } from "@/lib/queries/tokenizeddeposit-factory/tokenizeddeposit-factory-predict-address";
+import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
+import { getPredictedAddress } from "@/lib/queries/deposit-factory/deposit-factory-predict-address";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
 
 export function Summary() {
-  const { control } = useFormContext<CreateTokenizedDepositInput>();
+  const { control } = useFormContext<CreateDepositInput>();
   const values = useWatch({
     control: control,
   });
@@ -78,12 +78,9 @@ export function Summary() {
 
 Summary.validatedFields = [
   "predictedAddress",
-] satisfies (keyof CreateTokenizedDepositInput)[];
+] satisfies (keyof CreateDepositInput)[];
 Summary.beforeValidate = [
-  async ({
-    setValue,
-    getValues,
-  }: UseFormReturn<CreateTokenizedDepositInput>) => {
+  async ({ setValue, getValues }: UseFormReturn<CreateDepositInput>) => {
     const values = getValues();
     const predictedAddress = await getPredictedAddress(values);
 

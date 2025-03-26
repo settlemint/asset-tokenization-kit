@@ -2,25 +2,25 @@ import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
-import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
+import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import { formatNumber } from "@/lib/utils/number";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
 
-interface TokenizedDepositsDetailsProps {
+interface DepositsDetailsProps {
   address: Address;
   showBalance?: boolean;
   userAddress?: Address;
 }
 
-export async function TokenizedDepositsDetails({
+export async function DepositsDetails({
   address,
   showBalance = false,
   userAddress,
-}: TokenizedDepositsDetailsProps) {
-  const [tokenizedDeposit, t, locale] = await Promise.all([
-    getTokenizedDepositDetail({ address }),
+}: DepositsDetailsProps) {
+  const [deposit, t, locale] = await Promise.all([
+    getDepositDetail({ address }),
     getTranslations("private.assets.fields"),
     getLocale(),
   ]);
@@ -34,20 +34,14 @@ export async function TokenizedDepositsDetails({
   return (
     <Suspense>
       <DetailGrid>
-        <DetailGridItem label={t("name")}>
-          {tokenizedDeposit.name}
-        </DetailGridItem>
-        <DetailGridItem label={t("symbol")}>
-          {tokenizedDeposit.symbol}
-        </DetailGridItem>
-        {tokenizedDeposit.isin && (
-          <DetailGridItem label={t("isin")}>
-            {tokenizedDeposit.isin}
-          </DetailGridItem>
+        <DetailGridItem label={t("name")}>{deposit.name}</DetailGridItem>
+        <DetailGridItem label={t("symbol")}>{deposit.symbol}</DetailGridItem>
+        {deposit.isin && (
+          <DetailGridItem label={t("isin")}>{deposit.isin}</DetailGridItem>
         )}
         <DetailGridItem label={t("contract-address")}>
           <EvmAddress
-            address={tokenizedDeposit.id}
+            address={deposit.id}
             prettyNames={false}
             hoverCard={false}
             copyToClipboard={true}
@@ -55,17 +49,17 @@ export async function TokenizedDepositsDetails({
         </DetailGridItem>
         <DetailGridItem label={t("creator")}>
           <EvmAddress
-            address={tokenizedDeposit.creator.id}
+            address={deposit.creator.id}
             hoverCard={false}
             copyToClipboard={true}
           />
         </DetailGridItem>
         <DetailGridItem label={t("decimals")}>
-          {tokenizedDeposit.decimals}
+          {deposit.decimals}
         </DetailGridItem>
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
-          {formatNumber(tokenizedDeposit.totalSupply, {
-            token: tokenizedDeposit.symbol,
+          {formatNumber(deposit.totalSupply, {
+            token: deposit.symbol,
             locale: locale,
           })}
         </DetailGridItem>
@@ -73,14 +67,14 @@ export async function TokenizedDepositsDetails({
         {showBalance && balanceData && (
           <DetailGridItem label={t("balance")}>
             {formatNumber(balanceData.value, {
-              token: tokenizedDeposit.symbol,
+              token: deposit.symbol,
               locale: locale,
             })}
           </DetailGridItem>
         )}
         <DetailGridItem label={t("total-burned")} info={t("total-burned-info")}>
-          {formatNumber(tokenizedDeposit.totalBurned, {
-            token: tokenizedDeposit.symbol,
+          {formatNumber(deposit.totalBurned, {
+            token: deposit.symbol,
             locale: locale,
           })}
         </DetailGridItem>
@@ -88,7 +82,7 @@ export async function TokenizedDepositsDetails({
           label={t("total-holders")}
           info={t("total-holders-info")}
         >
-          {formatNumber(tokenizedDeposit.totalHolders, {
+          {formatNumber(deposit.totalHolders, {
             decimals: 0,
             locale: locale,
           })}
@@ -97,28 +91,25 @@ export async function TokenizedDepositsDetails({
           label={t("ownership-concentration")}
           info={t("ownership-concentration-info")}
         >
-          {formatNumber(tokenizedDeposit.concentration, {
+          {formatNumber(deposit.concentration, {
             percentage: true,
             decimals: 2,
             locale: locale,
           })}
         </DetailGridItem>
         <DetailGridItem label={t("price")}>
-          {formatNumber(tokenizedDeposit.price.amount, {
-            currency: tokenizedDeposit.price.currency,
+          {formatNumber(deposit.price.amount, {
+            currency: deposit.price.currency,
             decimals: 2,
             locale: locale,
           })}
         </DetailGridItem>
         <DetailGridItem label={t("total-value")}>
-          {formatNumber(
-            tokenizedDeposit.price.amount * tokenizedDeposit.totalSupply,
-            {
-              currency: tokenizedDeposit.price.currency,
-              decimals: 2,
-              locale: locale,
-            }
-          )}
+          {formatNumber(deposit.price.amount * deposit.totalSupply, {
+            currency: deposit.price.currency,
+            decimals: 2,
+            locale: locale,
+          })}
         </DetailGridItem>
       </DetailGrid>
     </Suspense>

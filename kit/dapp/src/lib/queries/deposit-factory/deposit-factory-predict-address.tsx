@@ -9,7 +9,7 @@ import type { Address } from "viem";
 import {
   PredictedAddressSchema,
   type PredictAddressInput,
-} from "./tokenizeddeposit-factory-schema";
+} from "./deposit-factory-schema";
 
 /**
  * GraphQL query for predicting the address of a new stablecoin
@@ -17,9 +17,9 @@ import {
  * @remarks
  * Uses deterministic deployment to predict the contract address before creation
  */
-const CreateTokenizedDepositPredictAddress = portalGraphql(`
-  query CreateTokenizedDepositPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $collateralLivenessSeconds: Float!) {
-    TokenizedDepositFactory(address: $address) {
+const CreateDepositPredictAddress = portalGraphql(`
+  query CreateDepositPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $collateralLivenessSeconds: Float!) {
+    DepositFactory(address: $address) {
       predictAddress(
         sender: $sender
         decimals: $decimals
@@ -52,19 +52,16 @@ export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
   const collateralLivenessSeconds =
     collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
 
-  const data = await portalClient.request(
-    CreateTokenizedDepositPredictAddress,
-    {
-      address: TOKENIZED_DEPOSIT_FACTORY_ADDRESS,
-      sender: user.wallet as Address,
-      decimals,
-      name: assetName,
-      symbol,
-      collateralLivenessSeconds,
-    }
-  );
+  const data = await portalClient.request(CreateDepositPredictAddress, {
+    address: TOKENIZED_DEPOSIT_FACTORY_ADDRESS,
+    sender: user.wallet as Address,
+    decimals,
+    name: assetName,
+    symbol,
+    collateralLivenessSeconds,
+  });
 
   const predictedAddress = safeParse(PredictedAddressSchema, data);
 
-  return predictedAddress.TokenizedDepositFactory.predictAddress.predicted;
+  return predictedAddress.DepositFactory.predictAddress.predicted;
 });

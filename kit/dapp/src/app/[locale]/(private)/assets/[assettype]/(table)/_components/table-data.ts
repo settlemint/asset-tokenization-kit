@@ -1,9 +1,9 @@
 import { getBondList } from "@/lib/queries/bond/bond-list";
 import { getCryptoCurrencyList } from "@/lib/queries/cryptocurrency/cryptocurrency-list";
+import { getDepositList } from "@/lib/queries/deposit/deposit-list";
 import { getEquityList } from "@/lib/queries/equity/equity-list";
 import { getFundList } from "@/lib/queries/fund/fund-list";
 import { getStableCoinList } from "@/lib/queries/stablecoin/stablecoin-list";
-import { getTokenizedDepositList } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-list";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 
 export function getTableData(assettype: AssetType) {
@@ -14,8 +14,8 @@ export function getTableData(assettype: AssetType) {
       return getCryptoCurrencyList();
     case "stablecoin":
       return getStableCoinList();
-    case "tokenizeddeposit":
-      return getTokenizedDepositList();
+    case "deposit":
+      return getDepositList();
     case "equity":
       return getEquityList();
     case "fund":

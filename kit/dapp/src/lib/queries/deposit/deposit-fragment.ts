@@ -7,8 +7,8 @@ import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
  * @remarks
  * Contains core tokenized deposit properties including ID, name, symbol, supply, and holders
  */
-export const TokenizedDepositFragment = theGraphGraphqlKit(`
-  fragment TokenizedDepositFragment on TokenizedDeposit {
+export const DepositFragment = theGraphGraphqlKit(`
+  fragment DepositFragment on Deposit {
     id
     name
     symbol
@@ -37,8 +37,8 @@ export const TokenizedDepositFragment = theGraphGraphqlKit(`
  * @remarks
  * Contains additional metadata about tokenized deposits stored in the database
  */
-export const OffchainTokenizedDepositFragment = hasuraGraphql(`
-  fragment OffchainTokenizedDepositFragment on asset {
+export const OffchainDepositFragment = hasuraGraphql(`
+  fragment OffchainDepositFragment on asset {
     id
     isin
   }
