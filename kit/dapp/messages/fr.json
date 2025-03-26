@@ -1,0 +1,22 @@
+{
+  "charts": {
+    "asset-type-formatter": {
+      "deposit": "Dépôts"
+    }
+  },
+  "dashboard": {
+    "charts": {
+      "asset-types": {
+        "deposit": "Dépôts"
+      }
+    }
+  },
+  "sidebar": {
+    "asset-management": {
+      "deposits": "Dépôts"
+    },
+    "asset-types": {
+      "deposit": "Dépôt"
+    }
+  }
+}

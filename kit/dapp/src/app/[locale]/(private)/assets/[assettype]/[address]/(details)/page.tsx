@@ -44,7 +44,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
     <>
       <Details assettype={assettype} address={address} />
       <ChartGrid title={t("asset-statistics-title")}>
-        {["stablecoin", "tokenizeddeposit"].includes(assettype) && (
+        {["stablecoin", "deposit"].includes(assettype) && (
           <CollateralRatio address={address} assettype={assettype} />
         )}
         {assettype === "bond" && (

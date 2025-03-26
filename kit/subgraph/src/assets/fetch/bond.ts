@@ -2,26 +2,26 @@ import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import {
   Bond,
   CryptoCurrency,
+  Deposit,
   Equity,
   Fund,
   StableCoin,
-  TokenizedDeposit,
 } from "../../../generated/schema";
 import { Bond as BondContract } from "../../../generated/templates/Bond/Bond";
 import { CryptoCurrency as CryptoCurrencyContract } from "../../../generated/templates/CryptoCurrency/CryptoCurrency";
+import { Deposit as DepositContract } from "../../../generated/templates/Deposit/Deposit";
 import { Equity as EquityContract } from "../../../generated/templates/Equity/Equity";
 import { Fund as FundContract } from "../../../generated/templates/Fund/Fund";
 import { StableCoin as StableCoinContract } from "../../../generated/templates/StableCoin/StableCoin";
-import { TokenizedDeposit as TokenizedDepositContract } from "../../../generated/templates/TokenizedDeposit/TokenizedDeposit";
 import { fetchAccount } from "../../fetch/account";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
 import { updateDerivedFields } from "../bond";
 import { fetchCryptoCurrency } from "./cryptocurrency";
+import { fetchDeposit } from "./deposit";
 import { fetchEquity } from "./equity";
 import { fetchFund } from "./fund";
 import { fetchStableCoin } from "./stablecoin";
-import { fetchTokenizedDeposit } from "./tokenizeddeposit";
 
 function determineAssetType(address: Address): string {
   // Try to determine the asset type by calling unique functions for each type
@@ -29,7 +29,7 @@ function determineAssetType(address: Address): string {
   let cryptoCurrencyContract = CryptoCurrencyContract.bind(address);
   let equityContract = EquityContract.bind(address);
   let fundContract = FundContract.bind(address);
-  let tokenizedDepositContract = TokenizedDepositContract.bind(address);
+  let depositContract = DepositContract.bind(address);
 
   // Try StableCoin-specific function
   let liveness = stableCoinContract.try_liveness();
@@ -55,10 +55,10 @@ function determineAssetType(address: Address): string {
     return AssetType.fund;
   }
 
-  // Try TokenizedDeposit-specific function
-  let tokenizedDepositLiveness = tokenizedDepositContract.try_liveness();
-  if (!tokenizedDepositLiveness.reverted) {
-    return AssetType.tokenizeddeposit;
+  // Try Deposit-specific function
+  let depositLiveness = depositContract.try_liveness();
+  if (!depositLiveness.reverted) {
+    return AssetType.deposit;
   }
 
   // Default to stablecoin if we can't determine the type
@@ -68,7 +68,7 @@ function determineAssetType(address: Address): string {
 
 function fetchUnderlyingAsset(
   address: Address
-): StableCoin | CryptoCurrency | Equity | Fund | TokenizedDeposit | null {
+): StableCoin | CryptoCurrency | Equity | Fund | Deposit | null {
   if (address == Address.zero()) {
     return null;
   }
@@ -84,8 +84,8 @@ function fetchUnderlyingAsset(
       return fetchEquity(address);
     case AssetType.fund:
       return fetchFund(address);
-    case AssetType.tokenizeddeposit:
-      return fetchTokenizedDeposit(address);
+    case AssetType.deposit:
+      return fetchDeposit(address);
     default:
       return fetchStableCoin(address);
   }
@@ -161,15 +161,15 @@ export function fetchBond(
         case AssetType.fund:
           underlyingAssetEntity = fetchFund(underlyingAssetAddress);
           break;
-        case AssetType.tokenizeddeposit:
-          underlyingAssetEntity = fetchTokenizedDeposit(underlyingAssetAddress);
+        case AssetType.deposit:
+          underlyingAssetEntity = fetchDeposit(underlyingAssetAddress);
           break;
         default:
           underlyingAssetEntity = fetchStableCoin(underlyingAssetAddress);
       }
 
       if (underlyingAssetEntity) {
-        bond.underlyingAsset = underlyingAssetEntity;
+        bond.underlyingAsset = underlyingAssetEntity.id;
       }
     }
 

@@ -65,9 +65,7 @@ export async function TotalSupply({
       label: t("total-supply.label"),
       color: "var(--chart-1)",
     },
-    ...(["stablecoin", "tokenizeddeposit"].includes(
-      data.at(0)?.assetType as AssetType
-    )
+    ...(["stablecoin", "deposit"].includes(data.at(0)?.assetType as AssetType)
       ? {
           totalCollateral: {
             label: t("total-collateral.label"),
@@ -81,9 +79,7 @@ export async function TotalSupply({
     data,
     [
       "totalSupply",
-      ...(["stablecoin", "tokenizeddeposit"].includes(
-        data.at(0)?.assetType as AssetType
-      )
+      ...(["stablecoin", "deposit"].includes(data.at(0)?.assetType as AssetType)
         ? (["totalCollateral"] as const)
         : []),
     ],

@@ -1,42 +1,31 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 /**
- * TypeBox schema for validating update collateral mutation inputs
- *
- * @property {string} address - The contract address
- * @property {number} amount - The new collateral amount
- * @property {string} pincode - The pincode for signing the transaction
- * @property {string} assettype - The type of asset (only stablecoin or tokenizeddeposit)
+ * Schema for updating collateral
+ * @property {string} address - The address of the asset
+ * @property {string} assettype - The type of asset (only stablecoin or deposit)
+ * @property {string} collateral - The collateral amount
  */
-export function UpdateCollateralSchema({
-  maxAmount,
-  minAmount,
-  decimals,
-}: {
-  maxAmount?: number;
-  minAmount?: number;
-  decimals?: number;
-} = {}) {
-  return t.Object(
-    {
-      address: t.EthereumAddress({
-        description: "The contract address",
-      }),
-      amount: t.Amount(maxAmount, minAmount, decimals, {
-        description: "The new collateral amount",
-      }),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
-      }),
-      assettype: t.AssetType({
-        description: "The type of asset (only stablecoin or tokenizeddeposit)",
-      }),
-    },
-    {
-      description: "Schema for validating update collateral mutation inputs",
-    }
-  );
-}
+export const UpdateCollateralSchema = t.Object(
+  {
+    address: t.String({
+      minLength: 42,
+      maxLength: 42,
+      error: "Invalid address",
+    }),
+    assettype: t.String({
+      minLength: 1,
+      maxLength: 50,
+      description: "The type of asset (only stablecoin or deposit)",
+      error: "Invalid asset type",
+    }),
+    collateral: t.String({
+      minLength: 1,
+      error: "Invalid collateral amount",
+    }),
+  },
+  { $id: "UpdateCollateral" }
+);
 
 export type UpdateCollateralInput = StaticDecode<
   ReturnType<typeof UpdateCollateralSchema>

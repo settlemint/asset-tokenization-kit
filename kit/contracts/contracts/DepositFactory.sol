@@ -5,8 +5,8 @@ import { Deposit } from "./Deposit.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
-/// @title TokenizedDepositFactory - A factory contract for creating TokenizedDeposit tokens
-/// @notice This contract allows the creation of new TokenizedDeposit tokens with deterministic addresses using CREATE2.
+/// @title DepositFactory - A factory contract for creating Deposit tokens
+/// @notice This contract allows the creation of new Deposit tokens with deterministic addresses using CREATE2.
 /// It provides functionality to create tokenized deposits with specific parameters and predict their
 /// deployment addresses.
 /// @dev Inherits from ReentrancyGuard for protection against reentrancy attacks and ERC2771Context for
@@ -14,7 +14,7 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 /// of deployed tokens.
 /// @custom:security-contact support@settlemint.com
 contract DepositFactory is ReentrancyGuard, ERC2771Context {
-    /// @notice Custom errors for the TokenizedDepositFactory contract
+    /// @notice Custom errors for the DepositFactory contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error AddressAlreadyDeployed();
 
@@ -26,7 +26,7 @@ contract DepositFactory is ReentrancyGuard, ERC2771Context {
     /// @param token The address of the newly created token
     event DepositCreated(address indexed token, address indexed creator);
 
-    /// @notice Deploys a new TokenizedDepositFactory contract
+    /// @notice Deploys a new DepositFactory contract
     /// @dev Sets up the factory with meta-transaction support
     /// @param forwarder The address of the trusted forwarder for meta-transactions
     constructor(address forwarder) ERC2771Context(forwarder) { }

@@ -19,7 +19,7 @@
         "funds": "Fonds",
         "stablecoins": "Stablecoins",
         "tokenizeddeposit": "Tokenisierte Einlagen",
-        "deposit": "Einzahlungen"
+        "deposit": "Einlagen"
       }
     },
     "dashboard": {
@@ -38,7 +38,7 @@
           "funds": "Fonds",
           "stablecoins": "Stablecoins",
           "tokenizeddeposit": "Tokenisierte Einlagen",
-          "deposit": "Einzahlungen"
+          "deposit": "Einlagen"
         },
         "assets-supply": {
           "description": "Die Verteilung der Token pro Anlageklasse",
@@ -118,7 +118,8 @@
         "group-title": "Vermögensverwaltung",
         "stablecoins": "Stablecoins",
         "tokenized-deposits": "Einzahlungen",
-        "view-all": "Alle anzeigen"
+        "view-all": "Alle anzeigen",
+        "deposits": "Einlagen"
       },
       "asset-types": {
         "bond": "Anleihe",
@@ -126,7 +127,8 @@
         "equity": "Aktie",
         "fund": "Fonds",
         "stablecoin": "Stablecoin",
-        "tokenized-deposit": "Einzahlungen"
+        "tokenized-deposit": "Einlagen",
+        "deposit": "Einlage"
       },
       "platform-management": {
         "group-title": "Plattformverwaltung",

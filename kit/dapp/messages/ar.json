@@ -118,7 +118,8 @@
         "group-title": "إدارة الأصول",
         "stablecoins": "العملات المستقرة",
         "tokenized-deposits": "الودائع",
-        "view-all": "عرض الكل"
+        "view-all": "عرض الكل",
+        "deposits": "الودائع"
       },
       "asset-types": {
         "bond": "سند",
@@ -126,7 +127,8 @@
         "equity": "سهم",
         "fund": "صندوق",
         "stablecoin": "عملة مستقرة",
-        "tokenized-deposit": "الودائع"
+        "tokenized-deposit": "الودائع",
+        "deposit": "الودائع"
       },
       "platform-management": {
         "group-title": "إدارة المنصة",

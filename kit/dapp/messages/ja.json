@@ -126,7 +126,8 @@
         "equity": "株式",
         "fund": "ファンド",
         "stablecoin": "ステーブルコイン",
-        "tokenized-deposit": "預金"
+        "tokenized-deposit": "預金",
+        "deposit": "預金"
       },
       "platform-management": {
         "group-title": "プラットフォーム管理",
