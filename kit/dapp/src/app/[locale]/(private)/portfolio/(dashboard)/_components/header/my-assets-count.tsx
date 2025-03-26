@@ -1,7 +1,14 @@
 import { formatNumber } from "@/lib/utils/number";
+import type { Price } from "@/lib/utils/typebox/price";
 import { useLocale, useTranslations } from "next-intl";
 
-export function MyAssetsCount({ total }: { total: string }) {
+export function MyAssetsCount({
+  totalCount,
+  totalValue,
+}: {
+  totalCount: string;
+  totalValue: Price;
+}) {
   const t = useTranslations("portfolio");
   const locale = useLocale();
 
@@ -9,9 +16,11 @@ export function MyAssetsCount({ total }: { total: string }) {
     <div className="flex items-center justify-between">
       <div>
         <span className="mr-1 font-bold text-4xl">
-          {formatNumber(total, { locale })}
+          {formatNumber(totalValue.amount, {
+            locale,
+            currency: totalValue.currency,
+          })}
         </span>
-        <span>{t("assets-count-assets")}</span>
       </div>
     </div>
   );

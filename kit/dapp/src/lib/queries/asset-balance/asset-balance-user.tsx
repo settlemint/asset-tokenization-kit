@@ -56,6 +56,7 @@ export const getUserAssetsBalance = cache(async (wallet: Address) => {
       total: "0",
     };
   }
+
   // Group and sum balances by asset type
   const assetTypeBalances = validatedUserAssetsBalance.reduce<
     Partial<Record<AssetType, BigNumber>>
