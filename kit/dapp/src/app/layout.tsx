@@ -88,10 +88,7 @@ export default async function RootLayout({
       </html>
     );
   } catch (error) {
-    const isServer = typeof window === "undefined";
-    if (isServer) {
-      console.error(error);
-    }
+    console.error(error);
     throw error;
   }
 }
