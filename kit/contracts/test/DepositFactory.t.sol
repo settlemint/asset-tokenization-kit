@@ -160,7 +160,7 @@ contract DepositFactoryTest is Test {
         assertEq(
             entries.length,
             5,
-            "Should emit 5 events: UserAllowed, RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and TokenizedDepositCreated"
+            "Should emit 5 events: UserAllowed, RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and DepositCreated"
         );
 
         // First event should be UserAllowed for the owner
@@ -196,12 +196,12 @@ contract DepositFactoryTest is Test {
             "Wrong event signature for third RoleGranted"
         );
 
-        // Fifth event should be TokenizedDepositCreated
+        // Fifth event should be DepositCreated
         VmSafe.Log memory lastEntry = entries[4];
         assertEq(
             lastEntry.topics[0],
-            keccak256("TokenizedDepositCreated(address,address)"),
-            "Wrong event signature for TokenizedDepositCreated"
+            keccak256("DepositCreated(address,address)"),
+            "Wrong event signature for DepositCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
         assertEq(address(uint160(uint256(lastEntry.topics[2]))), owner, "Wrong creator address in event");
