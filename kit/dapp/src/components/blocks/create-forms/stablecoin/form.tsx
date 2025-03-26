@@ -56,12 +56,7 @@ export function CreateStablecoinForm({
             amount: 1,
             currency: userDetails.currency,
           },
-          tokenAdmins: [
-            {
-              wallet: userDetails.wallet,
-              roles: ["admin", "user-manager", "issuer"]
-            }
-          ]
+          tokenAdmins: []
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);

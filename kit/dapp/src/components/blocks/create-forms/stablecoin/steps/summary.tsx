@@ -21,6 +21,9 @@ export function Summary() {
   const locale = useLocale();
   const baseCurrency = useSettings("baseCurrency");
 
+  console.log("errors", errors);
+  console.log("values", values);
+
   return (
     <FormStep title={t("summary.title")} description={t("summary.description")}>
       <FormSummaryDetailCard

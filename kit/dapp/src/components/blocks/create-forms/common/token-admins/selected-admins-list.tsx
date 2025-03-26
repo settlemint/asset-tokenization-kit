@@ -1,15 +1,11 @@
 "use client";
 
-import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { User } from "@/lib/queries/user/user-schema";
-import { Plus, X } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { Address } from "viem";
-
-export type AdminRole = "admin" | "user-manager" | "issuer";
+import type { AdminRole } from "./admin-roles-badges";
+import { SelectedAdminListItem } from "./selected-admin-list-item";
 
 export interface TokenAdmin {
   wallet: string;
@@ -33,61 +29,24 @@ export function SelectedAdminsList({
 }: SelectedAdminsListProps) {
   const t = useTranslations("private.assets.create.form.steps.token-admins");
 
-  const getRoleTranslation = (role: AdminRole) => {
-    if (role === "admin") return t("roles.admin");
-    if (role === "user-manager") return t("roles.user-manager");
-    return t("roles.issuer");
-  };
-
   return (
     <div className="space-y-3">
+      {/* Always show current user as admin, they will by default be added as a token admin */}
+      <SelectedAdminListItem
+        key={userDetails.wallet}
+        admin={{
+          wallet: userDetails.wallet,
+          roles: ["admin", "user-manager", "issuer"]
+        }}
+      />
+      {/* Show all other admins */}
       {admins.map((admin) => (
-        <div key={admin.wallet} className="flex items-center justify-between rounded-md border p-3 shadow-sm">
-          <div className="flex items-center gap-2">
-            <EvmAddress address={admin.wallet as Address} />
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Role badges */}
-            <div className="flex gap-1">
-              {["admin", "user-manager", "issuer"].map((role) => (
-                <Tooltip key={role}>
-                  <TooltipTrigger asChild>
-                    <Badge
-                      variant={admin.roles.includes(role as AdminRole) ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const newRoles = admin.roles.includes(role as AdminRole)
-                          ? admin.roles.filter(r => r !== role)
-                          : [...admin.roles, role as AdminRole];
-                        onChangeRoles(admin.wallet, newRoles);
-                      }}
-                    >
-                      {getRoleTranslation(role as AdminRole)}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {admin.roles.includes(role as AdminRole)
-                      ? t("remove-role")
-                      : t("add-role")}
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-
-            {admin.wallet !== userDetails.wallet ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onRemove(admin.wallet)}
-              >
-                <X className="size-4" />
-              </Button>
-            ) : (
-              <div className="h-9 w-9" /> /* Same size as the button */
-            )}
-          </div>
-        </div>
+        <SelectedAdminListItem
+          key={admin.wallet}
+          admin={admin}
+          onRemove={admin.wallet !== userDetails.wallet ? onRemove : undefined}
+          onChangeRoles={onChangeRoles}
+        />
       ))}
 
       <Button

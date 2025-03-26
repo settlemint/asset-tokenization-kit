@@ -4,9 +4,10 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import type { User } from "@/lib/queries/user/user-schema";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { type AdminRole, SelectedAdminsList, type TokenAdmin } from "./selected-admins-list";
+import type { AdminRole } from "./admin-roles-badges";
+import { SelectedAdminsList, type TokenAdmin } from "./selected-admins-list";
 
 export function TokenAdmins({ userDetails }: { userDetails: User }) {
   const t = useTranslations("private.assets.create.form.steps.token-admins");
@@ -61,41 +62,20 @@ export function TokenAdmins({ userDetails }: { userDetails: User }) {
     });
   };
 
-  // Set the current user as the default token admin
-  useEffect(() => {
-    if (userDetails?.wallet && tokenAdmins.length === 0) {
-      form.setValue(
-        "tokenAdmins",
-        [
-          {
-            wallet: userDetails.wallet,
-            roles: ["admin", "user-manager", "issuer"]
-          }
-        ],
-        {
-          shouldValidate: true,
-          shouldDirty: true
-        }
-      );
-    }
-  }, [userDetails?.wallet, form, tokenAdmins.length]);
-
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">{t("title")}</h3>
       <p className="text-muted-foreground">{t("description")}</p>
 
-      {tokenAdmins.length > 0 && (
-        <SelectedAdminsList
-          admins={tokenAdmins}
-          onRemove={handleRemoveAdmin}
-          onChangeRoles={handleChangeRoles}
-          onAddAnother={() => setShowUserSelector(true)}
-          userDetails={userDetails}
-        />
-      )}
+      <SelectedAdminsList
+        admins={tokenAdmins}
+        onRemove={handleRemoveAdmin}
+        onChangeRoles={handleChangeRoles}
+        onAddAnother={() => setShowUserSelector(true)}
+        userDetails={userDetails}
+      />
 
-      {(showUserSelector || tokenAdmins.length === 0) && (
+      {(showUserSelector) && (
         <div className="space-y-1">
           {isManualEntry ? (
             <FormInput

@@ -13,6 +13,5 @@ export const TokenAdminsSchemaFragment = () => t.Array(
       ]),
       { minItems: 1, error: "At least one role is required" }
     )
-  }),
-  { minItems: 1, error: "At least one admin is required" }
+  })
 );
