@@ -21,7 +21,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { getUserSearch } from "@/lib/queries/user/user-search";
+import { searchUser } from "@/lib/api-client/user/user-search";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
 import { Check, ChevronsUpDown, History } from "lucide-react";
@@ -158,7 +158,7 @@ function FormUsersList({
   const { data: users = [], isLoading } = useSWR(
     debounced ? [`user-search`, debounced, role] : null,
     async () => {
-      const results = await getUserSearch({ searchTerm: debounced });
+      const results = await searchUser(debounced);
       return role ? results.filter((user) => user.role === role) : results;
     },
     {

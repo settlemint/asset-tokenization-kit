@@ -48,12 +48,12 @@ export function ChangeRoleAction({
         userId: user.id,
         role: selectedRole,
       });
-      toast.success(t("change-role.success"));
+      toast.success(t("actions.change-role.success"));
       onOpenChange(false);
       router.refresh();
     } catch (error) {
       toast.error(
-        t("change-role.error", {
+        t("actions.change-role.error", {
           error: error instanceof Error ? error.message : "Unknown error",
         })
       );
@@ -67,9 +67,9 @@ export function ChangeRoleAction({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("change-role.title")}</DialogTitle>
+            <DialogTitle>{t("actions.change-role.title")}</DialogTitle>
             <DialogDescription>
-              {t("change-role.description", {
+              {t("actions.change-role.description", {
                 userName: user.name,
               })}
             </DialogDescription>
@@ -81,7 +81,7 @@ export function ChangeRoleAction({
             disabled={isLoading}
           >
             <SelectTrigger>
-              <SelectValue placeholder={t("change-role.select-role")} />
+              <SelectValue placeholder={t("actions.change-role.select-role")} />
             </SelectTrigger>
             <SelectContent>
               {userRoles.map((role) => (
@@ -99,7 +99,7 @@ export function ChangeRoleAction({
                 onOpenChange(false);
               }}
             >
-              {t("change-role.actions.cancel")}
+              {t("actions.change-role.buttons.cancel")}
             </Button>
             <Button
               variant="default"
@@ -107,8 +107,8 @@ export function ChangeRoleAction({
               disabled={selectedRole === user.role || isLoading}
             >
               {isLoading
-                ? t("change-role.actions.loading")
-                : t("change-role.actions.change")}
+                ? t("actions.change-role.buttons.loading")
+                : t("actions.change-role.buttons.change")}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -4,6 +4,7 @@ import { adminAc, defaultStatements } from "better-auth/plugins/admin/access";
 
 const customPermissions = {
   ...defaultStatements,
+  user: [...defaultStatements.user, "set-kyc-status"],
   asset: ["transfer", "manage"],
 } as const;
 
@@ -18,6 +19,7 @@ export const accessControl = createAccessControl(customPermissions);
 export const adminRole = accessControl.newRole({
   asset: ["transfer", "manage"],
   ...adminAc.statements,
+  user: [...adminAc.statements.user, "set-kyc-status"],
 });
 
 export const issuerRole = accessControl.newRole({

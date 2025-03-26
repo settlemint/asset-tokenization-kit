@@ -10,8 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Link } from "@/i18n/routing";
+import { searchUser } from "@/lib/api-client/user/user-search";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
-import { getUserSearch } from "@/lib/queries/user/user-search";
 import { cn } from "@/lib/utils";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { History } from "lucide-react";
@@ -72,7 +72,7 @@ export const Search = () => {
   const { data: users, isLoading: isLoadingUsers } = useSWR(
     sanitizedSearchTerm ? [`user-search`, sanitizedSearchTerm] : null,
     async () => {
-      const result = await getUserSearch({ searchTerm: sanitizedSearchTerm });
+      const result = await searchUser(sanitizedSearchTerm);
       return result || [];
     },
     {

@@ -8,6 +8,7 @@ import { CryptoCurrencyApi } from "@/lib/api/cryptocurrency";
 import { EquityApi } from "@/lib/api/equity";
 import { FixedYieldApi } from "@/lib/api/fixed-yield";
 import { FundApi } from "@/lib/api/fund";
+import { SettingApi } from "@/lib/api/setting";
 import { StableCoinApi } from "@/lib/api/stablecoin";
 import { TokenizedDepositApi } from "@/lib/api/tokenizeddeposit";
 import { TransactionApi } from "@/lib/api/transaction";
@@ -83,6 +84,7 @@ const app = new Elysia({
   .group("/asset-events", (app) => app.use(AssetEventsApi))
   .group("/asset-balance", (app) => app.use(AssetBalanceApi))
   .group("/asset-activity", (app) => app.use(AssetActivityApi))
+  .group("/setting", (app) => app.use(SettingApi))
   .group("/providers/exchange-rates", (app) =>
     app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
   )

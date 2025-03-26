@@ -1761,6 +1761,38 @@
       }
     },
     "users": {
+      "actions": {
+        "change-role": {
+          "buttons": {
+            "cancel": "Cancel",
+            "change": "Change role",
+            "loading": "Updating..."
+          },
+          "description": "Select a new role for {userName}. This will change their permissions in the system.",
+          "error": "Failed to update role: {error}",
+          "select-role": "Select role",
+          "success": "User role updated successfully",
+          "title": "Change user role"
+        },
+        "update-kyc-status": {
+          "buttons": {
+            "cancel": "Cancel",
+            "loading": "Updating...",
+            "set": "Verify",
+            "remove": "Remove verification"
+          },
+          "success": "KYC status updated successfully",
+          "error": "Failed to update KYC status: {error}",
+          "set-kyc-status": {
+            "title": "Verify KYC",
+            "description": "Are you sure you want to verify KYC for ${userName}?"
+          },
+          "remove-kyc-status": {
+            "title": "Remove KYC status",
+            "description": "Are you sure you want to remove KYC verification for ${userName}?"
+          }
+        }
+      },
       "banned_reason": "Banned for {reason}",
       "columns": {
         "email": "Email",
@@ -1770,18 +1802,6 @@
         "role": "Role",
         "status": "Status",
         "wallet": "Wallet"
-      },
-      "change-role": {
-        "actions": {
-          "cancel": "Cancel",
-          "change": "Change role",
-          "loading": "Updating..."
-        },
-        "description": "Select a new role for {userName}. This will change their permissions in the system.",
-        "error": "Failed to update role: {error}",
-        "select-role": "Select role",
-        "success": "User role updated successfully",
-        "title": "Change user role"
       },
       "detail": {
         "charts": {
