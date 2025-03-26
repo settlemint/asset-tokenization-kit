@@ -65,7 +65,7 @@ export function CreateStablecoinForm({
         <Basics />
         <TokenAdmins userDetails={userDetails} />
         <Configuration />
-        <Summary />
+        <Summary userDetails={userDetails} />
       </Form>
     </FormSheet>
   );

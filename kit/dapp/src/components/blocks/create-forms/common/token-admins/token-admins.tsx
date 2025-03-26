@@ -4,7 +4,7 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import type { User } from "@/lib/queries/user/user-schema";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import type { AdminRole } from "./admin-roles-badges";
 import { SelectedAdminsList, type TokenAdmin } from "./selected-admins-list";
@@ -20,27 +20,29 @@ export function TokenAdmins({ userDetails }: { userDetails: User }) {
   const tokenAdmins = form.watch("tokenAdmins") || [];
   const selectedWallet = form.watch("selectedWallet");
 
-  // Watch for changes to selectedWallet and add as admin when selected
-  if (selectedWallet && !tokenAdmins.some((admin: TokenAdmin) => admin.wallet === selectedWallet)) {
-    const updatedAdmins = [
-      ...tokenAdmins,
-      { wallet: selectedWallet, roles: ["admin"] as AdminRole[] }
-    ];
+  // Use useEffect to handle state updates when selectedWallet changes
+  useEffect(() => {
+    if (selectedWallet && !tokenAdmins.some((admin: TokenAdmin) => admin.wallet === selectedWallet)) {
+      const updatedAdmins = [
+        ...tokenAdmins,
+        { wallet: selectedWallet, roles: ["admin"] as AdminRole[] }
+      ];
 
-    form.setValue("tokenAdmins", updatedAdmins, {
-      shouldValidate: false,
-      shouldDirty: true
-    });
-    // Validate only the tokenAdmins field
-    form.trigger("tokenAdmins");
+      form.setValue("tokenAdmins", updatedAdmins, {
+        shouldValidate: false,
+        shouldDirty: true
+      });
+      // Validate only the tokenAdmins field
+      form.trigger("tokenAdmins");
 
-    // Reset the selector
-    form.setValue("selectedWallet", "", {
-      shouldValidate: false
-    });
+      // Reset the selector
+      form.setValue("selectedWallet", "", {
+        shouldValidate: false
+      });
 
-    setShowUserSelector(false);
-  }
+      setShowUserSelector(false);
+    }
+  }, [selectedWallet, tokenAdmins, form]);
 
   const handleRemoveAdmin = (wallet: string) => {
     const updatedAdmins = tokenAdmins.filter(

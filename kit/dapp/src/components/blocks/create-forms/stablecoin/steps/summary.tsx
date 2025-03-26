@@ -6,13 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
+import type { User } from "@/lib/queries/user/user-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings, Users } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
 import type { Address } from "viem";
 
-export function Summary() {
+export function Summary({ userDetails }: { userDetails: User }) {
   const { control, formState: { errors } } = useFormContext<CreateStablecoinInput>();
   const values = useWatch({
     control: control,
@@ -77,6 +78,19 @@ export function Summary() {
         description={t("summary.token-admins-description")}
         icon={<Users className="size-3 text-primary-foreground" />}
       >
+        <FormSummaryDetailItem
+            key={userDetails.wallet}
+            label={<EvmAddress address={userDetails.wallet} prettyNames />}
+            value={
+              <div className="flex flex-wrap gap-1">
+                <Badge key="admin" variant="outline" className="text-xs">
+                  {t("form.steps.token-admins.roles.admin")}
+                </Badge>
+                <Badge key="user-manager" variant="outline" className="text-xs">{t("form.steps.token-admins.roles.user-manager")}</Badge>
+                <Badge key="issuer" variant="outline" className="text-xs">{t("form.steps.token-admins.roles.issuer")}</Badge>
+              </div>
+            }
+          />
         {values.tokenAdmins?.map((admin) => (
           <FormSummaryDetailItem
             key={admin.wallet}
