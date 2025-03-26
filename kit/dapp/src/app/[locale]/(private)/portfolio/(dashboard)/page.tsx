@@ -14,10 +14,20 @@ import { startOfDay, subMonths } from "date-fns";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { cache } from "react";
 import type { Address } from "viem";
 import { LatestEvents } from "../../assets/(dashboard)/_components/table/latest-events";
 import { Greeting } from "./_components/greeting/greeting";
 import { MyAssetsHeader } from "./_components/header/my-assets-header";
+
+// Cache the asset price fetching to avoid redundant API calls
+const getAssetPricesForIds = cache(async (assetIds: string[]) => {
+  const uniqueIds = Array.from(new Set(assetIds));
+  const prices = await Promise.all(
+    uniqueIds.map((id) => getAssetPriceInUserCurrency(id))
+  );
+  return Object.fromEntries(uniqueIds.map((id, index) => [id, prices[index]]));
+});
 
 export async function generateMetadata({
   params,
@@ -53,46 +63,43 @@ export default async function PortfolioDashboard({
   const user = await getUser();
   const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
 
-  const [myAssetsBalance, data, userDetails] = await Promise.all([
-    getUserAssetsBalance(user.wallet as Address),
-    getTransactionsTimeline({
-      timelineStartDate: oneMonthAgo,
-      granularity: "DAY",
-      from: user.wallet as Address,
-    }),
-    getCurrentUserDetail(),
-  ]);
+  // Fetch all data in parallel
+  const [myAssetsBalance, transactionsData, userDetails, portfolioStats] =
+    await Promise.all([
+      getUserAssetsBalance(user.wallet as Address),
+      getTransactionsTimeline({
+        timelineStartDate: oneMonthAgo,
+        granularity: "DAY",
+        from: user.wallet as Address,
+      }),
+      getCurrentUserDetail(),
+      getPortfolioHistory({
+        address: user.wallet as Address,
+        days: 30,
+      }),
+    ]);
 
-  // Get portfolio history and asset prices
-  const portfolioHistory = await getPortfolioHistory({
-    address: user.wallet as Address,
-    days: 30,
-  });
-
-  // Get unique assets and their prices
-  const uniqueAssets = Array.from(
-    new Set(portfolioHistory?.map((item) => item.asset.id) ?? [])
+  // Get all unique asset IDs from both portfolio history and current balances
+  const uniqueAssetIds = Array.from(
+    new Set([
+      ...(portfolioStats?.map((item) => item.asset.id) ?? []),
+      ...myAssetsBalance.balances.map((balance) => balance.asset.id),
+    ])
   );
 
-  const assetPrices = await Promise.all(
-    uniqueAssets.map((assetId) => getAssetPriceInUserCurrency(assetId))
+  // Fetch all asset prices in one batch
+  const assetPrices = await getAssetPricesForIds(uniqueAssetIds);
+
+  // Create asset price map for portfolio history
+  const assetPriceMap = new Map(
+    Object.entries(assetPrices).map(([id, price]) => [id, price.amount])
   );
 
-  // Create asset price map
-  const assetPriceMap = new Map<string, number>();
-  uniqueAssets.forEach((assetId, index) => {
-    assetPriceMap.set(assetId, assetPrices[index].amount);
-  });
-
-  const assetValues = await Promise.all(
-    myAssetsBalance.balances.map(async (balance) => {
-      const price = await getAssetPriceInUserCurrency(balance.asset.id);
-      return price.amount * balance.value;
-    })
-  );
-
-  const totalUserAssetsValue = assetValues.reduce(
-    (acc, value) => acc + value,
+  // Calculate total user assets value
+  const totalUserAssetsValue = myAssetsBalance.balances.reduce(
+    (acc, balance) =>
+      acc +
+      (assetPrices[balance.asset.id]?.amount ?? 0) * Number(balance.value),
     0
   );
 
@@ -113,16 +120,9 @@ export default async function PortfolioDashboard({
           }}
         />
         <PortfolioValue
-          portfolioHistory={portfolioHistory?.map((item) => ({
-            timestamp: item.timestamp,
-            balance: item.balance,
-            asset: {
-              id: item.asset.id,
-              name: item.asset.name,
-              type: item.asset.type,
-            },
-          }))}
+          portfolioStats={portfolioStats}
           assetPriceMap={assetPriceMap}
+          locale={locale}
         />
       </div>
 
@@ -135,7 +135,7 @@ export default async function PortfolioDashboard({
           variant="small"
         />
         <TransactionsHistory
-          data={data}
+          data={transactionsData}
           chartOptions={{
             intervalType: "month",
             intervalLength: 1,

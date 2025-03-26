@@ -11,7 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createTimeSeries } from "@/lib/charts";
-import { useTranslations } from "next-intl";
+import type { PortfolioStatsCollection } from "@/lib/queries/portfolio/portfolio-schema";
+import { useTranslations, type Locale } from "next-intl";
 import { useState } from "react";
 import { AreaChartComponent } from "../area-chart";
 
@@ -21,16 +22,9 @@ interface TimeseriesEntry {
 }
 
 interface PortfolioValueProps {
-  portfolioHistory: {
-    timestamp: string;
-    balance: string;
-    asset: {
-      id: string;
-      name: string;
-      type: string;
-    };
-  }[];
+  portfolioStats: PortfolioStatsCollection;
   assetPriceMap: Map<string, number>;
+  locale: Locale;
 }
 
 type AggregationType = "individual" | "type" | "total";
@@ -42,14 +36,15 @@ const AGGREGATION_OPTIONS = [
 ] as const;
 
 export function PortfolioValue({
-  portfolioHistory,
+  portfolioStats,
   assetPriceMap,
+  locale,
 }: PortfolioValueProps) {
   const t = useTranslations("components.charts.portfolio");
   const [aggregationType, setAggregationType] =
     useState<AggregationType>("individual");
 
-  if (!portfolioHistory || portfolioHistory.length === 0) {
+  if (!portfolioStats || portfolioStats.length === 0) {
     return (
       <ChartSkeleton title="Portfolio Value" variant="noData">
         <div className="flex flex-col items-center gap-2 text-center">
@@ -62,17 +57,17 @@ export function PortfolioValue({
 
   // Get unique assets and their types
   const uniqueAssets = Array.from(
-    new Set(portfolioHistory.map((item) => item.asset.id))
+    new Set(portfolioStats.map((item) => item.asset.id))
   );
   const uniqueAssetTypes = Array.from(
-    new Set(portfolioHistory.map((item) => item.asset.type))
+    new Set(portfolioStats.map((item) => item.asset.type))
   );
 
   // Create chart config based on aggregation type
   const chartConfig: ChartConfig = {};
   if (aggregationType === "individual") {
     uniqueAssets.forEach((assetId, index) => {
-      const asset = portfolioHistory.find(
+      const asset = portfolioStats.find(
         (item) => item.asset.id === assetId
       )?.asset;
       if (asset) {
@@ -100,7 +95,7 @@ export function PortfolioValue({
   const processData = () => {
     if (aggregationType === "individual") {
       const timeseriesPerAsset = uniqueAssets.map((assetId) => {
-        const assetHistory = portfolioHistory.filter(
+        const assetHistory = portfolioStats.filter(
           (item) => item.asset.id === assetId
         );
 
@@ -121,7 +116,7 @@ export function PortfolioValue({
             aggregation: "first",
             historical: true,
           },
-          "en"
+          locale
         );
       });
 
@@ -156,7 +151,7 @@ export function PortfolioValue({
         });
     } else if (aggregationType === "type") {
       const timeseriesPerType = uniqueAssetTypes.map((type) => {
-        const typeHistory = portfolioHistory.filter(
+        const typeHistory = portfolioStats.filter(
           (item) => item.asset.type === type
         );
 
@@ -177,7 +172,7 @@ export function PortfolioValue({
             aggregation: "sum",
             historical: true,
           },
-          "en"
+          locale
         );
       });
 
@@ -212,7 +207,7 @@ export function PortfolioValue({
         });
     } else {
       // Total value
-      const processedData: TimeseriesEntry[] = portfolioHistory.map((item) => ({
+      const processedData: TimeseriesEntry[] = portfolioStats.map((item) => ({
         timestamp: item.timestamp,
         total: Number(item.balance) * (assetPriceMap.get(item.asset.id) || 0),
       }));
@@ -228,7 +223,7 @@ export function PortfolioValue({
           aggregation: "sum",
           historical: true,
         },
-        "en"
+        locale
       );
     }
   };
