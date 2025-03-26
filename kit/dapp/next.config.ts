@@ -20,6 +20,14 @@ const nextConfig: NextConfig = {
     authInterrupts: true,
   },
   output: "standalone",
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+    incomingRequests: {
+      ignore: [/\api\/v1\/health/],
+    },
+  },
 };
 
 export default withSettleMint(withNextIntl(nextConfig));
