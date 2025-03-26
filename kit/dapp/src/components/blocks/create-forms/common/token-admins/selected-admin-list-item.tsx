@@ -31,6 +31,7 @@ export function SelectedAdminListItem({
 
         {onRemove ? (
           <Button
+            type="button"
             variant="ghost"
             size="icon"
             onClick={() => onRemove(admin.wallet)}

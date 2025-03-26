@@ -50,6 +50,7 @@ export function SelectedAdminsList({
       ))}
 
       <Button
+        type="button"
         variant="outline"
         className="w-full"
         onClick={onAddAnother}

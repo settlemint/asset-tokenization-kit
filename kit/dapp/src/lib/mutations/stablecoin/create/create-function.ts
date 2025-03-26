@@ -34,10 +34,21 @@ const StableCoinFactoryCreate = portalGraphql(`
  *
  * @remarks
  * Stores additional metadata about the stablecoin in Hasura
+ * The on_conflict parameter provides idempotency:
+ * - If this asset doesn't exist yet, create it
+ * - If it already exists (same primary key), do nothing (empty update_columns)
+ * This prevents errors if the operation is retried and handles race conditions
+ * where multiple requests might try to create the same asset simultaneously
  */
 const CreateOffchainStablecoin = hasuraGraphql(`
     mutation CreateOffchainStablecoin($id: String!) {
-      insert_asset_one(object: {id: $id}, on_conflict: {constraint: asset_pkey, update_columns: []}) {
+      insert_asset_one(
+        object: {id: $id},
+        on_conflict: {
+          constraint: asset_pkey,
+          update_columns: []
+        }
+      ) {
         id
       }
   }
@@ -67,20 +78,28 @@ export async function createStablecoinFunction({
   parsedInput: CreateStablecoinInput;
   ctx: { user: User };
 }) {
+  // Ensure predictedAddress is available
+  if (!predictedAddress) {
+    throw new Error("Predicted address must be provided");
+  }
 
-  console.log("tokenAdmins", tokenAdmins);
+  // Ensure pincode is available
+  if (!pincode) {
+    throw new Error("Pincode must be provided");
+  }
 
-  // Execute metadata operations in parallel
-  await Promise.all([
-    hasuraClient.request(CreateOffchainStablecoin, {
-      id: predictedAddress,
-    }),
-    hasuraClient.request(AddAssetPrice, {
-      assetId: predictedAddress,
-      amount: String(price.amount),
-      currency: price.currency,
-    }),
-  ]);
+  // Execute metadata operations sequentially to ensure foreign key constraint is satisfied
+  // First create the asset record
+  await hasuraClient.request(CreateOffchainStablecoin, {
+    id: predictedAddress,
+  });
+
+  // Then create the price record (ensuring asset exists first)
+  await hasuraClient.request(AddAssetPrice, {
+    assetId: predictedAddress,
+    amount: String(price.amount),
+    currency: price.currency,
+  });
 
   // Create the stablecoin
   const createStablecoinResult = await portalClient.request(StableCoinFactoryCreate, {
@@ -88,8 +107,8 @@ export async function createStablecoinFunction({
     from: user.wallet,
     name: assetName,
     symbol: symbol.toString(),
-    decimals,
-    collateralLivenessSeconds: collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit),
+    decimals: decimals || 6, // Provide fallback for decimals
+    collateralLivenessSeconds: (collateralLivenessValue || 12) * getTimeUnitSeconds(collateralLivenessTimeUnit || "months"),
     challengeResponse: await handleChallenge(user.wallet, pincode),
   });
 

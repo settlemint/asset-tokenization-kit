@@ -22,22 +22,29 @@ export function AdminRolesBadges({ roles, onChangeRoles, className }: AdminRoles
       {(["admin", "user-manager", "issuer"] as const).map((role) => (
         <Tooltip key={role}>
           <TooltipTrigger asChild>
-            <Badge
-              variant={roles.includes(role) ? "default" : "outline"}
-              className={onChangeRoles ? "cursor-pointer" : undefined}
-              onClick={
-                onChangeRoles
-                  ? () => {
-                      const newRoles = roles.includes(role)
-                        ? roles.filter((r) => r !== role)
-                        : [...roles, role];
-                      onChangeRoles(newRoles);
-                    }
-                  : undefined
-              }
-            >
-              {getRoleTranslation(role)}
-            </Badge>
+            {onChangeRoles ? (
+              <button
+                type="button"
+                onClick={() => {
+                  const newRoles = roles.includes(role)
+                    ? roles.filter((r) => r !== role)
+                    : [...roles, role];
+                  onChangeRoles(newRoles);
+                }}
+                className="p-0 border-none bg-transparent"
+              >
+                <Badge
+                  variant={roles.includes(role) ? "default" : "outline"}
+                  className="cursor-pointer"
+                >
+                  {getRoleTranslation(role)}
+                </Badge>
+              </button>
+            ) : (
+              <Badge variant={roles.includes(role) ? "default" : "outline"}>
+                {getRoleTranslation(role)}
+              </Badge>
+            )}
           </TooltipTrigger>
           {onChangeRoles && (
             <TooltipContent>
@@ -48,4 +55,4 @@ export function AdminRolesBadges({ roles, onChangeRoles, className }: AdminRoles
       ))}
     </div>
   );
-} 
+}
