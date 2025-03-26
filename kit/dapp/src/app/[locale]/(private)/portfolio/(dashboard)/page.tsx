@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
-import { getAssetPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
+import { getAssetsPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { getPortfolioHistory } from "@/lib/queries/portfolio/portfolio-history";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
@@ -14,20 +14,10 @@ import { startOfDay, subMonths } from "date-fns";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { cache } from "react";
 import type { Address } from "viem";
 import { LatestEvents } from "../../assets/(dashboard)/_components/table/latest-events";
 import { Greeting } from "./_components/greeting/greeting";
 import { MyAssetsHeader } from "./_components/header/my-assets-header";
-
-// Cache the asset price fetching to avoid redundant API calls
-const getAssetPricesForIds = cache(async (assetIds: string[]) => {
-  const uniqueIds = Array.from(new Set(assetIds));
-  const prices = await Promise.all(
-    uniqueIds.map((id) => getAssetPriceInUserCurrency(id))
-  );
-  return Object.fromEntries(uniqueIds.map((id, index) => [id, prices[index]]));
-});
 
 export async function generateMetadata({
   params,
@@ -79,27 +69,14 @@ export default async function PortfolioDashboard({
       }),
     ]);
 
-  // Get all unique asset IDs from both portfolio history and current balances
-  const uniqueAssetIds = Array.from(
-    new Set([
-      ...(portfolioStats?.map((item) => item.asset.id) ?? []),
-      ...myAssetsBalance.balances.map((balance) => balance.asset.id),
-    ])
+  const assetPrices = await getAssetsPriceInUserCurrency(
+    myAssetsBalance.balances.map((balance) => balance.asset.id)
   );
 
-  // Fetch all asset prices in one batch
-  const assetPrices = await getAssetPricesForIds(uniqueAssetIds);
-
-  // Create asset price map for portfolio history
-  const assetPriceMap = new Map(
-    Object.entries(assetPrices).map(([id, price]) => [id, price.amount])
-  );
-
-  // Calculate total user assets value
   const totalUserAssetsValue = myAssetsBalance.balances.reduce(
     (acc, balance) =>
       acc +
-      (assetPrices[balance.asset.id]?.amount ?? 0) * Number(balance.value),
+      (assetPrices.get(balance.asset.id)?.amount ?? 0) * Number(balance.value),
     0
   );
 
@@ -121,7 +98,7 @@ export default async function PortfolioDashboard({
         />
         <PortfolioValue
           portfolioStats={portfolioStats}
-          assetPriceMap={assetPriceMap}
+          assetPriceMap={assetPrices}
           locale={locale}
         />
       </div>

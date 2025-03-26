@@ -55,3 +55,16 @@ export async function getAssetPriceInUserCurrency(
     currency: userDetails.currency,
   };
 }
+
+export async function getAssetsPriceInUserCurrency(
+  assetIds: string[]
+): Promise<Map<string, Price>> {
+  const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
+  const assetPrices = await Promise.all(
+    assetIdsWithoutDuplicates.map(async (assetId) => {
+      const price = await getAssetPriceInUserCurrency(assetId);
+      return [assetId, price] as [string, Price];
+    })
+  );
+  return new Map(assetPrices);
+}

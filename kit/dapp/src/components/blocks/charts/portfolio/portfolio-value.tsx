@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { createTimeSeries } from "@/lib/charts";
 import type { PortfolioStatsCollection } from "@/lib/queries/portfolio/portfolio-schema";
+import type { Price } from "@/lib/utils/typebox/price";
 import { useTranslations, type Locale } from "next-intl";
 import { useState } from "react";
 import { AreaChartComponent } from "../area-chart";
@@ -23,7 +24,7 @@ interface TimeseriesEntry {
 
 interface PortfolioValueProps {
   portfolioStats: PortfolioStatsCollection;
-  assetPriceMap: Map<string, number>;
+  assetPriceMap: Map<string, Price>;
   locale: Locale;
 }
 
@@ -102,7 +103,8 @@ export function PortfolioValue({
         const processedData: TimeseriesEntry[] = assetHistory.map((item) => ({
           timestamp: item.timestamp,
           [assetId]:
-            Number(item.balance) * (assetPriceMap.get(item.asset.id) || 0),
+            Number(item.balance) *
+            (assetPriceMap.get(item.asset.id)?.amount || 0),
         }));
 
         return createTimeSeries(
@@ -158,7 +160,8 @@ export function PortfolioValue({
         const processedData: TimeseriesEntry[] = typeHistory.map((item) => ({
           timestamp: item.timestamp,
           [type]:
-            Number(item.balance) * (assetPriceMap.get(item.asset.id) || 0),
+            Number(item.balance) *
+            (assetPriceMap.get(item.asset.id)?.amount || 0),
         }));
 
         return createTimeSeries(
@@ -209,7 +212,9 @@ export function PortfolioValue({
       // Total value
       const processedData: TimeseriesEntry[] = portfolioStats.map((item) => ({
         timestamp: item.timestamp,
-        total: Number(item.balance) * (assetPriceMap.get(item.asset.id) || 0),
+        total:
+          Number(item.balance) *
+          (assetPriceMap.get(item.asset.id)?.amount || 0),
       }));
 
       return createTimeSeries(
