@@ -34,7 +34,6 @@ export function PortfolioValue({
   const t = useTranslations("components.charts.portfolio");
   const [aggregationType, setAggregationType] =
     useState<AggregationType>("individual");
-
   const AGGREGATION_OPTIONS = [
     { value: "individual", label: t("aggregation-options.by-asset") },
     { value: "type", label: t("aggregation-options.by-type") },
