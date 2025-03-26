@@ -8,6 +8,7 @@ import type { Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { Figtree, Roboto_Mono } from "next/font/google";
+import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { getLangDir } from "rtl-detect";
 import { Toaster } from "sonner";
@@ -50,7 +51,7 @@ export default async function RootLayout({
 
     // Ensure that the incoming `locale` is valid
     if (!routing.locales.includes(locale)) {
-      //notFound();
+      notFound();
     }
 
     return (
