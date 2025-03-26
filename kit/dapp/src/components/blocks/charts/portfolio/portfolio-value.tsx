@@ -2,6 +2,7 @@ import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import { getAssetPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { getPortfolioHistory } from "@/lib/queries/portfolio/portfolio-history";
+import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { PortfolioValueClient } from "./portfolio-value-client";
 
@@ -14,15 +15,15 @@ export async function PortfolioValue({ address }: PortfolioValueProps) {
   const portfolioHistory = await getPortfolioHistory({
     address,
     days: 30,
-    interval: "hour",
   });
+  const t = await getTranslations("components.charts.portfolio");
 
   if (!portfolioHistory || portfolioHistory.length === 0) {
     return (
       <ChartSkeleton title="Portfolio Value" variant="noData">
         <div className="flex flex-col items-center gap-2 text-center">
           <ChartColumnIncreasingIcon className="h-8 w-8 text-muted-foreground" />
-          <p>No portfolio data available</p>
+          <p>{t("portfolio-value-no-data")}</p>
         </div>
       </ChartSkeleton>
     );

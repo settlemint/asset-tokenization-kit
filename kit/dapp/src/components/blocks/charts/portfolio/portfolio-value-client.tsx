@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createTimeSeries } from "@/lib/charts";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { AreaChartComponent } from "../area-chart";
 
@@ -42,6 +43,7 @@ export function PortfolioValueClient({
   portfolioHistory,
   assetPriceMap,
 }: PortfolioValueClientProps) {
+  const t = useTranslations("components.charts.portfolio");
   const [aggregationType, setAggregationType] =
     useState<AggregationType>("individual");
 
@@ -227,7 +229,7 @@ export function PortfolioValueClient({
         config={chartConfig}
         title={
           <div className="flex items-center justify-between w-full space-x-4">
-            <span>Portfolio Value</span>
+            <span>{t("portfolio-value-title")}</span>
 
             <Select
               value={aggregationType}
@@ -248,7 +250,7 @@ export function PortfolioValueClient({
             </Select>
           </div>
         }
-        description="Your portfolio value over time (based on current prices)"
+        description={t("portfolio-value-description")}
         xAxis={{ key: "timestamp" }}
         showYAxis={true}
         stacked={aggregationType !== "individual"}
