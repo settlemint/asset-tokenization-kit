@@ -1,7 +1,6 @@
 "use client";
 
 import type { AssetBalance } from "@/lib/queries/asset-balance/asset-balance-fragment";
-import type {} from "@/lib/queries/user/current-user-detail";
 import type { UserDetail } from "@/lib/queries/user/user-schema";
 import type { Price } from "@/lib/utils/typebox/price";
 import { TransferForm } from "../../../_components/transfer-form/form";

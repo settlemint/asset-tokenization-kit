@@ -44,7 +44,7 @@ interface AreaChartProps {
   xAxis: XAxisConfig;
   className?: string;
   footer?: ReactNode;
-  info?: ReactNode;
+  info?: string;
   showYAxis?: boolean;
   stacked?: boolean;
   chartContainerClassName?: string;

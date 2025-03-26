@@ -33,7 +33,7 @@ interface GetPortfolioHistoryParams {
  * @returns Promise resolving to an array of validated portfolio history data points
  * @throws Error if data validation fails
  */
-export const getPortfolioHistory = cache(
+export const getPortfolioStats = cache(
   async ({ address, days = 30 }: GetPortfolioHistoryParams) => {
     const startTime = Math.floor(Date.now() / 1000) - days * 24 * 60 * 60;
 

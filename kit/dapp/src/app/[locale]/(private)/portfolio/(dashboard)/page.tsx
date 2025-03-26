@@ -7,7 +7,7 @@ import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getAssetsPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
-import { getPortfolioHistory } from "@/lib/queries/portfolio/portfolio-history";
+import { getPortfolioStats } from "@/lib/queries/portfolio/portfolio-stats";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
 import { startOfDay, subMonths } from "date-fns";
@@ -53,7 +53,6 @@ export default async function PortfolioDashboard({
   const user = await getUser();
   const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
 
-  // Fetch all data in parallel
   const [myAssetsBalance, transactionsData, userDetails, portfolioStats] =
     await Promise.all([
       getUserAssetsBalance(user.wallet as Address),
@@ -63,7 +62,7 @@ export default async function PortfolioDashboard({
         from: user.wallet as Address,
       }),
       getCurrentUserDetail(),
-      getPortfolioHistory({
+      getPortfolioStats({
         address: user.wallet as Address,
         days: 30,
       }),
@@ -117,7 +116,6 @@ export default async function PortfolioDashboard({
             intervalType: "month",
             intervalLength: 1,
             granularity: "day",
-            chartContainerClassName: "h-[14rem] w-full",
           }}
         />
       </div>

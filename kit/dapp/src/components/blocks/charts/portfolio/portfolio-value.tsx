@@ -245,7 +245,7 @@ export function PortfolioValue({
               setAggregationType(value as AggregationType)
             }
           >
-            <SelectTrigger className="bg-background border-input hover:bg-accent">
+            <SelectTrigger>
               <SelectValue placeholder="View by" defaultValue="individual" />
             </SelectTrigger>
             <SelectContent>
