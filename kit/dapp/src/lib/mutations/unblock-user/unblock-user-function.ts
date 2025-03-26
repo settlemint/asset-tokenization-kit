@@ -105,9 +105,7 @@ export async function unblockUserFunction({
       );
     }
     case "deposit": {
-      throw new Error(
-        "Tokenized deposit does not support unblock user operations"
-      );
+      throw new Error("Deposit does not support unblock user operations");
     }
     default:
       throw new Error("Invalid asset type");

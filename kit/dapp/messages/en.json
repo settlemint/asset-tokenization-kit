@@ -1060,8 +1060,8 @@
           },
           "deposits": {
             "isin-placeholder": "EU1234567890",
-            "name-placeholder": "Tokenized Euro",
-            "symbol-placeholder": "TEUR"
+            "name-placeholder": "Deposited Euro",
+            "symbol-placeholder": "EURD"
           }
         },
         "summary": {

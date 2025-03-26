@@ -1,6 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
-import { TOKENIZED_DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
+import { DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
@@ -80,7 +80,7 @@ export async function createDepositFunction({
     collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
 
   const data = await portalClient.request(DepositFactoryCreate, {
-    address: TOKENIZED_DEPOSIT_FACTORY_ADDRESS,
+    address: DEPOSIT_FACTORY_ADDRESS,
     from: user.wallet,
     name: assetName,
     symbol: symbol.toString(),
