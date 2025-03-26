@@ -21,8 +21,8 @@ export const SettingApi = new Elysia({
   .use(superJson)
   .get(
     "/:key",
-    async ({ params: { key } }) => {
-      return await getSetting(key);
+    async ({ params: { key }, user }) => {
+      return await getSetting({ key, ctx: { user } });
     },
     {
       auth: true,

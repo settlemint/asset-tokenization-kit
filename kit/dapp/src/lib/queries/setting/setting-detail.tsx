@@ -28,7 +28,7 @@ export const getSetting = cache(
         setting: ["read"],
       },
     },
-    async (key: SettingKey) => {
+    async ({ key }: { key: SettingKey }) => {
       const result = await hasuraClient.request(GetSetting, { _eq: key });
       if (result.settings.length === 0) {
         throw new NotFoundError();
