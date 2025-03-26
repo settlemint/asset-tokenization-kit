@@ -1,11 +1,14 @@
 import { AssetDistribution } from "@/components/blocks/charts/assets/asset-distribution";
+import { PortfolioValue } from "@/components/blocks/charts/portfolio/portfolio-value";
 import MyAssetsTable from "@/components/blocks/my-assets-table/my-assets-table-mini";
 import { TransactionsHistory } from "@/components/blocks/transactions-table/transactions-history";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
+import { getAssetPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
+import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
 import { startOfDay, subMonths } from "date-fns";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
@@ -49,14 +52,27 @@ export default async function PortfolioDashboard({
   const user = await getUser();
   const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
 
-  const [myAssetsBalance, data] = await Promise.all([
+  const [myAssetsBalance, data, userDetails] = await Promise.all([
     getUserAssetsBalance(user.wallet as Address),
     getTransactionsTimeline({
       timelineStartDate: oneMonthAgo,
       granularity: "DAY",
       from: user.wallet as Address,
     }),
+    getCurrentUserDetail(),
   ]);
+
+  const assetValues = await Promise.all(
+    myAssetsBalance.balances.map(async (balance) => {
+      const price = await getAssetPriceInUserCurrency(balance.asset.id);
+      return price.amount * balance.value;
+    })
+  );
+
+  const totalUserAssetsValue = assetValues.reduce(
+    (acc, value) => acc + value,
+    0
+  );
 
   return (
     <>
@@ -68,17 +84,13 @@ export default async function PortfolioDashboard({
         <Greeting />
         <MyAssetsHeader
           data={myAssetsBalance}
-          userAddress={user.wallet as Address}
-        />
-        <TransactionsHistory
-          data={data}
-          chartOptions={{
-            intervalType: "month",
-            intervalLength: 1,
-            granularity: "day",
-            chartContainerClassName: "h-[14rem] w-full",
+          userDetails={userDetails}
+          totalValue={{
+            amount: totalUserAssetsValue,
+            currency: userDetails.currency,
           }}
         />
+        <PortfolioValue address={user.wallet as Address} />
       </div>
 
       <PageHeader title={t("dashboard.my-assets")} className="mt-8" />
@@ -88,6 +100,15 @@ export default async function PortfolioDashboard({
           wallet={user.wallet as Address}
           title={t("dashboard.my-assets")}
           variant="small"
+        />
+        <TransactionsHistory
+          data={data}
+          chartOptions={{
+            intervalType: "month",
+            intervalLength: 1,
+            granularity: "day",
+            chartContainerClassName: "h-[14rem] w-full",
+          }}
         />
       </div>
       <PageHeader title={t("dashboard.latest-events")} className="mt-8" />

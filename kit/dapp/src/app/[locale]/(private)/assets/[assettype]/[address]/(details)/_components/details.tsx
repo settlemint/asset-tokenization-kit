@@ -3,10 +3,10 @@ import type { Address } from "viem";
 import { BondsDetails } from "./details/bonds";
 import { Collateral } from "./details/collateral";
 import { CryptocurrenciesDetails } from "./details/cryptocurrencies";
+import { DepositsDetails } from "./details/deposits";
 import { EquitiesDetails } from "./details/equities";
 import { FundsDetails } from "./details/funds";
 import { StablecoinsDetails } from "./details/stablecoins";
-import { TokenizedDepositsDetails } from "./details/tokenizeddeposits";
 
 interface DetailsProps {
   assettype: AssetType;
@@ -49,10 +49,10 @@ export function Details({
           <Collateral address={address} assettype={assettype} />
         </>
       );
-    case "tokenizeddeposit":
+    case "deposit":
       return (
         <>
-          <TokenizedDepositsDetails
+          <DepositsDetails
             address={address}
             showBalance={showBalance}
             userAddress={userAddress}

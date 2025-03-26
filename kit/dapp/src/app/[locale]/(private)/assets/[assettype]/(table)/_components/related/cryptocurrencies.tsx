@@ -1,4 +1,4 @@
-import { CreateCryptoCurrencyForm } from "@/components/blocks/create-forms/cryptocurrencies/form";
+import { CreateCryptoCurrencyForm } from "@/components/blocks/create-forms/cryptocurrency/form";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";

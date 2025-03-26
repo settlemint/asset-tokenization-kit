@@ -87,7 +87,7 @@
         "equities": "Equities",
         "funds": "Funds",
         "stablecoins": "Stablecoins",
-        "tokenizeddeposit": "Tokenized Deposits"
+        "deposit": "Deposits"
       }
     },
     "dashboard": {
@@ -105,7 +105,7 @@
           "equities": "Equities",
           "funds": "Funds",
           "stablecoins": "Stablecoins",
-          "tokenizeddeposit": "Tokenized Deposits"
+          "deposit": "Deposits"
         },
         "assets-supply": {
           "description": "The distribution of tokens per asset class",
@@ -136,7 +136,7 @@
       "widgets": {
         "assets": {
           "label": "Assets",
-          "subtext": "{bonds} bonds | {cryptocurrencies} cryptocurrencies | {equities} equities | {funds} funds | {stableCoins} stablecoins | {tokenizedDeposits} tokenized deposits"
+          "subtext": "{bonds} bonds | {cryptocurrencies} cryptocurrencies | {equities} equities | {funds} funds | {stableCoins} stablecoins | {deposits} deposits"
         },
         "price": {
           "label": "Value",
@@ -184,7 +184,7 @@
         "funds": "Funds",
         "group-title": "Asset management",
         "stablecoins": "Stablecoins",
-        "tokenized-deposits": "Tokenized Deposits",
+        "tokenized-deposits": "Deposits",
         "view-all": "View all"
       },
       "asset-types": {
@@ -193,7 +193,7 @@
         "equity": "Equity",
         "fund": "Fund",
         "stablecoin": "Stablecoin",
-        "tokenized-deposit": "Tokenized Deposits"
+        "tokenized-deposit": "Deposits"
       },
       "platform-management": {
         "group-title": "Platform management",
@@ -260,8 +260,8 @@
     "funds-plural": "Funds",
     "stablecoins": "Stablecoin",
     "stablecoins-plural": "Stablecoins",
-    "tokenizeddeposits": "Tokenized Deposit",
-    "tokenizeddeposits-plural": "Tokenized Deposits",
+    "deposits": "Deposit",
+    "deposits-plural": "Deposits",
     "unknown": "Unknown"
   },
   "blocked": "Blocked",
@@ -358,7 +358,7 @@
         "last-updated": "Last updated",
         "loading": "Loading...",
         "stablecoin": "Stablecoin",
-        "tokenizeddeposit": "Tokenized Deposit",
+        "deposit": "Deposit",
         "total-collateral": {
           "label": "Total Collateral"
         },
@@ -693,7 +693,7 @@
     "issuer-portal": "Issuer portal",
     "portfolio": "Portfolio",
     "stablecoins": "stablecoins",
-    "tokenized-deposits": "tokenized deposits"
+    "tokenized-deposits": "deposits"
   },
   "language": {
     "changing": "Changing...",
@@ -757,7 +757,7 @@
       "afternoon": "Good afternoon",
       "evening": "Good evening",
       "morning": "Good morning",
-      "you-have": "You have"
+      "you-have": "You have assets worth"
     },
     "my-assets": {
       "bond": {
@@ -961,9 +961,9 @@
             "description": "Set parameters specific to your stable coin.",
             "title": "Stable coin configuration"
           },
-          "tokenizeddeposits": {
-            "description": "Set parameters specific to your tokenized deposit.",
-            "title": "Tokenized deposit configuration"
+          "deposits": {
+            "description": "Set parameters specific to your deposit.",
+            "title": "Deposit configuration"
           }
         },
         "form": {
@@ -973,7 +973,7 @@
             "equities": "Assets representing ownership in a company.",
             "funds": "Investment vehicles pooled by professional managers.",
             "stablecoins": "Digital assets pegged to a stable asset like USD.",
-            "tokenizeddeposits": "Digital assets that represent a deposit of a traditional asset."
+            "deposits": "Digital assets that represent a deposit of a traditional asset."
           },
           "title": {
             "bonds": "Design a new bond",
@@ -981,7 +981,7 @@
             "equities": "Design a new equity",
             "funds": "Design a new fund",
             "stablecoins": "Design a new stable coin",
-            "tokenizeddeposits": "Design a new tokenized deposit"
+            "deposits": "Design a new deposit"
           },
           "trigger-label": {
             "bonds": "Issue a new bond",
@@ -989,7 +989,7 @@
             "equities": "Issue a new equity",
             "funds": "Issue a new fund",
             "stablecoins": "Issue a new stablecoin",
-            "tokenizeddeposits": "Issue a new tokenized deposit"
+            "deposits": "Issue a new deposit"
           },
           "steps": {
             "token-admins": {
@@ -1074,10 +1074,10 @@
             "name-placeholder": "TotallyNotTether",
             "symbol-placeholder": "SAFU"
           },
-          "tokenizeddeposits": {
+          "deposits": {
             "isin-placeholder": "EU1234567890",
-            "name-placeholder": "Tokenized Euro",
-            "symbol-placeholder": "TEUR"
+            "name-placeholder": "Deposited Euro",
+            "symbol-placeholder": "EURD"
           }
         },
         "summary": {
@@ -1327,14 +1327,14 @@
               "equities": "An equity manager can reduce the total supply of shares through a buyback program or capital reduction.",
               "funds": "A fund manager can reduce the total supply through fund redemption at maturity or early repurchase programs.",
               "stablecoins": "A supply manager can burn existing stablecoins, provided sufficient collateral is available.",
-              "tokenizeddeposits": "A supply manager can burn existing tokenized deposits, provided sufficient collateral is available."
+              "deposits": "A supply manager can burn existing deposits, provided sufficient collateral is available."
             },
             "title": {
               "bonds": "Redeem bonds",
               "equities": "Reduce share supply",
               "funds": "Redeem bonds",
               "stablecoins": "Decrease the supply",
-              "tokenizeddeposits": "Reduce tokenized deposit supply"
+              "deposits": "Reduce deposit supply"
             }
           },
           "increase-supply": {
@@ -1344,7 +1344,7 @@
               "equities": "An equity manager can issue new shares through various mechanisms like rights issues, private placements, or stock splits.",
               "funds": "A fund manager can issue new funds through primary issuance or tap issuance with defined face value and maturity.",
               "stablecoins": "A supply manager can mint new stablecoins, provided sufficient collateral is available.",
-              "tokenizeddeposits": "A supply manager can mint new tokenized deposits, provided sufficient collateral is available."
+              "deposits": "A supply manager can mint new deposits, provided sufficient collateral is available."
             },
             "title": {
               "bonds": "Issue bonds",
@@ -1352,14 +1352,14 @@
               "equities": "Issue new shares",
               "funds": "Issue bonds",
               "stablecoins": "Increase the supply",
-              "tokenizeddeposits": "Increase the supply"
+              "deposits": "Increase the supply"
             }
           },
           "title": "Related Actions",
           "update-collateral": {
             "description": {
               "stablecoins": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times.",
-              "tokenizeddeposits": "A supply manager needs to refresh and verify the collateral backing the tokenized deposit. This ensures the asset remains fully collateralized at all times."
+              "deposits": "A supply manager needs to refresh and verify the collateral backing the deposit. This ensures the asset remains fully collateralized at all times."
             },
             "title": "Update collateral"
           }
@@ -1556,7 +1556,7 @@
           "equity": "Equities",
           "fund": "Funds",
           "stablecoin": "Stablecoins",
-          "tokenizeddeposit": "Tokenized Deposits"
+          "deposit": "Deposits"
         },
         "related": {
           "bond": {
@@ -1640,19 +1640,19 @@
             }
           },
           "title": "Related actions",
-          "tokenizeddeposit": {
+          "deposit": {
             "issue-new": {
-              "description": "Create and launch a new tokenized deposit with defined parameters. Streamline token deployment to support new projects and market segments.",
-              "title": "Issue a new tokenized deposit"
+              "description": "Create and launch a new deposit with defined parameters. Streamline token deployment to support new projects and market segments.",
+              "title": "Issue a new deposit"
             },
             "mechanics": {
               "button": "Learn more",
-              "description": "Learn how to adjust key tokenized deposit parameters.",
-              "title": "Tokenized deposit mechanics"
+              "description": "Learn how to adjust key deposit parameters.",
+              "title": "Deposit mechanics"
             },
             "usecases": {
               "button": "Explore",
-              "description": "Explore the practical applications and integrations of tokenized deposits.",
+              "description": "Explore the practical applications and integrations of deposits.",
               "title": "Usecases"
             }
           }
@@ -1663,7 +1663,7 @@
           "equity": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
           "fund": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
           "stablecoin": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
-          "tokenizeddeposit": "Tokenized Deposits digitally represent traditional banking deposits, providing financial institutions with enhanced security, real-time transparency, and rigorous compliance capabilities. Key features include customizable allowlists, custodial oversight, robust role-based management, and integrated meta-transactions, simplifying institutional deposit administration."
+          "deposit": "Deposits digitally represent traditional banking deposits, providing financial institutions with enhanced security, real-time transparency, and rigorous compliance capabilities. Key features include customizable allowlists, custodial oversight, robust role-based management, and integrated meta-transactions, simplifying institutional deposit administration."
         },
         "topinfo-title": {
           "bond": "A digital fixed-income security asset",
@@ -1671,7 +1671,7 @@
           "equity": "Institutional-grade digital equity management",
           "fund": "Digital asset for institutional fund management",
           "stablecoin": "A secure and collateralized digital currency",
-          "tokenizeddeposit": "Secure and compliant digital deposit management"
+          "deposit": "Secure and compliant digital deposit management"
         }
       }
     },
