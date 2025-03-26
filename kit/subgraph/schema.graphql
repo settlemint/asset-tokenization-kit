@@ -202,7 +202,7 @@ type CryptoCurrency implements Asset @entity {
   # CryptoCurrency-Specific Fields
 }
 
-type TokenizedDeposit implements Asset @entity {
+type Deposit implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -226,7 +226,7 @@ type TokenizedDeposit implements Asset @entity {
   allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
   # Concentration
   concentration: BigDecimal!
-  # TokenizedDeposit-Specific Fields
+  # Deposit-Specific Fields
   paused: Boolean!
   # Collateral Fields
   collateral: BigDecimal!

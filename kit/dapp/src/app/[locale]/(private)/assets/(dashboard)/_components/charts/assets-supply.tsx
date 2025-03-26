@@ -36,9 +36,9 @@ export async function AssetsSupply() {
       label: t("asset-types.stablecoins"),
       color: getAssetColor("stablecoin", "color"),
     },
-    tokenizeddeposit: {
-      label: t("asset-types.tokenizeddeposit"),
-      color: getAssetColor("tokenizeddeposit", "color"),
+    deposit: {
+      label: t("asset-types.deposit"),
+      color: getAssetColor("deposit", "color"),
     },
   };
   return (

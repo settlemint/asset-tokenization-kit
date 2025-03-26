@@ -35,7 +35,7 @@ export async function AssetsWidget() {
           decimals: 0,
         }),
         funds: formatNumber(getAssetCount("fund"), { locale, decimals: 0 }),
-        tokenizedDeposits: formatNumber(getAssetCount("tokenizeddeposit"), {
+        deposits: formatNumber(getAssetCount("deposit"), {
           locale,
           decimals: 0,
         }),

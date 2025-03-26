@@ -1,4 +1,4 @@
-import { CreateEquityForm } from "@/components/blocks/create-forms/equities/form";
+import { CreateEquityForm } from "@/components/blocks/create-forms/equity/form";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
