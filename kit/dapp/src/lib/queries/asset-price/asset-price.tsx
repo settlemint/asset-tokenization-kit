@@ -2,6 +2,7 @@ import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { safeParse } from "@/lib/utils/typebox";
 import type { Price } from "@/lib/utils/typebox/price";
+import { cache } from "react";
 import { getAddress } from "viem";
 import { getCurrentUserDetail } from "../user/current-user-detail";
 import { AssetPriceFragment } from "./asset-price-fragment";
@@ -56,15 +57,15 @@ export async function getAssetPriceInUserCurrency(
   };
 }
 
-export async function getAssetsPriceInUserCurrency(
-  assetIds: string[]
-): Promise<Map<string, Price>> {
-  const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
-  const assetPrices = await Promise.all(
-    assetIdsWithoutDuplicates.map(async (assetId) => {
-      const price = await getAssetPriceInUserCurrency(assetId);
-      return [assetId, price] as [string, Price];
-    })
-  );
-  return new Map(assetPrices);
-}
+export const getAssetsPriceInUserCurrency = cache(
+  async (assetIds: string[]): Promise<Map<string, Price>> => {
+    const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
+    const assetPrices = await Promise.all(
+      assetIdsWithoutDuplicates.map(async (assetId) => {
+        const price = await getAssetPriceInUserCurrency(assetId);
+        return [assetId, price] as [string, Price];
+      })
+    );
+    return new Map(assetPrices);
+  }
+);
