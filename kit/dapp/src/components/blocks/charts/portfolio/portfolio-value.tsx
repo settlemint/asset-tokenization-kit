@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { createTimeSeries } from "@/lib/charts";
 import type { PortfolioStatsCollection } from "@/lib/queries/portfolio/portfolio-schema";
+import { assetTypes } from "@/lib/utils/typebox/asset-types";
 import type { Price } from "@/lib/utils/typebox/price";
 import { useTranslations, type Locale } from "next-intl";
 import { useState } from "react";
@@ -60,9 +61,6 @@ export function PortfolioValue({
   const uniqueAssets = Array.from(
     new Set(portfolioStats.map((item) => item.asset.id))
   );
-  const uniqueAssetTypes = Array.from(
-    new Set(portfolioStats.map((item) => item.asset.type))
-  );
 
   // Create chart config based on aggregation type
   const chartConfig: ChartConfig = {};
@@ -79,7 +77,7 @@ export function PortfolioValue({
       }
     });
   } else if (aggregationType === "type") {
-    uniqueAssetTypes.forEach((type, index) => {
+    assetTypes.forEach((type, index) => {
       chartConfig[type] = {
         label: type,
         color: `var(--chart-${(index % 6) + 1})`,
@@ -152,7 +150,7 @@ export function PortfolioValue({
           return entry;
         });
     } else if (aggregationType === "type") {
-      const timeseriesPerType = uniqueAssetTypes.map((type) => {
+      const timeseriesPerType = assetTypes.map((type) => {
         const typeHistory = portfolioStats.filter(
           (item) => item.asset.type === type
         );
@@ -190,7 +188,7 @@ export function PortfolioValue({
         .map((timestamp) => {
           const entry: TimeseriesEntry = {
             timestamp,
-            ...Object.fromEntries(uniqueAssetTypes.map((type) => [type, 0])),
+            ...Object.fromEntries(assetTypes.map((type) => [type, 0])),
           };
 
           timeseriesPerType.forEach((series) => {
