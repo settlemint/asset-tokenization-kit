@@ -2,10 +2,8 @@ import { t } from "@/lib/utils/typebox";
 
 export const TokenAdminsSchemaFragment = () => t.Array(
   t.Object({
-    wallet: t.String({
-      minLength: 1,
-      error: "Wallet address is required",
-      format: "ethereum-address"
+    wallet: t.EthereumAddress({
+      error: "Wallet address is required"
     }),
     roles: t.Array(
       t.Union([

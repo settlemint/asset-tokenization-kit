@@ -58,6 +58,7 @@ export async function createStablecoinFunction({
     collateralLivenessTimeUnit,
     predictedAddress,
     price,
+    tokenAdmins,
   },
   ctx: { user },
 }: {

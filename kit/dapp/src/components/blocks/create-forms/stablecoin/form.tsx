@@ -1,6 +1,6 @@
 "use client";
 
-import { TokenAdmins } from "@/components/blocks/create-forms/common/steps/token-admins";
+import { TokenAdmins } from "@/components/blocks/create-forms/common/token-admins/token-admins";
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";

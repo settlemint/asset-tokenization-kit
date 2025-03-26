@@ -13,7 +13,7 @@ import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
 import type { Address } from "viem";
 
 export function Summary() {
-  const { control } = useFormContext<CreateStablecoinInput>();
+  const { control, formState: { errors } } = useFormContext<CreateStablecoinInput>();
   const values = useWatch({
     control: control,
   });
@@ -84,7 +84,7 @@ export function Summary() {
             value={
               <div className="flex flex-wrap gap-1">
                 {admin.roles?.map((role) => (
-                  <Badge key={role} className="text-xs">
+                  <Badge key={role} variant="outline" className="text-xs">
                     {t(`form.steps.token-admins.roles.${role}`)}
                   </Badge>
                 ))}
@@ -99,6 +99,13 @@ export function Summary() {
 
 Summary.validatedFields = [
   "predictedAddress",
+  "assetName",
+  "symbol",
+  "decimals",
+  "collateralLivenessValue",
+  "collateralLivenessTimeUnit",
+  "price",
+  "tokenAdmins"
 ] satisfies (keyof CreateStablecoinInput)[];
 Summary.beforeValidate = [
   async ({ setValue, getValues }: UseFormReturn<CreateStablecoinInput>) => {
