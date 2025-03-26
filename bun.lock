@@ -1848,7 +1848,7 @@
 
     "electron-fetch": ["electron-fetch@1.9.1", "", { "dependencies": { "encoding": "^0.1.13" } }, "sha512-M9qw6oUILGVrcENMSRRefE1MbHPIz0h79EKIeJWK9v563aT9Qkh8aEHPO1H5vi970wPirNY+jO9OpFoLiMsMGA=="],
 
-    "electron-to-chromium": ["electron-to-chromium@1.5.123", "", {}, "sha512-refir3NlutEZqlKaBLK0tzlVLe5P2wDKS7UQt/3SpibizgsRAPOsqQC3ffw1nlv3ze5gjRQZYHoPymgVZkplFA=="],
+    "electron-to-chromium": ["electron-to-chromium@1.5.124", "", {}, "sha512-riELkpDUqBi00gqreV3RIGoowxGrfueEKBd6zPdOk/I8lvuFpBGNkYoHof3zUHbiTBsIU8oxdIIL/WNrAG1/7A=="],
 
     "elliptic": ["elliptic@6.6.1", "", { "dependencies": { "bn.js": "^4.11.9", "brorand": "^1.1.0", "hash.js": "^1.0.0", "hmac-drbg": "^1.0.1", "inherits": "^2.0.4", "minimalistic-assert": "^1.0.1", "minimalistic-crypto-utils": "^1.0.1" } }, "sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g=="],
 
@@ -4333,6 +4333,8 @@
     "load-yaml-file/js-yaml/esprima": ["esprima@4.0.1", "", { "bin": { "esparse": "./bin/esparse.js", "esvalidate": "./bin/esvalidate.js" } }, "sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A=="],
 
     "minio/fast-xml-parser/strnum": ["strnum@1.1.2", "", {}, "sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA=="],
+
+    "mocha/chokidar/fsevents": ["fsevents@2.3.2", "", { "os": "darwin" }, "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA=="],
 
     "mocha/chokidar/glob-parent": ["glob-parent@5.1.2", "", { "dependencies": { "is-glob": "^4.0.1" } }, "sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow=="],
 

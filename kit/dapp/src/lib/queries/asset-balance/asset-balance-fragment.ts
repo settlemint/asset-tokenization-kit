@@ -42,7 +42,7 @@ export const AssetBalanceFragment = theGraphGraphqlKit(
       ... on Equity {
         paused
       }
-      ... on TokenizedDeposit {
+      ... on Deposit {
         paused
       }
     }
