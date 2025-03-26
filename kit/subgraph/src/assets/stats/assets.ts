@@ -1,5 +1,5 @@
 import { BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { AssetStatsData, StableCoin, TokenizedDeposit } from "../../../generated/schema";
+import { AssetStatsData, Deposit, StableCoin } from "../../../generated/schema";
 
 export function newAssetStatsData(
   asset: Bytes,
@@ -46,9 +46,9 @@ export function newAssetStatsData(
   return assetStats;
 }
 
-export function updateTokenizedDepositCollateralData(
+export function updateDepositCollateralData(
   assetStats: AssetStatsData,
-  asset: TokenizedDeposit
+  asset: Deposit
 ): AssetStatsData {
   // Collateral
   assetStats.collateral = asset.collateral;

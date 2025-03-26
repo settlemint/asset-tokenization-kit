@@ -20,14 +20,14 @@ import {
   Unpaused,
   UserAllowed,
   UserDisallowed,
-} from "../../generated/templates/TokenizedDeposit/TokenizedDeposit";
+} from "../../generated/templates/Deposit/Deposit";
 import { fetchAccount } from "../fetch/account";
 import { allowUser, disallowUser } from "../fetch/allow-user";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
-import { tokenizedDepositCollateralCalculatedFields } from "./calculations/collateral";
+import { depositCollateralCalculatedFields } from "./calculations/collateral";
 import { calculateConcentration } from "./calculations/concentration";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
@@ -45,22 +45,16 @@ import { userAllowedEvent } from "./events/userallowed";
 import { userDisallowedEvent } from "./events/userdisallowed";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
-import { fetchTokenizedDeposit } from "./fetch/tokenizeddeposit";
-import {
-  newAssetStatsData,
-  updateTokenizedDepositCollateralData,
-} from "./stats/assets";
+import { fetchDeposit } from "./fetch/deposit";
+import { newAssetStatsData, updateDepositCollateralData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
-  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  const assetActivity = fetchAssetActivity(AssetType.deposit);
 
-  const assetStats = newAssetStatsData(
-    tokenizedDeposit.id,
-    AssetType.tokenizeddeposit
-  );
+  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
 
   if (event.params.from.equals(Address.zero())) {
     const to = fetchAccount(event.params.to);
@@ -69,29 +63,24 @@ export function handleTransfer(event: Transfer): void {
       event.block.timestamp,
       event.address,
       sender.id,
-      AssetType.tokenizeddeposit,
+      AssetType.deposit,
       to.id,
       event.params.value,
-      tokenizedDeposit.decimals
+      deposit.decimals
     );
 
-    log.info(
-      "TokenizedDeposit mint event: amount={}, to={}, sender={}, token={}",
-      [
-        mint.value.toString(),
-        mint.to.toHexString(),
-        mint.sender.toHexString(),
-        event.address.toHexString(),
-      ]
-    );
+    log.info("Deposit mint event: amount={}, to={}, sender={}, token={}", [
+      mint.value.toString(),
+      mint.to.toHexString(),
+      mint.sender.toHexString(),
+      event.address.toHexString(),
+    ]);
 
     // increase total supply
-    tokenizedDeposit.totalSupplyExact = tokenizedDeposit.totalSupplyExact.plus(
-      mint.valueExact
-    );
-    tokenizedDeposit.totalSupply = toDecimals(
-      tokenizedDeposit.totalSupplyExact,
-      tokenizedDeposit.decimals
+    deposit.totalSupplyExact = deposit.totalSupplyExact.plus(mint.valueExact);
+    deposit.totalSupply = toDecimals(
+      deposit.totalSupplyExact,
+      deposit.decimals
     );
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
       mint.valueExact
@@ -99,16 +88,14 @@ export function handleTransfer(event: Transfer): void {
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
     // Update collateral calculated fields after supply change
-    tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
-    tokenizedDeposit.concentration = calculateConcentration(
-      tokenizedDeposit.holders.load(),
-      tokenizedDeposit.totalSupplyExact
+    depositCollateralCalculatedFields(deposit);
+    deposit.concentration = calculateConcentration(
+      deposit.holders.load(),
+      deposit.totalSupplyExact
     );
 
-    if (
-      !hasBalance(tokenizedDeposit.id, to.id, tokenizedDeposit.decimals, false)
-    ) {
-      tokenizedDeposit.totalHolders = tokenizedDeposit.totalHolders + 1;
+    if (!hasBalance(deposit.id, to.id, deposit.decimals, false)) {
+      deposit.totalHolders = deposit.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
 
@@ -117,32 +104,29 @@ export function handleTransfer(event: Transfer): void {
     to.save();
 
     const balance = fetchAssetBalance(
-      tokenizedDeposit.id,
+      deposit.id,
       to.id,
-      tokenizedDeposit.decimals,
+      deposit.decimals,
       true
     );
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
-    balance.value = toDecimals(balance.valueExact, tokenizedDeposit.decimals);
+    balance.value = toDecimals(balance.valueExact, deposit.decimals);
     balance.lastActivity = event.block.timestamp;
     balance.save();
 
     const portfolioStats = newPortfolioStatsData(
       to.id,
-      tokenizedDeposit.id,
-      AssetType.tokenizeddeposit
+      deposit.id,
+      AssetType.deposit
     );
     portfolioStats.balance = balance.value;
     portfolioStats.balanceExact = balance.valueExact;
     portfolioStats.save();
 
-    assetStats.minted = toDecimals(
-      event.params.value,
-      tokenizedDeposit.decimals
-    );
+    assetStats.minted = toDecimals(event.params.value, deposit.decimals);
     assetStats.mintedExact = event.params.value;
     // Update collateral data in asset stats
-    updateTokenizedDepositCollateralData(assetStats, tokenizedDeposit);
+    updateDepositCollateralData(assetStats, deposit);
 
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
 
@@ -150,15 +134,15 @@ export function handleTransfer(event: Transfer): void {
       sender,
       EventName.Mint,
       event.block.timestamp,
-      AssetType.tokenizeddeposit,
-      tokenizedDeposit.id
+      AssetType.deposit,
+      deposit.id
     );
     accountActivityEvent(
       to,
       EventName.Mint,
       event.block.timestamp,
-      AssetType.tokenizeddeposit,
-      tokenizedDeposit.id
+      AssetType.deposit,
+      deposit.id
     );
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
@@ -167,36 +151,29 @@ export function handleTransfer(event: Transfer): void {
       event.block.timestamp,
       event.address,
       sender.id,
-      AssetType.tokenizeddeposit,
+      AssetType.deposit,
       from.id,
       event.params.value,
-      tokenizedDeposit.decimals
+      deposit.decimals
     );
 
-    log.info(
-      "TokenizedDeposit burn event: amount={}, from={}, sender={}, token={}",
-      [
-        burn.value.toString(),
-        burn.from.toHexString(),
-        burn.sender.toHexString(),
-        event.address.toHexString(),
-      ]
-    );
+    log.info("Deposit burn event: amount={}, from={}, sender={}, token={}", [
+      burn.value.toString(),
+      burn.from.toHexString(),
+      burn.sender.toHexString(),
+      event.address.toHexString(),
+    ]);
 
     // decrease total supply
-    tokenizedDeposit.totalSupplyExact = tokenizedDeposit.totalSupplyExact.minus(
-      burn.valueExact
+    deposit.totalSupplyExact = deposit.totalSupplyExact.minus(burn.valueExact);
+    deposit.totalSupply = toDecimals(
+      deposit.totalSupplyExact,
+      deposit.decimals
     );
-    tokenizedDeposit.totalSupply = toDecimals(
-      tokenizedDeposit.totalSupplyExact,
-      tokenizedDeposit.decimals
-    );
-    tokenizedDeposit.totalBurnedExact = tokenizedDeposit.totalBurnedExact.plus(
-      burn.valueExact
-    );
-    tokenizedDeposit.totalBurned = toDecimals(
-      tokenizedDeposit.totalBurnedExact,
-      tokenizedDeposit.decimals
+    deposit.totalBurnedExact = deposit.totalBurnedExact.plus(burn.valueExact);
+    deposit.totalBurned = toDecimals(
+      deposit.totalBurnedExact,
+      deposit.decimals
     );
 
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
@@ -205,20 +182,20 @@ export function handleTransfer(event: Transfer): void {
     assetActivity.totalSupply = assetActivity.totalSupply.minus(burn.value);
 
     // Update collateral calculated fields after supply change
-    tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
-    tokenizedDeposit.concentration = calculateConcentration(
-      tokenizedDeposit.holders.load(),
-      tokenizedDeposit.totalSupplyExact
+    depositCollateralCalculatedFields(deposit);
+    deposit.concentration = calculateConcentration(
+      deposit.holders.load(),
+      deposit.totalSupplyExact
     );
 
     const balance = fetchAssetBalance(
-      tokenizedDeposit.id,
+      deposit.id,
       from.id,
-      tokenizedDeposit.decimals,
+      deposit.decimals,
       true
     );
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
-    balance.value = toDecimals(balance.valueExact, tokenizedDeposit.decimals);
+    balance.value = toDecimals(balance.valueExact, deposit.decimals);
     balance.lastActivity = event.block.timestamp;
     balance.save();
 
@@ -227,7 +204,7 @@ export function handleTransfer(event: Transfer): void {
     from.save();
 
     if (balance.valueExact.equals(BigInt.zero())) {
-      tokenizedDeposit.totalHolders = tokenizedDeposit.totalHolders - 1;
+      deposit.totalHolders = deposit.totalHolders - 1;
       store.remove("AssetBalance", balance.id.toHexString());
       from.balancesCount = from.balancesCount - 1;
       from.save();
@@ -235,20 +212,17 @@ export function handleTransfer(event: Transfer): void {
 
     const portfolioStats = newPortfolioStatsData(
       from.id,
-      tokenizedDeposit.id,
-      AssetType.tokenizeddeposit
+      deposit.id,
+      AssetType.deposit
     );
     portfolioStats.balance = balance.value;
     portfolioStats.balanceExact = balance.valueExact;
     portfolioStats.save();
 
-    assetStats.burned = toDecimals(
-      event.params.value,
-      tokenizedDeposit.decimals
-    );
+    assetStats.burned = toDecimals(event.params.value, deposit.decimals);
     assetStats.burnedExact = event.params.value;
     // Update collateral data in asset stats
-    updateTokenizedDepositCollateralData(assetStats, tokenizedDeposit);
+    updateDepositCollateralData(assetStats, deposit);
 
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
 
@@ -256,15 +230,15 @@ export function handleTransfer(event: Transfer): void {
       sender,
       EventName.Burn,
       event.block.timestamp,
-      AssetType.tokenizeddeposit,
-      tokenizedDeposit.id
+      AssetType.deposit,
+      deposit.id
     );
     accountActivityEvent(
       from,
       EventName.Burn,
       event.block.timestamp,
-      AssetType.tokenizeddeposit,
-      tokenizedDeposit.id
+      AssetType.deposit,
+      deposit.id
     );
   } else {
     const from = fetchAccount(event.params.from);
@@ -274,15 +248,15 @@ export function handleTransfer(event: Transfer): void {
       event.block.timestamp,
       event.address,
       sender.id,
-      AssetType.tokenizeddeposit,
+      AssetType.deposit,
       from.id,
       to.id,
       event.params.value,
-      tokenizedDeposit.decimals
+      deposit.decimals
     );
 
     log.info(
-      "TokenizedDeposit transfer event: amount={}, from={}, to={}, sender={}, token={}",
+      "Deposit transfer event: amount={}, from={}, to={}, sender={}, token={}",
       [
         transfer.value.toString(),
         transfer.from.toHexString(),
@@ -292,24 +266,19 @@ export function handleTransfer(event: Transfer): void {
       ]
     );
 
-    if (
-      !hasBalance(tokenizedDeposit.id, to.id, tokenizedDeposit.decimals, false)
-    ) {
-      tokenizedDeposit.totalHolders = tokenizedDeposit.totalHolders + 1;
+    if (!hasBalance(deposit.id, to.id, deposit.decimals, false)) {
+      deposit.totalHolders = deposit.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
 
     const fromBalance = fetchAssetBalance(
-      tokenizedDeposit.id,
+      deposit.id,
       from.id,
-      tokenizedDeposit.decimals,
+      deposit.decimals,
       true
     );
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
-    fromBalance.value = toDecimals(
-      fromBalance.valueExact,
-      tokenizedDeposit.decimals
-    );
+    fromBalance.value = toDecimals(fromBalance.valueExact, deposit.decimals);
     fromBalance.lastActivity = event.block.timestamp;
     fromBalance.save();
 
@@ -318,23 +287,20 @@ export function handleTransfer(event: Transfer): void {
     from.save();
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
-      tokenizedDeposit.totalHolders = tokenizedDeposit.totalHolders - 1;
+      deposit.totalHolders = deposit.totalHolders - 1;
       store.remove("AssetBalance", fromBalance.id.toHexString());
       from.balancesCount = from.balancesCount - 1;
       from.save();
     }
 
     const toBalance = fetchAssetBalance(
-      tokenizedDeposit.id,
+      deposit.id,
       to.id,
-      tokenizedDeposit.decimals,
+      deposit.decimals,
       true
     );
     toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
-    toBalance.value = toDecimals(
-      toBalance.valueExact,
-      tokenizedDeposit.decimals
-    );
+    toBalance.value = toDecimals(toBalance.valueExact, deposit.decimals);
     toBalance.lastActivity = event.block.timestamp;
     toBalance.save();
 
@@ -344,8 +310,8 @@ export function handleTransfer(event: Transfer): void {
 
     const fromPortfolioStats = newPortfolioStatsData(
       from.id,
-      tokenizedDeposit.id,
-      AssetType.tokenizeddeposit
+      deposit.id,
+      AssetType.deposit
     );
     fromPortfolioStats.balance = fromBalance.value;
     fromPortfolioStats.balanceExact = fromBalance.valueExact;
@@ -353,8 +319,8 @@ export function handleTransfer(event: Transfer): void {
 
     const toPortfolioStats = newPortfolioStatsData(
       to.id,
-      tokenizedDeposit.id,
-      AssetType.tokenizeddeposit
+      deposit.id,
+      AssetType.deposit
     );
     toPortfolioStats.balance = toBalance.value;
     toPortfolioStats.balanceExact = toBalance.valueExact;
@@ -364,7 +330,7 @@ export function handleTransfer(event: Transfer): void {
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
     // Update collateral data in asset stats
-    updateTokenizedDepositCollateralData(assetStats, tokenizedDeposit);
+    updateDepositCollateralData(assetStats, deposit);
 
     assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
 
@@ -372,42 +338,42 @@ export function handleTransfer(event: Transfer): void {
       sender,
       EventName.Transfer,
       event.block.timestamp,
-      AssetType.tokenizeddeposit,
-      tokenizedDeposit.id
+      AssetType.deposit,
+      deposit.id
     );
     accountActivityEvent(
       from,
       EventName.Transfer,
       event.block.timestamp,
-      AssetType.tokenizeddeposit,
-      tokenizedDeposit.id
+      AssetType.deposit,
+      deposit.id
     );
     accountActivityEvent(
       to,
       EventName.Transfer,
       event.block.timestamp,
-      AssetType.tokenizeddeposit,
-      tokenizedDeposit.id
+      AssetType.deposit,
+      deposit.id
     );
   }
 
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  tokenizedDeposit.concentration = calculateConcentration(
-    tokenizedDeposit.holders.load(),
-    tokenizedDeposit.totalSupplyExact
+  deposit.lastActivity = event.block.timestamp;
+  deposit.concentration = calculateConcentration(
+    deposit.holders.load(),
+    deposit.totalSupplyExact
   );
-  tokenizedDeposit.save();
+  deposit.save();
 
   // Update supply in asset stats
-  assetStats.supply = tokenizedDeposit.totalSupply;
-  assetStats.supplyExact = tokenizedDeposit.totalSupplyExact;
+  assetStats.supply = deposit.totalSupply;
+  assetStats.supplyExact = deposit.totalSupplyExact;
   assetStats.save();
 
   assetActivity.save();
 }
 
 export function handleApproval(event: Approval): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
   const owner = fetchAccount(event.params.owner);
   const spender = fetchAccount(event.params.spender);
@@ -417,15 +383,15 @@ export function handleApproval(event: Approval): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    AssetType.tokenizeddeposit,
+    AssetType.deposit,
     owner.id,
     spender.id,
     event.params.value,
-    tokenizedDeposit.decimals
+    deposit.decimals
   );
 
   log.info(
-    "TokenizedDeposit approval event: amount={}, owner={}, spender={}, sender={}, token={}",
+    "Deposit approval event: amount={}, owner={}, spender={}, sender={}, token={}",
     [
       approval.value.toString(),
       approval.owner.toHexString(),
@@ -436,16 +402,13 @@ export function handleApproval(event: Approval): void {
   );
 
   const balance = fetchAssetBalance(
-    tokenizedDeposit.id,
+    deposit.id,
     owner.id,
-    tokenizedDeposit.decimals,
+    deposit.decimals,
     true
   );
   balance.approvedExact = event.params.value;
-  balance.approved = toDecimals(
-    balance.approvedExact,
-    tokenizedDeposit.decimals
-  );
+  balance.approved = toDecimals(balance.approvedExact, deposit.decimals);
   balance.lastActivity = event.block.timestamp;
   balance.save();
 
@@ -453,53 +416,46 @@ export function handleApproval(event: Approval): void {
     sender,
     EventName.Approval,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
   accountActivityEvent(
     owner,
     EventName.Approval,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
   accountActivityEvent(
     spender,
     EventName.Approval,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
 
 export function handlePaused(event: Paused): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
 
-  log.info("TokenizedDeposit paused event: sender={}, token={}", [
+  log.info("Deposit paused event: sender={}, token={}", [
     sender.id.toHexString(),
     event.address.toHexString(),
   ]);
 
-  tokenizedDeposit.paused = true;
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  tokenizedDeposit.save();
+  deposit.paused = true;
+  deposit.lastActivity = event.block.timestamp;
+  deposit.save();
 
-  const assetCount = fetchAssetCount(AssetType.tokenizeddeposit);
+  const assetCount = fetchAssetCount(AssetType.deposit);
   assetCount.countPaused = assetCount.countPaused + 1;
   assetCount.save();
 
-  const holders = tokenizedDeposit.holders.load();
+  const holders = deposit.holders.load();
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
-    if (
-      hasBalance(
-        tokenizedDeposit.id,
-        assetBalance.account,
-        tokenizedDeposit.decimals,
-        true
-      )
-    ) {
+    if (hasBalance(deposit.id, assetBalance.account, deposit.decimals, true)) {
       const holderAccount =
         sender.id == assetBalance.account
           ? sender
@@ -524,7 +480,7 @@ export function handlePaused(event: Paused): void {
     }
   }
 
-  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  const assetActivity = fetchAssetActivity(AssetType.deposit);
   assetActivity.save();
 
   pausedEvent(
@@ -532,45 +488,38 @@ export function handlePaused(event: Paused): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    AssetType.tokenizeddeposit
+    AssetType.deposit
   );
   accountActivityEvent(
     sender,
     EventName.Paused,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
 
 export function handleUnpaused(event: Unpaused): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
 
-  log.info("TokenizedDeposit unpaused event: sender={}, token={}", [
+  log.info("Deposit unpaused event: sender={}, token={}", [
     sender.id.toHexString(),
     event.address.toHexString(),
   ]);
 
-  tokenizedDeposit.paused = false;
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  tokenizedDeposit.save();
+  deposit.paused = false;
+  deposit.lastActivity = event.block.timestamp;
+  deposit.save();
 
-  const assetCount = fetchAssetCount(AssetType.tokenizeddeposit);
+  const assetCount = fetchAssetCount(AssetType.deposit);
   assetCount.countPaused = assetCount.countPaused - 1;
   assetCount.save();
 
-  const holders = tokenizedDeposit.holders.load();
+  const holders = deposit.holders.load();
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
-    if (
-      hasBalance(
-        tokenizedDeposit.id,
-        assetBalance.account,
-        tokenizedDeposit.decimals,
-        true
-      )
-    ) {
+    if (hasBalance(deposit.id, assetBalance.account, deposit.decimals, true)) {
       const holderAccount =
         sender.id == assetBalance.account
           ? sender
@@ -595,7 +544,7 @@ export function handleUnpaused(event: Unpaused): void {
     }
   }
 
-  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  const assetActivity = fetchAssetActivity(AssetType.deposit);
   assetActivity.save();
 
   unpausedEvent(
@@ -603,24 +552,24 @@ export function handleUnpaused(event: Unpaused): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    AssetType.tokenizeddeposit
+    AssetType.deposit
   );
   accountActivityEvent(
     sender,
     EventName.Unpaused,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
   const user = fetchAccount(event.params.user);
 
   log.info(
-    "TokenizedDeposit tokens frozen event: amount={}, user={}, sender={}, token={}",
+    "Deposit tokens frozen event: amount={}, user={}, sender={}, token={}",
     [
       event.params.amount.toString(),
       user.id.toHexString(),
@@ -630,95 +579,83 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   );
 
   const balance = fetchAssetBalance(
-    tokenizedDeposit.id,
+    deposit.id,
     user.id,
-    tokenizedDeposit.decimals,
+    deposit.decimals,
     true
   );
   balance.frozenExact = event.params.amount;
-  balance.frozen = toDecimals(balance.frozenExact, tokenizedDeposit.decimals);
+  balance.frozen = toDecimals(balance.frozenExact, deposit.decimals);
   balance.lastActivity = event.block.timestamp;
   balance.save();
 
-  const assetStats = newAssetStatsData(
-    tokenizedDeposit.id,
-    AssetType.tokenizeddeposit
-  );
-  assetStats.frozen = toDecimals(
-    event.params.amount,
-    tokenizedDeposit.decimals
-  );
+  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
+  assetStats.frozen = toDecimals(event.params.amount, deposit.decimals);
   assetStats.frozenExact = event.params.amount;
   assetStats.save();
 
-  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  const assetActivity = fetchAssetActivity(AssetType.deposit);
   assetActivity.frozenEventCount = assetActivity.frozenEventCount + 1;
   assetActivity.save();
 
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  tokenizedDeposit.save();
+  deposit.lastActivity = event.block.timestamp;
+  deposit.save();
 
   tokensFrozenEvent(
     eventId(event),
     event.block.timestamp,
     event.address,
     sender.id,
-    AssetType.tokenizeddeposit,
+    AssetType.deposit,
     user.id,
     event.params.amount,
-    tokenizedDeposit.decimals
+    deposit.decimals
   );
   accountActivityEvent(
     sender,
     EventName.TokensFrozen,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
   accountActivityEvent(
     user,
     EventName.TokensFrozen,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
 
 export function handleUserAllowed(event: UserAllowed): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
   const user = fetchAccount(event.params.user);
 
-  log.info(
-    "TokenizedDeposit user allowed event: user={}, sender={}, token={}",
-    [
-      user.id.toHexString(),
-      sender.id.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  log.info("Deposit user allowed event: user={}, sender={}, token={}", [
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
 
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  allowUser(tokenizedDeposit.id, user.id, event.block.timestamp);
-  tokenizedDeposit.save();
+  deposit.lastActivity = event.block.timestamp;
+  allowUser(deposit.id, user.id, event.block.timestamp);
+  deposit.save();
 
   const balance = fetchAssetBalance(
-    tokenizedDeposit.id,
+    deposit.id,
     user.id,
-    tokenizedDeposit.decimals,
+    deposit.decimals,
     true
   );
   balance.blocked = false;
   balance.lastActivity = event.block.timestamp;
   balance.save();
 
-  const assetStats = newAssetStatsData(
-    tokenizedDeposit.id,
-    AssetType.tokenizeddeposit
-  );
+  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
   assetStats.save();
 
-  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  const assetActivity = fetchAssetActivity(AssetType.deposit);
   assetActivity.save();
 
   userAllowedEvent(
@@ -726,60 +663,54 @@ export function handleUserAllowed(event: UserAllowed): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    AssetType.tokenizeddeposit,
+    AssetType.deposit,
     user.id
   );
   accountActivityEvent(
     sender,
     EventName.UserAllowed,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
   accountActivityEvent(
     user,
     EventName.UserAllowed,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
 
 export function handleUserDisallowed(event: UserDisallowed): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
   const user = fetchAccount(event.params.user);
 
-  log.info(
-    "TokenizedDeposit user disallowed event: user={}, sender={}, token={}",
-    [
-      user.id.toHexString(),
-      sender.id.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  log.info("Deposit user disallowed event: user={}, sender={}, token={}", [
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
 
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  disallowUser(tokenizedDeposit.id, user.id);
-  tokenizedDeposit.save();
+  deposit.lastActivity = event.block.timestamp;
+  disallowUser(deposit.id, user.id);
+  deposit.save();
 
   const balance = fetchAssetBalance(
-    tokenizedDeposit.id,
+    deposit.id,
     user.id,
-    tokenizedDeposit.decimals,
+    deposit.decimals,
     true
   );
   balance.blocked = true;
   balance.lastActivity = event.block.timestamp;
   balance.save();
 
-  const assetStats = newAssetStatsData(
-    tokenizedDeposit.id,
-    AssetType.tokenizeddeposit
-  );
+  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
   assetStats.save();
 
-  const assetActivity = fetchAssetActivity(AssetType.tokenizeddeposit);
+  const assetActivity = fetchAssetActivity(AssetType.deposit);
   assetActivity.save();
 
   userDisallowedEvent(
@@ -787,33 +718,33 @@ export function handleUserDisallowed(event: UserDisallowed): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    AssetType.tokenizeddeposit,
+    AssetType.deposit,
     user.id
   );
   accountActivityEvent(
     sender,
     EventName.UserDisallowed,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
   accountActivityEvent(
     user,
     EventName.UserDisallowed,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
 
 export function handleTokenWithdrawn(event: TokenWithdrawn): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
   const token = fetchAccount(event.params.token);
   const to = fetchAccount(event.params.to);
 
   log.info(
-    "TokenizedDeposit token withdrawn event: amount={}, token={}, to={}, sender={}, tokenizedDeposit={}",
+    "Deposit token withdrawn event: amount={}, token={}, to={}, sender={}, deposit={}",
     [
       event.params.amount.toString(),
       token.id.toHexString(),
@@ -823,27 +754,27 @@ export function handleTokenWithdrawn(event: TokenWithdrawn): void {
     ]
   );
 
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  tokenizedDeposit.save();
+  deposit.lastActivity = event.block.timestamp;
+  deposit.save();
 
   accountActivityEvent(
     sender,
     EventName.TokenWithdrawn,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
   accountActivityEvent(
     to,
     EventName.TokenWithdrawn,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
 
 export function handleRoleGranted(event: RoleGranted): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const account = fetchAccount(event.params.account);
   const sender = fetchAccount(event.transaction.from);
 
@@ -852,19 +783,16 @@ export function handleRoleGranted(event: RoleGranted): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    AssetType.tokenizeddeposit,
+    AssetType.deposit,
     event.params.role,
     account.id
   );
 
-  log.info(
-    "TokenizedDeposit role granted event: role={}, account={}, tokenizeddeposit={}",
-    [
-      roleGranted.role.toHexString(),
-      roleGranted.account.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  log.info("Deposit role granted event: role={}, account={}, deposit={}", [
+    roleGranted.role.toHexString(),
+    roleGranted.account.toHexString(),
+    event.address.toHexString(),
+  ]);
 
   // Handle different roles
   if (
@@ -873,14 +801,14 @@ export function handleRoleGranted(event: RoleGranted): void {
   ) {
     // DEFAULT_ADMIN_ROLE
     let found = false;
-    for (let i = 0; i < tokenizedDeposit.admins.length; i++) {
-      if (tokenizedDeposit.admins[i].equals(account.id)) {
+    for (let i = 0; i < deposit.admins.length; i++) {
+      if (deposit.admins[i].equals(account.id)) {
         found = true;
         break;
       }
     }
     if (!found) {
-      tokenizedDeposit.admins = tokenizedDeposit.admins.concat([account.id]);
+      deposit.admins = deposit.admins.concat([account.id]);
     }
   } else if (
     event.params.role.toHexString() ==
@@ -888,16 +816,14 @@ export function handleRoleGranted(event: RoleGranted): void {
   ) {
     // SUPPLY_MANAGEMENT_ROLE
     let found = false;
-    for (let i = 0; i < tokenizedDeposit.supplyManagers.length; i++) {
-      if (tokenizedDeposit.supplyManagers[i].equals(account.id)) {
+    for (let i = 0; i < deposit.supplyManagers.length; i++) {
+      if (deposit.supplyManagers[i].equals(account.id)) {
         found = true;
         break;
       }
     }
     if (!found) {
-      tokenizedDeposit.supplyManagers = tokenizedDeposit.supplyManagers.concat([
-        account.id,
-      ]);
+      deposit.supplyManagers = deposit.supplyManagers.concat([account.id]);
     }
   } else if (
     event.params.role.toHexString() ==
@@ -905,40 +831,38 @@ export function handleRoleGranted(event: RoleGranted): void {
   ) {
     // USER_MANAGEMENT_ROLE
     let found = false;
-    for (let i = 0; i < tokenizedDeposit.userManagers.length; i++) {
-      if (tokenizedDeposit.userManagers[i].equals(account.id)) {
+    for (let i = 0; i < deposit.userManagers.length; i++) {
+      if (deposit.userManagers[i].equals(account.id)) {
         found = true;
         break;
       }
     }
     if (!found) {
-      tokenizedDeposit.userManagers = tokenizedDeposit.userManagers.concat([
-        account.id,
-      ]);
+      deposit.userManagers = deposit.userManagers.concat([account.id]);
     }
   }
 
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  tokenizedDeposit.save();
+  deposit.lastActivity = event.block.timestamp;
+  deposit.save();
 
   accountActivityEvent(
     sender,
     EventName.RoleGranted,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
   accountActivityEvent(
     account,
     EventName.RoleGranted,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const account = fetchAccount(event.params.account);
   const sender = fetchAccount(event.transaction.from);
 
@@ -947,19 +871,16 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    AssetType.tokenizeddeposit,
+    AssetType.deposit,
     event.params.role,
     account.id
   );
 
-  log.info(
-    "TokenizedDeposit role revoked event: role={}, account={}, tokenizeddeposit={}",
-    [
-      roleRevoked.role.toHexString(),
-      roleRevoked.account.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  log.info("Deposit role revoked event: role={}, account={}, deposit={}", [
+    roleRevoked.role.toHexString(),
+    roleRevoked.account.toHexString(),
+    event.address.toHexString(),
+  ]);
 
   // Handle different roles
   if (
@@ -968,59 +889,59 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   ) {
     // DEFAULT_ADMIN_ROLE
     const newAdmins: Bytes[] = [];
-    for (let i = 0; i < tokenizedDeposit.admins.length; i++) {
-      if (!tokenizedDeposit.admins[i].equals(account.id)) {
-        newAdmins.push(tokenizedDeposit.admins[i]);
+    for (let i = 0; i < deposit.admins.length; i++) {
+      if (!deposit.admins[i].equals(account.id)) {
+        newAdmins.push(deposit.admins[i]);
       }
     }
-    tokenizedDeposit.admins = newAdmins;
+    deposit.admins = newAdmins;
   } else if (
     event.params.role.toHexString() ==
     crypto.keccak256(ByteArray.fromUTF8("SUPPLY_MANAGEMENT_ROLE")).toHexString()
   ) {
     // SUPPLY_MANAGEMENT_ROLE
     const newSupplyManagers: Bytes[] = [];
-    for (let i = 0; i < tokenizedDeposit.supplyManagers.length; i++) {
-      if (!tokenizedDeposit.supplyManagers[i].equals(account.id)) {
-        newSupplyManagers.push(tokenizedDeposit.supplyManagers[i]);
+    for (let i = 0; i < deposit.supplyManagers.length; i++) {
+      if (!deposit.supplyManagers[i].equals(account.id)) {
+        newSupplyManagers.push(deposit.supplyManagers[i]);
       }
     }
-    tokenizedDeposit.supplyManagers = newSupplyManagers;
+    deposit.supplyManagers = newSupplyManagers;
   } else if (
     event.params.role.toHexString() ==
     crypto.keccak256(ByteArray.fromUTF8("USER_MANAGEMENT_ROLE")).toHexString()
   ) {
     // USER_MANAGEMENT_ROLE
     const newUserManagers: Bytes[] = [];
-    for (let i = 0; i < tokenizedDeposit.userManagers.length; i++) {
-      if (!tokenizedDeposit.userManagers[i].equals(account.id)) {
-        newUserManagers.push(tokenizedDeposit.userManagers[i]);
+    for (let i = 0; i < deposit.userManagers.length; i++) {
+      if (!deposit.userManagers[i].equals(account.id)) {
+        newUserManagers.push(deposit.userManagers[i]);
       }
     }
-    tokenizedDeposit.userManagers = newUserManagers;
+    deposit.userManagers = newUserManagers;
   }
 
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  tokenizedDeposit.save();
+  deposit.lastActivity = event.block.timestamp;
+  deposit.save();
 
   accountActivityEvent(
     sender,
     EventName.RoleRevoked,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
   accountActivityEvent(
     account,
     EventName.RoleRevoked,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
 
   const roleAdminChanged = roleAdminChangedEvent(
@@ -1028,14 +949,14 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    AssetType.tokenizeddeposit,
+    AssetType.deposit,
     event.params.role,
     event.params.previousAdminRole,
     event.params.newAdminRole
   );
 
   log.info(
-    "TokenizedDeposit role admin changed event: role={}, previousAdminRole={}, newAdminRole={}, tokenizeddeposit={}",
+    "Deposit role admin changed event: role={}, previousAdminRole={}, newAdminRole={}, deposit={}",
     [
       roleAdminChanged.role.toHexString(),
       roleAdminChanged.previousAdminRole.toHexString(),
@@ -1044,24 +965,24 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     ]
   );
 
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  tokenizedDeposit.save();
+  deposit.lastActivity = event.block.timestamp;
+  deposit.save();
 
   accountActivityEvent(
     sender,
     EventName.RoleAdminChanged,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
 
 export function handleCollateralUpdated(event: CollateralUpdated): void {
-  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const deposit = fetchDeposit(event.address);
   const sender = fetchAccount(event.transaction.from);
 
   log.info(
-    "TokenizedDeposit collateral updated event: oldAmount={}, newAmount={}, sender={}, tokenizedDeposit={}",
+    "Deposit collateral updated event: oldAmount={}, newAmount={}, sender={}, deposit={}",
     [
       event.params.oldAmount.toString(),
       event.params.newAmount.toString(),
@@ -1070,25 +991,19 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     ]
   );
 
-  tokenizedDeposit.collateral = toDecimals(
-    event.params.newAmount,
-    tokenizedDeposit.decimals
+  deposit.collateral = toDecimals(event.params.newAmount, deposit.decimals);
+  deposit.collateralExact = event.params.newAmount;
+  deposit.lastActivity = event.block.timestamp;
+  deposit.lastCollateralUpdate = event.block.timestamp;
+  depositCollateralCalculatedFields(deposit);
+  deposit.concentration = calculateConcentration(
+    deposit.holders.load(),
+    deposit.totalSupplyExact
   );
-  tokenizedDeposit.collateralExact = event.params.newAmount;
-  tokenizedDeposit.lastActivity = event.block.timestamp;
-  tokenizedDeposit.lastCollateralUpdate = event.block.timestamp;
-  tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
-  tokenizedDeposit.concentration = calculateConcentration(
-    tokenizedDeposit.holders.load(),
-    tokenizedDeposit.totalSupplyExact
-  );
-  tokenizedDeposit.save();
+  deposit.save();
 
-  const assetStats = newAssetStatsData(
-    tokenizedDeposit.id,
-    AssetType.tokenizeddeposit
-  );
-  updateTokenizedDepositCollateralData(assetStats, tokenizedDeposit);
+  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
+  updateDepositCollateralData(assetStats, deposit);
   assetStats.save();
 
   collateralUpdatedEvent(
@@ -1098,13 +1013,13 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     sender.id,
     event.params.oldAmount,
     event.params.newAmount,
-    tokenizedDeposit.decimals
+    deposit.decimals
   );
   accountActivityEvent(
     sender,
     EventName.CollateralUpdated,
     event.block.timestamp,
-    AssetType.tokenizeddeposit,
-    tokenizedDeposit.id
+    AssetType.deposit,
+    deposit.id
   );
 }
