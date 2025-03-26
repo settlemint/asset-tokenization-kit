@@ -1,7 +1,7 @@
 "use client";
 
-import { settingDetail } from "@/lib/api-client/setting/setting-detail";
 import { DEFAULT_SETTINGS, type SettingKey } from "@/lib/db/schema-settings";
+import { getSetting } from "@/lib/queries/setting/setting-detail";
 import { useEffect, useState } from "react";
 
 type Settings = typeof DEFAULT_SETTINGS;
@@ -14,7 +14,7 @@ export function useSettings(key: SettingKey): Settings[SettingKey] {
   useEffect(() => {
     const loadSetting = async () => {
       try {
-        const settingValue = await settingDetail(key);
+        const settingValue = await getSetting({ key });
         setValue(
           (settingValue?.value as Settings[SettingKey]) ?? DEFAULT_SETTINGS[key]
         );

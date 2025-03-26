@@ -104,9 +104,10 @@ export const UserApi = new Elysia({
   )
   .get(
     "/search",
-    async ({ query: { term } }) => {
+    async ({ query: { term }, user }) => {
       return await getUserSearch({
         searchTerm: term,
+        ctx: { user },
       });
     },
     {

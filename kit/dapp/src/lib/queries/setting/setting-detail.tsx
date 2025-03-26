@@ -1,3 +1,5 @@
+"use server";
+
 import type { SettingKey } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withAccessControl } from "@/lib/utils/access-control";
