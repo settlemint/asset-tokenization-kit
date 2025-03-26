@@ -21,9 +21,6 @@ export function Summary() {
   const locale = useLocale();
   const baseCurrency = useSettings("baseCurrency");
 
-  console.log("errors", errors);
-  console.log("values", values);
-
   return (
     <FormStep title={t("summary.title")} description={t("summary.description")}>
       <FormSummaryDetailCard
@@ -102,13 +99,6 @@ export function Summary() {
 
 Summary.validatedFields = [
   "predictedAddress",
-  "assetName",
-  "symbol",
-  "decimals",
-  "collateralLivenessValue",
-  "collateralLivenessTimeUnit",
-  "price",
-  "tokenAdmins"
 ] satisfies (keyof CreateStablecoinInput)[];
 Summary.beforeValidate = [
   async ({ setValue, getValues }: UseFormReturn<CreateStablecoinInput>) => {

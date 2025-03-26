@@ -28,9 +28,11 @@ export function TokenAdmins({ userDetails }: { userDetails: User }) {
     ];
 
     form.setValue("tokenAdmins", updatedAdmins, {
-      shouldValidate: true,
+      shouldValidate: false,
       shouldDirty: true
     });
+    // Validate only the tokenAdmins field
+    form.trigger("tokenAdmins");
 
     // Reset the selector
     form.setValue("selectedWallet", "", {
@@ -46,9 +48,11 @@ export function TokenAdmins({ userDetails }: { userDetails: User }) {
     );
 
     form.setValue("tokenAdmins", updatedAdmins, {
-      shouldValidate: true,
+      shouldValidate: false,
       shouldDirty: true
     });
+    // Validate only the tokenAdmins field
+    form.trigger("tokenAdmins");
   };
 
   const handleChangeRoles = (wallet: string, roles: AdminRole[]) => {
@@ -57,9 +61,11 @@ export function TokenAdmins({ userDetails }: { userDetails: User }) {
     );
 
     form.setValue("tokenAdmins", updatedAdmins, {
-      shouldValidate: true,
+      shouldValidate: false,
       shouldDirty: true
     });
+    // Validate only the tokenAdmins field
+    form.trigger("tokenAdmins");
   };
 
   return (
