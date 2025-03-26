@@ -15,21 +15,18 @@ export default function middleware(request: NextRequest) {
   // Handle proxy routes - proxyMiddleware already checks if the path matches
   // and returns NextResponse.next() if it's not a proxy route
   const proxyResponse = proxyMiddleware(request);
-  if (proxyResponse) {
-    return proxyResponse;
-  }
 
   // Only stop the middleware chain if the response is a rewrite (for proxy routes)
   // NextResponse.next() should be ignored and allow the middleware to continue
-  // if (proxyResponse?.headers.get("x-middleware-rewrite")) {
-  //   const cookies = getSessionCookie(request, {
-  //     useSecureCookies: process.env.NODE_ENV === "production",
-  //   });
-  //   if (!cookies) {
-  //     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  //   }
-  //   return proxyResponse;
-  // }
+  if (proxyResponse?.headers.get("x-middleware-rewrite")) {
+    const cookies = getSessionCookie(request, {
+      useSecureCookies: process.env.NODE_ENV === "production",
+    });
+    if (!cookies) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return proxyResponse;
+  }
 
   // Finally, handle the internationalization routing
   return intlMiddleware(request);
