@@ -73,31 +73,6 @@ jobs:
       - name: Turbo!
         run: bunx turbo deploy:local
 
-      - name: Docker Metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ghcr.io/settlemint/asset-tokenization-kit
-          tags: |
-            type=raw,value=${{ env.VERSION }}
-
-      - name: Extract SHA tag
-        id: sha-tag
-        run: |
-          echo "sha_tag=$(echo "${{ steps.meta.outputs.tags }}" | grep "sha-" | head -n1)" >> $GITHUB_OUTPUT
-
-      - name: Build and Push
-        uses: docker/build-push-action@v6
-        with:
-          context: kit/dapp
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/arm64
-          provenance: mode=max
-          sbom: true
-
   security:
     name: Security
     runs-on: namespace-profile-atk-trivy

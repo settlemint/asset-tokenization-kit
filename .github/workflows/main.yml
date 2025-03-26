@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - snigdha/eng-2760-portfolio-graph-options
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -76,9 +77,9 @@ jobs:
       - name: Turbo!
         run: bunx turbo deploy:local
 
-      - name: Update package versions
-        id: package-version
-        run: bash .github/scripts/update-version.sh
+      # - name: Update package versions
+      #   id: package-version
+      #   run: bash .github/scripts/update-version.sh
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -112,27 +113,27 @@ jobs:
           provenance: mode=max
           sbom: true
 
-      - name: Run Drizzle migrations
-        run: bunx drizzle-kit push --force
-        working-directory: kit/dapp
+      # - name: Run Drizzle migrations
+      #   run: bunx drizzle-kit push --force
+      #   working-directory: kit/dapp
 
-      - name: Update Hasura
-        uses: settlemint/settlemint-action@main
-        with:
-          auto-connect: false
-          access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
-          dotEnvFile: ${{ secrets.ENV_FILE }}
-          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
-          command: hasura track -a
+      # - name: Update Hasura
+      #   uses: settlemint/settlemint-action@main
+      #   with:
+      #     auto-connect: false
+      #     access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
+      #     dotEnvFile: ${{ secrets.ENV_FILE }}
+      #     dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+      #     command: hasura track -a
 
-      - name: Update Custom Deployment
-        uses: settlemint/settlemint-action@main
-        with:
-          auto-connect: false
-          access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
-          dotEnvFile: ${{ secrets.ENV_FILE }}
-          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
-          command: platform update custom-deployment ${{ env.VERSION }} --wait
+      # - name: Update Custom Deployment
+      #   uses: settlemint/settlemint-action@main
+      #   with:
+      #     auto-connect: false
+      #     access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
+      #     dotEnvFile: ${{ secrets.ENV_FILE }}
+      #     dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+      #     command: platform update custom-deployment ${{ env.VERSION }} --wait
 
   security:
     name: Security
