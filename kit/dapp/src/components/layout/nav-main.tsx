@@ -17,19 +17,14 @@ import {
 } from "@/components/ui/sidebar";
 import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
 
 export type NavItem = {
   id?: string;
-  assetType?:
-    | "bond"
-    | "cryptocurrency"
-    | "equity"
-    | "fund"
-    | "stablecoin"
-    | "tokenizeddeposit";
+  assetType?: AssetType;
   label: ReactNode;
   path: string;
   icon?: ReactNode;

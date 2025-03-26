@@ -16,7 +16,7 @@ export const assetTypes = [
   "equity",
   "fund",
   "stablecoin",
-  "tokenizeddeposit",
+  "deposit",
 ] as const;
 
 /**

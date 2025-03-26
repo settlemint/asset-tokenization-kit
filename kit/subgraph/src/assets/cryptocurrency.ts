@@ -19,6 +19,7 @@ import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
+import { calculateConcentration } from "./calculations/concentration";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { burnEvent } from "./events/burn";
@@ -78,7 +79,7 @@ export function handleTransfer(event: Transfer): void {
     );
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
-    if (!hasBalance(cryptoCurrency.id, to.id)) {
+    if (!hasBalance(cryptoCurrency.id, to.id, cryptoCurrency.decimals, false)) {
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -245,7 +246,7 @@ export function handleTransfer(event: Transfer): void {
       ]
     );
 
-    if (!hasBalance(cryptoCurrency.id, to.id)) {
+    if (!hasBalance(cryptoCurrency.id, to.id, cryptoCurrency.decimals, false)) {
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -337,6 +338,10 @@ export function handleTransfer(event: Transfer): void {
   }
 
   cryptoCurrency.lastActivity = event.block.timestamp;
+  cryptoCurrency.concentration = calculateConcentration(
+    cryptoCurrency.holders.load(),
+    cryptoCurrency.totalSupplyExact
+  );
   cryptoCurrency.save();
 
   assetStats.supply = cryptoCurrency.totalSupply;

@@ -34,7 +34,7 @@ const FixedYieldFactoryCreate = portalGraphql(`
  * @returns The transaction hash
  */
 export async function setYieldScheduleFunction({
-  parsedInput: { address, startTime, endTime, rate, interval, pincode, locale },
+  parsedInput: { address, startTime, endTime, rate, interval, pincode },
   ctx: { user },
 }: {
   parsedInput: SetYieldScheduleInput;
@@ -42,11 +42,9 @@ export async function setYieldScheduleFunction({
 }) {
   const startTimeTimestamp = formatDate(startTime, {
     type: "unixSeconds",
-    locale: locale,
   });
   const endTimeTimestamp = formatDate(endTime, {
     type: "unixSeconds",
-    locale: locale,
   });
 
   const data = await portalClient.request(FixedYieldFactoryCreate, {

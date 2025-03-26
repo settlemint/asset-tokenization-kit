@@ -106,9 +106,9 @@ const EquityGrantRole = portalGraphql(`
  * @remarks
  * Assigns permissions to an account for interacting with the tokenized deposit
  */
-const TokenizedDepositGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: TokenizedDepositGrantRoleInput!) {
-    TokenizedDepositGrantRole(
+const DepositGrantRole = portalGraphql(`
+  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: DepositGrantRoleInput!) {
+    DepositGrantRole(
       from: $from
       input: $input
       address: $address
@@ -171,12 +171,9 @@ export async function grantRoleFunction({
         const response = await portalClient.request(EquityGrantRole, params);
         return response.EquityGrantRole?.transactionHash;
       }
-      case "tokenizeddeposit": {
-        const response = await portalClient.request(
-          TokenizedDepositGrantRole,
-          params
-        );
-        return response.TokenizedDepositGrantRole?.transactionHash;
+      case "deposit": {
+        const response = await portalClient.request(DepositGrantRole, params);
+        return response.DepositGrantRole?.transactionHash;
       }
       default:
         throw new Error("Unsupported asset type");

@@ -93,6 +93,9 @@ export const AccountSchema = t.Object(
           "The number of activity events associated with this account",
       })
     ),
+    lastActivity: t.String({
+      description: "The timestamp of the user's last activity",
+    }),
   },
   {
     description: "Blockchain account data related to a user from The Graph",

@@ -4,6 +4,7 @@ import { EQUITY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateEquityInput } from "./create-schema";
 
 /**
@@ -32,8 +33,8 @@ const EquityFactoryCreate = portalGraphql(`
  * Stores additional metadata about the equity in Hasura
  */
 const CreateOffchainEquity = hasuraGraphql(`
-    mutation CreateOffchainEquity($id: String!, $isin: String, $value_in_base_currency: numeric) {
-      insert_asset_one(object: {id: $id, isin: $isin, value_in_base_currency: $value_in_base_currency}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
+    mutation CreateOffchainEquity($id: String!, $isin: String) {
+      insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
         id
       }
   }
@@ -56,7 +57,7 @@ export async function createEquityFunction({
     equityCategory,
     equityClass,
     predictedAddress,
-    valueInBaseCurrency,
+    price,
   },
   ctx: { user },
 }: {
@@ -66,7 +67,12 @@ export async function createEquityFunction({
   await hasuraClient.request(CreateOffchainEquity, {
     id: predictedAddress,
     isin: isin,
-    value_in_base_currency: String(valueInBaseCurrency),
+  });
+
+  await hasuraClient.request(AddAssetPrice, {
+    assetId: predictedAddress,
+    amount: String(price.amount),
+    currency: price.currency,
   });
 
   const data = await portalClient.request(EquityFactoryCreate, {

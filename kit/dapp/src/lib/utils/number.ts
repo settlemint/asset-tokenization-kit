@@ -84,7 +84,7 @@ export function formatNumber(
   options: FormatOptions
 ): string {
   const formatter = createFormatter({
-    locale: options.locale?.toString() || "en",
+    locale: options.locale || "en",
     formats: {
       number: {
         currency: {

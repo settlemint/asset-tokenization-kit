@@ -25,9 +25,9 @@ const StableCoinUpdateCollateral = portalGraphql(`
 /**
  * GraphQL mutation for updating a tokenized deposit's collateral amount
  */
-const TokenizedDepositUpdateCollateral = portalGraphql(`
-  mutation TokenizedDepositUpdateCollateral($address: String!, $from: String!, $challengeResponse: String!, $input: TokenizedDepositUpdateCollateralInput!) {
-    TokenizedDepositUpdateCollateral(
+const DepositUpdateCollateral = portalGraphql(`
+  mutation DepositUpdateCollateral($address: String!, $from: String!, $challengeResponse: String!, $input: DepositUpdateCollateralInput!) {
+    DepositUpdateCollateral(
       address: $address
       from: $from
       input: $input
@@ -77,13 +77,13 @@ export async function updateCollateralFunction({
         response.StableCoinUpdateCollateral?.transactionHash,
       ]);
     }
-    case "tokenizeddeposit": {
+    case "deposit": {
       const response = await portalClient.request(
-        TokenizedDepositUpdateCollateral,
+        DepositUpdateCollateral,
         params
       );
       return safeParse(t.Hashes(), [
-        response.TokenizedDepositUpdateCollateral?.transactionHash,
+        response.DepositUpdateCollateral?.transactionHash,
       ]);
     }
     default:

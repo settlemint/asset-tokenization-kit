@@ -90,9 +90,9 @@ const StableCoinMint = portalGraphql(`
 /**
  * GraphQL mutation to mint new tokenized deposit tokens
  */
-const TokenizedDepositMint = portalGraphql(`
-  mutation TokenizedDepositMint($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!) {
-    TokenizedDepositMint(
+const DepositMint = portalGraphql(`
+  mutation DepositMint($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!) {
+    DepositMint(
       address: $address
       from: $from
       input: {amount: $amount, to: $to}
@@ -163,14 +163,9 @@ export const mintFunction = withAccessControl(
           response.StableCoinMint?.transactionHash,
         ]);
       }
-      case "tokenizeddeposit": {
-        const response = await portalClient.request(
-          TokenizedDepositMint,
-          params
-        );
-        return safeParse(t.Hashes(), [
-          response.TokenizedDepositMint?.transactionHash,
-        ]);
+      case "deposit": {
+        const response = await portalClient.request(DepositMint, params);
+        return safeParse(t.Hashes(), [response.DepositMint?.transactionHash]);
       }
       default:
         throw new Error("Invalid asset type");

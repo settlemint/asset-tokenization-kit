@@ -6,6 +6,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateStablecoinInput } from "./create-schema";
 
 /**
@@ -34,8 +35,8 @@ const StableCoinFactoryCreate = portalGraphql(`
  * Stores additional metadata about the stablecoin in Hasura
  */
 const CreateOffchainStablecoin = hasuraGraphql(`
-    mutation CreateOffchainStablecoin($id: String!, $value_in_base_currency: numeric) {
-      insert_asset_one(object: {id: $id, value_in_base_currency: $value_in_base_currency}, on_conflict: {constraint: asset_pkey, update_columns: value_in_base_currency}) {
+    mutation CreateOffchainStablecoin($id: String!) {
+      insert_asset_one(object: {id: $id}) {
         id
       }
   }
@@ -63,7 +64,7 @@ export const createStablecoinFunction = withAccessControl(
       collateralLivenessValue,
       collateralLivenessTimeUnit,
       predictedAddress,
-      valueInBaseCurrency,
+      price,
     },
     ctx: { user },
   }: {
@@ -72,7 +73,12 @@ export const createStablecoinFunction = withAccessControl(
   }) => {
     await hasuraClient.request(CreateOffchainStablecoin, {
       id: predictedAddress,
-      value_in_base_currency: String(valueInBaseCurrency),
+    });
+
+    await hasuraClient.request(AddAssetPrice, {
+      assetId: predictedAddress,
+      amount: String(price.amount),
+      currency: price.currency,
     });
 
     const collateralLivenessSeconds =

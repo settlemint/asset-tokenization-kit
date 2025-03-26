@@ -7,7 +7,12 @@ import {
   setDefaultOptions,
 } from "date-fns";
 import { ar, de, ja } from "date-fns/locale";
-import { createFormatter, type Locale, useFormatter } from "next-intl";
+import {
+  createFormatter,
+  type DateTimeFormatOptions,
+  type Locale,
+  useFormatter,
+} from "next-intl";
 import type { TimeUnit } from "./typebox/time-units";
 
 const NUMERIC_REGEX = /^\d+$/;
@@ -20,9 +25,9 @@ export interface DateFormatOptions {
   /** Format type: absolute (default), relative, distance, or unix */
   readonly type?: "absolute" | "relative" | "distance" | "unixSeconds";
   /** The locale to use for formatting (e.g., 'en-US') */
-  readonly locale: Locale;
+  readonly locale?: Locale;
   /** Custom format options for absolute dates */
-  readonly formatOptions?: Intl.DateTimeFormatOptions;
+  readonly formatOptions?: DateTimeFormatOptions;
 }
 
 /**
@@ -80,7 +85,7 @@ export function formatDate(
       return "-";
     }
 
-    const locale = options.locale?.toString() || "en";
+    const locale = options.locale || "en";
 
     if (locale !== "en") {
       if (locale === "de") {

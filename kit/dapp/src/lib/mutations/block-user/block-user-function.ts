@@ -88,10 +88,8 @@ export async function blockUserFunction({
     case "cryptocurrency": {
       throw new Error("Cryptocurrency does not support block user operations");
     }
-    case "tokenizeddeposit": {
-      throw new Error(
-        "Tokenized deposit does not support block user operations"
-      );
+    case "deposit": {
+      throw new Error("Deposit does not support block user operations");
     }
     default:
       throw new Error("Invalid asset type");

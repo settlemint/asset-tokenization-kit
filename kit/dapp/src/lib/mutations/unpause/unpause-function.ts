@@ -67,9 +67,9 @@ const StableCoinUnpause = portalGraphql(`
 /**
  * GraphQL mutation for unpausing a tokenized deposit contract
  */
-const TokenizedDepositUnpause = portalGraphql(`
-  mutation TokenizedDepositUnpause($address: String!, $from: String!, $challengeResponse: String!) {
-    TokenizedDepositUnpause(
+const DepositUnpause = portalGraphql(`
+  mutation DepositUnpause($address: String!, $from: String!, $challengeResponse: String!) {
+    DepositUnpause(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
@@ -122,14 +122,9 @@ export async function unpauseFunction({
         response.StableCoinUnpause?.transactionHash,
       ]);
     }
-    case "tokenizeddeposit": {
-      const response = await portalClient.request(
-        TokenizedDepositUnpause,
-        params
-      );
-      return safeParse(t.Hashes(), [
-        response.TokenizedDepositUnpause?.transactionHash,
-      ]);
+    case "deposit": {
+      const response = await portalClient.request(DepositUnpause, params);
+      return safeParse(t.Hashes(), [response.DepositUnpause?.transactionHash]);
     }
     default:
       throw new Error("Invalid asset type");

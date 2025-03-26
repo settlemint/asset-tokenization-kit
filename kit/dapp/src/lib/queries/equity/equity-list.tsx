@@ -82,17 +82,22 @@ export const getEquityList = cache(async () => {
     offChainEquities.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const equities = onChainEquities.map((equity) => {
-    const offChainEquity = assetsById.get(getAddress(equity.id));
+  const equities = await Promise.all(
+    onChainEquities.map(async (equity) => {
+      const offChainEquity = assetsById.get(getAddress(equity.id));
 
-    const calculatedFields = equityCalculateFields(equity, offChainEquity);
+      const calculatedFields = await equityCalculateFields(
+        equity,
+        offChainEquity
+      );
 
-    return {
-      ...equity,
-      ...offChainEquity,
-      ...calculatedFields,
-    };
-  });
+      return {
+        ...equity,
+        ...offChainEquity,
+        ...calculatedFields,
+      };
+    })
+  );
 
   return equities;
 });

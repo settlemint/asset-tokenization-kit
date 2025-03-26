@@ -121,6 +121,7 @@ test.describe("Update collateral, mint and transfer assets", () => {
     await userPages.portfolioPage.transferAsset({
       asset: testData.stablecoinName,
       walletAddress: testData.transferUserWalletAddress,
+      user: testData.transferUserName,
       ...stableCoinTransferData,
     });
     await userPages.adminPage.verifySuccessMessage(assetMessage.successMessage);

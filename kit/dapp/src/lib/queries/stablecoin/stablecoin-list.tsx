@@ -88,20 +88,22 @@ export const getStableCoinList = cache(async () => {
     offChainStableCoins.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const stableCoins = onChainStableCoins.map((stableCoin) => {
-    const offChainStableCoin = assetsById.get(getAddress(stableCoin.id));
+  const stableCoins = await Promise.all(
+    onChainStableCoins.map(async (stableCoin) => {
+      const offChainStableCoin = assetsById.get(getAddress(stableCoin.id));
 
-    const calculatedFields = stablecoinCalculateFields(
-      stableCoin,
-      offChainStableCoin
-    );
+      const calculatedFields = await stablecoinCalculateFields(
+        stableCoin,
+        offChainStableCoin
+      );
 
-    return {
-      ...stableCoin,
-      ...offChainStableCoin,
-      ...calculatedFields,
-    };
-  });
+      return {
+        ...stableCoin,
+        ...offChainStableCoin,
+        ...calculatedFields,
+      };
+    })
+  );
 
   return stableCoins;
 });

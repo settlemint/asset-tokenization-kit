@@ -74,9 +74,9 @@ const StableCoinBurn = portalGraphql(`
 /**
  * GraphQL mutation for burning tokenized deposit tokens
  */
-const TokenizedDepositBurn = portalGraphql(`
-  mutation TokenizedDepositBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
-    TokenizedDepositBurn(
+const DepositBurn = portalGraphql(`
+  mutation DepositBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
+    DepositBurn(
       address: $address
       from: $from
       input: {value: $amount}
@@ -143,14 +143,9 @@ export const burnFunction = withAccessControl(
           response.StableCoinBurn?.transactionHash,
         ]);
       }
-      case "tokenizeddeposit": {
-        const response = await portalClient.request(
-          TokenizedDepositBurn,
-          params
-        );
-        return safeParse(t.Hashes(), [
-          response.TokenizedDepositBurn?.transactionHash,
-        ]);
+      case "deposit": {
+        const response = await portalClient.request(DepositBurn, params);
+        return safeParse(t.Hashes(), [response.DepositBurn?.transactionHash]);
       }
       default:
         throw new Error("Invalid asset type");

@@ -24,9 +24,6 @@ export function SetYieldScheduleSchema() {
       pincode: t.Pincode({
         description: "The pincode for signing the transaction",
       }),
-      locale: t.String({
-        description: "The locale for date formatting",
-      }),
     },
     {
       description: "Schema for validating yield schedule inputs",

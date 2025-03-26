@@ -96,24 +96,6 @@ export const Search = () => {
 
   const isLoading = isLoadingUsers || isLoadingAssets;
 
-  // Get URL segment based on asset type
-  const getAssetUrlSegment = (type: string): string => {
-    switch (type) {
-      case "bond":
-        return "bonds";
-      case "cryptocurrency":
-        return "cryptocurrencies";
-      case "equity":
-        return "equities";
-      case "fund":
-        return "funds";
-      case "stablecoin":
-        return "stablecoins";
-      default:
-        return type;
-    }
-  };
-
   // Add selected asset to recent assets
   const addToRecentAssets = useCallback(
     (asset: { id: string; type: string }) => {
@@ -251,7 +233,7 @@ export const Search = () => {
                   >
                     <History className="mr-2 h-4 w-4 opacity-50" />
                     <Link
-                      href={`/assets/${getAssetUrlSegment(asset.type)}/${getAddress(asset.id)}`}
+                      href={`/assets/${asset.type}/${getAddress(asset.id)}`}
                       onClick={() => {
                         form.setValue("search", "", {
                           shouldDirty: true,
@@ -282,7 +264,7 @@ export const Search = () => {
                     className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
                   >
                     <Link
-                      href={`/assets/${getAssetUrlSegment(asset.type)}/${getAddress(asset.id)}`}
+                      href={`/assets/${asset.type}/${getAddress(asset.id)}`}
                       onClick={() => {
                         addToRecentAssets(asset);
                         form.setValue("search", "", {

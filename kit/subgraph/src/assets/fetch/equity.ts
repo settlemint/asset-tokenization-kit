@@ -33,6 +33,7 @@ export function fetchEquity(address: Address): Equity {
     equity.totalBurned = BigDecimal.zero();
     equity.totalBurnedExact = BigInt.zero();
     equity.totalHolders = 0;
+    equity.concentration = BigDecimal.zero();
 
     // Equity-specific fields
     equity.equityClass = equityClass.reverted ? "" : equityClass.value;

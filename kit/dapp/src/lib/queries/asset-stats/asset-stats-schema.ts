@@ -7,6 +7,9 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
  */
 export const AssetStatsSchema = t.Object(
   {
+    assetType: t.AssetType({
+      description: "The type of asset",
+    }),
     totalBurned: t.BigDecimal({
       description:
         "The total amount of tokens burned in a human-readable decimal format",

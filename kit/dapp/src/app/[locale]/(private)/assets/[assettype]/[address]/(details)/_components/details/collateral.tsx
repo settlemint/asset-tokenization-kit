@@ -1,8 +1,8 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
+import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
-import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
 import { formatDate, formatDuration } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -19,8 +19,8 @@ export async function Collateral({ address, assettype }: CollateralProps) {
   const [asset, t, locale] = await Promise.all([
     assettype === "stablecoin"
       ? await getStableCoinDetail({ address })
-      : assettype === "tokenizeddeposit"
-        ? await getTokenizedDepositDetail({ address })
+      : assettype === "deposit"
+        ? await getDepositDetail({ address })
         : undefined,
     getTranslations("private.assets.fields"),
     getLocale(),
@@ -73,7 +73,7 @@ export async function Collateral({ address, assettype }: CollateralProps) {
           label={t("collateral-proof-validity")}
           info={t("collateral-proof-validity-info")}
         >
-          {formatDuration(asset.liveness)}
+          {formatDuration(asset.liveness.toString())}
         </DetailGridItem>
       </DetailGrid>
     </Suspense>

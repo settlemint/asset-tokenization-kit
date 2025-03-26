@@ -44,10 +44,10 @@ export async function AssetManagement() {
       icon: <AssetTypeIcon type="stablecoin" />,
     },
     {
-      assetType: "tokenizeddeposit",
+      assetType: "deposit",
       label: t("tokenized-deposits"),
-      path: "/assets/tokenizeddeposit",
-      icon: <AssetTypeIcon type="tokenizeddeposit" />,
+      path: "/assets/deposit",
+      icon: <AssetTypeIcon type="deposit" />,
     },
   ];
 

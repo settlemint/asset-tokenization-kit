@@ -28,6 +28,7 @@ import { blockUser, unblockUser } from "../fetch/block-user";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
+import { calculateConcentration } from "./calculations/concentration";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { burnEvent } from "./events/burn";
@@ -90,7 +91,7 @@ export function handleTransfer(event: Transfer): void {
     );
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
-    if (!hasBalance(fund.id, to.id)) {
+    if (!hasBalance(fund.id, to.id, fund.decimals, false)) {
       fund.totalHolders = fund.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -234,7 +235,7 @@ export function handleTransfer(event: Transfer): void {
       ]
     );
 
-    if (!hasBalance(fund.id, to.id)) {
+    if (!hasBalance(fund.id, to.id, fund.decimals, false)) {
       fund.totalHolders = fund.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
@@ -318,6 +319,10 @@ export function handleTransfer(event: Transfer): void {
   }
 
   fund.lastActivity = event.block.timestamp;
+  fund.concentration = calculateConcentration(
+    fund.holders.load(),
+    fund.totalSupplyExact
+  );
   fund.save();
 
   assetStats.supply = fund.totalSupply;
@@ -613,7 +618,7 @@ export function handlePaused(event: Paused): void {
   const holders = fund.holders.load();
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
-    if (hasBalance(fund.id, assetBalance.account)) {
+    if (hasBalance(fund.id, assetBalance.account, fund.decimals, false)) {
       const holderAccount =
         sender.id == assetBalance.account
           ? sender
@@ -674,7 +679,7 @@ export function handleUnpaused(event: Unpaused): void {
   const holders = fund.holders.load();
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
-    if (hasBalance(fund.id, assetBalance.account)) {
+    if (hasBalance(fund.id, assetBalance.account, fund.decimals, false)) {
       const holderAccount =
         sender.id == assetBalance.account
           ? sender

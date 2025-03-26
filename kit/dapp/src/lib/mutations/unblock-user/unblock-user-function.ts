@@ -104,10 +104,8 @@ export async function unblockUserFunction({
         "Cryptocurrency does not support unblock user operations"
       );
     }
-    case "tokenizeddeposit": {
-      throw new Error(
-        "Tokenized deposit does not support unblock user operations"
-      );
+    case "deposit": {
+      throw new Error("Deposit does not support unblock user operations");
     }
     default:
       throw new Error("Invalid asset type");

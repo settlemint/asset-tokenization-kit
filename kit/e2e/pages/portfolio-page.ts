@@ -11,6 +11,7 @@ export class PortfolioPage extends BasePage {
   }
 
   async verifyPortfolioAssetAmount(options: { expectedAmount: string }) {
+    await this.page.getByRole("link", { name: "Dashboard" }).click();
     const amountElement = this.page.locator("span.font-bold.text-4xl");
     await amountElement.waitFor({ state: "visible" });
 
@@ -38,68 +39,44 @@ export class PortfolioPage extends BasePage {
     asset: string;
     walletAddress: string;
     transferAmount: string;
+    user: string;
     pincode: string;
   }): Promise<void> {
     await this.page.getByRole("button", { name: "Transfer" }).click();
-    const assetButton = this.page.getByRole("button", {
-      name: "Select an asset",
-    });
-    await assetButton.scrollIntoViewIfNeeded();
+    const assetButton = this.page.locator('#asset, [id="asset"]');
+    await assetButton.waitFor({ state: "visible", timeout: 15000 });
+    await assetButton.click();
 
-    try {
-      await assetButton.evaluate((node) => {
-        node.scrollIntoView({ behavior: "smooth", block: "center" });
-        (node as HTMLElement).click();
-      });
-    } catch (_) {
-      await assetButton.click({ force: true });
-    }
-
-    await this.page.waitForFunction(
-      () => {
-        const input = document.querySelector(
-          'input[placeholder="Search for an asset..."]'
-        );
-        return input !== null;
-      },
-      { timeout: 40000 }
+    await this.page.waitForSelector('[role="dialog"][data-state="open"]');
+    const searchInput = this.page.locator(
+      '[role="dialog"][data-state="open"] input'
     );
-
-    const input = this.page.getByPlaceholder("Search for an asset...");
-    await input.fill(options.asset);
-    const optionLocator = this.page.locator('[cmdk-item][role="option"]', {
-      hasText: options.asset,
-    });
-
-    await optionLocator.waitFor({ state: "visible", timeout: 40000 });
-    await this.page.waitForFunction(
-      () => {
-        const options = document.querySelectorAll('[cmdk-item][role="option"]');
-        return options.length > 0;
-      },
-      { timeout: 40000 }
-    );
-
-    try {
-      await optionLocator.evaluate((node) => {
-        const event = new MouseEvent("click", {
-          bubbles: true,
-          cancelable: true,
-          view: window,
-        });
-        node.dispatchEvent(event);
-      });
-    } catch (_) {
-      await optionLocator.click({ force: true, timeout: 40000 });
-    }
+    await searchInput.waitFor({ state: "visible" });
+    await searchInput.fill(options.asset);
+    await this.page
+      .locator(`[role="option"]`)
+      .filter({ hasText: options.asset })
+      .first()
+      .click();
 
     await this.page.getByRole("button", { name: "Confirm" }).click();
-    await this.page.getByLabel("Wallet Address").fill(options.walletAddress);
-    await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByLabel("Amount").fill(options.transferAmount);
     await this.page.getByRole("button", { name: "Next" }).click();
+    const recipientButton = this.page.locator('#to, [id="to"]');
+    await recipientButton.waitFor({ state: "visible", timeout: 15000 });
+    await recipientButton.click();
+    await this.searchAndSelectFromDialog(options.walletAddress, options.user);
+    await this.page.getByRole("button", { name: "Next" }).click();
+
+    const button = this.page.getByRole("button", { name: "Transfer" });
+
+    await button.waitFor({ state: "attached" });
+    await button.scrollIntoViewIfNeeded();
+    await button.click();
+
+    await this.page.getByRole("dialog").waitFor({ state: "visible" });
     await this.page.locator('[data-input-otp="true"]').fill(options.pincode);
-    await this.page.getByRole("button", { name: "Transfer" }).click();
+    await this.page.getByRole("button", { name: "Yes, confirm" }).click();
   }
 
   async verifyAssetBalance(initialBalance: string, expectedBalance: string) {
@@ -128,5 +105,25 @@ export class PortfolioPage extends BasePage {
         }
       )
       .toBe(expectedBalance);
+  }
+
+  private async searchAndSelectFromDialog(
+    searchText: string,
+    user: string,
+    optionSelector: string = '[role="option"]'
+  ) {
+    await this.page.waitForSelector('[role="dialog"][data-state="open"]');
+
+    const searchInput = this.page.locator(
+      '[role="dialog"][data-state="open"] input'
+    );
+    await searchInput.waitFor({ state: "visible" });
+    await searchInput.fill(searchText);
+
+    await this.page
+      .locator(optionSelector)
+      .filter({ hasText: user })
+      .first()
+      .click();
   }
 }

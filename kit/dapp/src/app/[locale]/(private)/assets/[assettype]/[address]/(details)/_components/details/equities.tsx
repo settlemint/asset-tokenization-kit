@@ -1,8 +1,6 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { getSetting } from "@/lib/config/settings";
-import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
 import { formatNumber } from "@/lib/utils/number";
@@ -19,19 +17,19 @@ interface EquitiesDetailsProps {
 export async function EquitiesDetails({
   address,
   showBalance = false,
-  userAddress
+  userAddress,
 }: EquitiesDetailsProps) {
-  const [equity, t, baseCurrency, locale] = await Promise.all([
+  const [equity, t, locale] = await Promise.all([
     getEquityDetail({ address }),
     getTranslations("private.assets.fields"),
-    getSetting(SETTING_KEYS.BASE_CURRENCY),
     getLocale(),
   ]);
 
   // Conditionally fetch balance data only when needed
-  const balanceData = showBalance && userAddress
-    ? await getAssetBalanceDetail({ address, account: userAddress })
-    : null;
+  const balanceData =
+    showBalance && userAddress
+      ? await getAssetBalanceDetail({ address, account: userAddress })
+      : null;
 
   return (
     <Suspense>
@@ -65,9 +63,7 @@ export async function EquitiesDetails({
         </DetailGridItem>
         {/* Show balance only when requested and available */}
         {showBalance && balanceData && (
-          <DetailGridItem
-            label={t("balance")}
-          >
+          <DetailGridItem label={t("balance")}>
             {formatNumber(balanceData.value, {
               token: equity.symbol,
               locale: locale,
@@ -85,8 +81,15 @@ export async function EquitiesDetails({
           })}
         </DetailGridItem>
         <DetailGridItem label={t("price")}>
-          {formatNumber(equity.value_in_base_currency, {
-            currency: baseCurrency,
+          {formatNumber(equity.price.amount, {
+            currency: equity.price.currency,
+            decimals: 2,
+            locale: locale,
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("total-value")}>
+          {formatNumber(equity.price.amount * equity.totalSupply, {
+            currency: equity.price.currency,
             decimals: 2,
             locale: locale,
           })}

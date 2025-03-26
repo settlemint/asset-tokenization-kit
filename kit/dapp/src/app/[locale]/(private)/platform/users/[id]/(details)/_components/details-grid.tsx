@@ -75,8 +75,8 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         {formatNumber(user.transactionCount, { decimals: 0, locale: locale })}
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.last_activity")}>
-        {user.last_activity_at
-          ? formatDate(user.last_activity_at, {
+        {user.lastActivity
+          ? formatDate(user.lastActivity, {
               type: "distance",
               locale: locale,
             })
