@@ -990,6 +990,22 @@
             "funds": "Issue a new fund",
             "stablecoins": "Issue a new stablecoin",
             "tokenizeddeposits": "Issue a new tokenized deposit"
+          },
+          "steps": {
+            "token-admins": {
+              "title": "Token permissions",
+              "description": "Define administrative roles and permissions for managing this token.",
+              "add-first-admin": "Add token admin",
+              "add-another-admin": "Add another admin",
+              "select-user-placeholder": "Search and select a user",
+              "remove-role": "Remove this role",
+              "add-role": "Add this role",
+              "roles": {
+                "admin": "Admin",
+                "user-manager": "User manager",
+                "issuer": "Issuer"
+              }
+            }
           }
         },
         "parameters": {

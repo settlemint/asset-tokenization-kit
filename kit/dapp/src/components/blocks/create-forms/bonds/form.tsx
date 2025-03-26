@@ -8,6 +8,7 @@ import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { TokenAdmins } from "../common/steps/token-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
@@ -50,12 +51,14 @@ export function CreateBondForm({
         }}
         defaultValues={{
           valueInBaseCurrency: 1,
+          tokenAdmins: [],
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}
       >
         <Basics />
+        <TokenAdmins />
         <Configuration baseCurrency={baseCurrency} />
         <Summary />
       </Form>
