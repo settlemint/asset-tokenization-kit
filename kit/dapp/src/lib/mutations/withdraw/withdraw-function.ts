@@ -195,12 +195,13 @@ export const withdrawFunction = withAccessControl(
       amount: parseUnits(amount.toString(), asset.decimals).toString(),
     };
 
+    const challengeResponse = await handleChallenge(user.wallet, pincode);
     // Common parameters for token mutations
     const tokenParams = {
       address: targetAddress,
       from: user.wallet,
       input: tokenInput,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse,
     };
 
     switch (assettype) {
@@ -232,7 +233,7 @@ export const withdrawFunction = withAccessControl(
                 to,
                 amount: bondFormattedAmount,
               },
-              challengeResponse: await handleChallenge(user.wallet, pincode),
+              challengeResponse,
             }
           );
 
@@ -253,7 +254,7 @@ export const withdrawFunction = withAccessControl(
                 to,
                 amount: bondFormattedAmount,
               },
-              challengeResponse: await handleChallenge(user.wallet, pincode),
+              challengeResponse,
             }
           );
 
