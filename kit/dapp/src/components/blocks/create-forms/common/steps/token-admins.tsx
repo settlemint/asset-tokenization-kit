@@ -69,7 +69,7 @@ export function TokenAdmins({ userDetails }: { userDetails: User }) {
         [
           {
             wallet: userDetails.wallet,
-            roles: ["admin", "mint", "burn", "pause", "transfer"] as AdminRole[]
+            roles: ["admin", "user-manager", "issuer"]
           }
         ],
         {
