@@ -101,7 +101,8 @@ export function ManageDropdown({
     ROLES.USER_MANAGEMENT_ROLE.contractRole
   );
   const userIsAdmin = userRoles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole);
-  const hasYieldSchedule = 'yieldSchedule' in assetDetails && assetDetails.yieldSchedule !== null;
+  const hasYieldSchedule =
+    "yieldSchedule" in assetDetails && assetDetails.yieldSchedule !== null;
   const collateralIsExpired =
     "collateralProofValidity" in assetDetails &&
     assetDetails.collateralProofValidity !== undefined &&
@@ -169,16 +170,19 @@ export function ManageDropdown({
       label: t("actions.top-up"),
       hidden: !hasUnderlyingAsset || assettype !== "bond",
       disabled: isBlocked || isPaused || !userIsSupplyManager,
-      form: assettype === "bond" ? (
-        <TopUpForm
-          key="top-up"
-          address={address}
-          showTarget={hasYieldSchedule}
-          open={openMenuItem === "top-up"}
-          onOpenChange={onFormOpenChange}
-          bondDetails={assetDetails as Awaited<ReturnType<typeof getBondDetail>>}
-        />
-      ) : null,
+      form:
+        assettype === "bond" ? (
+          <TopUpForm
+            key="top-up"
+            address={address}
+            showTarget={hasYieldSchedule}
+            open={openMenuItem === "top-up"}
+            onOpenChange={onFormOpenChange}
+            bondDetails={
+              assetDetails as Awaited<ReturnType<typeof getBondDetail>>
+            }
+          />
+        ) : null,
     },
     {
       id: "withdraw",
@@ -192,7 +196,9 @@ export function ManageDropdown({
           showTarget={hasYieldSchedule}
           open={openMenuItem === "withdraw"}
           onOpenChange={onFormOpenChange}
-          bondDetails={assetDetails as Awaited<ReturnType<typeof getBondDetail>>}
+          bondDetails={
+            assetDetails as Awaited<ReturnType<typeof getBondDetail>>
+          }
         />
       ),
     },

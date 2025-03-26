@@ -8,6 +8,7 @@ import { safeParse } from "@/lib/utils/typebox";
 import BigNumber from "bignumber.js";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
+import { getAssetPriceInUserCurrency } from "../asset-price/asset-price";
 import { AssetBalanceSchema, type AssetBalance } from "./asset-balance-schema";
 
 const UserAssetsBalance = theGraphGraphqlKit(
@@ -38,16 +39,25 @@ export const getUserAssetsBalance = cache(async (wallet: Address) => {
   });
 
   // Parse and validate the data using TypeBox schema
-  const validatedUserAssetsBalance = userAssetsBalance
-    .map((asset) => {
-      try {
-        return safeParse(AssetBalanceSchema, asset);
-      } catch (error) {
-        console.error("Error validating asset balance:", error);
-        return null;
-      }
-    })
-    .filter((balance): balance is AssetBalance => balance !== null);
+  const validatedUserAssetsBalance = (
+    await Promise.all(
+      userAssetsBalance.map(async (asset) => {
+        try {
+          const price = await getAssetPriceInUserCurrency(asset.asset.id);
+          return safeParse(AssetBalanceSchema, {
+            ...asset,
+            asset: {
+              ...asset.asset,
+              price,
+            },
+          });
+        } catch (error) {
+          console.error("Error validating asset balance:", error);
+          return null;
+        }
+      })
+    )
+  ).filter((balance): balance is AssetBalance => balance !== null);
 
   if (!validatedUserAssetsBalance.length) {
     return {

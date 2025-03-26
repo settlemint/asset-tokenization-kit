@@ -74,6 +74,9 @@ export const AssetBalanceSchema = t.Object(
             default: false,
           })
         ),
+        price: t.Price({
+          description: "Price of the asset in the user's currency",
+        }),
       },
       {
         description: "Information about the asset",
