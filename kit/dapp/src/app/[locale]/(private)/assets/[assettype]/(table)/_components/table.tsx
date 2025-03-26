@@ -3,17 +3,17 @@ import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getBondList } from "@/lib/queries/bond/bond-list";
 import { getCryptoCurrencyList } from "@/lib/queries/cryptocurrency/cryptocurrency-list";
+import { getDepositList } from "@/lib/queries/deposit/deposit-list";
 import { getEquityList } from "@/lib/queries/equity/equity-list";
 import { getFundList } from "@/lib/queries/fund/fund-list";
 import { getStableCoinList } from "@/lib/queries/stablecoin/stablecoin-list";
-import { getTokenizedDepositList } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-list";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { bondColumns } from "./columns/bonds";
 import { cryptocurrencyColumns } from "./columns/cryptocurrencies";
+import { depositColumns } from "./columns/deposits";
 import { equityColumns } from "./columns/equities";
 import { fundColumns } from "./columns/funds";
 import { stablecoinColumns } from "./columns/stablecoins";
-import { tokenizedDepositColumns } from "./columns/tokenizeddeposits";
 
 interface TableProps {
   assettype: AssetType;
@@ -50,11 +50,11 @@ export async function Table({ assettype }: TableProps) {
           columnParams={{ baseCurrency }}
         />
       );
-    case "tokenizeddeposit":
+    case "deposit":
       return (
         <DataTable
-          columns={tokenizedDepositColumns}
-          data={await getTokenizedDepositList()}
+          columns={depositColumns}
+          data={await getDepositList()}
           name={assettype}
           columnParams={{ baseCurrency }}
         />

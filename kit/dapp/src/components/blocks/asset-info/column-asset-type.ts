@@ -20,8 +20,8 @@ export function ColumnAssetType({ assettype, plural }: AssetTypeProps) {
   if (assettype === "stablecoin") {
     return plural ? t("stablecoins-plural") : t("stablecoins");
   }
-  if (assettype === "tokenizeddeposit") {
-    return plural ? t("tokenizeddeposits-plural") : t("tokenizeddeposits");
+  if (assettype === "deposit") {
+    return plural ? t("deposits-plural") : t("deposits");
   }
   if (assettype === "equity") {
     return plural ? t("equities-plural") : t("equities");

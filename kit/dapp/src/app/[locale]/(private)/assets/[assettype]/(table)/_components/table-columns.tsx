@@ -1,10 +1,10 @@
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { bondColumns } from "./columns/bonds";
 import { cryptocurrencyColumns } from "./columns/cryptocurrencies";
+import { depositColumns } from "./columns/deposits";
 import { equityColumns } from "./columns/equities";
 import { fundColumns } from "./columns/funds";
 import { stablecoinColumns } from "./columns/stablecoins";
-import { tokenizedDepositColumns } from "./columns/tokenizeddeposits";
 
 export function getTableColumns(assettype: AssetType) {
   switch (assettype) {
@@ -14,8 +14,8 @@ export function getTableColumns(assettype: AssetType) {
       return cryptocurrencyColumns;
     case "stablecoin":
       return stablecoinColumns;
-    case "tokenizeddeposit":
-      return tokenizedDepositColumns;
+    case "deposit":
+      return depositColumns;
     case "equity":
       return equityColumns;
     case "fund":

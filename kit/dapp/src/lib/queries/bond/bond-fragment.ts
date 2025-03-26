@@ -63,9 +63,6 @@ export const BondFragment = theGraphGraphqlKit(
     creator {
       id
     }
-    holders(first: 5, orderBy: valueExact, orderDirection: desc) {
-      valueExact
-    }
     underlyingAsset {
       id
       symbol
@@ -85,6 +82,7 @@ export const BondFragment = theGraphGraphqlKit(
     totalUnderlyingNeededExact
     cap
     deployedOn
+    concentration
   }
 `,
   [YieldScheduleFragment]
@@ -100,6 +98,5 @@ export const OffchainBondFragment = hasuraGraphql(`
   fragment OffchainBondFragment on asset {
     id
     isin
-    value_in_base_currency
   }
 `);

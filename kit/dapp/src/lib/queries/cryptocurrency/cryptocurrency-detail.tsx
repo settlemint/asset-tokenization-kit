@@ -85,7 +85,7 @@ export const getCryptoCurrencyDetail = cache(
       })(),
     ]);
 
-    const calculatedFields = cryptoCurrencyCalculateFields(
+    const calculatedFields = await cryptoCurrencyCalculateFields(
       onChainCryptoCurrency,
       offChainCryptoCurrency
     );

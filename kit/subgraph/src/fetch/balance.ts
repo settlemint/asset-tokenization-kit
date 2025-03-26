@@ -29,10 +29,20 @@ export function fetchAssetBalance(
   return balance;
 }
 
-export function hasBalance(asset: Bytes, account: Bytes): boolean {
+export function hasBalance(
+  asset: Bytes,
+  account: Bytes,
+  decimals: number,
+  initialBlockedState: boolean
+): boolean {
   const id = assetBalanceId(asset, account);
-  const balance = AssetBalance.load(id);
-  return balance != null;
+  const balance = fetchAssetBalance(
+    asset,
+    account,
+    decimals,
+    initialBlockedState
+  );
+  return balance.valueExact.gt(BigInt.zero());
 }
 
 export function assetBalanceId(asset: Bytes, account: Bytes): Bytes {

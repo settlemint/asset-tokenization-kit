@@ -11,10 +11,12 @@ import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
 // BigDecimal format validator
 if (!FormatRegistry.Has("big-decimal")) {
   FormatRegistry.Set("big-decimal", (value) => {
-    if (typeof value !== "string") return false;
     try {
-      const bn = new BigNumber(value);
-      return !bn.isNaN();
+      if (typeof value === "string" || typeof value === "number") {
+        const bn = new BigNumber(value);
+        return !bn.isNaN();
+      }
+      return false;
     } catch {
       return false;
     }
@@ -39,14 +41,23 @@ if (!TypeRegistry.Has("big-decimal")) {
 export const BigDecimal = (options?: SchemaOptions) =>
   t
     .Transform(
-      t.String({
-        format: "big-decimal",
-        title: "BigDecimal",
-        description:
-          "A string representation of a decimal number with arbitrary precision using BigNumber.js",
-        examples: ["123.456", "-789.012", "1000", "0.00000001"],
-        ...options,
-      })
+      t.Union([
+        t.String({
+          format: "big-decimal",
+          title: "BigDecimal",
+          description:
+            "A string representation of a decimal number with arbitrary precision using BigNumber.js",
+          examples: ["123.456", "-789.012", "1000", "0.00000001"],
+          ...options,
+        }),
+        t.Number({
+          title: "BigDecimal",
+          description:
+            "A number that will be converted to a string for arbitrary precision using BigNumber.js",
+          examples: [123.456, -789.012, 1000, 0.00000001],
+          ...options,
+        }),
+      ])
     )
     .Decode((value) => new BigNumber(value).toNumber())
     .Encode((value) => value.toString());

@@ -25,9 +25,7 @@ export const FundFragment = theGraphGraphqlKit(`
     creator {
       id
     }
-    holders(first: 5, orderBy: valueExact, orderDirection: desc) {
-      valueExact
-    }
+    concentration
     asAccount {
       balances {
         value
@@ -46,6 +44,5 @@ export const OffchainFundFragment = hasuraGraphql(`
   fragment OffchainFundFragment on asset {
     id
     isin
-    value_in_base_currency
   }
 `);

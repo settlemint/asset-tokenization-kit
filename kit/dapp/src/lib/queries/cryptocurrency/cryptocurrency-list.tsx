@@ -92,22 +92,24 @@ export const getCryptoCurrencyList = cache(async () => {
     offChainCryptoCurrencies.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const cryptoCurrencies = onChainCryptoCurrencies.map((cryptocurrency) => {
-    const offChainCryptoCurrency = assetsById.get(
-      getAddress(cryptocurrency.id)
-    );
+  const cryptoCurrencies = await Promise.all(
+    onChainCryptoCurrencies.map(async (cryptocurrency) => {
+      const offChainCryptoCurrency = assetsById.get(
+        getAddress(cryptocurrency.id)
+      );
 
-    const calculatedFields = cryptoCurrencyCalculateFields(
-      cryptocurrency,
-      offChainCryptoCurrency
-    );
+      const calculatedFields = await cryptoCurrencyCalculateFields(
+        cryptocurrency,
+        offChainCryptoCurrency
+      );
 
-    return {
-      ...cryptocurrency,
-      ...offChainCryptoCurrency,
-      ...calculatedFields,
-    };
-  });
+      return {
+        ...cryptocurrency,
+        ...offChainCryptoCurrency,
+        ...calculatedFields,
+      };
+    })
+  );
 
   return cryptoCurrencies;
 });

@@ -75,7 +75,7 @@ export const getBondDetail = cache(async ({ address }: BondDetailProps) => {
     })(),
   ]);
 
-  const calculatedFields = bondCalculateFields(onChainBond, offChainBond);
+  const calculatedFields = await bondCalculateFields(onChainBond, offChainBond);
 
   return {
     ...onChainBond,

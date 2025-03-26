@@ -19,9 +19,7 @@ export const CryptoCurrencyFragment = theGraphGraphqlKit(`
     creator {
       id
     }
-    holders(first: 5, orderBy: valueExact, orderDirection: desc) {
-      valueExact
-    }
+    concentration
   }
 `);
 
@@ -35,6 +33,5 @@ export const OffchainCryptoCurrencyFragment = hasuraGraphql(`
   fragment OffchainCryptoCurrencyFragment on asset {
     id
     isin
-    value_in_base_currency
   }
 `);

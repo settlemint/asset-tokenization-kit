@@ -1,12 +1,14 @@
-import { CreateFundForm } from "@/components/blocks/create-forms/funds/form";
+import { CreateFundForm } from "@/components/blocks/create-forms/fund/form";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
+import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
 import { getTranslations } from "next-intl/server";
 
 export async function FundsRelated() {
   const t = await getTranslations("private.assets.table.related");
+  const userDetails = await getCurrentUserDetail();
 
   return (
     <RelatedGrid title={t("title")}>
@@ -14,7 +16,7 @@ export async function FundsRelated() {
         title={t("fund.issue-new.title")}
         description={t("fund.issue-new.description")}
       >
-        <CreateFundForm asButton />
+        <CreateFundForm asButton userDetails={userDetails} />
       </RelatedGridItem>
       <RelatedGridItem
         title={t("fund.mechanics.title")}

@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { setYieldSchedule } from "@/lib/mutations/bond/set-yield-schedule/set-yield-schedule-action";
 import { SetYieldScheduleSchema } from "@/lib/mutations/bond/set-yield-schedule/set-yield-schedule-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
 import { Schedule } from "./steps/schedule";
@@ -28,7 +28,6 @@ export function SetYieldScheduleForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
-  const locale = useLocale();
 
   return (
     <FormSheet
@@ -52,7 +51,6 @@ export function SetYieldScheduleForm({
         }}
         defaultValues={{
           address,
-          locale,
         }}
       >
         <Schedule />

@@ -170,7 +170,7 @@ const fundAssetClasses = ["Equity", "Fixed Income", "Multi-Asset", "Global"];
 
 const stableCurrencies = ["Dollar", "Euro", "Pound", "Yen", "Franc"];
 
-const tokenizedDepositCurrencies = [
+const depositCurrencies = [
   "Dollar",
   "Euro",
   "Pound",
@@ -228,12 +228,12 @@ export const generateStablecoinName = (): string => {
   return `${prefix}${currency} Stable-${uniqueId}`;
 };
 
-export const generateTokenizedDepositName = (): string => {
+export const generateDepositName = (): string => {
   const prefix = getRandomElement(prefixes);
-  const currency = getRandomElement(tokenizedDepositCurrencies);
+  const currency = getRandomElement(depositCurrencies);
   const uniqueId = getUniqueId();
 
-  return `${prefix}${currency} Tokenized Deposit-${uniqueId}`;
+  return `${prefix}${currency} Deposit-${uniqueId}`;
 };
 
 const generateSymbol = (name: string): string => {
@@ -317,16 +317,16 @@ export const stablecoinData = {
   initialSupply: "0",
 };
 
-export const tokenizedDepositData = {
-  assetType: "Tokenized Deposits",
-  name: generateTokenizedDepositName(),
-  symbol: generateSymbol(generateTokenizedDepositName()),
+export const depositData = {
+  assetType: "Deposit",
+  name: generateDepositName(),
+  symbol: generateSymbol(generateDepositName()),
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
   decimals: "16",
   validityPeriod: "600",
   valueInEur: "3",
   pincode: pincode,
-  sidebarAssetTypes: "Tokenized Deposits",
+  sidebarAssetTypes: "Deposits",
   initialSupply: "0",
 };
 

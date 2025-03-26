@@ -73,9 +73,9 @@ const StableCoinFreeze = portalGraphql(`
 /**
  * GraphQL mutation to freeze a specific user account from a tokenized deposit
  */
-const TokenizedDepositFreeze = portalGraphql(`
-  mutation TokenizedDepositFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
-    TokenizedDepositFreeze(
+const DepositFreeze = portalGraphql(`
+  mutation DepositFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+    DepositFreeze(
       address: $address
       from: $from
       input: {user: $user, amount: $amount}
@@ -137,14 +137,9 @@ export async function freezeFunction({
         response.StableCoinFreeze?.transactionHash,
       ]);
     }
-    case "tokenizeddeposit": {
-      const response = await portalClient.request(
-        TokenizedDepositFreeze,
-        params
-      );
-      return safeParse(t.Hashes(), [
-        response.TokenizedDepositFreeze?.transactionHash,
-      ]);
+    case "deposit": {
+      const response = await portalClient.request(DepositFreeze, params);
+      return safeParse(t.Hashes(), [response.DepositFreeze?.transactionHash]);
     }
     default:
       throw new Error("Invalid asset type");

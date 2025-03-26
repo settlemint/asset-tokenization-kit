@@ -24,6 +24,8 @@ interface Asset {
   blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
   allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
   deployedOn: BigInt!
+  # Concentration
+  concentration: BigDecimal!
 }
 
 type Factory @entity {
@@ -58,6 +60,8 @@ type Bond implements Asset @entity {
   userManagers: [Account!]!
   blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
   allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
   # Bond-Specific Fields
   cap: BigDecimal!
   capExact: BigInt!
@@ -96,6 +100,8 @@ type Equity implements Asset @entity {
   userManagers: [Account!]!
   blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
   allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
   # Equity-Specific Fields
   equityClass: String!
   equityCategory: String!
@@ -124,6 +130,8 @@ type Fund implements Asset @entity {
   userManagers: [Account!]!
   blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
   allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
   # Fund-Specific Fields
   fundClass: String!
   fundCategory: String!
@@ -154,6 +162,8 @@ type StableCoin implements Asset @entity {
   userManagers: [Account!]!
   blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
   allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
   # StableCoin-Specific Fields
   collateral: BigDecimal!
   collateralExact: BigInt!
@@ -187,10 +197,12 @@ type CryptoCurrency implements Asset @entity {
   userManagers: [Account!]!
   blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
   allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
   # CryptoCurrency-Specific Fields
 }
 
-type TokenizedDeposit implements Asset @entity {
+type Deposit implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -212,7 +224,9 @@ type TokenizedDeposit implements Asset @entity {
   userManagers: [Account!]!
   blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
   allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
-  # TokenizedDeposit-Specific Fields
+  # Concentration
+  concentration: BigDecimal!
+  # Deposit-Specific Fields
   paused: Boolean!
   # Collateral Fields
   collateral: BigDecimal!
