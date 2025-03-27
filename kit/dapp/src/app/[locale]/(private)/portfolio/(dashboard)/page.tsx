@@ -69,7 +69,7 @@ export default async function PortfolioDashboard({
     ]);
 
   const assetPrices = await getAssetsPriceInUserCurrency(
-    myAssetsBalance.balances.map((balance) => balance.asset.id)
+    portfolioStats.map(({ asset }) => asset.id)
   );
 
   const totalUserAssetsValue = myAssetsBalance.balances.reduce(
