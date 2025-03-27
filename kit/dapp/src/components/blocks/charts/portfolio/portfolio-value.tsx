@@ -16,19 +16,12 @@ import type {
   PortfolioAsset,
   PortfolioStatsCollection,
 } from "@/lib/queries/portfolio/portfolio-schema";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Price } from "@/lib/utils/typebox/price";
 import { useTranslations, type Locale } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
 import { AreaChartComponent } from "../area-chart";
-
-type AssetType =
-  | "bond"
-  | "cryptocurrency"
-  | "equity"
-  | "fund"
-  | "stablecoin"
-  | "deposit";
 
 interface PortfolioValueProps {
   portfolioStats: PortfolioStatsCollection;
@@ -113,9 +106,9 @@ export function PortfolioValue({
       individualData,
       Array.from(uniqueAssets),
       {
-        granularity: "hour",
-        intervalType: "day",
-        intervalLength: 3,
+        granularity: "day",
+        intervalType: "month",
+        intervalLength: 1,
         aggregation: {
           display: "max",
           storage: "last",
@@ -140,7 +133,7 @@ export function PortfolioValue({
             const assetType = asset.type;
             typeValues.set(
               assetType,
-              (typeValues.get(assetType) || 0) + (value as number)
+              (typeValues.get(assetType) || 0) + (Number(value) || 0)
             );
           }
         }
@@ -153,7 +146,7 @@ export function PortfolioValue({
     } else {
       return individualTimeSeries.map((row) => {
         const total = Object.entries(row).reduce((sum, [key, value]) => {
-          return key !== "timestamp" ? sum + (value as number) : sum;
+          return key !== "timestamp" ? sum + (Number(value) || 0) : sum;
         }, 0);
 
         return {
