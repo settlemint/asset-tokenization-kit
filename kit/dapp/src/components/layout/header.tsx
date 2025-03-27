@@ -1,3 +1,4 @@
+import { PendingTransactionsDropdown } from "@/components/blocks/pending-transactions-dropdown/pending-transactions-dropdown";
 import { UserDropdown } from "@/components/layout/user-dropdown";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -14,6 +15,7 @@ export default async function Header() {
         <Search />
       </div>
       <div className="ml-auto rtl:ml-0 rtl:mr-auto flex items-center gap-2 px-4">
+        <PendingTransactionsDropdown />
         <UserDropdown user={userDetails} />
       </div>
     </header>

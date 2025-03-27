@@ -1,0 +1,90 @@
+"use client";
+
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { TransactionHash } from "@/components/blocks/transaction-hash/transaction-hash";
+import { PendingTransactionsIcon } from "@/components/ui/animated-icons/pending-transactions";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { usePendingTransactions } from "@/lib/hooks/use-pending-transactions";
+import { formatDate } from "@/lib/utils/date";
+import { useTranslations } from "next-intl";
+import { useRef } from "react";
+
+export function PendingTransactionsDropdown() {
+  const t = useTranslations("components.pending-transactions");
+  const iconRef = useRef(null);
+  const { pendingTransactions, hasPendingTransactions } =
+    usePendingTransactions();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative h-12 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:bg-sidebar-accent focus-visible:text-sidebar-accent-foreground dark:hover:bg-theme-accent-background dark:hover:text-foreground dark:focus-visible:bg-theme-accent-background dark:focus-visible:text-foreground focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+          aria-label={t("aria-label")}
+        >
+          <PendingTransactionsIcon
+            ref={iconRef}
+            hasPendingTransactions={hasPendingTransactions}
+          />
+          {hasPendingTransactions && (
+            <span className="absolute top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground pt-[1px]">
+              {pendingTransactions.length}
+            </span>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="w-[350px] rounded-lg shadow-dropdown"
+      >
+        {pendingTransactions.length === 0 ? (
+          <div className="p-4 text-center text-sm text-muted-foreground">
+            {t("no-pending")}
+          </div>
+        ) : (
+          <ScrollArea className="h-[400px]">
+            <div className="space-y-2 p-2">
+              {pendingTransactions.map((tx) => (
+                <div
+                  key={tx.transactionHash}
+                  className="flex flex-col gap-2 rounded-lg border bg-card p-3 text-sm"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium">{tx.functionName}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {formatDate(tx.createdAt, { type: "relative" })}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1 text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-muted-foreground">{t("from")}</span>
+                      <EvmAddress address={tx.from} />
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-muted-foreground">
+                        {t("contract")}
+                      </span>
+                      <EvmAddress address={tx.address} />
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-muted-foreground">{t("hash")}</span>
+                      <TransactionHash hash={tx.transactionHash} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
