@@ -1,4 +1,6 @@
+import type { User } from "@/lib/auth/types";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { getUser } from "../../auth/utils";
 import type { SetPincodeInput } from "./set-pincode-schema";
 
 /**
@@ -25,15 +27,17 @@ const SetPinCode = portalGraphql(`
  * @returns Wallet verification data
  */
 export async function setPincodeFunction({
-  parsedInput: { name, address, pincode },
+  parsedInput: { name, pincode },
+  ctx,
 }: {
   parsedInput: SetPincodeInput;
+  ctx?: { user: User };
 }) {
-  const result = await portalClient.request(SetPinCode, {
+  const currentUser = ctx?.user ?? (await getUser());
+  await portalClient.request(SetPinCode, {
     name,
-    address,
+    address: currentUser?.wallet,
     pincode: pincode.toString(),
   });
-
-  return result.createWalletVerification;
+  return { success: true };
 }

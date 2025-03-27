@@ -1,4 +1,5 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
+import { SetPincodeSchema } from "@/lib/mutations/user/set-pincode-schema";
 import {
   getCurrentUserDetail,
   getUserDetail,
@@ -6,14 +7,11 @@ import {
 import { getUserList } from "@/lib/queries/user/user-list";
 import { UserDetailSchema, UserSchema } from "@/lib/queries/user/user-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
-import {
-  getUserWalletVerifications,
-  WalletVerificationSchema,
-} from "@/lib/queries/user/wallet-security";
 import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
+import { setPincodeFunction } from "../mutations/user/set-pincode-function";
 
 export const UserApi = new Elysia({
   detail: {
@@ -129,26 +127,24 @@ export const UserApi = new Elysia({
       },
     }
   )
-  .get(
-    "/wallet-security/:address",
-    async ({ params: { address } }) => {
-      return await getUserWalletVerifications(address);
+  .post(
+    "/set-pincode",
+    async ({ body, user }) => {
+      return setPincodeFunction({
+        parsedInput: body,
+        ctx: { user },
+      });
     },
     {
       auth: true,
       detail: {
-        summary: "Wallet Security",
-        description:
-          "Retrieves security verifications associated with a user's wallet.",
+        summary: "Set pincode",
+        description: "Sets a pincode for a user.",
         tags: ["user"],
       },
-      params: t.Object({
-        address: t.String({
-          description: "The wallet address to check security verifications for",
-        }),
-      }),
+      body: SetPincodeSchema(),
       response: {
-        200: t.Array(WalletVerificationSchema),
+        200: t.Object({ success: t.Boolean() }),
         ...defaultErrorSchema,
       },
     }

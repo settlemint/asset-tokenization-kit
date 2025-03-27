@@ -1,3 +1,5 @@
+import type { User } from "@/lib/auth/types";
+import { getUser } from "@/lib/auth/utils";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
 import { cache } from "react";
@@ -37,15 +39,15 @@ const UserWalletVerifications = portalGraphql(`
 `);
 
 /**
- * Fetches wallet verifications for a user's wallet address
+ * Fetches wallet verifications for the logged in user
  *
- * @param userWalletAddress - The wallet address to check verifications for
  * @returns Array of wallet verification information
  */
 export const getUserWalletVerifications = cache(
-  async (userWalletAddress: string) => {
+  async (ctx?: { user: User }) => {
+    const currentUser = ctx?.user ?? (await getUser());
     const result = await portalClient.request(UserWalletVerifications, {
-      userWalletAddress,
+      userWalletAddress: currentUser.wallet,
     });
     return safeParse(
       t.Array(WalletVerificationSchema),
@@ -53,3 +55,13 @@ export const getUserWalletVerifications = cache(
     );
   }
 );
+
+/**
+ * Checks if the logged in user has a wallet verification
+ *
+ * @returns True if the user has a wallet verification, false otherwise
+ */
+export const hasWalletVerification = cache(async () => {
+  const verifications = await getUserWalletVerifications();
+  return verifications.length > 0;
+});
