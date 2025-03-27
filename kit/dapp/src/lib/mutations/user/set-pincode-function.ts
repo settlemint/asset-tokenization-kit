@@ -1,6 +1,6 @@
 import type { User } from "@/lib/auth/types";
+import { getUser } from "@/lib/auth/utils";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { getUser } from "../../auth/utils";
 import type { SetPincodeInput } from "./set-pincode-schema";
 
 /**

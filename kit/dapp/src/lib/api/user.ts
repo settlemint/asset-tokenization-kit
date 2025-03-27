@@ -1,4 +1,5 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
+import { setPincodeFunction } from "@/lib/mutations/user/set-pincode-function";
 import { SetPincodeSchema } from "@/lib/mutations/user/set-pincode-schema";
 import {
   getCurrentUserDetail,
@@ -11,7 +12,6 @@ import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
-import { setPincodeFunction } from "../mutations/user/set-pincode-function";
 
 export const UserApi = new Elysia({
   detail: {
