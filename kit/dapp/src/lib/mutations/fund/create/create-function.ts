@@ -62,7 +62,7 @@ export async function createFundFunction({
     managementFeeBps,
     predictedAddress,
     price,
-    tokenAdmins,
+    assetAdmins,
   },
   ctx: { user },
 }: {
@@ -100,7 +100,7 @@ export async function createFundFunction({
   await waitForTransactions([createTxHash]);
 
   // After fund is created, grant roles to admins in parallel
-  const grantRolePromises = tokenAdmins.map(async (admin) => {
+  const grantRolePromises = assetAdmins.map(async (admin) => {
     const roles = {
       DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
       SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
@@ -126,5 +126,5 @@ export async function createFundFunction({
   // Combine all transaction hashes
   const allTransactionHashes = [createTxHash, ...roleGrantHashes];
 
-  return safeParse(t.Hashes(), [data.FundFactoryCreate?.transactionHash]);
+  return safeParse(t.Hashes(), allTransactionHashes);
 }

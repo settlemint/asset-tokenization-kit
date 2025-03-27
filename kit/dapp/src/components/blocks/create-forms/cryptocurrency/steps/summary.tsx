@@ -9,7 +9,7 @@ import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
-import { TokenAdminsCard } from "../../common/token-admins/token-admins-card";
+import { AssetAdminsCard } from "../../common/asset-admins/asset-admins-card";
 
 export function Summary({ userDetails }: { userDetails: User }) {
   const { control } = useFormContext<CreateCryptoCurrencyInput>();
@@ -59,7 +59,7 @@ export function Summary({ userDetails }: { userDetails: User }) {
         />
       </FormSummaryDetailCard>
 
-      <TokenAdminsCard userDetails={userDetails} tokenAdmins={values.tokenAdmins} />
+      <AssetAdminsCard userDetails={userDetails} assetAdmins={values.assetAdmins} />
     </FormStep>
   );
 }

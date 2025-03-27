@@ -1,4 +1,4 @@
-import { TokenAdminsSchemaFragment } from "@/lib/mutations/common/token-admins-schema";
+import { AssetAdminsSchemaFragment } from "@/lib/mutations/common/asset-admins-schema";
 import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
@@ -14,7 +14,7 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  * @property {string} pincode - The pincode for signing the transaction
  * @property {string} predictedAddress - The predicted contract address
  * @property {number} valueInBaseCurrency - The value in base currency
- * @property {Array} tokenAdmins - List of admin users with their roles
+ * @property {Array} assetAdmins - List of admin users with their roles
  */
 export function CreateStablecoinSchema() {
   return t.Intersect([
@@ -49,7 +49,7 @@ export function CreateStablecoinSchema() {
         price: t.Price({
           description: "Price of the stablecoin",
         }),
-        tokenAdmins: TokenAdminsSchemaFragment(),
+        assetAdmins: AssetAdminsSchemaFragment(),
       },
       {
         description: "Schema for validating stablecoin creation inputs",

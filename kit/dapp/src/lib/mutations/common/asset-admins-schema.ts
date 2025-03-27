@@ -1,6 +1,6 @@
 import { t } from "@/lib/utils/typebox";
 
-export const TokenAdminsSchemaFragment = () => t.Array(
+export const AssetAdminsSchemaFragment = () => t.Array(
   t.Object({
     wallet: t.EthereumAddress({
       error: "Wallet address is required"

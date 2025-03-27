@@ -1,6 +1,6 @@
 import { isAddressAvailable } from "@/lib/queries/equity-factory/equity-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
-import { TokenAdminsSchemaFragment } from "../../common/token-admins-schema";
+import { AssetAdminsSchemaFragment } from "../../common/asset-admins-schema";
 
 /**
  * TypeBox schema for validating equity creation inputs
@@ -53,7 +53,7 @@ export function CreateEquitySchema() {
       price: t.Price({
         description: "Price of the equity",
       }),
-      tokenAdmins: TokenAdminsSchemaFragment(),
+      assetAdmins: AssetAdminsSchemaFragment(),
     },
     {
       description: "Schema for validating equity creation inputs",

@@ -8,7 +8,7 @@ import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { TokenAdmins } from "../common/token-admins/token-admins";
+import { AssetAdmins } from "../common/asset-admins/asset-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
@@ -62,7 +62,7 @@ export function CreateFundForm({
       >
         <Basics />
         <Configuration />
-        <TokenAdmins userDetails={userDetails} />
+        <AssetAdmins userDetails={userDetails} />
         <Summary userDetails={userDetails} />
       </Form>
     </FormSheet>

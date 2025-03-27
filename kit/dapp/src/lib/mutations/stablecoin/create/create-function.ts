@@ -71,7 +71,7 @@ export async function createStablecoinFunction({
     collateralLivenessTimeUnit,
     predictedAddress,
     price,
-    tokenAdmins,
+    assetAdmins,
   },
   ctx: { user },
 }: {
@@ -107,7 +107,7 @@ export async function createStablecoinFunction({
   await waitForTransactions([createTxHash]);
 
   // After stablecoin is created, grant roles to admins in parallel
-  const grantRolePromises = tokenAdmins.map(async (admin) => {
+  const grantRolePromises = assetAdmins.map(async (admin) => {
     const roles = {
       DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
       SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),

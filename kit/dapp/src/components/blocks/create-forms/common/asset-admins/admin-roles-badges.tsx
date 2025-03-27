@@ -13,7 +13,7 @@ interface AdminRolesBadgesProps {
 }
 
 export function AdminRolesBadges({ roles, onChangeRoles, className }: AdminRolesBadgesProps) {
-  const t = useTranslations("private.assets.create.form.steps.token-admins");
+  const t = useTranslations("private.assets.create.form.steps.asset-admins");
 
   const getRoleTranslation = (role: AdminRole) => t(`roles.${role}`);
 

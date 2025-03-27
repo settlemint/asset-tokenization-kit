@@ -6,7 +6,7 @@ import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 
-interface TokenAdmin {
+interface AssetAdmin {
   wallet?: Address;
   roles?: ("admin" | "user-manager" | "issuer")[];
 }
@@ -15,20 +15,20 @@ interface TokenAdminsCardProps {
   userDetails: {
     wallet: Address;
   };
-  tokenAdmins?: TokenAdmin[];
+  assetAdmins?: AssetAdmin[];
 }
 
-export function TokenAdminsCard({ userDetails, tokenAdmins }: TokenAdminsCardProps) {
+export function AssetAdminsCard({ userDetails, assetAdmins }: TokenAdminsCardProps) {
   const t = useTranslations("private.assets.create");
 
-  if (!tokenAdmins) {
+  if (!assetAdmins) {
     return null;
   }
 
   return (
     <FormSummaryDetailCard
-      title={t("summary.token-admins-title")}
-      description={t("summary.token-admins-description")}
+      title={t("summary.asset-admins-title")}
+      description={t("summary.asset-admins-description")}
       icon={<Users className="size-3 text-primary-foreground" />}
     >
       <FormSummaryDetailItem
@@ -37,18 +37,18 @@ export function TokenAdminsCard({ userDetails, tokenAdmins }: TokenAdminsCardPro
         value={
           <div className="flex flex-wrap gap-1">
             <Badge key="admin" variant="outline" className="text-xs">
-              {t("form.steps.token-admins.roles.admin")}
+              {t("form.steps.asset-admins.roles.admin")}
             </Badge>
             <Badge key="user-manager" variant="outline" className="text-xs">
-              {t("form.steps.token-admins.roles.user-manager")}
+              {t("form.steps.asset-admins.roles.user-manager")}
             </Badge>
             <Badge key="issuer" variant="outline" className="text-xs">
-              {t("form.steps.token-admins.roles.issuer")}
+              {t("form.steps.asset-admins.roles.issuer")}
             </Badge>
           </div>
         }
       />
-      {tokenAdmins.map((admin) => (
+      {assetAdmins.map((admin) => (
         admin.wallet && (
           <FormSummaryDetailItem
             key={admin.wallet}
@@ -57,7 +57,7 @@ export function TokenAdminsCard({ userDetails, tokenAdmins }: TokenAdminsCardPro
               <div className="flex flex-wrap gap-1">
                 {admin.roles?.map((role) => (
                   <Badge key={role} variant="outline" className="text-xs">
-                    {t(`form.steps.token-admins.roles.${role}` as any)}
+                    {t(`form.steps.asset-admins.roles.${role}` as any)}
                   </Badge>
                 ))}
               </div>

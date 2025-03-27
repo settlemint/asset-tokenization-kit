@@ -5,36 +5,37 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import type { User } from "@/lib/queries/user/user-schema";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import type { AdminRole } from "./admin-roles-badges";
-import { SelectedAdminsList, type TokenAdmin } from "./selected-admins-list";
+import { SelectedAdminsList, type AssetAdmin } from "./selected-admins-list";
 
-export function TokenAdmins({ userDetails }: { userDetails: User }) {
-  const t = useTranslations("private.assets.create.form.steps.token-admins");
+export function AssetAdmins({ userDetails }: { userDetails: User }) {
+  const t = useTranslations("private.assets.create.form.steps.asset-admins");
   const commonT = useTranslations("private.assets.details.forms.account");
   const form = useFormContext();
   const [showUserSelector, setShowUserSelector] = useState(false);
   const [isManualEntry, setIsManualEntry] = useState(false);
 
+  const watchedAssetAdmins = form.watch("assetAdmins");
   // Get current token admins from form state or initialize empty array
-  const tokenAdmins = form.watch("tokenAdmins") || [];
+  const assetAdmins = useMemo(() => watchedAssetAdmins || [], [watchedAssetAdmins]);
   const selectedWallet = form.watch("selectedWallet");
 
   // Use useEffect to handle state updates when selectedWallet changes
   useEffect(() => {
-    if (selectedWallet && !tokenAdmins.some((admin: TokenAdmin) => admin.wallet === selectedWallet)) {
+    if (selectedWallet && !assetAdmins.some((admin: AssetAdmin) => admin.wallet === selectedWallet)) {
       const updatedAdmins = [
-        ...tokenAdmins,
+        ...assetAdmins,
         { wallet: selectedWallet, roles: ["admin"] as AdminRole[] }
       ];
 
-      form.setValue("tokenAdmins", updatedAdmins, {
+      form.setValue("assetAdmins", updatedAdmins, {
         shouldValidate: false,
         shouldDirty: true
       });
-      // Validate only the tokenAdmins field
-      form.trigger("tokenAdmins");
+      // Validate only the assetAdmins field
+      form.trigger("assetAdmins");
 
       // Reset the selector
       form.setValue("selectedWallet", "", {
@@ -43,39 +44,39 @@ export function TokenAdmins({ userDetails }: { userDetails: User }) {
 
       setShowUserSelector(false);
     }
-  }, [selectedWallet, tokenAdmins, form]);
+  }, [selectedWallet, assetAdmins, form]);
 
   const handleRemoveAdmin = (wallet: string) => {
-    const updatedAdmins = tokenAdmins.filter(
-      (admin: TokenAdmin) => admin.wallet !== wallet
+    const updatedAdmins = assetAdmins.filter(
+      (admin: AssetAdmin) => admin.wallet !== wallet
     );
 
-    form.setValue("tokenAdmins", updatedAdmins, {
+    form.setValue("assetAdmins", updatedAdmins, {
       shouldValidate: false,
       shouldDirty: true
     });
-    // Validate only the tokenAdmins field
-    form.trigger("tokenAdmins");
+    // Validate only the assetAdmins field
+    form.trigger("assetAdmins");
   };
 
   const handleChangeRoles = (wallet: string, roles: AdminRole[]) => {
-    const updatedAdmins = tokenAdmins.map((admin: TokenAdmin) =>
+    const updatedAdmins = assetAdmins.map((admin: AssetAdmin) =>
       admin.wallet === wallet ? { ...admin, roles } : admin
     );
 
-    form.setValue("tokenAdmins", updatedAdmins, {
+    form.setValue("assetAdmins", updatedAdmins, {
       shouldValidate: false,
       shouldDirty: true
     });
-    // Validate only the tokenAdmins field
-    form.trigger("tokenAdmins");
+    // Validate only the assetAdmins field
+    form.trigger("assetAdmins");
   };
 
   return (
     <FormStep title={t("title")} description={t("description")}>
       <div className="space-y-4">
         <SelectedAdminsList
-          admins={tokenAdmins}
+          admins={assetAdmins}
           onRemove={handleRemoveAdmin}
           onChangeRoles={handleChangeRoles}
           onAddAnother={() => setShowUserSelector(true)}

@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import type { Address } from "viem";
 import { AdminRolesBadges, type AdminRole } from "./admin-roles-badges";
-import type { TokenAdmin } from "./selected-admins-list";
+import type { AssetAdmin } from "./selected-admins-list";
 
 interface SelectedAdminListItemProps {
-  admin: TokenAdmin;
+  admin: AssetAdmin;
   onChangeRoles?: (wallet: string, roles: AdminRole[]) => void;
   onRemove?: (wallet: string) => void;
 }

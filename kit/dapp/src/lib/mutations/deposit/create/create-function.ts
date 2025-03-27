@@ -61,7 +61,7 @@ export async function createDepositFunction({
     isin,
     predictedAddress,
     price,
-    tokenAdmins
+    assetAdmins
   },
   ctx: { user },
 }: {
@@ -101,7 +101,7 @@ export async function createDepositFunction({
   await waitForTransactions([createTxHash]);
 
   // After deposit is created, grant roles to admins in parallel
-  const grantRolePromises = tokenAdmins.map(async (admin) => {
+  const grantRolePromises = assetAdmins.map(async (admin) => {
     const roles = {
       DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
       SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),

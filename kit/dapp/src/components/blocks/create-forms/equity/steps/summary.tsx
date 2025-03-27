@@ -11,7 +11,7 @@ import type { equityClasses } from "@/lib/utils/typebox/equity-classes";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
-import { TokenAdminsCard } from "../../common/token-admins/token-admins-card";
+import { AssetAdminsCard } from "../../common/asset-admins/asset-admins-card";
 import { EquityCategoriesSummary } from "./_components/equity-categories-summary";
 import { EquityClassesSummary } from "./_components/equity-classes-summary";
 export function Summary({ userDetails }: { userDetails: User }) {
@@ -88,7 +88,7 @@ export function Summary({ userDetails }: { userDetails: User }) {
         />
       </FormSummaryDetailCard>
 
-      <TokenAdminsCard userDetails={userDetails} tokenAdmins={values.tokenAdmins} />
+      <AssetAdminsCard userDetails={userDetails} assetAdmins={values.assetAdmins} />
     </FormStep>
   );
 }

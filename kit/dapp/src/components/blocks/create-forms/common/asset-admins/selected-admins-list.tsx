@@ -7,13 +7,13 @@ import { useTranslations } from "next-intl";
 import type { AdminRole } from "./admin-roles-badges";
 import { SelectedAdminListItem } from "./selected-admin-list-item";
 
-export interface TokenAdmin {
+export interface AssetAdmin {
   wallet: string;
   roles: AdminRole[];
 }
 
 interface SelectedAdminsListProps {
-  admins: TokenAdmin[];
+  admins: AssetAdmin[];
   onRemove: (wallet: string) => void;
   onChangeRoles: (wallet: string, roles: AdminRole[]) => void;
   onAddAnother: () => void;
@@ -27,7 +27,7 @@ export function SelectedAdminsList({
   onAddAnother,
   userDetails
 }: SelectedAdminsListProps) {
-  const t = useTranslations("private.assets.create.form.steps.token-admins");
+  const t = useTranslations("private.assets.create.form.steps.asset-admins");
 
   return (
     <div className="space-y-3">

@@ -1,6 +1,6 @@
 "use client";
 
-import { TokenAdmins } from "@/components/blocks/create-forms/common/token-admins/token-admins";
+import { AssetAdmins } from "@/components/blocks/create-forms/common/asset-admins/asset-admins";
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
@@ -56,7 +56,7 @@ export function CreateStablecoinForm({
             amount: 1,
             currency: userDetails.currency,
           },
-          tokenAdmins: []
+          assetAdmins: []
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
@@ -64,7 +64,7 @@ export function CreateStablecoinForm({
       >
         <Basics />
         <Configuration />
-        <TokenAdmins userDetails={userDetails} />
+        <AssetAdmins userDetails={userDetails} />
         <Summary userDetails={userDetails} />
       </Form>
     </FormSheet>

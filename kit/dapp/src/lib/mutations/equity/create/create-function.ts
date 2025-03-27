@@ -60,7 +60,7 @@ export async function createEquityFunction({
     equityClass,
     predictedAddress,
     price,
-    tokenAdmins,
+    assetAdmins,
   },
   ctx: { user },
 }: {
@@ -98,7 +98,7 @@ export async function createEquityFunction({
   await waitForTransactions([createTxHash]);
 
   // After equity is created, grant roles to admins in parallel
-  const grantRolePromises = tokenAdmins.map(async (admin) => {
+  const grantRolePromises = assetAdmins.map(async (admin) => {
     const roles = {
       DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
       SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
