@@ -72,7 +72,7 @@ export const createEquityFunction = withAccessControl(
 }: {
   parsedInput: CreateEquityInput;
   ctx: { user: User };
-}) {
+}) => {
   await hasuraClient.request(CreateOffchainEquity, {
     id: predictedAddress,
     isin: isin,

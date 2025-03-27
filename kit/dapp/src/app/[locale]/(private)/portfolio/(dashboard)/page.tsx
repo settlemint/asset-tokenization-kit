@@ -86,11 +86,6 @@ export default async function PortfolioDashboard({
     })
   );
 
-  const totalUserAssetsValue = assetValues.reduce(
-    (acc, value) => acc + value,
-    0
-  );
-
   return (
     <>
       <PageHeader

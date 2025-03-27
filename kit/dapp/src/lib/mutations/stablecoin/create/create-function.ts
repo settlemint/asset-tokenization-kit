@@ -83,7 +83,7 @@ export const createStablecoinFunction = withAccessControl(
 }: {
   parsedInput: CreateStablecoinInput;
   ctx: { user: User };
-}) {
+}) => {
   await hasuraClient.request(CreateOffchainStablecoin, {
     id: predictedAddress,
   });
