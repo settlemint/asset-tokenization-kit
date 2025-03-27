@@ -101,8 +101,11 @@ export function PortfolioValue({
           granularity: "hour",
           intervalType: "day",
           intervalLength: 3,
+          aggregation: {
+            display: "max",
+            storage: "last",
+          },
           accumulation: "current",
-          aggregation: "first",
           historical: true,
         },
         locale
@@ -128,7 +131,10 @@ export function PortfolioValue({
             intervalType: "month",
             intervalLength: 1,
             accumulation: "max",
-            aggregation: "sum",
+            aggregation: {
+              display: "sum",
+              storage: "last",
+            },
             historical: true,
           },
           locale
@@ -148,7 +154,9 @@ export function PortfolioValue({
 
           // Update values for this timestamp
           for (const [key, value] of Object.entries(item)) {
-            timestampValues[key] = Number(value);
+            if (key !== "timestamp") {
+              timestampValues[key] = Number(value);
+            }
           }
 
           timeseriesMap.set(item.timestamp, timestampValues);
@@ -180,7 +188,7 @@ export function PortfolioValue({
           intervalType: "month",
           intervalLength: 1,
           accumulation: "max",
-          aggregation: "sum",
+          aggregation: "sum", // Simplified since we don't need different storage behavior
           historical: true,
         },
         locale
