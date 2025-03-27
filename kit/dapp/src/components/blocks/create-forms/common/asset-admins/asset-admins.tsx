@@ -24,7 +24,11 @@ export function AssetAdmins({ userDetails }: { userDetails: User }) {
 
   // Use useEffect to handle state updates when selectedWallet changes
   useEffect(() => {
-    if (selectedWallet && !assetAdmins.some((admin: AssetAdmin) => admin.wallet === selectedWallet)) {
+    if (!selectedWallet) {
+      return;
+    }
+
+    if (!assetAdmins.some((admin: AssetAdmin) => admin.wallet === selectedWallet)) {
       const updatedAdmins = [
         ...assetAdmins,
         { wallet: selectedWallet, roles: ["admin"] as AdminRole[] }
@@ -34,6 +38,7 @@ export function AssetAdmins({ userDetails }: { userDetails: User }) {
         shouldValidate: false,
         shouldDirty: true
       });
+
       // Validate only the assetAdmins field
       form.trigger("assetAdmins");
 
@@ -44,7 +49,16 @@ export function AssetAdmins({ userDetails }: { userDetails: User }) {
 
       setShowUserSelector(false);
     }
-  }, [selectedWallet, assetAdmins, form]);
+
+    // Cleanup function to handle component unmount or selectedWallet changes
+    return () => {
+      if (selectedWallet) {
+        form.setValue("selectedWallet", "", {
+          shouldValidate: false
+        });
+      }
+    };
+  }, [selectedWallet, assetAdmins, form, setShowUserSelector]);
 
   const handleRemoveAdmin = (wallet: string) => {
     const updatedAdmins = assetAdmins.filter(
