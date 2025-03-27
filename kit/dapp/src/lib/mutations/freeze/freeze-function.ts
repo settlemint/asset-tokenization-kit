@@ -2,6 +2,7 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import type { FreezeInput } from "./freeze-schema";
@@ -93,55 +94,62 @@ const DepositFreeze = portalGraphql(`
  * @param user - The user executing the freeze operation
  * @returns Array of transaction hashes
  */
-export async function freezeFunction({
-  parsedInput: { address, pincode, userAddress, amount, assettype },
-  ctx: { user },
-}: {
-  parsedInput: FreezeInput;
-  ctx: { user: User };
-}) {
-  // Get token details based on asset type
-  const { decimals } = await getAssetDetail({
-    address,
-    assettype,
-  });
+export const freezeFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({
+    parsedInput: { address, pincode, userAddress, amount, assettype },
+    ctx: { user },
+  }: {
+    parsedInput: FreezeInput;
+    ctx: { user: User };
+  }) => {
+    // Get token details based on asset type
+    const { decimals } = await getAssetDetail({
+      address,
+      assettype,
+    });
 
-  // Common parameters for all mutations
-  const params = {
-    address,
-    user: userAddress,
-    from: user.wallet,
-    amount: parseUnits(amount.toString(), decimals).toString(),
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  };
+    // Common parameters for all mutations
+    const params = {
+      address,
+      user: userAddress,
+      from: user.wallet,
+      amount: parseUnits(amount.toString(), decimals).toString(),
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    };
 
-  switch (assettype) {
-    case "bond": {
-      const response = await portalClient.request(BondFreeze, params);
-      return safeParse(t.Hashes(), [response.BondFreeze?.transactionHash]);
+    switch (assettype) {
+      case "bond": {
+        const response = await portalClient.request(BondFreeze, params);
+        return safeParse(t.Hashes(), [response.BondFreeze?.transactionHash]);
+      }
+      case "cryptocurrency": {
+        throw new Error("Cryptocurrency does not support freeze operations");
+      }
+      case "equity": {
+        const response = await portalClient.request(EquityFreeze, params);
+        return safeParse(t.Hashes(), [response.EquityFreeze?.transactionHash]);
+      }
+      case "fund": {
+        const response = await portalClient.request(FundFreeze, params);
+        return safeParse(t.Hashes(), [response.FundFreeze?.transactionHash]);
+      }
+      case "stablecoin": {
+        const response = await portalClient.request(StableCoinFreeze, params);
+        return safeParse(t.Hashes(), [
+          response.StableCoinFreeze?.transactionHash,
+        ]);
+      }
+      case "deposit": {
+        const response = await portalClient.request(DepositFreeze, params);
+        return safeParse(t.Hashes(), [response.DepositFreeze?.transactionHash]);
+      }
+      default:
+        throw new Error("Invalid asset type");
     }
-    case "cryptocurrency": {
-      throw new Error("Cryptocurrency does not support freeze operations");
-    }
-    case "equity": {
-      const response = await portalClient.request(EquityFreeze, params);
-      return safeParse(t.Hashes(), [response.EquityFreeze?.transactionHash]);
-    }
-    case "fund": {
-      const response = await portalClient.request(FundFreeze, params);
-      return safeParse(t.Hashes(), [response.FundFreeze?.transactionHash]);
-    }
-    case "stablecoin": {
-      const response = await portalClient.request(StableCoinFreeze, params);
-      return safeParse(t.Hashes(), [
-        response.StableCoinFreeze?.transactionHash,
-      ]);
-    }
-    case "deposit": {
-      const response = await portalClient.request(DepositFreeze, params);
-      return safeParse(t.Hashes(), [response.DepositFreeze?.transactionHash]);
-    }
-    default:
-      throw new Error("Invalid asset type");
   }
-}
+);

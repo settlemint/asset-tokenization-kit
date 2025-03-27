@@ -1,7 +1,10 @@
+"use server";
+
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
+import { withAccessControl } from "../../utils/access-control";
 import { UserFragment } from "./user-fragment";
 import { UserSchema } from "./user-schema";
 
@@ -48,18 +51,25 @@ export interface UserSearchProps {
  * @remarks
  * Returns an empty array if no address is provided or if an error occurs
  */
-export const getUserSearch = cache(async ({ searchTerm }: UserSearchProps) => {
-  const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
+export const getUserSearch = withAccessControl(
+  {
+    requiredPermissions: {
+      user: ["list"],
+    },
+  },
+  cache(async ({ searchTerm }: UserSearchProps) => {
+    const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
 
-  if (!sanitizedSearchTerm) {
-    return [];
-  }
+    if (!sanitizedSearchTerm) {
+      return [];
+    }
 
-  const searchValue = `%${searchTerm}%`;
-  const result = await hasuraClient.request(UserSearch, {
-    address: searchValue,
-  });
+    const searchValue = `%${searchTerm}%`;
+    const result = await hasuraClient.request(UserSearch, {
+      address: searchValue,
+    });
 
-  // Parse and validate users using TypeBox schema
-  return safeParse(t.Array(UserSchema), result.user || []);
-});
+    // Parse and validate users using TypeBox schema
+    return safeParse(t.Array(UserSchema), result.user || []);
+  })
+);

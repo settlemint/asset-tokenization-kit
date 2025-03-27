@@ -1,10 +1,10 @@
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
+import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { safeParse } from "@/lib/utils/typebox";
 import type { Price } from "@/lib/utils/typebox/price";
 import { cache } from "react";
 import { getAddress } from "viem";
-import { getCurrentUserDetail } from "../user/current-user-detail";
 import { AssetPriceFragment } from "./asset-price-fragment";
 import { AssetPriceSchema } from "./asset-price-schema";
 

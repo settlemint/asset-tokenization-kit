@@ -1,11 +1,11 @@
 import { getFundList } from "@/lib/queries/fund/fund-list";
+import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { cache } from "react";
 import { getBondList } from "../bond/bond-list";
 import { getCryptoCurrencyList } from "../cryptocurrency/cryptocurrency-list";
 import { getDepositList } from "../deposit/deposit-list";
 import { getEquityList } from "../equity/equity-list";
 import { getStableCoinList } from "../stablecoin/stablecoin-list";
-import { getCurrentUserDetail } from "../user/current-user-detail";
 
 /**
  * Gets the total price across all assets in the user's preferred currency

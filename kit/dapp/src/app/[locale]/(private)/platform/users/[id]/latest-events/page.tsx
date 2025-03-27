@@ -1,8 +1,7 @@
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
-import { getUserDetail } from "@/lib/queries/user/user-detail";
-
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
+import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { getTranslations } from "next-intl/server";
 
 interface LatestTransactionsPageProps {

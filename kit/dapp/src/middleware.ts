@@ -19,9 +19,7 @@ export default function middleware(request: NextRequest) {
   // Only stop the middleware chain if the response is a rewrite (for proxy routes)
   // NextResponse.next() should be ignored and allow the middleware to continue
   if (proxyResponse?.headers.get("x-middleware-rewrite")) {
-    const cookies = getSessionCookie(request, {
-      useSecureCookies: process.env.NODE_ENV === "production",
-    });
+    const cookies = getSessionCookie(request);
     if (!cookies) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
