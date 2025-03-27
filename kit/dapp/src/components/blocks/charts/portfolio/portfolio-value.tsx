@@ -12,12 +12,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createTimeSeries } from "@/lib/charts";
-import type { PortfolioStatsCollection } from "@/lib/queries/portfolio/portfolio-schema";
+import type {
+  PortfolioAsset,
+  PortfolioStatsCollection,
+} from "@/lib/queries/portfolio/portfolio-schema";
 import type { Price } from "@/lib/utils/typebox/price";
 import { useTranslations, type Locale } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
 import { AreaChartComponent } from "../area-chart";
+
+type AssetType =
+  | "bond"
+  | "cryptocurrency"
+  | "equity"
+  | "fund"
+  | "stablecoin"
+  | "deposit";
 
 interface PortfolioValueProps {
   portfolioStats: PortfolioStatsCollection;
@@ -52,21 +63,24 @@ export function PortfolioValue({
     );
   }
 
-  // Get unique assets and their types
-  const uniqueAssets = Array.from(
-    new Set(portfolioStats.map((item) => item.asset.id))
-  );
-  const uniqueTypes = Array.from(
-    new Set(portfolioStats.map((item) => item.asset.type))
+  const { uniqueAssets, uniqueTypes, assetMap } = portfolioStats.reduce(
+    (acc, item) => {
+      acc.uniqueAssets.add(item.asset.id);
+      acc.uniqueTypes.add(item.asset.type as AssetType);
+      acc.assetMap.set(item.asset.id as Address, item.asset);
+      return acc;
+    },
+    {
+      uniqueAssets: new Set<string>(),
+      uniqueTypes: new Set<AssetType>(),
+      assetMap: new Map<Address, PortfolioAsset>(),
+    }
   );
 
-  // Create chart config based on aggregation type
   const chartConfig: ChartConfig = {};
   if (aggregationType === "individual") {
-    uniqueAssets.forEach((assetId, index) => {
-      const asset = portfolioStats.find(
-        (item) => item.asset.id === assetId
-      )?.asset;
+    Array.from(uniqueAssets).forEach((assetId, index) => {
+      const asset = assetMap.get(assetId as Address);
       if (asset) {
         chartConfig[assetId] = {
           label: asset.name,
@@ -75,7 +89,6 @@ export function PortfolioValue({
       }
     });
   } else if (aggregationType === "type") {
-    // Configure chart colors for each type
     for (const type of uniqueTypes) {
       chartConfig[type] = {
         label: type,
@@ -89,9 +102,7 @@ export function PortfolioValue({
     };
   }
 
-  // Process data based on aggregation type
   const processData = () => {
-    // First create individual asset time series
     const individualData = portfolioStats.map((item) => ({
       timestamp: item.timestamp,
       [item.asset.id]:
@@ -100,7 +111,7 @@ export function PortfolioValue({
 
     const individualTimeSeries = createTimeSeries(
       individualData,
-      uniqueAssets,
+      Array.from(uniqueAssets),
       {
         granularity: "hour",
         intervalType: "day",
@@ -118,24 +129,15 @@ export function PortfolioValue({
     if (aggregationType === "individual") {
       return individualTimeSeries;
     } else if (aggregationType === "type") {
-      // Create a map of asset id to asset type
-      const assetTypeMap = new Map<Address, string>(
-        portfolioStats.map((item) => [
-          item.asset.id as Address,
-          item.asset.type,
-        ])
-      );
-
-      // Transform individual time series to type-based time series
       return individualTimeSeries.map((row) => {
-        const typeValues = new Map<string, number>();
+        const typeValues = new Map<AssetType, number>();
 
-        // For each key in the row (except timestamp), get its type and sum values
         for (const [key, value] of Object.entries(row)) {
           if (key === "timestamp") continue;
 
-          const assetType = assetTypeMap.get(key as Address);
-          if (assetType) {
+          const asset = assetMap.get(key as Address);
+          if (asset) {
+            const assetType = asset.type;
             typeValues.set(
               assetType,
               (typeValues.get(assetType) || 0) + (value as number)
@@ -143,14 +145,12 @@ export function PortfolioValue({
           }
         }
 
-        // Create new row with type-based sums
         return {
           timestamp: row.timestamp,
           ...Object.fromEntries(typeValues.entries()),
         };
       });
     } else {
-      // Total value - sum all values for each timestamp
       return individualTimeSeries.map((row) => {
         const total = Object.entries(row).reduce((sum, [key, value]) => {
           return key !== "timestamp" ? sum + (value as number) : sum;
