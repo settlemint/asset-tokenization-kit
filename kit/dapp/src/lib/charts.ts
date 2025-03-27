@@ -301,16 +301,6 @@ function processTimeSeriesValue(
   }
 }
 
-function updateLastValidValue(
-  lastValidValues: Map<unknown, number>,
-  key: unknown,
-  value: unknown
-): void {
-  if (value) {
-    lastValidValues.set(key, Number(value));
-  }
-}
-
 function findClosestHistoricalValue<T extends DataPoint>(
   data: T[],
   key: keyof T,
