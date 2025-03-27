@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { AllowUserInput } from "./allow-user-schema";
 
@@ -27,29 +28,36 @@ const DepositAllowUser = portalGraphql(`
  * @param user - The user authorizing access
  * @returns The transaction hash
  */
-export async function allowUserFunction({
-  parsedInput: { address, pincode, userAddress, assettype },
-  ctx: { user },
-}: {
-  parsedInput: AllowUserInput;
-  ctx: { user: User };
-}) {
-  // Common parameters for all mutations
-  const params = {
-    address,
-    user: userAddress,
-    from: user.wallet,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  };
+export const allowUserFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({
+    parsedInput: { address, pincode, userAddress, assettype },
+    ctx: { user },
+  }: {
+    parsedInput: AllowUserInput;
+    ctx: { user: User };
+  }) => {
+    // Common parameters for all mutations
+    const params = {
+      address,
+      user: userAddress,
+      from: user.wallet,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    };
 
-  switch (assettype) {
-    case "deposit": {
-      const response = await portalClient.request(DepositAllowUser, params);
-      return safeParse(t.Hashes(), [
-        response.DepositAllowUser?.transactionHash,
-      ]);
+    switch (assettype) {
+      case "deposit": {
+        const response = await portalClient.request(DepositAllowUser, params);
+        return safeParse(t.Hashes(), [
+          response.DepositAllowUser?.transactionHash,
+        ]);
+      }
+      default:
+        throw new Error("Asset type does not support allow user operations");
     }
-    default:
-      throw new Error("Asset type does not support allow user operations");
   }
-}
+);

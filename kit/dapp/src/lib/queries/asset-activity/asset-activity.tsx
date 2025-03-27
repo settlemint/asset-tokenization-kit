@@ -1,3 +1,5 @@
+"use server";
+
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
   theGraphClientKit,

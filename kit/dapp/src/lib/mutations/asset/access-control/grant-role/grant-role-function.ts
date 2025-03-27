@@ -2,6 +2,7 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { type Role, getRoleIdentifier } from "@/lib/config/roles";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { GrantRoleInput } from "./grant-role-schema";
 
@@ -126,65 +127,72 @@ const DepositGrantRole = portalGraphql(`
  * @param user - The user granting the roles
  * @returns Array of transaction hashes
  */
-export async function grantRoleFunction({
-  parsedInput: { address, roles, userAddress, pincode, assettype },
-  ctx: { user },
-}: {
-  parsedInput: GrantRoleInput;
-  ctx: { user: User };
-}) {
-  const grantRoleFn = async (role: Role) => {
-    const params = {
-      address: address,
-      from: user.wallet,
-      input: {
-        role: getRoleIdentifier(role),
-        account: userAddress,
-      },
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+export const grantRoleFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({
+    parsedInput: { address, roles, userAddress, pincode, assettype },
+    ctx: { user },
+  }: {
+    parsedInput: GrantRoleInput;
+    ctx: { user: User };
+  }) => {
+    const grantRoleFn = async (role: Role) => {
+      const params = {
+        address: address,
+        from: user.wallet,
+        input: {
+          role: getRoleIdentifier(role),
+          account: userAddress,
+        },
+        challengeResponse: await handleChallenge(user.wallet, pincode),
+      };
+
+      switch (assettype) {
+        case "stablecoin": {
+          const response = await portalClient.request(
+            StableCoinGrantRole,
+            params
+          );
+          return response.StableCoinGrantRole?.transactionHash;
+        }
+        case "bond": {
+          const response = await portalClient.request(BondGrantRole, params);
+          return response.BondGrantRole?.transactionHash;
+        }
+        case "cryptocurrency": {
+          const response = await portalClient.request(
+            CryptoCurrencyGrantRole,
+            params
+          );
+          return response.CryptoCurrencyGrantRole?.transactionHash;
+        }
+        case "fund": {
+          const response = await portalClient.request(FundGrantRole, params);
+          return response.FundGrantRole?.transactionHash;
+        }
+        case "equity": {
+          const response = await portalClient.request(EquityGrantRole, params);
+          return response.EquityGrantRole?.transactionHash;
+        }
+        case "deposit": {
+          const response = await portalClient.request(DepositGrantRole, params);
+          return response.DepositGrantRole?.transactionHash;
+        }
+        default:
+          throw new Error("Unsupported asset type");
+      }
     };
 
-    switch (assettype) {
-      case "stablecoin": {
-        const response = await portalClient.request(
-          StableCoinGrantRole,
-          params
-        );
-        return response.StableCoinGrantRole?.transactionHash;
-      }
-      case "bond": {
-        const response = await portalClient.request(BondGrantRole, params);
-        return response.BondGrantRole?.transactionHash;
-      }
-      case "cryptocurrency": {
-        const response = await portalClient.request(
-          CryptoCurrencyGrantRole,
-          params
-        );
-        return response.CryptoCurrencyGrantRole?.transactionHash;
-      }
-      case "fund": {
-        const response = await portalClient.request(FundGrantRole, params);
-        return response.FundGrantRole?.transactionHash;
-      }
-      case "equity": {
-        const response = await portalClient.request(EquityGrantRole, params);
-        return response.EquityGrantRole?.transactionHash;
-      }
-      case "deposit": {
-        const response = await portalClient.request(DepositGrantRole, params);
-        return response.DepositGrantRole?.transactionHash;
-      }
-      default:
-        throw new Error("Unsupported asset type");
-    }
-  };
+    const selectedRoles = Object.entries(roles)
+      .filter(([, enabled]) => enabled)
+      .map(([role]) => role as Role);
+    const grantPromises = selectedRoles.map((role) => grantRoleFn(role));
+    const results = await Promise.all(grantPromises);
 
-  const selectedRoles = Object.entries(roles)
-    .filter(([, enabled]) => enabled)
-    .map(([role]) => role as Role);
-  const grantPromises = selectedRoles.map((role) => grantRoleFn(role));
-  const results = await Promise.all(grantPromises);
-
-  return safeParse(t.Hashes(), results);
-}
+    return safeParse(t.Hashes(), results);
+  }
+);
