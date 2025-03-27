@@ -22,7 +22,7 @@ import { getDateFromTimestamp } from "./utils/date";
 export type TimeGranularity = "hour" | "day" | "month";
 export type IntervalType = "year" | "month" | "week" | "day";
 export type AggregationType = "first" | "sum" | "count";
-export type AccumulationType = "total" | "max";
+export type AccumulationType = "total" | "max" | "current";
 
 export interface TimeSeriesOptions {
   granularity: TimeGranularity;
@@ -252,6 +252,8 @@ function processTimeSeriesValue(
       return currentValue + lastValidValue;
     case "max":
       return Math.max(currentValue, lastValidValue);
+    case "current":
+      return currentValue;
     default: {
       return currentValue;
     }

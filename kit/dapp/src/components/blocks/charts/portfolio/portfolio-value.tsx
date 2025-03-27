@@ -87,61 +87,26 @@ export function PortfolioValue({
   // Process data based on aggregation type
   const processData = () => {
     if (aggregationType === "individual") {
-      const timeseriesPerAsset = uniqueAssets.map((assetId) => {
-        const assetHistory = portfolioStats.filter(
-          (item) => item.asset.id === assetId
-        );
-
-        const processedData = assetHistory.map((item) => ({
-          timestamp: item.timestamp,
-          [assetId]:
-            Number(item.balance) *
-            (assetPriceMap.get(item.asset.id)?.amount || 0),
-        }));
-
-        return createTimeSeries(
-          processedData,
-          [assetId],
-          {
-            granularity: "day",
-            intervalType: "month",
-            intervalLength: 1,
-            accumulation: "max",
-            aggregation: "first",
-            historical: true,
-          },
-          locale
-        );
-      });
-
-      // Combine all time series data using a Map
-      const timeseriesMap = new Map<string, Record<string, number>>();
-
-      // Process each asset's time series
-      for (const series of timeseriesPerAsset) {
-        for (const item of series) {
-          // Get or create values for this timestamp
-          const timestampValues = timeseriesMap.get(item.timestamp) || {
-            ...Object.fromEntries(uniqueAssets.map((id) => [id, 0])),
-          };
-
-          // Update values for this timestamp
-          for (const [key, value] of Object.entries(item)) {
-            timestampValues[key] = Number(value);
-          }
-
-          timeseriesMap.set(item.timestamp, timestampValues);
-        }
-      }
-
-      // Convert map to sorted array
-      const entries = Array.from(timeseriesMap.entries());
-      entries.sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime());
-
-      return entries.map(([timestamp, values]) => ({
-        timestamp,
-        ...values,
+      const processedData = portfolioStats.map((item) => ({
+        timestamp: item.timestamp,
+        [item.asset.id]:
+          Number(item.balance) *
+          (assetPriceMap.get(item.asset.id)?.amount || 0),
       }));
+
+      return createTimeSeries(
+        processedData,
+        uniqueAssets,
+        {
+          granularity: "hour",
+          intervalType: "day",
+          intervalLength: 3,
+          accumulation: "current",
+          aggregation: "first",
+          historical: true,
+        },
+        locale
+      );
     } else if (aggregationType === "type") {
       const timeseriesPerType = assetTypes.map((type) => {
         const typeHistory = portfolioStats.filter(
