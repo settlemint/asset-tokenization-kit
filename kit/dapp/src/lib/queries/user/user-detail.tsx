@@ -1,3 +1,5 @@
+"use server";
+
 import { getUser } from "@/lib/auth/utils";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
