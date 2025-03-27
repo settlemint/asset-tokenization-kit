@@ -6,8 +6,8 @@ import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
+import { grantRolesToAdmins } from '@/lib/utils/role-granting';
 import { safeParse, t } from "@/lib/utils/typebox";
-import { grantRoleFunction } from "../../asset/access-control/grant-role/grant-role-function";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateDepositInput } from "./create-schema";
 
@@ -102,29 +102,14 @@ export const createDepositFunction = withAccessControl(
   // Wait for the deposit creation transaction to be mined
   await waitForTransactions([createTxHash]);
 
-  // After deposit is created, grant roles to admins in parallel
-  const grantRolePromises = assetAdmins.map(async (admin) => {
-    const roles = {
-      DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
-      SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
-      USER_MANAGEMENT_ROLE: admin.roles.includes("user-manager"),
-    };
-
-    return grantRoleFunction({
-      parsedInput: {
-        address: predictedAddress,
-        roles,
-        userAddress: admin.wallet,
-        pincode,
-        assettype: "deposit",
-      },
-      ctx: { user },
-    });
-  });
-
-  // Get all role grant transaction hashes
-  const grantRoleResults = await Promise.all(grantRolePromises);
-  const roleGrantHashes = grantRoleResults.flatMap((result) => result);
+  // Grant roles to admins using the shared helper
+  const roleGrantHashes = await grantRolesToAdmins(
+    assetAdmins,
+    predictedAddress,
+    pincode,
+    "deposit",
+    user
+  );
 
   // Combine all transaction hashes
   const allTransactionHashes = [createTxHash, ...roleGrantHashes];
