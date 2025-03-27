@@ -9,12 +9,8 @@ export async function fetchPendingTransactions(address: Address) {
       address,
     });
 
-    // Filter for pending transactions
-    return (
-      transactions?.filter(
-        (tx) => tx.receipt?.status.toLowerCase() === "pending"
-      ) ?? []
-    );
+    // Filter for pending transactions - a transaction is pending if it has no receipt
+    return transactions?.filter((tx) => !tx.receipt) ?? [];
   } catch (error) {
     console.error("Error fetching pending transactions:", error);
     return [];

@@ -44,11 +44,8 @@ export function PendingTransactionsDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-[350px] rounded shadow-dropdown"
+        className="w-[350px] rounded-lg shadow-dropdown"
       >
-        <div className="flex items-center justify-between p-4">
-          <h2 className="font-semibold">{t("title")}</h2>
-        </div>
         {pendingTransactions.length === 0 ? (
           <div className="p-4 text-center text-sm text-muted-foreground">
             {t("no-pending")}
