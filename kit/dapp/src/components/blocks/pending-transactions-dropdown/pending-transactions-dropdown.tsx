@@ -12,11 +12,12 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePendingTransactions } from "@/lib/hooks/use-pending-transactions";
 import { formatDate } from "@/lib/utils/date";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRef } from "react";
 
 export function PendingTransactionsDropdown() {
   const t = useTranslations("components.pending-transactions");
+  const locale = useLocale();
   const iconRef = useRef(null);
   const { pendingTransactions, hasPendingTransactions } =
     usePendingTransactions();
@@ -43,8 +44,11 @@ export function PendingTransactionsDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-[350px] rounded-lg shadow-dropdown"
+        className="w-[350px] rounded shadow-dropdown"
       >
+        <div className="flex items-center justify-between p-4">
+          <h2 className="font-semibold">{t("title")}</h2>
+        </div>
         {pendingTransactions.length === 0 ? (
           <div className="p-4 text-center text-sm text-muted-foreground">
             {t("no-pending")}
@@ -57,27 +61,22 @@ export function PendingTransactionsDropdown() {
                   key={tx.transactionHash}
                   className="flex flex-col gap-2 rounded-lg border bg-card p-3 text-sm"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium">{tx.functionName}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDate(tx.createdAt, { type: "relative" })}
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">
+                      {formatDate(tx.createdAt, { locale })}
                     </span>
                   </div>
-                  <div className="flex flex-col gap-1 text-xs">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-muted-foreground">{t("from")}</span>
-                      <EvmAddress address={tx.from} />
-                    </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-muted-foreground">
-                        {t("contract")}
-                      </span>
-                      <EvmAddress address={tx.address} />
-                    </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-muted-foreground">{t("hash")}</span>
-                      <TransactionHash hash={tx.transactionHash} />
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">From:</span>
+                    <EvmAddress address={tx.from} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Contract:</span>
+                    <EvmAddress address={tx.address} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Hash:</span>
+                    <TransactionHash hash={tx.transactionHash} />
                   </div>
                 </div>
               ))}
