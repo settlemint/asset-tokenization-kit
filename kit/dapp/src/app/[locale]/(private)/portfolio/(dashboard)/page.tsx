@@ -9,7 +9,7 @@ import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-
 import { getAssetsPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { getPortfolioStats } from "@/lib/queries/portfolio/portfolio-stats";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
-import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
+import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { startOfDay, subMonths } from "date-fns";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
