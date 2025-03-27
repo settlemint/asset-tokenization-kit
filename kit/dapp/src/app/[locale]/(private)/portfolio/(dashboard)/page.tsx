@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
-import { getAssetPriceInUserCurrency, getAssetsPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
+import { getAssetsPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { getPortfolioStats } from "@/lib/queries/portfolio/portfolio-stats";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
@@ -77,13 +77,6 @@ export default async function PortfolioDashboard({
       acc +
       (assetPrices.get(balance.asset.id)?.amount ?? 0) * Number(balance.value),
     0
-  );
-
-  const assetValues = await Promise.all(
-    myAssetsBalance.balances.map(async (balance) => {
-      const price = await getAssetPriceInUserCurrency(balance.asset.id);
-      return price.amount * balance.value;
-    })
   );
 
   return (
