@@ -11,6 +11,7 @@ import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
+import { twoFactor } from "better-auth/plugins/two-factor";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { getServerEnvironment } from "../config/environment";
@@ -171,6 +172,7 @@ export const auth = betterAuth({
     passkey({
       rpName: metadata.title.default,
     }),
+    twoFactor(),
     magicLink({
       sendMagicLink,
     }),

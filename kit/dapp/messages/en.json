@@ -902,7 +902,44 @@
       },
       "profile": {
         "portfolio-management": "Portfolio Management",
-        "title": "Profile"
+        "title": "Profile",
+        "two-factor-authentication": {
+          "title": "Two-Factor Authentication",
+          "description": "Add an additional layer of security to your account by enabling two-factor authentication.",
+          "status": {
+            "enabled": "Two-factor authentication is enabled",
+            "disabled": "Two-factor authentication is disabled"
+          },
+          "setup-mfa": {
+            "title": "Setup MFA",
+            "description": "Scan the QR code with the authenticator app on your phone to enable two-factor authentication.",
+            "backup-codes-title": "Backup codes",
+            "backup-codes-description": "These codes can be used to access your account if you lose your phone. Make sure to store them in a safe place.",
+            "backup-codes-copy": "Copy backup codes",
+            "backup-codes-copied": "Backup codes copied to clipboard",
+            "cancel": "Cancel",
+            "enable": "Enable",
+            "enable-loading": "Enabling..."
+          },
+          "enable": {
+            "title": "Enable",
+            "description": "Enable two-factor authentication to add an additional layer of security to your account.",
+            "enter-password-title": "Enter password",
+            "enter-password-description": "Enter your password to enable two-factor authentication.",
+            "enter-password-placeholder": "Password",
+            "enter-password-submit": "Enable",
+            "enter-password-submit-loading": "Enabling...",
+            "enter-password-cancel": "Cancel",
+            "success-message": "Two-factor authentication enabled successfully",
+            "error-message": "Failed to enable two-factor authentication: {error}"
+          },
+          "disable": {
+            "title": "Disable",
+            "description": "Disable two-factor authentication to remove the additional layer of security from your account.",
+            "success-message": "Two-factor authentication disabled successfully",
+            "error-message": "Failed to disable two-factor authentication: {error}"
+          }
+        }
       }
     },
     "transfer-form": {
