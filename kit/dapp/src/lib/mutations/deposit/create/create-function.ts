@@ -1,10 +1,12 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { grantRoleFunction } from "../../asset/access-control/grant-role/grant-role-function";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateDepositInput } from "./create-schema";
 
@@ -59,6 +61,7 @@ export async function createDepositFunction({
     isin,
     predictedAddress,
     price,
+    tokenAdmins
   },
   ctx: { user },
 }: {
@@ -79,7 +82,7 @@ export async function createDepositFunction({
   const collateralLivenessSeconds =
     collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
 
-  const data = await portalClient.request(DepositFactoryCreate, {
+  const createDepositResult = await portalClient.request(DepositFactoryCreate, {
     address: DEPOSIT_FACTORY_ADDRESS,
     from: user.wallet,
     name: assetName,
@@ -89,5 +92,40 @@ export async function createDepositFunction({
     challengeResponse: await handleChallenge(user.wallet, pincode),
   });
 
-  return safeParse(t.Hashes(), [data.DepositFactoryCreate?.transactionHash]);
+  const createTxHash = createDepositResult.DepositFactoryCreate?.transactionHash;
+  if (!createTxHash) {
+    throw new Error("Failed to create deposit: no transaction hash received");
+  }
+
+  // Wait for the deposit creation transaction to be mined
+  await waitForTransactions([createTxHash]);
+
+  // After deposit is created, grant roles to admins in parallel
+  const grantRolePromises = tokenAdmins.map(async (admin) => {
+    const roles = {
+      DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
+      SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
+      USER_MANAGEMENT_ROLE: admin.roles.includes("user-manager"),
+    };
+
+    return grantRoleFunction({
+      parsedInput: {
+        address: predictedAddress,
+        roles,
+        userAddress: admin.wallet,
+        pincode,
+        assettype: "deposit",
+      },
+      ctx: { user },
+    });
+  });
+
+  // Get all role grant transaction hashes
+  const grantRoleResults = await Promise.all(grantRolePromises);
+  const roleGrantHashes = grantRoleResults.flatMap((result) => result);
+
+  // Combine all transaction hashes
+  const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+
+  return safeParse(t.Hashes(), allTransactionHashes);
 }

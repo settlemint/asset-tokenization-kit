@@ -4,16 +4,18 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/fund-factory/fund-factory-predict-address";
+import type { User } from "@/lib/queries/user/user-schema";
 import { formatNumber } from "@/lib/utils/number";
 import type { fundCategories } from "@/lib/utils/typebox/fund-categories";
 import type { fundClasses } from "@/lib/utils/typebox/fund-classes";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
+import { TokenAdminsCard } from "../../common/token-admins/token-admins-card";
 import { FundCategoriesSummary } from "./_components/fund-categories-summary";
 import { FundClassesSummary } from "./_components/fund-classes-summary";
 
-export function Summary() {
+export function Summary({ userDetails }: { userDetails: User }) {
   const { control } = useFormContext<CreateFundInput>();
   const values = useWatch({
     control: control,
@@ -92,6 +94,8 @@ export function Summary() {
           })}
         />
       </FormSummaryDetailCard>
+
+      <TokenAdminsCard userDetails={userDetails} tokenAdmins={values.tokenAdmins} />
     </FormStep>
   );
 }

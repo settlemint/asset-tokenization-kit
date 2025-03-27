@@ -1,5 +1,6 @@
 import { isAddressAvailable } from "@/lib/queries/deposit-factory/deposit-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
+import { TokenAdminsSchemaFragment } from "../../common/token-admins-schema";
 
 /**
  * TypeBox schema for validating tokenized deposit creation inputs
@@ -52,6 +53,7 @@ export function CreateDepositSchema() {
       price: t.Price({
         description: "Price of the tokenized deposit",
       }),
+      tokenAdmins: TokenAdminsSchemaFragment(),
     },
     {
       description: "Schema for validating tokenized deposit creation inputs",

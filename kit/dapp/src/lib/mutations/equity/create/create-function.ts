@@ -1,9 +1,11 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { EQUITY_FACTORY_ADDRESS } from "@/lib/contracts";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { grantRoleFunction } from "../../asset/access-control/grant-role/grant-role-function";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateEquityInput } from "./create-schema";
 
@@ -58,6 +60,7 @@ export async function createEquityFunction({
     equityClass,
     predictedAddress,
     price,
+    tokenAdmins,
   },
   ctx: { user },
 }: {
@@ -75,7 +78,7 @@ export async function createEquityFunction({
     currency: price.currency,
   });
 
-  const data = await portalClient.request(EquityFactoryCreate, {
+  const createEquityResult = await portalClient.request(EquityFactoryCreate, {
     address: EQUITY_FACTORY_ADDRESS,
     from: user.wallet,
     name: assetName,
@@ -86,5 +89,40 @@ export async function createEquityFunction({
     equityClass,
   });
 
-  return safeParse(t.Hashes(), [data.EquityFactoryCreate?.transactionHash]);
+  const createTxHash = createEquityResult.EquityFactoryCreate?.transactionHash;
+  if (!createTxHash) {
+    throw new Error("Failed to create equity: no transaction hash received");
+  }
+
+  // Wait for the equity creation transaction to be mined
+  await waitForTransactions([createTxHash]);
+
+  // After equity is created, grant roles to admins in parallel
+  const grantRolePromises = tokenAdmins.map(async (admin) => {
+    const roles = {
+      DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
+      SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
+      USER_MANAGEMENT_ROLE: admin.roles.includes("user-manager"),
+    };
+
+    return grantRoleFunction({
+      parsedInput: {
+        address: predictedAddress,
+        roles,
+        userAddress: admin.wallet,
+        pincode,
+        assettype: "equity",
+      },
+      ctx: { user },
+    });
+  });
+
+  // Get all role grant transaction hashes
+  const grantRoleResults = await Promise.all(grantRolePromises);
+  const roleGrantHashes = grantRoleResults.flatMap((result) => result);
+
+  // Combine all transaction hashes
+  const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+
+  return safeParse(t.Hashes(), allTransactionHashes);
 }

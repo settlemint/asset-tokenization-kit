@@ -1,9 +1,11 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { grantRoleFunction } from "../../asset/access-control/grant-role/grant-role-function";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateFundInput } from "./create-schema";
 
@@ -60,6 +62,7 @@ export async function createFundFunction({
     managementFeeBps,
     predictedAddress,
     price,
+    tokenAdmins,
   },
   ctx: { user },
 }: {
@@ -88,6 +91,40 @@ export async function createFundFunction({
     fundClass,
     managementFeeBps,
   });
+
+  const createTxHash = data.FundFactoryCreate?.transactionHash;
+  if (!createTxHash) {
+    throw new Error("Failed to create fund: no transaction hash received");
+  }
+
+  await waitForTransactions([createTxHash]);
+
+  // After fund is created, grant roles to admins in parallel
+  const grantRolePromises = tokenAdmins.map(async (admin) => {
+    const roles = {
+      DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
+      SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
+      USER_MANAGEMENT_ROLE: admin.roles.includes("user-manager"),
+    };
+
+    return grantRoleFunction({
+      parsedInput: {
+        address: predictedAddress,
+        roles,
+        userAddress: admin.wallet,
+        pincode,
+        assettype: "stablecoin",
+      },
+      ctx: { user },
+    });
+  });
+
+  // Get all role grant transaction hashes
+  const grantRoleResults = await Promise.all(grantRolePromises);
+  const roleGrantHashes = grantRoleResults.flatMap((result) => result);
+
+  // Combine all transaction hashes
+  const allTransactionHashes = [createTxHash, ...roleGrantHashes];
 
   return safeParse(t.Hashes(), [data.FundFactoryCreate?.transactionHash]);
 }
