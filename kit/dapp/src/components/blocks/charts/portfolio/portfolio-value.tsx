@@ -175,7 +175,6 @@ export function PortfolioValue({
         description={t("portfolio-value-description")}
         xAxis={{ key: "timestamp" }}
         showYAxis={true}
-        stacked={aggregationType !== "individual"}
         info={`Last updated: ${timeseries.at(-1)?.timestamp}`}
         chartContainerClassName="h-[14rem] w-full"
         options={
