@@ -1,3 +1,5 @@
+"use server";
+
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import {
   OffChainCryptoCurrencySchema,

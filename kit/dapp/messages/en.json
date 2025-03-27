@@ -155,16 +155,18 @@
     "platform": {
       "settings": {
         "base-currency-label": "Base Currency",
+        "base-currency-title": "Base Currency",
+        "base-currency-description": "Set the default currency for displaying asset values across the platform",
         "base-currency-updated": "Base currency updated successfully",
         "currencies": {
-          "aed": "UAE Dirham (AED)",
-          "chf": "Swiss Franc (CHF)",
           "eur": "Euro (EUR)",
-          "gbp": "British Pound (GBP)",
+          "usd": "US Dollar (USD)",
           "jpy": "Japanese Yen (JPY)",
-          "sar": "Saudi Riyal (SAR)",
+          "aed": "UAE Dirham (AED)",
           "sgd": "Singapore Dollar (SGD)",
-          "usd": "US Dollar (USD)"
+          "sar": "Saudi Riyal (SAR)",
+          "gbp": "British Pound (GBP)",
+          "chf": "Swiss Franc (CHF)"
         },
         "platform-management": "Platform management",
         "save": "Save",
@@ -197,7 +199,7 @@
       },
       "platform-management": {
         "group-title": "Platform management",
-        "settings": "Settings",
+        "settings": "Platform",
         "user-management": "User management"
       },
       "portfolio-management": {
@@ -209,6 +211,13 @@
         "my-contacts": "My contacts",
         "profile": "Profile",
         "settings": "Settings"
+      },
+      "settings-management": {
+        "group-title": "Settings",
+        "settings": "Settings",
+        "profile": "Profile",
+        "api": "API",
+        "platform": "Platform"
       }
     }
   },
@@ -412,6 +421,18 @@
           "no-data": "No yield distribution data available",
           "title": "Yield distribution",
           "total-yield-label": "Total yield"
+        }
+      },
+      "portfolio": {
+        "portfolio-value": "Portfolio value",
+        "portfolio-value-description": "Your portfolio value over time (based on current prices)",
+        "portfolio-value-error": "Error loading portfolio value data",
+        "portfolio-value-no-data": "No portfolio data available",
+        "portfolio-value-title": "Portfolio value",
+        "aggregation-options": {
+          "by-asset": "By asset",
+          "by-type": "By asset type",
+          "total": "Total value"
         }
       }
     },
@@ -765,7 +786,7 @@
       "afternoon": "Good afternoon",
       "evening": "Good evening",
       "morning": "Good morning",
-      "you-have": "You have"
+      "you-have": "You have assets worth"
     },
     "my-assets": {
       "bond": {
