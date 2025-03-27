@@ -1,12 +1,13 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
-import { getUserDetail } from "@/lib/queries/user/user-detail";
+import { setPincodeFunction } from "@/lib/mutations/user/set-pincode-function";
+import { SetPincodeSchema } from "@/lib/mutations/user/set-pincode-schema";
+import {
+  getCurrentUserDetail,
+  getUserDetail,
+} from "@/lib/queries/user/user-detail";
 import { getUserList } from "@/lib/queries/user/user-list";
 import { UserDetailSchema, UserSchema } from "@/lib/queries/user/user-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
-import {
-  getUserWalletVerifications,
-  WalletVerificationSchema,
-} from "@/lib/queries/user/wallet-security";
 import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
@@ -25,8 +26,8 @@ export const UserApi = new Elysia({
   .use(superJson)
   .get(
     "",
-    async () => {
-      return await getUserList();
+    async ({ user }) => {
+      return await getUserList({ ctx: { user } });
     },
     {
       auth: true,
@@ -44,8 +45,12 @@ export const UserApi = new Elysia({
   )
   .get(
     "/:id",
-    async ({ params: { id } }) => {
+    async ({ user, params: { id } }) => {
+      if (id === user.id) {
+        return await getCurrentUserDetail();
+      }
       return await getUserDetail({
+        ctx: { user },
         id,
       });
     },
@@ -70,8 +75,9 @@ export const UserApi = new Elysia({
   )
   .get(
     "/wallet/:address",
-    async ({ params: { address } }) => {
+    async ({ user, params: { address } }) => {
       return await getUserDetail({
+        ctx: { user },
         address: getAddress(address),
       });
     },
@@ -96,9 +102,10 @@ export const UserApi = new Elysia({
   )
   .get(
     "/search",
-    async ({ query: { term } }) => {
+    async ({ query: { term }, user }) => {
       return await getUserSearch({
         searchTerm: term,
+        ctx: { user },
       });
     },
     {
@@ -120,26 +127,24 @@ export const UserApi = new Elysia({
       },
     }
   )
-  .get(
-    "/wallet-security/:address",
-    async ({ params: { address } }) => {
-      return await getUserWalletVerifications(address);
+  .post(
+    "/set-pincode",
+    async ({ body, user }) => {
+      return setPincodeFunction({
+        parsedInput: body,
+        ctx: { user },
+      });
     },
     {
       auth: true,
       detail: {
-        summary: "Wallet Security",
-        description:
-          "Retrieves security verifications associated with a user's wallet.",
+        summary: "Set pincode",
+        description: "Sets a pincode for a user.",
         tags: ["user"],
       },
-      params: t.Object({
-        address: t.String({
-          description: "The wallet address to check security verifications for",
-        }),
-      }),
+      body: SetPincodeSchema(),
       response: {
-        200: t.Array(WalletVerificationSchema),
+        200: t.Object({ success: t.Boolean() }),
         ...defaultErrorSchema,
       },
     }

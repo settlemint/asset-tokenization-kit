@@ -1,3 +1,5 @@
+"use server";
+
 import type { Role } from "@/lib/config/roles";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {

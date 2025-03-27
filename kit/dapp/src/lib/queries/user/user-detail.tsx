@@ -1,8 +1,12 @@
+"use server";
+
+import { getUser } from "@/lib/auth/utils";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
@@ -72,14 +76,10 @@ export interface UserDetailProps {
   address?: Address;
 }
 
-/**
- * Fetches and combines user data with blockchain activity
- *
- * @param params - Object containing either the user ID or address
- * @returns Combined user data with additional calculated metrics
- * @throws Error if fetching fails or if neither id nor address is provided
- */
-export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
+const getUserDetailFromIdOrAddress = async ({
+  id,
+  address,
+}: UserDetailProps) => {
   if (!id && !address) {
     throw new Error("Either id or address must be provided");
   }
@@ -132,19 +132,29 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
     ...user,
     ...calculatedFields,
   };
-});
+};
 
 /**
- * Fetches a user by ID, returning null if not found
+ * Fetches and combines user data with blockchain activity
  *
- * @param params - Object containing the user ID or address
+ * @param params - Object containing either the user ID or address
+ * @returns Combined user data with additional calculated metrics
+ * @throws Error if fetching fails or if neither id nor address is provided
  */
-export const getOptionalUserDetail = cache(
-  async ({ id, address }: UserDetailProps) => {
-    try {
-      return await getUserDetail({ id, address });
-    } catch {
-      return null;
-    }
-  }
+export const getUserDetail = cache(
+  withAccessControl(
+    { requiredPermissions: { user: ["list"] } },
+    getUserDetailFromIdOrAddress
+  )
 );
+
+/**
+ * Fetches and combines user data with blockchain activity for the current user
+ *
+ * @returns Combined user data with additional calculated metrics
+ * @throws Error if fetching fails or if neither id nor address is provided
+ */
+export const getCurrentUserDetail = cache(async () => {
+  const user = await getUser();
+  return getUserDetailFromIdOrAddress({ id: user.id });
+});

@@ -2,6 +2,7 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import type { RedeemBondInput } from "./redeem-schema";
@@ -32,23 +33,30 @@ const BondRedeem = portalGraphql(`
  * @param user - The user initiating the redeem operation
  * @returns The transaction hash
  */
-export async function redeemFunction({
-  parsedInput: { address, pincode, amount },
-  ctx: { user },
-}: {
-  parsedInput: RedeemBondInput;
-  ctx: { user: User };
-}) {
-  const { decimals } = await getBondDetail({ address });
-
-  const response = await portalClient.request(BondRedeem, {
-    address,
-    from: user.wallet,
-    input: {
-      amount: parseUnits(amount.toString(), decimals).toString(),
+export const redeemFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
     },
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  });
+  },
+  async ({
+    parsedInput: { address, pincode, amount },
+    ctx: { user },
+  }: {
+    parsedInput: RedeemBondInput;
+    ctx: { user: User };
+  }) => {
+    const { decimals } = await getBondDetail({ address });
 
-  return safeParse(t.Hashes(), [response.BondRedeem?.transactionHash]);
-}
+    const response = await portalClient.request(BondRedeem, {
+      address,
+      from: user.wallet,
+      input: {
+        amount: parseUnits(amount.toString(), decimals).toString(),
+      },
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    });
+
+    return safeParse(t.Hashes(), [response.BondRedeem?.transactionHash]);
+  }
+);

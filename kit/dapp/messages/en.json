@@ -155,16 +155,18 @@
     "platform": {
       "settings": {
         "base-currency-label": "Base Currency",
+        "base-currency-title": "Base Currency",
+        "base-currency-description": "Set the default currency for displaying asset values across the platform",
         "base-currency-updated": "Base currency updated successfully",
         "currencies": {
-          "aed": "UAE Dirham (AED)",
-          "chf": "Swiss Franc (CHF)",
           "eur": "Euro (EUR)",
-          "gbp": "British Pound (GBP)",
+          "usd": "US Dollar (USD)",
           "jpy": "Japanese Yen (JPY)",
-          "sar": "Saudi Riyal (SAR)",
+          "aed": "UAE Dirham (AED)",
           "sgd": "Singapore Dollar (SGD)",
-          "usd": "US Dollar (USD)"
+          "sar": "Saudi Riyal (SAR)",
+          "gbp": "British Pound (GBP)",
+          "chf": "Swiss Franc (CHF)"
         },
         "platform-management": "Platform management",
         "save": "Save",
@@ -197,7 +199,7 @@
       },
       "platform-management": {
         "group-title": "Platform management",
-        "settings": "Settings",
+        "settings": "Platform",
         "user-management": "User management"
       },
       "portfolio-management": {
@@ -209,6 +211,13 @@
         "my-contacts": "My contacts",
         "profile": "Profile",
         "settings": "Settings"
+      },
+      "settings-management": {
+        "group-title": "Settings",
+        "settings": "Settings",
+        "profile": "Profile",
+        "api": "API",
+        "platform": "Platform"
       }
     }
   },
@@ -413,6 +422,18 @@
           "title": "Yield distribution",
           "total-yield-label": "Total yield"
         }
+      },
+      "portfolio": {
+        "portfolio-value": "Portfolio value",
+        "portfolio-value-description": "Your portfolio value over time (based on current prices)",
+        "portfolio-value-error": "Error loading portfolio value data",
+        "portfolio-value-no-data": "No portfolio data available",
+        "portfolio-value-title": "Portfolio value",
+        "aggregation-options": {
+          "by-asset": "By asset",
+          "by-type": "By asset type",
+          "total": "Total value"
+        }
       }
     },
     "data-table": {
@@ -615,6 +636,20 @@
     "validation-errors": "Validation error",
     "void": "This field should be empty"
   },
+  "error-pages": {
+    "forbidden": {
+      "title": "Forbidden",
+      "description": "You are not authorized to access this page.",
+      "go-back": "Go back",
+      "go-home": "Go home"
+    },
+    "not-found": {
+      "title": "Page not found",
+      "description": "The page you are looking for doesn't exist or has been moved.",
+      "go-back": "Go back",
+      "go-home": "Go home"
+    }
+  },
   "homepage": {
     "asset-tokenization": "asset tokenization",
     "bonds-funds-equities": "bonds, funds, equities",
@@ -717,12 +752,6 @@
       "logout": "Log out",
       "pending-transactions": "Pending Transactions"
     }
-  },
-  "not-found": {
-    "description": "The page you are looking for doesn't exist or has been moved.",
-    "go-back": "Go back",
-    "go-home": "Go home",
-    "title": "Page not found"
   },
   "paused": "Paused",
   "portfolio": {
@@ -1644,7 +1673,7 @@
           "title": "Related actions",
           "deposit": {
             "issue-new": {
-              "description": "Create and launch a new deposit with defined parameters. Streamline asset deployment to support new projects and market segments.",
+              "description": "Create and launch a new deposit with defined parameters. Streamline token deployment to support new projects and market segments.",
               "title": "Issue a new deposit"
             },
             "mechanics": {
@@ -1664,7 +1693,7 @@
           "cryptocurrency": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
           "equity": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
           "fund": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
-          "stablecoin": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every asset issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
+          "stablecoin": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
           "deposit": "Deposits digitally represent traditional banking deposits, providing financial institutions with enhanced security, real-time transparency, and rigorous compliance capabilities. Key features include customizable allowlists, custodial oversight, robust role-based management, and integrated meta-transactions, simplifying institutional deposit administration."
         },
         "topinfo-title": {
@@ -1788,6 +1817,38 @@
       }
     },
     "users": {
+      "actions": {
+        "change-role": {
+          "buttons": {
+            "cancel": "Cancel",
+            "change": "Change role",
+            "loading": "Updating..."
+          },
+          "description": "Select a new role for {userName}. This will change their permissions in the system.",
+          "error": "Failed to update role: {error}",
+          "select-role": "Select role",
+          "success": "User role updated successfully",
+          "title": "Change user role"
+        },
+        "update-kyc-status": {
+          "buttons": {
+            "cancel": "Cancel",
+            "loading": "Updating...",
+            "set": "Verify",
+            "remove": "Remove verification"
+          },
+          "success": "KYC status updated successfully",
+          "error": "Failed to update KYC status: {error}",
+          "set-kyc-status": {
+            "title": "Verify KYC",
+            "description": "Are you sure you want to verify KYC for ${userName}?"
+          },
+          "remove-kyc-status": {
+            "title": "Remove KYC status",
+            "description": "Are you sure you want to remove KYC verification for ${userName}?"
+          }
+        }
+      },
       "banned_reason": "Banned for {reason}",
       "columns": {
         "email": "Email",

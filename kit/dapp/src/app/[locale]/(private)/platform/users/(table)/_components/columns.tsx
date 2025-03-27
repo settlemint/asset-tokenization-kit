@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { cn } from "@/lib/utils";
+import type { UserRole } from "@/lib/utils/typebox/user-roles";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   BadgeCheck,
@@ -84,19 +85,13 @@ export function Columns() {
     }),
     columnHelper.accessor("role", {
       header: t("columns.role"),
-      cell: ({ renderValue }) => {
-        const role = renderValue();
+      cell: ({ getValue }) => {
+        const role = getValue() as UserRole;
         const Icon = role ? icons[role] : null;
         return (
           <>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>
-              {role === "admin"
-                ? t("roles.admin")
-                : role === "issuer"
-                  ? t("roles.issuer")
-                  : t("roles.user")}
-            </span>
+            <span>{t(`roles.${role}`)}</span>
           </>
         );
       },

@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
     authInterrupts: true,
   },
   output: "standalone",
+  logging: {
+    incomingRequests: true,
+  },
 };
 
 export default withSettleMint(withNextIntl(nextConfig));

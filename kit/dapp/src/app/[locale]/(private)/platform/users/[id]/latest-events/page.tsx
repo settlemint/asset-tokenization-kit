@@ -1,8 +1,7 @@
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
-import { getUserDetail } from "@/lib/queries/user/user-detail";
-
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
+import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { getTranslations } from "next-intl/server";
 
 interface LatestTransactionsPageProps {
@@ -24,6 +23,7 @@ export default async function LatestEventsPage({
         sender={user.wallet}
       />
       <Link
+        prefetch
         href={`/assets/activity/events?sender=${encodeURIComponent(
           user.wallet
         )}`}

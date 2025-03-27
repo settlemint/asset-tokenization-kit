@@ -2,6 +2,7 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { FIXED_YIELD_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { intervalToSeconds, percentageToBasisPoints } from "@/lib/utils/yield";
@@ -33,30 +34,39 @@ const FixedYieldFactoryCreate = portalGraphql(`
  * @param user - The user initiating the operation
  * @returns The transaction hash
  */
-export async function setYieldScheduleFunction({
-  parsedInput: { address, startTime, endTime, rate, interval, pincode },
-  ctx: { user },
-}: {
-  parsedInput: SetYieldScheduleInput;
-  ctx: { user: User };
-}) {
-  const startTimeTimestamp = formatDate(startTime, {
-    type: "unixSeconds",
-  });
-  const endTimeTimestamp = formatDate(endTime, {
-    type: "unixSeconds",
-  });
+export const setYieldScheduleFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({
+    parsedInput: { address, startTime, endTime, rate, interval, pincode },
+    ctx: { user },
+  }: {
+    parsedInput: SetYieldScheduleInput;
+    ctx: { user: User };
+  }) => {
+    const startTimeTimestamp = formatDate(startTime, {
+      type: "unixSeconds",
+    });
+    const endTimeTimestamp = formatDate(endTime, {
+      type: "unixSeconds",
+    });
 
-  const data = await portalClient.request(FixedYieldFactoryCreate, {
-    address: FIXED_YIELD_FACTORY_ADDRESS,
-    from: user.wallet,
-    token: address,
-    startTime: startTimeTimestamp,
-    endTime: endTimeTimestamp,
-    rate: percentageToBasisPoints(Number(rate)),
-    interval: intervalToSeconds(interval),
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  });
+    const data = await portalClient.request(FixedYieldFactoryCreate, {
+      address: FIXED_YIELD_FACTORY_ADDRESS,
+      from: user.wallet,
+      token: address,
+      startTime: startTimeTimestamp,
+      endTime: endTimeTimestamp,
+      rate: percentageToBasisPoints(Number(rate)),
+      interval: intervalToSeconds(interval),
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    });
 
-  return safeParse(t.Hashes(), [data.FixedYieldFactoryCreate?.transactionHash]);
-}
+    return safeParse(t.Hashes(), [
+      data.FixedYieldFactoryCreate?.transactionHash,
+    ]);
+  }
+);

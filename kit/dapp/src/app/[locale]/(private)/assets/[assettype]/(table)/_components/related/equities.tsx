@@ -3,7 +3,7 @@ import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
-import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
+import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { getTranslations } from "next-intl/server";
 
 export async function EquitiesRelated() {

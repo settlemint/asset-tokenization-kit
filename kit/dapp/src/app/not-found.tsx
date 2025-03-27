@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 
 export default function NotFoundPage() {
   const router = useRouter();
-  const t = useTranslations("not-found");
+  const t = useTranslations("error-pages.not-found");
 
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4 text-center">

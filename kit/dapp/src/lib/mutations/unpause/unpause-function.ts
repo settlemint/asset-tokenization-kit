@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { UnpauseInput } from "./unpause-schema";
 
@@ -86,47 +87,56 @@ const DepositUnpause = portalGraphql(`
  * @param user - The user executing the unpause operation
  * @returns Array of transaction hashes
  */
-export async function unpauseFunction({
-  parsedInput: { address, pincode, assettype },
-  ctx: { user },
-}: {
-  parsedInput: UnpauseInput;
-  ctx: { user: User };
-}) {
-  // Common parameters for all mutations
-  const params = {
-    address,
-    from: user.wallet,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  };
+export const unpauseFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({
+    parsedInput: { address, pincode, assettype },
+    ctx: { user },
+  }: {
+    parsedInput: UnpauseInput;
+    ctx: { user: User };
+  }) => {
+    // Common parameters for all mutations
+    const params = {
+      address,
+      from: user.wallet,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    };
 
-  switch (assettype) {
-    case "bond": {
-      const response = await portalClient.request(BondUnpause, params);
-      return safeParse(t.Hashes(), [response.BondUnpause?.transactionHash]);
+    switch (assettype) {
+      case "bond": {
+        const response = await portalClient.request(BondUnpause, params);
+        return safeParse(t.Hashes(), [response.BondUnpause?.transactionHash]);
+      }
+      case "cryptocurrency": {
+        throw new Error("Cryptocurrency does not support unpause operations");
+      }
+      case "equity": {
+        const response = await portalClient.request(EquityUnpause, params);
+        return safeParse(t.Hashes(), [response.EquityUnpause?.transactionHash]);
+      }
+      case "fund": {
+        const response = await portalClient.request(FundUnpause, params);
+        return safeParse(t.Hashes(), [response.FundUnpause?.transactionHash]);
+      }
+      case "stablecoin": {
+        const response = await portalClient.request(StableCoinUnpause, params);
+        return safeParse(t.Hashes(), [
+          response.StableCoinUnpause?.transactionHash,
+        ]);
+      }
+      case "deposit": {
+        const response = await portalClient.request(DepositUnpause, params);
+        return safeParse(t.Hashes(), [
+          response.DepositUnpause?.transactionHash,
+        ]);
+      }
+      default:
+        throw new Error("Invalid asset type");
     }
-    case "cryptocurrency": {
-      throw new Error("Cryptocurrency does not support unpause operations");
-    }
-    case "equity": {
-      const response = await portalClient.request(EquityUnpause, params);
-      return safeParse(t.Hashes(), [response.EquityUnpause?.transactionHash]);
-    }
-    case "fund": {
-      const response = await portalClient.request(FundUnpause, params);
-      return safeParse(t.Hashes(), [response.FundUnpause?.transactionHash]);
-    }
-    case "stablecoin": {
-      const response = await portalClient.request(StableCoinUnpause, params);
-      return safeParse(t.Hashes(), [
-        response.StableCoinUnpause?.transactionHash,
-      ]);
-    }
-    case "deposit": {
-      const response = await portalClient.request(DepositUnpause, params);
-      return safeParse(t.Hashes(), [response.DepositUnpause?.transactionHash]);
-    }
-    default:
-      throw new Error("Invalid asset type");
   }
-}
+);

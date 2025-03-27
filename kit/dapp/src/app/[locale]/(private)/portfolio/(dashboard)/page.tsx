@@ -6,9 +6,10 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
-import { getAssetPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
+import { getAssetPriceInUserCurrency, getAssetsPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
+import { getPortfolioStats } from "@/lib/queries/portfolio/portfolio-stats";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
-import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
+import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { startOfDay, subMonths } from "date-fns";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
@@ -52,15 +53,31 @@ export default async function PortfolioDashboard({
   const user = await getUser();
   const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
 
-  const [myAssetsBalance, data, userDetails] = await Promise.all([
-    getUserAssetsBalance(user.wallet as Address),
-    getTransactionsTimeline({
-      timelineStartDate: oneMonthAgo,
-      granularity: "DAY",
-      from: user.wallet as Address,
-    }),
-    getCurrentUserDetail(),
-  ]);
+  const [myAssetsBalance, transactionsData, userDetails, portfolioStats] =
+    await Promise.all([
+      getUserAssetsBalance(user.wallet as Address),
+      getTransactionsTimeline({
+        timelineStartDate: oneMonthAgo,
+        granularity: "DAY",
+        from: user.wallet as Address,
+      }),
+      getCurrentUserDetail(),
+      getPortfolioStats({
+        address: user.wallet as Address,
+        days: 30,
+      }),
+    ]);
+
+  const assetPrices = await getAssetsPriceInUserCurrency(
+    myAssetsBalance.balances.map((balance) => balance.asset.id)
+  );
+
+  const totalUserAssetsValue = myAssetsBalance.balances.reduce(
+    (acc, balance) =>
+      acc +
+      (assetPrices.get(balance.asset.id)?.amount ?? 0) * Number(balance.value),
+    0
+  );
 
   const assetValues = await Promise.all(
     myAssetsBalance.balances.map(async (balance) => {
@@ -90,7 +107,11 @@ export default async function PortfolioDashboard({
             currency: userDetails.currency,
           }}
         />
-        <PortfolioValue address={user.wallet as Address} />
+        <PortfolioValue
+          portfolioStats={portfolioStats}
+          assetPriceMap={assetPrices}
+          locale={locale}
+        />
       </div>
 
       <PageHeader title={t("dashboard.my-assets")} className="mt-8" />
@@ -102,12 +123,11 @@ export default async function PortfolioDashboard({
           variant="small"
         />
         <TransactionsHistory
-          data={data}
+          data={transactionsData}
           chartOptions={{
             intervalType: "month",
             intervalLength: 1,
             granularity: "day",
-            chartContainerClassName: "h-[14rem] w-full",
           }}
         />
       </div>

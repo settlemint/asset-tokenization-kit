@@ -4,6 +4,7 @@ import { EQUITY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { grantRoleFunction } from "../../asset/access-control/grant-role/grant-role-function";
 import { AddAssetPrice } from "../../asset/price/add-price";
@@ -49,8 +50,13 @@ const CreateOffchainEquity = hasuraGraphql(`
  * @param user - The user creating the equity
  * @returns Array of transaction hashes
  */
-export async function createEquityFunction({
-  parsedInput: {
+export const createEquityFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({  parsedInput: {
     assetName,
     symbol,
     decimals,
@@ -125,4 +131,4 @@ export async function createEquityFunction({
   const allTransactionHashes = [createTxHash, ...roleGrantHashes];
 
   return safeParse(t.Hashes(), allTransactionHashes);
-}
+});

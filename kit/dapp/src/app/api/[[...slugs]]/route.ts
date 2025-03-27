@@ -9,6 +9,7 @@ import { DepositApi } from "@/lib/api/deposit";
 import { EquityApi } from "@/lib/api/equity";
 import { FixedYieldApi } from "@/lib/api/fixed-yield";
 import { FundApi } from "@/lib/api/fund";
+import { SettingApi } from "@/lib/api/setting";
 import { StableCoinApi } from "@/lib/api/stablecoin";
 import { TransactionApi } from "@/lib/api/transaction";
 import { UserApi } from "@/lib/api/user";
@@ -16,9 +17,10 @@ import { metadata } from "@/lib/config/metadata";
 import { AssetPriceApi } from "@/lib/providers/asset-price/asset-price-api";
 import { ExchangeRatesApi } from "@/lib/providers/exchange-rates/exchange-rates-api";
 import { ExchangeRateUpdateApi } from "@/lib/providers/exchange-rates/exchange-rates-update-api";
+import { AccessControlError } from "@/lib/utils/access-control";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
-import { Elysia } from "elysia";
+import { Elysia, error as elysiaError } from "elysia";
 import pkgjson from "../../../../package.json";
 
 const app = new Elysia({
@@ -57,6 +59,20 @@ const app = new Elysia({
       },
     })
   )
+  .onError(({ code, error }) => {
+    if (code === "NOT_FOUND") {
+      return elysiaError(404, "Not Found");
+    }
+    if (error instanceof AccessControlError) {
+      return elysiaError(error.statusCode, error.message);
+    }
+    // TODO: handle specific errors (hasura, postgres, thegraph, portal, etc)
+    console.error(
+      `Unexpected error: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
+      error
+    );
+    return elysiaError(500, "Internal server error");
+  })
   .group("/bond", (app) => app.use(BondApi))
   .group("/contact", (app) => app.use(ContactApi))
   .group("/cryptocurrency", (app) => app.use(CryptoCurrencyApi))
@@ -71,6 +87,7 @@ const app = new Elysia({
   .group("/asset-events", (app) => app.use(AssetEventsApi))
   .group("/asset-balance", (app) => app.use(AssetBalanceApi))
   .group("/asset-activity", (app) => app.use(AssetActivityApi))
+  .group("/setting", (app) => app.use(SettingApi))
   .group("/providers/exchange-rates", (app) =>
     app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
   )

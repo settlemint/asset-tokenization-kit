@@ -7,10 +7,11 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { getCurrentUserDetail } from "@/lib/queries/user/current-user-detail";
+import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { AssetManagement } from "./items/asset-management";
 import { PlatformManagement } from "./items/platform-management";
 import { PortfolioManagement } from "./items/portfolio-management";
+import { SettingsManagement } from "./items/settings-management";
 
 export async function PrivateSidebar() {
   const userDetails = await getCurrentUserDetail();
@@ -30,6 +31,7 @@ export async function PrivateSidebar() {
         <RoleGuard requiredRoles={["admin"]}>
           <PlatformManagement />
         </RoleGuard>
+        <SettingsManagement />
       </SidebarContent>
       <SidebarRail />
     </NavSidebar>

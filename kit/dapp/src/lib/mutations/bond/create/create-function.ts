@@ -5,6 +5,7 @@ import { grantRoleFunction } from '@/lib/mutations/asset/access-control/grant-ro
 import { waitForTransactions } from '@/lib/queries/transactions/wait-for-transaction';
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
@@ -51,31 +52,37 @@ const CreateOffchainBond = hasuraGraphql(`
  * @param user - The user creating the bond
  * @returns The transaction hash
  */
-export async function createBondFunction({
-  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    pincode,
-    isin,
-    cap,
-    faceValue,
-    maturityDate,
-    underlyingAsset,
-    predictedAddress,
-    price,
-    assetAdmins
+export const createBondFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
   },
-  ctx: { user },
-}: {
-  parsedInput: CreateBondInput;
-  ctx: { user: User };
-}) {
-  const capExact = String(parseUnits(String(cap), decimals));
-  const maturityDateTimestamp = formatDate(maturityDate, {
-    type: "unixSeconds",
-    locale: "en",
-  });
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      pincode,
+      isin,
+      cap,
+      faceValue,
+      maturityDate,
+      underlyingAsset,
+      predictedAddress,
+      price,
+      assetAdmins,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateBondInput;
+    ctx: { user: User };
+  }) => {
+    const capExact = String(parseUnits(String(cap), decimals));
+    const maturityDateTimestamp = formatDate(maturityDate, {
+      type: "unixSeconds",
+      locale: "en",
+    });
 
   await hasuraClient.request(CreateOffchainBond, {
     id: predictedAddress,
@@ -137,4 +144,4 @@ export async function createBondFunction({
   const allTransactionHashes = [createTxHash, ...roleGrantHashes];
 
   return safeParse(t.Hashes(), allTransactionHashes);
-}
+});

@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { BlockUserInput } from "./block-user-schema";
 
@@ -51,47 +52,61 @@ const FundBlockUser = portalGraphql(`
  * @param user - The user blocking access
  * @returns The transaction hash
  */
-export async function blockUserFunction({
-  parsedInput: { address, pincode, userAddress, assettype },
-  ctx: { user },
-}: {
-  parsedInput: BlockUserInput;
-  ctx: { user: User };
-}) {
-  // Common parameters for all mutations
-  const params = {
-    address,
-    account: userAddress,
-    from: user.wallet,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  };
+export const blockUserFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({
+    parsedInput: { address, pincode, userAddress, assettype },
+    ctx: { user },
+  }: {
+    parsedInput: BlockUserInput;
+    ctx: { user: User };
+  }) => {
+    // Common parameters for all mutations
+    const params = {
+      address,
+      account: userAddress,
+      from: user.wallet,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    };
 
-  switch (assettype) {
-    case "bond": {
-      const response = await portalClient.request(BondBlockUser, params);
-      return safeParse(t.Hashes(), [response.BondBlockUser?.transactionHash]);
+    switch (assettype) {
+      case "bond": {
+        const response = await portalClient.request(BondBlockUser, params);
+        return safeParse(t.Hashes(), [response.BondBlockUser?.transactionHash]);
+      }
+      case "equity": {
+        const response = await portalClient.request(EquityBlockUser, params);
+        return safeParse(t.Hashes(), [
+          response.EquityBlockUser?.transactionHash,
+        ]);
+      }
+      case "fund": {
+        const response = await portalClient.request(FundBlockUser, params);
+        return safeParse(t.Hashes(), [response.FundBlockUser?.transactionHash]);
+      }
+      case "stablecoin": {
+        const response = await portalClient.request(
+          StableCoinBlockUser,
+          params
+        );
+        return safeParse(t.Hashes(), [
+          response.StableCoinBlockUser?.transactionHash,
+        ]);
+      }
+      case "cryptocurrency": {
+        throw new Error(
+          "Cryptocurrency does not support block user operations"
+        );
+      }
+      case "deposit": {
+        throw new Error("Deposit does not support block user operations");
+      }
+      default:
+        throw new Error("Invalid asset type");
     }
-    case "equity": {
-      const response = await portalClient.request(EquityBlockUser, params);
-      return safeParse(t.Hashes(), [response.EquityBlockUser?.transactionHash]);
-    }
-    case "fund": {
-      const response = await portalClient.request(FundBlockUser, params);
-      return safeParse(t.Hashes(), [response.FundBlockUser?.transactionHash]);
-    }
-    case "stablecoin": {
-      const response = await portalClient.request(StableCoinBlockUser, params);
-      return safeParse(t.Hashes(), [
-        response.StableCoinBlockUser?.transactionHash,
-      ]);
-    }
-    case "cryptocurrency": {
-      throw new Error("Cryptocurrency does not support block user operations");
-    }
-    case "deposit": {
-      throw new Error("Deposit does not support block user operations");
-    }
-    default:
-      throw new Error("Invalid asset type");
   }
-}
+);

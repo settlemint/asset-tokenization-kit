@@ -16,17 +16,14 @@ import { setPincode } from "@/lib/mutations/user/set-pincode-action";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { toast } from "sonner";
-import type { Address } from "viem";
 
 interface WalletSecurityClientProps {
   children: ReactNode;
   hasVerification: boolean;
-  walletAddress: Address;
 }
 
 export function WalletSecurityClient({
   children,
-  walletAddress,
   hasVerification,
 }: WalletSecurityClientProps) {
   const [showDialog, setShowDialog] = useState(!hasVerification);
@@ -38,7 +35,6 @@ export function WalletSecurityClient({
       setShowDialog(false);
       await setPincode({
         name: data.pincodeName,
-        address: walletAddress,
         pincode: data.pincode,
       });
       toast.success(t("pincode-set"));
@@ -50,7 +46,7 @@ export function WalletSecurityClient({
 
   return (
     <>
-      {!walletAddress || hasVerification ? (
+      {hasVerification ? (
         children
       ) : (
         <div className="min-h-screen w-full bg-[url('/backgrounds/background-lm.svg')] bg-center bg-cover dark:bg-[url('/backgrounds/background-dm.svg')]">

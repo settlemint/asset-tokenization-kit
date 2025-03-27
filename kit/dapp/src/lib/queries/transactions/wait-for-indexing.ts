@@ -1,10 +1,12 @@
+"use server";
+
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import {
   IndexingFragment,
-  type IndexingFragment as IndexingFragmentType,
+  type IndexingFragmentType,
 } from "./transaction-fragment";
 
 /**

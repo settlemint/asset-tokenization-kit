@@ -4,6 +4,7 @@ import { DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { grantRoleFunction } from "../../asset/access-control/grant-role/grant-role-function";
@@ -50,8 +51,9 @@ const CreateOffchainDeposit = hasuraGraphql(`
  * @param user - The user creating the tokenized deposit
  * @returns Array of transaction hashes
  */
-export async function createDepositFunction({
-  parsedInput: {
+export const createDepositFunction = withAccessControl(
+  { requiredPermissions: { asset: ["manage"] } },
+  async ({  parsedInput: {
     assetName,
     symbol,
     decimals,
@@ -67,7 +69,7 @@ export async function createDepositFunction({
 }: {
   parsedInput: CreateDepositInput;
   ctx: { user: User };
-}) {
+}) => {
   await hasuraClient.request(CreateOffchainDeposit, {
     id: predictedAddress,
     isin,
@@ -128,4 +130,4 @@ export async function createDepositFunction({
   const allTransactionHashes = [createTxHash, ...roleGrantHashes];
 
   return safeParse(t.Hashes(), allTransactionHashes);
-}
+});

@@ -4,6 +4,7 @@ import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { grantRoleFunction } from "../../asset/access-control/grant-role/grant-role-function";
@@ -61,8 +62,13 @@ const CreateOffchainStablecoin = hasuraGraphql(`
  * @param user - The user creating the stablecoin
  * @returns Array of transaction hashes
  */
-export async function createStablecoinFunction({
-  parsedInput: {
+export const createStablecoinFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({  parsedInput: {
     assetName,
     symbol,
     decimals,
@@ -134,4 +140,4 @@ export async function createStablecoinFunction({
   const allTransactionHashes = [createTxHash, ...roleGrantHashes];
 
   return safeParse(t.Hashes(), allTransactionHashes);
-}
+});

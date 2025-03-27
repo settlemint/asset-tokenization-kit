@@ -18,6 +18,7 @@ export function LatestEvents({ sender }: LatestEventsProps) {
         sender={sender}
       />
       <Link
+        prefetch
         href="/assets/activity/events"
         className="mt-4 text-muted-foreground text-sm hover:text-primary"
       >

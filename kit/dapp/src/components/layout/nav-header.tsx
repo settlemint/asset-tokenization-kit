@@ -33,11 +33,17 @@ export function NavHeader() {
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" asChild>
           {pathname.includes("/assets") ? (
-            <Link href="/assets">{content}</Link>
+            <Link prefetch href="/assets">
+              {content}
+            </Link>
           ) : pathname.includes("/portfolio") ? (
-            <Link href="/portfolio">{content}</Link>
+            <Link prefetch href="/portfolio">
+              {content}
+            </Link>
           ) : pathname.includes("/platform") ? (
-            <Link href="/platform/settings">{content}</Link>
+            <Link prefetch href="/platform/settings">
+              {content}
+            </Link>
           ) : (
             content
           )}

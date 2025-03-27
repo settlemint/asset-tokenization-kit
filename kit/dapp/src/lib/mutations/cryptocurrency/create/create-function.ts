@@ -6,6 +6,7 @@ import { AddAssetPrice } from "@/lib/mutations/asset/price/add-price";
 import { waitForTransactions } from '@/lib/queries/transactions/wait-for-transaction';
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import type { CreateCryptoCurrencyInput } from "./create-schema";
@@ -50,25 +51,31 @@ const CreateOffchainCryptoCurrency = hasuraGraphql(`
  * @param user - The user creating the cryptocurrency
  * @returns The transaction hash
  */
-export async function createCryptoCurrencyFunction({
-  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    pincode,
-    initialSupply,
-    predictedAddress,
-    price,
-    assetAdmins,
+export const createCryptoCurrencyFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
   },
-  ctx: { user },
-}: {
-  parsedInput: CreateCryptoCurrencyInput;
-  ctx: { user: User };
-}) {
-  const initialSupplyExact = String(
-    parseUnits(String(initialSupply), decimals)
-  );
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      pincode,
+      initialSupply,
+      predictedAddress,
+      price,
+      assetAdmins,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateCryptoCurrencyInput;
+    ctx: { user: User };
+  }) => {
+    const initialSupplyExact = String(
+      parseUnits(String(initialSupply), decimals)
+    );
 
   await hasuraClient.request(CreateOffchainCryptoCurrency, {
     id: predictedAddress,
@@ -126,4 +133,4 @@ export async function createCryptoCurrencyFunction({
   const allTransactionHashes = [createTxHash, ...roleGrantHashes];
 
   return safeParse(t.Hashes(), allTransactionHashes);
-}
+});

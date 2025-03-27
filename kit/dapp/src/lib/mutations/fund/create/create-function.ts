@@ -4,6 +4,7 @@ import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { grantRoleFunction } from "../../asset/access-control/grant-role/grant-role-function";
 import { AddAssetPrice } from "../../asset/price/add-price";
@@ -50,81 +51,87 @@ const CreateOffchainFund = hasuraGraphql(`
  * @param user - The user creating the fund
  * @returns Array of transaction hashes
  */
-export async function createFundFunction({
-  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    pincode,
-    isin,
-    fundCategory,
-    fundClass,
-    managementFeeBps,
-    predictedAddress,
-    price,
-    assetAdmins,
+export const createFundFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
   },
-  ctx: { user },
-}: {
-  parsedInput: CreateFundInput;
-  ctx: { user: User };
-}) {
-  await hasuraClient.request(CreateOffchainFund, {
-    id: predictedAddress,
-    isin,
-  });
-
-  await hasuraClient.request(AddAssetPrice, {
-    assetId: predictedAddress,
-    amount: String(price.amount),
-    currency: price.currency,
-  });
-
-  const data = await portalClient.request(FundFactoryCreate, {
-    address: FUND_FACTORY_ADDRESS,
-    from: user.wallet,
-    name: assetName,
-    symbol: symbol.toString(),
-    decimals,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-    fundCategory,
-    fundClass,
-    managementFeeBps,
-  });
-
-  const createTxHash = data.FundFactoryCreate?.transactionHash;
-  if (!createTxHash) {
-    throw new Error("Failed to create fund: no transaction hash received");
-  }
-
-  await waitForTransactions([createTxHash]);
-
-  // After fund is created, grant roles to admins in parallel
-  const grantRolePromises = assetAdmins.map(async (admin) => {
-    const roles = {
-      DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
-      SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
-      USER_MANAGEMENT_ROLE: admin.roles.includes("user-manager"),
-    };
-
-    return grantRoleFunction({
-      parsedInput: {
-        address: predictedAddress,
-        roles,
-        userAddress: admin.wallet,
-        pincode,
-        assettype: "stablecoin",
-      },
-      ctx: { user },
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      pincode,
+      isin,
+      fundCategory,
+      fundClass,
+      managementFeeBps,
+      predictedAddress,
+      price,
+      assetAdmins,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateFundInput;
+    ctx: { user: User };
+  }) => {
+    await hasuraClient.request(CreateOffchainFund, {
+      id: predictedAddress,
+      isin,
     });
-  });
 
-  // Get all role grant transaction hashes
-  const grantRoleResults = await Promise.all(grantRolePromises);
-  const roleGrantHashes = grantRoleResults.flatMap((result) => result);
+    await hasuraClient.request(AddAssetPrice, {
+      assetId: predictedAddress,
+      amount: String(price.amount),
+      currency: price.currency,
+    });
 
-  // Combine all transaction hashes
-  const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+    const data = await portalClient.request(FundFactoryCreate, {
+      address: FUND_FACTORY_ADDRESS,
+      from: user.wallet,
+      name: assetName,
+      symbol: symbol.toString(),
+      decimals,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+      fundCategory,
+      fundClass,
+      managementFeeBps,
+    });
 
-  return safeParse(t.Hashes(), allTransactionHashes);
-}
+    const createTxHash = data.FundFactoryCreate?.transactionHash;
+    if (!createTxHash) {
+      throw new Error("Failed to create fund: no transaction hash received");
+    }
+
+    await waitForTransactions([createTxHash]);
+
+    // After fund is created, grant roles to admins in parallel
+    const grantRolePromises = assetAdmins.map(async (admin) => {
+      const roles = {
+        DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
+        SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
+        USER_MANAGEMENT_ROLE: admin.roles.includes("user-manager"),
+      };
+
+      return grantRoleFunction({
+        parsedInput: {
+          address: predictedAddress,
+          roles,
+          userAddress: admin.wallet,
+          pincode,
+          assettype: "stablecoin",
+        },
+        ctx: { user },
+      });
+    });
+
+    // Get all role grant transaction hashes
+    const grantRoleResults = await Promise.all(grantRolePromises);
+    const roleGrantHashes = grantRoleResults.flatMap((result) => result);
+
+    // Combine all transaction hashes
+    const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+
+    return safeParse(t.Hashes(), allTransactionHashes);
+});

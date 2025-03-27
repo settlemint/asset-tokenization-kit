@@ -1,3 +1,5 @@
+"use server";
+
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import { AssetBalanceFragment } from "@/lib/queries/asset-balance/asset-balance-fragment";
 import {
