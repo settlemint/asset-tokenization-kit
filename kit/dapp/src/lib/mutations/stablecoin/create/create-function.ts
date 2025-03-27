@@ -78,30 +78,16 @@ export async function createStablecoinFunction({
   parsedInput: CreateStablecoinInput;
   ctx: { user: User };
 }) {
-  // Ensure predictedAddress is available
-  if (!predictedAddress) {
-    throw new Error("Predicted address must be provided");
-  }
-
-  // Ensure pincode is available
-  if (!pincode) {
-    throw new Error("Pincode must be provided");
-  }
-
-  // Execute metadata operations sequentially to ensure foreign key constraint is satisfied
-  // First create the asset record
   await hasuraClient.request(CreateOffchainStablecoin, {
     id: predictedAddress,
   });
 
-  // Then create the price record (ensuring asset exists first)
   await hasuraClient.request(AddAssetPrice, {
     assetId: predictedAddress,
     amount: String(price.amount),
     currency: price.currency,
   });
 
-  // Create the stablecoin
   const createStablecoinResult = await portalClient.request(StableCoinFactoryCreate, {
     address: STABLE_COIN_FACTORY_ADDRESS,
     from: user.wallet,

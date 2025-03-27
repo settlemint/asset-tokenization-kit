@@ -1,6 +1,8 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
+import { grantRoleFunction } from '@/lib/mutations/asset/access-control/grant-role/grant-role-function';
+import { waitForTransactions } from '@/lib/queries/transactions/wait-for-transaction';
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
@@ -62,6 +64,7 @@ export async function createBondFunction({
     underlyingAsset,
     predictedAddress,
     price,
+    tokenAdmins
   },
   ctx: { user },
 }: {
@@ -85,7 +88,7 @@ export async function createBondFunction({
     currency: price.currency,
   });
 
-  const data = await portalClient.request(BondFactoryCreate, {
+  const createBondResult = await portalClient.request(BondFactoryCreate, {
     address: BOND_FACTORY_ADDRESS,
     from: user.wallet,
     name: assetName,
@@ -98,5 +101,40 @@ export async function createBondFunction({
     challengeResponse: await handleChallenge(user.wallet, pincode),
   });
 
-  return safeParse(t.Hashes(), [data.BondFactoryCreate?.transactionHash]);
+  const createTxHash = createBondResult.BondFactoryCreate?.transactionHash;
+  if (!createTxHash) {
+    throw new Error("Failed to create bond: no transaction hash received");
+  }
+
+  // Wait for the stablecoin creation transaction to be mined
+  await waitForTransactions([createTxHash]);
+
+  // After stablecoin is created, grant roles to admins in parallel
+  const grantRolePromises = tokenAdmins.map(async (admin) => {
+    const roles = {
+      DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
+      SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
+      USER_MANAGEMENT_ROLE: admin.roles.includes("user-manager"),
+    };
+
+    return grantRoleFunction({
+      parsedInput: {
+        address: predictedAddress,
+        roles,
+        userAddress: admin.wallet,
+        pincode,
+        assettype: "stablecoin",
+      },
+      ctx: { user },
+    });
+  });
+
+  // Get all role grant transaction hashes
+  const grantRoleResults = await Promise.all(grantRolePromises);
+  const roleGrantHashes = grantRoleResults.flatMap((result) => result);
+
+  // Combine all transaction hashes
+  const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+
+  return safeParse(t.Hashes(), allTransactionHashes);
 }

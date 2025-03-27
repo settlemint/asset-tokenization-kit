@@ -38,20 +38,14 @@ export function CreateStablecoinSchema() {
           description: "The time unit for collateral validity duration",
           default: "months",
         }),
-        // NOTE: pincode is marked as optional in the schema to prevent validation errors during the form-filling process.
-        // The actual pincode value is collected via the FormOtpDialog component before form submission.
-        // This prevents premature validation when adding tokenAdmins or navigating between form steps.
-        pincode: t.Optional(t.Pincode({
+        pincode: t.Pincode({
           description: "The pincode for signing the transaction",
-        })),
-        // NOTE: predictedAddress is marked as optional to prevent validation errors during form filling.
-        // It is calculated and set by the Summary component's beforeValidate hook just before form submission.
-        // This prevents race conditions between validation and the async address calculation.
-        predictedAddress: t.Optional(t.EthereumAddress({
+        }),
+        predictedAddress: t.EthereumAddress({
           description: "The predicted contract address",
           refine: isAddressAvailable,
           error: "stablecoin.duplicate",
-        })),
+        }),
         price: t.Price({
           description: "Price of the stablecoin",
         }),
