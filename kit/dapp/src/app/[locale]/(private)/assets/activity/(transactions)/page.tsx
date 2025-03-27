@@ -42,7 +42,9 @@ export default async function TransactionsPage({
       <TransactionsTable />
       {explorerUrl && (
         <div className="mt-2 flex flex-col gap-4 text-right text-muted-foreground text-sm">
-          <Link href={explorerUrl}>{t("view-all")}</Link>
+          <Link prefetch href={explorerUrl}>
+            {t("view-all")}
+          </Link>
         </div>
       )}
     </>

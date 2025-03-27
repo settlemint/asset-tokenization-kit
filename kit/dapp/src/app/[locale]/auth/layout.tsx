@@ -28,7 +28,7 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
       </div>
       <div className="absolute top-8 right-8 flex flex-col items-end gap-0">
         <div className="text-right">
-          <Link href="/" className="text-primary-foreground">
+          <Link prefetch href="/" className="text-primary-foreground">
             {t("home")}
           </Link>
         </div>
