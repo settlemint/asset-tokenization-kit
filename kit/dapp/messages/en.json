@@ -1003,7 +1003,7 @@
               "roles": {
                 "admin": "Admin",
                 "user-manager": "User manager",
-                "issuer": "Issuer"
+                "issuer": "Supply manager"
               }
             }
           }
