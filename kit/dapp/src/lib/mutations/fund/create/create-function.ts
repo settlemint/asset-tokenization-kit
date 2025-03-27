@@ -3,6 +3,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateFundInput } from "./create-schema";
@@ -48,46 +49,53 @@ const CreateOffchainFund = hasuraGraphql(`
  * @param user - The user creating the fund
  * @returns Array of transaction hashes
  */
-export async function createFundFunction({
-  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    pincode,
-    isin,
-    fundCategory,
-    fundClass,
-    managementFeeBps,
-    predictedAddress,
-    price,
+export const createFundFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
   },
-  ctx: { user },
-}: {
-  parsedInput: CreateFundInput;
-  ctx: { user: User };
-}) {
-  await hasuraClient.request(CreateOffchainFund, {
-    id: predictedAddress,
-    isin,
-  });
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      pincode,
+      isin,
+      fundCategory,
+      fundClass,
+      managementFeeBps,
+      predictedAddress,
+      price,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateFundInput;
+    ctx: { user: User };
+  }) => {
+    await hasuraClient.request(CreateOffchainFund, {
+      id: predictedAddress,
+      isin,
+    });
 
-  await hasuraClient.request(AddAssetPrice, {
-    assetId: predictedAddress,
-    amount: String(price.amount),
-    currency: price.currency,
-  });
+    await hasuraClient.request(AddAssetPrice, {
+      assetId: predictedAddress,
+      amount: String(price.amount),
+      currency: price.currency,
+    });
 
-  const data = await portalClient.request(FundFactoryCreate, {
-    address: FUND_FACTORY_ADDRESS,
-    from: user.wallet,
-    name: assetName,
-    symbol: symbol.toString(),
-    decimals,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-    fundCategory,
-    fundClass,
-    managementFeeBps,
-  });
+    const data = await portalClient.request(FundFactoryCreate, {
+      address: FUND_FACTORY_ADDRESS,
+      from: user.wallet,
+      name: assetName,
+      symbol: symbol.toString(),
+      decimals,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+      fundCategory,
+      fundClass,
+      managementFeeBps,
+    });
 
-  return safeParse(t.Hashes(), [data.FundFactoryCreate?.transactionHash]);
-}
+    return safeParse(t.Hashes(), [data.FundFactoryCreate?.transactionHash]);
+  }
+);

@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { MatureFormInput } from "./mature-schema";
 
@@ -33,18 +34,25 @@ const MatureBond = portalGraphql(`
  * @param user - The user initiating the mature operation
  * @returns The transaction hash
  */
-export async function matureFunction({
-  parsedInput: { address, pincode },
-  ctx: { user },
-}: {
-  parsedInput: MatureFormInput;
-  ctx: { user: User };
-}) {
-  const response = await portalClient.request(MatureBond, {
-    address: address,
-    from: user.wallet,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  });
+export const matureFunction = withAccessControl(
+  {
+    requiredPermissions: {
+      asset: ["manage"],
+    },
+  },
+  async ({
+    parsedInput: { address, pincode },
+    ctx: { user },
+  }: {
+    parsedInput: MatureFormInput;
+    ctx: { user: User };
+  }) => {
+    const response = await portalClient.request(MatureBond, {
+      address: address,
+      from: user.wallet,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
+    });
 
-  return safeParse(t.Hashes(), [response.BondMature?.transactionHash]);
-}
+    return safeParse(t.Hashes(), [response.BondMature?.transactionHash]);
+  }
+);

@@ -1,4 +1,10 @@
 import {
+  accessControl,
+  adminRole,
+  issuerRole,
+  userRole,
+} from "@/lib/auth/permissions";
+import {
   adminClient,
   apiKeyClient,
   inferAdditionalFields,
@@ -14,7 +20,14 @@ import type { auth } from "./auth";
 export const authClient = createAuthClient({
   plugins: [
     inferAdditionalFields<typeof auth>(),
-    adminClient(),
+    adminClient({
+      ac: accessControl,
+      roles: {
+        admin: adminRole,
+        user: userRole,
+        issuer: issuerRole,
+      },
+    }),
     apiKeyClient(),
     passkeyClient(),
     magicLinkClient(),

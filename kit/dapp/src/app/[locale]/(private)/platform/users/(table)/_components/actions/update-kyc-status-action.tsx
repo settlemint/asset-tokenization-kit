@@ -8,19 +8,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/routing";
+import { updateKycStatus } from "@/lib/mutations/user/update-kyc-status-action";
 import type { getUserList } from "@/lib/queries/user/user-list";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
 import { toast } from "sonner";
-
-const UpdateKycStatusMutation = hasuraGraphql(`
-  mutation UpdateKycStatus($userId: String!, $kycVerified: timestamptz) {
-    update_user_by_pk(pk_columns: {id: $userId}, _set: {kyc_verified_at: $kycVerified}) {
-      id
-      kyc_verified_at
-    }
-  }
-`);
 
 export function UpdateKycStatusAction({
   user,
@@ -31,6 +23,7 @@ export function UpdateKycStatusAction({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("private.users.actions.update-kyc-status");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -39,17 +32,19 @@ export function UpdateKycStatusAction({
 
     try {
       setIsLoading(true);
-      await hasuraClient.request(UpdateKycStatusMutation, {
+      await updateKycStatus({
         userId: user.id,
         kycVerified: user.kyc_verified_at ? null : new Date().toJSON(),
       });
 
-      toast.success("KYC status updated successfully");
+      toast.success(t("success"));
       onOpenChange(false);
       router.refresh();
     } catch (error) {
       toast.error(
-        `Failed to update KYC status: ${error instanceof Error ? error.message : "Unknown error"}`
+        t("error", {
+          error: error instanceof Error ? error.message : "Unknown error",
+        })
       );
     } finally {
       setIsLoading(false);
@@ -62,12 +57,18 @@ export function UpdateKycStatusAction({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {user.kyc_verified_at ? "Remove KYC Verification" : "Verify KYC"}
+              {user.kyc_verified_at
+                ? t("remove-kyc-status.title")
+                : t("set-kyc-status.title")}
             </DialogTitle>
             <DialogDescription>
               {user.kyc_verified_at
-                ? `Are you sure you want to remove KYC verification for ${user.name}?`
-                : `Are you sure you want to verify KYC for ${user.name}?`}
+                ? t("remove-kyc-status.description", {
+                    userName: user.name,
+                  })
+                : t("set-kyc-status.description", {
+                    userName: user.name,
+                  })}
             </DialogDescription>
           </DialogHeader>
 
@@ -78,24 +79,18 @@ export function UpdateKycStatusAction({
                 onOpenChange(false);
               }}
             >
-              Cancel
+              {t("buttons.cancel")}
             </Button>
             <Button
               variant={user.kyc_verified_at ? "destructive" : "default"}
-              onClick={(e) => {
-                handleStatusChange(e).catch((error) => {
-                  toast.error(
-                    `Failed to update KYC status: ${error instanceof Error ? error.message : "Unknown error"}`
-                  );
-                });
-              }}
+              onClick={handleStatusChange}
               disabled={isLoading}
             >
               {isLoading
-                ? "Updating..."
+                ? t("buttons.loading")
                 : user.kyc_verified_at
-                  ? "Remove Verification"
-                  : "Verify"}
+                  ? t("buttons.remove")
+                  : t("buttons.set")}
             </Button>
           </DialogFooter>
         </DialogContent>

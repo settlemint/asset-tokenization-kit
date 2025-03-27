@@ -615,6 +615,20 @@
     "validation-errors": "Validation error",
     "void": "This field should be empty"
   },
+  "error-pages": {
+    "forbidden": {
+      "title": "Forbidden",
+      "description": "You are not authorized to access this page.",
+      "go-back": "Go back",
+      "go-home": "Go home"
+    },
+    "not-found": {
+      "title": "Page not found",
+      "description": "The page you are looking for doesn't exist or has been moved.",
+      "go-back": "Go back",
+      "go-home": "Go home"
+    }
+  },
   "homepage": {
     "asset-tokenization": "asset tokenization",
     "bonds-funds-equities": "bonds, funds, equities",
@@ -717,12 +731,6 @@
       "logout": "Log out",
       "pending-transactions": "Pending Transactions"
     }
-  },
-  "not-found": {
-    "description": "The page you are looking for doesn't exist or has been moved.",
-    "go-back": "Go back",
-    "go-home": "Go home",
-    "title": "Page not found"
   },
   "paused": "Paused",
   "portfolio": {
@@ -1770,6 +1778,38 @@
       }
     },
     "users": {
+      "actions": {
+        "change-role": {
+          "buttons": {
+            "cancel": "Cancel",
+            "change": "Change role",
+            "loading": "Updating..."
+          },
+          "description": "Select a new role for {userName}. This will change their permissions in the system.",
+          "error": "Failed to update role: {error}",
+          "select-role": "Select role",
+          "success": "User role updated successfully",
+          "title": "Change user role"
+        },
+        "update-kyc-status": {
+          "buttons": {
+            "cancel": "Cancel",
+            "loading": "Updating...",
+            "set": "Verify",
+            "remove": "Remove verification"
+          },
+          "success": "KYC status updated successfully",
+          "error": "Failed to update KYC status: {error}",
+          "set-kyc-status": {
+            "title": "Verify KYC",
+            "description": "Are you sure you want to verify KYC for ${userName}?"
+          },
+          "remove-kyc-status": {
+            "title": "Remove KYC status",
+            "description": "Are you sure you want to remove KYC verification for ${userName}?"
+          }
+        }
+      },
       "banned_reason": "Banned for {reason}",
       "columns": {
         "email": "Email",
