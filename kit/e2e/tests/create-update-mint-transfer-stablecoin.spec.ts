@@ -117,6 +117,7 @@ test.describe("Update collateral, mint and transfer assets", () => {
     await userPages.portfolioPage.goto();
     await userPages.portfolioPage.verifyPortfolioAssetAmount({
       expectedAmount: stableCoinMintTokenData.amount,
+      price: stablecoinData.price,
     });
     await userPages.portfolioPage.transferAsset({
       asset: testData.stablecoinName,
@@ -133,13 +134,15 @@ test.describe("Update collateral, mint and transfer assets", () => {
     const expectedBalance = (mintAmount - transferAmount).toString();
     await userPages.portfolioPage.verifyAssetBalance(
       stableCoinMintTokenData.amount,
-      expectedBalance
+      expectedBalance,
+      stablecoinData.price
     );
   });
   test("Verify transfer user received the assets", async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
       expectedAmount: stableCoinTransferData.transferAmount,
+      price: stablecoinData.price,
     });
   });
 });

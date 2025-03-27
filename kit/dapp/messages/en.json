@@ -108,7 +108,7 @@
           "deposit": "Deposits"
         },
         "assets-supply": {
-          "description": "The distribution of tokens per asset class",
+          "description": "The distribution of assets per asset class",
           "title": "Assets supply"
         },
         "transaction-history": {
@@ -311,7 +311,7 @@
         "previous-admin-role": "Previous Admin Role",
         "role": "Role",
         "to": "To",
-        "token": "Token",
+        "asset": "Asset",
         "underlying-amount": "Underlying Amount",
         "user": "User",
         "value": "Value"
@@ -372,26 +372,26 @@
           "label": "Total Collateral"
         },
         "total-supply": {
-          "description": "Showing the total supply of the token",
+          "description": "Showing the total supply of the asset",
           "label": "Total supply",
           "no-data": "No data available in this window",
           "title": "Total supply"
         },
         "total-supply-changed": {
           "burned-label": "Total burned",
-          "description": "Showing the supply change of the token",
+          "description": "Showing the supply change of the asset",
           "minted-label": "Total minted",
           "no-data": "No data available in this window",
           "title": "Supply changes"
         },
         "total-transfers": {
-          "description": "Showing the total transfers of the token",
+          "description": "Showing the total transfers of the asset",
           "label": "Total transfers",
           "no-data": "No data available in this window",
           "title": "Total transfers"
         },
         "total-volume": {
-          "description": "Showing the total volume of the token",
+          "description": "Showing the total volume of the asset",
           "label": "Total volume",
           "no-data": "No data available in this window",
           "title": "Total volume"
@@ -798,7 +798,7 @@
             "title": "Enter Amount"
           },
           "button-label": "Redeem Assets",
-          "description": "Redeem your bond tokens for the underlying asset.",
+          "description": "Redeem your bond assets for the underlying asset.",
           "summary": {
             "asset-label": "Asset",
             "description": "Verify the details of your redemption before proceeding",
@@ -812,7 +812,7 @@
         },
         "transfer-form": {
           "button-label": "Transfer",
-          "description": "Transfer your bond tokens to another address",
+          "description": "Transfer your bond assets to another address",
           "summary": {
             "asset-label": "Asset",
             "description": "Verify the details of your transfer before proceeding",
@@ -831,13 +831,13 @@
           "amount": {
             "amount-label": "Amount",
             "balance-description": "Available balance:",
-            "description": "Enter the amount of tokens you want to transfer",
+            "description": "Enter the amount of assets you want to transfer",
             "title": "Amount"
           },
           "recipients": {
             "address-label": "Recipient Address",
             "address-placeholder": "Search for a user",
-            "description": "Choose who will receive the tokens",
+            "description": "Choose who will receive the assets",
             "manual-entry-link": "Enter address manually...",
             "search-user-link": "Search for a user instead...",
             "title": "Select Recipient"
@@ -930,7 +930,7 @@
       "amount": {
         "amount-label": "Amount",
         "balance-description": "Balance:",
-        "decimals-description": "Number of decimal places for the token",
+        "decimals-description": "Number of decimal places for the asset",
         "decimals-label": "Decimals",
         "description": "Specify the amount you want to transfer",
         "title": "Enter Amount"
@@ -939,7 +939,7 @@
       "description": "Easily transfer an amount of {name} ({symbol}) by selecting a recipient and specifying the amount.",
       "recipients": {
         "address-placeholder": "Search for a user",
-        "description": "Enter a wallet address to send tokens directly.",
+        "description": "Enter a wallet address to send assets directly.",
         "manual-entry-link": "Enter address manually...",
         "search-user-link": "Search for a user instead...",
         "title": "Select Recipients",
@@ -1019,11 +1019,27 @@
             "funds": "Issue a new fund",
             "stablecoins": "Issue a new stablecoin",
             "deposits": "Issue a new deposit"
+          },
+          "steps": {
+            "asset-admins": {
+              "title": "Asset permissions",
+              "description": "Define administrative roles and permissions for managing this asset.",
+              "add-first-admin": "Add asset admin",
+              "add-another-admin": "Add another admin",
+              "select-user-placeholder": "Search and select a user",
+              "remove-role": "Remove this role",
+              "add-role": "Add this role",
+              "roles": {
+                "admin": "Admin",
+                "user-manager": "User manager",
+                "issuer": "Supply manager"
+              }
+            }
           }
         },
         "parameters": {
           "bonds": {
-            "cap-description": "Maximum amount of tokens that can be issued",
+            "cap-description": "Maximum amount of assets that can be issued",
             "cap-label": "Maximum supply",
             "face-value-description": "Nominal value of a single bond unit",
             "face-value-label": "Face value",
@@ -1060,7 +1076,7 @@
             "price-label": "Price"
           },
           "cryptocurrencies": {
-            "initial-supply-description": "Initial amount of tokens to be minted",
+            "initial-supply-description": "Initial amount of assets to be minted",
             "initial-supply-label": "Initial supply",
             "name-placeholder": "Bitcoin",
             "symbol-placeholder": "BTC"
@@ -1099,7 +1115,9 @@
           "configuration-description": "Specific parameters for your asset.",
           "configuration-title": "Configuration",
           "description": "This is the final step before creating your asset. Please review all the details you have entered.",
-          "title": "Summary"
+          "title": "Summary",
+          "asset-admins-description": "Administrative roles and permissions for managing this assset.",
+          "asset-admins-title": "Asset permissions"
         }
       },
       "detail": {
@@ -1132,13 +1150,13 @@
             "description": {
               "allow": "Enter a wallet address to allow, or search for a user by their name, email or wallet address.",
               "block": "Enter a wallet address to block, or search for a user by their name, email or wallet address.",
-              "burn": "Enter a wallet address from which the tokens will be burned, or search for a user by their name, email or wallet address.",
+              "burn": "Enter a wallet address from which the assets will be burned, or search for a user by their name, email or wallet address.",
               "disallow": "Enter a wallet address to disallow, or search for a user by their name, email or wallet address.",
-              "freeze": "Enter a wallet address from which the tokens will be frozen, or search for a user by their name, email or wallet address.",
+              "freeze": "Enter a wallet address from which the assets will be frozen, or search for a user by their name, email or wallet address.",
               "grant-role": "Enter a wallet address to grant roles to, or search for a user by their name, email or wallet address.",
-              "mint": "Enter a wallet address to send tokens directly, or search for a user by their name, email or wallet address.",
+              "mint": "Enter a wallet address to send assets directly, or search for a user by their name, email or wallet address.",
               "unblock": "Enter a wallet address to unblock, or search for a user by their name, email or wallet address.",
-              "withdraw": "Enter a wallet address to withdraw tokens to, or search for a user by their name, email or wallet address."
+              "withdraw": "Enter a wallet address to withdraw assets to, or search for a user by their name, email or wallet address."
             },
             "enter-user-address-manually": "Enter address manually...",
             "enter-wallet-address-placeholder": "Enter a wallet address",
@@ -1186,12 +1204,12 @@
             "description": {
               "allow": "Allow this user to perform transactions and interactions.",
               "block": "Prevent this user from performing any transactions or interactions.",
-              "burn": "Permanently remove tokens from circulation to reduce supply.",
+              "burn": "Permanently remove assets from circulation to reduce supply.",
               "disallow": "Prevent this user from performing any transactions or interactions.",
               "freeze": "Temporarily restrict a user's access to their funds.",
               "grant-role": "Assign administrative permissions to a new user.",
               "mature": "Mature your bond and receive the underlying asset",
-              "mint": "Issue new tokens to increase the asset's circulating supply.",
+              "mint": "Issue new assets to increase the asset's circulating supply.",
               "pause": "Temporarily halt all transactions and interactions for this asset.",
               "top-up": "Add more underlying asset to your bond",
               "unblock": "Allow this user to perform transactions and interactions again.",
@@ -1353,7 +1371,7 @@
           "increase-supply": {
             "description": {
               "bonds": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
-              "cryptocurrencies": "A token manager can mint new tokens according to the tokenomics plan and emission schedule.",
+              "cryptocurrencies": "A asset manager can mint new assets according to the tokenomics plan and emission schedule.",
               "equities": "An equity manager can issue new shares through various mechanisms like rights issues, private placements, or stock splits.",
               "funds": "A fund manager can issue new funds through primary issuance or tap issuance with defined face value and maturity.",
               "stablecoins": "A supply manager can mint new stablecoins, provided sufficient collateral is available.",
@@ -1361,7 +1379,7 @@
             },
             "title": {
               "bonds": "Issue bonds",
-              "cryptocurrencies": "Mint tokens",
+              "cryptocurrencies": "Mint assets",
               "equities": "Issue new shares",
               "funds": "Issue bonds",
               "stablecoins": "Increase the supply",
@@ -1405,7 +1423,7 @@
         "collateral-proof-validity-info": "How long the collateral proof is valid for",
         "committed-collateral-header": "Comitted collateral",
         "committed-collateral-ratio": "Committed collateral ratio",
-        "committed-collateral-ratio-info": "The ratio of the collateral committed to the total supply of the token",
+        "committed-collateral-ratio-info": "The ratio of the collateral committed to the total supply of the asset",
         "contract-address": "Address",
         "creator": "Creator",
         "decimals": "Decimals",
@@ -1534,7 +1552,7 @@
         "price-header": "Price",
         "total-value": "Total value",
         "proven-collateral": "Proven collateral",
-        "proven-collateral-info": "The amount of collateral that has been proven to be held by the token",
+        "proven-collateral-info": "The amount of collateral that has been proven to be held by the asset",
         "redeemed": "Redeemed",
         "redeemed-info": "Total amount of assets redeemed",
         "redemption-readiness": "Redemption readiness",
@@ -1548,7 +1566,7 @@
         "symbol": "Symbol",
         "symbol-header": "Symbol",
         "total-burned": "Total burned",
-        "total-burned-info": "Amount of tokens permanently removed from circulation",
+        "total-burned-info": "Amount of assets permanently removed from circulation",
         "total-holders": "# of holders",
         "total-holders-info": "Amount of addresses currently holding the assets",
         "total-issued": "Total issued",
@@ -1590,13 +1608,13 @@
           },
           "cryptocurrency": {
             "issue-new": {
-              "description": "Create and launch a new cryptocurrency token with customizable parameters and security features. Streamline token deployment with configurable supply mechanisms and transfer controls.",
+              "description": "Create and launch a new cryptocurrency asset with customizable parameters and security features. Streamline asset deployment with configurable supply mechanisms and transfer controls.",
               "title": "Issue new cryptocurrency"
             },
             "mechanics": {
               "button": "Learn more",
-              "description": "Learn how to manage token economics, supply controls, transfer restrictions, and security features for your cryptocurrency.",
-              "title": "Token mechanics"
+              "description": "Learn how to manage asset economics, supply controls, transfer restrictions, and security features for your cryptocurrency.",
+              "title": "Asset mechanics"
             },
             "usecases": {
               "button": "Explore",
@@ -1606,8 +1624,8 @@
           },
           "equity": {
             "issue-new": {
-              "description": "Create and launch a new equity token with defined share classes and ownership rights. Streamline equity issuance to support shareholder distribution and corporate governance.",
-              "title": "Issue new equity tokens"
+              "description": "Create and launch a new equity asset with defined share classes and ownership rights. Streamline equity issuance to support shareholder distribution and corporate governance.",
+              "title": "Issue new equity assets"
             },
             "mechanics": {
               "button": "Learn more",
@@ -1638,7 +1656,7 @@
           },
           "stablecoin": {
             "issue-new": {
-              "description": "Create and launch a new stablecoin with defined parameters and collateral backing. Streamline token deployment to support new projects and market segments.",
+              "description": "Create and launch a new stablecoin with defined parameters and collateral backing. Streamline asset deployment to support new projects and market segments.",
               "title": "Issue a new stablecoin"
             },
             "mechanics": {
