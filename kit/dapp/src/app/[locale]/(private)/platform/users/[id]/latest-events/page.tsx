@@ -23,6 +23,7 @@ export default async function LatestEventsPage({
         sender={user.wallet}
       />
       <Link
+        prefetch
         href={`/assets/activity/events?sender=${encodeURIComponent(
           user.wallet
         )}`}
