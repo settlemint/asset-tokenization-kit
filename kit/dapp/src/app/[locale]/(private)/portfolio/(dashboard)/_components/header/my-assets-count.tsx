@@ -1,15 +1,13 @@
 import { formatNumber } from "@/lib/utils/number";
 import type { Price } from "@/lib/utils/typebox/price";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 
 export function MyAssetsCount({
-  totalCount,
   totalValue,
 }: {
   totalCount: string;
   totalValue: Price;
 }) {
-  const t = useTranslations("portfolio");
   const locale = useLocale();
 
   return (

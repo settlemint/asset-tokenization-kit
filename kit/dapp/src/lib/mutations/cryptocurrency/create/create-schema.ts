@@ -1,5 +1,6 @@
 import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
+import { AssetAdminsSchemaFragment } from "../../common/asset-admins-schema";
 
 /**
  * TypeBox schema for validating cryptocurrency creation inputs
@@ -48,6 +49,7 @@ export function CreateCryptoCurrencySchema({
       price: t.Price({
         description: "Price of the cryptocurrency",
       }),
+      assetAdmins: AssetAdminsSchemaFragment(),
     },
     {
       description: "Schema for validating cryptocurrency creation inputs",
