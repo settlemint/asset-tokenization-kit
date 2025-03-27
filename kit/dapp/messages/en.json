@@ -264,6 +264,13 @@
     "deposits-plural": "Deposits",
     "unknown": "Unknown"
   },
+  "auth-2fa": {
+    "title": "Enter your code",
+    "description": "Enter the 6-digit security code from your authenticator app.",
+    "submit": "Continue",
+    "submitting": "Verifying...",
+    "error": "Invalid security code"
+  },
   "blocked": "Blocked",
   "components": {
     "active-pill": {
@@ -919,7 +926,8 @@
             "backup-codes-copied": "Backup codes copied to clipboard",
             "cancel": "Cancel",
             "enable": "Enable",
-            "enable-loading": "Enabling..."
+            "enable-loading": "Enabling...",
+            "enter-code-title": "Enter the code from the authenticator app"
           },
           "enable": {
             "title": "Enable",

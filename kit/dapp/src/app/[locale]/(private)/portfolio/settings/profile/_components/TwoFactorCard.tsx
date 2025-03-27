@@ -1,6 +1,5 @@
 "use client";
 
-import { CopyToClipboard } from "@/components/blocks/copy/copy";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,6 +29,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
+import { CopyToClipboard } from "../../../../../../../components/blocks/copy/copy";
 
 export function TwoFactorCard() {
   const t = useTranslations(
@@ -146,9 +146,33 @@ export function TwoFactorCard() {
         </CardHeader>
 
         <CardContent className="flex flex-col gap-3 flex-1">
-          {session?.user.twoFactorEnabled
-            ? t("status.enabled")
-            : t("status.disabled")}
+          {session?.user.twoFactorEnabled ? (
+            <>
+              {t("status.enabled")}
+              <div className="flex flex-col gap-2">
+                <h3 className="text-lg font-semibold">
+                  {t("setup-mfa.backup-codes-title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("setup-mfa.backup-codes-description")}
+                </p>
+                <ul className="mt-4 space-y-2 text-sm">
+                  {twoFactorData?.backupCodes.map((code) => (
+                    <li key={code}>{code}</li>
+                  ))}
+                </ul>
+              </div>
+              <Button variant="secondary" size="sm">
+                <div>{t("setup-mfa.backup-codes-copy")}</div>
+                <CopyToClipboard
+                  value={twoFactorData?.backupCodes.join("\n") ?? ""}
+                  successMessage={t("setup-mfa.backup-codes-copied")}
+                />
+              </Button>
+            </>
+          ) : (
+            t("status.disabled")
+          )}
         </CardContent>
 
         <CardFooter className="flex items-center p-6 py-4 md:py-3 bg-transparent border-none justify-end">
@@ -195,6 +219,7 @@ export function TwoFactorCard() {
               onClick={() => {
                 setIsEnteringPassword(false);
               }}
+              disabled={isLoading}
             >
               {t("enable.enter-password-cancel")}
             </Button>
@@ -230,12 +255,17 @@ export function TwoFactorCard() {
           </DialogHeader>
 
           <div className="space-y-4">
-            <div className="rounded-md bg-muted p-4">
+            <div className="flex justify-center w-full">
               <QRCode
-                className="flex justify-center w-full"
+                className="rounded-md bg-muted p-4"
                 value={twoFactorData?.totpURI ?? ""}
                 size={256}
               />
+            </div>
+            <label className="flex justify-center w-full text-md font-semibold">
+              {t("setup-mfa.enter-code-title")}
+            </label>
+            <div className="flex justify-center w-full pb-6">
               <InputOTP maxLength={6} value={firstOtp} onChange={setFirstOtp}>
                 <InputOTPGroup>
                   <InputOTPSlot index={0} />
@@ -247,26 +277,6 @@ export function TwoFactorCard() {
                 </InputOTPGroup>
               </InputOTP>
             </div>
-            <div className="flex flex-col gap-2">
-              <h3 className="text-lg font-semibold">
-                {t("setup-mfa.backup-codes-title")}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {t("setup-mfa.backup-codes-description")}
-              </p>
-              <ul className="mt-4 space-y-2 text-sm">
-                {twoFactorData?.backupCodes.map((code) => (
-                  <li key={code}>{code}</li>
-                ))}
-              </ul>
-            </div>
-            <Button variant="secondary" size="sm">
-              <div>{t("setup-mfa.backup-codes-copy")}</div>
-              <CopyToClipboard
-                value={twoFactorData?.backupCodes.join("\n") ?? ""}
-                successMessage={t("setup-mfa.backup-codes-copied")}
-              />
-            </Button>
           </div>
 
           <DialogFooter>

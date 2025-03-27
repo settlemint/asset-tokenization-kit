@@ -31,7 +31,12 @@ export const authClient = createAuthClient({
     }),
     apiKeyClient(),
     passkeyClient(),
-    twoFactorClient(),
+    twoFactorClient({
+      onTwoFactorRedirect: async () => {
+        const locale = window.location.pathname.split("/")[1];
+        window.location.href = `/${locale || "en"}/auth/2fa`; // Handle the 2FA verification redirect
+      },
+    }),
     magicLinkClient(),
   ],
 });
