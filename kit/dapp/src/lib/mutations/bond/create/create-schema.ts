@@ -68,9 +68,17 @@ export function CreateBondSchema({
           message: "Maturity date must be at least 1 hour in the future",
         },
       }),
-      underlyingAsset: t.Any({
-        description: "Underlying asset of the bond",
-      }),
+      underlyingAsset: t.Object(
+        {
+          id: t.String({
+            minLength: 1,
+            errorMessage: "Underlying asset is required",
+          }),
+        },
+        {
+          description: "Underlying asset of the bond",
+        }
+      ),
       predictedAddress: t.EthereumAddress({
         description: "Predicted address of the bond",
         refinement: {
