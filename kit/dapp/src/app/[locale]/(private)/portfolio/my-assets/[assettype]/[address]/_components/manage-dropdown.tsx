@@ -104,7 +104,6 @@ export function ManageDropdown({
       <BurnForm
         address={address}
         assettype={assettype}
-        balance={Number(userBalance?.available ?? 0)}
         open={openMenuItem === "burn"}
         onOpenChange={onFormOpenChange}
         max={Number(userBalance?.available ?? 0)}

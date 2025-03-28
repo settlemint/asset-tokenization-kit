@@ -21,7 +21,6 @@ interface BurnFormProps {
   disabled?: boolean;
   asButton?: boolean;
   open?: boolean;
-  balance?: number;
   onOpenChange?: (open: boolean) => void;
 }
 
