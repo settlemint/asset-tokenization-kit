@@ -948,6 +948,14 @@
             "enabled": "Two-factor authentication is enabled",
             "disabled": "Two-factor authentication is disabled"
           },
+          "enter-password": {
+            "title": "Enter password",
+            "description": "Enter your password to enable two-factor authentication.",
+            "placeholder": "Password",
+            "submit": "Enable",
+            "loading": "Enabling...",
+            "cancel": "Cancel"
+          },
           "setup-mfa": {
             "title": "Setup MFA",
             "description": "Scan the QR code with the authenticator app on your phone to enable two-factor authentication.",
@@ -963,12 +971,6 @@
           "enable": {
             "title": "Enable",
             "description": "Enable two-factor authentication to add an additional layer of security to your account.",
-            "enter-password-title": "Enter password",
-            "enter-password-description": "Enter your password to enable two-factor authentication.",
-            "enter-password-placeholder": "Password",
-            "enter-password-submit": "Enable",
-            "enter-password-submit-loading": "Enabling...",
-            "enter-password-cancel": "Cancel",
             "success-message": "Two-factor authentication enabled successfully",
             "error-message": "Failed to enable two-factor authentication: {error}"
           },
