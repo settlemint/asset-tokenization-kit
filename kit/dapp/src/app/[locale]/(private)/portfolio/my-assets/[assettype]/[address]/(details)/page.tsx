@@ -49,7 +49,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
       </ChartGrid>
 
       <div className="mt-8">
-        <AssetEventsTable asset={address} sender={user.wallet as Address} />
+        <AssetEventsTable asset={address} sender={user.wallet} />
       </div>
     </>
   );
