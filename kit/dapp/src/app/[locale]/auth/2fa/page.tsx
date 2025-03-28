@@ -20,9 +20,8 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/client";
-import type { StaticDecode } from "@/lib/utils/typebox";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { t } from "elysia";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";

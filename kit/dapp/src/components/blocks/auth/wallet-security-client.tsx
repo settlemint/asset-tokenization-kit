@@ -18,7 +18,6 @@ export function WalletSecurityClient({
   children,
   hasVerification,
 }: WalletSecurityClientProps) {
-  const [showDialog, setShowDialog] = useState(!hasVerification);
   const [selectedMethod, setSelectedMethod] =
     useState<WalletSecurityMethod | null>(null);
 
@@ -29,7 +28,7 @@ export function WalletSecurityClient({
       ) : (
         <div className="min-h-screen w-full bg-[url('/backgrounds/background-lm.svg')] bg-center bg-cover dark:bg-[url('/backgrounds/background-dm.svg')]">
           <WalletSecurityMethodDialog
-            open={showDialog}
+            open={!hasVerification && selectedMethod === null}
             onOpenChange={() => setSelectedMethod(null)}
             onSelect={setSelectedMethod}
           />
