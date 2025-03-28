@@ -81,7 +81,7 @@ export function TransferForm({
       disabled={disabled}
     >
       {!address && !selectedAsset ? (
-        <SelectAsset onSelect={setSelectedAsset} />
+        <SelectAsset onSelect={setSelectedAsset} userWallet={userAddress} />
       ) : (
         <Form
           action={transfer}
