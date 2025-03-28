@@ -3,7 +3,8 @@ import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getUserCount } from "@/lib/queries/user/user-count";
 import { getTranslations } from "next-intl/server";
-import { PermissionsCard, SettingsForm } from "./_components/settings-form";
+import { PermissionsCard } from "./_components/permissions-card";
+import { SettingsForm } from "./_components/settings-form";
 
 export default async function SettingsPage() {
   const t = await getTranslations("admin.platform.settings");
