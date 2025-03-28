@@ -27,7 +27,6 @@ import { DisallowForm } from "../disallow-form/form";
 import { hasAllowlist, hasBlocklist } from "../features-enabled";
 import { MintForm } from "../mint-form/form";
 import { UnblockForm } from "../unblock-form/form";
-import { BurnForm } from "./burn-form/form";
 import { GrantRoleForm } from "./grant-role-form/form";
 import { MatureForm } from "./mature-form/form";
 import { PauseForm } from "./pause-form/form";
@@ -125,29 +124,6 @@ export function ManageDropdown({
           max={mintMax}
           decimals={assetDetails.decimals}
           symbol={assetDetails.symbol}
-        />
-      ),
-    },
-    {
-      id: "burn",
-      label: t("actions.burn"),
-      hidden: assettype === "cryptocurrency",
-      disabled:
-        isBlocked ||
-        isPaused ||
-        !userIsSupplyManager ||
-        (userBalance?.available ?? 0) === 0 ||
-        collateralIsExpired,
-      form: (
-        <BurnForm
-          key="burn"
-          address={address}
-          assettype={assettype}
-          max={userBalance?.available ?? 0}
-          decimals={assetDetails.decimals}
-          symbol={assetDetails.symbol}
-          open={openMenuItem === "burn"}
-          onOpenChange={onFormOpenChange}
         />
       ),
     },
