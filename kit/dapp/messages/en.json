@@ -1824,7 +1824,6 @@
       "password-instructions": "Please use 8 characters at minimum.",
       "password-placeholder": "Enter your password",
       "pincode-form": {
-        "name-label": "Pincode Name",
         "pincode-label": "Pincode",
         "setting-up": "Setting up...",
         "submit": "Setup Pincode"
