@@ -241,6 +241,7 @@ export function TimeSeriesChart<T>({
       <ChartComponent
         data={timeseries}
         xAxis={{ key: "timestamp" }}
+        showYAxis={true}
         {...chartContainerProps}
       />
     </CardContent>
