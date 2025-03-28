@@ -51,11 +51,11 @@ export function CreateBondSchema({
       }),
       cap: t.Amount(maxCap, minCap, decimals, {
         description: "Maximum issuance amount",
-        errorMessage: "Must be at least 1",
+        errorMessage: `Must be at least ${minCap}`,
       }),
       faceValue: t.Amount(maxFaceValue, minFaceValue, decimals, {
         description: "Face value of the bond",
-        errorMessage: "Must be at least 1",
+        errorMessage: `Must be at least ${minFaceValue}`,
       }),
       maturityDate: t.String({
         description: "Maturity date of the bond",

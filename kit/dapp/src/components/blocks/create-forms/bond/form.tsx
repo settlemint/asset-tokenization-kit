@@ -43,7 +43,10 @@ export function CreateBondForm({
     >
       <Form
         action={createBond}
-        resolver={typeboxResolver(CreateBondSchema())}
+        resolver={typeboxResolver(CreateBondSchema({
+          minCap: 1,
+          minFaceValue: 1
+        }))}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("trigger-label.bonds"),
