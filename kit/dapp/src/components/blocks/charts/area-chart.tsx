@@ -67,7 +67,7 @@ export function AreaChartComponent({
   chartContainerClassName,
   options,
 }: AreaChartProps) {
-  const t = useTranslations("components.area-chart");
+  const t = useTranslations("components.chart");
   const dataKeys = Object.keys(config);
   const {
     key,

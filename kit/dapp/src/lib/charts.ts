@@ -43,7 +43,7 @@ type DataPoint = {
   [key: string]: unknown;
 };
 
-type TimeSeriesResult<T> = {
+export type TimeSeriesResult<T> = {
   timestamp: string;
 } & {
   [K in keyof T]: number;

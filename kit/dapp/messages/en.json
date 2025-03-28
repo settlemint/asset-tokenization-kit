@@ -282,8 +282,18 @@
     "address-avatar": {
       "avatar": "Avatar"
     },
-    "area-chart": {
-      "info-icon-label": "Info"
+    "chart": {
+      "switch-to-area-chart": "Switch to area chart",
+      "switch-to-bar-chart": "Switch to bar chart",
+      "info-icon-label": "Info",
+      "select-time-range": "Select time range",
+      "time-range": {
+        "7d": "7d",
+        "30d": "30d",
+        "90d": "90d",
+        "180d": "180d",
+        "1y": "1y"
+      }
     },
     "asset-events-table": {
       "asset": "Asset",
