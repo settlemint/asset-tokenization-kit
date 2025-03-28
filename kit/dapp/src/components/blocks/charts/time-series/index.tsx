@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -22,6 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { TimeSeriesOptions, TimeSeriesResult } from "@/lib/charts";
+import { cn } from "@/lib/utils";
 import { BarChartIcon, Info, LineChartIcon } from "lucide-react";
 import type { Locale } from "next-intl";
 import { useTranslations } from "next-intl";
@@ -134,25 +136,56 @@ export function TimeSeriesTitle({
   description,
   tooltip,
 }: TimeSeriesTitleProps) {
+  const t = useTranslations("components.chart");
+  const { chartType, setChartType } = useTimeSeries();
+
   return (
     <CardHeader>
       <div className="flex items-center justify-between">
         <CardTitle>{title}</CardTitle>
-        {tooltip && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info
-                  className="h-4 w-4 text-muted-foreground"
-                  aria-label="Information"
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-accent-foreground text-xs">{tooltip}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
+        <div className="flex items-center gap-2">
+          {tooltip && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                    <Info
+                      className="h-4 w-4 text-muted-foreground"
+                      aria-label="Information"
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-accent-foreground text-xs">{tooltip}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setChartType("area")}
+            className={cn(
+              "h-8 w-8 p-0",
+              chartType === "area" ? "text-primary" : "text-muted-foreground"
+            )}
+            aria-label={t("switch-to-area-chart")}
+          >
+            <LineChartIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setChartType("bar")}
+            className={cn(
+              "h-8 w-8 p-0",
+              chartType === "bar" ? "text-primary" : "text-muted-foreground"
+            )}
+            aria-label={t("switch-to-bar-chart")}
+          >
+            <BarChartIcon className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       {description && <CardDescription>{description}</CardDescription>}
     </CardHeader>
@@ -161,32 +194,10 @@ export function TimeSeriesTitle({
 
 export function TimeSeriesControls() {
   const t = useTranslations("components.chart");
-  const { timeRange, setTimeRange, chartType, setChartType } = useTimeSeries();
+  const { timeRange, setTimeRange } = useTimeSeries();
 
   return (
     <div className="flex items-center gap-4 px-6">
-      {/* Chart Type Toggle */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setChartType("area")}
-          className={`p-1 rounded hover:bg-accent ${
-            chartType === "area" ? "text-primary" : "text-muted-foreground"
-          }`}
-          aria-label={t("switch-to-area-chart")}
-        >
-          <LineChartIcon className="h-4 w-4" />
-        </button>
-        <button
-          onClick={() => setChartType("bar")}
-          className={`p-1 rounded hover:bg-accent ${
-            chartType === "bar" ? "text-primary" : "text-muted-foreground"
-          }`}
-          aria-label={t("switch-to-bar-chart")}
-        >
-          <BarChartIcon className="h-4 w-4" />
-        </button>
-      </div>
-
       {/* Time Range Selector */}
       <Select
         value={timeRange}
