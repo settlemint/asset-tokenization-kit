@@ -219,13 +219,11 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
       underlyingAsset.decimals
     ).toString();
 
-    const challengeResponse = await handleChallenge(user.wallet, pincode);
-
     // Common parameters for all approve mutations
     const approveParams = {
       address: underlyingAssetAddress,
       from: user.wallet,
-      challengeResponse,
+      challengeResponse: await handleChallenge(user.wallet, pincode),
       input: {
         spender: targetAddress,
         value: formattedAmount,
@@ -297,7 +295,7 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
         input: {
           amount: formattedAmount,
         },
-        challengeResponse,
+        challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
       if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
@@ -316,7 +314,7 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
           input: {
             amount: formattedAmount,
           },
-          challengeResponse,
+          challengeResponse: await handleChallenge(user.wallet, pincode),
         }
       );
 
