@@ -15,18 +15,46 @@ interface SquareStackIconProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;
 }
 
-const rectVariants: Variants = {
-  normal: { scale: 1 },
+// Animation variants for the bottom square (first in stack)
+const bottomSquareVariants: Variants = {
+  normal: { opacity: 1 },
   animate: {
-    scale: [1, 0.8, 1],
-    transition: { duration: 0.4 },
+    opacity: [1, 0.3, 1],
+    transition: {
+      duration: 0.8,
+      repeat: Infinity,
+      repeatType: "reverse",
+      ease: "easeInOut",
+    },
   },
 };
 
-const pathVariants: Variants = {
-  normal: { scale: 1 },
+// Animation variants for the middle square
+const middleSquareVariants: Variants = {
+  normal: { opacity: 1 },
   animate: {
-    scale: [1, 0.9, 1],
+    opacity: [0.3, 1, 0.3],
+    transition: {
+      duration: 0.8,
+      repeat: Infinity,
+      repeatType: "reverse",
+      ease: "easeInOut",
+    },
+  },
+};
+
+// Animation variants for the top square (last in stack)
+const topSquareVariants: Variants = {
+  normal: { opacity: 1 },
+  animate: {
+    opacity: [0.3, 1, 0.3],
+    transition: {
+      duration: 0.8,
+      repeat: Infinity,
+      repeatType: "reverse",
+      ease: "easeInOut",
+      delay: 0.4, // Offset the animation to create alternating effect
+    },
   },
 };
 
@@ -87,26 +115,21 @@ const SquareStackIcon = forwardRef<SquareStackIconHandle, SquareStackIconProps>(
           strokeLinecap="round"
           strokeLinejoin="round"
         >
+          {/* Bottom square */}
           <motion.path
-            variants={pathVariants}
+            variants={bottomSquareVariants}
             animate={controls}
-            transition={{
-              delay: 0.3,
-              duration: 0.4,
-            }}
             d="M4 10c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2"
           />
+          {/* Middle square */}
           <motion.path
             d="M10 16c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2"
-            variants={pathVariants}
+            variants={middleSquareVariants}
             animate={controls}
-            transition={{
-              delay: 0.2,
-              duration: 0.2,
-            }}
           />
+          {/* Top square (main square) */}
           <motion.rect
-            variants={rectVariants}
+            variants={topSquareVariants}
             width="8"
             height="8"
             x="14"

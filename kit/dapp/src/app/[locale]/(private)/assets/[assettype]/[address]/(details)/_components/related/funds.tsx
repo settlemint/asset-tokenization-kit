@@ -1,10 +1,10 @@
+import { BurnForm } from "@/app/[locale]/(private)/portfolio/my-assets/[assettype]/[address]/_components/burn-form/form";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
 import { MintForm } from "../../../_components/mint-form/form";
 
 interface FundsRelatedProps {
