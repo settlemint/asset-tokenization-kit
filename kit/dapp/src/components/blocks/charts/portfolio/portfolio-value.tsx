@@ -4,13 +4,6 @@ import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { createTimeSeries } from "@/lib/charts";
 import type {
   PortfolioAsset,
@@ -21,7 +14,14 @@ import type { Price } from "@/lib/utils/typebox/price";
 import { useTranslations, type Locale } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
-import { AreaChartComponent } from "../area-chart";
+import {
+  TIME_RANGE_CONFIG,
+  TimeSeriesChart,
+  TimeSeriesControls,
+  TimeSeriesRoot,
+  TimeSeriesTitle,
+  type TimeRange,
+} from "../time-series";
 
 interface PortfolioValueProps {
   portfolioStats: PortfolioStatsCollection;
@@ -94,74 +94,97 @@ export function PortfolioValue({
       color: "var(--chart-1)",
     };
   }
+  const individualData = portfolioStats.map((item) => ({
+    timestamp: item.timestamp,
+    [item.asset.id]:
+      Number(item.balance) * (assetPriceMap.get(item.asset.id)?.amount || 0),
+  }));
 
-  const processData = () => {
-    const individualData = portfolioStats.map((item) => ({
-      timestamp: item.timestamp,
-      [item.asset.id]:
-        Number(item.balance) * (assetPriceMap.get(item.asset.id)?.amount || 0),
-    }));
-
-    const individualTimeSeries = createTimeSeries(
-      individualData,
+  const individualTimeSeries = (
+    data: typeof individualData,
+    timeRange: TimeRange,
+    locale: Locale
+  ) => {
+    return createTimeSeries(
+      data,
       Array.from(uniqueAssets),
       {
-        granularity: "day",
-        intervalType: "month",
-        intervalLength: 1,
-        aggregation: {
-          display: "max",
-          storage: "last",
-        },
+        ...TIME_RANGE_CONFIG[timeRange],
+        aggregation: { display: "max", storage: "last" },
         accumulation: "current",
         historical: true,
       },
       locale
     );
-
-    if (aggregationType === "individual") {
-      return individualTimeSeries;
-    } else if (aggregationType === "type") {
-      return individualTimeSeries.map((row) => {
-        const typeValues = new Map<AssetType, number>();
-
-        for (const [key, value] of Object.entries(row)) {
-          if (key === "timestamp") continue;
-
-          const asset = assetMap.get(key as Address);
-          if (asset) {
-            const assetType = asset.type;
-            typeValues.set(
-              assetType,
-              (typeValues.get(assetType) || 0) + (Number(value) || 0)
-            );
-          }
-        }
-
-        return {
-          timestamp: row.timestamp,
-          ...Object.fromEntries(typeValues.entries()),
-        };
-      });
-    } else {
-      return individualTimeSeries.map((row) => {
-        const total = Object.entries(row).reduce((sum, [key, value]) => {
-          return key !== "timestamp" ? sum + (Number(value) || 0) : sum;
-        }, 0);
-
-        return {
-          timestamp: row.timestamp,
-          total,
-        };
-      });
-    }
   };
 
-  const timeseries = processData();
+  const assetTypeTimeSeries = (
+    data: typeof individualData,
+    timeRange: TimeRange,
+    locale: Locale
+  ) => {
+    const assetTypeData = data.map((row) => {
+      const typeValues = new Map<AssetType, number>();
+
+      for (const [key, value] of Object.entries(row)) {
+        if (key === "timestamp") continue;
+
+        const asset = assetMap.get(key as Address);
+        if (asset) {
+          const assetType = asset.type;
+          typeValues.set(
+            assetType,
+            (typeValues.get(assetType) || 0) + (Number(value) || 0)
+          );
+        }
+      }
+
+      const assetTypeValues = Object.fromEntries(typeValues.entries());
+      return {
+        timestamp: row.timestamp,
+        ...assetTypeValues,
+      } as { timestamp: string } & Record<AssetType, number>;
+    });
+
+    return createTimeSeries(
+      assetTypeData,
+      Array.from(uniqueTypes),
+      {
+        ...TIME_RANGE_CONFIG[timeRange],
+        aggregation: "sum",
+        historical: true,
+      },
+      locale
+    );
+  };
+
+  const totalValueTimeSeries = (
+    data: typeof individualData,
+    timeRange: TimeRange,
+    locale: Locale
+  ) => {
+    const totalData = data.map((row) => ({
+      timestamp: row.timestamp,
+      total: Object.entries(row).reduce((sum, [key, value]) => {
+        return key !== "timestamp" ? sum + (Number(value) || 0) : sum;
+      }, 0),
+    }));
+
+    return createTimeSeries(
+      totalData,
+      ["total"],
+      {
+        ...TIME_RANGE_CONFIG[timeRange],
+        aggregation: "sum",
+        historical: true,
+      },
+      locale
+    );
+  };
 
   return (
     <div className="space-y-4">
-      <AreaChartComponent
+      {/* <AreaChartComponent
         data={timeseries}
         config={chartConfig}
         title={t("portfolio-value-title")}
@@ -190,7 +213,31 @@ export function PortfolioValue({
             </SelectContent>
           </Select>
         }
-      />
+      /> */}
+
+      <TimeSeriesRoot data={individualData} locale={locale}>
+        <TimeSeriesTitle
+          title={t("portfolio-value-title")}
+          description={t("portfolio-value-description")}
+        />
+        <TimeSeriesControls />
+        {aggregationType === "individual" ? (
+          <TimeSeriesChart
+            processData={individualTimeSeries}
+            config={chartConfig}
+          />
+        ) : aggregationType === "type" ? (
+          <TimeSeriesChart
+            processData={assetTypeTimeSeries}
+            config={chartConfig}
+          />
+        ) : (
+          <TimeSeriesChart
+            processData={totalValueTimeSeries}
+            config={chartConfig}
+          />
+        )}
+      </TimeSeriesRoot>
     </div>
   );
 }
