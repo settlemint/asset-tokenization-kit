@@ -425,7 +425,7 @@
       },
       "portfolio": {
         "portfolio-value": "Portfolio value",
-        "portfolio-value-description": "Your portfolio value over time (based on current prices)",
+        "portfolio-value-description": "The maximum of value of your portfolio over time (based on current prices)",
         "portfolio-value-error": "Error loading portfolio value data",
         "portfolio-value-no-data": "No portfolio data available",
         "portfolio-value-title": "Portfolio value",

@@ -1,3 +1,5 @@
+"use server";
+
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
