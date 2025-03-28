@@ -131,7 +131,12 @@ export function PortfolioValue({
     timeRange: TimeRange,
     locale: Locale
   ) => {
-    const assetTypeData = data.map((row) => {
+    const individualTimeSeriesData = individualTimeSeries(
+      data,
+      timeRange,
+      locale
+    );
+    return individualTimeSeriesData.map((row) => {
       const typeValues = new Map<AssetType, number>();
 
       for (const [key, value] of Object.entries(row)) {
@@ -147,23 +152,15 @@ export function PortfolioValue({
         }
       }
 
-      const assetTypeValues = Object.fromEntries(typeValues.entries());
+      const assetTypeValues = Object.fromEntries(
+        typeValues.entries()
+      ) as Record<AssetType, number>;
+
       return {
         timestamp: row.timestamp,
         ...assetTypeValues,
-      } as { timestamp: string } & Record<AssetType, number>;
+      };
     });
-
-    return createTimeSeries(
-      assetTypeData,
-      Array.from(uniqueTypes),
-      {
-        ...TIME_RANGE_CONFIG[timeRange],
-        aggregation: "sum",
-        historical: true,
-      },
-      locale
-    );
   };
 
   const totalValueTimeSeries = (
@@ -171,23 +168,17 @@ export function PortfolioValue({
     timeRange: TimeRange,
     locale: Locale
   ) => {
-    const totalData = data.map((row) => ({
+    const individualTimeSeriesData = individualTimeSeries(
+      data,
+      timeRange,
+      locale
+    );
+    return individualTimeSeriesData.map((row) => ({
       timestamp: row.timestamp,
       total: Object.entries(row).reduce((sum, [key, value]) => {
         return key !== "timestamp" ? sum + (Number(value) || 0) : sum;
       }, 0),
     }));
-
-    return createTimeSeries(
-      totalData,
-      ["total"],
-      {
-        ...TIME_RANGE_CONFIG[timeRange],
-        aggregation: "sum",
-        historical: true,
-      },
-      locale
-    );
   };
 
   return (
