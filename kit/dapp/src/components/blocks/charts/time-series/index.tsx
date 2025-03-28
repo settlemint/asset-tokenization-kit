@@ -1,13 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChartConfig } from "@/components/ui/chart";
 import {
   Select,
@@ -39,12 +33,17 @@ import { AreaChartContainer } from "../area-chart";
 import { BarChartContainer } from "../bar-charts/horizontal-bar-chart";
 
 export type ChartType = "area" | "bar";
-export type TimeRange = "7d" | "30d" | "90d" | "180d" | "1y";
+export type TimeRange = "24h" | "7d" | "30d" | "90d";
 
 export const TIME_RANGE_CONFIG: Record<
   TimeRange,
   Pick<TimeSeriesOptions, "intervalType" | "intervalLength" | "granularity">
 > = {
+  "24h": {
+    granularity: "hour",
+    intervalType: "day",
+    intervalLength: 1,
+  },
   "7d": {
     granularity: "day",
     intervalType: "day",
@@ -59,16 +58,6 @@ export const TIME_RANGE_CONFIG: Record<
     granularity: "day",
     intervalType: "day",
     intervalLength: 90,
-  },
-  "180d": {
-    granularity: "day",
-    intervalType: "month",
-    intervalLength: 6,
-  },
-  "1y": {
-    granularity: "day",
-    intervalType: "year",
-    intervalLength: 1,
   },
 };
 
@@ -128,23 +117,18 @@ export function TimeSeriesRoot<T extends { timestamp: string }>({
 interface TimeSeriesTitleProps {
   title: string;
   description?: string;
-  tooltip?: string;
 }
 
-export function TimeSeriesTitle({
-  title,
-  description,
-  tooltip,
-}: TimeSeriesTitleProps) {
+export function TimeSeriesTitle({ title, description }: TimeSeriesTitleProps) {
   const t = useTranslations("components.chart");
   const { chartType, setChartType } = useTimeSeries();
 
   return (
     <CardHeader>
       <div className="flex items-center justify-between">
-        <CardTitle>{title}</CardTitle>
         <div className="flex items-center gap-2">
-          {tooltip && (
+          <CardTitle>{title}</CardTitle>
+          {description && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -156,11 +140,15 @@ export function TimeSeriesTitle({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="text-accent-foreground text-xs">{tooltip}</p>
+                  <p className="text-accent-foreground text-xs">
+                    {description}
+                  </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
+        </div>
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
@@ -187,7 +175,6 @@ export function TimeSeriesTitle({
           </Button>
         </div>
       </div>
-      {description && <CardDescription>{description}</CardDescription>}
     </CardHeader>
   );
 }
@@ -197,21 +184,19 @@ export function TimeSeriesControls() {
   const { timeRange, setTimeRange } = useTimeSeries();
 
   return (
-    <div className="flex items-center gap-4 px-6">
-      {/* Time Range Selector */}
+    <div className="-mt-4 px-6">
       <Select
         value={timeRange}
         onValueChange={(value) => setTimeRange(value as TimeRange)}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger>
           <SelectValue placeholder={t("select-time-range")} />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="24h">{t("time-range.24h")}</SelectItem>
           <SelectItem value="7d">{t("time-range.7d")}</SelectItem>
           <SelectItem value="30d">{t("time-range.30d")}</SelectItem>
           <SelectItem value="90d">{t("time-range.90d")}</SelectItem>
-          <SelectItem value="180d">{t("time-range.180d")}</SelectItem>
-          <SelectItem value="1y">{t("time-range.1y")}</SelectItem>
         </SelectContent>
       </Select>
     </div>
