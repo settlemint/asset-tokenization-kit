@@ -1,4 +1,5 @@
 import { TwoFactorPasswordDialog } from "@/app/[locale]/(private)/portfolio/settings/profile/_components/two-factor-password-dialog";
+import { CopyTwoFactorBackupCodes } from "@/components/blocks/auth/copy-two-tactor-backup-codes";
 import {
   Dialog,
   DialogContent,
@@ -7,11 +8,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
-import { authClient } from "../../../../../../../lib/auth/client";
-import { CopyTwoFactorBackupCodesButton } from "./copy-two-tactor-backup-codes-button";
 
 interface TwoFactorBackupCodesDialogProps {
   open: boolean;
@@ -22,7 +22,6 @@ export function TwoFactorBackupCodesDialog({
   open,
   onOpenChange,
 }: TwoFactorBackupCodesDialogProps) {
-  const { data: session } = authClient.useSession();
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isEnteringPassword, setIsEnteringPassword] = useState(true);
@@ -71,10 +70,7 @@ export function TwoFactorBackupCodesDialog({
             ))}
           </ul>
           <DialogFooter>
-            <CopyTwoFactorBackupCodesButton
-              backupCodes={backupCodes}
-              buttonVariant="default"
-            />
+            <CopyTwoFactorBackupCodes backupCodes={backupCodes} />
           </DialogFooter>
         </DialogContent>
       </Dialog>

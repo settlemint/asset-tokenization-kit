@@ -1,5 +1,6 @@
 "use client";
 
+import { SetupTwoFactorDialog } from "@/components/blocks/auth/setup-two-factor-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,7 +15,6 @@ import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
-import { SetupTwoFactorDialog } from "./setup-two-factor-dialog";
 import { TwoFactorBackupCodesDialog } from "./two-factor-backup-codes-dialog";
 import { TwoFactorPasswordDialog } from "./two-factor-password-dialog";
 
@@ -31,33 +31,6 @@ export function TwoFactorCard() {
     backupCodes: string[];
   } | null>(null);
   const [isBackupCodesDialogOpen, setIsBackupCodesDialogOpen] = useState(false);
-
-  const enableTwoFactorAuthentication = async (password: string) => {
-    try {
-      setIsLoading(true);
-      const { data, error } = await authClient.twoFactor.enable({
-        password,
-      });
-      if (error) {
-        toast.error(
-          t("enable.error-message", {
-            error: error.message ?? "Unknown error",
-          })
-        );
-      } else {
-        setTwoFactorData(data);
-      }
-    } catch (error) {
-      toast.error(
-        t("enable.error-message", {
-          error: error instanceof Error ? error.message : "Unknown error",
-        })
-      );
-    } finally {
-      setIsEnteringPassword(false);
-      setIsLoading(false);
-    }
-  };
 
   const disableTwoFactorAuthentication = async (password: string) => {
     try {
@@ -83,14 +56,6 @@ export function TwoFactorCard() {
     } finally {
       setIsEnteringPassword(false);
       setIsLoading(false);
-    }
-  };
-
-  const onPasswordSubmit = async (password: string) => {
-    if (session?.user.twoFactorEnabled) {
-      await disableTwoFactorAuthentication(password);
-    } else {
-      await enableTwoFactorAuthentication(password);
     }
   };
 
@@ -144,19 +109,12 @@ export function TwoFactorCard() {
       <TwoFactorPasswordDialog
         open={isEnteringPassword}
         onOpenChange={setIsEnteringPassword}
-        onSubmit={onPasswordSubmit}
+        onSubmit={disableTwoFactorAuthentication}
         isLoading={isLoading}
-        submitButtonVariant={
-          session?.user.twoFactorEnabled ? "destructive" : "default"
-        }
-        submitButtonText={
-          session?.user.twoFactorEnabled
-            ? t("disable.title")
-            : t("enable.title")
-        }
+        submitButtonVariant="destructive"
+        submitButtonText={t("disable.title")}
       />
       <SetupTwoFactorDialog
-        twoFactorData={twoFactorData}
         onOpenChange={(isOpen) => {
           if (!isOpen) {
             setTwoFactorData(null);

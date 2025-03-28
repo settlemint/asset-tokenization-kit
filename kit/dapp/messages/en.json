@@ -1872,7 +1872,14 @@
       "wallet-security": {
         "pincode-instruction": "Enter a 6-digit pincode to secure your wallet.",
         "pincode-set": "Pincode set successfully",
-        "setup-pincode": "Setup Pincode"
+        "pincode-set-error": "Failed to set pincode",
+        "setup-pincode": "Setup Pincode",
+        "security-method": {
+          "title": "Wallet security method",
+          "description": "Choose a security option to secure your wallet.",
+          "pincode": "PIN-code",
+          "two-factor-authentication": "Authenticator app"
+        }
       }
     },
     "users": {
