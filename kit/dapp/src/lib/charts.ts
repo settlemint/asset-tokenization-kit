@@ -62,7 +62,7 @@ export function createTimeSeries<T extends DataPoint>(
   valueKeys: (keyof T)[],
   options: TimeSeriesOptions,
   locale: Locale
-): TimeSeriesResult<Pick<T, keyof T>>[] {
+): TimeSeriesResult<T>[] {
   const {
     granularity,
     intervalType,
