@@ -2,7 +2,10 @@
 
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { TransactionHash } from "@/components/blocks/transaction-hash/transaction-hash";
-import { PendingTransactionsIcon } from "@/components/ui/animated-icons/pending-transactions";
+import {
+  SquareStackIcon,
+  type SquareStackIconHandle,
+} from "@/components/ui/animated-icons/square-stack";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,14 +16,23 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePendingTransactions } from "@/lib/hooks/use-pending-transactions";
 import { formatDate } from "@/lib/utils/date";
 import { useLocale, useTranslations } from "next-intl";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export function PendingTransactionsDropdown() {
   const t = useTranslations("components.pending-transactions");
   const locale = useLocale();
-  const iconRef = useRef(null);
+  const iconRef = useRef<SquareStackIconHandle>(null);
   const { pendingTransactions, hasPendingTransactions } =
     usePendingTransactions();
+
+  // Start animation when there are pending transactions
+  useEffect(() => {
+    if (hasPendingTransactions) {
+      iconRef.current?.startAnimation();
+    } else {
+      iconRef.current?.stopAnimation();
+    }
+  }, [hasPendingTransactions]);
 
   return (
     <DropdownMenu>
@@ -31,9 +43,10 @@ export function PendingTransactionsDropdown() {
           className="relative h-12 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:bg-sidebar-accent focus-visible:text-sidebar-accent-foreground dark:hover:bg-theme-accent-background dark:hover:text-foreground dark:focus-visible:bg-theme-accent-background dark:focus-visible:text-foreground focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
           aria-label={t("aria-label")}
         >
-          <PendingTransactionsIcon
+          <SquareStackIcon
             ref={iconRef}
-            hasPendingTransactions={hasPendingTransactions}
+            className={!hasPendingTransactions ? "text-muted-foreground" : ""}
+            size={20}
           />
           {hasPendingTransactions && (
             <span className="absolute top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground pt-[1px]">

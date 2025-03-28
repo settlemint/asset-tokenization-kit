@@ -1,4 +1,5 @@
 import { Details } from "@/app/[locale]/(private)/assets/[assettype]/[address]/(details)/_components/details";
+import { AssetEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
 import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
 import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
@@ -46,6 +47,10 @@ export default async function AssetDetailsPage({ params }: PageProps) {
         <TotalTransfers address={address} />
         <TotalVolume address={address} />
       </ChartGrid>
+
+      <div className="mt-8">
+        <AssetEventsTable asset={address} sender={user.wallet} />
+      </div>
     </>
   );
 }
