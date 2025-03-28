@@ -10,6 +10,7 @@ import {
   inferAdditionalFields,
   magicLinkClient,
   passkeyClient,
+  twoFactorClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
@@ -30,6 +31,12 @@ export const authClient = createAuthClient({
     }),
     apiKeyClient(),
     passkeyClient(),
+    twoFactorClient({
+      onTwoFactorRedirect: async () => {
+        const locale = window.location.pathname.split("/")[1];
+        window.location.href = `/${locale || "en"}/auth/2fa`; // Handle the 2FA verification redirect
+      },
+    }),
     magicLinkClient(),
   ],
 });

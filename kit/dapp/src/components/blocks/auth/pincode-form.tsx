@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
@@ -23,7 +22,6 @@ import {
 // TypeBox schema for the pincode form
 const pincodeSchema = t.Object(
   {
-    pincodeName: t.String({ minLength: 1, error: "Name is required" }),
     pincode: t.String({ length: 6, error: "Pincode must be 6 digits" }),
   },
   { $id: "PincodeForm" }
@@ -41,7 +39,6 @@ export function PincodeForm({ onSubmit }: PincodeFormProps) {
   const form = useForm<PincodeFormValues>({
     resolver: typeboxResolver(pincodeSchema),
     defaultValues: {
-      pincodeName: "Default PIN",
       pincode: "",
     },
   });
@@ -49,20 +46,6 @@ export function PincodeForm({ onSubmit }: PincodeFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="pincodeName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("name-label")}</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="pincode"
