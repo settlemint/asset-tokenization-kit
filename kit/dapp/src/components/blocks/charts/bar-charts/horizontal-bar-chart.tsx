@@ -39,7 +39,7 @@ interface XAxisConfig {
   angle?: number;
 }
 
-interface BarChartContainerProps {
+export interface BarChartContainerProps {
   data: BarChartData[];
   config: ChartConfig;
   xAxis: XAxisConfig;
@@ -50,6 +50,7 @@ interface BarChartContainerProps {
   colors?: string[];
   chartContainerClassName?: string;
   stacked?: boolean;
+  roundedBars?: boolean;
 }
 
 interface BarChartProps extends BarChartContainerProps {
@@ -88,6 +89,7 @@ export function BarChartContainer({
   chartContainerClassName,
   showLegend = true,
   stacked = true,
+  roundedBars = true,
 }: BarChartContainerProps) {
   const dataKeys = Object.keys(config);
   const {
@@ -176,7 +178,7 @@ export function BarChartContainer({
             fill={`url(#barGradient${key})`}
             stroke={config[key].color}
             strokeWidth={1}
-            radius={[2, 2, 0, 0]}
+            radius={roundedBars ? [2, 2, 0, 0] : undefined}
           >
             {colors?.map((color, index) => (
               <Cell

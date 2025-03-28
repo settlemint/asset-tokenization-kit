@@ -207,21 +207,24 @@ export function PortfolioValue({
         <TimeSeriesChart
           processData={totalValueTimeSeries}
           config={chartConfig}
-          className="h-[16rem] w-full"
+          chartContainerClassName="h-[16rem] w-full"
+          roundedBars={false}
         />
       ) : aggregationType === "stackByType" ? (
         <TimeSeriesChart
           processData={assetTypeTimeSeries}
           config={chartConfig}
-          className="h-[16rem] w-full"
+          chartContainerClassName="h-[16rem] w-full"
           stacked={true}
+          roundedBars={false}
         />
       ) : (
         <TimeSeriesChart
           processData={assetTypeTimeSeries}
           config={chartConfig}
-          className="h-[16rem] w-full"
+          chartContainerClassName="h-[16rem] w-full"
           stacked={false}
+          roundedBars={false}
         />
       )}
     </TimeSeriesRoot>

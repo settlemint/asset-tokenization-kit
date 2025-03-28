@@ -28,9 +28,15 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { AreaChartContainer } from "../area-chart";
+import {
+  AreaChartContainer,
+  type AreaChartContainerProps,
+} from "../area-chart";
 
-import { BarChartContainer } from "../bar-charts/horizontal-bar-chart";
+import {
+  BarChartContainer,
+  type BarChartContainerProps,
+} from "../bar-charts/horizontal-bar-chart";
 
 export type ChartType = "area" | "bar";
 export type TimeRange = "24h" | "7d" | "30d" | "90d";
@@ -205,24 +211,22 @@ export function TimeRangeSelect() {
   );
 }
 
-interface TimeSeriesChartProps<T> {
+type TimeSeriesChartProps<T> = {
   processData: (
     rawData: T[],
     timeRange: TimeRange,
     locale: Locale
   ) => TimeSeriesResult<T>[];
   config: ChartConfig;
-  showYAxis?: boolean;
-  stacked?: boolean;
+
   className?: string;
-}
+} & Omit<AreaChartContainerProps, "data" | "xAxis"> &
+  Omit<BarChartContainerProps, "data" | "xAxis">;
 
 export function TimeSeriesChart<T>({
   processData,
-  config,
-  showYAxis = true,
-  stacked = false,
   className,
+  ...chartContainerProps
 }: TimeSeriesChartProps<T>) {
   const { timeRange, chartType, data, locale } = useTimeSeries<T>();
 
@@ -236,11 +240,8 @@ export function TimeSeriesChart<T>({
     <CardContent className="p-0 pr-4">
       <ChartComponent
         data={timeseries}
-        config={config}
         xAxis={{ key: "timestamp" }}
-        showYAxis={showYAxis}
-        stacked={stacked}
-        chartContainerClassName={className}
+        {...chartContainerProps}
       />
     </CardContent>
   );

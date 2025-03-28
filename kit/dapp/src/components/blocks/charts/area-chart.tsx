@@ -37,7 +37,7 @@ interface XAxisConfig {
   angle?: number;
 }
 
-interface AreaChartContainerProps {
+export interface AreaChartContainerProps {
   data: AreaChartData[];
   config: ChartConfig;
   xAxis: XAxisConfig;
