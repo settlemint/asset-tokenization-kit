@@ -12,7 +12,7 @@ export default async function AdminsPage() {
   return (
     <>
       <PageHeader
-        title={t("permissions-title")}
+        title={t("platform-admins")}
         section={t("platform-management")}
         button={<AdminsActions />}
       />
