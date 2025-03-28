@@ -1,6 +1,6 @@
 import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
-import { isFuture } from "date-fns";
+import { addHours, isFuture } from "date-fns";
 
 /**
  * TypeBox schema for validating bond creation inputs
@@ -58,10 +58,13 @@ export function CreateBondSchema({
       }),
       maturityDate: t.String({
         description: "Maturity date of the bond",
-        format: "date-time",
         refinement: {
-          predicate: (value: string) => isFuture(new Date(value)),
-          message: "Maturity date must be in the future",
+          predicate: (value: string) => {
+            const selectedDate = new Date(value);
+            const minDate = addHours(new Date(), 1);
+            return isFuture(selectedDate) && selectedDate >= minDate;
+          },
+          message: "Maturity date must be at least 1 hour in the future",
         },
       }),
       underlyingAsset: t.Any({
