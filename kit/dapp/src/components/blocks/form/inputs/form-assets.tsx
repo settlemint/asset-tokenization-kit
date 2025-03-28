@@ -67,8 +67,6 @@ export function FormAssets<T extends FieldValues>({
   userWallet,
   ...props
 }: FormSearchSelectProps<T>) {
-  console.log('FormAssets', userWallet);
-
   const [open, setOpen] = useState(false);
   const t = useTranslations("components.form.assets");
   const defaultPlaceholder = t("default-placeholder");
