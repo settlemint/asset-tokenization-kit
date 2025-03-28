@@ -26,7 +26,6 @@ export function PincodeDialog({ open, onOpenChange }: PincodeDialogProps) {
   const onSubmit = async (data: PincodeFormValues) => {
     try {
       await setPincode({
-        name: data.pincodeName,
         pincode: data.pincode,
       });
       toast.success(t("pincode-set"));

@@ -7,10 +7,10 @@ import type { SetPincodeInput } from "./set-pincode-schema";
  * GraphQL mutation to set a pincode for wallet verification
  */
 const SetPinCode = portalGraphql(`
-  mutation SetPinCode($name: String!, $address: String!, $pincode: String!) {
+  mutation SetPinCode($address: String!, $pincode: String!) {
     createWalletVerification(
       userWalletAddress: $address
-      verificationInfo: {pincode: {name: $name, pincode: $pincode}}
+      verificationInfo: {pincode: {name: "PINCODE", pincode: $pincode}}
     ) {
       id
       name
@@ -23,11 +23,12 @@ const SetPinCode = portalGraphql(`
 /**
  * Function to set a pincode for wallet verification
  *
- * @param input - Validated input containing name, address, and pincode
- * @returns Wallet verification data
+ * @param parsedInput - Validated input containing pincode
+ * @param ctx - Optional context containing user information
+ * @returns Object indicating success status
  */
 export async function setPincodeFunction({
-  parsedInput: { name, pincode },
+  parsedInput: { pincode },
   ctx,
 }: {
   parsedInput: SetPincodeInput;
@@ -35,7 +36,6 @@ export async function setPincodeFunction({
 }) {
   const currentUser = ctx?.user ?? (await getUser());
   await portalClient.request(SetPinCode, {
-    name,
     address: currentUser?.wallet,
     pincode: pincode.toString(),
   });

@@ -1,5 +1,4 @@
 "use client";
-import type { TwoFactorInput } from "@/app/[locale]/auth/2fa/verify-otp-schema";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,11 +20,27 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/client";
+import type { StaticDecode } from "@/lib/utils/typebox";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
+import { t } from "elysia";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { TwoFactorSchema } from "./verify-otp-schema";
+
+function TwoFactorSchema() {
+  return t.Object(
+    {
+      code: t.Pincode({
+        description: "The OTP code",
+      }),
+    },
+    {
+      description: "Schema for verifying 2FA OTP",
+    }
+  );
+}
+
+type TwoFactorInput = StaticDecode<ReturnType<typeof TwoFactorSchema>>;
 
 export default function TwoFactorAuthPage() {
   const t = useTranslations("auth-2fa");

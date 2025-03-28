@@ -17,6 +17,7 @@ import { revalidateTag } from "next/cache";
 import { getServerEnvironment } from "../config/environment";
 import { metadata } from "../config/metadata";
 import { db } from "../db";
+import { OTP_DIGITS, OTP_PERIOD } from "./otp";
 import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
 import { createUserWallet } from "./portal";
 
@@ -172,7 +173,12 @@ export const auth = betterAuth({
     passkey({
       rpName: metadata.title.default,
     }),
-    twoFactor(),
+    twoFactor({
+      totpOptions: {
+        digits: OTP_DIGITS,
+        period: OTP_PERIOD,
+      },
+    }),
     magicLink({
       sendMagicLink,
     }),

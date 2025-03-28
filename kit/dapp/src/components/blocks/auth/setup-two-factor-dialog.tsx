@@ -13,7 +13,10 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
+import { OTP_ALGORITHM, OTP_DIGITS, OTP_PERIOD } from "@/lib/auth/otp";
+import { enableTwoFactor } from "@/lib/mutations/user/enable-two-factor-action";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import QRCode from "react-qr-code";
@@ -23,15 +26,18 @@ import { CopyTwoFactorBackupCodes } from "./copy-two-tactor-backup-codes";
 interface SetupTwoFactorDialogProps {
   open: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  refreshOnSuccess?: boolean;
 }
 
 export function SetupTwoFactorDialog({
   onOpenChange,
   open,
+  refreshOnSuccess = false,
 }: SetupTwoFactorDialogProps) {
   const t = useTranslations(
     "portfolio.settings.profile.two-factor-authentication"
   );
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [firstOtp, setFirstOtp] = useState("");
   const [twoFactorData, setTwoFactorData] = useState<{
@@ -65,12 +71,13 @@ export function SetupTwoFactorDialog({
     }
   };
 
-  const onMfaSetupFinished = async () => {
+  const onSetupFinished = async () => {
     try {
       setIsLoading(true);
-      const { error } = await authClient.twoFactor.verifyTotp({
+      const result = await authClient.twoFactor.verifyTotp({
         code: firstOtp,
       });
+      const { error } = result;
       if (error) {
         toast.error(
           t("enable.error-message", {
@@ -78,9 +85,17 @@ export function SetupTwoFactorDialog({
           })
         );
       } else {
+        await enableTwoFactor({
+          algorithm: OTP_ALGORITHM,
+          digits: OTP_DIGITS,
+          period: OTP_PERIOD,
+        });
         setFirstOtp("");
         onOpenChange(false);
         toast.success(t("enable.success-message"));
+        if (refreshOnSuccess) {
+          router.refresh();
+        }
       }
     } catch (error) {
       toast.error(
@@ -146,7 +161,7 @@ export function SetupTwoFactorDialog({
                 <Button
                   onClick={(e) => {
                     e.preventDefault();
-                    onMfaSetupFinished();
+                    onSetupFinished();
                   }}
                   disabled={!firstOtp.trim() || isLoading}
                 >

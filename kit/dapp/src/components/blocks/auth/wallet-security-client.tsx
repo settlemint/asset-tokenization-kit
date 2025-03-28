@@ -35,14 +35,15 @@ export function WalletSecurityClient({
           />
           <PincodeDialog
             open={selectedMethod === WalletSecurityMethodOptions.Pincode}
-            onOpenChange={setShowDialog}
+            onOpenChange={() => setSelectedMethod(null)}
           />
           <SetupTwoFactorDialog
-            onOpenChange={() => setSelectedMethod(null)}
             open={
               selectedMethod ===
               WalletSecurityMethodOptions.TwoFactorAuthentication
             }
+            onOpenChange={() => setSelectedMethod(null)}
+            refreshOnSuccess={true}
           />
         </div>
       )}
