@@ -4,6 +4,7 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
+import { addHours } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
@@ -14,6 +15,12 @@ export function Configuration() {
     value: currency,
     label: currency,
   }));
+
+  // Calculate default maturity date (1 hour from now)
+  const oneHourFromNow = addHours(new Date(), 1);
+  const defaultMaturityDate = oneHourFromNow.toLocaleDateString('sv').replace(/\//g, '-') + 'T' +
+    oneHourFromNow.toLocaleTimeString('sv').slice(0, 5);
+  const minMaturityDate = defaultMaturityDate;
 
   return (
     <FormStep
@@ -39,10 +46,12 @@ export function Configuration() {
         />
         <FormInput
           control={control}
-          type="date"
+          type="datetime-local"
           name="maturityDate"
           label={t("parameters.bonds.maturity-date-label")}
           required
+          min={minMaturityDate}
+          defaultValue={defaultMaturityDate}
         />
         <FormAssets
           control={control}

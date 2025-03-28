@@ -1,10 +1,12 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
+import { grantRolesToAdmins } from '@/lib/utils/role-granting';
 import { safeParse, t } from "@/lib/utils/typebox";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateDepositInput } from "./create-schema";
@@ -51,47 +53,66 @@ const CreateOffchainDeposit = hasuraGraphql(`
  */
 export const createDepositFunction = withAccessControl(
   { requiredPermissions: { asset: ["manage"] } },
-  async ({
-    parsedInput: {
-      assetName,
-      symbol,
-      decimals,
-      collateralLivenessValue,
-      collateralLivenessTimeUnit,
-      pincode,
-      isin,
-      predictedAddress,
-      price,
-    },
-    ctx: { user },
-  }: {
-    parsedInput: CreateDepositInput;
-    ctx: { user: User };
-  }) => {
-    await hasuraClient.request(CreateOffchainDeposit, {
-      id: predictedAddress,
-      isin,
-    });
+  async ({  parsedInput: {
+    assetName,
+    symbol,
+    decimals,
+    collateralLivenessValue,
+    collateralLivenessTimeUnit,
+    pincode,
+    isin,
+    predictedAddress,
+    price,
+    assetAdmins
+  },
+  ctx: { user },
+}: {
+  parsedInput: CreateDepositInput;
+  ctx: { user: User };
+}) => {
+  await hasuraClient.request(CreateOffchainDeposit, {
+    id: predictedAddress,
+    isin,
+  });
 
-    await hasuraClient.request(AddAssetPrice, {
-      assetId: predictedAddress,
-      amount: String(price.amount),
-      currency: price.currency,
-    });
+  await hasuraClient.request(AddAssetPrice, {
+    assetId: predictedAddress,
+    amount: String(price.amount),
+    currency: price.currency,
+  });
 
-    const collateralLivenessSeconds =
-      collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
+  const collateralLivenessSeconds =
+    collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
 
-    const data = await portalClient.request(DepositFactoryCreate, {
-      address: DEPOSIT_FACTORY_ADDRESS,
-      from: user.wallet,
-      name: assetName,
-      symbol: symbol.toString(),
-      decimals,
-      collateralLivenessSeconds,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
-    });
+  const createDepositResult = await portalClient.request(DepositFactoryCreate, {
+    address: DEPOSIT_FACTORY_ADDRESS,
+    from: user.wallet,
+    name: assetName,
+    symbol: symbol.toString(),
+    decimals,
+    collateralLivenessSeconds,
+    challengeResponse: await handleChallenge(user.wallet, pincode),
+  });
 
-    return safeParse(t.Hashes(), [data.DepositFactoryCreate?.transactionHash]);
+  const createTxHash = createDepositResult.DepositFactoryCreate?.transactionHash;
+  if (!createTxHash) {
+    throw new Error("Failed to create deposit: no transaction hash received");
   }
-);
+
+  // Wait for the deposit creation transaction to be mined
+  await waitForTransactions([createTxHash]);
+
+  // Grant roles to admins using the shared helper
+  const roleGrantHashes = await grantRolesToAdmins(
+    assetAdmins,
+    predictedAddress,
+    pincode,
+    "deposit",
+    user
+  );
+
+  // Combine all transaction hashes
+  const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+
+  return safeParse(t.Hashes(), allTransactionHashes);
+});

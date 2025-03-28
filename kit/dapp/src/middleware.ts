@@ -1,7 +1,5 @@
-import { proxyMiddleware } from "@settlemint/sdk-next/middlewares/proxy";
-import { getSessionCookie } from "better-auth/cookies";
 import { default as createIntlMiddleware } from "next-intl/middleware";
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 // Create the Next Intl middleware outside the main middleware function
 const intlMiddleware = createIntlMiddleware({
@@ -12,21 +10,7 @@ const intlMiddleware = createIntlMiddleware({
 });
 
 export default function middleware(request: NextRequest) {
-  // Handle proxy routes - proxyMiddleware already checks if the path matches
-  // and returns NextResponse.next() if it's not a proxy route
-  const proxyResponse = proxyMiddleware(request);
-
-  // Only stop the middleware chain if the response is a rewrite (for proxy routes)
-  // NextResponse.next() should be ignored and allow the middleware to continue
-  if (proxyResponse?.headers.get("x-middleware-rewrite")) {
-    const cookies = getSessionCookie(request);
-    if (!cookies) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    return proxyResponse;
-  }
-
-  // Finally, handle the internationalization routing
+  // Handle the internationalization routing
   return intlMiddleware(request);
 }
 

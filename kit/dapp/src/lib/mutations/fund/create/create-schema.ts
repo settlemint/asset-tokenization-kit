@@ -1,5 +1,6 @@
 import { isAddressAvailable } from "@/lib/queries/fund-factory/fund-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
+import { AssetAdminsSchemaFragment } from "../../common/asset-admins-schema";
 
 /**
  * TypeBox schema for validating fund creation inputs
@@ -58,6 +59,7 @@ export function CreateFundSchema() {
       price: t.Price({
         description: "Price of the fund",
       }),
+      assetAdmins: AssetAdminsSchemaFragment(),
     },
     {
       description: "Schema for validating fund creation inputs",

@@ -5,7 +5,6 @@ import { ColumnAssetStatus } from "@/components/blocks/asset-info/column-asset-s
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { getEquityList } from "@/lib/queries/equity/equity-list";
 import { formatNumber } from "@/lib/utils/number";
 import type { equityCategories } from "@/lib/utils/typebox/equity-categories";
@@ -19,11 +18,7 @@ const columnHelper =
 type EquityCategory = (typeof equityCategories)[number];
 type EquityClass = (typeof equityClasses)[number];
 
-export function equityColumns({
-  baseCurrency,
-}: {
-  baseCurrency: CurrencyCode;
-}) {
+export function equityColumns() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
   // eslint-disable-next-line react-hooks/rules-of-hooks

@@ -48,6 +48,7 @@ interface AreaChartProps {
   showYAxis?: boolean;
   stacked?: boolean;
   chartContainerClassName?: string;
+  options?: ReactNode;
 }
 
 const defaultTickFormatter = (value: string) => value.split(",")[0];
@@ -64,6 +65,7 @@ export function AreaChartComponent({
   showYAxis,
   stacked,
   chartContainerClassName,
+  options,
 }: AreaChartProps) {
   const t = useTranslations("components.area-chart");
   const dataKeys = Object.keys(config);
@@ -78,21 +80,24 @@ export function AreaChartComponent({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{title}</CardTitle>
-          {info && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info
-                    className="size-4 text-muted-foreground"
-                    aria-label={t("info-icon-label")}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-accent-foreground text-xs">{info}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+          <div className="flex items-center gap-4">
+            {options && options}
+            {info && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info
+                      className="size-4 text-muted-foreground"
+                      aria-label={t("info-icon-label")}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-accent-foreground text-xs">{info}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
         </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>

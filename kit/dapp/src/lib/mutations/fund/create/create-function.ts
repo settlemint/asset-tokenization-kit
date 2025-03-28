@@ -1,9 +1,11 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
+import { grantRolesToAdmins } from '@/lib/utils/role-granting';
 import { safeParse, t } from "@/lib/utils/typebox";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateFundInput } from "./create-schema";
@@ -67,6 +69,7 @@ export const createFundFunction = withAccessControl(
       managementFeeBps,
       predictedAddress,
       price,
+      assetAdmins,
     },
     ctx: { user },
   }: {
@@ -96,6 +99,24 @@ export const createFundFunction = withAccessControl(
       managementFeeBps,
     });
 
-    return safeParse(t.Hashes(), [data.FundFactoryCreate?.transactionHash]);
-  }
-);
+    const createTxHash = data.FundFactoryCreate?.transactionHash;
+    if (!createTxHash) {
+      throw new Error("Failed to create fund: no transaction hash received");
+    }
+
+    await waitForTransactions([createTxHash]);
+
+    // Grant roles to admins using the shared helper
+  const roleGrantHashes = await grantRolesToAdmins(
+    assetAdmins,
+    predictedAddress,
+    pincode,
+    "fund",
+    user
+  );
+
+    // Combine all transaction hashes
+    const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+
+    return safeParse(t.Hashes(), allTransactionHashes);
+});

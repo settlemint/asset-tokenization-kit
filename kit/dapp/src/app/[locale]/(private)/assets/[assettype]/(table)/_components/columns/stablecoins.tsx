@@ -6,7 +6,6 @@ import { DataTableRowActions } from "@/components/blocks/data-table/data-table-r
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
-import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { getStableCoinList } from "@/lib/queries/stablecoin/stablecoin-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -15,11 +14,7 @@ import { useLocale, useTranslations } from "next-intl";
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getStableCoinList>>[number]>();
 
-export function stablecoinColumns({
-  baseCurrency,
-}: {
-  baseCurrency: CurrencyCode;
-}) {
+export function stablecoinColumns() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
   // eslint-disable-next-line react-hooks/rules-of-hooks

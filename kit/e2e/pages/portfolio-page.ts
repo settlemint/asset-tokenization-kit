@@ -10,7 +10,10 @@ export class PortfolioPage extends BasePage {
     await this.page.goto("/portfolio");
   }
 
-  async verifyPortfolioAssetAmount(options: { expectedAmount: string }) {
+  async verifyPortfolioAssetAmount(options: {
+    expectedAmount: string;
+    price?: string;
+  }) {
     await this.page.getByRole("link", { name: "Dashboard" }).click();
     const amountElement = this.page.locator("span.font-bold.text-4xl");
     await amountElement.waitFor({ state: "visible" });
@@ -22,15 +25,22 @@ export class PortfolioPage extends BasePage {
     }
 
     const formattedActual = Number.parseFloat(
-      actualAmount.replace(/,/g, "")
-    ).toString();
-    const formattedExpected = Number.parseFloat(
+      actualAmount.replace(/[€$£,]/g, "").trim()
+    ).toFixed(0);
+
+    let formattedExpected = Number.parseFloat(
       options.expectedAmount
     ).toString();
+    if (options.price) {
+      formattedExpected = (
+        Number.parseFloat(options.expectedAmount) *
+        Number.parseFloat(options.price)
+      ).toFixed(0);
+    }
 
     if (formattedActual !== formattedExpected) {
       throw new Error(
-        `Expected portfolio amount to be ${options.expectedAmount} but found ${actualAmount}`
+        `Expected portfolio amount to be ${formattedExpected} but found ${actualAmount} (formatted: ${formattedActual})`
       );
     }
   }
@@ -79,9 +89,25 @@ export class PortfolioPage extends BasePage {
     await this.page.getByRole("button", { name: "Yes, confirm" }).click();
   }
 
-  async verifyAssetBalance(initialBalance: string, expectedBalance: string) {
+  async verifyAssetBalance(
+    initialBalance: string,
+    expectedBalance: string,
+    price?: string
+  ) {
     const amountElement = this.page.locator("span.mr-1.font-bold.text-4xl");
     await amountElement.waitFor({ state: "visible" });
+
+    let adjustedInitialBalance = initialBalance;
+    let adjustedExpectedBalance = expectedBalance;
+
+    if (price) {
+      adjustedInitialBalance = (
+        Number.parseFloat(initialBalance) * Number.parseFloat(price)
+      ).toFixed(0);
+      adjustedExpectedBalance = (
+        Number.parseFloat(expectedBalance) * Number.parseFloat(price)
+      ).toFixed(0);
+    }
 
     await expect
       .poll(
@@ -90,21 +116,34 @@ export class PortfolioPage extends BasePage {
           if (!actualAmount) {
             throw new Error("Could not find portfolio balance amount");
           }
+
+          // Improved formatting to handle currency symbols and commas
           const formattedActual = Number.parseFloat(
-            actualAmount.replace(/,/g, "")
-          ).toString();
-          if (formattedActual === initialBalance) {
-            return initialBalance;
+            actualAmount.replace(/[€$£,]/g, "").trim()
+          ).toFixed(0);
+
+          // Convert initial balance to same format for comparison
+          const formattedInitial = price
+            ? adjustedInitialBalance
+            : Number.parseFloat(initialBalance).toFixed(0);
+
+          if (formattedActual === formattedInitial) {
+            return formattedInitial;
           }
+
           return formattedActual;
         },
         {
-          message: `Waiting for balance to change from ${initialBalance} to ${expectedBalance}`,
+          message: `Waiting for balance to change from ${adjustedInitialBalance} to ${adjustedExpectedBalance}`,
           timeout: 120000,
           intervals: [1000],
         }
       )
-      .toBe(expectedBalance);
+      .toBe(
+        price
+          ? adjustedExpectedBalance
+          : Number.parseFloat(expectedBalance).toFixed(0)
+      );
   }
 
   private async searchAndSelectFromDialog(

@@ -5,7 +5,6 @@ import { ColumnAssetStatus } from "@/components/blocks/asset-info/column-asset-s
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { getDepositList } from "@/lib/queries/deposit/deposit-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -14,11 +13,7 @@ import { useLocale, useTranslations } from "next-intl";
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getDepositList>>[number]>();
 
-export function depositColumns({
-  baseCurrency,
-}: {
-  baseCurrency: CurrencyCode;
-}) {
+export function depositColumns() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
   // eslint-disable-next-line react-hooks/rules-of-hooks

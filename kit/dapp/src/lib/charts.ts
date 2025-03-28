@@ -21,14 +21,19 @@ import { getDateFromTimestamp } from "./utils/date";
 
 export type TimeGranularity = "hour" | "day" | "month";
 export type IntervalType = "year" | "month" | "week" | "day";
-export type AggregationType = "first" | "sum" | "count";
-export type AccumulationType = "total" | "max";
+export type AggregationType = "first" | "last" | "sum" | "count" | "max";
+export type AccumulationType = "total" | "max" | "current";
+
+export interface AggregationOptions {
+  display: AggregationType;
+  storage: AggregationType;
+}
 
 export interface TimeSeriesOptions {
   granularity: TimeGranularity;
   intervalType: IntervalType;
   intervalLength: number;
-  aggregation: AggregationType;
+  aggregation: AggregationType | AggregationOptions;
   accumulation?: AccumulationType;
   historical?: boolean;
 }
@@ -63,9 +68,15 @@ export function createTimeSeries<T extends DataPoint>(
     intervalType,
     intervalLength,
     accumulation,
-    aggregation = "first",
+    aggregation,
     historical,
   } = options;
+
+  // Normalize aggregation options
+  const { display: displayAggregation, storage: storageAggregation } =
+    typeof aggregation === "string"
+      ? { display: aggregation, storage: aggregation }
+      : aggregation;
 
   // Generate ticks based on granularity
   const interval: Interval = getInterval(
@@ -88,10 +99,17 @@ export function createTimeSeries<T extends DataPoint>(
     const matchingDataForTick = data.filter((d) =>
       isInTick(tick, d.timestamp, granularity)
     );
-    const aggregatedData = aggregateData(
+
+    // Get both display and storage aggregated values
+    const displayData = aggregateData(
       matchingDataForTick,
       valueKeys,
-      aggregation
+      displayAggregation
+    );
+    const storageData = aggregateData(
+      matchingDataForTick,
+      valueKeys,
+      storageAggregation
     );
 
     const result = {
@@ -99,13 +117,20 @@ export function createTimeSeries<T extends DataPoint>(
     } as TimeSeriesResult<Pick<T, keyof T>>;
 
     for (const key of valueKeys) {
+      const displayValue = Number(displayData?.[key]);
+      const storageValue = Number(storageData?.[key]);
+
       const processedValue = processTimeSeriesValue(
-        Number(aggregatedData?.[key]),
+        displayValue,
         lastValidValues.get(key) ?? 0,
         accumulation
       );
 
-      updateLastValidValue(lastValidValues, key, processedValue);
+      // Update last valid value with the storage value instead of processed value
+      if (storageValue) {
+        lastValidValues.set(key, storageValue);
+      }
+
       Object.assign(result, { [key]: processedValue });
     }
 
@@ -230,7 +255,36 @@ function aggregateData<T extends DataPoint>(
         {} as Record<keyof T, number>
       );
     case "first":
-      return matchingData.length > 0 ? matchingData[0] : null;
+      return valueKeys.reduce(
+        (acc, key) => {
+          const firstDataPoint = matchingData.find((d) => d[key] !== undefined);
+          acc[key] = firstDataPoint?.[key];
+          return acc;
+        },
+        {} as Record<keyof T, unknown>
+      );
+    case "last":
+      return valueKeys.reduce(
+        (acc, key) => {
+          const reversedData = [...matchingData].reverse();
+          const lastDataPoint = reversedData.find((d) => d[key] !== undefined);
+          acc[key] = lastDataPoint?.[key];
+          return acc;
+        },
+        {} as Record<keyof T, unknown>
+      );
+    case "max":
+      return valueKeys.reduce(
+        (acc, key) => {
+          const maxValue = matchingData.reduce((max, d) => {
+            const value = Number(d[key]);
+            return isNaN(value) ? max : Math.max(max, value);
+          }, 0);
+          acc[key] = maxValue;
+          return acc;
+        },
+        {} as Record<keyof T, number>
+      );
     default: {
       const _exhaustiveCheck: never = aggregation;
       throw new Error("Unsupported aggregation type");
@@ -252,19 +306,11 @@ function processTimeSeriesValue(
       return currentValue + lastValidValue;
     case "max":
       return Math.max(currentValue, lastValidValue);
+    case "current":
+      return currentValue;
     default: {
       return currentValue;
     }
-  }
-}
-
-function updateLastValidValue(
-  lastValidValues: Map<unknown, number>,
-  key: unknown,
-  value: unknown
-): void {
-  if (value) {
-    lastValidValues.set(key, Number(value));
   }
 }
 

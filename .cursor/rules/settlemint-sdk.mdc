@@ -7,3 +7,4 @@ alwaysApply: false
 - Implement proper error handling for SDK operations.
 - Utilize SettleMint's codegen tool for generating type-safe SDK clients.
 - Leverage SettleMint's documentation (https://console.settlemint.com/documentation/) for SDK-specific best practices.
+- Every 'challengeResponse' argument passed to a mutation created by 'portalGraphql' should be unique. Do not store this in a variable and re-use it on multiple 'portalClient' requests.
