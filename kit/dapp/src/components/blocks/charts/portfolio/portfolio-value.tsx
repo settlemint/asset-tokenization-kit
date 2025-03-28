@@ -4,6 +4,13 @@ import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { createTimeSeries } from "@/lib/charts";
 import type {
   PortfolioAsset,
@@ -16,6 +23,7 @@ import { useState } from "react";
 import type { Address } from "viem";
 import {
   TIME_RANGE_CONFIG,
+  TimeRangeSelect,
   TimeSeriesChart,
   TimeSeriesControls,
   TimeSeriesRoot,
@@ -183,64 +191,50 @@ export function PortfolioValue({
   };
 
   return (
-    <div className="space-y-4">
-      {/* <AreaChartComponent
-        data={timeseries}
-        config={chartConfig}
+    <TimeSeriesRoot data={individualData} locale={locale}>
+      <TimeSeriesTitle
         title={t("portfolio-value-title")}
         description={t("portfolio-value-description")}
-        xAxis={{ key: "timestamp" }}
-        showYAxis={true}
-        stacked={true}
-        info={`Last updated: ${timeseries.at(-1)?.timestamp}`}
-        chartContainerClassName="h-[14rem] w-full"
-        options={
-          <Select
-            value={aggregationType}
-            onValueChange={(value) =>
-              setAggregationType(value as AggregationType)
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="View by" defaultValue="individual" />
-            </SelectTrigger>
-            <SelectContent>
-              {AGGREGATION_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        }
-      /> */}
-
-      <TimeSeriesRoot data={individualData} locale={locale}>
-        <TimeSeriesTitle
-          title={t("portfolio-value-title")}
-          description={t("portfolio-value-description")}
+      />
+      <TimeSeriesControls>
+        <TimeRangeSelect />
+        <Select
+          value={aggregationType}
+          onValueChange={(value) =>
+            setAggregationType(value as AggregationType)
+          }
+        >
+          <SelectTrigger>
+            <SelectValue defaultValue="individual" />
+          </SelectTrigger>
+          <SelectContent>
+            {AGGREGATION_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </TimeSeriesControls>
+      {aggregationType === "individual" ? (
+        <TimeSeriesChart
+          processData={individualTimeSeries}
+          config={chartConfig}
+          className="h-[16rem] w-full"
         />
-        <TimeSeriesControls />
-        {aggregationType === "individual" ? (
-          <TimeSeriesChart
-            processData={individualTimeSeries}
-            config={chartConfig}
-            className="h-[16rem] w-full"
-          />
-        ) : aggregationType === "type" ? (
-          <TimeSeriesChart
-            processData={assetTypeTimeSeries}
-            config={chartConfig}
-            className="h-[16rem] w-full"
-          />
-        ) : (
-          <TimeSeriesChart
-            processData={totalValueTimeSeries}
-            config={chartConfig}
-            className="h-[16rem] w-full"
-          />
-        )}
-      </TimeSeriesRoot>
-    </div>
+      ) : aggregationType === "type" ? (
+        <TimeSeriesChart
+          processData={assetTypeTimeSeries}
+          config={chartConfig}
+          className="h-[16rem] w-full"
+        />
+      ) : (
+        <TimeSeriesChart
+          processData={totalValueTimeSeries}
+          config={chartConfig}
+          className="h-[16rem] w-full"
+        />
+      )}
+    </TimeSeriesRoot>
   );
 }

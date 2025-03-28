@@ -179,27 +179,29 @@ export function TimeSeriesTitle({ title, description }: TimeSeriesTitleProps) {
   );
 }
 
-export function TimeSeriesControls() {
+export function TimeSeriesControls({ children }: { children: ReactNode }) {
+  return <div className="-mt-4 px-6 flex items-center gap-4">{children}</div>;
+}
+
+export function TimeRangeSelect() {
   const t = useTranslations("components.chart");
   const { timeRange, setTimeRange } = useTimeSeries();
 
   return (
-    <div className="-mt-4 px-6">
-      <Select
-        value={timeRange}
-        onValueChange={(value) => setTimeRange(value as TimeRange)}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder={t("select-time-range")} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="24h">{t("time-range.24h")}</SelectItem>
-          <SelectItem value="7d">{t("time-range.7d")}</SelectItem>
-          <SelectItem value="30d">{t("time-range.30d")}</SelectItem>
-          <SelectItem value="90d">{t("time-range.90d")}</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
+    <Select
+      value={timeRange}
+      onValueChange={(value) => setTimeRange(value as TimeRange)}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder={t("select-time-range")} />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="24h">{t("time-range.24h")}</SelectItem>
+        <SelectItem value="7d">{t("time-range.7d")}</SelectItem>
+        <SelectItem value="30d">{t("time-range.30d")}</SelectItem>
+        <SelectItem value="90d">{t("time-range.90d")}</SelectItem>
+      </SelectContent>
+    </Select>
   );
 }
 
