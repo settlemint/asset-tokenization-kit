@@ -85,7 +85,7 @@ export default async function PortfolioDashboard({
         title={t("dashboard.page-title")}
         section={t("dashboard.portfolio-management")}
       />
-      <div className="grid grid-cols-1 gap-4">
+      <div className="space-y-4">
         <Greeting />
         <MyAssetsHeader
           data={myAssetsBalance}
@@ -119,10 +119,8 @@ export default async function PortfolioDashboard({
           }}
         />
       </div>
-      <PageHeader title={t("dashboard.latest-events")} className="mt-8" />
-      <div className="grid grid-cols-1 gap-4">
-        <LatestEvents sender={user.wallet as Address} />
-      </div>
+      <PageHeader title={t("dashboard.latest-events")} className="mt-8 mb-4" />
+      <LatestEvents sender={user.wallet as Address} />
     </>
   );
 }
