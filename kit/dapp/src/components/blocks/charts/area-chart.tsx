@@ -36,44 +36,33 @@ interface XAxisConfig {
   angle?: number;
 }
 
-interface AreaChartProps {
+interface AreaChartContainerProps {
   data: AreaChartData[];
   config: ChartConfig;
-  title: string;
-  description?: string;
   xAxis: XAxisConfig;
-  className?: string;
-  footer?: ReactNode;
-  info?: string;
   showYAxis?: boolean;
   stacked?: boolean;
   chartContainerClassName?: string;
-  options?: ReactNode;
+}
+
+interface AreaChartProps extends AreaChartContainerProps {
+  title: string;
+  description?: string;
+  footer?: ReactNode;
+  info?: string;
 }
 
 const defaultTickFormatter = (value: string) => value.split(",")[0];
 const defaultTickMargin = 8;
 
 export function AreaChartComponent({
-  data,
-  config,
   title,
   description,
-  xAxis,
   footer,
   info,
-  showYAxis,
-  stacked,
-  chartContainerClassName,
-  options,
+  ...chartContainerProps
 }: AreaChartProps) {
   const t = useTranslations("components.chart");
-  const dataKeys = Object.keys(config);
-  const {
-    key,
-    tickFormatter = defaultTickFormatter,
-    tickMargin = defaultTickMargin,
-  } = xAxis;
 
   return (
     <Card>
@@ -81,7 +70,6 @@ export function AreaChartComponent({
         <div className="flex items-center justify-between">
           <CardTitle>{title}</CardTitle>
           <div className="flex items-center gap-4">
-            {options && options}
             {info && (
               <TooltipProvider>
                 <Tooltip>
@@ -102,73 +90,93 @@ export function AreaChartComponent({
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent className="p-0 pr-4">
-        <ChartContainer config={config} className={chartContainerClassName}>
-          <AreaChart accessibilityLayer data={data}>
-            <CartesianGrid vertical={false} />
-            {dataKeys.length > 1 && (
-              <Legend
-                align="center"
-                verticalAlign="bottom"
-                formatter={(value) => config[value].label}
-              />
-            )}
-            <XAxis
-              dataKey={key}
-              tickLine={false}
-              axisLine={false}
-              tickMargin={tickMargin}
-              tickFormatter={tickFormatter}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={true}
-              tickMargin={tickMargin}
-              hide={!showYAxis}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent />}
-              wrapperStyle={{ minWidth: "200px", width: "auto" }}
-            />
-            <defs>
-              {dataKeys.map((key) => (
-                <linearGradient
-                  key={key}
-                  id={`fill${key}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor={config[key].color}
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor={config[key].color}
-                    stopOpacity={0.1}
-                  />
-                </linearGradient>
-              ))}
-            </defs>
-            {dataKeys.map((key) => (
-              <Area
-                key={key}
-                dataKey={key}
-                type="bump"
-                fill={`url(#fill${key})`}
-                fillOpacity={0.4}
-                stroke={config[key].color}
-                strokeWidth={2}
-                stackId={stacked ? "a" : key}
-              />
-            ))}
-          </AreaChart>
-        </ChartContainer>
+        <AreaChartContainer {...chartContainerProps} />
       </CardContent>
       {footer && <CardFooter>{footer}</CardFooter>}
     </Card>
+  );
+}
+
+export function AreaChartContainer({
+  data,
+  config,
+  xAxis,
+  showYAxis,
+  stacked,
+  chartContainerClassName,
+}: AreaChartContainerProps) {
+  const dataKeys = Object.keys(config);
+  const {
+    key,
+    tickFormatter = defaultTickFormatter,
+    tickMargin = defaultTickMargin,
+  } = xAxis;
+
+  return (
+    <ChartContainer config={config} className={chartContainerClassName}>
+      <AreaChart accessibilityLayer data={data}>
+        <CartesianGrid vertical={false} />
+        {dataKeys.length > 1 && (
+          <Legend
+            align="center"
+            verticalAlign="bottom"
+            formatter={(value) => config[value].label}
+          />
+        )}
+        <XAxis
+          dataKey={key}
+          tickLine={false}
+          axisLine={false}
+          tickMargin={tickMargin}
+          tickFormatter={tickFormatter}
+        />
+        <YAxis
+          tickLine={false}
+          axisLine={true}
+          tickMargin={tickMargin}
+          hide={!showYAxis}
+        />
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent />}
+          wrapperStyle={{ minWidth: "200px", width: "auto" }}
+        />
+        <defs>
+          {dataKeys.map((key) => (
+            <linearGradient
+              key={key}
+              id={`fill${key}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop
+                offset="5%"
+                stopColor={config[key].color}
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor={config[key].color}
+                stopOpacity={0.1}
+              />
+            </linearGradient>
+          ))}
+        </defs>
+        {dataKeys.map((key) => (
+          <Area
+            key={key}
+            dataKey={key}
+            type="bump"
+            fill={`url(#fill${key})`}
+            fillOpacity={0.4}
+            stroke={config[key].color}
+            strokeWidth={2}
+            stackId={stacked ? "a" : key}
+          />
+        ))}
+      </AreaChart>
+    </ChartContainer>
   );
 }

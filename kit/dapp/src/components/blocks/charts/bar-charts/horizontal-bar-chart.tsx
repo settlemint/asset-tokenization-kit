@@ -38,17 +38,24 @@ interface XAxisConfig {
   angle?: number;
 }
 
-interface BarChartProps {
+interface BarChartContainerProps {
   data: BarChartData[];
   config: ChartConfig;
-  title: string;
-  description?: string;
   xAxis: XAxisConfig;
   className?: string;
   footer?: ReactNode;
   showYAxis?: boolean;
   showLegend?: boolean;
   colors?: string[];
+  chartContainerClassName?: string;
+}
+
+interface BarChartProps extends BarChartContainerProps {
+  title: string;
+  description?: string;
+
+  footer?: ReactNode;
+  showYAxis?: boolean;
 }
 
 const defaultTickFormatter = (value: string) => {
@@ -67,16 +74,34 @@ const defaultTickFormatter = (value: string) => {
 const defaultTickMargin = 8;
 
 export function BarChartComponent({
-  data,
-  config,
   title,
   description,
-  xAxis,
   footer,
-  showYAxis,
-  showLegend = true,
-  colors,
+  ...chartContainerProps
 }: BarChartProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        {description && <CardDescription>{description}</CardDescription>}
+      </CardHeader>
+      <CardContent className="p-0 pr-4 pb-4">
+        <BarChartContainer {...chartContainerProps} />
+      </CardContent>
+      {footer && <CardFooter>{footer}</CardFooter>}
+    </Card>
+  );
+}
+
+export function BarChartContainer({
+  data,
+  config,
+  xAxis,
+  showYAxis,
+  colors,
+  chartContainerClassName,
+  showLegend = true,
+}: BarChartContainerProps) {
   const dataKeys = Object.keys(config);
   const {
     key,
@@ -95,96 +120,87 @@ export function BarChartComponent({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
-      </CardHeader>
-      <CardContent className="p-0 pr-4 pb-4">
-        <ChartContainer config={config}>
-          <BarChart accessibilityLayer data={data}>
-            <CartesianGrid vertical={false} />
-            {showLegend && dataKeys.length > 1 && (
-              <Legend
-                align="center"
-                verticalAlign="bottom"
-                formatter={(value) => config[value].label}
+    <ChartContainer config={config} className={chartContainerClassName}>
+      <BarChart accessibilityLayer data={data}>
+        <CartesianGrid vertical={false} />
+        {showLegend && dataKeys.length > 1 && (
+          <Legend
+            align="center"
+            verticalAlign="bottom"
+            formatter={(value) => config[value].label}
+          />
+        )}
+        <XAxis
+          dataKey={key}
+          tickLine={false}
+          axisLine={false}
+          tickMargin={tickMargin}
+          tickFormatter={tickFormatter}
+        />
+        {showYAxis && (
+          <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} />
+        )}
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent />}
+          wrapperStyle={{ minWidth: "200px", width: "auto" }}
+        />
+        <defs>
+          {dataKeys.map((key) => (
+            <linearGradient
+              key={key}
+              id={`barGradient${key}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop
+                offset="5%"
+                stopColor={config[key].color}
+                stopOpacity={0.8}
               />
-            )}
-            <XAxis
-              dataKey={key}
-              tickLine={false}
-              axisLine={false}
-              tickMargin={tickMargin}
-              tickFormatter={tickFormatter}
-            />
-            {showYAxis && (
-              <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} />
-            )}
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent />}
-              wrapperStyle={{ minWidth: "200px", width: "auto" }}
-            />
-            <defs>
-              {dataKeys.map((key) => (
-                <linearGradient
-                  key={key}
-                  id={`barGradient${key}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor={config[key].color}
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor={config[key].color}
-                    stopOpacity={0.4}
-                  />
-                </linearGradient>
-              ))}
-              {colors?.map((color, index) => (
-                <linearGradient
-                  key={`customGradient${index}`}
-                  id={`customGradient${index}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="5%" stopColor={color} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={color} stopOpacity={0.4} />
-                </linearGradient>
-              ))}
-            </defs>
-            {dataKeys.map((key) => (
-              <Bar
-                key={key}
-                dataKey={key}
-                stackId="a"
-                fill={`url(#barGradient${key})`}
-                stroke={config[key].color}
-                strokeWidth={1}
-                radius={[2, 2, 0, 0]}
-              >
-                {colors?.map((color, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={`url(#customGradient${index})`}
-                    stroke={color}
-                  />
-                ))}
-              </Bar>
+              <stop
+                offset="95%"
+                stopColor={config[key].color}
+                stopOpacity={0.4}
+              />
+            </linearGradient>
+          ))}
+          {colors?.map((color, index) => (
+            <linearGradient
+              key={`customGradient${index}`}
+              id={`customGradient${index}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="5%" stopColor={color} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={color} stopOpacity={0.4} />
+            </linearGradient>
+          ))}
+        </defs>
+        {dataKeys.map((key) => (
+          <Bar
+            key={key}
+            dataKey={key}
+            stackId="a"
+            fill={`url(#barGradient${key})`}
+            stroke={config[key].color}
+            strokeWidth={1}
+            radius={[2, 2, 0, 0]}
+          >
+            {colors?.map((color, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={`url(#customGradient${index})`}
+                stroke={color}
+              />
             ))}
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-      {footer && <CardFooter>{footer}</CardFooter>}
-    </Card>
+          </Bar>
+        ))}
+      </BarChart>
+    </ChartContainer>
   );
 }

@@ -225,16 +225,19 @@ export function PortfolioValue({
           <TimeSeriesChart
             processData={individualTimeSeries}
             config={chartConfig}
+            className="h-[16rem] w-full"
           />
         ) : aggregationType === "type" ? (
           <TimeSeriesChart
             processData={assetTypeTimeSeries}
             config={chartConfig}
+            className="h-[16rem] w-full"
           />
         ) : (
           <TimeSeriesChart
             processData={totalValueTimeSeries}
             config={chartConfig}
+            className="h-[16rem] w-full"
           />
         )}
       </TimeSeriesRoot>
