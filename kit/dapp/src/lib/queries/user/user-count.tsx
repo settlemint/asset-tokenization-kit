@@ -20,6 +20,11 @@ const UserCount = hasuraGraphql(
         ...RecentUsersCountFragment
       }
     }
+    adminUsers: user_aggregate(where: { role: { _eq: "admin" } }) {
+      aggregate {
+        ...RecentUsersCountFragment
+      }
+    }
     user(order_by: { created_at: asc }) {
       ...UserFragment
     }
@@ -46,6 +51,8 @@ export type UserCountResult = {
   recentUsersCount: number;
   /** Total user count */
   totalUsersCount: number;
+  /** Count of admin users */
+  adminUsersCount: number;
 };
 
 /**
@@ -106,6 +113,11 @@ export const getUserCount = cache(async ({ since }: UserCountProps = {}) => {
     result.totalUsers.aggregate
   );
 
+  const adminUsersCount = safeParse(
+    UserCountSchema,
+    result.adminUsers.aggregate
+  );
+
   // Parse and validate each user in the results
   const validatedUsers = safeParse(
     t.Array(UserSchema),
@@ -116,5 +128,6 @@ export const getUserCount = cache(async ({ since }: UserCountProps = {}) => {
     users: calculateCumulativeUsersByDay(validatedUsers),
     recentUsersCount: recentUsersCount.count,
     totalUsersCount: totalUsersCount.count,
+    adminUsersCount: adminUsersCount.count,
   };
 });

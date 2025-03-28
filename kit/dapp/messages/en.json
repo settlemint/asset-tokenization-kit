@@ -168,6 +168,10 @@
           "gbp": "British Pound (GBP)",
           "chf": "Swiss Franc (CHF)"
         },
+        "permissions-title": "Permissions",
+        "permissions-description": "Manage platform administrators and their access levels",
+        "admin-count": "Admins",
+        "manage-admins": "Manage platform admins",
         "platform-management": "Platform management",
         "save": "Save",
         "save-changes": "Save changes",

@@ -11,6 +11,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Link } from "@/i18n/routing";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
+import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { cn } from "@/lib/utils";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
@@ -21,7 +22,6 @@ import { useForm, useWatch } from "react-hook-form";
 import useSWR from "swr";
 import { getAddress } from "viem";
 import { EvmAddress } from "../evm-address/evm-address";
-
 // Define types for recent items
 type RecentAsset = {
   id: string;
@@ -259,7 +259,7 @@ export const Search = () => {
                 <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
                   {t("assets-section")}
                 </div>
-                {assets.map((asset) => (
+                {assets.map((asset: AssetUsers) => (
                   <div
                     key={asset.id}
                     className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"

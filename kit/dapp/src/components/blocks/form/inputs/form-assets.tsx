@@ -44,6 +44,14 @@ type RecentAsset = {
   selectedAt: number;
 };
 
+// Define a type for asset holders
+type AssetHolder = {
+  account: {
+    id: string;
+  };
+  value: string;
+};
+
 const MAX_RECENT_ASSETS = 5;
 const LOCAL_STORAGE_KEY = "recently-selected-assets";
 const INITIAL_RECENT_ASSETS: RecentAsset[] = [];
@@ -172,14 +180,15 @@ function FormAssetsList({
 
       // Filter by user wallet if provided
       if (userWallet) {
-         return results.filter(asset =>
-          asset.holders.some(holder =>
-            holder.account.id.toLowerCase() === userWallet.toLowerCase() &&
-            BigInt(holder.value) > 0n
+        return results.filter((asset: AssetUsers) =>
+          asset.holders.some(
+            (holder: AssetHolder) =>
+              holder.account.id.toLowerCase() === userWallet.toLowerCase() &&
+              BigInt(holder.value) > 0n
           )
         );
       }
-
+      return results;
     },
     {
       revalidateOnFocus: false,
@@ -228,7 +237,7 @@ function FormAssetsList({
 
     return recentAssets
       .map((recent) => {
-        const asset = assets.find((a) => a.id === recent.id);
+        const asset = assets.find((a: AssetUsers) => a.id === recent.id);
         return asset ? { ...asset, selectedAt: recent.selectedAt } : null;
       })
       .filter(Boolean) as (AssetUsers & { selectedAt: number })[];
@@ -296,7 +305,7 @@ function FormAssetsList({
 
       {/* Show search results */}
       <CommandGroup>
-        {assets.map((asset) => (
+        {assets.map((asset: AssetUsers) => (
           <AssetItem
             key={asset.id}
             asset={asset}
