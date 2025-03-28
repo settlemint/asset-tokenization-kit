@@ -48,12 +48,12 @@ interface BarChartContainerProps {
   showLegend?: boolean;
   colors?: string[];
   chartContainerClassName?: string;
+  stacked?: boolean;
 }
 
 interface BarChartProps extends BarChartContainerProps {
   title: string;
   description?: string;
-
   footer?: ReactNode;
   showYAxis?: boolean;
 }
@@ -101,6 +101,7 @@ export function BarChartContainer({
   colors,
   chartContainerClassName,
   showLegend = true,
+  stacked = true,
 }: BarChartContainerProps) {
   const dataKeys = Object.keys(config);
   const {
@@ -185,7 +186,7 @@ export function BarChartContainer({
           <Bar
             key={key}
             dataKey={key}
-            stackId="a"
+            stackId={stacked ? "a" : undefined}
             fill={`url(#barGradient${key})`}
             stroke={config[key].color}
             strokeWidth={1}
