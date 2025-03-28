@@ -257,16 +257,22 @@ function aggregateData<T extends DataPoint>(
     case "first":
       return matchingData.length > 0 ? matchingData[0] : null;
     case "last":
-      return matchingData.length > 0
-        ? matchingData[matchingData.length - 1]
-        : null;
+      return valueKeys.reduce(
+        (acc, key) => {
+          const reversedData = [...matchingData].reverse();
+          const lastDataPoint = reversedData.find((d) => d[key] !== undefined);
+          acc[key] = lastDataPoint?.[key];
+          return acc;
+        },
+        {} as Record<keyof T, unknown>
+      );
     case "max":
       return valueKeys.reduce(
         (acc, key) => {
-          const maxValue = matchingData.reduce(
-            (max, d) => Math.max(max, Number(d[key])),
-            0
-          );
+          const maxValue = matchingData.reduce((max, d) => {
+            const value = Number(d[key]);
+            return isNaN(value) ? max : Math.max(max, value);
+          }, 0);
           acc[key] = maxValue;
           return acc;
         },
