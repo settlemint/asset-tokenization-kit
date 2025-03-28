@@ -255,7 +255,14 @@ function aggregateData<T extends DataPoint>(
         {} as Record<keyof T, number>
       );
     case "first":
-      return matchingData.length > 0 ? matchingData[0] : null;
+      return valueKeys.reduce(
+        (acc, key) => {
+          const firstDataPoint = matchingData.find((d) => d[key] !== undefined);
+          acc[key] = firstDataPoint?.[key];
+          return acc;
+        },
+        {} as Record<keyof T, unknown>
+      );
     case "last":
       return valueKeys.reduce(
         (acc, key) => {
