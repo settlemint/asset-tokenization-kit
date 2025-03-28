@@ -69,7 +69,7 @@ export default async function PortfolioDashboard({
     ]);
 
   const assetPrices = await getAssetsPriceInUserCurrency(
-    myAssetsBalance.balances.map((balance) => balance.asset.id)
+    portfolioStats.map(({ asset }) => asset.id)
   );
 
   const totalUserAssetsValue = myAssetsBalance.balances.reduce(
@@ -85,7 +85,7 @@ export default async function PortfolioDashboard({
         title={t("dashboard.page-title")}
         section={t("dashboard.portfolio-management")}
       />
-      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:divide-x lg:divide-y-0">
+      <div className="space-y-4">
         <Greeting />
         <MyAssetsHeader
           data={myAssetsBalance}
@@ -103,7 +103,7 @@ export default async function PortfolioDashboard({
       </div>
 
       <PageHeader title={t("dashboard.my-assets")} className="mt-8" />
-      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y md:grid-cols-2 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <AssetDistribution address={user.wallet as Address} />
         <MyAssetsTable
           wallet={user.wallet as Address}
@@ -119,10 +119,8 @@ export default async function PortfolioDashboard({
           }}
         />
       </div>
-      <PageHeader title={t("dashboard.latest-events")} className="mt-8" />
-      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:divide-x lg:divide-y-0">
-        <LatestEvents sender={user.wallet as Address} />
-      </div>
+      <PageHeader title={t("dashboard.latest-events")} className="mt-8 mb-4" />
+      <LatestEvents sender={user.wallet as Address} />
     </>
   );
 }

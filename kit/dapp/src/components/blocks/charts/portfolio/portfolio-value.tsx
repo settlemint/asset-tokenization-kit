@@ -1,5 +1,6 @@
 "use client";
 
+import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
@@ -11,11 +12,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createTimeSeries } from "@/lib/charts";
-import type { PortfolioStatsCollection } from "@/lib/queries/portfolio/portfolio-schema";
-import { assetTypes } from "@/lib/utils/typebox/asset-types";
+import type {
+  PortfolioAsset,
+  PortfolioStatsCollection,
+} from "@/lib/queries/portfolio/portfolio-schema";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Price } from "@/lib/utils/typebox/price";
 import { useTranslations, type Locale } from "next-intl";
 import { useState } from "react";
+import type { Address } from "viem";
 import { AreaChartComponent } from "../area-chart";
 
 interface PortfolioValueProps {
@@ -51,18 +56,24 @@ export function PortfolioValue({
     );
   }
 
-  // Get unique assets and their types
-  const uniqueAssets = Array.from(
-    new Set(portfolioStats.map((item) => item.asset.id))
+  const { uniqueAssets, uniqueTypes, assetMap } = portfolioStats.reduce(
+    (acc, item) => {
+      acc.uniqueAssets.add(item.asset.id);
+      acc.uniqueTypes.add(item.asset.type as AssetType);
+      acc.assetMap.set(item.asset.id as Address, item.asset);
+      return acc;
+    },
+    {
+      uniqueAssets: new Set<string>(),
+      uniqueTypes: new Set<AssetType>(),
+      assetMap: new Map<Address, PortfolioAsset>(),
+    }
   );
 
-  // Create chart config based on aggregation type
   const chartConfig: ChartConfig = {};
   if (aggregationType === "individual") {
-    uniqueAssets.forEach((assetId, index) => {
-      const asset = portfolioStats.find(
-        (item) => item.asset.id === assetId
-      )?.asset;
+    Array.from(uniqueAssets).forEach((assetId, index) => {
+      const asset = assetMap.get(assetId as Address);
       if (asset) {
         chartConfig[assetId] = {
           label: asset.name,
@@ -71,12 +82,12 @@ export function PortfolioValue({
       }
     });
   } else if (aggregationType === "type") {
-    assetTypes.forEach((type, index) => {
+    for (const type of uniqueTypes) {
       chartConfig[type] = {
         label: type,
-        color: `var(--chart-${(index % 6) + 1})`,
+        color: getAssetColor(type, "color"),
       };
-    });
+    }
   } else {
     chartConfig.total = {
       label: "Total Value",
@@ -84,142 +95,65 @@ export function PortfolioValue({
     };
   }
 
-  // Process data based on aggregation type
   const processData = () => {
-    if (aggregationType === "individual") {
-      const timeseriesPerAsset = uniqueAssets.map((assetId) => {
-        const assetHistory = portfolioStats.filter(
-          (item) => item.asset.id === assetId
-        );
+    const individualData = portfolioStats.map((item) => ({
+      timestamp: item.timestamp,
+      [item.asset.id]:
+        Number(item.balance) * (assetPriceMap.get(item.asset.id)?.amount || 0),
+    }));
 
-        const processedData = assetHistory.map((item) => ({
-          timestamp: item.timestamp,
-          [assetId]:
-            Number(item.balance) *
-            (assetPriceMap.get(item.asset.id)?.amount || 0),
-        }));
-
-        return createTimeSeries(
-          processedData,
-          [assetId],
-          {
-            granularity: "day",
-            intervalType: "month",
-            intervalLength: 1,
-            accumulation: "max",
-            aggregation: "first",
-            historical: true,
-          },
-          locale
-        );
-      });
-
-      // Combine all time series data using a Map
-      const timeseriesMap = new Map<string, Record<string, number>>();
-
-      // Process each asset's time series
-      for (const series of timeseriesPerAsset) {
-        for (const item of series) {
-          // Get or create values for this timestamp
-          const timestampValues = timeseriesMap.get(item.timestamp) || {
-            ...Object.fromEntries(uniqueAssets.map((id) => [id, 0])),
-          };
-
-          // Update values for this timestamp
-          for (const [key, value] of Object.entries(item)) {
-            timestampValues[key] = Number(value);
-          }
-
-          timeseriesMap.set(item.timestamp, timestampValues);
-        }
-      }
-
-      // Convert map to sorted array
-      const entries = Array.from(timeseriesMap.entries());
-      entries.sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime());
-
-      return entries.map(([timestamp, values]) => ({
-        timestamp,
-        ...values,
-      }));
-    } else if (aggregationType === "type") {
-      const timeseriesPerType = assetTypes.map((type) => {
-        const typeHistory = portfolioStats.filter(
-          (item) => item.asset.type === type
-        );
-
-        const processedData = typeHistory.map((item) => ({
-          timestamp: item.timestamp,
-          [type]:
-            Number(item.balance) *
-            (assetPriceMap.get(item.asset.id)?.amount || 0),
-        }));
-
-        return createTimeSeries(
-          processedData,
-          [type],
-          {
-            granularity: "day",
-            intervalType: "month",
-            intervalLength: 1,
-            accumulation: "max",
-            aggregation: "sum",
-            historical: true,
-          },
-          locale
-        );
-      });
-
-      // Combine all time series data using a Map
-      const timeseriesMap = new Map<string, Record<string, number>>();
-
-      // Process each type's time series
-      for (const series of timeseriesPerType) {
-        for (const item of series) {
-          // Get or create values for this timestamp
-          const timestampValues = timeseriesMap.get(item.timestamp) || {
-            ...Object.fromEntries(assetTypes.map((type) => [type, 0])),
-          };
-
-          // Update values for this timestamp
-          for (const [key, value] of Object.entries(item)) {
-            timestampValues[key] = Number(value);
-          }
-
-          timeseriesMap.set(item.timestamp, timestampValues);
-        }
-      }
-
-      // Convert map to sorted array
-      const entries = Array.from(timeseriesMap.entries());
-      entries.sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime());
-
-      return entries.map(([timestamp, values]) => ({
-        timestamp,
-        ...values,
-      }));
-    } else {
-      // Total value
-      const processedData = portfolioStats.map((item) => ({
-        timestamp: item.timestamp,
-        total:
-          Number(item.balance) *
-          (assetPriceMap.get(item.asset.id)?.amount || 0),
-      }));
-
-      return createTimeSeries(
-        processedData,
-        ["total"],
-        {
-          granularity: "day",
-          intervalType: "month",
-          intervalLength: 1,
-          accumulation: "max",
-          aggregation: "sum",
-          historical: true,
+    const individualTimeSeries = createTimeSeries(
+      individualData,
+      Array.from(uniqueAssets),
+      {
+        granularity: "day",
+        intervalType: "month",
+        intervalLength: 1,
+        aggregation: {
+          display: "max",
+          storage: "last",
         },
-        locale
-      );
+        accumulation: "current",
+        historical: true,
+      },
+      locale
+    );
+
+    if (aggregationType === "individual") {
+      return individualTimeSeries;
+    } else if (aggregationType === "type") {
+      return individualTimeSeries.map((row) => {
+        const typeValues = new Map<AssetType, number>();
+
+        for (const [key, value] of Object.entries(row)) {
+          if (key === "timestamp") continue;
+
+          const asset = assetMap.get(key as Address);
+          if (asset) {
+            const assetType = asset.type;
+            typeValues.set(
+              assetType,
+              (typeValues.get(assetType) || 0) + (Number(value) || 0)
+            );
+          }
+        }
+
+        return {
+          timestamp: row.timestamp,
+          ...Object.fromEntries(typeValues.entries()),
+        };
+      });
+    } else {
+      return individualTimeSeries.map((row) => {
+        const total = Object.entries(row).reduce((sum, [key, value]) => {
+          return key !== "timestamp" ? sum + (Number(value) || 0) : sum;
+        }, 0);
+
+        return {
+          timestamp: row.timestamp,
+          total,
+        };
+      });
     }
   };
 
@@ -234,7 +168,7 @@ export function PortfolioValue({
         description={t("portfolio-value-description")}
         xAxis={{ key: "timestamp" }}
         showYAxis={true}
-        stacked={aggregationType !== "individual"}
+        stacked={true}
         info={`Last updated: ${timeseries.at(-1)?.timestamp}`}
         chartContainerClassName="h-[14rem] w-full"
         options={
