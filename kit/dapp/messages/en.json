@@ -559,6 +559,16 @@
         "status": "Status",
         "transaction-hash": "Transaction Hash"
       }
+    },
+    "pending-transactions": {
+      "aria-label": "View pending transactions",
+      "title": "Pending Transactions",
+      "no-pending": "No pending transactions",
+      "from": "From",
+      "contract": "Contract",
+      "hash": "Hash",
+      "function": "Function",
+      "created": "Created"
     }
   },
   "creator-owner": "Creator / Owner",
