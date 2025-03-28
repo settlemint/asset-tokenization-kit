@@ -439,9 +439,9 @@
         "portfolio-value-no-data": "No portfolio data available",
         "portfolio-value-title": "Portfolio value",
         "aggregation-options": {
-          "by-asset": "By asset",
-          "by-type": "By asset type",
-          "total": "Total value"
+          "compare-asset-types": "Compare asset types",
+          "stacked-asset-types": "Stacked by asset type",
+          "total-value": "Total value"
         }
       }
     },

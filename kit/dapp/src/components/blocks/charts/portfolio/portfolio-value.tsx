@@ -37,7 +37,7 @@ interface PortfolioValueProps {
   locale: Locale;
 }
 
-type AggregationType = "individual" | "type" | "total";
+type AggregationType = "total" | "stackByType" | "compareTypes";
 
 export function PortfolioValue({
   portfolioStats,
@@ -46,11 +46,17 @@ export function PortfolioValue({
 }: PortfolioValueProps) {
   const t = useTranslations("components.charts.portfolio");
   const [aggregationType, setAggregationType] =
-    useState<AggregationType>("individual");
+    useState<AggregationType>("total");
   const AGGREGATION_OPTIONS = [
-    { value: "individual", label: t("aggregation-options.by-asset") },
-    { value: "type", label: t("aggregation-options.by-type") },
-    { value: "total", label: t("aggregation-options.total") },
+    { value: "total", label: t("aggregation-options.total-value") },
+    {
+      value: "stackByType",
+      label: t("aggregation-options.stacked-asset-types"),
+    },
+    {
+      value: "compareTypes",
+      label: t("aggregation-options.compare-asset-types"),
+    },
   ] as const;
 
   if (!portfolioStats || portfolioStats.length === 0) {
@@ -79,28 +85,18 @@ export function PortfolioValue({
   );
 
   const chartConfig: ChartConfig = {};
-  if (aggregationType === "individual") {
-    Array.from(uniqueAssets).forEach((assetId, index) => {
-      const asset = assetMap.get(assetId as Address);
-      if (asset) {
-        chartConfig[assetId] = {
-          label: asset.name,
-          color: `var(--chart-${(index % 6) + 1})`,
-        };
-      }
-    });
-  } else if (aggregationType === "type") {
+  if (aggregationType === "total") {
+    chartConfig.total = {
+      label: "Total Value",
+      color: "var(--chart-1)",
+    };
+  } else {
     for (const type of uniqueTypes) {
       chartConfig[type] = {
         label: type,
         color: getAssetColor(type, "color"),
       };
     }
-  } else {
-    chartConfig.total = {
-      label: "Total Value",
-      color: "var(--chart-1)",
-    };
   }
   const individualData = portfolioStats.map((item) => ({
     timestamp: item.timestamp,
@@ -196,7 +192,7 @@ export function PortfolioValue({
           }
         >
           <SelectTrigger>
-            <SelectValue defaultValue="individual" />
+            <SelectValue defaultValue="total" />
           </SelectTrigger>
           <SelectContent>
             {AGGREGATION_OPTIONS.map((option) => (
@@ -207,23 +203,25 @@ export function PortfolioValue({
           </SelectContent>
         </Select>
       </TimeSeriesControls>
-      {aggregationType === "individual" ? (
-        <TimeSeriesChart
-          processData={individualTimeSeries}
-          config={chartConfig}
-          className="h-[16rem] w-full"
-        />
-      ) : aggregationType === "type" ? (
-        <TimeSeriesChart
-          processData={assetTypeTimeSeries}
-          config={chartConfig}
-          className="h-[16rem] w-full"
-        />
-      ) : (
+      {aggregationType === "total" ? (
         <TimeSeriesChart
           processData={totalValueTimeSeries}
           config={chartConfig}
           className="h-[16rem] w-full"
+        />
+      ) : aggregationType === "stackByType" ? (
+        <TimeSeriesChart
+          processData={assetTypeTimeSeries}
+          config={chartConfig}
+          className="h-[16rem] w-full"
+          stacked={true}
+        />
+      ) : (
+        <TimeSeriesChart
+          processData={assetTypeTimeSeries}
+          config={chartConfig}
+          className="h-[16rem] w-full"
+          stacked={false}
         />
       )}
     </TimeSeriesRoot>
