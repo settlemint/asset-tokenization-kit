@@ -16,7 +16,8 @@ interface TwoFactorPasswordDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (password: string) => Promise<void>;
   isLoading: boolean;
-  twoFactorEnabled: boolean;
+  submitButtonVariant?: "destructive" | "default";
+  submitButtonText: string;
 }
 
 export function TwoFactorPasswordDialog({
@@ -24,7 +25,8 @@ export function TwoFactorPasswordDialog({
   onOpenChange,
   onSubmit,
   isLoading,
-  twoFactorEnabled,
+  submitButtonVariant,
+  submitButtonText,
 }: TwoFactorPasswordDialogProps) {
   const t = useTranslations(
     "portfolio.settings.profile.two-factor-authentication.enter-password"
@@ -66,7 +68,7 @@ export function TwoFactorPasswordDialog({
             {t("cancel")}
           </Button>
           <Button
-            variant={twoFactorEnabled ? "destructive" : "default"}
+            variant={submitButtonVariant}
             onClick={(e) => {
               e.preventDefault();
               onSubmit(password).finally(() => {
@@ -75,7 +77,7 @@ export function TwoFactorPasswordDialog({
             }}
             disabled={!password.trim() || isLoading}
           >
-            {isLoading ? t("loading") : t("submit")}
+            {submitButtonText}
           </Button>
         </DialogFooter>
       </DialogContent>

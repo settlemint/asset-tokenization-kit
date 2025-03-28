@@ -17,15 +17,19 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
+import { CopyTwoFactorBackupCodesButton } from "./CopyTwoFactorBackupCodesButton";
 
 interface SetupTwoFactorDialogProps {
-  totpURI: string | null;
+  twoFactorData: {
+    totpURI: string;
+    backupCodes: string[];
+  } | null;
   open: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }
 
 export function SetupTwoFactorDialog({
-  totpURI,
+  twoFactorData,
   onOpenChange,
   open,
 }: SetupTwoFactorDialogProps) {
@@ -44,7 +48,7 @@ export function SetupTwoFactorDialog({
       if (error) {
         toast.error(
           t("enable.error-message", {
-            error: error instanceof Error ? error.message : "Unknown error",
+            error: error.message ?? "Unknown error",
           })
         );
       } else {
@@ -74,7 +78,7 @@ export function SetupTwoFactorDialog({
           <div className="flex justify-center w-full">
             <QRCode
               className="rounded-md bg-muted p-4"
-              value={totpURI ?? ""}
+              value={twoFactorData?.totpURI ?? ""}
               size={256}
             />
           </div>
@@ -94,7 +98,6 @@ export function SetupTwoFactorDialog({
             </InputOTP>
           </div>
         </div>
-
         <DialogFooter>
           <Button
             variant="outline"
@@ -105,6 +108,9 @@ export function SetupTwoFactorDialog({
           >
             {t("setup-mfa.cancel")}
           </Button>
+          <CopyTwoFactorBackupCodesButton
+            backupCodes={twoFactorData?.backupCodes ?? []}
+          />
           <Button
             onClick={(e) => {
               e.preventDefault();
@@ -112,7 +118,7 @@ export function SetupTwoFactorDialog({
             }}
             disabled={!firstOtp.trim() || isLoading}
           >
-            {isLoading ? t("setup-mfa.enable-loading") : t("setup-mfa.enable")}
+            {isLoading ? t("setup-mfa.loading") : t("setup-mfa.enable")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -948,24 +948,26 @@
             "enabled": "Two-factor authentication is enabled",
             "disabled": "Two-factor authentication is disabled"
           },
+          "backup-codes": {
+            "title": "Backup codes",
+            "description": "These codes can be used to access your account if you lose your phone. Make sure to store them in a safe place.",
+            "copy": "Copy backup codes",
+            "copied": "Backup codes copied to clipboard",
+            "generate": "Generate backup codes",
+            "error-message": "Failed to generate backup codes: {error}"
+          },
           "enter-password": {
             "title": "Enter password",
             "description": "Enter your password to enable two-factor authentication.",
             "placeholder": "Password",
-            "submit": "Enable",
-            "loading": "Enabling...",
             "cancel": "Cancel"
           },
           "setup-mfa": {
             "title": "Setup MFA",
             "description": "Scan the QR code with the authenticator app on your phone to enable two-factor authentication.",
-            "backup-codes-title": "Backup codes",
-            "backup-codes-description": "These codes can be used to access your account if you lose your phone. Make sure to store them in a safe place.",
-            "backup-codes-copy": "Copy backup codes",
-            "backup-codes-copied": "Backup codes copied to clipboard",
             "cancel": "Cancel",
             "enable": "Enable",
-            "enable-loading": "Enabling...",
+            "loading": "Enabling...",
             "enter-code-title": "Enter the code from the authenticator app"
           },
           "enable": {

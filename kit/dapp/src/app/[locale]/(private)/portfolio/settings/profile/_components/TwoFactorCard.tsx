@@ -1,6 +1,5 @@
 "use client";
 
-import { CopyToClipboard } from "@/components/blocks/copy/copy";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,6 +15,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { SetupTwoFactorDialog } from "./SetupTwoFactorDialog";
+import { TwoFactorBackupCodesDialog } from "./TwoFactorBackupCodesDialog";
 import { TwoFactorPasswordDialog } from "./TwoFactorPasswordDialog";
 
 export function TwoFactorCard() {
@@ -25,12 +25,12 @@ export function TwoFactorCard() {
   const { data: session, isPending } = authClient.useSession();
 
   const [isLoading, setIsLoading] = useState(false);
-
   const [isEnteringPassword, setIsEnteringPassword] = useState(false);
   const [twoFactorData, setTwoFactorData] = useState<{
     totpURI: string;
     backupCodes: string[];
   } | null>(null);
+  const [isBackupCodesDialogOpen, setIsBackupCodesDialogOpen] = useState(false);
 
   const enableTwoFactorAuthentication = async (password: string) => {
     try {
@@ -41,7 +41,7 @@ export function TwoFactorCard() {
       if (error) {
         toast.error(
           t("enable.error-message", {
-            error: error instanceof Error ? error.message : "Unknown error",
+            error: error.message ?? "Unknown error",
           })
         );
       } else {
@@ -62,10 +62,18 @@ export function TwoFactorCard() {
   const disableTwoFactorAuthentication = async (password: string) => {
     try {
       setIsLoading(true);
-      await authClient.twoFactor.disable({
+      const { error } = await authClient.twoFactor.disable({
         password,
       });
-      toast.success(t("disable.success-message"));
+      if (error) {
+        toast.error(
+          t("disable.error-message", {
+            error: error.message ?? "Unknown error",
+          })
+        );
+      } else {
+        toast.success(t("disable.success-message"));
+      }
     } catch (error) {
       toast.error(
         t("disable.error-message", {
@@ -102,27 +110,20 @@ export function TwoFactorCard() {
         <CardContent className="flex flex-col gap-3 flex-1">
           {session?.user.twoFactorEnabled ? (
             <>
-              {t("status.enabled")}
-              <div className="flex flex-col gap-2">
-                <h3 className="text-lg font-semibold">
-                  {t("setup-mfa.backup-codes-title")}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {t("setup-mfa.backup-codes-description")}
-                </p>
-                <ul className="mt-4 space-y-2 text-sm">
-                  {twoFactorData?.backupCodes.map((code) => (
-                    <li key={code}>{code}</li>
-                  ))}
-                </ul>
-              </div>
-              <Button variant="secondary" size="sm">
-                <div>{t("setup-mfa.backup-codes-copy")}</div>
-                <CopyToClipboard
-                  value={twoFactorData?.backupCodes.join("\n") ?? ""}
-                  successMessage={t("setup-mfa.backup-codes-copied")}
+              <div>{t("status.enabled")}</div>
+              <div>
+                <TwoFactorBackupCodesDialog
+                  open={isBackupCodesDialogOpen}
+                  onOpenChange={setIsBackupCodesDialogOpen}
                 />
-              </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => setIsBackupCodesDialogOpen(true)}
+                  size="sm"
+                >
+                  {t("backup-codes.generate")}
+                </Button>
+              </div>
             </>
           ) : (
             t("status.disabled")
@@ -145,10 +146,17 @@ export function TwoFactorCard() {
         onOpenChange={setIsEnteringPassword}
         onSubmit={onPasswordSubmit}
         isLoading={isLoading}
-        twoFactorEnabled={session?.user.twoFactorEnabled ?? false}
+        submitButtonVariant={
+          session?.user.twoFactorEnabled ? "destructive" : "default"
+        }
+        submitButtonText={
+          session?.user.twoFactorEnabled
+            ? t("disable.title")
+            : t("enable.title")
+        }
       />
       <SetupTwoFactorDialog
-        totpURI={twoFactorData?.totpURI ?? null}
+        twoFactorData={twoFactorData}
         onOpenChange={(isOpen) => {
           if (!isOpen) {
             setTwoFactorData(null);
