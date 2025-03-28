@@ -109,7 +109,7 @@
     "@types/rtl-detect": "1.0.3",
     "babel-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
     "dotenv": "16.4.7",
-    "drizzle-kit": "0.30.5",
+    "drizzle-kit": "0.30.6",
     "eslint": "9.23.0",
     "eslint-config-next": "15.2.4",
     "languine": "3.1.2",
