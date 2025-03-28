@@ -53,6 +53,8 @@ type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
     /** The default selected value */
     defaultValue?: AssetUsers;
     onSelect?: (asset: AssetUsers) => void;
+    /** Optional wallet address to filter only assets held by this user */
+    userWallet?: Address;
   };
 
 export function FormAssets<T extends FieldValues>({
@@ -62,8 +64,11 @@ export function FormAssets<T extends FieldValues>({
   placeholder,
   defaultValue,
   onSelect,
+  userWallet,
   ...props
 }: FormSearchSelectProps<T>) {
+  console.log('FormAssets', userWallet);
+
   const [open, setOpen] = useState(false);
   const t = useTranslations("components.form.assets");
   const defaultPlaceholder = t("default-placeholder");
@@ -118,6 +123,7 @@ export function FormAssets<T extends FieldValues>({
                     setOpen={setOpen}
                     value={field.value}
                     onSelect={(asset) => onSelect?.(asset)}
+                    userWallet={userWallet}
                   />
                 </Command>
               </PopoverContent>
@@ -141,11 +147,13 @@ function FormAssetsList({
   setOpen,
   value,
   onSelect,
+  userWallet,
 }: {
   value?: AssetUsers;
   onValueChange: (value: AssetUsers) => void;
   onSelect: (asset: AssetUsers) => void;
   setOpen: (open: boolean) => void;
+  userWallet?: Address;
 }) {
   const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
@@ -162,7 +170,18 @@ function FormAssetsList({
     debounced ? [`asset-search`, debounced] : null,
     async () => {
       if (!debounced) return [];
-      return getAssetSearch({ searchTerm: debounced });
+      const results = await getAssetSearch({ searchTerm: debounced });
+
+      // Filter by user wallet if provided
+      if (userWallet) {
+         return results.filter(asset =>
+          asset.holders.some(holder =>
+            holder.account.id.toLowerCase() === userWallet.toLowerCase() &&
+            BigInt(holder.value) > 0n
+          )
+        );
+      }
+
     },
     {
       revalidateOnFocus: false,
