@@ -8,7 +8,7 @@ export function TwoFactorSchema() {
       }),
     },
     {
-      description: "Schema for validating yield schedule inputs",
+      description: "Schema for verifying 2FA OTP",
     }
   );
 }
