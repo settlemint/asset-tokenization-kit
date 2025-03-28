@@ -34,7 +34,6 @@ export function BurnForm({
   disabled = false,
   asButton = false,
   open,
-  balance,
   onOpenChange,
 }: BurnFormProps) {
   const t = useTranslations("private.assets.details.forms.form");
