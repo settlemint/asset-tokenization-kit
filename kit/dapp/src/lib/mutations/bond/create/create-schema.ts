@@ -1,3 +1,4 @@
+import { AssetAdminsSchemaFragment } from '@/lib/mutations/common/asset-admins-schema';
 import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 import { addHours, isFuture } from "date-fns";
@@ -80,6 +81,7 @@ export function CreateBondSchema({
       price: t.Price({
         description: "Price of the bond",
       }),
+      assetAdmins: AssetAdminsSchemaFragment(),
     },
     {
       description: "Schema for validating bond creation inputs",

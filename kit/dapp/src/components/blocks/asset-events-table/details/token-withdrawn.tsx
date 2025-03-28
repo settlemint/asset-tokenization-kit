@@ -24,8 +24,8 @@ export function TokenWithdrawnDetails({ details }: TokenWithdrawnDetailsProps) {
       ),
     },
     {
-      key: "token",
-      label: t("token"),
+      key: "asset",
+      label: t("asset"),
       value: (
         <>
           <EvmAddress address={details.token.id}>
