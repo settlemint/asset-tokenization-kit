@@ -232,7 +232,6 @@ export function TimeSeriesChart<T>({
 
   const ChartComponent =
     chartType === "area" ? AreaChartContainer : BarChartContainer;
-
   return (
     <CardContent className="p-0 pr-4">
       <ChartComponent

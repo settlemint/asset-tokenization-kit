@@ -16,6 +16,3 @@ export interface BarChartProps<T extends BarChartData> {
   title: string;
   description?: string;
 }
-
-export const defaultTickFormatter = (value: string) => value.slice(0, 3);
-export const defaultTickMargin = 10;

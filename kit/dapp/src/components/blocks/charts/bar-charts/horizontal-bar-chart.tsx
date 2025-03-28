@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/chart";
 import { useAssetTypeFormatter } from "@/hooks/use-asset-type-formatter";
 import type { ReactNode } from "react";
+import { defaultTickFormatter, defaultTickMargin } from "../tick-formatter";
 
 export interface BarChartData {
   [key: string]: string | number;
@@ -57,21 +58,6 @@ interface BarChartProps extends BarChartContainerProps {
   footer?: ReactNode;
   showYAxis?: boolean;
 }
-
-const defaultTickFormatter = (value: string) => {
-  if (!value) {
-    return "";
-  }
-  // Try comma split first
-  const commaSplit = value.split(",")[0];
-  if (commaSplit !== value) {
-    return commaSplit;
-  }
-
-  // Try lowercase
-  return value.toLowerCase();
-};
-const defaultTickMargin = 8;
 
 export function BarChartComponent({
   title,

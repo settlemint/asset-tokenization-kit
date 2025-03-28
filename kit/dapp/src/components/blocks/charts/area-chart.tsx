@@ -24,6 +24,7 @@ import {
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { defaultTickFormatter, defaultTickMargin } from "./tick-formatter";
 
 export interface AreaChartData {
   [key: string]: string | number;
@@ -51,9 +52,6 @@ interface AreaChartProps extends AreaChartContainerProps {
   footer?: ReactNode;
   info?: string;
 }
-
-const defaultTickFormatter = (value: string) => value.split(",")[0];
-const defaultTickMargin = 8;
 
 export function AreaChartComponent({
   title,
