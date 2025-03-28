@@ -106,9 +106,9 @@ export function PortfolioValue({
       individualData,
       Array.from(uniqueAssets),
       {
-        granularity: "day",
-        intervalType: "month",
-        intervalLength: 1,
+        granularity: "hour",
+        intervalType: "day",
+        intervalLength: 3,
         aggregation: {
           display: "max",
           storage: "last",
@@ -168,6 +168,7 @@ export function PortfolioValue({
         description={t("portfolio-value-description")}
         xAxis={{ key: "timestamp" }}
         showYAxis={true}
+        stacked={true}
         info={`Last updated: ${timeseries.at(-1)?.timestamp}`}
         chartContainerClassName="h-[14rem] w-full"
         options={
