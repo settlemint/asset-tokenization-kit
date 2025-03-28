@@ -1,4 +1,4 @@
-import { TwoFactorPasswordDialog } from "@/app/[locale]/(private)/portfolio/settings/profile/_components/TwoFactorPasswordDialog";
+import { TwoFactorPasswordDialog } from "@/app/[locale]/(private)/portfolio/settings/profile/_components/two-factor-password-dialog";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { authClient } from "../../../../../../../lib/auth/client";
-import { CopyTwoFactorBackupCodesButton } from "./CopyTwoFactorBackupCodesButton";
+import { CopyTwoFactorBackupCodesButton } from "./copy-two-tactor-backup-codes-button";
 
 interface TwoFactorBackupCodesDialogProps {
   open: boolean;

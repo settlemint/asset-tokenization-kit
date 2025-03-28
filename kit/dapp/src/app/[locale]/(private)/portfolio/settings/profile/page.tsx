@@ -11,7 +11,7 @@ import {
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { TwoFactorCard } from "./_components/TwoFactorCard";
+import { TwoFactorCard } from "./_components/two-factor-card";
 
 export async function generateMetadata({
   params,

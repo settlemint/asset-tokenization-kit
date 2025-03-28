@@ -14,9 +14,9 @@ import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
-import { SetupTwoFactorDialog } from "./SetupTwoFactorDialog";
-import { TwoFactorBackupCodesDialog } from "./TwoFactorBackupCodesDialog";
-import { TwoFactorPasswordDialog } from "./TwoFactorPasswordDialog";
+import { SetupTwoFactorDialog } from "./setup-two-factor-dialog";
+import { TwoFactorBackupCodesDialog } from "./two-factor-backup-codes-dialog";
+import { TwoFactorPasswordDialog } from "./two-factor-password-dialog";
 
 export function TwoFactorCard() {
   const t = useTranslations(

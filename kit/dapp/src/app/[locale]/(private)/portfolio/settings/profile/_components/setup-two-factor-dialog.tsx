@@ -17,7 +17,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
-import { CopyTwoFactorBackupCodesButton } from "./CopyTwoFactorBackupCodesButton";
+import { CopyTwoFactorBackupCodesButton } from "./copy-two-tactor-backup-codes-button";
 
 interface SetupTwoFactorDialogProps {
   twoFactorData: {
