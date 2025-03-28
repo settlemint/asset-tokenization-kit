@@ -106,9 +106,9 @@ export function PortfolioValue({
       individualData,
       Array.from(uniqueAssets),
       {
-        granularity: "hour",
-        intervalType: "day",
-        intervalLength: 3,
+        granularity: "day",
+        intervalType: "month",
+        intervalLength: 1,
         aggregation: {
           display: "max",
           storage: "last",
