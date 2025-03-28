@@ -858,7 +858,8 @@
         "forms": {
           "actions": {
             "redeem": "Redeem",
-            "transfer": "Transfer"
+            "transfer": "Transfer",
+            "burn": "Burn"
           }
         },
         "manage": "Manage"

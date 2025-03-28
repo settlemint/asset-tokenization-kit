@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
 import { TransferForm } from "../../../../_components/transfer-form/form";
+import { BurnForm } from "./burn-form/form";
 import { RedeemForm } from "./redeem-form/form";
 
 interface ManageDropdownProps {
@@ -38,6 +39,10 @@ export function ManageDropdown({
     {
       id: "transfer",
       label: t("forms.actions.transfer"),
+    },
+    {
+      id: "burn",
+      label: t("forms.actions.burn"),
     },
     ...(assettype === "bond"
       ? [
@@ -93,6 +98,16 @@ export function ManageDropdown({
         onOpenChange={onFormOpenChange}
         disabled={isBlocked || isPaused || (userBalance?.available ?? 0) === 0}
         userAddress={userAddress}
+        decimals={assetDetails.decimals}
+        symbol={assetDetails.symbol}
+      />
+      <BurnForm
+        address={address}
+        assettype={assettype}
+        balance={Number(userBalance?.available ?? 0)}
+        open={openMenuItem === "burn"}
+        onOpenChange={onFormOpenChange}
+        max={Number(userBalance?.available ?? 0)}
         decimals={assetDetails.decimals}
         symbol={assetDetails.symbol}
       />
