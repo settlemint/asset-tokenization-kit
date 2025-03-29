@@ -69,7 +69,7 @@
   ],
   "packageManager": "bun@1.2.3",
   "overrides": {
-    "react-is": "19.0.0",
+    "react-is": "19.1.0",
     "graphql": "16.10.0",
     "elliptic": "6.6.1",
     "ws": "8.18.1",
