@@ -54,3 +54,7 @@ dependencies:
     version: 2.0.0
     repository: https://stakater.github.io/stakater-charts
     condition: reloader.enabled
+  - name: graph-node
+    version: 0.5.9
+    repository: http://graphops.github.io/launchpad-charts
+    condition: graph-node.enabled

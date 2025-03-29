@@ -41,4 +41,4 @@ yarn-error.log*
 .idea
 .specstory
 bun.lockb
-kit/charts/**.tgz
+kit/charts/**/*.tgz

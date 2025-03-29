@@ -167,17 +167,17 @@ postgresql-ha:
     initdbScripts:
       create_blockscout_db.sql: |
         CREATE DATABASE blockscout;
-        CREATE USER blockscout WITH PASSWORD 'atk';
+        CREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;
         GRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;
         \c blockscout;
         GRANT ALL ON SCHEMA public TO blockscout;
-        CREATE DATABASE thegraph;
-        CREATE USER thegraph WITH PASSWORD 'atk';
+        CREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;
+        CREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;
         GRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;
         \c thegraph;
         GRANT ALL ON SCHEMA public TO thegraph;
         CREATE DATABASE hasura;
-        CREATE USER hasura WITH PASSWORD 'atk';
+        CREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;
         GRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;
         \c hasura;
         GRANT ALL ON SCHEMA public TO hasura;
@@ -257,6 +257,8 @@ blockscout-stack:
     image:
       repository: ghcr.io/blockscout/frontend
       tag: "v1.38.2"
+    replicaCount: 1
+    env:
       NEXT_PUBLIC_IS_ACCOUNT_SUPPORTED: 'false'
       NEXT_PUBLIC_IS_TESTNET: 'false'
       NEXT_PUBLIC_AD_BANNER_PROVIDER: 'none'
@@ -282,20 +284,16 @@ ingress-nginx:
   fullnameOverride: 'ingress-nginx'
   defaultBackend:
     enabled: false
-    image:
-      registry: registry.k8s.io
   controller:
-    image:
-      registry: registry.k8s.io
     allowSnippetAnnotations: true
     runAsUser: 2016
     admissionWebhooks:
       enabled: false
-    replicaCount: 2
+    replicaCount: 1
     autoscaling:
       enabled: true
-      minReplicas: 2
-      maxReplicas: 11
+      minReplicas: 1
+      maxReplicas: 10
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
       behaviour:
@@ -448,14 +446,6 @@ ingress-nginx:
 reloader:
   enabled: false
   fullnameOverride: 'reloader'
-  global:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  image:
-    name: stakater/reloader
-    repository: ghcr.io/stakater/reloader
   reloader:
     autoReloadAll: true
     watchGlobally: false
@@ -488,8 +478,6 @@ reloader:
 cert-manager:
   enabled: false
   fullnameOverride: 'cert-manager'
-  image:
-    repository: quay.io/jetstack/cert-manager-controller
   crds:
     enabled: true
   resources:
@@ -514,3 +502,93 @@ cert-manager:
         cpu: 10m
   prometheus:
     enabled: true
+
+
+graph-node:
+  enabled: true
+  fullnameOverride: graph-node
+  customSecret:
+    PGUSER: thegraph
+    PGPASSWORD: atk
+  graphNodeDefaults:
+    # -- Environment variable defaults for all Graph Node groups
+    env:
+      # -- Hostname of the primary shard PostgreSQL server
+      PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql-pgpool
+      # -- Port for the primary shard PostgreSQL server
+      PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
+      # -- Name of the primary shard database to use
+      PRIMARY_SUBGRAPH_DATA_PGDATABASE: "thegraph"
+      # -- The URL for your IPFS node
+      IPFS: "https://ipfs.console.settlemint.com"
+    secretEnv:
+      PRIMARY_SUBGRAPH_DATA_PGUSER:
+        # -- Name of the secret that contains your PG username
+        secretName: thegraph-pg-secret
+        # -- Name of the data key in the secret that contains your PG username
+        key: PGUSER
+      PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
+        # -- Name of the secret that contains your PG password
+        secretName: thegraph-pg-secret
+        # -- Name of the data key in the secret that contains your PG password
+        key: PGPASSWORD
+  graphNodeGroups:
+    query:
+      enabled: true
+      replicaCount: 1
+      env:
+        node_role: query-node # this key must be lowercase
+
+  # -- Blockchain configuration for Graph Node
+  chains:
+    # -- Ethereum Mainnet
+    settlemint:
+      # -- Enable this configuring graph-node with this chain
+      enabled: true
+      # -- The database shard to use for this chain
+      shard: primary
+      ## -- A list of JSON-RPC endpoints for this node (you should override this list with your own configuration)
+      provider:
+        -
+          # -- Label for a JSON-RPC endpoint
+          label: erpc
+          details:
+            # -- Type of Provider: web3
+            type: web3
+            # -- URL for JSON-RPC endpoint
+            url: http://besu-loadbalancer:4000
+            # -- Data capabilities this node has
+            features: [archive, traces]
+  ingress:
+    enabled: true
+    className: "settlemint-nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: 'true'
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    hosts:
+      - host: thegraph.k8s.orb.local
+        paths:
+          - path: /(.*)
+            pathType: ImplementationSpecific
+            port: 8000
+            serviceName: graph-node-query
+          - path: /ws/?(.*)
+            pathType: ImplementationSpecific
+            port: 8001
+            serviceName: graph-node-query
+          - path: /admin/?(.*)
+            pathType: ImplementationSpecific
+            port: 8020
+            serviceName: graph-node-query
+          - path: /indexer/?(.*)
+            pathType: ImplementationSpecific
+            port: 8030
+            serviceName: graph-node-index
+          - path: /graphman/?(.*)
+            pathType: ImplementationSpecific
+            port: 8050
+            serviceName: graph-node-index
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local

@@ -125,7 +125,7 @@ affinity: {}
 
 
 config:
-  logLevel: debug
+  logLevel: info
   projects:
     - id: settlemint
       upstreams:

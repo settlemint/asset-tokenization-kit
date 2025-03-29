@@ -38,5 +38,8 @@ dependencies:
 - name: reloader
   repository: https://stakater.github.io/stakater-charts
   version: 2.0.0
-digest: sha256:0d05e9db9b7bd329d47b72418ace4df65bb3847f5f7e0a16ba5517cea468923c
-generated: "2025-03-29T20:37:12.880234+01:00"
+- name: graph-node
+  repository: http://graphops.github.io/launchpad-charts
+  version: 0.5.9
+digest: sha256:0e3bf3285974a596258d250893e00a595f5e08cb380aae5f7bee81ed628ed2e8
+generated: "2025-03-29T21:58:34.399219+01:00"
