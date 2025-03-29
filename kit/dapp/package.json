@@ -84,7 +84,7 @@
     "react": "19.0.0",
     "react-awesome-gravatar": "2.0.3",
     "react-dom": "19.0.0",
-    "react-hook-form": "7.54.2",
+    "react-hook-form": "7.55.0",
     "recharts": "2.15.1",
     "resend": "4.2.0",
     "rtl-detect": "1.1.2",
