@@ -96,7 +96,7 @@
     "tailwind-merge": "3.0.2",
     "tailwindcss-animate": "1.0.7",
     "tw-animate-css": "1.2.5",
-    "viem": "2.24.1"
+    "viem": "2.24.2"
   },
   "devDependencies": {
     "@better-auth/cli": "1.2.5",
