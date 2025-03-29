@@ -38,7 +38,7 @@ export interface TimeSeriesOptions {
   historical?: boolean;
 }
 
-type DataPoint = {
+export type DataPoint = {
   timestamp: number | string | Date;
   [key: string]: unknown;
 };

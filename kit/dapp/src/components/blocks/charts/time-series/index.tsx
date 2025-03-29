@@ -16,7 +16,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { TimeSeriesOptions, TimeSeriesResult } from "@/lib/charts";
+import type {
+  DataPoint,
+  TimeSeriesOptions,
+  TimeSeriesResult,
+} from "@/lib/charts";
 import { cn } from "@/lib/utils";
 import {
   BarChartIcon,
@@ -100,7 +104,7 @@ interface TimeSeriesRootProps<T> {
   defaultChartType?: ChartType;
 }
 
-export function TimeSeriesRoot<T extends { timestamp: string }>({
+export function TimeSeriesRoot<T extends DataPoint>({
   children,
   data,
   locale,

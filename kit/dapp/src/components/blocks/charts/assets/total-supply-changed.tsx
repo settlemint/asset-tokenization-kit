@@ -1,5 +1,9 @@
-import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
+import {
+  TimeSeriesChart,
+  TimeSeriesRoot,
+  TimeSeriesTitle,
+} from "@/components/blocks/charts/time-series";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
 import { createTimeSeries } from "@/lib/charts";
@@ -52,14 +56,17 @@ export async function TotalSupplyChanged({ address }: TotalSupplyChangedProps) {
   );
 
   return (
-    <AreaChartComponent
-      data={timeseries}
-      config={chartConfig}
-      title={t("total-supply-changed.title")}
-      description={t("total-supply-changed.description")}
-      xAxis={{ key: "timestamp" }}
-      showYAxis={true}
-      info={`${t("last-updated")}: ${timeseries.at(-1)?.timestamp}`}
-    />
+    <TimeSeriesRoot data={data} locale={locale}>
+      <TimeSeriesTitle
+        title={t("total-supply-changed.title")}
+        description={t("total-supply-changed.description")}
+        lastUpdated={timeseries.at(-1)?.timestamp}
+      />
+      <TimeSeriesChart
+        processData={timeseries}
+        config={chartConfig}
+        roundedBars={false}
+      />
+    </TimeSeriesRoot>
   );
 }
