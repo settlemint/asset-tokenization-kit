@@ -27,22 +27,12 @@ import {
 import { useAssetTypeFormatter } from "@/hooks/use-asset-type-formatter";
 import type { ReactNode } from "react";
 import { defaultTickFormatter, defaultTickMargin } from "../tick-formatter";
-
-export interface BarChartData {
-  [key: string]: string | number;
-}
-
-interface XAxisConfig {
-  key: string;
-  assetTypeFormatter?: boolean;
-  tickMargin?: number;
-  angle?: number;
-}
+import type { AxisConfig, ChartData } from "../types";
 
 export interface BarChartContainerProps {
-  data: BarChartData[];
+  data: ChartData[];
   config: ChartConfig;
-  xAxis: XAxisConfig;
+  xAxis: AxisConfig & { assetTypeFormatter?: boolean };
   showYAxis?: boolean;
   showLegend?: boolean;
   colors?: string[];
@@ -52,7 +42,7 @@ export interface BarChartContainerProps {
   chartTooltipCursor?: boolean;
 }
 
-interface BarChartProps extends BarChartContainerProps {
+export interface BarChartProps extends BarChartContainerProps {
   title: string;
   description?: string;
   footer?: ReactNode;

@@ -5,9 +5,7 @@ import type { ChartConfig } from "@/components/ui/chart";
 import { formatChartDate, type TimeSeriesOptions } from "@/lib/charts";
 import { useLocale, useTranslations, type Locale } from "next-intl";
 import {
-  TimeRangeSelect,
   TimeSeriesChart,
-  TimeSeriesControls,
   TimeSeriesRoot,
   TimeSeriesTitle,
 } from "../charts/time-series";
@@ -61,15 +59,16 @@ export function TransactionsHistory({
         title={title ?? t("title")}
         description={description ?? t("description")}
       />
-      <TimeSeriesControls>
-        <TimeRangeSelect />
-      </TimeSeriesControls>
       <TimeSeriesChart
         processData={data}
         config={TRANSACTIONS_CHART_CONFIG}
         chartContainerClassName={
           chartOptions?.chartContainerClassName ?? "h-[16rem] w-full"
         }
+        xAxis={{
+          key: "timestamp",
+          tickFormatter: getTickFormatter(chartOptions, locale),
+        }}
         roundedBars={false}
       />
     </TimeSeriesRoot>

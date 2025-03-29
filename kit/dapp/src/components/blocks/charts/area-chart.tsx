@@ -1,6 +1,7 @@
 "use client";
 import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 
+import type { AxisConfig } from "@/components/blocks/charts/types";
 import {
   Card,
   CardContent,
@@ -25,22 +26,12 @@ import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { defaultTickFormatter, defaultTickMargin } from "./tick-formatter";
-
-export interface AreaChartData {
-  [key: string]: string | number;
-}
-
-interface XAxisConfig {
-  key: string;
-  tickFormatter?: (value: string) => string;
-  tickMargin?: number;
-  angle?: number;
-}
+import type { ChartData } from "./types";
 
 export interface AreaChartContainerProps {
-  data: AreaChartData[];
+  data: ChartData[];
   config: ChartConfig;
-  xAxis: XAxisConfig;
+  xAxis: AxisConfig;
   showYAxis?: boolean;
   stacked?: boolean;
   chartContainerClassName?: string;

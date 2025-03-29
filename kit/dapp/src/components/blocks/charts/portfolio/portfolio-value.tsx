@@ -23,7 +23,6 @@ import { useState } from "react";
 import type { Address } from "viem";
 import {
   TIME_RANGE_CONFIG,
-  TimeRangeSelect,
   TimeSeriesChart,
   TimeSeriesControls,
   TimeSeriesRoot,
@@ -184,7 +183,6 @@ export function PortfolioValue({
         description={t("portfolio-value-description")}
       />
       <TimeSeriesControls>
-        <TimeRangeSelect />
         <Select
           value={aggregationType}
           onValueChange={(value) =>
