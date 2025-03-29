@@ -177,7 +177,7 @@ export function PortfolioValue({
   };
 
   return (
-    <TimeSeriesRoot data={individualData} locale={locale}>
+    <TimeSeriesRoot locale={locale}>
       <TimeSeriesTitle
         title={t("portfolio-value-title")}
         description={t("portfolio-value-description")}
@@ -203,6 +203,7 @@ export function PortfolioValue({
       </TimeSeriesControls>
       {aggregationType === "total" ? (
         <TimeSeriesChart
+          rawData={individualData}
           processData={totalValueTimeSeries}
           config={chartConfig}
           chartContainerClassName="h-[16rem] w-full"
@@ -210,6 +211,7 @@ export function PortfolioValue({
         />
       ) : aggregationType === "stackByType" ? (
         <TimeSeriesChart
+          rawData={individualData}
           processData={assetTypeTimeSeries}
           config={chartConfig}
           chartContainerClassName="h-[16rem] w-full"
@@ -218,6 +220,7 @@ export function PortfolioValue({
         />
       ) : (
         <TimeSeriesChart
+          rawData={individualData}
           processData={assetTypeTimeSeries}
           config={chartConfig}
           chartContainerClassName="h-[16rem] w-full"

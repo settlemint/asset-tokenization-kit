@@ -77,40 +77,39 @@ export const TIME_RANGE_CONFIG: Record<
   },
 };
 
-interface TimeSeriesState<T> {
+interface TimeSeriesState {
   timeRange: TimeRange;
   setTimeRange: (range: TimeRange) => void;
   chartType: ChartType;
   setChartType: (type: ChartType) => void;
-  data: T[];
   locale: Locale;
 }
 
-const TimeSeriesContext = createContext<TimeSeriesState<any> | null>(null);
+const TimeSeriesContext = createContext<TimeSeriesState | null>(null);
 
-function useTimeSeries<T>() {
+function useTimeSeries() {
   const context = useContext(TimeSeriesContext);
   if (!context) {
     throw new Error("useTimeSeries must be used within a TimeSeriesRoot");
   }
-  return context as TimeSeriesState<T>;
+  return context as TimeSeriesState;
 }
 
-interface TimeSeriesRootProps<T> {
+interface TimeSeriesRootProps {
   children: ReactNode;
-  data: T[];
   locale: Locale;
   defaultTimeRange?: TimeRange;
   defaultChartType?: ChartType;
+  className?: string;
 }
 
-export function TimeSeriesRoot<T extends DataPoint>({
+export function TimeSeriesRoot({
   children,
-  data,
   locale,
   defaultTimeRange = "30d",
   defaultChartType = "area",
-}: TimeSeriesRootProps<T>) {
+  className,
+}: TimeSeriesRootProps) {
   const [timeRange, setTimeRange] = useState<TimeRange>(defaultTimeRange);
   const [chartType, setChartType] = useState<ChartType>(defaultChartType);
 
@@ -121,11 +120,10 @@ export function TimeSeriesRoot<T extends DataPoint>({
         setTimeRange,
         chartType,
         setChartType,
-        data,
         locale,
       }}
     >
-      <Card>{children}</Card>
+      <Card className={cn(className)}>{children}</Card>
     </TimeSeriesContext.Provider>
   );
 }
@@ -147,8 +145,22 @@ export function TimeSeriesTitle({
   return (
     <CardHeader>
       <div className="flex items-center justify-between">
+        <CardTitle>{title}</CardTitle>
         <div className="flex items-center gap-2">
-          <CardTitle>{title}</CardTitle>
+          <Select
+            value={timeRange}
+            onValueChange={(value) => setTimeRange(value as TimeRange)}
+          >
+            <SelectTrigger className="w-[5rem]">
+              <SelectValue placeholder={t("select-time-range")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="24h">{t("time-range.24h")}</SelectItem>
+              <SelectItem value="7d">{t("time-range.7d")}</SelectItem>
+              <SelectItem value="30d">{t("time-range.30d")}</SelectItem>
+              <SelectItem value="90d">{t("time-range.90d")}</SelectItem>
+            </SelectContent>
+          </Select>
           {description && (
             <TooltipProvider>
               <Tooltip>
@@ -168,22 +180,6 @@ export function TimeSeriesTitle({
               </Tooltip>
             </TooltipProvider>
           )}
-        </div>
-        <div className="flex items-center gap-2">
-          <Select
-            value={timeRange}
-            onValueChange={(value) => setTimeRange(value as TimeRange)}
-          >
-            <SelectTrigger className="w-[5rem]">
-              <SelectValue placeholder={t("select-time-range")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="24h">{t("time-range.24h")}</SelectItem>
-              <SelectItem value="7d">{t("time-range.7d")}</SelectItem>
-              <SelectItem value="30d">{t("time-range.30d")}</SelectItem>
-              <SelectItem value="90d">{t("time-range.90d")}</SelectItem>
-            </SelectContent>
-          </Select>
           {lastUpdated && (
             <TooltipProvider>
               <Tooltip>
@@ -237,34 +233,32 @@ export function TimeSeriesControls({ children }: { children: ReactNode }) {
   return <div className="-mt-4 px-6 flex items-center gap-4">{children}</div>;
 }
 
-type TimeSeriesChartProps<T> = {
-  processData:
-    | {
-        (
-          rawData: T[],
-          timeRange: TimeRange,
-          locale: Locale
-        ): TimeSeriesResult<Exclude<T, "timestamp">>[];
-      }
-    | TimeSeriesResult<Exclude<T, "timestamp">>[];
+type TimeSeriesChartProps<T extends DataPoint> = {
+  processData: {
+    (
+      rawData: T[],
+      timeRange: TimeRange,
+      locale: Locale
+    ): TimeSeriesResult<Exclude<T, "timestamp">>[];
+  };
+  rawData: T[];
   config: ChartConfig;
   className?: string;
 } & Omit<AreaChartContainerProps, "data" | "xAxis"> &
   Omit<BarChartContainerProps, "data" | "xAxis">;
 
-export function TimeSeriesChart<T>({
+export function TimeSeriesChart<T extends DataPoint>({
   processData,
+  rawData,
   className,
   xAxis = { key: "timestamp" },
   ...chartContainerProps
 }: TimeSeriesChartProps<T> & { xAxis?: AxisConfig<ChartData> }) {
-  const { timeRange, chartType, data, locale } = useTimeSeries<T>();
+  const { timeRange, chartType, locale } = useTimeSeries();
 
   const timeseries = useMemo(() => {
-    return typeof processData === "function"
-      ? processData(data, timeRange, locale)
-      : processData;
-  }, [data, timeRange, processData, locale]);
+    return processData(rawData, timeRange, locale);
+  }, [rawData, timeRange, processData, locale]);
 
   const ChartComponent =
     chartType === "area" ? AreaChartContainer : BarChartContainer;

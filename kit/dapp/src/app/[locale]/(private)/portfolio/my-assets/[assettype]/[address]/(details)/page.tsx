@@ -1,5 +1,5 @@
 import { Details } from "@/app/[locale]/(private)/assets/[assettype]/[address]/(details)/_components/details";
-import { AssetEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
+import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
 import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
 import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
@@ -8,9 +8,10 @@ import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfer
 import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
 import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-distribution";
 import { getUser } from "@/lib/auth/utils";
+import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
 interface PageProps {
@@ -23,8 +24,12 @@ interface PageProps {
 
 export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
-  const t = await getTranslations("private.assets");
-  const user = await getUser();
+  const [t, user, assetStats, locale] = await Promise.all([
+    getTranslations("private.assets"),
+    getUser(),
+    getAssetStats({ address }),
+    getLocale(),
+  ]);
 
   // The URL parameter 'assettype' is used directly to determine which component to render
   // This ensures that when the URL has 'equity' in it, we show the equity component
@@ -41,8 +46,8 @@ export default async function AssetDetailsPage({ params }: PageProps) {
         {assettype === "stablecoin" && (
           <CollateralRatio address={address} assettype={assettype} />
         )}
-        <TotalSupply address={address} />
-        <TotalSupplyChanged address={address} />
+        <TotalSupply data={assetStats} locale={locale} />
+        <TotalSupplyChanged data={assetStats} locale={locale} />
         <WalletDistribution address={address} />
         <TotalTransfers address={address} />
         <TotalVolume address={address} />
