@@ -225,6 +225,7 @@ export function PortfolioValue({
           chartContainerClassName="h-[16rem] w-full"
           stacked={false}
           roundedBars={false}
+          chartTooltipCursor={true}
         />
       )}
     </TimeSeriesRoot>

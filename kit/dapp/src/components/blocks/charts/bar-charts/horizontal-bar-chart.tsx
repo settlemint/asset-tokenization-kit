@@ -51,6 +51,7 @@ export interface BarChartContainerProps {
   chartContainerClassName?: string;
   stacked?: boolean;
   roundedBars?: boolean;
+  chartTooltipCursor?: boolean;
 }
 
 interface BarChartProps extends BarChartContainerProps {
@@ -90,6 +91,7 @@ export function BarChartContainer({
   showLegend = true,
   stacked = true,
   roundedBars = true,
+  chartTooltipCursor = false,
 }: BarChartContainerProps) {
   const dataKeys = Object.keys(config);
   const {
@@ -130,7 +132,7 @@ export function BarChartContainer({
           <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} />
         )}
         <ChartTooltip
-          cursor={false}
+          cursor={chartTooltipCursor}
           content={<ChartTooltipContent />}
           wrapperStyle={{ minWidth: "200px", width: "auto" }}
         />
