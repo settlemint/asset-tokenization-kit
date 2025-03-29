@@ -1,14 +1,8 @@
 "use client";
-import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
-import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
+import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
 import type { ChartConfig } from "@/components/ui/chart";
 import { formatChartDate, type TimeSeriesOptions } from "@/lib/charts";
 import { useLocale, useTranslations, type Locale } from "next-intl";
-import {
-  TimeSeriesChart,
-  TimeSeriesRoot,
-  TimeSeriesTitle,
-} from "../charts/time-series";
 
 export interface TransactionsHistoryProps {
   title?: string;
@@ -27,24 +21,13 @@ export interface TransactionsHistoryProps {
 }
 
 export function TransactionsHistory({
+  chartOptions,
   data,
   title,
   description,
-  chartOptions,
 }: TransactionsHistoryProps) {
   const t = useTranslations("components.transactions-history");
   const locale = useLocale();
-
-  if (!data || data.length === 0) {
-    return (
-      <ChartSkeleton title={title ?? t("title")} variant="noData">
-        <div className="flex flex-col items-center gap-2 text-center">
-          <ChartColumnIncreasingIcon className="h-8 w-8 text-muted-foreground" />
-          <p>No data</p>
-        </div>
-      </ChartSkeleton>
-    );
-  }
 
   const TRANSACTIONS_CHART_CONFIG = {
     transaction: {
@@ -54,21 +37,18 @@ export function TransactionsHistory({
   } satisfies ChartConfig;
 
   return (
-    <TimeSeriesRoot data={data} locale={locale}>
-      <TimeSeriesTitle
-        title={title ?? t("title")}
-        description={description ?? t("description")}
-      />
-      <TimeSeriesChart
-        processData={data}
-        config={TRANSACTIONS_CHART_CONFIG}
-        xAxis={{
-          key: "timestamp",
-          tickFormatter: getTickFormatter(chartOptions, locale),
-        }}
-        roundedBars={false}
-      />
-    </TimeSeriesRoot>
+    <AreaChartComponent
+      data={data}
+      config={TRANSACTIONS_CHART_CONFIG}
+      title={title ?? t("title")}
+      description={description ?? t("description")}
+      xAxis={{
+        key: "timestamp",
+        tickFormatter: getTickFormatter(chartOptions, locale),
+      }}
+      showYAxis={true}
+      chartContainerClassName={chartOptions.chartContainerClassName}
+    />
   );
 }
 
