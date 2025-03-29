@@ -1,4 +1,4 @@
-# Default values for atk.
+# Default values for erpc.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -7,18 +7,24 @@ replicaCount: 1
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
-  repository: nginx
+  repository: ghcr.io/erpc/erpc
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "0.0.41"
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Automatically mount a ServiceAccount's API credentials?
-  automount: true
+  automount: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -32,12 +38,10 @@ podAnnotations: {}
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 podLabels: {}
 
-podSecurityContext:
-  {}
+podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext:
-  {}
+securityContext: {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -50,14 +54,14 @@ service:
   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   type: ClusterIP
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 80
+  port: 4000
+  metricsPort: 4001
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
   enabled: false
   className: ""
-  annotations:
-    {}
+  annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
@@ -70,8 +74,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources:
-  {}
+resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -86,11 +89,11 @@ resources:
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
   httpGet:
-    path: /
+    path: /healthcheck
     port: http
 readinessProbe:
   httpGet:
-    path: /
+    path: /healthcheck
     port: http
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
@@ -119,39 +122,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-besu-validator-1:
-  enabled: true
-  fullnameOverride: besu-node-validator-1
-
-besu-validator-2:
-  enabled: true
-  fullnameOverride: besu-node-validator-2
-
-besu-validator-3:
-  enabled: true
-  fullnameOverride: besu-node-validator-3
-
-besu-validator-4:
-  enabled: true
-  fullnameOverride: besu-node-validator-4
-
-besu-rpc-1:
-  enabled: true
-  fullnameOverride: besu-node-rpc-1
-  node:
-    besu:
-      account:
-        password: "password"
-
-besu-rpc-2:
-  enabled: true
-  fullnameOverride: besu-node-rpc-2
-  node:
-    besu:
-      account:
-        password: "password"
-
-erpc:
-  enabled: true
-  fullnameOverride: besu-loadbalancer

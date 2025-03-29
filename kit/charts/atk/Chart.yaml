@@ -32,3 +32,6 @@ dependencies:
     alias: besu-rpc-2
     version: "*"
     condition: besu-rpc-2.enabled
+  - name: erpc
+    version: "*"
+    condition: erpc.enabled
