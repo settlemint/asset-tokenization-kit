@@ -3,14 +3,8 @@
 import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
+import { Button } from "@/components/ui/button";
 import type { ChartConfig } from "@/components/ui/chart";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { createTimeSeries } from "@/lib/charts";
 import type {
   PortfolioAsset,
@@ -183,23 +177,20 @@ export function PortfolioValue({
         description={t("portfolio-value-description")}
       />
       <TimeSeriesControls>
-        <Select
-          value={aggregationType}
-          onValueChange={(value) =>
-            setAggregationType(value as AggregationType)
-          }
-        >
-          <SelectTrigger>
-            <SelectValue defaultValue="total" />
-          </SelectTrigger>
-          <SelectContent>
-            {AGGREGATION_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2">
+          {AGGREGATION_OPTIONS.map((option) => (
+            <Button
+              key={option.value}
+              onClick={() =>
+                setAggregationType(option.value as AggregationType)
+              }
+              variant={aggregationType === option.value ? "default" : "outline"}
+              className="flex-1"
+            >
+              {option.label}
+            </Button>
+          ))}
+        </div>
       </TimeSeriesControls>
       {aggregationType === "total" ? (
         <TimeSeriesChart
