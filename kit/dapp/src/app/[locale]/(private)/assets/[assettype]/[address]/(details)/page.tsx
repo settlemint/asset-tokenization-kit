@@ -61,8 +61,8 @@ export default async function AssetDetailsPage({ params }: PageProps) {
         <TotalSupply data={assetStats} locale={locale} />
         <TotalSupplyChanged data={assetStats} locale={locale} />
         <WalletDistribution address={address} />
-        <TotalTransfers address={address} />
-        <TotalVolume address={address} />
+        <TotalTransfers data={assetStats} locale={locale} />
+        <TotalVolume data={assetStats} locale={locale} />
       </ChartGrid>
       <Related
         assettype={assettype}
