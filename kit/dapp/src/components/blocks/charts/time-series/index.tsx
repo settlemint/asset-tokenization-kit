@@ -241,13 +241,16 @@ export function TimeRangeSelect() {
 }
 
 type TimeSeriesChartProps<T> = {
-  processData: (
-    rawData: T[],
-    timeRange: TimeRange,
-    locale: Locale
-  ) => TimeSeriesResult<T>[];
+  processData:
+    | {
+        (
+          rawData: T[],
+          timeRange: TimeRange,
+          locale: Locale
+        ): TimeSeriesResult<Exclude<T, "timestamp">>[];
+      }
+    | TimeSeriesResult<Exclude<T, "timestamp">>[];
   config: ChartConfig;
-
   className?: string;
 } & Omit<AreaChartContainerProps, "data" | "xAxis"> &
   Omit<BarChartContainerProps, "data" | "xAxis">;
@@ -260,7 +263,9 @@ export function TimeSeriesChart<T>({
   const { timeRange, chartType, data, locale } = useTimeSeries<T>();
 
   const timeseries = useMemo(() => {
-    return processData(data, timeRange, locale);
+    return typeof processData === "function"
+      ? processData(data, timeRange, locale)
+      : processData;
   }, [data, timeRange, processData, locale]);
 
   const ChartComponent =
