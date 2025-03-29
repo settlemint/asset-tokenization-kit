@@ -26,6 +26,9 @@ dependencies:
 - name: postgresql-ha
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 15.3.8
+- name: redis
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 20.11.4
 - name: blockscout-stack
   repository: https://blockscout.github.io/helm-charts
   version: 2.0.3
@@ -41,5 +44,5 @@ dependencies:
 - name: graph-node
   repository: http://graphops.github.io/launchpad-charts
   version: 0.5.9
-digest: sha256:0e3bf3285974a596258d250893e00a595f5e08cb380aae5f7bee81ed628ed2e8
-generated: "2025-03-29T21:58:34.399219+01:00"
+digest: sha256:522664e3762c46555d9aca698adeaf61300a721236175a0a840ef9f4d7793496
+generated: "2025-03-29T23:28:22.854507+01:00"

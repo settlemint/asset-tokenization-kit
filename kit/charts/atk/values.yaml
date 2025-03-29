@@ -181,12 +181,17 @@ postgresql-ha:
         GRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;
         \c hasura;
         GRANT ALL ON SCHEMA public TO hasura;
+        CREATE DATABASE portal;
+        CREATE USER portal WITH PASSWORD 'atk' SUPERUSER;
+        GRANT ALL PRIVILEGES ON DATABASE portal TO portal;
+        \c portal;
+        GRANT ALL ON SCHEMA public TO portal;
   pgpool:
     adminUsername: "pgpool"
     adminPassword: "atk"
     customUsers:
-      usernames: "blockscout,hasura,thegraph"
-      passwords: "atk,atk,atk"
+      usernames: "blockscout,hasura,thegraph,portal"
+      passwords: "atk,atk,atk,atk"
     maxPool: 100
     numInitChildren: 100
     resourcesPreset: medium
@@ -592,3 +597,11 @@ graph-node:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
+
+redis:
+  enabled: true
+  fullnameOverride: redis
+  auth:
+    password: "atk"
+  replica:
+    replicaCount: 2
