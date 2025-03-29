@@ -62,9 +62,6 @@ export function TransactionsHistory({
       <TimeSeriesChart
         processData={data}
         config={TRANSACTIONS_CHART_CONFIG}
-        chartContainerClassName={
-          chartOptions?.chartContainerClassName ?? "h-[16rem] w-full"
-        }
         xAxis={{
           key: "timestamp",
           tickFormatter: getTickFormatter(chartOptions, locale),
