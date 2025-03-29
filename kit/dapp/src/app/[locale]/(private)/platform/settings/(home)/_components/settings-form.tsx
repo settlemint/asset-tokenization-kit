@@ -100,10 +100,7 @@ export function SettingsForm({ defaultBaseCurrency }: SettingsFormProps) {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form
-            onSubmit={handleSubmitWithAction}
-            className="w-full max-w-2xl space-y-4"
-          >
+          <form onSubmit={handleSubmitWithAction} className="w-full space-y-4">
             <FormField
               name="baseCurrency"
               render={({ field }) => (
@@ -131,7 +128,7 @@ export function SettingsForm({ defaultBaseCurrency }: SettingsFormProps) {
                 </FormItem>
               )}
             />
-            <div className="flex justify-end gap-4 pt-4">
+            <div className="flex justify-end pt-4">
               <Button type="submit">{t("save-changes")}</Button>
             </div>
           </form>

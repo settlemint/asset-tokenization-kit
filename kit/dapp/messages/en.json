@@ -154,6 +154,16 @@
     },
     "platform": {
       "settings": {
+        "add-admin": {
+          "title": "Add Admin",
+          "description": "Add a new admin to the platform",
+          "wallet-address-label": "Wallet Address",
+          "first-name-label": "First Name",
+          "last-name-label": "Last Name",
+          "adding": "Adding admin...",
+          "added": "Admin added successfully"
+        },
+        "add-admin-button": "Add Admin",
         "base-currency-label": "Base Currency",
         "base-currency-title": "Base Currency",
         "base-currency-description": "Set the default currency for displaying asset values across the platform",
@@ -168,7 +178,12 @@
           "gbp": "British Pound (GBP)",
           "chf": "Swiss Franc (CHF)"
         },
+        "permissions-title": "Permissions",
+        "permissions-description": "Manage platform administrators and their access levels",
+        "admin-count": "Admins",
+        "manage-admins": "Manage platform admins",
         "platform-management": "Platform management",
+        "platform-admins": "Platform Admins",
         "save": "Save",
         "save-changes": "Save changes",
         "saving": "Saving...",

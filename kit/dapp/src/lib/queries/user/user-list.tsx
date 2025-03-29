@@ -49,6 +49,28 @@ const UserActivity = theGraphGraphqlKit(
 );
 
 /**
+ * GraphQL query to fetch admin users list from Hasura
+ *
+ * @remarks
+ * Retrieves only users with admin role ordered by creation date in descending order
+ */
+const AdminUserList = hasuraGraphql(
+  `
+  query AdminUserList($limit: Int, $offset: Int) {
+    user(
+      where: { role: { _eq: "admin" } }
+      order_by: { created_at: desc }
+      limit: $limit
+      offset: $offset
+    ) {
+      ...UserFragment
+    }
+  }
+`,
+  [UserFragment]
+);
+
+/**
  * Fetches a list of users from Hasura with their last activity
  *
  * @remarks
@@ -66,6 +88,67 @@ export const getUserList = cache(
       const [users, accounts] = await Promise.all([
         fetchAllHasuraPages(async (pageLimit, offset) => {
           const result = await hasuraClient.request(UserList, {
+            limit: pageLimit,
+            offset,
+          });
+          return safeParse(t.Array(UserSchema), result.user || []);
+        }),
+        fetchAllTheGraphPages(async (first, skip) => {
+          const result = await theGraphClientKit.request(UserActivity, {
+            first,
+            skip,
+          });
+          return safeParse(t.Array(AccountSchema), result.accounts || []);
+        }),
+      ]);
+
+      // Create a map of accounts by address for quick lookup
+      const accountsById = new Map(
+        accounts.map((account) => [getAddress(account.id), account])
+      );
+
+      // Combine user data with account data and calculate fields
+      return users.map((user) => {
+        if (!user.wallet) {
+          // Return user with default calculated fields if no wallet
+          const calculatedFields = userCalculateFields(user);
+          return {
+            ...user,
+            ...calculatedFields,
+          };
+        }
+
+        const account = accountsById.get(getAddress(user.wallet));
+        const calculatedFields = userCalculateFields(user, account);
+
+        return {
+          ...account,
+          ...user,
+          ...calculatedFields,
+        };
+      });
+    }
+  )
+);
+
+/**
+ * Fetches a list of admin users from Hasura with their last activity
+ *
+ * @remarks
+ * This function fetches admin user data from Hasura and activity data from TheGraph,
+ * then returns a combined list of admin users with their details and calculated fields.
+ */
+export const getAdminUserList = cache(
+  withAccessControl(
+    {
+      requiredPermissions: {
+        user: ["list"],
+      },
+    },
+    async () => {
+      const [users, accounts] = await Promise.all([
+        fetchAllHasuraPages(async (pageLimit, offset) => {
+          const result = await hasuraClient.request(AdminUserList, {
             limit: pageLimit,
             offset,
           });
