@@ -18,7 +18,12 @@ import {
 } from "@/components/ui/tooltip";
 import type { TimeSeriesOptions, TimeSeriesResult } from "@/lib/charts";
 import { cn } from "@/lib/utils";
-import { BarChartIcon, Info, LineChartIcon } from "lucide-react";
+import {
+  BarChartIcon,
+  ClockArrowDownIcon,
+  Info,
+  LineChartIcon,
+} from "lucide-react";
 import type { Locale } from "next-intl";
 import { useTranslations } from "next-intl";
 import {
@@ -123,9 +128,14 @@ export function TimeSeriesRoot<T extends { timestamp: string }>({
 interface TimeSeriesTitleProps {
   title: string;
   description?: string;
+  lastUpdated?: string;
 }
 
-export function TimeSeriesTitle({ title, description }: TimeSeriesTitleProps) {
+export function TimeSeriesTitle({
+  title,
+  description,
+  lastUpdated,
+}: TimeSeriesTitleProps) {
   const t = useTranslations("components.chart");
   const { chartType, setChartType } = useTimeSeries();
 
@@ -155,6 +165,25 @@ export function TimeSeriesTitle({ title, description }: TimeSeriesTitleProps) {
           )}
         </div>
         <div className="flex items-center gap-2">
+          {lastUpdated && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                    <ClockArrowDownIcon
+                      className="h-4 w-4 text-muted-foreground"
+                      aria-label="Last updated"
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-accent-foreground text-xs">
+                    {t("last-updated-at", { lastUpdated })}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
           <Button
             variant="ghost"
             size="icon"

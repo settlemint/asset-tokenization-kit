@@ -287,6 +287,7 @@
       "switch-to-bar-chart": "Switch to bar chart",
       "info-icon-label": "Info",
       "select-time-range": "Select time range",
+      "last-updated-at": "Last updated at: {lastUpdated}",
       "time-range": {
         "24h": "24h",
         "7d": "7d",

@@ -43,8 +43,6 @@ export interface BarChartContainerProps {
   data: BarChartData[];
   config: ChartConfig;
   xAxis: XAxisConfig;
-  className?: string;
-  footer?: ReactNode;
   showYAxis?: boolean;
   showLegend?: boolean;
   colors?: string[];
@@ -58,7 +56,6 @@ interface BarChartProps extends BarChartContainerProps {
   title: string;
   description?: string;
   footer?: ReactNode;
-  showYAxis?: boolean;
 }
 
 export function BarChartComponent({
