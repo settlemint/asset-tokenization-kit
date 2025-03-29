@@ -26,57 +26,60 @@ import {
 } from "@/components/ui/chart";
 import { useAssetTypeFormatter } from "@/hooks/use-asset-type-formatter";
 import type { ReactNode } from "react";
+import { defaultTickFormatter, defaultTickMargin } from "../tick-formatter";
+import type { AxisConfig, ChartData } from "../types";
 
-export interface BarChartData {
-  [key: string]: string | number;
-}
-
-interface XAxisConfig {
-  key: string;
-  assetTypeFormatter?: boolean;
-  tickMargin?: number;
-  angle?: number;
-}
-
-interface BarChartProps {
-  data: BarChartData[];
+export interface BarChartContainerProps {
+  data: ChartData[];
   config: ChartConfig;
-  title: string;
-  description?: string;
-  xAxis: XAxisConfig;
-  className?: string;
-  footer?: ReactNode;
+  xAxis: AxisConfig & { assetTypeFormatter?: boolean };
   showYAxis?: boolean;
   showLegend?: boolean;
   colors?: string[];
+  chartContainerClassName?: string;
+  stacked?: boolean;
+  roundedBars?: boolean;
+  chartTooltipCursor?: boolean;
 }
 
-const defaultTickFormatter = (value: string) => {
-  if (!value) {
-    return "";
-  }
-  // Try comma split first
-  const commaSplit = value.split(",")[0];
-  if (commaSplit !== value) {
-    return commaSplit;
-  }
-
-  // Try lowercase
-  return value.toLowerCase();
-};
-const defaultTickMargin = 8;
+export interface BarChartProps extends BarChartContainerProps {
+  title: string;
+  description?: string;
+  footer?: ReactNode;
+}
 
 export function BarChartComponent({
-  data,
-  config,
   title,
   description,
-  xAxis,
   footer,
-  showYAxis,
-  showLegend = true,
-  colors,
+  ...chartContainerProps
 }: BarChartProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        {description && <CardDescription>{description}</CardDescription>}
+      </CardHeader>
+      <CardContent className="p-0 pr-4 pb-4">
+        <BarChartContainer {...chartContainerProps} />
+      </CardContent>
+      {footer && <CardFooter>{footer}</CardFooter>}
+    </Card>
+  );
+}
+
+export function BarChartContainer({
+  data,
+  config,
+  xAxis,
+  showYAxis,
+  colors,
+  chartContainerClassName,
+  showLegend = true,
+  stacked = true,
+  roundedBars = true,
+  chartTooltipCursor = false,
+}: BarChartContainerProps) {
   const dataKeys = Object.keys(config);
   const {
     key,
@@ -95,96 +98,87 @@ export function BarChartComponent({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
-      </CardHeader>
-      <CardContent className="p-0 pr-4 pb-4">
-        <ChartContainer config={config}>
-          <BarChart accessibilityLayer data={data}>
-            <CartesianGrid vertical={false} />
-            {showLegend && dataKeys.length > 1 && (
-              <Legend
-                align="center"
-                verticalAlign="bottom"
-                formatter={(value) => config[value].label}
+    <ChartContainer config={config} className={chartContainerClassName}>
+      <BarChart accessibilityLayer data={data}>
+        <CartesianGrid vertical={false} />
+        {showLegend && dataKeys.length > 1 && (
+          <Legend
+            align="center"
+            verticalAlign="bottom"
+            formatter={(value) => config[value].label}
+          />
+        )}
+        <XAxis
+          dataKey={key}
+          tickLine={false}
+          axisLine={false}
+          tickMargin={tickMargin}
+          tickFormatter={tickFormatter}
+        />
+        {showYAxis && (
+          <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} />
+        )}
+        <ChartTooltip
+          cursor={chartTooltipCursor}
+          content={<ChartTooltipContent />}
+          wrapperStyle={{ minWidth: "200px", width: "auto" }}
+        />
+        <defs>
+          {dataKeys.map((key) => (
+            <linearGradient
+              key={key}
+              id={`barGradient${key}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop
+                offset="5%"
+                stopColor={config[key].color}
+                stopOpacity={0.8}
               />
-            )}
-            <XAxis
-              dataKey={key}
-              tickLine={false}
-              axisLine={false}
-              tickMargin={tickMargin}
-              tickFormatter={tickFormatter}
-            />
-            {showYAxis && (
-              <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} />
-            )}
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent />}
-              wrapperStyle={{ minWidth: "200px", width: "auto" }}
-            />
-            <defs>
-              {dataKeys.map((key) => (
-                <linearGradient
-                  key={key}
-                  id={`barGradient${key}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor={config[key].color}
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor={config[key].color}
-                    stopOpacity={0.4}
-                  />
-                </linearGradient>
-              ))}
-              {colors?.map((color, index) => (
-                <linearGradient
-                  key={`customGradient${index}`}
-                  id={`customGradient${index}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="5%" stopColor={color} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={color} stopOpacity={0.4} />
-                </linearGradient>
-              ))}
-            </defs>
-            {dataKeys.map((key) => (
-              <Bar
-                key={key}
-                dataKey={key}
-                stackId="a"
-                fill={`url(#barGradient${key})`}
-                stroke={config[key].color}
-                strokeWidth={1}
-                radius={[2, 2, 0, 0]}
-              >
-                {colors?.map((color, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={`url(#customGradient${index})`}
-                    stroke={color}
-                  />
-                ))}
-              </Bar>
+              <stop
+                offset="95%"
+                stopColor={config[key].color}
+                stopOpacity={0.4}
+              />
+            </linearGradient>
+          ))}
+          {colors?.map((color, index) => (
+            <linearGradient
+              key={`customGradient${index}`}
+              id={`customGradient${index}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="5%" stopColor={color} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={color} stopOpacity={0.4} />
+            </linearGradient>
+          ))}
+        </defs>
+        {dataKeys.map((key) => (
+          <Bar
+            key={key}
+            dataKey={key}
+            stackId={stacked ? "a" : undefined}
+            fill={`url(#barGradient${key})`}
+            stroke={config[key].color}
+            strokeWidth={1}
+            radius={roundedBars ? [2, 2, 0, 0] : undefined}
+          >
+            {colors?.map((color, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={`url(#customGradient${index})`}
+                stroke={color}
+              />
             ))}
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-      {footer && <CardFooter>{footer}</CardFooter>}
-    </Card>
+          </Bar>
+        ))}
+      </BarChart>
+    </ChartContainer>
   );
 }

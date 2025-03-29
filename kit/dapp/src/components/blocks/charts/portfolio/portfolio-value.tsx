@@ -3,14 +3,8 @@
 import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
+import { Button } from "@/components/ui/button";
 import type { ChartConfig } from "@/components/ui/chart";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { createTimeSeries } from "@/lib/charts";
 import type {
   PortfolioAsset,
@@ -21,7 +15,14 @@ import type { Price } from "@/lib/utils/typebox/price";
 import { useTranslations, type Locale } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
-import { AreaChartComponent } from "../area-chart";
+import {
+  TIME_RANGE_CONFIG,
+  TimeSeriesChart,
+  TimeSeriesControls,
+  TimeSeriesRoot,
+  TimeSeriesTitle,
+  type TimeRange,
+} from "../time-series";
 
 interface PortfolioValueProps {
   portfolioStats: PortfolioStatsCollection;
@@ -29,7 +30,7 @@ interface PortfolioValueProps {
   locale: Locale;
 }
 
-type AggregationType = "individual" | "type" | "total";
+type AggregationType = "total" | "stackByType" | "compareTypes";
 
 export function PortfolioValue({
   portfolioStats,
@@ -38,11 +39,17 @@ export function PortfolioValue({
 }: PortfolioValueProps) {
   const t = useTranslations("components.charts.portfolio");
   const [aggregationType, setAggregationType] =
-    useState<AggregationType>("individual");
+    useState<AggregationType>("total");
   const AGGREGATION_OPTIONS = [
-    { value: "individual", label: t("aggregation-options.by-asset") },
-    { value: "type", label: t("aggregation-options.by-type") },
-    { value: "total", label: t("aggregation-options.total") },
+    { value: "total", label: t("aggregation-options.total-value") },
+    {
+      value: "stackByType",
+      label: t("aggregation-options.stacked-asset-types"),
+    },
+    {
+      value: "compareTypes",
+      label: t("aggregation-options.compare-asset-types"),
+    },
   ] as const;
 
   if (!portfolioStats || portfolioStats.length === 0) {
@@ -71,126 +78,148 @@ export function PortfolioValue({
   );
 
   const chartConfig: ChartConfig = {};
-  if (aggregationType === "individual") {
-    Array.from(uniqueAssets).forEach((assetId, index) => {
-      const asset = assetMap.get(assetId as Address);
-      if (asset) {
-        chartConfig[assetId] = {
-          label: asset.name,
-          color: `var(--chart-${(index % 6) + 1})`,
-        };
-      }
-    });
-  } else if (aggregationType === "type") {
+  if (aggregationType === "total") {
+    chartConfig.total = {
+      label: "Total Value",
+      color: "var(--chart-1)",
+    };
+  } else {
     for (const type of uniqueTypes) {
       chartConfig[type] = {
         label: type,
         color: getAssetColor(type, "color"),
       };
     }
-  } else {
-    chartConfig.total = {
-      label: "Total Value",
-      color: "var(--chart-1)",
-    };
   }
+  const individualData = portfolioStats.map((item) => ({
+    timestamp: item.timestamp,
+    [item.asset.id]:
+      Number(item.balance) * (assetPriceMap.get(item.asset.id)?.amount || 0),
+  }));
 
-  const processData = () => {
-    const individualData = portfolioStats.map((item) => ({
-      timestamp: item.timestamp,
-      [item.asset.id]:
-        Number(item.balance) * (assetPriceMap.get(item.asset.id)?.amount || 0),
-    }));
-
-    const individualTimeSeries = createTimeSeries(
-      individualData,
+  const individualTimeSeries = (
+    data: typeof individualData,
+    timeRange: TimeRange,
+    locale: Locale
+  ) => {
+    return createTimeSeries(
+      data,
       Array.from(uniqueAssets),
       {
-        granularity: "day",
-        intervalType: "month",
-        intervalLength: 1,
-        aggregation: {
-          display: "max",
-          storage: "last",
-        },
+        ...TIME_RANGE_CONFIG[timeRange],
+        aggregation: { display: "max", storage: "last" },
         accumulation: "current",
         historical: true,
       },
       locale
     );
-
-    if (aggregationType === "individual") {
-      return individualTimeSeries;
-    } else if (aggregationType === "type") {
-      return individualTimeSeries.map((row) => {
-        const typeValues = new Map<AssetType, number>();
-
-        for (const [key, value] of Object.entries(row)) {
-          if (key === "timestamp") continue;
-
-          const asset = assetMap.get(key as Address);
-          if (asset) {
-            const assetType = asset.type;
-            typeValues.set(
-              assetType,
-              (typeValues.get(assetType) || 0) + (Number(value) || 0)
-            );
-          }
-        }
-
-        return {
-          timestamp: row.timestamp,
-          ...Object.fromEntries(typeValues.entries()),
-        };
-      });
-    } else {
-      return individualTimeSeries.map((row) => {
-        const total = Object.entries(row).reduce((sum, [key, value]) => {
-          return key !== "timestamp" ? sum + (Number(value) || 0) : sum;
-        }, 0);
-
-        return {
-          timestamp: row.timestamp,
-          total,
-        };
-      });
-    }
   };
 
-  const timeseries = processData();
+  const assetTypeTimeSeries = (
+    data: typeof individualData,
+    timeRange: TimeRange,
+    locale: Locale
+  ) => {
+    const individualTimeSeriesData = individualTimeSeries(
+      data,
+      timeRange,
+      locale
+    );
+    return individualTimeSeriesData.map((row) => {
+      const typeValues = new Map<AssetType, number>();
+
+      for (const [key, value] of Object.entries(row)) {
+        if (key === "timestamp") continue;
+
+        const asset = assetMap.get(key as Address);
+        if (asset) {
+          const assetType = asset.type;
+          typeValues.set(
+            assetType,
+            (typeValues.get(assetType) || 0) + (Number(value) || 0)
+          );
+        }
+      }
+
+      const assetTypeValues = Object.fromEntries(
+        typeValues.entries()
+      ) as Record<AssetType, number>;
+
+      return {
+        timestamp: row.timestamp,
+        ...assetTypeValues,
+      };
+    });
+  };
+
+  const totalValueTimeSeries = (
+    data: typeof individualData,
+    timeRange: TimeRange,
+    locale: Locale
+  ) => {
+    const individualTimeSeriesData = individualTimeSeries(
+      data,
+      timeRange,
+      locale
+    );
+    return individualTimeSeriesData.map((row) => ({
+      timestamp: row.timestamp,
+      total: Object.entries(row).reduce((sum, [key, value]) => {
+        return key !== "timestamp" ? sum + (Number(value) || 0) : sum;
+      }, 0),
+    }));
+  };
 
   return (
-    <div className="space-y-4">
-      <AreaChartComponent
-        data={timeseries}
-        config={chartConfig}
+    <TimeSeriesRoot locale={locale}>
+      <TimeSeriesTitle
         title={t("portfolio-value-title")}
         description={t("portfolio-value-description")}
-        xAxis={{ key: "timestamp" }}
-        showYAxis={true}
-        stacked={true}
-        info={`Last updated: ${timeseries.at(-1)?.timestamp}`}
-        chartContainerClassName="h-[14rem] w-full"
-        options={
-          <Select
-            value={aggregationType}
-            onValueChange={(value) =>
-              setAggregationType(value as AggregationType)
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="View by" defaultValue="individual" />
-            </SelectTrigger>
-            <SelectContent>
-              {AGGREGATION_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        }
       />
-    </div>
+      <TimeSeriesControls>
+        <div className="flex gap-2">
+          {AGGREGATION_OPTIONS.map((option) => (
+            <Button
+              key={option.value}
+              onClick={() =>
+                setAggregationType(option.value as AggregationType)
+              }
+              variant={aggregationType === option.value ? "default" : "outline"}
+              className="flex-1"
+            >
+              {option.label}
+            </Button>
+          ))}
+        </div>
+      </TimeSeriesControls>
+      {aggregationType === "total" ? (
+        <TimeSeriesChart
+          rawData={individualData}
+          processData={totalValueTimeSeries}
+          config={chartConfig}
+          chartContainerClassName="h-[16rem] w-full"
+          roundedBars={false}
+        />
+      ) : aggregationType === "stackByType" ? (
+        <TimeSeriesChart
+          rawData={individualData}
+          processData={assetTypeTimeSeries}
+          config={chartConfig}
+          chartContainerClassName="h-[16rem] w-full"
+          stacked={true}
+          roundedBars={false}
+        />
+      ) : (
+        <TimeSeriesChart
+          rawData={individualData}
+          processData={assetTypeTimeSeries}
+          config={chartConfig}
+          chartContainerClassName="h-[16rem] w-full"
+          stacked={false}
+          roundedBars={false}
+          chartTooltipCursor={true}
+        />
+      )}
+    </TimeSeriesRoot>
   );
 }

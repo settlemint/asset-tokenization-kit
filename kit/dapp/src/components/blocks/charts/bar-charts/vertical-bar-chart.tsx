@@ -11,6 +11,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from "@/components/ui/chart";
 import {
   Bar,
@@ -20,15 +21,18 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { AxisConfig, BarChartData, BarChartProps } from "./types";
+import type { AxisConfig, ChartData } from "../types";
 
-interface VerticalBarChartProps<T extends BarChartData>
-  extends BarChartProps<T> {
+interface VerticalBarChartProps<T extends ChartData> {
+  data: T[];
+  config: ChartConfig;
+  title: string;
+  description?: string;
   yAxis: AxisConfig<T>;
   valueKey: keyof T & string;
 }
 
-export function VerticalBarChartComponent<T extends BarChartData>({
+export function VerticalBarChartComponent<T extends ChartData>({
   data,
   config,
   title,
