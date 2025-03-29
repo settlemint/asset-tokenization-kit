@@ -1,7 +1,4 @@
 dependencies:
-- name: reloader
-  repository: https://stakater.github.io/stakater-charts
-  version: 2.0.0
 - name: besu-genesis
   repository: ""
   version: '*'
@@ -17,5 +14,29 @@ dependencies:
 - name: besu-node
   repository: ""
   version: '*'
-digest: sha256:b3223ed4054c3f5cfee3a2a3ff21206c8e8290018b52fa2487acd9b8657fd258
-generated: "2025-03-29T11:33:23.608783+01:00"
+- name: besu-node
+  repository: ""
+  version: '*'
+- name: besu-node
+  repository: ""
+  version: '*'
+- name: erpc
+  repository: ""
+  version: '*'
+- name: postgresql-ha
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 15.3.8
+- name: blockscout-stack
+  repository: https://blockscout.github.io/helm-charts
+  version: 2.0.3
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v1.17.1
+- name: ingress-nginx
+  repository: https://kubernetes.github.io/ingress-nginx
+  version: 4.12.1
+- name: reloader
+  repository: https://stakater.github.io/stakater-charts
+  version: 2.0.0
+digest: sha256:0d05e9db9b7bd329d47b72418ace4df65bb3847f5f7e0a16ba5517cea468923c
+generated: "2025-03-29T20:37:12.880234+01:00"

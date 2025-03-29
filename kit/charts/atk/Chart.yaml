@@ -35,3 +35,22 @@ dependencies:
   - name: erpc
     version: "*"
     condition: erpc.enabled
+  - name: postgresql-ha
+    version: "15.3.8"
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: postgresql-ha.enabled
+  - name: blockscout-stack
+    version: "2.0.3"
+    repository: https://blockscout.github.io/helm-charts
+    condition: blockscout-stack.enabled
+  - name: cert-manager
+    version: v1.17.1
+    repository: https://charts.jetstack.io
+    condition: cert-manager.enabled
+  - name: ingress-nginx
+    version: 4.12.1
+    repository: https://kubernetes.github.io/ingress-nginx
+  - name: reloader
+    version: 2.0.0
+    repository: https://stakater.github.io/stakater-charts
+    condition: reloader.enabled

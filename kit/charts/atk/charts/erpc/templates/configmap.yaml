@@ -6,9 +6,5 @@ metadata:
     {{- include "erpc.labels" . | nindent 4 }}
 data:
   erpc.yaml: |
-    logLevel: debug
-    projects:
-      - id: settlemint
-        upstreams:
-          - endpoint: http://besu-node-rpc-1-0.besu-node-rpc-1.atk.svc.cluster.local:8545
-          - endpoint: http://besu-node-rpc-2-0.besu-node-rpc-2.atk.svc.cluster.local:8545
+    {{- toYaml .Values.config | nindent 4 }}
+
