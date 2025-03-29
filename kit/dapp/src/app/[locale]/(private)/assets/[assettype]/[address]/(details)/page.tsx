@@ -12,9 +12,10 @@ import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-dis
 import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { Details } from "./_components/details";
 import { Related } from "./_components/related";
@@ -31,13 +32,15 @@ export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
   const user = await getUser();
 
-  const [assetDetails, t, userBalance] = await Promise.all([
+  const [assetDetails, t, userBalance, assetStats, locale] = await Promise.all([
     getAssetDetail({ address, assettype }),
     getTranslations("private.assets"),
     getAssetBalanceDetail({
       address,
       account: user.wallet as Address,
     }),
+    getAssetStats({ address }),
+    getLocale(),
   ]);
 
   return (
@@ -55,11 +58,11 @@ export default async function AssetDetailsPage({ params }: PageProps) {
             <BondYieldDistribution address={address} />
           </>
         )}
-        <TotalSupply address={address} />
-        <TotalSupplyChanged address={address} />
+        <TotalSupply data={assetStats} locale={locale} />
+        <TotalSupplyChanged data={assetStats} locale={locale} />
         <WalletDistribution address={address} />
-        <TotalTransfers address={address} />
-        <TotalVolume address={address} />
+        <TotalTransfers data={assetStats} locale={locale} />
+        <TotalVolume data={assetStats} locale={locale} />
       </ChartGrid>
       <Related
         assettype={assettype}
