@@ -1,4 +1,7 @@
 dependencies:
+- name: support
+  repository: ""
+  version: '*'
 - name: besu-genesis
   repository: ""
   version: '*'
@@ -23,26 +26,14 @@ dependencies:
 - name: erpc
   repository: ""
   version: '*'
-- name: postgresql-ha
-  repository: oci://registry-1.docker.io/bitnamicharts
-  version: 15.3.8
-- name: redis
-  repository: oci://registry-1.docker.io/bitnamicharts
-  version: 20.11.4
 - name: blockscout-stack
   repository: https://blockscout.github.io/helm-charts
   version: 2.0.3
-- name: cert-manager
-  repository: https://charts.jetstack.io
-  version: v1.17.1
-- name: ingress-nginx
-  repository: https://kubernetes.github.io/ingress-nginx
-  version: 4.12.1
-- name: reloader
-  repository: https://stakater.github.io/stakater-charts
-  version: 2.0.0
 - name: graph-node
   repository: http://graphops.github.io/launchpad-charts
   version: 0.5.9
-digest: sha256:522664e3762c46555d9aca698adeaf61300a721236175a0a840ef9f4d7793496
-generated: "2025-03-29T23:28:22.854507+01:00"
+- name: graphql-engine
+  repository: https://hasura.github.io/helm-charts
+  version: 0.8.0
+digest: sha256:72bda5d742f2d28e411672de0f83aadfcb950b9425ffb5efd591ed3a0e20f75f
+generated: "2025-03-30T08:30:30.277189+02:00"

@@ -6,7 +6,7 @@ metadata:
   labels:
 {{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
     azure.workload.identity/use: "true"
-{{- end }}  
+{{- end }}
     app.kubernetes.io/name: besu-genesis-job-cleanup
     app.kubernetes.io/component: genesis-job-cleanup
     app.kubernetes.io/part-of: {{ include "besu-genesis.fullname" . }}
@@ -25,7 +25,7 @@ spec:
       labels:
 {{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
         azure.workload.identity/use: "true"
-{{- end}}         
+{{- end}}
         app.kubernetes.io/name: besu-genesis-job-cleanup
         app.kubernetes.io/component: genesis-job-cleanup
         app.kubernetes.io/part-of: {{ include "besu-genesis.fullname" . }}
@@ -38,8 +38,12 @@ spec:
       serviceAccountName: {{ .Values.aws.serviceAccountName }}
 {{- else }}
       serviceAccountName: {{ include "besu-genesis.name" . }}-sa
-{{- end }}       
+{{- end }}
       restartPolicy: "Never"
+      imagePullSecrets:
+        {{- with .Values.imagePullSecrets }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       containers:
         - name: delete-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -60,4 +64,4 @@ spec:
               echo "Deleting node-enodes configmap in k8s ..."
               kubectl delete configmap --namespace {{ .Release.Namespace }} besu-peers
 
-{{- end}} 
+{{- end}}

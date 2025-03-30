@@ -43,7 +43,7 @@ spec:
   template:
     metadata:
       labels:
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}        
+{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
         azure.workload.identity/use: "true"
 {{- end }}
         app.kubernetes.io/name: besu-statefulset
@@ -64,6 +64,10 @@ spec:
 {{- else }}
       serviceAccountName: {{ include "besu-node.fullname" . }}-sa
 {{- end }}
+      imagePullSecrets:
+        {{- with .Values.imagePullSecrets }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       initContainers:
 
 {{- if has .Values.cluster.provider .Values.volumePermissionsFix }}
@@ -79,7 +83,7 @@ spec:
 {{- end}}
 
       containers:
-      
+
 {{- if .Values.quorumFlags.privacy }}
       - name: {{ .Release.Name }}-tessera
         image: {{ .Values.image.tessera.repository }}:{{ .Values.image.tessera.tag }}
@@ -215,7 +219,7 @@ spec:
 {{- if .Values.node.besu.envBesuOpts }}
           - name: BESU_OPTS
             value: "{{ .Values.node.besu.envBesuOpts }}"
-{{- end }}    
+{{- end }}
 {{- if .Values.quorumFlags.usesBootnodes }}
           - name: BESU_BOOTNODES
             valueFrom:
@@ -236,7 +240,7 @@ spec:
           - name: tessera-keys
             mountPath: {{ .Values.node.besu.privacy.pubkeysPath }}
             readOnly: true
-{{- end }}            
+{{- end }}
 {{- end }}
           - name: genesis
             mountPath: /etc/genesis
@@ -276,7 +280,7 @@ spec:
             /opt/besu/bin/besu \
               --config-file=/etc/besu/config.toml \
               --Xdns-enabled=true --Xdns-update-enabled=true \
-              --min-gas-price=0 
+              --min-gas-price=0
 
         livenessProbe:
           httpGet:

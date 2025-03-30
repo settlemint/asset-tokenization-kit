@@ -38,6 +38,10 @@ spec:
       serviceAccountName: {{ include "besu-node.fullname" . }}-hooks-sa
 {{- end }}
       restartPolicy: "OnFailure"
+      imagePullSecrets:
+        {{- with .Values.imagePullSecrets }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       containers:
         - name: {{ template "besu-node.fullname" . }}-node-pre-delete-hook
           image: "{{ .Values.image.hooks.repository }}:{{ .Values.image.hooks.tag }}"

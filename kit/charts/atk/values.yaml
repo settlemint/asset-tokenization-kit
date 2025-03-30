@@ -2,8 +2,51 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+imagePullCredentials:
+  registries:
+    # -- lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more
+    harbor:
+      # -- Enable this if you want this chart to create an image pull secret for you (harbor is the default registry for the platform)
+      enabled: false
+      # -- The registry hosting the packages, e.g docker.io or ghcr.io
+      registryUrl: 'harbor.settlemint.com'
+      # -- The username to access the registry
+      username: ''
+      # -- The password or access token to access the registry
+      password: ''
+      # -- The email to access the registry
+      email: ''
+    # -- lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more
+    ghcr:
+      # -- Enable this if you want this chart to create an image pull secret for you
+      enabled: false
+      # -- The registry hosting the packages, e.g docker.io or ghcr.io
+      registryUrl: 'ghcr.io'
+      # -- The username to access the registry
+      username: ''
+      # -- The password or access token to access the registry
+      password: ''
+      # -- The email to access the registry
+      email: ''
+    # -- lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more
+    docker:
+      # -- Enable this if you want this chart to create an image pull secret for you
+      enabled: false
+      # -- The registry hosting the packages, e.g docker.io or ghcr.io
+      registryUrl: 'docker.io'
+      # -- The username to access the registry
+      username: ''
+      # -- The password or access token to access the registry
+      password: ''
+      # -- The email to access the registry
+      email: ''
+
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 1
+
+
+fullnameOverride: ""
+nameOverride: ""
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
@@ -156,49 +199,14 @@ erpc:
   enabled: true
   fullnameOverride: besu-loadbalancer
 
-postgresql-ha:
-  enabled: true
-  fullnameOverride: postgresql
-  postgresql:
-    username: "postgres"
-    password: "atk"
-    repmgrUsername: repmgr
-    repmgrPassword: "atk"
-    initdbScripts:
-      create_blockscout_db.sql: |
-        CREATE DATABASE blockscout;
-        CREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;
-        GRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;
-        \c blockscout;
-        GRANT ALL ON SCHEMA public TO blockscout;
-        CREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;
-        CREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;
-        GRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;
-        \c thegraph;
-        GRANT ALL ON SCHEMA public TO thegraph;
-        CREATE DATABASE hasura;
-        CREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;
-        GRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;
-        \c hasura;
-        GRANT ALL ON SCHEMA public TO hasura;
-        CREATE DATABASE portal;
-        CREATE USER portal WITH PASSWORD 'atk' SUPERUSER;
-        GRANT ALL PRIVILEGES ON DATABASE portal TO portal;
-        \c portal;
-        GRANT ALL ON SCHEMA public TO portal;
-  pgpool:
-    adminUsername: "pgpool"
-    adminPassword: "atk"
-    customUsers:
-      usernames: "blockscout,hasura,thegraph,portal"
-      passwords: "atk,atk,atk,atk"
-    maxPool: 100
-    numInitChildren: 100
-    resourcesPreset: medium
-
+# https://github.com/blockscout/helm-charts/blob/main/charts/blockscout-stack/values.yaml
 blockscout-stack:
   enabled: true
   fullnameOverride: blockscout
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
   config:
     prometheus:
       enabled: false
@@ -213,6 +221,7 @@ blockscout-stack:
         symbol: NT
         decimals: 18
   blockscout:
+    replicaCount: 2
     image:
       repository: blockscout/blockscout
       tag: "7.0.2"
@@ -235,8 +244,8 @@ blockscout-stack:
       FETCH_REWARDS_WAY: 'trace_block'
       DISABLE_EXCHANGE_RATES: 'true'
       ECTO_USE_SSL: 'false'
-      POOL_SIZE: '10'
-      POOL_SIZE_API: '10'
+      POOL_SIZE: '5'
+      POOL_SIZE_API: '5'
       POOL_TIMEOUT: '30000'
       POOL_MAX_OVERFLOW: '40'
       ECTO_ADAPTER_TIMEOUT: '60000'
@@ -262,7 +271,7 @@ blockscout-stack:
     image:
       repository: ghcr.io/blockscout/frontend
       tag: "v1.38.2"
-    replicaCount: 1
+    replicaCount: 2
     env:
       NEXT_PUBLIC_IS_ACCOUNT_SUPPORTED: 'false'
       NEXT_PUBLIC_IS_TESTNET: 'false'
@@ -283,232 +292,8 @@ blockscout-stack:
       className: "settlemint-nginx"
       hostname: explorer.k8s.orb.local
 
-# https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
-ingress-nginx:
-  enabled: true
-  fullnameOverride: 'ingress-nginx'
-  defaultBackend:
-    enabled: false
-  controller:
-    allowSnippetAnnotations: true
-    runAsUser: 2016
-    admissionWebhooks:
-      enabled: false
-    replicaCount: 1
-    autoscaling:
-      enabled: true
-      minReplicas: 1
-      maxReplicas: 10
-      targetCPUUtilizationPercentage: 80
-      targetMemoryUtilizationPercentage: 80
-      behaviour:
-        scaleDown:
-          stabilizationWindowSeconds: 300
-          policies:
-            - type: Pods
-              value: 1
-              periodSeconds: 180
-        scaleUp:
-          stabilizationWindowSeconds: 0
-          policies:
-            - type: Pods
-              value: 2
-              periodSeconds: 60
-    updateStrategy:
-      type: RollingUpdate
-      rollingUpdate:
-        maxSurge: "100%"
-        maxUnavailable: "0%"
-    resources:
-      requests:
-        cpu: 250m
-        memory: 768Mi
-    podLabels:
-      kots.io/app-slug: settlemint-platform
-    podAnnotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "10254"
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                  - key: app.kubernetes.io/component
-                    operator: In
-                    values:
-                      - controller
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                      - ingress-nginx
-              topologyKey: kubernetes.io/hostname
-    config:
-      proxy-body-size: '500M'
-      http2-push-preload: 'true'
-      proxy-send-timeout: '3600'
-      proxy-read-timeout: '3600'
-      proxy-buffering: 'on'
-      proxy-buffer-size: '128k'
-      proxy-buffers-number: '4'
-      proxy-max-temp-file-size: '1024m'
-      client-body-buffer-size: '128k'
-      tcp-fast-open: '3000'
-      worker-processes: auto
-      max-worker-connections: '65536'
-      upstream-keepalive-connections: '64'
-      upstream-keepalive-timeout: '120'
-      limit-req-status-code: '429'
-      use-http2: 'true'
-      use-forwarded-headers: 'false'
-      log-format-escape-json: 'true'
-      log-format-upstream: '{"proxyUpstreamName": "$proxy_upstream_name", "httpRequest":{"requestMethod": "$request_method", "requestUrl": "$host$request_uri", "status": $status, "requestBody": "${request_body_filtered}"}, "cloudflare": {"cfConnectingIp": "$http_cf_connecting_ip", "cfIpCountry": "$http_cf_ipcountry", "cfRay": "$http_cf_ray", "trueClientIp": "$http_true_client_ip"}, "meta": {"timestamp": "$time_iso8601", "latency": "$upstream_response_time s", "requestID": "$req_id", "requestSize": "$request_length", "responseSize": "$upstream_response_length", "userAgent": "$http_user_agent", "referer": "$http_referer", "protocol":"$server_protocol", "proxyAlternativeUpstreamName": "$proxy_alternative_upstream_name", "upstreamStatus": "$upstream_status", "upstreamAddr": "$upstream_addr", "cfVisitor": "$http_cf_visitor", "cfRequestId": "$http_cf_request_id"}}'
-      ignore-invalid-headers: 'false'
-      enable-underscores-in-headers: 'true'
-      annotations-risk-level: Critical
-      ssl-ciphers: 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:AES128-GCM-SHA256:AES128-GCM-SHA384'
-      nginx-status-ipv4-whitelist: '0.0.0.0'
-      http-snippet: |
-        lua_need_request_body on;
 
-        map $status $request_body_filtered {
-            204     "";
-            default $request_body_binary_check;
-        }
-
-        map $request_body $request_body_binary_check {
-            ~[^[:print:]]  "[binary data]";
-            default       $request_body;
-        }
-
-        server {
-            listen 18080;
-
-            location /nginx_status {
-                allow all;
-                stub_status on;
-            }
-            location / {
-                return 404;
-            }
-        }
-      ssl-redirect: 'false'
-      enable-opentelemetry: 'true'
-      enable-access-log-for-default-backend: 'true'
-      otlp-collector-host: 'o11y-alloy'
-      otlp-collector-port: '4317'
-      otel-sampler: AlwaysOn
-      otel-sampler-ratio: '1.0'
-      otel-sampler-parent-based: 'false'
-      opentelemetry-trust-incoming-span: 'true'
-      otel-max-queuesize: '2048'
-      otel-schedule-delay-millis: '5000'
-      otel-max-export-batch-size: '512'
-      enable-brotli: 'true'
-      proxy_next_upstream: 'error timeout http_500 http_502 http_503 http_504'
-      proxy_next_upstream_timeout: '30'
-      proxy_next_upstream_tries: '3'
-    extraArgs:
-      enable-ssl-passthrough: 'true'
-    service:
-      externalTrafficPolicy: "Local" # Use if not ClusterIP
-      type: LoadBalancer # Or ClusterIP if there is an external LB
-      annotations:
-        external-dns.alpha.kubernetes.io/hostname: 'settlemint.local, *.settlemint.local'
-        external-dns.alpha.kubernetes.io/cloudflare-proxied: 'true'
-        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: 'tcp'
-        service.beta.kubernetes.io/aws-load-balancer-type: 'external'
-        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: 'ip'
-        service.beta.kubernetes.io/aws-load-balancer-scheme: 'internet-facing'
-        service.beta.kubernetes.io/azure-load-balancer-disable-tcp-reset: 'true'
-        service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout: '30'
-        service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: '/healthz'
-    ingressClassResource:
-      # -- If you run more than one platform versions on a single cluster, you need to make sure these are unique
-      name: settlemint-nginx
-      enabled: true
-      default: false
-      controllerValue: 'k8s.io/settlemint-nginx'
-    ingressClass: settlemint-nginx
-    opentelemetry:
-      enabled: true
-      image:
-        registry: registry.k8s.io
-    patch:
-      image:
-        registry: registry.k8s.io
-    metrics:
-      enabled: true
-      service:
-        labels:
-          kots.io/app-slug: settlemint-platform
-        annotations:
-          prometheus.io/scrape: 'true'
-          prometheus.io/port: '10254'
-
-# https://github.com/stakater/Reloader/blob/master/deployments/kubernetes/chart/reloader/values.yaml
-reloader:
-  enabled: false
-  fullnameOverride: 'reloader'
-  reloader:
-    autoReloadAll: true
-    watchGlobally: false
-    readOnlyRootFileSystem: true
-    reloadOnCreate: true
-    syncAfterRestart: true
-    securityContext:
-      # -- Specifies the security capabilities for the container. Here, all capabilities are dropped.
-      capabilities:
-        drop:
-          - ALL
-      # -- If true, the root filesystem of the container is read-only.
-      readOnlyRootFilesystem: false
-      # -- Ensures the container runs as a non-root user.
-      runAsNonRoot: true
-      # -- The user ID to run the container as. Change this for OpenShift or specific requirements.
-      runAsUser: 2016
-      allowPrivilegeEscalation: false
-    containerSecurityContext:
-      capabilities:
-        drop:
-          - ALL
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
-    deployment:
-      labels:
-        kots.io/app-slug: settlemint-platform
-
-# https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
-cert-manager:
-  enabled: false
-  fullnameOverride: 'cert-manager'
-  crds:
-    enabled: true
-  resources:
-    limits:
-      memory: 100Mi
-    requests:
-      memory: 100Mi
-      cpu: 10m
-  webhook:
-    resources:
-      limits:
-        memory: 50Mi
-      requests:
-        memory: 10Mi
-        cpu: 10m
-  cainjector:
-    resources:
-      limits:
-        memory: 128Mi
-      requests:
-        memory: 128Mi
-        cpu: 10m
-  prometheus:
-    enabled: true
-
-
+# https://github.com/graphops/launchpad-charts/blob/main/charts/graph-node/values.yaml
 graph-node:
   enabled: true
   fullnameOverride: graph-node
@@ -516,6 +301,17 @@ graph-node:
     PGUSER: thegraph
     PGPASSWORD: atk
   graphNodeDefaults:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    extraInitContainers:
+      - name: wait-for-postgresql
+        image: ghcr.io/settlemint/btp-waitforit:v7.7.2
+        command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
+    affinityPresets:
+      # -- Create anti-affinity rule to deter scheduling replicas on the same host
+      antiAffinityByHostname: false
     # -- Environment variable defaults for all Graph Node groups
     env:
       # -- Hostname of the primary shard PostgreSQL server
@@ -540,7 +336,7 @@ graph-node:
   graphNodeGroups:
     query:
       enabled: true
-      replicaCount: 1
+      replicaCount: 2
       env:
         node_role: query-node # this key must be lowercase
 
@@ -598,10 +394,42 @@ graph-node:
     #    hosts:
     #      - chart-example.local
 
-redis:
+
+
+# https://github.com/hasura/helm-charts/blob/main/charts/graphql-engine/values.yaml
+graphql-engine:
   enabled: true
-  fullnameOverride: redis
-  auth:
-    password: "atk"
-  replica:
-    replicaCount: 2
+  nameOverride: hasura
+  replicas: 2
+  ingress:
+    enabled: true
+    ingressClassName: "settlemint-nginx"
+    hostName: "hasura.k8s.orb.local"
+  config:
+    metadataOnly: false
+    enableInternalConsoleAssets: true
+    devMode: true
+  secret:
+    enabled: true
+    adminSecret: "atk"
+    redisUrl: "redis://redis-master:6379"
+    rateLimitRedisUrl: "redis://redis-master:6379"
+  extraEnvs:
+    - name: HASURA_GRAPHQL_PG_CONNECTIONS
+      value: "10"
+  global:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  postgres:
+    name: postgresql-pgpool
+    auth:
+      username: hasura
+      password: "atk"
+      database: hasura
+
+
+
+support:
+  enabled: true

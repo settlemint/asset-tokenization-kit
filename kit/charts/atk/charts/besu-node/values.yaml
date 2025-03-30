@@ -209,3 +209,10 @@ image:
     repository: ghcr.io/settlemint/quorum-genesis-tool
     tag: sha-49c40f5
     pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: image-pull-secret-docker
+  - name: image-pull-secret-ghcr
+  - name: image-pull-secret-harbor
+
+imagePullPolicy: IfNotPresent

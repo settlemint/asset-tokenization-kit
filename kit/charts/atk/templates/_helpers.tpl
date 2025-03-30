@@ -60,3 +60,14 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "atk.imagePullSecretName" -}}
+{{- printf "image-pull-secret-%s" . -}}
+{{- end -}}
+
+{{/*
+Creates an image pull secret value
+*/}}
+{{- define "atk.imagePullSecret" }}
+{{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"auth\":\"%s\"}}}" .registryUrl .username .password .email (printf "%s:%s" .username .password | b64enc) | b64enc }}
+{{- end }}

@@ -6,6 +6,9 @@ version: 0.1.0
 appVersion: "0.1.0"
 
 dependencies:
+  - name: support
+    version: "*"
+    condition: support.enabled
   - name: besu-genesis
     version: "*"
   - name: besu-node
@@ -35,30 +38,15 @@ dependencies:
   - name: erpc
     version: "*"
     condition: erpc.enabled
-  - name: postgresql-ha
-    version: "15.3.8"
-    repository: oci://registry-1.docker.io/bitnamicharts
-    condition: postgresql-ha.enabled
-  - name: redis
-    version: "20.11.4"
-    repository: oci://registry-1.docker.io/bitnamicharts
-    condition: redis.enabled
   - name: blockscout-stack
     version: "2.0.3"
     repository: https://blockscout.github.io/helm-charts
     condition: blockscout-stack.enabled
-  - name: cert-manager
-    version: v1.17.1
-    repository: https://charts.jetstack.io
-    condition: cert-manager.enabled
-  - name: ingress-nginx
-    version: 4.12.1
-    repository: https://kubernetes.github.io/ingress-nginx
-  - name: reloader
-    version: 2.0.0
-    repository: https://stakater.github.io/stakater-charts
-    condition: reloader.enabled
   - name: graph-node
     version: 0.5.9
     repository: http://graphops.github.io/launchpad-charts
     condition: graph-node.enabled
+  - name: graphql-engine
+    version: 0.8.0
+    repository: https://hasura.github.io/helm-charts
+    condition: graphql-engine.enabled

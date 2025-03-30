@@ -41,6 +41,10 @@ spec:
       serviceAccountName: {{ include "besu-genesis.name" . }}-sa
 {{- end }}
       restartPolicy: "Never"
+      imagePullSecrets:
+        {{- with .Values.imagePullSecrets }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       containers:
         - name: generate-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
