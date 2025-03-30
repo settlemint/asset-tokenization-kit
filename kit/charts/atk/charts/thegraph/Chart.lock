@@ -2,5 +2,5 @@ dependencies:
 - name: graph-node
   repository: http://graphops.github.io/launchpad-charts
   version: 0.5.9
-digest: sha256:b1a1666481a61a534dc40fb82063fad514a1413beba070c04e7556fb5e15fb6b
-generated: "2025-03-30T08:42:10.462547+02:00"
+digest: sha256:d437a20463efb67af06f6ba2fbe88aa9c25941e924ea03220a31ad62c123e32c
+generated: "2025-03-30T11:13:22.84116+02:00"

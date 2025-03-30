@@ -180,3 +180,6 @@ hasura:
 
 support:
   enabled: true
+
+observability:
+  enabled: true

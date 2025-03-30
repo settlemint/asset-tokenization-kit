@@ -27,6 +27,13 @@ blockscout-stack:
       enabled: true
       className: "settlemint-nginx"
       hostname: explorer.k8s.orb.local
+    resources:
+      limits:
+        cpu: 2
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 512Mi
     env:
       NETWORK: "mainnet"
       SUBNETWORK: "ATK"

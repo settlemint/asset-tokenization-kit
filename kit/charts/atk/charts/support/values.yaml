@@ -46,7 +46,7 @@ postgresql-ha:
     maxPool: 500
     numInitChildren: 500
     logConnections: true
-    resourcesPreset: 2xlarge
+    resourcesPreset: large
     pullSecrets:
      - image-pull-secret-docker
      - image-pull-secret-ghcr

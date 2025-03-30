@@ -1,0 +1,946 @@
+# https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
+metrics-server:
+  enabled: false
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+  image:
+    repository: registry.k8s.io/metrics-server/metrics-server
+  fullnameOverride: metrics-server
+  service:
+    labels:
+      kots.io/app-slug: settlemint-atk
+  server:
+    persistentVolume:
+      enabled: false
+  podLabels:
+    kots.io/app-slug: settlemint-atk
+
+# https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
+kube-state-metrics:
+  enabled: false
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+  image:
+    registry: registry.k8s.io
+  fullnameOverride: kube-state-metrics
+  customLabels:
+    kots.io/app-slug: settlemint-atk
+  podAnnotations:
+    prometheus.io/scrape: "true"
+  metricLabelsAllowlist:
+    - pods=[*]
+    - ingresses=[*]
+
+# https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
+victoria-metrics-single:
+  enabled: false
+  global:
+    image:
+      registry: docker.io
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  server:
+    extraArgs:
+      search.maxQueryLen: 163840
+    fullnameOverride: metrics
+    retentionPeriod: 1
+    persistentVolume:
+      storageClass: ""
+      size: 50Gi
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+    ingress:
+      enabled: false
+      annotations:
+        nginx.ingress.kubernetes.io/auth-type: basic
+        nginx.ingress.kubernetes.io/auth-secret: observability-metrics
+        nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - Metrics"
+        nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+        nginx.ingress.kubernetes.io/client-body-buffer-size: "500m"
+      hosts:
+        - name: metrics.settlemint.local
+          path: /
+          port: http
+      ingressClassName: settlemint-nginx
+      pathType: Prefix
+    podLabels:
+      kots.io/app-slug: settlemint-atk
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8428"
+      prometheus.io/path: /metrics
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8428"
+        prometheus.io/path: /metrics
+      labels:
+        kots.io/app-slug: settlemint-atk
+
+# https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
+loki:
+  enabled: false
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+  fullnameOverride: logs
+  global:
+    image:
+      registry: docker.io
+  memcached:
+    image:
+      repository: docker.io/library/memcached
+  memcachedExporter:
+    image:
+      repository: docker.io/prom/memcached-exporter
+  loki:
+    auth_enabled: false
+    commonConfig:
+      replication_factor: 1
+    schemaConfig:
+      configs:
+        - from: 2024-04-01
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: loki_index_
+            period: 24h
+    storage:
+      type: 'filesystem'
+    ingester:
+      chunk_encoding: snappy
+    tracing:
+      enabled: true
+    querier:
+      max_concurrent: 2
+    limits_config:
+      retention_period: 168h
+      reject_old_samples: true
+      reject_old_samples_max_age: 24h
+      max_query_series: 10000
+      max_query_parallelism: 2
+      max_line_size: 100982429
+      split_queries_by_interval: 15m
+      per_stream_rate_limit: 512M
+      per_stream_rate_limit_burst: 1024M
+      cardinality_limit: 200000
+      ingestion_burst_size_mb: 1000
+      ingestion_rate_mb: 1000
+      max_entries_limit_per_query: 1000000
+      max_global_streams_per_user: 10000
+      max_label_value_length: 20480
+      max_label_name_length: 10240
+      max_label_names_per_series: 300
+      allow_structured_metadata: true
+      volume_enabled: true
+    server:
+      grpc_server_max_recv_msg_size: 100982429
+      grpc_server_max_send_msg_size: 100982429
+    compactor:
+      retention_enabled: true
+      working_directory: /var/loki/retention
+      compaction_interval: 60m
+      retention_delete_delay: 2h
+      retention_delete_worker_count: 150
+      delete_request_store: filesystem
+    pattern_receiver:
+      enabled: true
+
+  gateway:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution: null
+    ingress:
+      enabled: false
+      ingressClassName: settlemint-nginx
+      annotations:
+        nginx.ingress.kubernetes.io/auth-type: basic
+        nginx.ingress.kubernetes.io/auth-secret: observability-logs
+        nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - Logs"
+        nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+        nginx.ingress.kubernetes.io/client-body-buffer-size: "500m"
+      hosts:
+        - host: logs.settlemint.local
+          paths:
+            - path: /
+              pathType: Prefix
+
+  deploymentMode: SingleBinary
+  singleBinary:
+    persistence:
+      size: 50Gi
+    replicas: 1
+    resources:
+      limits:
+        cpu: 3
+        memory: 4Gi
+      requests:
+        cpu: 1
+        memory: "512Mi"
+    extraEnv:
+      # Keep a little bit lower than memory limits
+      - name: GOMEMLIMIT
+        value: 3750MiB
+
+  chunksCache:
+    # default is 500MB, with limited memory keep this smaller
+    writebackSizeLimit: 100MB
+    allocatedMemory: 1024
+
+  test:
+    enabled: false
+  lokiCanary:
+    enabled: false
+
+  # Enable minio for storage
+  minio:
+    enabled: false
+
+  # Zero out replica counts of other deployment modes
+  backend:
+    replicas: 0
+  read:
+    replicas: 0
+  write:
+    replicas: 0
+
+  ingester:
+    replicas: 0
+  querier:
+    replicas: 0
+  queryFrontend:
+    replicas: 0
+  queryScheduler:
+    replicas: 0
+  distributor:
+    replicas: 0
+  compactor:
+    replicas: 0
+  indexGateway:
+    replicas: 0
+  bloomCompactor:
+    replicas: 0
+  bloomGateway:
+    replicas: 0
+
+
+# https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
+alloy:
+  enabled: false
+  image:
+    registry: docker.io
+  configReloader:
+    image:
+      registry: ghcr.io
+  clustername: ''
+  global:
+    image:
+      pullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  endpoints:
+    internal:
+      prometheus:
+        enabled: true
+        url: http://metrics:8428/api/v1/write
+      loki:
+        enabled: true
+        url: http://logs:3100/loki/api/v1/push
+      otel:
+        enabled: true
+        url: http://tempo:4318
+    external:
+      prometheus:
+        enabled: false
+        url: ""
+        basicAuth:
+          username: null
+          password: null
+      loki:
+        enabled: false
+        url: ""
+        basicAuth:
+          username: null
+          password: null
+      otel:
+        enabled: false
+        url: ""
+        basicAuth:
+          username: null
+          password: null
+  fullnameOverride: alloy
+  controller:
+    type: "deployment"
+  crds:
+    create: false
+  alloy:
+    stabilityLevel: "experimental"
+    extraPorts:
+      - name: "otel-grpc"
+        port: 4317
+        targetPort: 4317
+        protocol: "TCP"
+      - name: "otel-http"
+        port: 4318
+        targetPort: 4318
+        protocol: "TCP"
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "512Mi"
+    enableReporting: false
+    configMap:
+      content: |
+        logging {
+          level  = "info"
+          format = "logfmt"
+        }
+
+        discovery.kubernetes "kubernetes_nodes" {
+          role = "node"
+        }
+
+        discovery.kubernetes "kubernetes_service_endpoints" {
+          role = "endpoints"
+        }
+
+        discovery.relabel "kubernetes_nodes_cadvisor" {
+          targets = discovery.kubernetes.kubernetes_nodes.targets
+
+          rule {
+            target_label = "__address__"
+            replacement  = "kubernetes.default.svc:443"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_node_name"]
+            regex         = "(.+)"
+            target_label  = "__metrics_path__"
+            replacement   = "/api/v1/nodes/$1/proxy/metrics/cadvisor"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_uid"
+            action      = "labeldrop"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_id"
+            action      = "labeldrop"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_name"
+            action      = "labeldrop"
+          }
+        }
+
+        discovery.relabel "kubernetes_nodes" {
+          targets = discovery.kubernetes.kubernetes_nodes.targets
+
+          rule {
+            target_label = "__address__"
+            replacement  = "kubernetes.default.svc:443"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_node_name"]
+            regex         = "(.+)"
+            target_label  = "__metrics_path__"
+            replacement   = "/api/v1/nodes/$1/proxy/metrics"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_uid"
+            action      = "labeldrop"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_id"
+            action      = "labeldrop"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_name"
+            action      = "labeldrop"
+          }
+
+          rule {
+            replacement  = "{{ .Values.clustername | default "settlemint" }}"
+            target_label = "cluster_name"
+          }
+        }
+
+        discovery.relabel "kubernetes_service_endpoints" {
+          targets = discovery.kubernetes.kubernetes_service_endpoints.targets
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_scrape"]
+            regex         = "true"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_scheme"]
+            regex         = "(https?)"
+            target_label  = "__scheme__"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_path"]
+            regex         = "(.+)"
+            target_label  = "__metrics_path__"
+          }
+
+          rule {
+            source_labels = ["__address__", "__meta_kubernetes_service_annotation_prometheus_io_port"]
+            regex         = "(.+?)(?::\\d+)?;(\\d+)"
+            target_label  = "__address__"
+            replacement   = "$1:$2"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_service_annotation_prometheus_io_param_(.+)"
+            replacement = "__param_$1"
+            action      = "labelmap"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_endpoints_label_settlemint_com_logging"]
+            target_label  = "settlemint_com_logging"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_endpoints_label_settlemint_com_hide_logs"]
+            target_label  = "settlemint_com_hide_logs"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_endpoints_label_settlemint_com_network_name"]
+            target_label  = "settlemint_com_network_name"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_endpoints_label_settlemint_com_application_slug"]
+            target_label  = "application_slug"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_endpoints_label_settlemint_com_workspace_slug"]
+            target_label  = "workspace_slug"
+          }
+
+           rule {
+            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_service_type"]
+            target_label  = "service_type"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            target_label  = "service"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_uid"
+            action      = "labeldrop"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_id"
+            action      = "labeldrop"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_name"
+            action      = "labeldrop"
+          }
+
+          rule {
+            replacement  = "{{ .Values.clustername | default "settlemint" }}"
+            target_label = "cluster_name"
+          }
+        }
+
+        prometheus.scrape "kubernetes_nodes_cadvisor" {
+          targets         = discovery.relabel.kubernetes_nodes_cadvisor.output
+          forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]
+          job_name        = "kubernetes-nodes-cadvisor"
+          scrape_interval = "15s"
+          scheme          = "https"
+
+          authorization {
+            type             = "Bearer"
+            credentials_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+          }
+
+          tls_config {
+            ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+            insecure_skip_verify = true
+          }
+        }
+
+        prometheus.scrape "kubernetes_nodes" {
+          targets         = discovery.relabel.kubernetes_nodes.output
+          forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]
+          job_name        = "kubernetes-nodes"
+          scrape_interval = "15s"
+          scheme          = "https"
+
+          authorization {
+            type             = "Bearer"
+            credentials_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+          }
+
+          tls_config {
+            ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+            insecure_skip_verify = true
+          }
+        }
+
+        {{- if .Values.endpoints.internal.prometheus.enabled }}
+        prometheus.remote_write "btp_metrics" {
+            endpoint {
+                url = {{ .Values.endpoints.internal.prometheus.url | quote }}
+            }
+        }
+        {{- end }}
+
+        {{- if .Values.endpoints.external.prometheus.enabled }}
+        prometheus.remote_write "btp_metrics_external" {
+            endpoint {
+                url = {{ .Values.endpoints.external.prometheus.url | quote }}
+
+                {{- if and .Values.endpoints.external.prometheus.basicAuth.username .Values.endpoints.external.prometheus.basicAuth.password }}
+                basic_auth {
+                  username = {{ .Values.endpoints.external.prometheus.basicAuth.username | quote }}
+                  password = {{ .Values.endpoints.external.prometheus.basicAuth.password | quote }}
+                }
+                {{- end }}
+            }
+        }
+        {{- end }}
+
+        discovery.kubernetes "kubernetes_pods" {
+          role = "pod"
+
+          selectors {
+            role  = "pod"
+            label = "kots.io/app-slug=settlemint-atk"
+          }
+        }
+
+        discovery.relabel "kubernetes_pods" {
+          targets = discovery.kubernetes.kubernetes_pods.targets
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_job_name"]
+            regex         = "repo-maintain-job.*"
+            action        = "drop"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_name"]
+            regex         = "node-agent"
+            action        = "drop"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape", "__meta_kubernetes_pod_annotation_loki_io_scrape"]
+            regex         = "true;.*|.*;true"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scheme"]
+            regex         = "(https?)"
+            target_label  = "__scheme__"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+            regex         = "(.+)"
+            target_label  = "__metrics_path__"
+          }
+
+          rule {
+            source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+            regex         = "(.+?)(?::\\d+)?;(\\d+)"
+            target_label  = "__address__"
+            replacement   = "$1:$2"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_annotation_prometheus_io_param_(.+)"
+            replacement = "__param_$1"
+            action      = "labelmap"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_logging"]
+            target_label  = "settlemint_com_logging"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_hide_logs"]
+            target_label  = "settlemint_com_hide_logs"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_network_name"]
+            target_label  = "settlemint_com_network_name"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_application_slug"]
+            target_label  = "application_slug"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_workspace_slug"]
+            target_label  = "workspace_slug"
+          }
+
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_component"]
+            target_label  = "component"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_service_type"]
+            target_label  = "service_type"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_uid"
+            action      = "labeldrop"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_id"
+            action      = "labeldrop"
+          }
+
+          rule {
+            regex       = "__meta_kubernetes_pod_label_name"
+            action      = "labeldrop"
+          }
+
+          rule {
+            replacement  = "{{ .Values.clustername | default "settlemint" }}"
+            target_label = "cluster_name"
+          }
+
+        }
+
+        prometheus.scrape "kubernetes_pods" {
+          targets         = discovery.relabel.kubernetes_pods.output
+          forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]
+          job_name        = "kubernetes-pods"
+          honor_labels    = true
+          scrape_interval = "15s"
+        }
+
+        loki.source.kubernetes "kubernetes_pods" {
+          targets    = discovery.relabel.kubernetes_pods.output
+          forward_to = [{{ if .Values.endpoints.internal.loki.enabled }}loki.process.redact_tokens.receiver{{ end }}{{ if .Values.endpoints.external.loki.enabled }}{{ if .Values.endpoints.internal.loki.enabled }},{{ end }}loki.process.redact_tokens_external.receiver{{ end }}]
+        }
+
+        {{- if .Values.endpoints.internal.loki.enabled }}
+        loki.process "redact_tokens" {
+          forward_to = [loki.secretfilter.secret_filter.receiver]
+          stage.replace {
+            expression = "(?i)sm_\\S+_[0-9a-zA-Z]{3}([0-9a-zA-Z]+)"
+            replace = "****"
+          }
+        }
+
+        loki.secretfilter "secret_filter" {
+          forward_to  = [loki.write.btp_logs.receiver]
+          redact_with = "<ALLOY-REDACTED-SECRET:$SECRET_NAME:$SECRET_HASH>"
+        }
+
+        loki.write "btp_logs" {
+          endpoint {
+            url = {{ .Values.endpoints.internal.loki.url | quote }}
+          }
+        }
+        {{- end }}
+
+        {{- if .Values.endpoints.external.loki.enabled }}
+        loki.process "redact_tokens_external" {
+          forward_to = [loki.secretfilter.secret_filter_external.receiver]
+          stage.replace {
+            expression = "(?i)sm_\\S+_[0-9a-zA-Z]{3}([0-9a-zA-Z]+)"
+            replace = "****"
+          }
+        }
+
+        loki.secretfilter "secret_filter_external" {
+          forward_to  = [loki.write.btp_logs_external.receiver]
+          redact_with = "<ALLOY-REDACTED-SECRET:$SECRET_NAME:$SECRET_HASH>"
+        }
+
+        loki.write "btp_logs_external" {
+          endpoint {
+            url = {{ .Values.endpoints.external.loki.url | quote }}
+
+            {{- if and .Values.endpoints.external.loki.basicAuth.username .Values.endpoints.external.loki.basicAuth.password }}
+            basic_auth {
+              username = {{ .Values.endpoints.external.loki.basicAuth.username | quote }}
+              password = {{ .Values.endpoints.external.loki.basicAuth.password | quote }}
+            }
+            {{- end }}
+          }
+        }
+        {{- end }}
+
+        otelcol.receiver.otlp "btp_traces" {
+          grpc {
+            endpoint = "0.0.0.0:4317"
+          }
+
+          http {
+            endpoint = "0.0.0.0:4318"
+          }
+
+          output {
+            traces  = [otelcol.processor.batch.btp_traces.input]
+          }
+        }
+
+        otelcol.processor.batch "btp_traces" {
+          send_batch_size = 16384
+          send_batch_max_size = 16384
+          timeout = "2s"
+
+          output {
+            traces  = [{{ if .Values.endpoints.internal.otel.enabled }}otelcol.exporter.otlphttp.btp_traces_internal.input{{ end }}{{ if .Values.endpoints.external.otel.enabled }}{{ if .Values.endpoints.internal.otel.enabled }},{{ end }}otelcol.exporter.otlphttp.btp_traces_external.input{{ end }}]
+          }
+        }
+
+        {{- if .Values.endpoints.internal.otel.enabled }}
+        otelcol.exporter.otlphttp "btp_traces_internal" {
+          client {
+            endpoint = {{ .Values.endpoints.internal.otel.url | quote }}
+            tls {
+              insecure             = true
+              insecure_skip_verify = true
+            }
+          }
+        }
+        {{- end }}
+
+        {{- if .Values.endpoints.external.otel.enabled }}
+        otelcol.exporter.otlp "btp_traces_external" {
+          client {
+            endpoint = {{ .Values.endpoints.external.otel.url | quote }}
+
+
+            {{- if and .Values.endpoints.external.otel.basicAuth.username .Values.endpoints.external.otel.basicAuth.password }}
+            auth     = otelcol.auth.basic.btp_traces_external.handler
+            {{- end }}
+          }
+        }
+
+        {{- if and .Values.endpoints.external.otel.basicAuth.username .Values.endpoints.external.otel.basicAuth.password }}
+        otelcol.auth.basic "btp_traces_external" {
+          username = {{ .Values.endpoints.external.otel.basicAuth.username | quote }}
+          password = {{ .Values.endpoints.external.otel.basicAuth.password | quote }}
+        }
+        {{- end }}
+
+        {{- end }}
+
+# https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+grafana:
+  enabled: false
+  fullnameOverride: grafana
+  global:
+    imageRegistry: docker.io
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  ingress:
+    enabled: false
+    ingressClassName: settlemint-nginx
+    hosts:
+      - grafana.settlemint.local
+  persistence:
+    enabled: false
+    size: 10Gi
+  initChownData:
+    enabled: false
+  admin:
+    existingSecret: observability-grafana
+    userKey: admin-user
+    passwordKey: admin-password
+  sidecar:
+    dashboards:
+      enabled: true
+      provider:
+        allowUiUpdates: true
+        foldersFromFilesStructure: true
+      folderAnnotation: grafana_folder
+      searchNamespace: ALL
+    datasources:
+      enabled: true
+      initDatasources: true
+    plugins:
+      enabled: true
+    alerts:
+      enabled: false
+      label: grafana_alert
+      searchNamespace: ALL
+      labelValue: "1"
+      slackUrl: ""
+      slackChannel: ""
+      slackUsername: ""
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          uid: prometheus
+          access: proxy
+          url: http://metrics:8428
+          isDefault: true
+          jsonData:
+            exemplarTraceIdDestinations:
+              - datasourceUid: tempo
+                name: traceID
+            httpMethod: POST
+            timeInterval: "2s"
+        - name: Loki
+          type: loki
+          uid: loki
+          access: proxy
+          url: http://logs:3100
+          isDefault: false
+          jsonData:
+            timeout: 60
+            maxLines: 1000
+            derivedFields:
+              - datasourceUid: tempo
+                matcherRegex: "^.*?traceI[d|D]=(\\w+).*$"
+                name: traceId
+                url: '$${__value.raw}'
+        - name: Tempo
+          type: tempo
+          uid: tempo
+          access: proxy
+          url: 'http://tempo:3100'
+          isDefault: false
+          jsonData:
+            tlsSkipVerify: true
+            nodeGraph:
+              enabled: true
+            serviceMap:
+              datasourceUid: prometheus
+            tracesToLogsV2:
+              datasourceUid: loki
+              spanStartTimeShift: 10m
+              spanEndTimeShift: -1h
+              tags: [{key: 'service.name', value: 'app'}]
+              filterByTraceID: true
+            lokiSearch:
+              datasourceUid: loki
+            search:
+              hide: false
+              filters: [{id: "service-name", scope: "resource", tag: "service.name", operator: "="}]
+  plugins:
+    - https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
+
+
+# https://github.com/grafana/helm-charts/blob/main/charts/tempo/values.yaml
+tempo:
+  enabled: false
+  fullnameOverride: tempo
+  tempo:
+    repository: docker.io/grafana/tempo
+    pullSecrets:
+      - image-pull-secret-docker
+      - image-pull-secret-ghcr
+      - image-pull-secret-harbor
+    reportingEnabled: false
+    retention: 168h
+    metricsGenerator:
+      enabled: true
+      remoteWriteUrl: http://metrics:8428/api/v1/write
+    global_overrides:
+      max_bytes_per_trace: 10000000
+      max_traces_per_user: 100000
+  tempoQuery:
+    repository: docker.io/grafana/tempo-query
+    pullSecrets:
+      - image-pull-secret-docker
+      - image-pull-secret-ghcr
+      - image-pull-secret-harbor
+  persistence:
+    enabled: true
+    size: 50Gi
+  securityContext:
+    runAsUser: 65532
+    runAsGroup: 65532
+    fsGroup: 65532
+    runAsNonRoot: true
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3100"
+    prometheus.io/path: /metrics
+  podLabels:
+    kots.io/app-slug: settlemint-atk
+
+# https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-node-exporter/values.yaml
+prometheus-node-exporter:
+  enabled: false
+  image:
+    registry: quay.io
+  kubeRBACProxy:
+    image:
+      registry: quay.io
+  global:
+    imageRegistry: quay.io
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  fullnameOverride: node-exporter
+  nameOverride: node-exporter
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9100"
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+  podLabels:
+    kots.io/app-slug: settlemint-atk
