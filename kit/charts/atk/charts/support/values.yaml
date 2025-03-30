@@ -10,10 +10,7 @@ postgresql-ha:
     maxConnections: 1000
     postgresConnectionLimit: 1000
     dbUserConnectionLimit: 1000
-    pullSecrets:
-     - image-pull-secret-docker
-     - image-pull-secret-ghcr
-     - image-pull-secret-harbor
+    pullSecrets: []
     initdbScripts:
       create_blockscout_db.sql: |
         CREATE DATABASE blockscout;
@@ -47,20 +44,14 @@ postgresql-ha:
     numInitChildren: 500
     logConnections: true
     resourcesPreset: large
-    pullSecrets:
-     - image-pull-secret-docker
-     - image-pull-secret-ghcr
-     - image-pull-secret-harbor
+    pullSecrets: []
 
 # https://github.com/stakater/Reloader/blob/master/deployments/kubernetes/chart/reloader/values.yaml
 reloader:
   enabled: true
   fullnameOverride: 'reloader'
   global:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+    imagePullSecrets: []
   reloader:
     autoReloadAll: true
     watchGlobally: false
@@ -95,19 +86,13 @@ redis:
   replica:
     replicaCount: 2
   global:
-    imagePullSecrets:
-      - image-pull-secret-docker
-      -  image-pull-secret-ghcr
-      - image-pull-secret-harbor
+    imagePullSecrets: []
 
 # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
 ingress-nginx:
   enabled: true
   fullnameOverride: 'ingress-nginx'
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+  imagePullSecrets: []
   defaultBackend:
     enabled: false
   controller:

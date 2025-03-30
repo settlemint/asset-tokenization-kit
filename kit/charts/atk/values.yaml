@@ -165,21 +165,162 @@ affinity: {}
 
 besu-network:
   enabled: true
+  besu-validator-1:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  besu-validator-2:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  besu-validator-3:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  besu-validator-4:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  besu-rpc-1:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  besu-rpc-2:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
 
 erpc:
   enabled: true
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
 
 blockscout:
   enabled: true
+  blockscout-stack:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
 
 thegraph:
   enabled: true
+  graph-node:
+    graphNodeDefaults:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
 
 hasura:
   enabled: true
+  graphql-engine:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
 
 support:
   enabled: true
+  postgresql-ha:
+    postgresql:
+      pullSecrets:
+        - image-pull-secret-docker
+        - image-pull-secret-ghcr
+        - image-pull-secret-harbor
+    pgpool:
+      pullSecrets:
+        - image-pull-secret-docker
+        - image-pull-secret-ghcr
+        - image-pull-secret-harbor
+
+  reloader:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+
+  redis:
+    global:
+      imagePullSecrets:
+        - image-pull-secret-docker
+        - image-pull-secret-ghcr
+        - image-pull-secret-harbor
+
+  ingress-nginx:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
 
 observability:
   enabled: true
+  metrics-server:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  kube-state-metrics:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  victoria-metrics-single:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  loki:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  alloy:
+    global:
+      image:
+        pullSecrets:
+          - name: image-pull-secret-docker
+          - name: image-pull-secret-ghcr
+          - name: image-pull-secret-harbor
+  alertmanager:
+    alertmanager:
+      global:
+        imagePullSecrets:
+          - name: image-pull-secret-docker
+          - name: image-pull-secret-ghcr
+          - name: image-pull-secret-harbor
+  prometheus-stack:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  grafana:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  tempo:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  promtail:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor

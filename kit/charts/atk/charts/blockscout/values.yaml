@@ -1,10 +1,7 @@
 # https://github.com/blockscout/helm-charts/blob/main/charts/blockscout-stack/values.yaml
 blockscout-stack:
   fullnameOverride: blockscout
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+  imagePullSecrets: []
   config:
     prometheus:
       enabled: false

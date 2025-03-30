@@ -1,10 +1,7 @@
 # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
 metrics-server:
   enabled: false
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+  imagePullSecrets: []
   image:
     repository: registry.k8s.io/metrics-server/metrics-server
   fullnameOverride: metrics-server
@@ -20,10 +17,7 @@ metrics-server:
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
 kube-state-metrics:
   enabled: false
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+  imagePullSecrets: []
   image:
     registry: registry.k8s.io
   fullnameOverride: kube-state-metrics
@@ -41,10 +35,7 @@ victoria-metrics-single:
   global:
     image:
       registry: docker.io
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+    imagePullSecrets: []
   server:
     extraArgs:
       search.maxQueryLen: 163840
@@ -90,10 +81,7 @@ victoria-metrics-single:
 # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
 loki:
   enabled: false
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+  imagePullSecrets: []
   fullnameOverride: logs
   global:
     image:
@@ -783,10 +771,7 @@ grafana:
   fullnameOverride: grafana
   global:
     imageRegistry: docker.io
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+    imagePullSecrets: []
   ingress:
     enabled: false
     ingressClassName: settlemint-nginx
@@ -928,16 +913,10 @@ prometheus-node-exporter:
       registry: quay.io
   global:
     imageRegistry: quay.io
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+    imagePullSecrets: []
   fullnameOverride: node-exporter
   nameOverride: node-exporter
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+  imagePullSecrets: []
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "9100"

@@ -19,10 +19,7 @@ graphql-engine:
     - name: HASURA_GRAPHQL_PG_CONNECTIONS
       value: "10"
   global:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+    imagePullSecrets: []
   postgres:
     name: postgresql-pgpool
     auth:

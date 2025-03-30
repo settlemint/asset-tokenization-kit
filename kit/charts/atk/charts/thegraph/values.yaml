@@ -5,10 +5,7 @@ graph-node:
     PGUSER: thegraph
     PGPASSWORD: atk
   graphNodeDefaults:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
+    imagePullSecrets: []
     extraInitContainers:
       - name: wait-for-postgresql
         image: ghcr.io/settlemint/btp-waitforit:v7.7.2
