@@ -18,6 +18,7 @@ imagePullSecrets:
   - name: image-pull-secret-docker
   - name: image-pull-secret-ghcr
   - name: image-pull-secret-harbor
+
 # This is to override the chart name.
 nameOverride: ""
 fullnameOverride: ""

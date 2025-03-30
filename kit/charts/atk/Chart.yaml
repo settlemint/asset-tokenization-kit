@@ -9,44 +9,15 @@ dependencies:
   - name: support
     version: "*"
     condition: support.enabled
-  - name: besu-genesis
+  - name: besu-network
     version: "*"
-  - name: besu-node
-    alias: besu-validator-1
-    version: "*"
-    condition: besu-validator-1.enabled
-  - name: besu-node
-    alias: besu-validator-2
-    version: "*"
-    condition: besu-validator-2.enabled
-  - name: besu-node
-    alias: besu-validator-3
-    version: "*"
-    condition: besu-validator-3.enabled
-  - name: besu-node
-    alias: besu-validator-4
-    version: "*"
-    condition: besu-validator-4.enabled
-  - name: besu-node
-    alias: besu-rpc-1
-    version: "*"
-    condition: besu-rpc-1.enabled
-  - name: besu-node
-    alias: besu-rpc-2
-    version: "*"
-    condition: besu-rpc-2.enabled
+    condition: besu-network.enabled
   - name: erpc
     version: "*"
     condition: erpc.enabled
-  - name: blockscout-stack
-    version: "2.0.3"
-    repository: https://blockscout.github.io/helm-charts
-    condition: blockscout-stack.enabled
-  - name: graph-node
-    version: 0.5.9
-    repository: http://graphops.github.io/launchpad-charts
-    condition: graph-node.enabled
-  - name: graphql-engine
-    version: 0.8.0
-    repository: https://hasura.github.io/helm-charts
-    condition: graphql-engine.enabled
+  - name: blockscout
+    version: "*"
+    condition: blockscout.enabled
+  - name: thegraph
+    version: "*"
+    condition: thegraph.enabled

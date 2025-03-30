@@ -1,0 +1,99 @@
+# https://github.com/graphops/launchpad-charts/blob/main/charts/graph-node/values.yaml
+graph-node:
+  fullnameOverride: graph-node
+  customSecret:
+    PGUSER: thegraph
+    PGPASSWORD: atk
+  graphNodeDefaults:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    extraInitContainers:
+      - name: wait-for-postgresql
+        image: ghcr.io/settlemint/btp-waitforit:v7.7.2
+        command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
+    affinityPresets:
+      # -- Create anti-affinity rule to deter scheduling replicas on the same host
+      antiAffinityByHostname: false
+    # -- Environment variable defaults for all Graph Node groups
+    env:
+      # -- Hostname of the primary shard PostgreSQL server
+      PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql-pgpool
+      # -- Port for the primary shard PostgreSQL server
+      PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
+      # -- Name of the primary shard database to use
+      PRIMARY_SUBGRAPH_DATA_PGDATABASE: "thegraph"
+      # -- The URL for your IPFS node
+      IPFS: "https://ipfs.console.settlemint.com"
+    secretEnv:
+      PRIMARY_SUBGRAPH_DATA_PGUSER:
+        # -- Name of the secret that contains your PG username
+        secretName: thegraph-pg-secret
+        # -- Name of the data key in the secret that contains your PG username
+        key: PGUSER
+      PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
+        # -- Name of the secret that contains your PG password
+        secretName: thegraph-pg-secret
+        # -- Name of the data key in the secret that contains your PG password
+        key: PGPASSWORD
+  graphNodeGroups:
+    query:
+      enabled: true
+      replicaCount: 2
+      env:
+        node_role: query-node # this key must be lowercase
+
+  # -- Blockchain configuration for Graph Node
+  chains:
+    # -- Ethereum Mainnet
+    settlemint:
+      # -- Enable this configuring graph-node with this chain
+      enabled: true
+      # -- The database shard to use for this chain
+      shard: primary
+      ## -- A list of JSON-RPC endpoints for this node (you should override this list with your own configuration)
+      provider:
+        -
+          # -- Label for a JSON-RPC endpoint
+          label: erpc
+          details:
+            # -- Type of Provider: web3
+            type: web3
+            # -- URL for JSON-RPC endpoint
+            url: http://besu-loadbalancer:4000
+            # -- Data capabilities this node has
+            features: [archive, traces]
+  ingress:
+    enabled: true
+    className: "settlemint-nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: 'true'
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    hosts:
+      - host: thegraph.k8s.orb.local
+        paths:
+          - path: /(.*)
+            pathType: ImplementationSpecific
+            port: 8000
+            serviceName: graph-node-query
+          - path: /ws/?(.*)
+            pathType: ImplementationSpecific
+            port: 8001
+            serviceName: graph-node-query
+          - path: /admin/?(.*)
+            pathType: ImplementationSpecific
+            port: 8020
+            serviceName: graph-node-query
+          - path: /indexer/?(.*)
+            pathType: ImplementationSpecific
+            port: 8030
+            serviceName: graph-node-index
+          - path: /graphman/?(.*)
+            pathType: ImplementationSpecific
+            port: 8050
+            serviceName: graph-node-index
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
