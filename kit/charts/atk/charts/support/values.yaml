@@ -47,37 +47,6 @@ postgresql-ha:
     resourcesPreset: none
     pullSecrets: []
 
-# https://github.com/stakater/Reloader/blob/master/deployments/kubernetes/chart/reloader/values.yaml
-reloader:
-  enabled: true
-  fullnameOverride: 'reloader'
-  global:
-    imagePullSecrets: []
-  reloader:
-    autoReloadAll: true
-    watchGlobally: false
-    readOnlyRootFileSystem: true
-    reloadOnCreate: true
-    syncAfterRestart: true
-    securityContext:
-      # -- Specifies the security capabilities for the container. Here, all capabilities are dropped.
-      capabilities:
-        drop:
-          - ALL
-      # -- If true, the root filesystem of the container is read-only.
-      readOnlyRootFilesystem: false
-      # -- Ensures the container runs as a non-root user.
-      runAsNonRoot: true
-      # -- The user ID to run the container as. Change this for OpenShift or specific requirements.
-      runAsUser: 2016
-      allowPrivilegeEscalation: false
-    containerSecurityContext:
-      capabilities:
-        drop:
-          - ALL
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
-
 # https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
 redis:
   enabled: true
