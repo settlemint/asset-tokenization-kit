@@ -765,10 +765,10 @@ grafana:
     imageRegistry: docker.io
     imagePullSecrets: []
   ingress:
-    enabled: false
+    enabled: true
     ingressClassName: settlemint-nginx
     hosts:
-      - grafana.settlemint.local
+      - grafana.k8s.orb.local
   persistence:
     enabled: false
     size: 10Gi

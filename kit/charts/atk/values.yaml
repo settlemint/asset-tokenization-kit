@@ -316,14 +316,6 @@ support:
         - image-pull-secret-harbor
       resources: {}
 
-  # https://github.com/stakater/Reloader/blob/master/deployments/kubernetes/chart/reloader/values.yaml
-  reloader:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-
   # https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
   redis:
     global:
@@ -425,6 +417,11 @@ observability:
         - name: image-pull-secret-docker
         - name: image-pull-secret-ghcr
         - name: image-pull-secret-harbor
+    ingress:
+      hosts:
+        - grafana.k8s.orb.local
+    adminUser: settlemint
+    adminPassword: atk
   tempo:
     global:
       imagePullSecrets:
