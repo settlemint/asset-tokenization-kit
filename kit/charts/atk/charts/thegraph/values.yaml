@@ -68,7 +68,7 @@ graph-node:
       nginx.ingress.kubernetes.io/use-regex: 'true'
       nginx.ingress.kubernetes.io/rewrite-target: /$1
     hosts:
-      - host: thegraph.k8s.orb.local
+      - host: graph.k8s.orb.local
         paths:
           - path: /(.*)
             pathType: ImplementationSpecific

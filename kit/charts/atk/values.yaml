@@ -226,6 +226,15 @@ erpc:
     - name: image-pull-secret-docker
     - name: image-pull-secret-ghcr
     - name: image-pull-secret-harbor
+  ingress:
+    enabled: true
+    className: "settlemint-nginx"
+    hosts:
+      - host: rpc.k8s.orb.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
 
 blockscout:
   enabled: true
@@ -234,6 +243,16 @@ blockscout:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    blockscout:
+      ingress:
+        hostname: explorer.k8s.orb.local
+      resources: {}
+      env:
+        API_URL: https://explorer.k8s.orb.local
+        WEBAPP_URL: https://explorer.k8s.orb.local
+    frontend:
+      ingress:
+        hostname: explorer.k8s.orb.local
 
 thegraph:
   enabled: true
@@ -243,6 +262,30 @@ thegraph:
         - name: image-pull-secret-docker
         - name: image-pull-secret-ghcr
         - name: image-pull-secret-harbor
+    ingress:
+      hosts:
+        - host: graph.k8s.orb.local
+          paths:
+            - path: /(.*)
+              pathType: ImplementationSpecific
+              port: 8000
+              serviceName: graph-node-query
+            - path: /ws/?(.*)
+              pathType: ImplementationSpecific
+              port: 8001
+              serviceName: graph-node-query
+            - path: /admin/?(.*)
+              pathType: ImplementationSpecific
+              port: 8020
+              serviceName: graph-node-query
+            - path: /indexer/?(.*)
+              pathType: ImplementationSpecific
+              port: 8030
+              serviceName: graph-node-index
+            - path: /graphman/?(.*)
+              pathType: ImplementationSpecific
+              port: 8050
+              serviceName: graph-node-index
 
 hasura:
   enabled: true
@@ -252,6 +295,8 @@ hasura:
         - name: image-pull-secret-docker
         - name: image-pull-secret-ghcr
         - name: image-pull-secret-harbor
+    ingress:
+      hostName: "hasura.k8s.orb.local"
 
 support:
   enabled: true
