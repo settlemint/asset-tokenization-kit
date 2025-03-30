@@ -11,6 +11,7 @@ postgresql-ha:
     postgresConnectionLimit: 1000
     dbUserConnectionLimit: 1000
     pullSecrets: []
+    resourcesPreset: none
     initdbScripts:
       create_blockscout_db.sql: |
         CREATE DATABASE blockscout;
@@ -43,7 +44,7 @@ postgresql-ha:
     maxPool: 500
     numInitChildren: 500
     logConnections: true
-    resourcesPreset: large
+    resourcesPreset: none
     pullSecrets: []
 
 # https://github.com/stakater/Reloader/blob/master/deployments/kubernetes/chart/reloader/values.yaml
@@ -83,8 +84,11 @@ redis:
   fullnameOverride: redis
   auth:
     password: "atk"
+  master:
+    resourcesPreset: "none"
   replica:
-    replicaCount: 2
+    replicaCount: 1
+    resourcesPreset: "none"
   global:
     imagePullSecrets: []
 
@@ -102,7 +106,7 @@ ingress-nginx:
       enabled: false
     replicaCount: 2
     autoscaling:
-      enabled: true
+      enabled: false
       minReplicas: 2
       maxReplicas: 10
       targetCPUUtilizationPercentage: 80
@@ -125,10 +129,7 @@ ingress-nginx:
       rollingUpdate:
         maxSurge: "100%"
         maxUnavailable: "0%"
-    resources:
-      requests:
-        cpu: 250m
-        memory: 768Mi
+    resources: {}
     podLabels:
       kots.io/app-slug: settlemint-platform
     podAnnotations:

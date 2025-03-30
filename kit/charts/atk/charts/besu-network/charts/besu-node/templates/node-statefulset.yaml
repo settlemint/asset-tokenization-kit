@@ -88,13 +88,10 @@ spec:
       - name: {{ .Release.Name }}-tessera
         image: {{ .Values.image.tessera.repository }}:{{ .Values.image.tessera.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
+        {{- with .Values.node.tessera.resources }}
         resources:
-          requests:
-            cpu: "{{ .Values.node.tessera.resources.cpuRequest }}"
-            memory: "{{ .Values.node.tessera.resources.memRequest }}"
-          limits:
-            cpu: "{{ .Values.node.tessera.resources.cpuLimit }}"
-            memory: "{{ .Values.node.tessera.resources.memLimit }}"
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: POD_IP
             valueFrom:
@@ -200,13 +197,10 @@ spec:
       - name: {{ .Release.Name }}-besu
         image: {{ .Values.image.besu.repository }}:{{ .Values.image.besu.tag }}
         imagePullPolicy: {{ .Values.image.besu.pullPolicy }}
+        {{- with .Values.node.besu.resources }}
         resources:
-          requests:
-            cpu: "{{ .Values.node.besu.resources.cpuRequest }}"
-            memory: "{{ .Values.node.besu.resources.memRequest }}"
-          limits:
-            cpu: "{{ .Values.node.besu.resources.cpuLimit }}"
-            memory: "{{ .Values.node.besu.resources.memLimit }}"
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: POD_IP
             valueFrom:

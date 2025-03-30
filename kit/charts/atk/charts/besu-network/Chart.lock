@@ -20,5 +20,5 @@ dependencies:
 - name: besu-node
   repository: ""
   version: '*'
-digest: sha256:b46496d01aad3385da2bfac0c217b160760414b55fd950beb358d8b92c9d56fd
-generated: "2025-03-30T08:42:05.39574+02:00"
+digest: sha256:e336443604043037bcc80fc8df203c486e71dba3857ab1aaa87ed125a2045014
+generated: "2025-03-30T14:21:07.504214+02:00"

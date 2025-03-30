@@ -50,11 +50,7 @@ volumePermissionsFix:
 node:
   besu:
     envBesuOpts: ""
-    resources:
-      cpuLimit: 0.7
-      cpuRequest: 0.5
-      memLimit: "2G"
-      memRequest: "1G"
+    resources: {}
     # privKey:
     # pubKey:
     dataPath: "/data/besu"

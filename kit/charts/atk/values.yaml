@@ -170,31 +170,55 @@ besu-network:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
   besu-validator-2:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
   besu-validator-3:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
   besu-validator-4:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
   besu-rpc-1:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
   besu-rpc-2:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
 
 erpc:
   enabled: true
@@ -231,18 +255,23 @@ hasura:
 
 support:
   enabled: true
+
+  # https://github.com/bitnami/charts/blob/main/bitnami/postgresql-ha/values.yaml
   postgresql-ha:
     postgresql:
       pullSecrets:
         - image-pull-secret-docker
         - image-pull-secret-ghcr
         - image-pull-secret-harbor
+      resources: {}
     pgpool:
       pullSecrets:
         - image-pull-secret-docker
         - image-pull-secret-ghcr
         - image-pull-secret-harbor
+      resources: {}
 
+  # https://github.com/stakater/Reloader/blob/master/deployments/kubernetes/chart/reloader/values.yaml
   reloader:
     global:
       imagePullSecrets:
@@ -250,42 +279,78 @@ support:
         - name: image-pull-secret-ghcr
         - name: image-pull-secret-harbor
 
+  # https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
   redis:
     global:
       imagePullSecrets:
         - image-pull-secret-docker
         - image-pull-secret-ghcr
         - image-pull-secret-harbor
+    master:
+      resources: {}
+    replica:
+      resources: {}
 
+  # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   ingress-nginx:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    controller:
+      resources: {}
 
 observability:
   enabled: true
+
+  # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
   metrics-server:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+
+  # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
   kube-state-metrics:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    resources: {}
+
+  # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
   victoria-metrics-single:
     global:
       imagePullSecrets:
         - name: image-pull-secret-docker
         - name: image-pull-secret-ghcr
         - name: image-pull-secret-harbor
+    server:
+      persistentVolume:
+        storageClass: ""
+        size: 10Gi
+      resources: {}
+
+  # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   loki:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+  singleBinary:
+    persistence:
+      size: 10Gi
+    resources: {}
+    extraEnv: {}
+      # Keep a little bit lower than memory limits
+      # - name: GOMEMLIMIT
+      #   value: 3750MiB
+
+  # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
   alloy:
     global:
       image:
@@ -293,6 +358,9 @@ observability:
           - name: image-pull-secret-docker
           - name: image-pull-secret-ghcr
           - name: image-pull-secret-harbor
+    alloy:
+      resources: {}
+
   alertmanager:
     alertmanager:
       global:

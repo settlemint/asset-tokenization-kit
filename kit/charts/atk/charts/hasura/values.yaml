@@ -7,7 +7,7 @@ graphql-engine:
     ingressClassName: "settlemint-nginx"
     hostName: "hasura.k8s.orb.local"
   config:
-    metadataOnly: false
+    metadataOnly: true
     enableInternalConsoleAssets: true
     devMode: true
   secret:
@@ -15,14 +15,14 @@ graphql-engine:
     adminSecret: "atk"
     redisUrl: "redis://redis-master:6379"
     rateLimitRedisUrl: "redis://redis-master:6379"
+    metadataDbUrl: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
   extraEnvs:
     - name: HASURA_GRAPHQL_PG_CONNECTIONS
       value: "10"
+  extraSecrets:
+    - name: HASURA_GRAPHQL_DATABASE_URL
+      value: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
   global:
     imagePullSecrets: []
   postgres:
-    name: postgresql-pgpool
-    auth:
-      username: hasura
-      password: "atk"
-      database: hasura
+    enabled: false

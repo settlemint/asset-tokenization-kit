@@ -43,11 +43,8 @@ victoria-metrics-single:
     retentionPeriod: 1
     persistentVolume:
       storageClass: ""
-      size: 50Gi
-    resources:
-      requests:
-        cpu: 500m
-        memory: 512Mi
+      size: 10Gi
+    resources: {}
     ingress:
       enabled: false
       annotations:
@@ -92,6 +89,8 @@ loki:
   memcachedExporter:
     image:
       repository: docker.io/prom/memcached-exporter
+  resultsCache:
+    enabled: false
   loki:
     auth_enabled: false
     commonConfig:
@@ -145,7 +144,6 @@ loki:
       delete_request_store: filesystem
     pattern_receiver:
       enabled: true
-
   gateway:
     affinity:
       podAntiAffinity:
@@ -172,19 +170,14 @@ loki:
     persistence:
       size: 50Gi
     replicas: 1
-    resources:
-      limits:
-        cpu: 3
-        memory: 4Gi
-      requests:
-        cpu: 1
-        memory: "512Mi"
-    extraEnv:
-      # Keep a little bit lower than memory limits
-      - name: GOMEMLIMIT
-        value: 3750MiB
+    resources: {}
+    # extraEnv:
+    #   # Keep a little bit lower than memory limits
+    #   - name: GOMEMLIMIT
+    #     value: 3750MiB
 
   chunksCache:
+    enabled: false
     # default is 500MB, with limited memory keep this smaller
     writebackSizeLimit: 100MB
     allocatedMemory: 1024
@@ -287,10 +280,7 @@ alloy:
         port: 4318
         targetPort: 4318
         protocol: "TCP"
-    resources:
-      requests:
-        cpu: "250m"
-        memory: "512Mi"
+    resources: {}
     enableReporting: false
     configMap:
       content: |
@@ -769,6 +759,8 @@ alloy:
 grafana:
   enabled: false
   fullnameOverride: grafana
+  adminUser: settlemint
+  adminPassword: atk
   global:
     imageRegistry: docker.io
     imagePullSecrets: []
@@ -782,10 +774,6 @@ grafana:
     size: 10Gi
   initChownData:
     enabled: false
-  admin:
-    existingSecret: observability-grafana
-    userKey: admin-user
-    passwordKey: admin-password
   sidecar:
     dashboards:
       enabled: true
@@ -817,12 +805,6 @@ grafana:
           access: proxy
           url: http://metrics:8428
           isDefault: true
-          jsonData:
-            exemplarTraceIdDestinations:
-              - datasourceUid: tempo
-                name: traceID
-            httpMethod: POST
-            timeInterval: "2s"
         - name: Loki
           type: loki
           uid: loki
@@ -837,71 +819,9 @@ grafana:
                 matcherRegex: "^.*?traceI[d|D]=(\\w+).*$"
                 name: traceId
                 url: '$${__value.raw}'
-        - name: Tempo
-          type: tempo
-          uid: tempo
-          access: proxy
-          url: 'http://tempo:3100'
-          isDefault: false
-          jsonData:
-            tlsSkipVerify: true
-            nodeGraph:
-              enabled: true
-            serviceMap:
-              datasourceUid: prometheus
-            tracesToLogsV2:
-              datasourceUid: loki
-              spanStartTimeShift: 10m
-              spanEndTimeShift: -1h
-              tags: [{key: 'service.name', value: 'app'}]
-              filterByTraceID: true
-            lokiSearch:
-              datasourceUid: loki
-            search:
-              hide: false
-              filters: [{id: "service-name", scope: "resource", tag: "service.name", operator: "="}]
   plugins:
     - https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
 
-
-# https://github.com/grafana/helm-charts/blob/main/charts/tempo/values.yaml
-tempo:
-  enabled: false
-  fullnameOverride: tempo
-  tempo:
-    repository: docker.io/grafana/tempo
-    pullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor
-    reportingEnabled: false
-    retention: 168h
-    metricsGenerator:
-      enabled: true
-      remoteWriteUrl: http://metrics:8428/api/v1/write
-    global_overrides:
-      max_bytes_per_trace: 10000000
-      max_traces_per_user: 100000
-  tempoQuery:
-    repository: docker.io/grafana/tempo-query
-    pullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor
-  persistence:
-    enabled: true
-    size: 50Gi
-  securityContext:
-    runAsUser: 65532
-    runAsGroup: 65532
-    fsGroup: 65532
-    runAsNonRoot: true
-  podAnnotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "3100"
-    prometheus.io/path: /metrics
-  podLabels:
-    kots.io/app-slug: settlemint-atk
 
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-node-exporter/values.yaml
 prometheus-node-exporter:
