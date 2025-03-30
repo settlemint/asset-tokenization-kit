@@ -1,0 +1,14 @@
+{{- range $path, $_ := .Files.Glob "abis/*.json" }}
+{{- $filename := base $path }}
+{{- $pathParts := splitList "/" $path }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "portal.fullname" $ }}-{{ $filename | trimSuffix ".json" | lower | replace "_" "-" }}
+  labels:
+    {{- include "portal.labels" $ | nindent 4 }}
+data:
+  {{ $filename }}: |
+{{ $.Files.Get $path | indent 4 }}
+---
+{{- end }}

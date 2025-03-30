@@ -28,3 +28,6 @@ dependencies:
   - name: thegraph
     version: "*"
     condition: thegraph.enabled
+  - name: portal
+    version: "*"
+    condition: portal.enabled

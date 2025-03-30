@@ -42,3 +42,4 @@ yarn-error.log*
 .specstory
 bun.lockb
 kit/charts/**/*.tgz
+kit/charts/atk/charts/portal/abis/**

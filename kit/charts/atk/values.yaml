@@ -298,6 +298,9 @@ hasura:
     ingress:
       hostName: "hasura.k8s.orb.local"
 
+portal:
+  enabled: true
+
 support:
   enabled: true
 

@@ -13,8 +13,8 @@ graphql-engine:
   secret:
     enabled: true
     adminSecret: "atk"
-    redisUrl: "redis://redis-master:6379"
-    rateLimitRedisUrl: "redis://redis-master:6379"
+    redisUrl: "redis://default:atk@redis-master:6379"
+    rateLimitRedisUrl: "redis://default:atk@redis-master:6379"
     metadataDbUrl: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
   extraEnvs:
     - name: HASURA_GRAPHQL_PG_CONNECTIONS
