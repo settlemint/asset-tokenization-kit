@@ -159,8 +159,8 @@ contract DepositFactoryTest is Test {
         // Updated to match the actual number of events emitted
         assertEq(
             entries.length,
-            5,
-            "Should emit 5 events: UserAllowed, RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and DepositCreated"
+            6,
+            "Should emit 6 events: UserAllowed, RoleGranted (admin), RoleGranted (supply), RoleGranted (user), RoleGranted (auditor), and DepositCreated"
         );
 
         // First event should be UserAllowed for the owner
