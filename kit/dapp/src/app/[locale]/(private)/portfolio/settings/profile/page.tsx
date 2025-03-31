@@ -52,13 +52,15 @@ export default async function SecuritySettingsPage() {
           }}
         />
       </div>
-      <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="mb-4 grid grid-cols-1 gap-4">
         <ChangePasswordCard
           classNames={{
             footer:
               "p-6 py-4 md:py-3 grid grid-cols-2 gap-4 bg-transparent border-none [&>*:first-child]:justify-self-start [&>*:last-child]:justify-self-end",
           }}
         />
+      </div>
+      <div className="mb-4 grid grid-cols-1 gap-4">
         <TwoFactorCard />
       </div>
       <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">

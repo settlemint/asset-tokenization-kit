@@ -45,18 +45,13 @@ export function WithdrawSchema({
       underlyingAssetType: t.AssetType({
         description: "The type of the underlying asset",
       }),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
       }),
-      target: t.Union(
-        [
-          t.Literal("bond"),
-          t.Literal("yield"),
-        ],
-        {
-          description: "The target type (bond or yield)",
-        }
-      ),
+      target: t.Union([t.Literal("bond"), t.Literal("yield")], {
+        description: "The target type (bond or yield)",
+      }),
     },
     {
       description:

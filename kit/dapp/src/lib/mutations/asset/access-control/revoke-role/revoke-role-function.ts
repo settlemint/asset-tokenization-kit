@@ -134,7 +134,7 @@ export const revokeRoleFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, roles, userAddress, pincode, assettype },
+    parsedInput: { address, roles, userAddress, verificationCode, assettype },
     ctx: { user },
   }: {
     parsedInput: RevokeRoleInput;
@@ -148,7 +148,7 @@ export const revokeRoleFunction = withAccessControl(
           role: getRoleIdentifier(role),
           account: userAddress,
         },
-        challengeResponse: await handleChallenge(user.wallet, pincode),
+        challengeResponse: await handleChallenge(user.wallet, verificationCode),
       };
 
       switch (assettype) {

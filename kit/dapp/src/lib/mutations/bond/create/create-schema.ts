@@ -1,4 +1,4 @@
-import { AssetAdminsSchemaFragment } from '@/lib/mutations/common/asset-admins-schema';
+import { AssetAdminsSchemaFragment } from "@/lib/mutations/common/asset-admins-schema";
 import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 import { addHours, isFuture } from "date-fns";
@@ -46,8 +46,9 @@ export function CreateBondSchema({
           description: "International Securities Identification Number",
         })
       ),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
       }),
       cap: t.Amount(maxCap, minCap, decimals, {
         description: "Maximum issuance amount",

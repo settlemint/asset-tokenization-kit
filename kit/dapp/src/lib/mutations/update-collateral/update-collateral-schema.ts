@@ -25,8 +25,9 @@ export function UpdateCollateralSchema({
       amount: t.Amount(maxAmount, minAmount, decimals, {
         description: "The new collateral amount",
       }),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
       }),
       assettype: t.AssetType({
         description: "The type of asset (only stablecoin or tokenizeddeposit)",

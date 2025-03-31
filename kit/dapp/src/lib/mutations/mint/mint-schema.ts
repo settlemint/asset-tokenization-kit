@@ -29,8 +29,9 @@ export function MintSchema({
       to: t.EthereumAddress({
         description: "The recipient address",
       }),
-      pincode: t.Pincode({
-        description: "User's pincode for authentication",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
       }),
       assettype: t.AssetType({
         description: "The type of asset",

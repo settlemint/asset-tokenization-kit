@@ -172,7 +172,7 @@ export const withdrawFunction = withAccessControl(
       assettype,
       target,
       targetAddress,
-      pincode,
+      verificationCode,
       amount,
       to,
       underlyingAssetAddress,
@@ -200,7 +200,7 @@ export const withdrawFunction = withAccessControl(
       address: targetAddress,
       from: user.wallet,
       input: tokenInput,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(user.wallet, verificationCode),
     };
 
     switch (assettype) {
@@ -232,7 +232,10 @@ export const withdrawFunction = withAccessControl(
                 to,
                 amount: bondFormattedAmount,
               },
-              challengeResponse: await handleChallenge(user.wallet, pincode),
+              challengeResponse: await handleChallenge(
+                user.wallet,
+                verificationCode
+              ),
             }
           );
 
@@ -253,7 +256,10 @@ export const withdrawFunction = withAccessControl(
                 to,
                 amount: bondFormattedAmount,
               },
-              challengeResponse: await handleChallenge(user.wallet, pincode),
+              challengeResponse: await handleChallenge(
+                user.wallet,
+                verificationCode
+              ),
             }
           );
 

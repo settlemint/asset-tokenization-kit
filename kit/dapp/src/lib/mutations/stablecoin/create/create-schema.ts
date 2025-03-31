@@ -42,9 +42,6 @@ export function CreateStablecoinSchema() {
           description:
             "The two factor code or pincode for signing the transaction",
         }),
-        verificationMethod: t.VerificationMethod({
-          description: "The method used to verify the transaction",
-        }),
         predictedAddress: t.EthereumAddress({
           description: "The predicted contract address",
           refine: isAddressAvailable,

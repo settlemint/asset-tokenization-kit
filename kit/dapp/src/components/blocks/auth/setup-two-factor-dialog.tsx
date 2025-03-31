@@ -79,11 +79,12 @@ export function SetupTwoFactorDialog({
           })
         );
       } else {
-        setFirstOtp("");
-        onOpenChange(false);
         toast.success(t("enable.success-message"));
         if (refreshOnSuccess) {
           router.refresh();
+        } else {
+          setFirstOtp("");
+          onOpenChange(false);
         }
       }
     } catch (error) {

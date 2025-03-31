@@ -32,8 +32,9 @@ export function CreateCryptoCurrencySchema({
       decimals: t.Decimals({
         description: "The number of decimal places for the token",
       }),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
       }),
       initialSupply: t.Amount(maxInitialSupply, 0, decimals, {
         description: "Initial supply of tokens",

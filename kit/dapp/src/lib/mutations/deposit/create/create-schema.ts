@@ -34,8 +34,9 @@ export function CreateDepositSchema() {
             "Optional International Securities Identification Number",
         })
       ),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
       }),
       collateralLivenessValue: t.Number({
         description: "The value for collateral liveness period",

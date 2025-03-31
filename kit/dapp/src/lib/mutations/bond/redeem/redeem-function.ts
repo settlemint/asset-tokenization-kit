@@ -40,7 +40,7 @@ export const redeemFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, pincode, amount },
+    parsedInput: { address, verificationCode, amount },
     ctx: { user },
   }: {
     parsedInput: RedeemBondInput;
@@ -54,7 +54,7 @@ export const redeemFunction = withAccessControl(
       input: {
         amount: parseUnits(amount.toString(), decimals).toString(),
       },
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(user.wallet, verificationCode),
     });
 
     return safeParse(t.Hashes(), [response.BondRedeem?.transactionHash]);

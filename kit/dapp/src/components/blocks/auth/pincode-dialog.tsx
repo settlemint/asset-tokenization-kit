@@ -29,7 +29,6 @@ export function PincodeDialog({ open, onOpenChange }: PincodeDialogProps) {
         pincode: data.pincode,
       });
       toast.success(t("pincode-set"));
-      onOpenChange(false);
       router.refresh();
     } catch (error) {
       console.error("Failed to set pincode:", error);

@@ -20,8 +20,8 @@ export const RevokeRoleSchema = () =>
     userAddress: t.EthereumAddress({
       description: "The address of the user to revoke roles from",
     }),
-    pincode: t.Pincode({
-      description: "The pincode for signing the transaction",
+    verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+      description: "The two factor code or pincode for signing the transaction",
     }),
     assettype: t.AssetType({
       description: "The type of asset",

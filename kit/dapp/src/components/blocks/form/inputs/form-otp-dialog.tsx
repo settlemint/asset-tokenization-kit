@@ -13,19 +13,18 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { InputOTP } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/client";
-import type { VerificationMethod } from "@/lib/utils/typebox/verification-method";
 import { useTranslations } from "next-intl";
 import type { ComponentPropsWithoutRef } from "react";
 import { useCallback, useState } from "react";
-import type { FieldValues, Path, PathValue } from "react-hook-form";
+import type { FieldValues } from "react-hook-form";
 import { PincodeInput } from "../../auth/pincode-input";
 import { TwoFactorOTPInput } from "../../auth/two-factor-otp-input";
 import type { BaseFormInputProps } from "./types";
 
 type InputProps = ComponentPropsWithoutRef<typeof InputOTP>;
+type VerificationMethod = "two-factor" | "pincode";
 
 type FormOtpDialogProps<T extends FieldValues> = Omit<
   InputProps,
@@ -99,41 +98,21 @@ export function FormOtpDialog<T extends FieldValues>({
               </DialogFooter>
             </FormItem>
           )}
-        />{" "}
-        <FormField
-          {...props}
-          defaultValue={
-            (isTwoFactorEnabled ? "two-factor" : "pincode") as PathValue<
-              T,
-              Path<T>
-            >
-          }
-          name={"verificationMethod" as Path<T>}
-          render={({ field }) => (
-            <FormItem hidden>
-              <FormControl>
-                <Input type="hidden" value={field.value} />
-              </FormControl>
-              {canSwitchMethod ? (
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      const newMethod =
-                        activeMethod === "two-factor"
-                          ? "pincode"
-                          : "two-factor";
-                      setActiveMethod(newMethod);
-                      field.onChange(newMethod);
-                    }}
-                  >
-                    {t("switch-method")}
-                  </Button>
-                </DialogFooter>
-              ) : null}
-            </FormItem>
-          )}
         />
+        {canSwitchMethod ? (
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const newMethod =
+                  activeMethod === "two-factor" ? "pincode" : "two-factor";
+                setActiveMethod(newMethod);
+              }}
+            >
+              {t("switch-method")}
+            </Button>
+          </DialogFooter>
+        ) : null}
       </DialogContent>
     </Dialog>
   );

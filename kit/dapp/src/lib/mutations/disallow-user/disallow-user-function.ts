@@ -24,7 +24,7 @@ const DepositDisallowUser = portalGraphql(`
 /**
  * Function to disallow a user from accessing a tokenized deposit
  *
- * @param input - Validated input containing address, pincode, userAddress, and assettype
+ * @param input - Validated input containing address, verificationCode, userAddress, and assettype
  * @param user - The user executing the disallow operation
  * @returns Array of transaction hashes
  */
@@ -35,7 +35,7 @@ export const disallowUserFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, pincode, userAddress, assettype },
+    parsedInput: { address, verificationCode, userAddress, assettype },
     ctx: { user },
   }: {
     parsedInput: DisallowUserInput;
@@ -46,7 +46,7 @@ export const disallowUserFunction = withAccessControl(
       address,
       user: userAddress,
       from: user.wallet,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(user.wallet, verificationCode),
     };
 
     switch (assettype) {

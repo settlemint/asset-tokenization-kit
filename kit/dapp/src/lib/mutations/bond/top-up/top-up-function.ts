@@ -184,7 +184,7 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
     parsedInput: {
       target,
       amount,
-      pincode,
+      verificationCode,
       targetAddress,
       underlyingAssetAddress,
       underlyingAssetType,
@@ -223,7 +223,7 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
     const approveParams = {
       address: underlyingAssetAddress,
       from: user.wallet,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(user.wallet, verificationCode),
       input: {
         spender: targetAddress,
         value: formattedAmount,

@@ -12,7 +12,7 @@ import type { UpdateRolesInput } from "./update-role-schema";
  * @returns Array of transaction hashes
  */
 export async function updateRolesFunction({
-  parsedInput: { address, roles, userAddress, pincode, assettype },
+  parsedInput: { address, roles, userAddress, verificationCode, assettype },
 }: {
   parsedInput: UpdateRolesInput;
   ctx: { user: User };
@@ -45,7 +45,7 @@ export async function updateRolesFunction({
       address,
       roles: rolesToEnable,
       userAddress,
-      pincode,
+      verificationCode,
       assettype,
     });
     if (grantResult?.data) {
@@ -59,7 +59,7 @@ export async function updateRolesFunction({
       address,
       roles: rolesToDisable,
       userAddress,
-      pincode,
+      verificationCode,
       assettype,
     });
 

@@ -129,7 +129,7 @@ export const createStablecoinFunction = withAccessControl(
       const roleGrantHashes = await grantRolesToAdmins(
         assetAdmins,
         predictedAddress,
-        111111, // TODO: remove hardcoded pincode
+        verificationCode,
         "stablecoin",
         user
       );

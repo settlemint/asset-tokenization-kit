@@ -21,8 +21,9 @@ export function SetYieldScheduleSchema() {
       interval: t.Enum(IntervalPeriod, {
         description: "The interval period for yield payments",
       }),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
       }),
     },
     {

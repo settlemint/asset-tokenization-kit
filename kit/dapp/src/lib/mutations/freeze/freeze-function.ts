@@ -90,7 +90,7 @@ const DepositFreeze = portalGraphql(`
 /**
  * Function to freeze a specific amount of tokens for a user
  *
- * @param input - Validated input containing address, pincode, userAddress, amount, and assettype
+ * @param input - Validated input containing address, verificationCode, userAddress, amount, and assettype
  * @param user - The user executing the freeze operation
  * @returns Array of transaction hashes
  */
@@ -101,7 +101,7 @@ export const freezeFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, pincode, userAddress, amount, assettype },
+    parsedInput: { address, verificationCode, userAddress, amount, assettype },
     ctx: { user },
   }: {
     parsedInput: FreezeInput;
@@ -119,7 +119,7 @@ export const freezeFunction = withAccessControl(
       user: userAddress,
       from: user.wallet,
       amount: parseUnits(amount.toString(), decimals).toString(),
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(user.wallet, verificationCode),
     };
 
     switch (assettype) {
