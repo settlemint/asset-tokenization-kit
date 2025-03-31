@@ -3,7 +3,6 @@ import { getUser } from "@/lib/auth/utils";
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
 import { parseUnits, type Address } from "viem";
 import {
   PredictedAddressSchema,
@@ -38,7 +37,7 @@ const CreateCryptoCurrencyPredictAddress = portalGraphql(`
  * @param input - The data for creating a new cryptocurrency
  * @returns The predicted address of the new cryptocurrency
  */
-export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
+export const getPredictedAddress = async (input: PredictAddressInput) => {
   try {
     const { assetName, symbol, decimals, initialSupply } = input;
     const user = await getUser();
@@ -75,4 +74,4 @@ export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
     // This allows the form to proceed
     return "0x0000000000000000000000000000000000000000" as Address;
   }
-});
+};

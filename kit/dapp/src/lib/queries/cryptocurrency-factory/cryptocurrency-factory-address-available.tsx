@@ -5,7 +5,6 @@ import {
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
 import type { Address } from "viem";
 import { CryptocurrencyExistsSchema } from "./cryptocurrency-factory-schema";
 
@@ -23,19 +22,41 @@ const CryptocurrencyExists = theGraphGraphqlKit(`
   }
 `);
 
-export const isAddressAvailable = cache(async (address: Address) => {
+export const isAddressAvailable = async (address: Address) => {
   try {
+    console.log(`Checking if address ${address} is available...`);
+
     const data = await theGraphClientKit.request(CryptocurrencyExists, {
       token: address,
     });
 
+    console.log(
+      "CryptocurrencyExists response:",
+      JSON.stringify(data, null, 2)
+    );
+
     const cryptocurrencyExists = safeParse(CryptocurrencyExistsSchema, data);
 
-    return !cryptocurrencyExists.cryptocurrency;
+    // Log the exact parsed result for debugging
+    console.log(
+      "Parsed result:",
+      JSON.stringify(cryptocurrencyExists, null, 2)
+    );
+
+    // A duplicate exists if cryptocurrencyExists.cryptoCurrency is not null or undefined
+    const isDuplicate = !!cryptocurrencyExists.cryptoCurrency?.id;
+
+    console.log(
+      `Address ${address} is ${isDuplicate ? "NOT" : ""} available. isDuplicate=${isDuplicate}`
+    );
+
+    // Return true if it's available (not a duplicate), false if unavailable (is a duplicate)
+    return !isDuplicate;
   } catch (error) {
     // Log the error but don't fail validation
     console.error("Error checking if address is available:", error);
-    // Return true to allow form submission to proceed
-    return true;
+    console.log("Defaulting to assuming address is unavailable for safety");
+    // In case of error, assume it's unavailable to be safe
+    return false;
   }
-});
+};

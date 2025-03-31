@@ -4,9 +4,15 @@ import type { PropsWithChildren } from "react";
 interface FormStepProps extends PropsWithChildren {
   title: string;
   description: string;
+  isNextDisabled?: boolean;
 }
 
-export function FormStep({ title, description, children }: FormStepProps) {
+export function FormStep({
+  title,
+  description,
+  children,
+  isNextDisabled,
+}: FormStepProps) {
   return (
     <Card>
       <CardHeader>

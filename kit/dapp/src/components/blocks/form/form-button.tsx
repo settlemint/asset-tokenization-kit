@@ -30,6 +30,8 @@ interface FormButtonProps {
   labels?: ButtonLabels;
   hideButtons?: boolean;
   isSecurityDialogOpen?: boolean;
+  /** Whether the next button should be disabled */
+  isNextDisabled?: boolean;
 }
 
 /**
@@ -49,6 +51,7 @@ export function FormButton({
   },
   hideButtons = false,
   isSecurityDialogOpen = false,
+  isNextDisabled = false,
 }: FormButtonProps) {
   const {
     formState: { isSubmitting, errors },
@@ -88,7 +91,9 @@ export function FormButton({
   };
 
   const disabled =
-    isSubmitting || (isLastStep && Object.keys(errors).length > 0);
+    isSubmitting ||
+    (isLastStep && Object.keys(errors).length > 0) ||
+    isNextDisabled;
   return (
     <div className="flex justify-between space-x-4 pt-4">
       {currentStep > 0 && (

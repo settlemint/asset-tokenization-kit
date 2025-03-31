@@ -47,6 +47,13 @@ interface FormProps<
   onAnyFieldChange?: (form: UseFormReturn<Infer<S>>) => void;
 }
 
+// Extend ReactElement type to include isNextDisabled
+type FormStepElementWithProps<S extends Schema> = FormStepElement<S> & {
+  props?: {
+    isNextDisabled?: boolean;
+  };
+};
+
 export function Form<
   ServerError,
   S extends Schema,
@@ -439,6 +446,13 @@ export function Form<
                 labels={buttonLabels}
                 onLastStep={secureForm ? handleNext : undefined}
                 isSecurityDialogOpen={showFormSecurityConfirmation}
+                isNextDisabled={
+                  Array.isArray(children)
+                    ? (children[currentStep] as FormStepElementWithProps<S>)
+                        ?.props?.isNextDisabled
+                    : (children as FormStepElementWithProps<S>)?.props
+                        ?.isNextDisabled
+                }
               />
             </div>
           </form>
