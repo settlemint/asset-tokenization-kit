@@ -11,6 +11,7 @@ const plugin = twoFactor({
     digits: OTP_DIGITS,
     period: OTP_PERIOD,
   },
+  skipVerificationOnEnable: true,
 });
 
 const originalEnableTwoFactor = plugin.endpoints.enableTwoFactor;
@@ -28,7 +29,6 @@ plugin.endpoints = {
         ...ctx,
         asResponse: false,
         returnHeaders: false,
-        skipVerificationOnEnable: true,
       });
       const { totpURI } = await enableTwoFactorFunction({
         parsedInput: {
