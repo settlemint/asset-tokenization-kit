@@ -160,7 +160,7 @@ contract StableCoinFactoryTest is Test {
         assertEq(
             entries.length,
             4,
-            "Should emit 4 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and StableCoinCreated"
+            "Should emit 5 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), RoleGranted (auditor) and StableCoinCreated"
         );
 
         // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
@@ -192,8 +192,16 @@ contract StableCoinFactoryTest is Test {
             "Wrong event signature for third RoleGranted"
         );
 
-        // Fourth event should be StableCoinCreated
-        VmSafe.Log memory lastEntry = entries[3];
+        // Fourth event should be RoleGranted for AUDITOR_ROLE
+        VmSafe.Log memory fourthEntry = entries[3];
+        assertEq(
+            fourthEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for fourth RoleGranted"
+        );
+
+        // Fifth event should be StableCoinCreated
+        VmSafe.Log memory lastEntry = entries[4];
         assertEq(
             lastEntry.topics[0],
             keccak256("StableCoinCreated(address,address)"),

@@ -42,6 +42,7 @@ contract StableCoinTest is Test {
         assertTrue(stableCoin.hasRole(stableCoin.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(stableCoin.hasRole(stableCoin.SUPPLY_MANAGEMENT_ROLE(), owner));
         assertTrue(stableCoin.hasRole(stableCoin.USER_MANAGEMENT_ROLE(), owner));
+        assertTrue(stableCoin.hasRole(stableCoin.AUDITOR_ROLE(), owner));
     }
 
     function test_DifferentDecimals() public {
@@ -188,7 +189,7 @@ contract StableCoinTest is Test {
     function test_OnlyAdminCanUpdateCollateral() public {
         uint256 collateralAmount = 1_000_000;
 
-        bytes32 role = stableCoin.SUPPLY_MANAGEMENT_ROLE();
+        bytes32 role = stableCoin.AUDITOR_ROLE();
         vm.startPrank(user1);
         vm.expectRevert(abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user1, role));
         stableCoin.updateCollateral(collateralAmount);
