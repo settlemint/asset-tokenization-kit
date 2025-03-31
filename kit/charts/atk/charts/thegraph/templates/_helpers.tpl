@@ -35,12 +35,16 @@ Common labels
 */}}
 {{- define "thegraph.labels" -}}
 helm.sh/chart: {{ include "thegraph.chart" . }}
-{{ include "thegraph.selectorLabels" . }}
+app.kubernetes.io/name: {{ include "thegraph.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.global.labels }}
+{{ toYaml .Values.global.labels }}
 {{- end }}
+{{- end -}}
 
 {{/*
 Selector labels

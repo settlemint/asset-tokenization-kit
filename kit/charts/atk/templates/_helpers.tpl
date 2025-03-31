@@ -40,6 +40,11 @@ helm.sh/chart: {{ include "atk.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.global.labels }}
+{{- range $key, $value := .Values.global.labels }}
+{{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
 {{- end }}
 
 {{/*
@@ -70,4 +75,13 @@ Creates an image pull secret value
 */}}
 {{- define "atk.imagePullSecret" }}
 {{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"auth\":\"%s\"}}}" .registryUrl .username .password .email (printf "%s:%s" .username .password | b64enc) | b64enc }}
+{{- end }}
+
+{{/*
+Common annotations
+*/}}
+{{- define "atk.annotations" -}}
+{{- if .Values.global.annotations }}
+{{- toYaml .Values.global.annotations }}
+{{- end }}
 {{- end }}

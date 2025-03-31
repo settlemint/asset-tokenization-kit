@@ -4,18 +4,7 @@ kind: StatefulSet
 metadata:
   name: {{ template "besu-node.fullname" . }}
   labels:
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
-    azure.workload.identity/use: "true"
-{{- end }}
-    app.kubernetes.io/name: besu-statefulset
-    app.kubernetes.io/component: besu
-    app.kubernetes.io/part-of: {{ include "besu-node.fullname" . }}
-    app.kubernetes.io/namespace: {{ .Release.Namespace }}
-    app.kubernetes.io/release: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: helm
-    {{- range $labelName, $labelValue := .Values.node.besu.customLabels }}
-    {{ $labelName }}: {{ $labelValue }}
-    {{- end }}
+    {{- include "besu-node.labels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
@@ -24,34 +13,23 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app.kubernetes.io/name: besu-statefulset
-      app.kubernetes.io/component: besu
-      app.kubernetes.io/part-of: {{ include "besu-node.fullname" . }}
-      app.kubernetes.io/namespace: {{ .Release.Namespace }}
-      app.kubernetes.io/release: {{ .Release.Name }}
-      app.kubernetes.io/managed-by: helm
+      {{- include "besu-node.labels" . | nindent 6 }}
   serviceName: {{ include "besu-node.fullname" . }}
   volumeClaimTemplates:
   - metadata:
       name: data
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: {{ include "besu-node.fullname" . }}-storage
+      {{- if .Values.storage.storageClass }}
+      storageClassName: {{ .Values.storage.storageClass }}
+      {{- end }}
       resources:
         requests:
           storage: "{{ .Values.storage.pvcSizeLimit }}"
   template:
     metadata:
       labels:
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
-        azure.workload.identity/use: "true"
-{{- end }}
-        app.kubernetes.io/name: besu-statefulset
-        app.kubernetes.io/component: besu
-        app.kubernetes.io/part-of: {{ include "besu-node.fullname" . }}
-        app.kubernetes.io/namespace: {{ .Release.Namespace }}
-        app.kubernetes.io/release: {{ .Release.Name }}
-        app.kubernetes.io/managed-by: helm
+        {{- include "besu-node.labels" . | nindent 8 }}
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: {{ .Values.node.besu.metrics.port | quote}}

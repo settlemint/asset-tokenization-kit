@@ -2,6 +2,12 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Global values shared across all subcharts
+global:
+  labels:
+    kots.io/app-slug: settlemint-atk
+    app.kubernetes.io/managed-by: helm
+
 imagePullCredentials:
   registries:
     # -- lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more

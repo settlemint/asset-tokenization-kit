@@ -399,36 +399,6 @@ alloy:
           }
 
           rule {
-            source_labels = ["__meta_kubernetes_endpoints_label_settlemint_com_logging"]
-            target_label  = "settlemint_com_logging"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_endpoints_label_settlemint_com_hide_logs"]
-            target_label  = "settlemint_com_hide_logs"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_endpoints_label_settlemint_com_network_name"]
-            target_label  = "settlemint_com_network_name"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_endpoints_label_settlemint_com_application_slug"]
-            target_label  = "application_slug"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_endpoints_label_settlemint_com_workspace_slug"]
-            target_label  = "workspace_slug"
-          }
-
-           rule {
-            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_service_type"]
-            target_label  = "service_type"
-          }
-
-          rule {
             source_labels = ["__meta_kubernetes_namespace"]
             target_label  = "namespace"
           }
@@ -531,12 +501,6 @@ alloy:
           targets = discovery.kubernetes.kubernetes_pods.targets
 
           rule {
-            source_labels = ["__meta_kubernetes_pod_label_job_name"]
-            regex         = "repo-maintain-job.*"
-            action        = "drop"
-          }
-
-          rule {
             source_labels = ["__meta_kubernetes_pod_label_name"]
             regex         = "node-agent"
             action        = "drop"
@@ -572,32 +536,6 @@ alloy:
             replacement = "__param_$1"
             action      = "labelmap"
           }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_logging"]
-            target_label  = "settlemint_com_logging"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_hide_logs"]
-            target_label  = "settlemint_com_hide_logs"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_network_name"]
-            target_label  = "settlemint_com_network_name"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_application_slug"]
-            target_label  = "application_slug"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_workspace_slug"]
-            target_label  = "workspace_slug"
-          }
-
 
           rule {
             source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_component"]
@@ -698,7 +636,7 @@ alloy:
         }
         {{- end }}
 
-        otelcol.receiver.otlp "btp_traces" {
+        otelcol.receiver.otlp "atk_traces" {
           grpc {
             endpoint = "0.0.0.0:4317"
           }
@@ -708,22 +646,22 @@ alloy:
           }
 
           output {
-            traces  = [otelcol.processor.batch.btp_traces.input]
+            traces  = [otelcol.processor.batch.atk_traces.input]
           }
         }
 
-        otelcol.processor.batch "btp_traces" {
+        otelcol.processor.batch "atk_traces" {
           send_batch_size = 16384
           send_batch_max_size = 16384
           timeout = "2s"
 
           output {
-            traces  = [{{ if .Values.endpoints.internal.otel.enabled }}otelcol.exporter.otlphttp.btp_traces_internal.input{{ end }}{{ if .Values.endpoints.external.otel.enabled }}{{ if .Values.endpoints.internal.otel.enabled }},{{ end }}otelcol.exporter.otlphttp.btp_traces_external.input{{ end }}]
+            traces  = [{{ if .Values.endpoints.internal.otel.enabled }}otelcol.exporter.otlphttp.atk_traces_internal.input{{ end }}{{ if .Values.endpoints.external.otel.enabled }}{{ if .Values.endpoints.internal.otel.enabled }},{{ end }}otelcol.exporter.otlphttp.atk_traces_external.input{{ end }}]
           }
         }
 
         {{- if .Values.endpoints.internal.otel.enabled }}
-        otelcol.exporter.otlphttp "btp_traces_internal" {
+        otelcol.exporter.otlphttp "atk_traces_internal" {
           client {
             endpoint = {{ .Values.endpoints.internal.otel.url | quote }}
             tls {
@@ -735,19 +673,19 @@ alloy:
         {{- end }}
 
         {{- if .Values.endpoints.external.otel.enabled }}
-        otelcol.exporter.otlp "btp_traces_external" {
+        otelcol.exporter.otlp "atk_traces_external" {
           client {
             endpoint = {{ .Values.endpoints.external.otel.url | quote }}
 
 
             {{- if and .Values.endpoints.external.otel.basicAuth.username .Values.endpoints.external.otel.basicAuth.password }}
-            auth     = otelcol.auth.basic.btp_traces_external.handler
+            auth     = otelcol.auth.basic.atk_traces_external.handler
             {{- end }}
           }
         }
 
         {{- if and .Values.endpoints.external.otel.basicAuth.username .Values.endpoints.external.otel.basicAuth.password }}
-        otelcol.auth.basic "btp_traces_external" {
+        otelcol.auth.basic "atk_traces_external" {
           username = {{ .Values.endpoints.external.otel.basicAuth.username | quote }}
           password = {{ .Values.endpoints.external.otel.basicAuth.password | quote }}
         }

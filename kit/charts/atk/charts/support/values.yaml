@@ -100,7 +100,7 @@ ingress-nginx:
         maxUnavailable: "0%"
     resources: {}
     podLabels:
-      kots.io/app-slug: settlemint-platform
+      kots.io/app-slug: settlemint-atk
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "10254"
@@ -218,7 +218,7 @@ ingress-nginx:
       enabled: true
       service:
         labels:
-          kots.io/app-slug: settlemint-platform
+          kots.io/app-slug: settlemint-atk
         annotations:
           prometheus.io/scrape: 'true'
           prometheus.io/port: '10254'

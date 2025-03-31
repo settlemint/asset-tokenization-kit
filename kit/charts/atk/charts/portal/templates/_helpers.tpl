@@ -35,11 +35,15 @@ Common labels
 */}}
 {{- define "portal.labels" -}}
 helm.sh/chart: {{ include "portal.chart" . }}
-{{ include "portal.selectorLabels" . }}
+app.kubernetes.io/name: {{ include "portal.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.global.labels }}
+{{ toYaml .Values.global.labels }}
+{{- end }}
 {{- end }}
 
 {{/*
