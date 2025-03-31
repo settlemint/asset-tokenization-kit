@@ -59,6 +59,11 @@ export function FormOtpDialog<T extends FieldValues>({
   const InputComponent =
     activeVerificationType === "two-factor" ? TwoFactorOTPInput : PincodeInput;
 
+  // Get the current path to check if we're in cryptocurrency creation
+  const pathname = window.location.pathname;
+  const isCryptocurrencyCreation =
+    pathname.includes("/portfolio") || pathname.includes("/cryptocurrency");
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -124,7 +129,11 @@ export function FormOtpDialog<T extends FieldValues>({
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
                   {t("cancel")}
                 </Button>
-                <Button onClick={handleSubmit} disabled={!isValid}>
+                <Button
+                  onClick={handleSubmit}
+                  // Always enable the button for cryptocurrency creation, otherwise use validation
+                  disabled={isCryptocurrencyCreation ? false : !isValid}
+                >
                   {t("confirm")}
                 </Button>
               </DialogFooter>

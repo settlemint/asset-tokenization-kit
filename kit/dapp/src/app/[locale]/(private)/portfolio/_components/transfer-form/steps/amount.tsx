@@ -15,21 +15,18 @@ interface AmountProps {
 
 export function Amount({ balance, decimals, symbol }: AmountProps) {
   const { control } = useFormContext<TransferInput>();
-  const t = useTranslations("portfolio.my-assets.cryptocurrency");
+  const t = useTranslations("portfolio.transfer-form.amount");
   const locale = useLocale();
 
   return (
-    <FormStep
-      title={t("transfer-form.amount.title")}
-      description={t("transfer-form.amount.description")}
-    >
+    <FormStep title={t("title")} description={t("description")}>
       <FormInput
         control={control}
         name="value"
-        label={t("transfer-form.amount.amount-label")}
+        label={t("amount-label")}
         type="number"
         max={balance}
-        description={`${t("transfer-form.amount.balance-description")} ${formatNumber(balance, { locale })}`}
+        description={`${t("balance-description")} ${formatNumber(balance, { locale })}`}
         required
         postfix={symbol}
         step={decimals ? 10 ** -decimals : 1}

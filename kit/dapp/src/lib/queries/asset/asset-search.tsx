@@ -70,9 +70,16 @@ export const getAssetSearch = cache(
     const { assets } = await theGraphClientKit.request(AssetSearch, search);
 
     // Validate data using TypeBox schema
-    const validatedAssets = assets.map((asset) =>
-      safeParse(AssetUsersSchema, asset)
-    );
+    const validatedAssets = assets.map((asset) => {
+      // Add default empty auditors array for validation
+      const assetWithDefaults = {
+        ...asset,
+        // The schema requires auditors, but they are only on certain asset types
+        // Add an empty array as default for validation
+        auditors: [],
+      };
+      return safeParse(AssetUsersSchema, assetWithDefaults);
+    });
     return validatedAssets;
   }
 );

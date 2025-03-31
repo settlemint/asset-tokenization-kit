@@ -15,7 +15,7 @@ interface SummaryProps {
 
 export function Summary({ address }: SummaryProps) {
   const { control } = useFormContext<TransferInput>();
-  const t = useTranslations("portfolio.my-assets.bond.transfer-form.summary");
+  const t = useTranslations("portfolio.transfer-form.summary");
   const values = useWatch({
     control: control,
   });
