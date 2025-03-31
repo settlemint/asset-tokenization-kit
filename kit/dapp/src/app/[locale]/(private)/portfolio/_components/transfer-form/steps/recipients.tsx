@@ -10,9 +10,7 @@ export function Recipients() {
   const { control } = useFormContext<TransferInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
 
-  const t = useTranslations(
-    "portfolio.my-assets.cryptocurrency.transfer-form.recipients"
-  );
+  const t = useTranslations("portfolio.transfer-form.recipients");
 
   return (
     <FormStep title={t("title")} description={t("description")}>
@@ -22,14 +20,14 @@ export function Recipients() {
             <FormInput
               control={control}
               name="to"
-              label={t("address-label")}
+              label={t("wallet-address-label")}
               placeholder="0x0000000000000000000000000000000000000000"
             />
           ) : (
             <FormUsers
               control={control}
               name="to"
-              label={t("address-label")}
+              label={t("wallet-address-label")}
               placeholder={t("address-placeholder")}
             />
           )}

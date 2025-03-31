@@ -860,7 +860,7 @@
             "description": "Choose who will receive the assets",
             "manual-entry-link": "Enter address manually...",
             "search-user-link": "Search for a user instead...",
-            "title": "Select Recipient"
+            "title": "Select Recipients"
           }
         }
       },
@@ -957,8 +957,12 @@
         "title": "Enter Amount"
       },
       "asset-types": "{type} {name} ({symbol})",
-      "description": "Easily transfer an amount of {name} ({symbol}) by selecting a recipient and specifying the amount.",
+      "button-label": "Transfer Assets",
+      "description": "Easily transfer an amount of assets by selecting a recipient and specifying the amount.",
+      "title": "Transfer Assets",
+      "trigger-label": "Transfer",
       "recipients": {
+        "address-label": "Recipient Address",
         "address-placeholder": "Search for a user",
         "description": "Enter a wallet address to send assets directly.",
         "manual-entry-link": "Enter address manually...",
@@ -969,16 +973,21 @@
       "select-asset": {
         "asset-description": "Select an asset from your portfolio",
         "asset-label": "Asset",
+        "confirm-button": "Confirm",
         "description": "Choose the asset you want to transfer",
         "title": "Select Asset"
       },
       "summary": {
         "address": "Address",
         "amount": "Amount",
+        "asset-label": "Asset",
         "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.",
-        "title": "Review and confirm transfer"
+        "recipient-label": "Recipient",
+        "title": "Review and confirm transfer",
+        "transfer-description": "Transfer operation details",
+        "transfer-title": "Transfer",
+        "value-label": "Amount"
       },
-      "transfer": "Transfer",
       "transfer-title": "Transfer {name} ({symbol})"
     }
   },
