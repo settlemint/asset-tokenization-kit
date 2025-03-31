@@ -129,6 +129,10 @@ export const getAssetUsersDetail = cache(
         permissions: validatedAsset.userManagers,
         role: "USER_MANAGEMENT_ROLE" as const,
       },
+      {
+        permissions: validatedAsset.auditors,
+        role: "AUDITOR_ROLE" as const,
+      }
     ];
 
     // Create a map to track users with their roles
