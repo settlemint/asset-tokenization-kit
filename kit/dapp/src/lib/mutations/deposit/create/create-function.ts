@@ -117,6 +117,7 @@ export const createDepositFunction = withAccessControl(
       assetAdmins,
       predictedAddress,
       verificationCode,
+      verificationType,
       "deposit",
       user
     );

@@ -121,6 +121,7 @@ export const createCryptoCurrencyFunction = withAccessControl(
       assetAdmins,
       predictedAddress,
       verificationCode,
+      verificationType,
       "cryptocurrency",
       user
     );

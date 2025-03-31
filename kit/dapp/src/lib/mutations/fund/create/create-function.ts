@@ -116,6 +116,7 @@ export const createFundFunction = withAccessControl(
       assetAdmins,
       predictedAddress,
       verificationCode,
+      verificationType,
       "fund",
       user
     );

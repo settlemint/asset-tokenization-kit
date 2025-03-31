@@ -115,6 +115,7 @@ export const createEquityFunction = withAccessControl(
       assetAdmins,
       predictedAddress,
       verificationCode,
+      verificationType,
       "equity",
       user
     );

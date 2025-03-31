@@ -126,6 +126,7 @@ export const createBondFunction = withAccessControl(
       assetAdmins,
       predictedAddress,
       verificationCode,
+      verificationType,
       "bond",
       user
     );

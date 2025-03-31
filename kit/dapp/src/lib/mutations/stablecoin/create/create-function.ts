@@ -132,6 +132,7 @@ export const createStablecoinFunction = withAccessControl(
         assetAdmins,
         predictedAddress,
         verificationCode,
+        verificationType,
         "stablecoin",
         user
       );
