@@ -157,7 +157,7 @@ const DepositWithdrawToken = portalGraphql(`
 /**
  * Function to withdraw tokens or underlying assets from a contract
  *
- * @param input - Validated input containing address, pincode, amount, to, underlyingAssetAddress, and assettype
+ * @param input - Validated input containing address, verificationCode, amount, to, underlyingAssetAddress, and assettype
  * @param user - The user executing the withdraw operation
  * @returns Array of transaction hashes
  */

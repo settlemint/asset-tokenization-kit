@@ -295,7 +295,7 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
         input: {
           amount: formattedAmount,
         },
-        challengeResponse: await handleChallenge(user.wallet, pincode),
+        challengeResponse: await handleChallenge(user.wallet, verificationCode),
       });
 
       if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
@@ -314,7 +314,10 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
           input: {
             amount: formattedAmount,
           },
-          challengeResponse: await handleChallenge(user.wallet, pincode),
+          challengeResponse: await handleChallenge(
+            user.wallet,
+            verificationCode
+          ),
         }
       );
 
