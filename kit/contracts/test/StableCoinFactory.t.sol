@@ -159,7 +159,7 @@ contract StableCoinFactoryTest is Test {
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
             entries.length,
-            4,
+            5,
             "Should emit 5 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), RoleGranted (auditor) and StableCoinCreated"
         );
 
