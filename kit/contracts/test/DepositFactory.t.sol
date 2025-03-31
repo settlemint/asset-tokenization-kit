@@ -196,6 +196,14 @@ contract DepositFactoryTest is Test {
             "Wrong event signature for third RoleGranted"
         );
 
+        // Fourth event should be RoleGranted for USER_MANAGEMENT_ROLE
+        VmSafe.Log memory fifthEntry = entries[4];
+        assertEq(
+            fifthEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for third RoleGranted"
+        );
+
         // Fifth event should be DepositCreated
         VmSafe.Log memory lastEntry = entries[4];
         assertEq(
