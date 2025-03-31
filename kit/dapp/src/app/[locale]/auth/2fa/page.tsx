@@ -15,38 +15,54 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import type { VerifyTwoFactorOTPInput } from "@/lib/mutations/user/verify-two-factor-otp-schema";
 import { VerifyTwoFactorOTPSchema } from "@/lib/mutations/user/verify-two-factor-otp-schema";
+import { AuthUIContext } from "@daveyplate/better-auth-ui";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import { useCallback, useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function TwoFactorAuthPage() {
+  const { data: sessionData } = authClient.useSession();
   const t = useTranslations("auth-2fa");
   const form = useForm<VerifyTwoFactorOTPInput>({
     resolver: typeboxResolver(VerifyTwoFactorOTPSchema()),
   });
-  const router = useRouter();
+  const { navigate } = useContext(AuthUIContext);
+
+  const redirect = useCallback(() => {
+    const redirectTo = new URLSearchParams(window.location.search).get(
+      "redirectTo"
+    );
+    navigate(redirectTo ?? "/portfolio");
+  }, [navigate]);
 
   const onSubmit = () => {
-    authClient.twoFactor.verifyTotp(
-      { code: form.getValues("code").toString() },
-      {
-        onSuccess() {
-          const redirectTo = new URLSearchParams(window.location.search).get(
-            "redirectTo"
-          );
-          router.push(redirectTo ?? "/");
-        },
-        onError() {
-          toast.error(t("error"));
-        },
-      }
-    );
+    return new Promise<void>((resolve, reject) => {
+      authClient.twoFactor.verifyTotp(
+        { code: form.getValues("code").toString() },
+        {
+          onSuccess() {
+            redirect();
+            resolve();
+          },
+          onError() {
+            toast.error(t("error"));
+            reject(new Error("Failed to verify 2FA"));
+          },
+        }
+      );
+    });
   };
+
+  useEffect(() => {
+    if (sessionData) {
+      redirect();
+    }
+  }, [redirect, sessionData]);
 
   return (
     <Card>
@@ -66,6 +82,7 @@ export default function TwoFactorAuthPage() {
                     <TwoFactorOTPInput
                       value={field.value?.toString() ?? ""}
                       onChange={field.onChange}
+                      autoFocus
                     />
                   </FormControl>
                   <FormMessage />
