@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+- Use semantic release commit messages.
+- ONLY use "fix" or "feat" prefixes WITHOUT a scope
