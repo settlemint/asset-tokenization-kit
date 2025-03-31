@@ -47,7 +47,6 @@ plugin.endpoints = {
     originalDisableTwoFactor.path,
     originalDisableTwoFactor.options,
     async (ctx) => {
-      debugger;
       const user = ctx.context.session.user as User;
       const { response, headers } = await originalDisableTwoFactor(
         ctx as typeof ctx & { returnHeaders: true }
