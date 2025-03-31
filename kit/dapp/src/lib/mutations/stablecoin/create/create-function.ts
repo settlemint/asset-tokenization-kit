@@ -96,56 +96,49 @@ export const createStablecoinFunction = withAccessControl(
       currency: price.currency,
     });
 
-    try {
-      const createStablecoinResult = await portalClient.request(
-        StableCoinFactoryCreate,
-        {
-          address: STABLE_COIN_FACTORY_ADDRESS,
-          from: user.wallet,
-          name: assetName,
-          symbol: symbol.toString(),
-          decimals: decimals || 6,
-          collateralLivenessSeconds:
-            (collateralLivenessValue || 12) *
-            getTimeUnitSeconds(collateralLivenessTimeUnit || "months"),
-          challengeResponse: await handleChallenge(
-            user.wallet,
-            verificationCode,
-            verificationType
-          ),
-        }
-      );
-
-      const createTxHash =
-        createStablecoinResult.StableCoinFactoryCreate?.transactionHash;
-      if (!createTxHash) {
-        throw new Error(
-          "Failed to create stablecoin: no transaction hash received"
-        );
+    const createStablecoinResult = await portalClient.request(
+      StableCoinFactoryCreate,
+      {
+        address: STABLE_COIN_FACTORY_ADDRESS,
+        from: user.wallet,
+        name: assetName,
+        symbol: symbol.toString(),
+        decimals: decimals || 6,
+        collateralLivenessSeconds:
+          (collateralLivenessValue || 12) *
+          getTimeUnitSeconds(collateralLivenessTimeUnit || "months"),
+        challengeResponse: await handleChallenge(
+          user.wallet,
+          verificationCode,
+          verificationType
+        ),
       }
+    );
 
-      // Wait for the stablecoin creation transaction to be mined
-      await waitForTransactions([createTxHash]);
-
-      // Grant roles to admins using the shared helper
-      const roleGrantHashes = await grantRolesToAdmins(
-        assetAdmins,
-        predictedAddress,
-        verificationCode,
-        verificationType,
-        "stablecoin",
-        user
+    const createTxHash =
+      createStablecoinResult.StableCoinFactoryCreate?.transactionHash;
+    if (!createTxHash) {
+      throw new Error(
+        "Failed to create stablecoin: no transaction hash received"
       );
-
-      // Combine all transaction hashes
-      const allTransactionHashes = [createTxHash, ...roleGrantHashes];
-
-      return safeParse(t.Hashes(), allTransactionHashes);
-    } catch (err) {
-      const error = err as Error;
-      debugger;
-      console.error(error);
-      throw error;
     }
+
+    // Wait for the stablecoin creation transaction to be mined
+    await waitForTransactions([createTxHash]);
+
+    // Grant roles to admins using the shared helper
+    const roleGrantHashes = await grantRolesToAdmins(
+      assetAdmins,
+      predictedAddress,
+      verificationCode,
+      verificationType,
+      "stablecoin",
+      user
+    );
+
+    // Combine all transaction hashes
+    const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+
+    return safeParse(t.Hashes(), allTransactionHashes);
   }
 );
