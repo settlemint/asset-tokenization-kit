@@ -289,8 +289,18 @@
     "address-avatar": {
       "avatar": "Avatar"
     },
-    "area-chart": {
-      "info-icon-label": "Info"
+    "chart": {
+      "switch-to-area-chart": "Switch to area chart",
+      "switch-to-bar-chart": "Switch to bar chart",
+      "info-icon-label": "Info",
+      "select-time-range": "Select time range",
+      "last-updated-at": "Last updated at: {lastUpdated}",
+      "time-range": {
+        "24h": "24h",
+        "7d": "7d",
+        "30d": "30d",
+        "90d": "90d"
+      }
     },
     "asset-events-table": {
       "asset": "Asset",
@@ -437,9 +447,9 @@
         "portfolio-value-no-data": "No portfolio data available",
         "portfolio-value-title": "Portfolio value",
         "aggregation-options": {
-          "by-asset": "By asset",
-          "by-type": "By asset type",
-          "total": "Total value"
+          "compare-asset-types": "Compare asset types",
+          "stacked-asset-types": "Stacked by asset type",
+          "total-value": "Total value"
         }
       }
     },
@@ -872,7 +882,8 @@
         "forms": {
           "actions": {
             "redeem": "Redeem",
-            "transfer": "Transfer"
+            "transfer": "Transfer",
+            "burn": "Burn"
           }
         },
         "manage": "Manage"

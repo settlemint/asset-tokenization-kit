@@ -38,12 +38,12 @@ export interface TimeSeriesOptions {
   historical?: boolean;
 }
 
-type DataPoint = {
+export type DataPoint = {
   timestamp: number | string | Date;
   [key: string]: unknown;
 };
 
-type TimeSeriesResult<T> = {
+export type TimeSeriesResult<T> = {
   timestamp: string;
 } & {
   [K in keyof T]: number;
@@ -62,7 +62,7 @@ export function createTimeSeries<T extends DataPoint>(
   valueKeys: (keyof T)[],
   options: TimeSeriesOptions,
   locale: Locale
-): TimeSeriesResult<Pick<T, keyof T>>[] {
+): TimeSeriesResult<T>[] {
   const {
     granularity,
     intervalType,
@@ -323,13 +323,21 @@ function findClosestHistoricalValue<T extends DataPoint>(
     return 0;
   }
   const startDate = getDateFromTimestamp(start);
-  const closestPoint = data
-    .filter((d) => getDateFromTimestamp(d.timestamp) <= startDate)
+  const validPoints = data
+    .filter((d) => {
+      const value = d[key];
+      return (
+        getDateFromTimestamp(d.timestamp) <= startDate &&
+        value !== undefined &&
+        value !== null &&
+        !isNaN(Number(value))
+      );
+    })
     .sort(
       (a, b) =>
         getDateFromTimestamp(b.timestamp).getTime() -
         getDateFromTimestamp(a.timestamp).getTime()
-    )[0];
+    );
 
-  return closestPoint ? Number(closestPoint[key]) : 0;
+  return validPoints.length > 0 ? Number(validPoints[0][key]) : 0;
 }
