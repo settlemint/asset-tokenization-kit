@@ -2,7 +2,6 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-predict-address";
@@ -208,16 +207,6 @@ export function Configuration() {
                 Initial Supply (currently: <strong>{initialSupply}</strong>)
               </li>
             </ul>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="self-start mt-2"
-                onClick={() => checkAddressAvailability(true)}
-              >
-                Revalidate Parameters
-              </Button>
-            </div>
           </AlertDescription>
         </Alert>
       )}
