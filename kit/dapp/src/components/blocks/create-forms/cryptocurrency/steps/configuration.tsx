@@ -43,12 +43,10 @@ export function Configuration() {
     setValue("predictedAddress", "0x0000000000000000000000000000000000000000", {
       shouldValidate: false,
     });
-    console.log("Validation state completely reset");
   }, [clearErrors, setAddressAvailable, setValue]);
 
   // Reset address availability state when any parameter changes to prevent showing stale errors
   useEffect(() => {
-    console.log("Parameters changed - resetting validation state");
     resetValidationState();
   }, [assetName, symbol, decimals, initialSupply, resetValidationState]);
 
@@ -66,11 +64,6 @@ export function Configuration() {
         setCheckingAddress(true);
         clearErrors("predictedAddress");
 
-        // Generate a unique timestamp to prevent caching issues
-        console.log(
-          `Checking parameters at ${Date.now()}: ${assetName}, ${symbol}, ${decimals}, ${initialSupply}`
-        );
-
         // Predict the address
         const predictedAddress = await getPredictedAddress({
           assetName,
@@ -78,10 +71,6 @@ export function Configuration() {
           decimals,
           initialSupply,
         });
-
-        console.log(
-          `Predicted address for current parameters: ${predictedAddress}`
-        );
 
         // Check if address is available - adding timestamp to prevent caching
         const available = await isAddressAvailable(predictedAddress);
@@ -130,7 +119,6 @@ export function Configuration() {
   useEffect(() => {
     // Clear any previous timers
     const timer = setTimeout(() => {
-      console.log("Debounced check triggered for params change");
       checkAddressAvailability();
     }, 800); // Increase debounce time for better user experience
     return () => clearTimeout(timer);
@@ -138,7 +126,6 @@ export function Configuration() {
 
   // Handler for checking right after user finishes entering a value
   const handleInputBlur = useCallback(() => {
-    console.log("Input blur triggered - immediate validation");
     // Get reference to input element for focus
     const inputElement = document.querySelector('input[name="initialSupply"]');
     // Immediate check on blur with focus forcing and no debounce
@@ -241,10 +228,6 @@ export function Configuration() {
         {...formMethods.register("predictedAddress", {
           validate: {
             available: (value) => {
-              // Log the validation execution
-              console.log(
-                `Validating predictedAddress=${value}, addressAvailable=${addressAvailable}`
-              );
               // Only validate if we have actually run a check
               if (addressAvailable === null) return true;
               // Otherwise use the addressAvailable state
