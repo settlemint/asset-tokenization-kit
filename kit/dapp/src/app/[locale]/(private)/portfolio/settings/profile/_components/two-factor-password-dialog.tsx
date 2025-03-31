@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface TwoFactorPasswordDialogProps {
   open: boolean;
@@ -32,6 +32,12 @@ export function TwoFactorPasswordDialog({
     "portfolio.settings.profile.two-factor-authentication.enter-password"
   );
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (!open) {
+      setPassword("");
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
