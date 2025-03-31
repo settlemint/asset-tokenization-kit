@@ -101,7 +101,14 @@ export const freezeFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, verificationCode, userAddress, amount, assettype },
+    parsedInput: {
+      address,
+      verificationCode,
+      verificationType,
+      userAddress,
+      amount,
+      assettype,
+    },
     ctx: { user },
   }: {
     parsedInput: FreezeInput;
@@ -119,7 +126,11 @@ export const freezeFunction = withAccessControl(
       user: userAddress,
       from: user.wallet,
       amount: parseUnits(amount.toString(), decimals).toString(),
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

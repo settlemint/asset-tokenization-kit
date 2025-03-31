@@ -15,6 +15,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import type { VerifyTwoFactorOTPInput } from "@/lib/mutations/user/verify-two-factor-otp-schema";
 import { VerifyTwoFactorOTPSchema } from "@/lib/mutations/user/verify-two-factor-otp-schema";
@@ -28,13 +29,17 @@ export default function TwoFactorAuthPage() {
   const form = useForm<VerifyTwoFactorOTPInput>({
     resolver: typeboxResolver(VerifyTwoFactorOTPSchema()),
   });
+  const router = useRouter();
 
   const onSubmit = () => {
     authClient.twoFactor.verifyTotp(
       { code: form.getValues("code").toString() },
       {
         onSuccess() {
-          window.location.href = "/en/portfolio";
+          const redirectTo = new URLSearchParams(window.location.search).get(
+            "redirectTo"
+          );
+          router.push(redirectTo ?? "/");
         },
         onError() {
           toast.error(t("error"));

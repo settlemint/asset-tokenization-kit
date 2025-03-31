@@ -33,8 +33,10 @@ export const authClient = createAuthClient({
     passkeyClient(),
     twoFactorClient({
       onTwoFactorRedirect: async () => {
-        const locale = window.location.pathname.split("/")[1];
-        window.location.href = `/${locale || "en"}/auth/2fa`; // Handle the 2FA verification redirect
+        const pathParts = window.location.pathname.split("/").filter(Boolean);
+        const locale = pathParts[0] ?? "en";
+        const queryParams = window.location.search;
+        window.location.href = `/${locale}/auth/2fa${queryParams}`; // Handle the 2FA verification redirect
       },
     }),
     magicLinkClient(),

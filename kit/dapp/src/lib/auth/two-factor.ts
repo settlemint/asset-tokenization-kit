@@ -26,10 +26,9 @@ plugin.endpoints = {
     originalEnableTwoFactor.options,
     async (ctx) => {
       const user = ctx.context.session.user as User;
-      const r = await originalEnableTwoFactor({
+      const { response } = await originalEnableTwoFactor({
         ...ctx,
-        asResponse: false,
-        returnHeaders: false,
+        returnHeaders: true,
       });
       const { totpURI } = await enableTwoFactorFunction({
         parsedInput: {
@@ -39,7 +38,7 @@ plugin.endpoints = {
         },
         ctx: { user },
       });
-      return { backupCodes: r.backupCodes, totpURI };
+      return ctx.json({ backupCodes: response.backupCodes, totpURI });
     }
   ),
   disableTwoFactor: createAuthEndpoint(
@@ -47,15 +46,14 @@ plugin.endpoints = {
     originalDisableTwoFactor.options,
     async (ctx) => {
       const user = ctx.context.session.user as User;
-      const { status } = await originalDisableTwoFactor({
+      const { response } = await originalDisableTwoFactor({
         ...ctx,
-        asResponse: false,
-        returnHeaders: false,
+        returnHeaders: true,
       });
-      if (status) {
+      if (response.status) {
         await disableTwoFactorFunction({ ctx: { user } });
       }
-      return { status };
+      return ctx.json({ status: response.status });
     }
   ),
   verifyTOTP: createAuthEndpoint(
