@@ -95,6 +95,12 @@ export const auth = betterAuth({
         default: "EUR",
         input: false,
       },
+      pincodeEnabled: {
+        type: "boolean",
+        required: false,
+        default: false,
+        input: false,
+      },
     },
   },
   databaseHooks: {

@@ -8,11 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import { OTP_ALGORITHM, OTP_DIGITS, OTP_PERIOD } from "@/lib/auth/otp";
@@ -22,6 +17,7 @@ import { useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
 import { CopyTwoFactorBackupCodes } from "./copy-two-tactor-backup-codes";
+import { TwoFactorOTPInput } from "./two-factor-otp-input";
 
 interface SetupTwoFactorDialogProps {
   open: boolean;
@@ -128,16 +124,7 @@ export function SetupTwoFactorDialog({
               {t("setup-mfa.enter-code-title")}
             </label>
             <div className="flex justify-center w-full pb-6">
-              <InputOTP maxLength={6} value={firstOtp} onChange={setFirstOtp}>
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-              </InputOTP>
+              <TwoFactorOTPInput value={firstOtp} onChange={setFirstOtp} />
             </div>
           </div>
           <DialogFooter>

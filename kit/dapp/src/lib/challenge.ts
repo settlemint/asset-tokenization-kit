@@ -84,13 +84,13 @@ async function generateChallengeResponse(
 /**
  * Handles a wallet verification challenge by generating an appropriate response
  * @param userWalletAddress - The wallet address to verify
- * @param pincode - The user's pincode
+ * @param otpCode - The user's OTP code
  * @returns Promise resolving to the challenge response
  * @throws {ChallengeError} If the challenge cannot be created or is invalid
  */
 export async function handleChallenge(
   userWalletAddress: Address,
-  pincode: number
+  otpCode: number
 ): Promise<string> {
   try {
     const verificationChallenges =
@@ -112,12 +112,16 @@ export async function handleChallenge(
       verificationChallenges.createWalletVerificationChallenges[0];
     const challenge = firstChallenge?.challenge;
 
+    if (firstChallenge.verificationType === "OTP") {
+      return otpCode.toString();
+    }
+
     if (!challenge?.secret || !challenge?.salt) {
       throw new ChallengeError("Invalid challenge format", "INVALID_CHALLENGE");
     }
 
     const { secret, salt } = challenge;
-    return generateChallengeResponse(pincode, salt, secret);
+    return generateChallengeResponse(otpCode, salt, secret);
   } catch (error) {
     if (error instanceof ChallengeError) {
       throw error;

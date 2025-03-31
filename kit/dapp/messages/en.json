@@ -492,11 +492,18 @@
         "valid-email": "Please enter a valid email address",
         "valid-number": "Please enter a valid number"
       },
-      "pincode-dialog": {
+      "otp-dialog": {
         "cancel": "Cancel",
         "confirm": "Yes, confirm",
-        "description": "To sign the transaction, please enter your pincode for verification and authorization.",
-        "title": "Enter your pincode to confirm"
+        "pincode": {
+          "description": "To sign the transaction, please enter your pincode for verification and authorization.",
+          "title": "Enter your pincode to confirm"
+        },
+        "two-factor-authentication": {
+          "description": "To sign the transaction, please enter your otp code from your authenticator app for verification and authorization.",
+          "title": "Enter your OTP to confirm"
+        },
+        "switch-method": "Switch method"
       },
       "progress": {
         "completed-step": "Completed step",

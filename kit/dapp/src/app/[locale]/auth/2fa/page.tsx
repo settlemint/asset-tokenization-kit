@@ -1,4 +1,5 @@
 "use client";
+import { TwoFactorOTPInput } from "@/components/blocks/auth/two-factor-otp-input";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,11 +15,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/client";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
@@ -76,20 +72,10 @@ export default function TwoFactorAuthPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <InputOTP
-                      maxLength={6}
+                    <TwoFactorOTPInput
                       value={field.value?.toString() ?? ""}
                       onChange={field.onChange}
-                    >
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
-                      </InputOTPGroup>
-                    </InputOTP>
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

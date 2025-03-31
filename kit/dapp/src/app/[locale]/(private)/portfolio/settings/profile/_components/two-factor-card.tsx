@@ -25,11 +25,8 @@ export function TwoFactorCard() {
   const { data: session, isPending } = authClient.useSession();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isEnteringPassword, setIsEnteringPassword] = useState(false);
-  const [twoFactorData, setTwoFactorData] = useState<{
-    totpURI: string;
-    backupCodes: string[];
-  } | null>(null);
+  const [isEnabling, setIsEnabling] = useState(false);
+  const [isDisabling, setIsDisabling] = useState(false);
   const [isBackupCodesDialogOpen, setIsBackupCodesDialogOpen] = useState(false);
 
   const disableTwoFactorAuthentication = async (password: string) => {
@@ -54,7 +51,7 @@ export function TwoFactorCard() {
         })
       );
     } finally {
-      setIsEnteringPassword(false);
+      setIsDisabling(false);
       setIsLoading(false);
     }
   };
@@ -96,7 +93,11 @@ export function TwoFactorCard() {
         </CardContent>
         <CardFooter className="flex items-center p-6 py-4 md:py-3 bg-transparent border-none justify-end">
           <Button
-            onClick={() => setIsEnteringPassword(true)}
+            onClick={() =>
+              session?.user.twoFactorEnabled
+                ? setIsDisabling(true)
+                : setIsEnabling(true)
+            }
             disabled={isLoading}
             size="sm"
           >
@@ -107,21 +108,14 @@ export function TwoFactorCard() {
         </CardFooter>
       </Card>
       <TwoFactorPasswordDialog
-        open={isEnteringPassword}
-        onOpenChange={setIsEnteringPassword}
+        open={isDisabling}
+        onOpenChange={setIsDisabling}
         onSubmit={disableTwoFactorAuthentication}
         isLoading={isLoading}
         submitButtonVariant="destructive"
         submitButtonText={t("disable.title")}
       />
-      <SetupTwoFactorDialog
-        onOpenChange={(isOpen) => {
-          if (!isOpen) {
-            setTwoFactorData(null);
-          }
-        }}
-        open={!!twoFactorData}
-      />
+      <SetupTwoFactorDialog onOpenChange={setIsEnabling} open={isEnabling} />
     </>
   );
 }

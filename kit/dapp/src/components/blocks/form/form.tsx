@@ -413,7 +413,7 @@ export function Form<
               {Array.isArray(children) ? children[currentStep] : children}
               {showFormSecurityConfirmation && (
                 <FormOtpDialog
-                  name={"pincode" as Path<Infer<S>>}
+                  name={"verificationCode" as Path<Infer<S>>}
                   open={showFormSecurityConfirmation}
                   onOpenChange={setShowFormSecurityConfirmation}
                   control={form.control as Control<Infer<S>>}

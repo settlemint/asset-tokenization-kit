@@ -22,6 +22,7 @@ export const user = pgTable("user", {
   kycVerifiedAt: timestamp("kyc_verified_at", { withTimezone: true }),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   currency: text("currency").notNull().default("EUR"),
+  pincodeEnabled: boolean("pincode_enabled").notNull().default(false),
   twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
 });
 

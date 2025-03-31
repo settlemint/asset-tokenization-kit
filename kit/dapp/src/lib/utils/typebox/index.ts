@@ -22,7 +22,9 @@ import { Price } from "./price";
 import { RoleMap, Roles } from "./roles";
 import { TimeUnit } from "./time-units";
 import { Timestamp } from "./timestamp";
+import { TwoFactorCode } from "./two-factor-code";
 import { UserRoles } from "./user-roles";
+import { VerificationMethod } from "./verification-method";
 
 // Extend TypeBox types with module augmentation
 declare module "@sinclair/typebox" {
@@ -41,6 +43,7 @@ declare module "@sinclair/typebox" {
     Hashes: typeof Hashes;
     Isin: typeof Isin;
     Pincode: typeof Pincode;
+    TwoFactorCode: typeof TwoFactorCode;
     Roles: typeof Roles;
     RoleMap: typeof RoleMap;
     AssetSymbol: typeof AssetSymbol;
@@ -49,6 +52,7 @@ declare module "@sinclair/typebox" {
     StringifiedBigInt: typeof StringifiedBigInt;
     Price: typeof Price;
     UserRoles: typeof UserRoles;
+    VerificationMethod: typeof VerificationMethod;
   }
 }
 
@@ -69,6 +73,7 @@ t.Hash = Hash;
 t.Hashes = Hashes;
 t.Isin = Isin;
 t.Pincode = Pincode;
+t.TwoFactorCode = TwoFactorCode;
 t.Roles = Roles;
 t.RoleMap = RoleMap;
 t.AssetSymbol = AssetSymbol;
@@ -77,6 +82,7 @@ t.Timestamp = Timestamp;
 t.StringifiedBigInt = StringifiedBigInt;
 t.Price = Price;
 t.UserRoles = UserRoles;
+t.VerificationMethod = VerificationMethod;
 
 export function safeParse<T extends TSchema>(
   schema: T,
@@ -105,4 +111,3 @@ export function safeParse<T extends TSchema>(
 
 export { t };
 export type { StaticDecode, TSchema };
-
