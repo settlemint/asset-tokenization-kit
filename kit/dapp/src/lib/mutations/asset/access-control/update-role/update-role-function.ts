@@ -29,11 +29,13 @@ export async function updateRolesFunction({
     DEFAULT_ADMIN_ROLE: false,
     SUPPLY_MANAGEMENT_ROLE: false,
     USER_MANAGEMENT_ROLE: false,
+    AUDITOR_ROLE: false,
   };
   const rolesToDisable: RoleMap = {
     DEFAULT_ADMIN_ROLE: false,
     SUPPLY_MANAGEMENT_ROLE: false,
     USER_MANAGEMENT_ROLE: false,
+    AUDITOR_ROLE: false,
   };
 
   for (const [role, enabled] of Object.entries(roles)) {
