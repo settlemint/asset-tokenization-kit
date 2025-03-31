@@ -38,8 +38,12 @@ export function CreateStablecoinSchema() {
           description: "The time unit for collateral validity duration",
           default: "months",
         }),
-        pincode: t.Pincode({
-          description: "The pincode for signing the transaction",
+        verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+          description:
+            "The two factor code or pincode for signing the transaction",
+        }),
+        verificationType: t.VerificationType({
+          description: "The type of verification",
         }),
         predictedAddress: t.EthereumAddress({
           description: "The predicted contract address",

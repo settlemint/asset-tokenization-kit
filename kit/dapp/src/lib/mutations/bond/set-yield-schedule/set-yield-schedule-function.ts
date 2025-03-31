@@ -41,7 +41,15 @@ export const setYieldScheduleFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, startTime, endTime, rate, interval, pincode },
+    parsedInput: {
+      address,
+      startTime,
+      endTime,
+      rate,
+      interval,
+      verificationCode,
+      verificationType,
+    },
     ctx: { user },
   }: {
     parsedInput: SetYieldScheduleInput;
@@ -62,7 +70,11 @@ export const setYieldScheduleFunction = withAccessControl(
       endTime: endTimeTimestamp,
       rate: percentageToBasisPoints(Number(rate)),
       interval: intervalToSeconds(interval),
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     });
 
     return safeParse(t.Hashes(), [

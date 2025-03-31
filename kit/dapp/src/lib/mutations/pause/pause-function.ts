@@ -83,7 +83,7 @@ const DepositPause = portalGraphql(`
 /**
  * Function to pause contract operations for a specific asset type
  *
- * @param input - Validated input containing address, pincode, and assettype
+ * @param input - Validated input containing address, verificationCode, and assettype
  * @param user - The user executing the pause operation
  * @returns Array of transaction hashes
  */
@@ -94,7 +94,7 @@ export const pauseFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, pincode, assettype },
+    parsedInput: { address, verificationCode, verificationType, assettype },
     ctx: { user },
   }: {
     parsedInput: PauseInput;
@@ -104,7 +104,11 @@ export const pauseFunction = withAccessControl(
     const params = {
       address,
       from: user.wallet,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

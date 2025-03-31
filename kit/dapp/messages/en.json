@@ -273,6 +273,13 @@
     "deposits-plural": "Deposits",
     "unknown": "Unknown"
   },
+  "auth-2fa": {
+    "title": "Enter your code",
+    "description": "Enter the 6-digit security code from your authenticator app.",
+    "submit": "Continue",
+    "submitting": "Verifying...",
+    "error": "Invalid security code"
+  },
   "blocked": "Blocked",
   "components": {
     "active-pill": {
@@ -495,11 +502,18 @@
         "valid-email": "Please enter a valid email address",
         "valid-number": "Please enter a valid number"
       },
-      "pincode-dialog": {
+      "otp-dialog": {
         "cancel": "Cancel",
         "confirm": "Yes, confirm",
-        "description": "To sign the transaction, please enter your pincode for verification and authorization.",
-        "title": "Enter your pincode to confirm"
+        "pincode": {
+          "description": "To sign the transaction, please enter your pincode for verification and authorization.",
+          "title": "Enter your pincode to confirm"
+        },
+        "two-factor-authentication": {
+          "description": "To sign the transaction, please enter your otp code from your authenticator app for verification and authorization.",
+          "title": "Enter your OTP to confirm"
+        },
+        "switch-method": "Switch method"
       },
       "progress": {
         "completed-step": "Completed step",
@@ -944,7 +958,49 @@
       },
       "profile": {
         "portfolio-management": "Portfolio Management",
-        "title": "Profile"
+        "title": "Profile",
+        "two-factor-authentication": {
+          "title": "Two-Factor Authentication",
+          "description": "Add an additional layer of security to your account by enabling two-factor authentication.",
+          "status": {
+            "enabled": "Two-factor authentication is enabled",
+            "disabled": "Two-factor authentication is disabled"
+          },
+          "backup-codes": {
+            "title": "Backup codes",
+            "description": "These codes can be used to access your account if you lose your phone. Make sure to store them in a safe place.",
+            "copy": "Copy backup codes",
+            "copied": "Backup codes copied to clipboard",
+            "generate": "Generate backup codes",
+            "error-message": "Failed to generate backup codes: {error}"
+          },
+          "enter-password": {
+            "title": "Enter password",
+            "description": "Enter your password to enable two-factor authentication.",
+            "placeholder": "Password",
+            "cancel": "Cancel"
+          },
+          "setup-mfa": {
+            "title": "Setup MFA",
+            "description": "Scan the QR code with the authenticator app on your phone to enable two-factor authentication.",
+            "cancel": "Cancel",
+            "enable": "Enable",
+            "loading": "Enabling...",
+            "enter-code-title": "Enter the code from the authenticator app"
+          },
+          "enable": {
+            "title": "Enable",
+            "description": "Enable two-factor authentication to add an additional layer of security to your account.",
+            "success-message": "Two-factor authentication enabled successfully",
+            "error-message": "Failed to enable two-factor authentication: {error}"
+          },
+          "disable": {
+            "title": "Disable",
+            "description": "Disable two-factor authentication to remove the additional layer of security from your account.",
+            "success-message": "Two-factor authentication disabled successfully",
+            "error-message": "Failed to disable two-factor authentication: {error}"
+          }
+        }
       }
     },
     "transfer-form": {
@@ -1786,7 +1842,6 @@
       "password-instructions": "Please use 8 characters at minimum.",
       "password-placeholder": "Enter your password",
       "pincode-form": {
-        "name-label": "Pincode Name",
         "pincode-label": "Pincode",
         "setting-up": "Setting up...",
         "submit": "Setup Pincode"
@@ -1834,7 +1889,14 @@
       "wallet-security": {
         "pincode-instruction": "Enter a 6-digit pincode to secure your wallet.",
         "pincode-set": "Pincode set successfully",
-        "setup-pincode": "Setup Pincode"
+        "pincode-set-error": "Failed to set pincode",
+        "setup-pincode": "Setup Pincode",
+        "security-method": {
+          "title": "Wallet security method",
+          "description": "Choose a security option to secure your wallet.",
+          "pincode": "PIN-code",
+          "two-factor-authentication": "Authenticator app"
+        }
       }
     },
     "users": {
