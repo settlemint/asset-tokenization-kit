@@ -4,6 +4,7 @@ import { createAuthEndpoint } from "better-auth/api";
 import { twoFactor } from "better-auth/plugins/two-factor";
 import { disableTwoFactorFunction } from "../mutations/user/disable-two-factor-function";
 import { verifyTwoFactorOTPFunction } from "../mutations/user/verify-two-factor-otp-function";
+
 import type { User } from "./types";
 const plugin = twoFactor({
   totpOptions: {
@@ -21,24 +22,38 @@ plugin.endpoints = {
   enableTwoFactor: createAuthEndpoint(
     originalEnableTwoFactor.path,
     originalEnableTwoFactor.options,
-    async (...args) => {
-      const { backupCodes } = await originalEnableTwoFactor(...args);
+    async (ctx) => {
+      const user = ctx.context.session.user as User;
+      const r = await originalEnableTwoFactor({
+        ...ctx,
+        asResponse: false,
+        returnHeaders: false,
+        skipVerificationOnEnable: true,
+      });
       const { totpURI } = await enableTwoFactorFunction({
         parsedInput: {
           algorithm: OTP_ALGORITHM,
           digits: OTP_DIGITS,
           period: OTP_PERIOD,
         },
+        ctx: { user },
       });
-      return { backupCodes, totpURI };
+      return { backupCodes: r.backupCodes, totpURI };
     }
   ),
   disableTwoFactor: createAuthEndpoint(
     originalDisableTwoFactor.path,
     originalDisableTwoFactor.options,
-    async (...args) => {
-      const { status } = await originalDisableTwoFactor(...args);
-      await disableTwoFactorFunction();
+    async (ctx) => {
+      const user = ctx.context.session.user as User;
+      const { status } = await originalDisableTwoFactor({
+        ...ctx,
+        asResponse: false,
+        returnHeaders: false,
+      });
+      if (status) {
+        await disableTwoFactorFunction({ ctx: { user } });
+      }
       return { status };
     }
   ),

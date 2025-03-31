@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { getUser } from "@/lib/auth/utils";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { revalidateTag } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
 
 /**
@@ -35,5 +36,6 @@ export async function disableTwoFactorFunction({
     address: currentUser.wallet,
     verificationId: currentUser.twoFactorVerificationId,
   });
+  revalidateTag("user");
   return result.deleteWalletVerification;
 }

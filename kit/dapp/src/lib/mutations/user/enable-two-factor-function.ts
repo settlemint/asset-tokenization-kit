@@ -2,6 +2,7 @@ import type { User } from "@/lib/auth/types";
 import { getUser } from "@/lib/auth/utils";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { revalidateTag } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
 import type { EnableTwoFactorInput } from "./enable-two-factor-schema";
 
@@ -26,9 +27,9 @@ const EnableTwoFactor = portalGraphql(`
 /**
  * GraphQL mutation to update the two-factor verification ID for a user
  */
-const UpdateUserTwoFactorVerificationId = hasuraGraphql(`
-  mutation UpdateUserTwoFactorVerificationId($id: String!, $verificationId: String!) {
-    update_user(where: { id: {_eq: $id} }, _set:{ two_factor_verification_id: $verificationId }) {
+const UpdateUserTwoFactor = hasuraGraphql(`
+  mutation UpdateUserTwoFactor($id: String!, $verificationId: String!) {
+    update_user(where: { id: {_eq: $id} }, _set:{ two_factor_enabled: true, two_factor_verification_id: $verificationId }) {
       affected_rows
     }
   }
@@ -49,7 +50,7 @@ export async function enableTwoFactorFunction({
 }) {
   const currentUser = ctx?.user ?? (await getUser());
   const result = await portalClient.request(EnableTwoFactor, {
-    address: currentUser?.wallet,
+    address: currentUser.wallet,
     algorithm,
     digits,
     period,
@@ -63,9 +64,10 @@ export async function enableTwoFactorFunction({
       "Failed to create wallet verification, no verification ID returned"
     );
   }
-  await hasuraClient.request(UpdateUserTwoFactorVerificationId, {
+  await hasuraClient.request(UpdateUserTwoFactor, {
     id: currentUser.id,
     verificationId: result.createWalletVerification?.id,
   });
+  revalidateTag("user");
   return { totpURI: parameters?.uri ?? "" };
 }

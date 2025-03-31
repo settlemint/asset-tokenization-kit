@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -23,7 +24,7 @@ export function TwoFactorCard() {
     "portfolio.settings.profile.two-factor-authentication"
   );
   const { data: session, isPending } = authClient.useSession();
-
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isEnabling, setIsEnabling] = useState(false);
   const [isDisabling, setIsDisabling] = useState(false);
@@ -43,6 +44,7 @@ export function TwoFactorCard() {
         );
       } else {
         toast.success(t("disable.success-message"));
+        router.refresh();
       }
     } catch (error) {
       toast.error(
