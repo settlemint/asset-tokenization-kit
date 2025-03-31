@@ -54,6 +54,9 @@ export function CreateCryptoCurrencyForm({
             amount: 1,
             currency: userDetails.currency,
           },
+          verificationType: "pincode",
+          predictedAddress: "0x0000000000000000000000000000000000000000",
+          assetAdmins: [],
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
