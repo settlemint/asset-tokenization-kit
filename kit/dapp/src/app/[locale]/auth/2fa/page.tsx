@@ -16,31 +16,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { authClient } from "@/lib/auth/client";
-import { t, type StaticDecode } from "@/lib/utils/typebox";
+import type { VerifyTwoFactorOTPInput } from "@/lib/mutations/user/verify-two-factor-otp-schema";
+import { VerifyTwoFactorOTPSchema } from "@/lib/mutations/user/verify-two-factor-otp-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-function TwoFactorSchema() {
-  return t.Object(
-    {
-      code: t.Pincode({
-        description: "The OTP code",
-      }),
-    },
-    {
-      description: "Schema for verifying 2FA OTP",
-    }
-  );
-}
-
-type TwoFactorInput = StaticDecode<ReturnType<typeof TwoFactorSchema>>;
-
 export default function TwoFactorAuthPage() {
   const t = useTranslations("auth-2fa");
-  const form = useForm<TwoFactorInput>({
-    resolver: typeboxResolver(TwoFactorSchema()),
+  const form = useForm<VerifyTwoFactorOTPInput>({
+    resolver: typeboxResolver(VerifyTwoFactorOTPSchema()),
   });
 
   const onSubmit = () => {

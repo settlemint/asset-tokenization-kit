@@ -24,6 +24,7 @@ export const user = pgTable("user", {
   currency: text("currency").notNull().default("EUR"),
   pincodeEnabled: boolean("pincode_enabled").notNull().default(false),
   twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
+  twoFactorVerificationId: text("two_factor_verification_id"),
 });
 
 export const session = pgTable("session", {

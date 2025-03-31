@@ -11,15 +11,14 @@ import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
-import { twoFactor } from "better-auth/plugins/two-factor";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { getServerEnvironment } from "../config/environment";
 import { metadata } from "../config/metadata";
 import { db } from "../db";
-import { OTP_DIGITS, OTP_PERIOD } from "./otp";
 import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
 import { createUserWallet } from "./portal";
+import twoFactorPlugin from "./two-factor";
 
 const env = getServerEnvironment();
 
@@ -101,6 +100,11 @@ export const auth = betterAuth({
         default: false,
         input: false,
       },
+      twoFactorVerificationId: {
+        type: "string",
+        required: false,
+        input: false,
+      },
     },
   },
   databaseHooks: {
@@ -179,12 +183,7 @@ export const auth = betterAuth({
     passkey({
       rpName: metadata.title.default,
     }),
-    twoFactor({
-      totpOptions: {
-        digits: OTP_DIGITS,
-        period: OTP_PERIOD,
-      },
-    }),
+    twoFactorPlugin,
     magicLink({
       sendMagicLink,
     }),

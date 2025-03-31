@@ -10,8 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
-import { OTP_ALGORITHM, OTP_DIGITS, OTP_PERIOD } from "@/lib/auth/otp";
-import { enableTwoFactor } from "@/lib/mutations/user/enable-two-factor-action";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import QRCode from "react-qr-code";
@@ -81,11 +79,6 @@ export function SetupTwoFactorDialog({
           })
         );
       } else {
-        await enableTwoFactor({
-          algorithm: OTP_ALGORITHM,
-          digits: OTP_DIGITS,
-          period: OTP_PERIOD,
-        });
         setFirstOtp("");
         onOpenChange(false);
         toast.success(t("enable.success-message"));
