@@ -14,8 +14,12 @@ export function BlockUserSchema() {
       address: t.EthereumAddress({
         description: "The contract address",
       }),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
+      }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
       }),
       userAddress: t.EthereumAddress({
         description: "The address of the user to block",

@@ -48,8 +48,12 @@ export function CreateBondSchema({
           description: "International Securities Identification Number",
         })
       ),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
+      }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
       }),
       cap: t.Amount(maxCap, minCap, decimals, {
         description: "Maximum issuance amount",

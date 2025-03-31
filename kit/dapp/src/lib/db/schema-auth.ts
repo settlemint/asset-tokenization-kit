@@ -22,6 +22,9 @@ export const user = pgTable("user", {
   kycVerifiedAt: timestamp("kyc_verified_at", { withTimezone: true }),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   currency: text("currency").notNull().default("EUR"),
+  pincodeEnabled: boolean("pincode_enabled").notNull().default(false),
+  twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
+  twoFactorVerificationId: text("two_factor_verification_id"),
 });
 
 export const session = pgTable("session", {
@@ -108,4 +111,13 @@ export const passkey = pgTable("passkey", {
   backedUp: boolean("backed_up").notNull(),
   transports: text("transports"),
   createdAt: timestamp("created_at", { withTimezone: true }),
+});
+
+export const twoFactor = pgTable("two_factor", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  secret: text("secret").notNull(),
+  backupCodes: text("backup_codes").notNull(),
 });

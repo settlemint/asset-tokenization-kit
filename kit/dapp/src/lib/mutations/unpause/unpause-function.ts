@@ -83,7 +83,7 @@ const DepositUnpause = portalGraphql(`
 /**
  * Function to unpause a token contract
  *
- * @param input - Validated input containing address, pincode, and assettype
+ * @param input - Validated input containing address, verificationCode, and assettype
  * @param user - The user executing the unpause operation
  * @returns Array of transaction hashes
  */
@@ -94,7 +94,7 @@ export const unpauseFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, pincode, assettype },
+    parsedInput: { address, verificationCode, verificationType, assettype },
     ctx: { user },
   }: {
     parsedInput: UnpauseInput;
@@ -104,7 +104,11 @@ export const unpauseFunction = withAccessControl(
     const params = {
       address,
       from: user.wallet,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

@@ -5,7 +5,7 @@ import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transac
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
-import { grantRolesToAdmins } from '@/lib/utils/role-granting';
+import { grantRolesToAdmins } from "@/lib/utils/role-granting";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateEquityInput } from "./create-schema";
@@ -56,64 +56,73 @@ export const createEquityFunction = withAccessControl(
       asset: ["manage"],
     },
   },
-  async ({  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    pincode,
-    isin,
-    equityCategory,
-    equityClass,
-    predictedAddress,
-    price,
-    assetAdmins,
-  },
-  ctx: { user },
-}: {
-  parsedInput: CreateEquityInput;
-  ctx: { user: User };
-}) => {
-  await hasuraClient.request(CreateOffchainEquity, {
-    id: predictedAddress,
-    isin: isin,
-  });
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      verificationCode,
+      verificationType,
+      isin,
+      equityCategory,
+      equityClass,
+      predictedAddress,
+      price,
+      assetAdmins,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateEquityInput;
+    ctx: { user: User };
+  }) => {
+    await hasuraClient.request(CreateOffchainEquity, {
+      id: predictedAddress,
+      isin: isin,
+    });
 
-  await hasuraClient.request(AddAssetPrice, {
-    assetId: predictedAddress,
-    amount: String(price.amount),
-    currency: price.currency,
-  });
+    await hasuraClient.request(AddAssetPrice, {
+      assetId: predictedAddress,
+      amount: String(price.amount),
+      currency: price.currency,
+    });
 
-  const createEquityResult = await portalClient.request(EquityFactoryCreate, {
-    address: EQUITY_FACTORY_ADDRESS,
-    from: user.wallet,
-    name: assetName,
-    symbol: symbol.toString(),
-    decimals,
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-    equityCategory,
-    equityClass,
-  });
+    const createEquityResult = await portalClient.request(EquityFactoryCreate, {
+      address: EQUITY_FACTORY_ADDRESS,
+      from: user.wallet,
+      name: assetName,
+      symbol: symbol.toString(),
+      decimals,
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
+      equityCategory,
+      equityClass,
+    });
 
-  const createTxHash = createEquityResult.EquityFactoryCreate?.transactionHash;
-  if (!createTxHash) {
-    throw new Error("Failed to create equity: no transaction hash received");
+    const createTxHash =
+      createEquityResult.EquityFactoryCreate?.transactionHash;
+    if (!createTxHash) {
+      throw new Error("Failed to create equity: no transaction hash received");
+    }
+
+    // Wait for the equity creation transaction to be mined
+    await waitForTransactions([createTxHash]);
+
+    // Grant roles to admins using the shared helper
+    const roleGrantHashes = await grantRolesToAdmins(
+      assetAdmins,
+      predictedAddress,
+      verificationCode,
+      verificationType,
+      "equity",
+      user
+    );
+
+    // Combine all transaction hashes
+    const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+
+    return safeParse(t.Hashes(), allTransactionHashes);
   }
-
-  // Wait for the equity creation transaction to be mined
-  await waitForTransactions([createTxHash]);
-
-  // Grant roles to admins using the shared helper
-  const roleGrantHashes = await grantRolesToAdmins(
-    assetAdmins,
-    predictedAddress,
-    pincode,
-    "equity",
-    user
-  );
-
-  // Combine all transaction hashes
-  const allTransactionHashes = [createTxHash, ...roleGrantHashes];
-
-  return safeParse(t.Hashes(), allTransactionHashes);
-});
+);

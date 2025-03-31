@@ -106,7 +106,7 @@ const DepositTransfer = portalGraphql(`
 /**
  * Function to transfer tokens to a recipient
  *
- * @param input - Validated input containing address, pincode, value, to, and assettype
+ * @param input - Validated input containing address, verificationCode, value, to, and assettype
  * @param user - The user executing the transfer operation
  * @returns Array of transaction hashes
  */
@@ -117,7 +117,14 @@ export const transferAssetFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, pincode, value, to, assettype },
+    parsedInput: {
+      address,
+      verificationCode,
+      verificationType,
+      value,
+      to,
+      assettype,
+    },
     ctx: { user },
   }: {
     parsedInput: TransferInput;
@@ -135,7 +142,11 @@ export const transferAssetFunction = withAccessControl(
       from: user.wallet,
       value: parseUnits(value.toString(), decimals).toString(),
       to,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

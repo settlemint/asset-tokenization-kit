@@ -18,6 +18,7 @@ import { metadata } from "../config/metadata";
 import { db } from "../db";
 import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
 import { createUserWallet } from "./portal";
+import twoFactorPlugin from "./two-factor";
 
 const env = getServerEnvironment();
 
@@ -91,6 +92,17 @@ export const auth = betterAuth({
         type: "string",
         required: false,
         default: "EUR",
+        input: false,
+      },
+      pincodeEnabled: {
+        type: "boolean",
+        required: false,
+        default: false,
+        input: false,
+      },
+      twoFactorVerificationId: {
+        type: "string",
+        required: false,
         input: false,
       },
     },
@@ -171,6 +183,7 @@ export const auth = betterAuth({
     passkey({
       rpName: metadata.title.default,
     }),
+    twoFactorPlugin,
     magicLink({
       sendMagicLink,
     }),
