@@ -159,8 +159,8 @@ contract DepositFactoryTest is Test {
         // Updated to match the actual number of events emitted
         assertEq(
             entries.length,
-            5,
-            "Should emit 5 events: UserAllowed, RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and DepositCreated"
+            6,
+            "Should emit 6 events: UserAllowed, RoleGranted (admin), RoleGranted (supply), RoleGranted (user), RoleGranted (auditor), and DepositCreated"
         );
 
         // First event should be UserAllowed for the owner
@@ -196,8 +196,16 @@ contract DepositFactoryTest is Test {
             "Wrong event signature for third RoleGranted"
         );
 
+        // Fifth event should be RoleGranted for AUDITOR_ROLE
+        VmSafe.Log memory fifthEntry = entries[4];
+        assertEq(
+            fifthEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for fourth RoleGranted"
+        );
+
         // Fifth event should be DepositCreated
-        VmSafe.Log memory lastEntry = entries[4];
+        VmSafe.Log memory lastEntry = entries[5];
         assertEq(
             lastEntry.topics[0],
             keccak256("DepositCreated(address,address)"),

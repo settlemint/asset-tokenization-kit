@@ -29,6 +29,7 @@ const StableCoinsModule = buildModule("StableCoinsModule", (m) => {
   // Set up roles for the stablecoin
   const supplyManagementRole = keccak256(toUtf8Bytes("SUPPLY_MANAGEMENT_ROLE"));
   const userManagementRole = keccak256(toUtf8Bytes("USER_MANAGEMENT_ROLE"));
+  const auditorRole = keccak256(toUtf8Bytes("AUDITOR_ROLE"));
 
   // Grant roles to the deployer
   m.call(usdc, "grantRole", [supplyManagementRole, deployer], {
@@ -36,6 +37,9 @@ const StableCoinsModule = buildModule("StableCoinsModule", (m) => {
   });
   m.call(usdc, "grantRole", [userManagementRole, deployer], {
     id: "grantUserRole",
+  });
+  m.call(usdc, "grantRole", [auditorRole, deployer], {
+    id: "grantAuditorRole",
   });
 
   // Mint and burn some tokens

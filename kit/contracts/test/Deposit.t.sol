@@ -44,6 +44,7 @@ contract DepositTest is Test {
         assertTrue(deposit.hasRole(deposit.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(deposit.hasRole(deposit.SUPPLY_MANAGEMENT_ROLE(), owner));
         assertTrue(deposit.hasRole(deposit.USER_MANAGEMENT_ROLE(), owner));
+        assertTrue(deposit.hasRole(deposit.AUDITOR_ROLE(), owner));
     }
 
     function test_DifferentDecimals() public {
@@ -94,7 +95,7 @@ contract DepositTest is Test {
     function test_OnlyAdminCanUpdateCollateral() public {
         uint256 collateralAmount = 1_000_000;
 
-        bytes32 role = deposit.SUPPLY_MANAGEMENT_ROLE();
+        bytes32 role = deposit.AUDITOR_ROLE();
         vm.startPrank(user1);
         vm.expectRevert(abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user1, role));
         deposit.updateCollateral(collateralAmount);
