@@ -61,6 +61,7 @@ export const createDepositFunction = withAccessControl(
       collateralLivenessValue,
       collateralLivenessTimeUnit,
       verificationCode,
+      verificationType,
       isin,
       predictedAddress,
       price,
@@ -94,7 +95,11 @@ export const createDepositFunction = withAccessControl(
         symbol: symbol.toString(),
         decimals,
         collateralLivenessSeconds,
-        challengeResponse: await handleChallenge(user.wallet, verificationCode),
+        challengeResponse: await handleChallenge(
+          user.wallet,
+          verificationCode,
+          verificationType
+        ),
       }
     );
 

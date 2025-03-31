@@ -185,6 +185,7 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
       target,
       amount,
       verificationCode,
+      verificationType,
       targetAddress,
       underlyingAssetAddress,
       underlyingAssetType,
@@ -223,7 +224,11 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
     const approveParams = {
       address: underlyingAssetAddress,
       from: user.wallet,
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
       input: {
         spender: targetAddress,
         value: formattedAmount,
@@ -295,7 +300,11 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
         input: {
           amount: formattedAmount,
         },
-        challengeResponse: await handleChallenge(user.wallet, verificationCode),
+        challengeResponse: await handleChallenge(
+          user.wallet,
+          verificationCode,
+          verificationType
+        ),
       });
 
       if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
@@ -316,7 +325,8 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
           },
           challengeResponse: await handleChallenge(
             user.wallet,
-            verificationCode
+            verificationCode,
+            verificationType
           ),
         }
       );

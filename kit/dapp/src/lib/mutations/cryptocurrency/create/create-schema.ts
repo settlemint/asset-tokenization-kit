@@ -36,6 +36,9 @@ export function CreateCryptoCurrencySchema({
         description:
           "The two factor code or pincode for signing the transaction",
       }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
       initialSupply: t.Amount(maxInitialSupply, 0, decimals, {
         description: "Initial supply of tokens",
         default: 0,

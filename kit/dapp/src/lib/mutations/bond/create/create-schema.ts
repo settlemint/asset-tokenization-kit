@@ -50,6 +50,9 @@ export function CreateBondSchema({
         description:
           "The two factor code or pincode for signing the transaction",
       }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
       cap: t.Amount(maxCap, minCap, decimals, {
         description: "Maximum issuance amount",
         errorMessage: "Must be at least 1",

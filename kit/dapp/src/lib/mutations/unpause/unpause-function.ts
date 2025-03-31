@@ -94,7 +94,7 @@ export const unpauseFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, verificationCode, assettype },
+    parsedInput: { address, verificationCode, verificationType, assettype },
     ctx: { user },
   }: {
     parsedInput: UnpauseInput;
@@ -104,7 +104,11 @@ export const unpauseFunction = withAccessControl(
     const params = {
       address,
       from: user.wallet,
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

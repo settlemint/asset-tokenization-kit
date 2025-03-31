@@ -101,7 +101,13 @@ export const burnFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, verificationCode, amount, assettype },
+    parsedInput: {
+      address,
+      verificationCode,
+      verificationType,
+      amount,
+      assettype,
+    },
     ctx: { user },
   }: {
     parsedInput: BurnInput;
@@ -118,7 +124,11 @@ export const burnFunction = withAccessControl(
       address,
       from: user.wallet,
       amount: parseUnits(amount.toString(), decimals).toString(),
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

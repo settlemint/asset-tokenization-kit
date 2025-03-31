@@ -24,6 +24,7 @@ import { TimeUnit } from "./time-units";
 import { Timestamp } from "./timestamp";
 import { TwoFactorCode } from "./two-factor-code";
 import { UserRoles } from "./user-roles";
+import { VerificationType } from "./verification-type";
 
 // Extend TypeBox types with module augmentation
 declare module "@sinclair/typebox" {
@@ -51,6 +52,7 @@ declare module "@sinclair/typebox" {
     StringifiedBigInt: typeof StringifiedBigInt;
     Price: typeof Price;
     UserRoles: typeof UserRoles;
+    VerificationType: typeof VerificationType;
   }
 }
 
@@ -80,6 +82,7 @@ t.Timestamp = Timestamp;
 t.StringifiedBigInt = StringifiedBigInt;
 t.Price = Price;
 t.UserRoles = UserRoles;
+t.VerificationType = VerificationType;
 
 export function safeParse<T extends TSchema>(
   schema: T,

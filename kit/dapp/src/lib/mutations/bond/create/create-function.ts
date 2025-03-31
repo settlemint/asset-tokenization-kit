@@ -64,6 +64,7 @@ export const createBondFunction = withAccessControl(
       symbol,
       decimals,
       verificationCode,
+      verificationType,
       isin,
       cap,
       faceValue,
@@ -105,7 +106,11 @@ export const createBondFunction = withAccessControl(
       faceValue: String(faceValue),
       maturityDate: maturityDateTimestamp,
       underlyingAsset: underlyingAsset.id,
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     });
 
     const createTxHash = createBondResult.BondFactoryCreate?.transactionHash;

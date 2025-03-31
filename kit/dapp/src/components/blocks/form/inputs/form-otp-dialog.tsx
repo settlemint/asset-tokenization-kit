@@ -13,18 +13,19 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { InputOTP } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/client";
+import type { VerificationType } from "@/lib/utils/typebox/verification-type";
 import { useTranslations } from "next-intl";
 import type { ComponentPropsWithoutRef } from "react";
 import { useCallback, useState } from "react";
-import type { FieldValues } from "react-hook-form";
+import type { FieldValues, Path, PathValue } from "react-hook-form";
 import { PincodeInput } from "../../auth/pincode-input";
 import { TwoFactorOTPInput } from "../../auth/two-factor-otp-input";
 import type { BaseFormInputProps } from "./types";
 
 type InputProps = ComponentPropsWithoutRef<typeof InputOTP>;
-type VerificationMethod = "two-factor" | "pincode";
 
 type FormOtpDialogProps<T extends FieldValues> = Omit<
   InputProps,
@@ -52,33 +53,32 @@ export function FormOtpDialog<T extends FieldValues>({
   const { data } = authClient.useSession();
   const isTwoFactorEnabled = data?.user?.twoFactorEnabled ?? false;
   const isPincodeEnabled = data?.user?.pincodeEnabled ?? false;
-  const [activeMethod, setActiveMethod] = useState<VerificationMethod>(
-    isTwoFactorEnabled ? "two-factor" : "pincode"
-  );
-  const canSwitchMethod = isTwoFactorEnabled && isPincodeEnabled;
+  const [activeVerificationType, setActiveVerificationType] =
+    useState<VerificationType>(isTwoFactorEnabled ? "two-factor" : "pincode");
+  const canSwitchVerificationType = isTwoFactorEnabled && isPincodeEnabled;
   const InputComponent =
-    activeMethod === "two-factor" ? TwoFactorOTPInput : PincodeInput;
+    activeVerificationType === "two-factor" ? TwoFactorOTPInput : PincodeInput;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {activeMethod === "two-factor"
+            {activeVerificationType === "two-factor"
               ? t("two-factor-authentication.title")
               : t("pincode.title")}
           </DialogTitle>
           <DialogDescription>
-            {activeMethod === "two-factor"
+            {activeVerificationType === "two-factor"
               ? t("two-factor-authentication.description")
               : t("pincode.description")}
           </DialogDescription>
         </DialogHeader>
         <FormField
           {...props}
-          render={({ field, formState: { isValid } }) => (
+          render={({ field }) => (
             <FormItem className="flex flex-col space-y-1">
-              <div className="space-y-2">
+              <div className="space-y-2 flex flex-col items-center">
                 <FormControl>
                   <InputComponent
                     value={(field.value ?? "").toString()}
@@ -88,7 +88,39 @@ export function FormOtpDialog<T extends FieldValues>({
                 </FormControl>
                 <FormMessage />
               </div>
-              <DialogFooter className="gap-2">
+            </FormItem>
+          )}
+        />
+        <FormField
+          {...props}
+          defaultValue={
+            (isTwoFactorEnabled ? "two-factor" : "pincode") as PathValue<
+              T,
+              Path<T>
+            >
+          }
+          name={"verificationType" as Path<T>}
+          render={({ field, formState: { isValid } }) => (
+            <FormItem>
+              <FormControl hidden>
+                <Input type="hidden" value={field.value} />
+              </FormControl>
+              {canSwitchVerificationType ? (
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    const newVerificationType =
+                      activeVerificationType === "two-factor"
+                        ? "pincode"
+                        : "two-factor";
+                    setActiveVerificationType(newVerificationType);
+                    field.onChange(newVerificationType);
+                  }}
+                >
+                  {t("switch-method")}
+                </Button>
+              ) : null}
+              <DialogFooter className="gap-2 mt-4">
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
                   {t("cancel")}
                 </Button>
@@ -99,20 +131,6 @@ export function FormOtpDialog<T extends FieldValues>({
             </FormItem>
           )}
         />
-        {canSwitchMethod ? (
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                const newMethod =
-                  activeMethod === "two-factor" ? "pincode" : "two-factor";
-                setActiveMethod(newMethod);
-              }}
-            >
-              {t("switch-method")}
-            </Button>
-          </DialogFooter>
-        ) : null}
       </DialogContent>
     </Dialog>
   );

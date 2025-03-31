@@ -53,7 +53,13 @@ export const updateCollateralFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, verificationCode, amount, assettype },
+    parsedInput: {
+      address,
+      verificationCode,
+      verificationType,
+      amount,
+      assettype,
+    },
     ctx: { user },
   }: {
     parsedInput: UpdateCollateralInput;
@@ -71,7 +77,11 @@ export const updateCollateralFunction = withAccessControl(
       address,
       from: user.wallet,
       input: collateralInput,
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

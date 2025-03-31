@@ -44,6 +44,9 @@ export function TopUpSchema({
         description:
           "The two factor code or pincode for signing the transaction",
       }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
     },
     {
       description: "Schema for validating top up underlying asset inputs",

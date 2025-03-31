@@ -63,6 +63,7 @@ export const createCryptoCurrencyFunction = withAccessControl(
       symbol,
       decimals,
       verificationCode,
+      verificationType,
       initialSupply,
       predictedAddress,
       price,
@@ -96,7 +97,11 @@ export const createCryptoCurrencyFunction = withAccessControl(
         symbol: String(symbol),
         decimals,
         initialSupply: initialSupplyExact,
-        challengeResponse: await handleChallenge(user.wallet, verificationCode),
+        challengeResponse: await handleChallenge(
+          user.wallet,
+          verificationCode,
+          verificationType
+        ),
       }
     );
 

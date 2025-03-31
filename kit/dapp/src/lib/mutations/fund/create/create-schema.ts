@@ -39,6 +39,9 @@ export function CreateFundSchema() {
         description:
           "The two factor code or pincode for signing the transaction",
       }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
       fundCategory: t.String({
         description: "The category of the fund",
         minLength: 1,

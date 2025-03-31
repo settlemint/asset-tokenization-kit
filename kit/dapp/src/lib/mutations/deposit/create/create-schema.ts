@@ -38,6 +38,9 @@ export function CreateDepositSchema() {
         description:
           "The two factor code or pincode for signing the transaction",
       }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
       collateralLivenessValue: t.Number({
         description: "The value for collateral liveness period",
         minimum: 1,

@@ -17,6 +17,9 @@ export function UnpauseSchema() {
         description:
           "The two factor code or pincode for signing the transaction",
       }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
       assettype: t.AssetType({
         description: "The type of asset",
       }),

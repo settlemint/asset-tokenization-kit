@@ -49,6 +49,9 @@ export function WithdrawSchema({
         description:
           "The two factor code or pincode for signing the transaction",
       }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
       target: t.Union([t.Literal("bond"), t.Literal("yield")], {
         description: "The target type (bond or yield)",
       }),

@@ -41,7 +41,7 @@ export const matureFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, verificationCode },
+    parsedInput: { address, verificationCode, verificationType },
     ctx: { user },
   }: {
     parsedInput: MatureFormInput;
@@ -50,7 +50,11 @@ export const matureFunction = withAccessControl(
     const response = await portalClient.request(MatureBond, {
       address: address,
       from: user.wallet,
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     });
 
     return safeParse(t.Hashes(), [response.BondMature?.transactionHash]);

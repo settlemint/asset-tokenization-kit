@@ -74,6 +74,7 @@ export const createStablecoinFunction = withAccessControl(
       symbol,
       decimals,
       verificationCode,
+      verificationType,
       collateralLivenessValue,
       collateralLivenessTimeUnit,
       predictedAddress,
@@ -109,7 +110,8 @@ export const createStablecoinFunction = withAccessControl(
             getTimeUnitSeconds(collateralLivenessTimeUnit || "months"),
           challengeResponse: await handleChallenge(
             user.wallet,
-            verificationCode
+            verificationCode,
+            verificationType
           ),
         }
       );

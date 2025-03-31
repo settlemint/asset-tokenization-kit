@@ -21,6 +21,9 @@ export function RedeemBondSchema({
         description:
           "The two factor code or pincode for signing the transaction",
       }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
     },
     {
       description: "Schema for validating bond redemption inputs",

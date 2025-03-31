@@ -63,6 +63,7 @@ export const createFundFunction = withAccessControl(
       symbol,
       decimals,
       verificationCode,
+      verificationType,
       isin,
       fundCategory,
       fundClass,
@@ -93,7 +94,11 @@ export const createFundFunction = withAccessControl(
       name: assetName,
       symbol: symbol.toString(),
       decimals,
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
       fundCategory,
       fundClass,
       managementFeeBps,

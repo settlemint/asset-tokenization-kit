@@ -38,6 +38,9 @@ export function CreateEquitySchema() {
         description:
           "The two factor code or pincode for signing the transaction",
       }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
       equityCategory: t.String({
         description: "The category of the equity",
         minLength: 1,

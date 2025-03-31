@@ -117,7 +117,14 @@ export const mintFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, verificationCode, amount, to, assettype },
+    parsedInput: {
+      address,
+      verificationCode,
+      verificationType,
+      amount,
+      to,
+      assettype,
+    },
     ctx: { user },
   }: {
     parsedInput: MintInput;
@@ -135,7 +142,11 @@ export const mintFunction = withAccessControl(
       from: user.wallet,
       amount: parseUnits(amount.toString(), decimals).toString(),
       to,
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

@@ -18,6 +18,9 @@ export function AllowUserSchema() {
         description:
           "The two factor code or pincode for signing the transaction",
       }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
       userAddress: t.EthereumAddress({
         description: "The address of the user to allow",
       }),

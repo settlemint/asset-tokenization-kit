@@ -173,6 +173,7 @@ export const withdrawFunction = withAccessControl(
       target,
       targetAddress,
       verificationCode,
+      verificationType,
       amount,
       to,
       underlyingAssetAddress,
@@ -200,7 +201,11 @@ export const withdrawFunction = withAccessControl(
       address: targetAddress,
       from: user.wallet,
       input: tokenInput,
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {
@@ -234,7 +239,8 @@ export const withdrawFunction = withAccessControl(
               },
               challengeResponse: await handleChallenge(
                 user.wallet,
-                verificationCode
+                verificationCode,
+                verificationType
               ),
             }
           );
@@ -258,7 +264,8 @@ export const withdrawFunction = withAccessControl(
               },
               challengeResponse: await handleChallenge(
                 user.wallet,
-                verificationCode
+                verificationCode,
+                verificationType
               ),
             }
           );

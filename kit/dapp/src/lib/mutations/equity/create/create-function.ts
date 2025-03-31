@@ -62,6 +62,7 @@ export const createEquityFunction = withAccessControl(
       symbol,
       decimals,
       verificationCode,
+      verificationType,
       isin,
       equityCategory,
       equityClass,
@@ -91,7 +92,11 @@ export const createEquityFunction = withAccessControl(
       name: assetName,
       symbol: symbol.toString(),
       decimals,
-      challengeResponse: await handleChallenge(user.wallet, verificationCode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
       equityCategory,
       equityClass,
     });
