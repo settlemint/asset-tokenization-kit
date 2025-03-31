@@ -27,9 +27,9 @@ const EnableTwoFactor = portalGraphql(`
 /**
  * GraphQL mutation to update the two-factor verification ID for a user
  */
-const UpdateUserTwoFactor = hasuraGraphql(`
-  mutation UpdateUserTwoFactor($id: String!, $verificationId: String!) {
-    update_user(where: { id: {_eq: $id} }, _set:{ two_factor_enabled: true, two_factor_verification_id: $verificationId }) {
+const UpdateUserTwoFactorVerificationId = hasuraGraphql(`
+  mutation UpdateUserTwoFactorVerificationId($id: String!, $verificationId: String!) {
+    update_user(where: { id: {_eq: $id} }, _set:{ two_factor_verification_id: $verificationId }) {
       affected_rows
     }
   }
@@ -64,7 +64,7 @@ export async function enableTwoFactorFunction({
       "Failed to create wallet verification, no verification ID returned"
     );
   }
-  await hasuraClient.request(UpdateUserTwoFactor, {
+  await hasuraClient.request(UpdateUserTwoFactorVerificationId, {
     id: currentUser.id,
     verificationId: result.createWalletVerification?.id,
   });
