@@ -119,9 +119,7 @@ contract StableCoinFactoryTest is Test {
         // Test minting without supply management role
         vm.startPrank(user);
         vm.expectRevert(
-            abi.encodeWithSignature(
-                "AccessControlUnauthorizedAccount(address,bytes32)", user, token.SUPPLY_MANAGEMENT_ROLE()
-            )
+            abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user, token.AUDITOR_ROLE())
         );
         token.updateCollateral(amount);
         vm.stopPrank();
