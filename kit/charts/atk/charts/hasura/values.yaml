@@ -5,6 +5,7 @@ graphql-engine:
   labels:
     kots.io/app-slug: settlemint-atk
     app.kubernetes.io/part-of: settlemint-atk
+    app.kubernetes.io/managed-by: helm
   ingress:
     enabled: true
     ingressClassName: "settlemint-nginx"

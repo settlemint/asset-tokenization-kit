@@ -25,6 +25,7 @@ initJob:
   annotations:
     helm.sh/hook: pre-install
     helm.sh/hook-weight: "-10"
+    helm.sh/hook-delete-policy: "hook-succeeded"
 
 aws:
   # the aws cli commands uses the name 'quorum-sa' so only change this if you altered the name

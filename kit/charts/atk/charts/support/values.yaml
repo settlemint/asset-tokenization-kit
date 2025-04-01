@@ -2,9 +2,10 @@
 postgresql-ha:
   enabled: true
   fullnameOverride: postgresql
-  commonAnnotations:
-    "helm.sh/hook": "pre-install"
-    "helm.sh/hook-weight": "-10"
+  commonLabels:
+    kots.io/app-slug: settlemint-atk
+    app.kubernetes.io/part-of: settlemint-atk
+    app.kubernetes.io/managed-by: helm
   postgresql:
     username: "postgres"
     password: "atk"
@@ -54,6 +55,10 @@ postgresql-ha:
 redis:
   enabled: true
   fullnameOverride: redis
+  commonLabels:
+    kots.io/app-slug: settlemint-atk
+    app.kubernetes.io/part-of: settlemint-atk
+    app.kubernetes.io/managed-by: helm
   auth:
     password: "atk"
   master:

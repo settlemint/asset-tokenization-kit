@@ -7,6 +7,7 @@ global:
   labels:
     kots.io/app-slug: settlemint-atk
     app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: settlemint-atk
 
 imagePullCredentials:
   registries:
@@ -268,6 +269,29 @@ thegraph:
         - name: image-pull-secret-docker
         - name: image-pull-secret-ghcr
         - name: image-pull-secret-harbor
+      podMetadata:
+        labels:
+          app.kubernetes.io/part-of: thegraph
+          environment: production
+    graphNodeGroups:
+      query:
+        enabled: true
+        podMetadata:
+          labels:
+            role: query-node
+            custom-label: custom-value
+      index:
+        enabled: true
+        podMetadata:
+          labels:
+            role: index-node
+            custom-label: custom-value
+      block-ingestor:
+        enabled: true
+        podMetadata:
+          labels:
+            role: block-ingestor
+            custom-label: custom-value
     ingress:
       hosts:
         - host: graph.k8s.orb.local

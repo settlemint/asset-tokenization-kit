@@ -696,6 +696,10 @@ alloy:
 # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 grafana:
   enabled: false
+  podLabels:
+    kots.io/app-slug: settlemint-atk
+    app.kubernetes.io/part-of: settlemint-atk
+    app.kubernetes.io/managed-by: helm
   fullnameOverride: grafana
   adminUser: settlemint
   adminPassword: atk
