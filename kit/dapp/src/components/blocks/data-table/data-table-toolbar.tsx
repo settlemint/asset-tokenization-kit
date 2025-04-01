@@ -32,18 +32,35 @@ export function DataTableToolbar<TData>({
 
   const facetedColumns = table
     .getAllLeafColumns()
-    .filter((column) => column.getCanFilter())
-    .map((column) => ({
-      column,
-      title: column.columnDef.header?.toString() ?? "",
-      options: Array.from(column.getFacetedUniqueValues().entries()).map(
-        ([value]) => ({
-          label: String(value),
-          value: String(value),
-          icon: table.options.meta?.icons?.[value],
-        })
-      ),
-    }));
+    .filter(
+      (column) =>
+        typeof column.accessorFn !== "undefined" && column.getCanFilter()
+    )
+    .map((column) => {
+      const metaFilterOptions =
+        (column.columnDef.meta as any)?.filterComponentOptions?.options ?? null;
+      const metaFilterTitle =
+        (column.columnDef.meta as any)?.filterComponentOptions?.title ?? null;
+
+      const options = metaFilterOptions
+        ? metaFilterOptions // Use predefined options if available
+        : Array.from(column.getFacetedUniqueValues().keys()).map((value) => ({
+            label: String(value),
+            value: String(value),
+            // Assuming icons aren't needed for roles, keep this logic for others
+            // icon: table.options.meta?.icons?.[value],
+          }));
+
+      const title = metaFilterTitle
+        ? metaFilterTitle // Use predefined title if available
+        : (column.columnDef.header?.toString() ?? ""); // Fallback to header string
+
+      return {
+        column,
+        title,
+        options,
+      };
+    });
 
   const globalFilterColumn = table
     .getAllLeafColumns()

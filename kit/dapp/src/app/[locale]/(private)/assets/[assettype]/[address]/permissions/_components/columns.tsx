@@ -43,9 +43,21 @@ export function columns({
       enableColumnFilter: false,
     }),
     columnHelper.accessor("roles", {
-      header: t("roles-header"),
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={t("roles-header")} />
+      ),
       cell: ({ getValue }) => <AssetRolePill roles={getValue()} />,
       enableColumnFilter: true,
+      filterFn: "arrIncludesSome",
+      meta: {
+        filterComponentOptions: {
+          title: t("roles-header"),
+          options: Object.values(ROLES).map((role) => ({
+            label: role.displayName,
+            value: role.contractRole,
+          })),
+        },
+      } as any,
     }),
     columnHelper.accessor("lastActivity", {
       header: t("last-activity-header"),
