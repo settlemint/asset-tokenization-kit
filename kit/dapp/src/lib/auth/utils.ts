@@ -17,19 +17,9 @@ export async function getUser() {
       headers: await headers(),
     });
 
-    // console.log("Session result:", JSON.stringify(session, null, 2));
-
     if (!session?.user) {
-      // console.log("No user in session, redirecting to login");
       unauthorized();
     }
-
-    // Remove checks/logs for wallet
-    // if (!session.user.wallet) {
-    //   console.log("User session found but no wallet address is present");
-    // } else if (typeof session.user.wallet !== 'string' || !session.user.wallet.startsWith('0x')) {
-    //   console.log("User has a wallet but it's not a valid Ethereum address:", session.user.wallet);
-    // }
 
     return session.user as User;
   } catch (error) {
