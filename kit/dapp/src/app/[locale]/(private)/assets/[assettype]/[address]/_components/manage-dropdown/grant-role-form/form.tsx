@@ -48,6 +48,7 @@ export function GrantRoleForm({
             DEFAULT_ADMIN_ROLE: false,
             SUPPLY_MANAGEMENT_ROLE: false,
             USER_MANAGEMENT_ROLE: false,
+            AUDITOR_ROLE: false,
           },
         }}
       >

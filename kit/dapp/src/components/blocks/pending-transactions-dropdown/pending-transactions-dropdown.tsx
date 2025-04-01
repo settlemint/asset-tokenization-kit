@@ -38,9 +38,9 @@ export function PendingTransactionsDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="ghost"
+          variant={hasPendingTransactions ? "default" : "ghost"}
           size="icon"
-          className="relative h-12 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:bg-sidebar-accent focus-visible:text-sidebar-accent-foreground dark:hover:bg-theme-accent-background dark:hover:text-foreground dark:focus-visible:bg-theme-accent-background dark:focus-visible:text-foreground focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+          className="relative size-12 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:bg-sidebar-accent focus-visible:text-sidebar-accent-foreground dark:hover:bg-theme-accent-background dark:hover:text-foreground dark:focus-visible:bg-theme-accent-background dark:focus-visible:text-foreground focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
           aria-label={t("aria-label")}
         >
           <SquareStackIcon

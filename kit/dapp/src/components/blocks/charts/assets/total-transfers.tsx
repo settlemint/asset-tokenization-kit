@@ -1,18 +1,27 @@
-import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
+"use client";
+
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
 import { createTimeSeries } from "@/lib/charts";
-import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
-import { getLocale, getTranslations } from "next-intl/server";
-import type { Address } from "viem";
+import type { AssetStats } from "@/lib/queries/asset-stats/asset-stats-schema";
+import { formatDate } from "@/lib/utils/date";
+import { startOfHour } from "date-fns";
+import { useTranslations, type Locale } from "next-intl";
+import {
+  TIME_RANGE_CONFIG,
+  TimeSeriesChart,
+  TimeSeriesRoot,
+  TimeSeriesTitle,
+} from "../time-series";
 
 interface TotalTransfersProps {
-  address: Address;
+  data: AssetStats[];
+  locale: Locale;
 }
 
-export async function TotalTransfers({ address }: TotalTransfersProps) {
-  const t = await getTranslations("components.charts.assets");
+export function TotalTransfers({ data, locale }: TotalTransfersProps) {
+  const t = useTranslations("components.charts.assets");
 
   const chartConfig = {
     totalTransfers: {
@@ -20,8 +29,6 @@ export async function TotalTransfers({ address }: TotalTransfersProps) {
       color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
-
-  const data = await getAssetStats({ address });
 
   if (!data || data.every((d) => d.totalTransfers === 0)) {
     return (
@@ -34,29 +41,29 @@ export async function TotalTransfers({ address }: TotalTransfersProps) {
     );
   }
 
-  const locale = await getLocale();
-
-  const timeseries = createTimeSeries(
-    data,
-    ["totalTransfers"],
-    {
-      granularity: "day",
-      intervalType: "week",
-      intervalLength: 1,
-      aggregation: "first",
-    },
-    locale
-  );
-
   return (
-    <AreaChartComponent
-      data={timeseries}
-      config={chartConfig}
-      title={t("total-transfers.title")}
-      description={t("total-transfers.description")}
-      xAxis={{ key: "timestamp" }}
-      showYAxis={true}
-      info={`${t("last-updated")}: ${timeseries.at(-1)?.timestamp}`}
-    />
+    <TimeSeriesRoot locale={locale}>
+      <TimeSeriesTitle
+        title={t("total-transfers.title")}
+        description={t("total-transfers.description")}
+        lastUpdated={formatDate(startOfHour(new Date()))}
+      />
+      <TimeSeriesChart
+        rawData={data}
+        processData={(rawData, timeRange, locale) => {
+          return createTimeSeries(
+            rawData,
+            ["totalTransfers"],
+            {
+              ...TIME_RANGE_CONFIG[timeRange],
+              aggregation: "first",
+            },
+            locale
+          );
+        }}
+        config={chartConfig}
+        roundedBars={false}
+      />
+    </TimeSeriesRoot>
   );
 }

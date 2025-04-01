@@ -21,9 +21,11 @@ export function CreateDepositSchema() {
       assetName: t.String({
         description: "The name of the tokenized deposit",
         minLength: 1,
+        maxLength: 50,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the tokenized deposit (ticker)",
+        maxLength: 10,
       }),
       decimals: t.Decimals({
         description: "The number of decimal places for the token",
@@ -34,8 +36,12 @@ export function CreateDepositSchema() {
             "Optional International Securities Identification Number",
         })
       ),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
+      }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
       }),
       collateralLivenessValue: t.Number({
         description: "The value for collateral liveness period",

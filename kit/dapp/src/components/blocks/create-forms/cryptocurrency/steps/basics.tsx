@@ -17,6 +17,7 @@ export function Basics() {
           label={t("parameters.common.name-label")}
           placeholder={t("parameters.cryptocurrencies.name-placeholder")}
           required
+          maxLength={50}
         />
         <FormInput
           control={control}
@@ -25,6 +26,7 @@ export function Basics() {
           placeholder={t("parameters.cryptocurrencies.symbol-placeholder")}
           textOnly
           required
+          maxLength={10}
         />
         <FormInput
           control={control}

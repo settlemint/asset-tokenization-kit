@@ -34,10 +34,7 @@ import {
   type BookTextIconHandle,
 } from "../ui/animated-icons/book-text";
 import { LogoutIcon, type LogoutIconHandle } from "../ui/animated-icons/logout";
-import {
-  SquareStackIcon,
-  type SquareStackIconHandle,
-} from "../ui/animated-icons/square-stack";
+import type { SquareStackIconHandle } from "../ui/animated-icons/square-stack";
 
 // Custom text component that renders either content or a skeleton with consistent DOM structure
 function TextOrSkeleton({
@@ -146,18 +143,6 @@ export function UserDropdown({ user }: { user: User }) {
           align="end"
           sideOffset={4}
         >
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              onMouseEnter={() => stackIconRef.current?.startAnimation()}
-              onMouseLeave={() => stackIconRef.current?.stopAnimation()}
-            >
-              <SquareStackIcon ref={stackIconRef} className="mr-2 size-4" />
-              <Link href="/portfolio/my-activity" prefetch>
-                {t("pending-transactions")}
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <ThemeMenuItem />
             <LanguageMenuItem />

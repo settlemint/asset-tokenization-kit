@@ -17,6 +17,7 @@ export function Basics() {
           label={t("parameters.common.name-label")}
           placeholder={t("parameters.funds.name-placeholder")}
           required
+          maxLength={50}
         />
         <div className="grid grid-cols-2 gap-6">
           <FormInput
@@ -26,6 +27,7 @@ export function Basics() {
             placeholder={t("parameters.funds.symbol-placeholder")}
             textOnly
             required
+            maxLength={10}
           />
           <FormInput
             control={control}

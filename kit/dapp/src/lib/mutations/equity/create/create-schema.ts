@@ -21,9 +21,11 @@ export function CreateEquitySchema() {
       assetName: t.String({
         description: "The name of the equity",
         minLength: 1,
+        maxLength: 50,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the equity (ticker)",
+        maxLength: 10,
       }),
       decimals: t.Decimals({
         description: "The number of decimal places for the token",
@@ -34,8 +36,12 @@ export function CreateEquitySchema() {
             "Optional International Securities Identification Number",
         })
       ),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
+      }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
       }),
       equityCategory: t.String({
         description: "The category of the equity",

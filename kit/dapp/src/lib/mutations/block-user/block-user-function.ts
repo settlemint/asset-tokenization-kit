@@ -59,7 +59,13 @@ export const blockUserFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, pincode, userAddress, assettype },
+    parsedInput: {
+      address,
+      verificationCode,
+      verificationType,
+      userAddress,
+      assettype,
+    },
     ctx: { user },
   }: {
     parsedInput: BlockUserInput;
@@ -70,7 +76,11 @@ export const blockUserFunction = withAccessControl(
       address,
       account: userAddress,
       from: user.wallet,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

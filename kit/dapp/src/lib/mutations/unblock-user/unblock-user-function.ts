@@ -57,7 +57,7 @@ const FundUnblockUser = portalGraphql(`
 /**
  * Function to unblock a user from a token
  *
- * @param input - Validated input containing address, pincode, userAddress, and assettype
+ * @param input - Validated input containing address, verificationCode, userAddress, and assettype
  * @param user - The user executing the unblock operation
  * @returns Array of transaction hashes
  */
@@ -68,7 +68,13 @@ export const unblockUserFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, pincode, userAddress, assettype },
+    parsedInput: {
+      address,
+      verificationCode,
+      verificationType,
+      userAddress,
+      assettype,
+    },
     ctx: { user },
   }: {
     parsedInput: UnblockUserInput;
@@ -79,7 +85,11 @@ export const unblockUserFunction = withAccessControl(
       address,
       account: userAddress,
       from: user.wallet,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

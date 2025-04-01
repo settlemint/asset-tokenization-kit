@@ -45,7 +45,7 @@ export function SelectAsset({ onSelect, userWallet }: SelectAssetProps) {
         />
         <div className="mt-6 text-right">
           <Button disabled={!isValid} onClick={handleConfirm}>
-            Confirm
+            {t("confirm-button")}
           </Button>
         </div>
       </div>
