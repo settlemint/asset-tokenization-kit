@@ -44,7 +44,9 @@ export function columns({
     }),
     columnHelper.accessor("roles", {
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={t("roles-header")} />
+        <DataTableColumnHeader column={column}>
+          {t("roles-header")}
+        </DataTableColumnHeader>
       ),
       cell: ({ getValue }) => <AssetRolePill roles={getValue()} />,
       enableColumnFilter: true,
