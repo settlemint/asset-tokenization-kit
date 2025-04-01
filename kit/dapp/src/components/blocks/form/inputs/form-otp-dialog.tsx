@@ -111,19 +111,21 @@ export function FormOtpDialog<T extends FieldValues>({
                 <Input type="hidden" value={field.value} />
               </FormControl>
               {canSwitchVerificationType ? (
-                <Button
-                  variant="link"
-                  onClick={() => {
-                    const newVerificationType =
-                      activeVerificationType === "two-factor"
-                        ? "pincode"
-                        : "two-factor";
-                    setActiveVerificationType(newVerificationType);
-                    field.onChange(newVerificationType);
-                  }}
-                >
-                  {t("switch-method")}
-                </Button>
+                <div className="space-y-2 flex flex-col items-center">
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      const newVerificationType =
+                        activeVerificationType === "two-factor"
+                          ? "pincode"
+                          : "two-factor";
+                      setActiveVerificationType(newVerificationType);
+                      field.onChange(newVerificationType);
+                    }}
+                  >
+                    {t("switch-method")}
+                  </Button>
+                </div>
               ) : null}
               <DialogFooter className="gap-2 mt-4">
                 <Button variant="outline" onClick={() => onOpenChange(false)}>

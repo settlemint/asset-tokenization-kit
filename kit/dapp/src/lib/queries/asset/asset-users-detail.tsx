@@ -132,7 +132,7 @@ export const getAssetUsersDetail = cache(
       {
         permissions: validatedAsset.auditors,
         role: "AUDITOR_ROLE" as const,
-      }
+      },
     ];
 
     // Create a map to track users with their roles
@@ -140,9 +140,10 @@ export const getAssetUsersDetail = cache(
 
     // Process all role configurations
     for (const { permissions, role } of roleConfigs) {
-      const validatedPermissions = permissions.map((permission: unknown) =>
-        safeParse(PermissionSchema, permission)
-      );
+      const validatedPermissions =
+        permissions?.map((permission: unknown) =>
+          safeParse(PermissionSchema, permission)
+        ) ?? [];
       for (const validatedPermission of validatedPermissions) {
         const userId = validatedPermission.id;
         const existing = usersWithRoles.get(userId);
