@@ -32,14 +32,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
   const user = await getUser();
 
-  // Remove or comment out debug logs
-  // console.log("USER OBJECT:", JSON.stringify(user, null, 2));
-  // console.log("USER WALLET:", user.wallet ? user.wallet : "NO WALLET");
-  // console.log("USER ROLE:", user.role ? user.role : "NO ROLE");
-  // console.log("ADDRESS:", address);
-
   const userIsAdmin = user.role === "admin";
-  // console.log("USER IS ADMIN:", userIsAdmin);
 
   // Fetch asset details and translations first
   const [assetDetails, t] = await Promise.all([
@@ -56,22 +49,14 @@ export default async function AssetDetailsPage({ params }: PageProps) {
     typeof user.wallet === "string" &&
     user.wallet.startsWith("0x")
   ) {
-    // console.log("FETCHING BALANCE WITH:", {
-    //   address,
-    //   account: user.wallet,
-    // });
-
     try {
       userBalance = await getAssetBalanceDetail({
         address,
         account: user.wallet as Address,
       });
-      // console.log("BALANCE RESULT:", userBalance);
     } catch (error) {
-      // console.error("Error fetching balance:", error);
+      console.error("Error fetching balance:", error);
     }
-  } else {
-    // console.log("NO VALID WALLET FOUND FOR USER:", user.wallet);
   }
 
   // Fetch remaining data
@@ -79,13 +64,6 @@ export default async function AssetDetailsPage({ params }: PageProps) {
     getAssetStats({ address }),
     getLocale(),
   ]);
-
-  // Remove or comment out debug logs
-  // console.log("data1", assetDetails);
-  // console.log("data2", t);
-  // console.log("data3", userBalance);
-  // console.log("data4", assetStats);
-  // console.log("data5", locale);
 
   return (
     <>
