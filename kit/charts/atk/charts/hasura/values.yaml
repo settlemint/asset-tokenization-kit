@@ -2,6 +2,9 @@
 graphql-engine:
   nameOverride: hasura
   replicas: 2
+  labels:
+    kots.io/app-slug: settlemint-atk
+    app.kubernetes.io/part-of: settlemint-atk
   ingress:
     enabled: true
     ingressClassName: "settlemint-nginx"
