@@ -46,7 +46,7 @@ export function fetchDeposit(address: Address): Deposit {
     deposit.admins = [];
     deposit.supplyManagers = [];
     deposit.userManagers = [];
-
+    deposit.auditors = [];
     // Add collateral related fields
     deposit.collateralExact = BigInt.zero();
     deposit.collateral = BigDecimal.zero();

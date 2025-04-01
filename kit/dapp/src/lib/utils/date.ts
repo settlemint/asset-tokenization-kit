@@ -71,7 +71,7 @@ function formatDateWithFormatter(
  */
 export function formatDate(
   date: string | Date,
-  options: DateFormatOptions
+  options: DateFormatOptions = {}
 ): string {
   try {
     const dateObj =

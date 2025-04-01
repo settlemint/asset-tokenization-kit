@@ -42,6 +42,9 @@ contract Deposit is
     /// @dev Keccak256 hash of "USER_MANAGEMENT_ROLE"
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
 
+    /// @notice Role identifier for addresses that can audit the collateral
+    bytes32 public constant AUDITOR_ROLE = keccak256("AUDITOR_ROLE");
+
     /// @notice Custom errors for the StableCoin contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error InvalidDecimals(uint8 decimals);
@@ -116,6 +119,7 @@ contract Deposit is
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
+        _grantRole(AUDITOR_ROLE, initialOwner);
     }
 
     /// @notice Returns the message sender in the context of meta-transactions
@@ -187,7 +191,7 @@ contract Deposit is
     /// @notice Updates the proven collateral amount with a timestamp
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Requires collateral >= total supply.
     /// @param amount New collateral amount
-    function updateCollateral(uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+    function updateCollateral(uint256 amount) public onlyRole(AUDITOR_ROLE) {
         if (amount < totalSupply()) revert InsufficientCollateral();
 
         uint256 oldAmount = _collateralProof.amount;

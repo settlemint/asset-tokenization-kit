@@ -2,6 +2,7 @@ import type { User } from "@/lib/auth/types";
 import { grantRoleFunction } from "@/lib/mutations/asset/access-control/grant-role/grant-role-function";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Hex } from "viem";
+import type { VerificationType } from "./typebox/verification-type";
 
 export interface AssetAdmin {
   wallet: Hex;
@@ -13,7 +14,8 @@ export interface AssetAdmin {
  *
  * @param assetAdmins - Array of admin objects with their wallet addresses and roles
  * @param predictedAddress - The address of the asset contract
- * @param pincode - The pincode for authentication
+ * @param verificationCode - The verification code for authentication
+ * @param verificationType - The type of verification (TOTP, backup code)
  * @param assetType - The type of asset (stablecoin, deposit, cryptocurrency, etc.)
  * @param user - The user executing the role grants
  * @returns Array of transaction hashes from the role grant operations
@@ -21,9 +23,10 @@ export interface AssetAdmin {
 export async function grantRolesToAdmins(
   assetAdmins: AssetAdmin[],
   predictedAddress: Hex,
-  pincode: number,
+  verificationCode: number,
+  verificationType: VerificationType,
   assetType: AssetType,
-  user: User,
+  user: User
 ): Promise<string[]> {
   // Map each admin to their role grant operation
   const grantRolePromises = assetAdmins.map(async (admin) => {
@@ -31,6 +34,7 @@ export async function grantRolesToAdmins(
       DEFAULT_ADMIN_ROLE: admin.roles.includes("admin"),
       SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
       USER_MANAGEMENT_ROLE: admin.roles.includes("user-manager"),
+      AUDITOR_ROLE: admin.roles.includes("auditor"),
     };
 
     return grantRoleFunction({
@@ -38,7 +42,8 @@ export async function grantRolesToAdmins(
         address: predictedAddress,
         roles,
         userAddress: admin.wallet,
-        pincode,
+        verificationCode,
+        verificationType,
         assettype: assetType,
       },
       ctx: { user },

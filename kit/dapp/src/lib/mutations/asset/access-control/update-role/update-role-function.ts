@@ -12,7 +12,14 @@ import type { UpdateRolesInput } from "./update-role-schema";
  * @returns Array of transaction hashes
  */
 export async function updateRolesFunction({
-  parsedInput: { address, roles, userAddress, pincode, assettype },
+  parsedInput: {
+    address,
+    roles,
+    userAddress,
+    verificationCode,
+    verificationType,
+    assettype,
+  },
 }: {
   parsedInput: UpdateRolesInput;
   ctx: { user: User };
@@ -22,11 +29,13 @@ export async function updateRolesFunction({
     DEFAULT_ADMIN_ROLE: false,
     SUPPLY_MANAGEMENT_ROLE: false,
     USER_MANAGEMENT_ROLE: false,
+    AUDITOR_ROLE: false,
   };
   const rolesToDisable: RoleMap = {
     DEFAULT_ADMIN_ROLE: false,
     SUPPLY_MANAGEMENT_ROLE: false,
     USER_MANAGEMENT_ROLE: false,
+    AUDITOR_ROLE: false,
   };
 
   for (const [role, enabled] of Object.entries(roles)) {
@@ -45,7 +54,8 @@ export async function updateRolesFunction({
       address,
       roles: rolesToEnable,
       userAddress,
-      pincode,
+      verificationCode,
+      verificationType,
       assettype,
     });
     if (grantResult?.data) {
@@ -59,7 +69,8 @@ export async function updateRolesFunction({
       address,
       roles: rolesToDisable,
       userAddress,
-      pincode,
+      verificationCode,
+      verificationType,
       assettype,
     });
 

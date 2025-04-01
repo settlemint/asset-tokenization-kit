@@ -1,51 +1,35 @@
-import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
+"use client";
+
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
+import {
+  TimeSeriesChart,
+  TimeSeriesRoot,
+  TimeSeriesTitle,
+} from "@/components/blocks/charts/time-series";
+import { TIME_RANGE_CONFIG } from "@/components/blocks/charts/time-series/index";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
 import { createTimeSeries } from "@/lib/charts";
-import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
+import type { AssetStats } from "@/lib/queries/asset-stats/asset-stats-schema";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/date";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { getLocale, getTranslations } from "next-intl/server";
-import type { Address } from "viem";
+import { startOfHour } from "date-fns";
+import { useTranslations, type Locale } from "next-intl";
 
 interface TotalSupplyProps {
-  address: Address;
+  data: AssetStats[];
+  locale: Locale;
   interval?: "day" | "week" | "month" | "year";
   size?: "small" | "large";
 }
 
-const INTERVAL_MAP = {
-  day: {
-    granularity: "hour",
-    intervalType: "day",
-    intervalLength: 1,
-  },
-  week: {
-    granularity: "day",
-    intervalType: "week",
-    intervalLength: 1,
-  },
-  month: {
-    granularity: "day",
-    intervalType: "month",
-    intervalLength: 1,
-  },
-  year: {
-    granularity: "month",
-    intervalType: "month",
-    intervalLength: 12,
-  },
-} as const;
-
-export async function TotalSupply({
-  address,
-  interval = "week",
+export function TotalSupply({
+  data,
+  locale,
   size = "small",
 }: TotalSupplyProps) {
-  const t = await getTranslations("components.charts.assets");
-
-  const data = await getAssetStats({ address });
+  const t = useTranslations("components.charts.assets");
 
   if (!data || data.every((d) => d.totalSupply === 0)) {
     return (
@@ -57,8 +41,6 @@ export async function TotalSupply({
       </ChartSkeleton>
     );
   }
-
-  const locale = await getLocale();
 
   const chartConfig = {
     totalSupply: {
@@ -77,39 +59,38 @@ export async function TotalSupply({
       : {}),
   } satisfies ChartConfig;
 
-  const timeseries = createTimeSeries(
-    data,
-    [
-      "totalSupply",
-      ...(["stablecoin", "tokenizeddeposit"].includes(
-        data.at(0)?.assetType as AssetType
-      )
-        ? (["totalCollateral"] as const)
-        : []),
-    ],
-    {
-      granularity: INTERVAL_MAP[interval].granularity,
-      intervalType: INTERVAL_MAP[interval].intervalType,
-      intervalLength: INTERVAL_MAP[interval].intervalLength,
-      accumulation: "max",
-      aggregation: "first",
-      historical: true,
-    },
-    locale
-  );
-
   return (
-    <div className={cn(size === "large" && "mb-4")}>
-      <AreaChartComponent
-        data={timeseries}
-        config={chartConfig}
+    <TimeSeriesRoot locale={locale} className={cn(size === "large" && "mb-4")}>
+      <TimeSeriesTitle
         title={t("total-supply.title")}
         description={t("total-supply.description")}
-        xAxis={{ key: "timestamp" }}
-        showYAxis={true}
-        info={`${t("last-updated")}: ${timeseries.at(-1)?.timestamp}`}
-        chartContainerClassName={cn(size === "large" && "h-[14rem] w-full")}
+        lastUpdated={formatDate(startOfHour(new Date()))}
       />
-    </div>
+      <TimeSeriesChart
+        rawData={data}
+        processData={(rawData, timeRange, locale) => {
+          return createTimeSeries(
+            rawData,
+            [
+              "totalSupply",
+              ...(["stablecoin", "tokenizeddeposit"].includes(
+                data.at(0)?.assetType as AssetType
+              )
+                ? (["totalCollateral"] as const)
+                : []),
+            ],
+            {
+              ...TIME_RANGE_CONFIG[timeRange],
+              accumulation: "max",
+              aggregation: "first",
+              historical: true,
+            },
+            locale
+          );
+        }}
+        config={chartConfig}
+        roundedBars={false}
+      />
+    </TimeSeriesRoot>
   );
 }

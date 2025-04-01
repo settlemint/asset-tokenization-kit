@@ -450,6 +450,18 @@ export function handleRoleGranted(event: RoleGranted): void {
     if (!found) {
       stableCoin.userManagers = stableCoin.userManagers.concat([account.id]);
     }
+  } else if (event.params.role.toHexString() == crypto.keccak256(ByteArray.fromUTF8("AUDITOR_ROLE")).toHexString()){
+    // AUDITOR_ROLE
+    let found = false;
+    for (let i = 0; i < stableCoin.auditors.length; i++) {
+      if (stableCoin.auditors[i].equals(account.id)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      stableCoin.auditors = stableCoin.auditors.concat([account.id]);
+    }
   }
 
   stableCoin.lastActivity = event.block.timestamp;
@@ -532,6 +544,18 @@ export function handleRoleRevoked(event: RoleRevoked): void {
       }
     }
     stableCoin.userManagers = newUserManagers;
+  } else if (
+    event.params.role.toHexString() ==
+    crypto.keccak256(ByteArray.fromUTF8("AUDITOR_ROLE")).toHexString()
+  ) {
+    // AUDITOR_ROLE
+    const newAuditors: Bytes[] = [];
+    for (let i = 0; i < stableCoin.auditors.length; i++) {
+      if (!stableCoin.auditors[i].equals(account.id)) {
+        newAuditors.push(stableCoin.auditors[i]);
+      }
+    }
+    stableCoin.auditors = newAuditors;
   }
 
   stableCoin.lastActivity = event.block.timestamp;

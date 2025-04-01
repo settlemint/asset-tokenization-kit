@@ -20,8 +20,11 @@ export const UpdateRolesSchema = () =>
     userAddress: t.EthereumAddress({
       description: "The address of the user whose roles will be updated",
     }),
-    pincode: t.Pincode({
-      description: "The pincode for signing the transaction",
+    verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+      description: "The two factor code or pincode for signing the transaction",
+    }),
+    verificationType: t.VerificationType({
+      description: "The type of verification",
     }),
     assettype: t.AssetType({
       description: "The type of asset",

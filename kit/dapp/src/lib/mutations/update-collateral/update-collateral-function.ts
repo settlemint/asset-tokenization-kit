@@ -42,7 +42,7 @@ const DepositUpdateCollateral = portalGraphql(`
 /**
  * Function to update the collateral amount for a token
  *
- * @param input - Validated input containing address, pincode, amount, and assettype
+ * @param input - Validated input containing address, verificationCode, amount, and assettype
  * @param user - The user executing the update collateral operation
  * @returns Array of transaction hashes
  */
@@ -53,7 +53,13 @@ export const updateCollateralFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, pincode, amount, assettype },
+    parsedInput: {
+      address,
+      verificationCode,
+      verificationType,
+      amount,
+      assettype,
+    },
     ctx: { user },
   }: {
     parsedInput: UpdateCollateralInput;
@@ -71,7 +77,11 @@ export const updateCollateralFunction = withAccessControl(
       address,
       from: user.wallet,
       input: collateralInput,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

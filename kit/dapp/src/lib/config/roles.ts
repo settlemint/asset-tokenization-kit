@@ -32,6 +32,12 @@ export const ROLES = {
     description:
       "Allows the account to block and unblock users and to freeze and unfreeze accounts.",
   },
+  AUDITOR_ROLE: {
+    id: keccak256(stringToBytes("AUDITOR_ROLE")),
+    contractRole: "AUDITOR_ROLE",
+    displayName: "Auditor",
+    description: "Allows the account to audit the asset",
+  },
 } as const;
 
 export const getRoles = (assettype: AssetType): Role[] => {

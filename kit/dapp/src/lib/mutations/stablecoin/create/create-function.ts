@@ -68,61 +68,77 @@ export const createStablecoinFunction = withAccessControl(
       asset: ["manage"],
     },
   },
-  async ({  parsedInput: {
-    assetName,
-    symbol,
-    decimals,
-    pincode,
-    collateralLivenessValue,
-    collateralLivenessTimeUnit,
-    predictedAddress,
-    price,
-    assetAdmins,
-  },
-  ctx: { user },
-}: {
-  parsedInput: CreateStablecoinInput;
-  ctx: { user: User };
-}) => {
-  await hasuraClient.request(CreateOffchainStablecoin, {
-    id: predictedAddress,
-  });
+  async ({
+    parsedInput: {
+      assetName,
+      symbol,
+      decimals,
+      verificationCode,
+      verificationType,
+      collateralLivenessValue,
+      collateralLivenessTimeUnit,
+      predictedAddress,
+      price,
+      assetAdmins,
+    },
+    ctx: { user },
+  }: {
+    parsedInput: CreateStablecoinInput;
+    ctx: { user: User };
+  }) => {
+    await hasuraClient.request(CreateOffchainStablecoin, {
+      id: predictedAddress,
+    });
 
-  await hasuraClient.request(AddAssetPrice, {
-    assetId: predictedAddress,
-    amount: String(price.amount),
-    currency: price.currency,
-  });
+    await hasuraClient.request(AddAssetPrice, {
+      assetId: predictedAddress,
+      amount: String(price.amount),
+      currency: price.currency,
+    });
 
-  const createStablecoinResult = await portalClient.request(StableCoinFactoryCreate, {
-    address: STABLE_COIN_FACTORY_ADDRESS,
-    from: user.wallet,
-    name: assetName,
-    symbol: symbol.toString(),
-    decimals: decimals || 6,
-    collateralLivenessSeconds: (collateralLivenessValue || 12) * getTimeUnitSeconds(collateralLivenessTimeUnit || "months"),
-    challengeResponse: await handleChallenge(user.wallet, pincode),
-  });
+    const createStablecoinResult = await portalClient.request(
+      StableCoinFactoryCreate,
+      {
+        address: STABLE_COIN_FACTORY_ADDRESS,
+        from: user.wallet,
+        name: assetName,
+        symbol: symbol.toString(),
+        decimals: decimals || 6,
+        collateralLivenessSeconds:
+          (collateralLivenessValue || 12) *
+          getTimeUnitSeconds(collateralLivenessTimeUnit || "months"),
+        challengeResponse: await handleChallenge(
+          user.wallet,
+          verificationCode,
+          verificationType
+        ),
+      }
+    );
 
-  const createTxHash = createStablecoinResult.StableCoinFactoryCreate?.transactionHash;
-  if (!createTxHash) {
-    throw new Error("Failed to create stablecoin: no transaction hash received");
+    const createTxHash =
+      createStablecoinResult.StableCoinFactoryCreate?.transactionHash;
+    if (!createTxHash) {
+      throw new Error(
+        "Failed to create stablecoin: no transaction hash received"
+      );
+    }
+
+    // Wait for the stablecoin creation transaction to be mined
+    await waitForTransactions([createTxHash]);
+
+    // Grant roles to admins using the shared helper
+    const roleGrantHashes = await grantRolesToAdmins(
+      assetAdmins,
+      predictedAddress,
+      verificationCode,
+      verificationType,
+      "stablecoin",
+      user
+    );
+
+    // Combine all transaction hashes
+    const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+
+    return safeParse(t.Hashes(), allTransactionHashes);
   }
-
-  // Wait for the stablecoin creation transaction to be mined
-  await waitForTransactions([createTxHash]);
-
-  // Grant roles to admins using the shared helper
-  const roleGrantHashes = await grantRolesToAdmins(
-    assetAdmins,
-    predictedAddress,
-    pincode,
-    "stablecoin",
-    user
-  );
-
-  // Combine all transaction hashes
-  const allTransactionHashes = [createTxHash, ...roleGrantHashes];
-
-  return safeParse(t.Hashes(), allTransactionHashes);
-});
+);
