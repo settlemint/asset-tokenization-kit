@@ -32,16 +32,60 @@ export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
   const user = await getUser();
 
-  const [assetDetails, t, userBalance, assetStats, locale] = await Promise.all([
+  // Enhanced user debugging
+  // console.log("USER OBJECT:", JSON.stringify(user, null, 2));
+  // console.log("USER WALLET:", user.wallet ? user.wallet : "NO WALLET");
+  // console.log("USER ROLE:", user.role ? user.role : "NO ROLE");
+  // console.log("ADDRESS:", address);
+
+  // Check if the user is an admin
+  const userIsAdmin = user.role === "admin";
+  console.log("USER IS ADMIN:", userIsAdmin);
+
+  // Fetch asset details and translations first
+  const [assetDetails, t] = await Promise.all([
     getAssetDetail({ address, assettype }),
     getTranslations("private.assets"),
-    getAssetBalanceDetail({
-      address,
-      account: user.wallet as Address,
-    }),
+  ]);
+
+  // Conditionally fetch user balance
+  let userBalance = undefined;
+
+  // Check if wallet exists and is a valid address
+  if (
+    user.wallet &&
+    typeof user.wallet === "string" &&
+    user.wallet.startsWith("0x")
+  ) {
+    // console.log("FETCHING BALANCE WITH:", {
+    //   address,
+    //   account: user.wallet,
+    // });
+
+    try {
+      userBalance = await getAssetBalanceDetail({
+        address,
+        account: user.wallet as Address,
+      });
+      // console.log("BALANCE RESULT:", userBalance);
+    } catch (error) {
+      // console.error("Error fetching balance:", error);
+    }
+  } else {
+    // console.log("NO VALID WALLET FOUND FOR USER:", user.wallet);
+  }
+
+  // Fetch remaining data
+  const [assetStats, locale] = await Promise.all([
     getAssetStats({ address }),
     getLocale(),
   ]);
+
+  console.log("data1", assetDetails);
+  console.log("data2", t);
+  console.log("data3", userBalance);
+  console.log("data4", assetStats);
+  console.log("data5", locale);
 
   return (
     <>
@@ -69,6 +113,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
         address={address}
         assetDetails={assetDetails}
         userBalance={userBalance}
+        userIsAdmin={userIsAdmin}
       />
     </>
   );

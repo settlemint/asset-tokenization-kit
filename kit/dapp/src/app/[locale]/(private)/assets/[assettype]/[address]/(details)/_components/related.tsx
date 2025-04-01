@@ -1,5 +1,7 @@
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import type { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
+import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Address } from "viem";
 import { BondsRelated } from "./related/bonds";
@@ -14,6 +16,8 @@ interface RelatedProps {
   address: Address;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
+  /** Whether the current user is an admin */
+  userIsAdmin: boolean;
 }
 
 export function Related({
@@ -21,6 +25,7 @@ export function Related({
   address,
   assetDetails,
   userBalance,
+  userIsAdmin,
 }: RelatedProps) {
   switch (assettype) {
     case "bond":
@@ -29,6 +34,7 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
+          userIsAdmin={userIsAdmin}
         />
       );
     case "cryptocurrency":
@@ -37,22 +43,29 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
+          userIsAdmin={userIsAdmin}
         />
       );
     case "stablecoin":
       return (
         <StablecoinsRelated
           address={address}
-          assetDetails={assetDetails}
+          assetDetails={
+            assetDetails as Awaited<ReturnType<typeof getStableCoinDetail>>
+          }
           userBalance={userBalance}
+          userIsAdmin={userIsAdmin}
         />
       );
     case "deposit":
       return (
         <DepositsRelated
           address={address}
-          assetDetails={assetDetails}
+          assetDetails={
+            assetDetails as Awaited<ReturnType<typeof getDepositDetail>>
+          }
           userBalance={userBalance}
+          userIsAdmin={userIsAdmin}
         />
       );
     case "equity":
@@ -61,6 +74,7 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
+          userIsAdmin={userIsAdmin}
         />
       );
     case "fund":
@@ -69,6 +83,7 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
+          userIsAdmin={userIsAdmin}
         />
       );
     default:
