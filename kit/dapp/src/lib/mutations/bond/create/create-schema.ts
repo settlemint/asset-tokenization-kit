@@ -76,7 +76,7 @@ export function CreateBondSchema({
       }),
       underlyingAsset: t.Object(
         {
-          id: t.String({
+          id: t.EthereumAddress({
             minLength: 1,
             errorMessage: "Underlying asset is required",
           }),
