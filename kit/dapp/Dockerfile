@@ -1,4 +1,4 @@
-FROM oven/bun:1.2.7
+FROM oven/bun:1.2.8
 
 LABEL org.opencontainers.image.source="https://github.com/settlemint/asset-tokenization-kit"
 
