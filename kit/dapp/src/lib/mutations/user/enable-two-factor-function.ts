@@ -69,5 +69,8 @@ export async function enableTwoFactorFunction({
     verificationId: result.createWalletVerification?.id,
   });
   revalidateTag("user");
-  return { totpURI: parameters?.uri ?? "" };
+  return {
+    totpURI: parameters?.uri ?? "",
+    verificationId: result.createWalletVerification?.id,
+  };
 }

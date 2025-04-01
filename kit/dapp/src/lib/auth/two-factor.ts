@@ -29,7 +29,7 @@ plugin.endpoints = {
       const { response, headers } = await originalEnableTwoFactor(
         ctx as typeof ctx & { returnHeaders: true }
       );
-      const { totpURI } = await enableTwoFactorFunction({
+      const { totpURI, verificationId } = await enableTwoFactorFunction({
         parsedInput: {
           algorithm: OTP_ALGORITHM,
           digits: OTP_DIGITS,
@@ -37,9 +37,28 @@ plugin.endpoints = {
         },
         ctx: { user },
       });
+      const newSession = await ctx.context.internalAdapter.createSession(
+        user.id,
+        ctx.request,
+        false,
+        ctx.context.session.session
+      );
+
+      await ctx.context.internalAdapter.deleteSession(
+        ctx.context.session.session.token
+      );
+      const updatedUser: User = {
+        ...user,
+        twoFactorVerificationId: verificationId,
+      };
+      await setSessionCookie(ctx as GenericEndpointContext, {
+        session: newSession,
+        user: updatedUser,
+      });
       for (const [name, value] of headers.entries()) {
         ctx.setHeader(name, value);
       }
+
       return ctx.json({ backupCodes: response.backupCodes, totpURI });
     }
   ),
