@@ -54,20 +54,12 @@ export const getAssetBalanceDetail = cache(
       const normalizedAddress = getAddress(address);
       const normalizedAccount = getAddress(account);
 
-      // console.log("ASSET BALANCE QUERY - Normalized addresses:", {
-      //   normalizedAddress,
-      //   normalizedAccount
-      // });
-
       const result = await theGraphClientKit.request(AssetBalanceDetail, {
         address: normalizedAddress,
         account: normalizedAccount,
       });
 
-      // console.log("ASSET BALANCE QUERY - Raw result:", result);
-
       if (result.assetBalances.length === 0) {
-        // console.log("ASSET BALANCE QUERY - No balances found for this address/account");
         return undefined;
       }
 
@@ -82,7 +74,6 @@ export const getAssetBalanceDetail = cache(
           available: validatedBalance.value - validatedBalance.frozen,
         };
 
-        // console.log("ASSET BALANCE QUERY - Returning formatted balance:", formattedBalance);
         return formattedBalance;
       } catch (parseError) {
         // Keep error logging for actual errors
