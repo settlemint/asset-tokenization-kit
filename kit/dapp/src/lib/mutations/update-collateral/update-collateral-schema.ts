@@ -9,12 +9,8 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
  * @property {string} assettype - The type of asset (only stablecoin or tokenizeddeposit)
  */
 export function UpdateCollateralSchema({
-  maxAmount,
-  minAmount,
   decimals,
 }: {
-  maxAmount?: number;
-  minAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -22,7 +18,8 @@ export function UpdateCollateralSchema({
       address: t.EthereumAddress({
         description: "The contract address",
       }),
-      amount: t.Amount(maxAmount, minAmount, decimals, {
+      amount: t.Amount({
+        decimals,
         description: "The new collateral amount",
       }),
       verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {

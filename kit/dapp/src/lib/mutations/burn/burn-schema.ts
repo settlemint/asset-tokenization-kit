@@ -10,11 +10,9 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  */
 export function BurnSchema({
   maxAmount,
-  minAmount,
   decimals,
 }: {
   maxAmount?: number;
-  minAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -22,7 +20,9 @@ export function BurnSchema({
       address: t.EthereumAddress({
         description: "The contract address of the asset",
       }),
-      amount: t.Amount(maxAmount, minAmount, decimals, {
+      amount: t.Amount({
+        max: maxAmount,
+        decimals,
         description: "The amount of tokens to burn",
       }),
       verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {

@@ -15,11 +15,9 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
  */
 export function WithdrawSchema({
   maxAmount,
-  minAmount,
   decimals,
 }: {
   maxAmount?: number;
-  minAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -36,7 +34,9 @@ export function WithdrawSchema({
       to: t.EthereumAddress({
         description: "The recipient address",
       }),
-      amount: t.Amount(maxAmount, minAmount, decimals, {
+      amount: t.Amount({
+        max: maxAmount,
+        decimals,
         description: "The amount of underlying asset to withdraw",
       }),
       underlyingAssetAddress: t.EthereumAddress({
