@@ -156,10 +156,7 @@ export const BondApi = new Elysia({
         description: "Creates a new bond token based on creation parameters.",
         tags: ["bond"],
       },
-      body: CreateBondSchema({
-        minCap: 1,
-        minFaceValue: 1
-      }),
+      body: CreateBondSchema(),
       response: {
         200: t.Hashes(),
         ...defaultErrorSchema,

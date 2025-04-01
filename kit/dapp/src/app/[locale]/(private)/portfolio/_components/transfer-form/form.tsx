@@ -83,7 +83,12 @@ export function TransferForm({
       ) : (
         <Form
           action={transfer}
-          resolver={typeboxResolver(TransferSchema())}
+          resolver={typeboxResolver(
+            TransferSchema({
+              maxAmount: Number(userBalance),
+              decimals: selectedAsset?.decimals,
+            })
+          )}
           onOpenChange={handleSheetOpenChange}
           buttonLabels={{
             label: t("button-label"),

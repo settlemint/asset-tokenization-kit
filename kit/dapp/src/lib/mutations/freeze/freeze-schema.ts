@@ -11,11 +11,9 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  */
 export function FreezeSchema({
   maxAmount,
-  minAmount,
   decimals,
 }: {
   maxAmount?: number;
-  minAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -26,7 +24,9 @@ export function FreezeSchema({
       userAddress: t.EthereumAddress({
         description: "The address of the user to freeze",
       }),
-      amount: t.Amount(maxAmount, minAmount, decimals, {
+      amount: t.Amount({
+        max: maxAmount,
+        decimals,
         description: "The amount to freeze",
       }),
       verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {

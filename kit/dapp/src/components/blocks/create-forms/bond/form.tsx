@@ -12,6 +12,7 @@ import { AssetAdmins } from "../common/asset-admins/asset-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
+
 interface CreateBondFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -43,10 +44,13 @@ export function CreateBondForm({
     >
       <Form
         action={createBond}
-        resolver={typeboxResolver(CreateBondSchema({
-          minCap: 1,
-          minFaceValue: 1
-        }))}
+        resolver={(...args) =>
+          typeboxResolver(
+            CreateBondSchema({
+              decimals: args[0].decimals,
+            })
+          )(...args)
+        }
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("trigger-label.bonds"),

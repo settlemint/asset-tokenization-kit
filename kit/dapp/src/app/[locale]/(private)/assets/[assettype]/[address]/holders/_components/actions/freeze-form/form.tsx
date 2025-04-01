@@ -44,7 +44,9 @@ export function FreezeForm({
     >
       <Form
         action={freeze}
-        resolver={typeboxResolver(FreezeSchema())}
+        resolver={typeboxResolver(
+          FreezeSchema({ decimals, maxAmount: balanceNum })
+        )}
         buttonLabels={{
           label: t("trigger-label.freeze"),
         }}

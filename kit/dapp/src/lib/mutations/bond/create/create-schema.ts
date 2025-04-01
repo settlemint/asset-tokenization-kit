@@ -10,23 +10,21 @@ import { addHours, isFuture } from "date-fns";
  * @property {string} symbol - The symbol of the bond (ticker)
  * @property {number} decimals - The number of decimal places for the token
  * @property {string} [isin] - Optional International Securities Identification Number
- * @property {string} pincode - The pincode for signing the transaction
+ * @property {string} verificationCode - The verification code for signing the transaction
+ * @property {string} verificationType - The type of verification used
  * @property {string} cap - Maximum issuance amount
  * @property {string} faceValue - Face value of the bond
  * @property {string} maturityDate - Maturity date of the bond
- * @property {string} underlyingAsset - Underlying asset of the bond
+ * @property {object} underlyingAsset - Underlying asset of the bond
+ * @property {object} price - Price information for the bond
+ * @property {number} price.amount - The price amount
+ * @property {string} price.currency - The currency of the price
+ * @property {object[]} assetAdmins - List of administrators for the asset
+ * @property {string} predictedAddress - The predicted contract address
  */
 export function CreateBondSchema({
-  maxCap,
-  minCap,
-  maxFaceValue,
-  minFaceValue,
   decimals,
 }: {
-  maxCap?: number;
-  minCap?: number;
-  maxFaceValue?: number;
-  minFaceValue?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -55,13 +53,13 @@ export function CreateBondSchema({
       verificationType: t.VerificationType({
         description: "The type of verification",
       }),
-      cap: t.Amount(maxCap, minCap, decimals, {
+      cap: t.Amount({
+        decimals,
         description: "Maximum issuance amount",
-        errorMessage: `Must be at least ${minCap}`,
       }),
-      faceValue: t.Amount(maxFaceValue, minFaceValue, decimals, {
+      faceValue: t.Amount({
+        decimals,
         description: "Face value of the bond",
-        errorMessage: `Must be at least ${minFaceValue}`,
       }),
       maturityDate: t.String({
         description: "Maturity date of the bond",

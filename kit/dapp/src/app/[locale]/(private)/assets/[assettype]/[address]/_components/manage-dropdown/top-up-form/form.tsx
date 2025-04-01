@@ -41,7 +41,7 @@ export function TopUpForm({
     const steps: FormStepElement<ReturnType<typeof TopUpSchema>>[] = [];
 
     if (showTarget) {
-      steps.push(<Target key="target" bondDetails={bondDetails}/>);
+      steps.push(<Target key="target" bondDetails={bondDetails} />);
     }
 
     steps.push(<Amount key="amount" />);
@@ -74,7 +74,9 @@ export function TopUpForm({
     >
       <Form
         action={topUpUnderlyingAsset}
-        resolver={typeboxResolver(TopUpSchema())}
+        resolver={typeboxResolver(
+          TopUpSchema({ decimals: bondDetails.underlyingAsset.decimals })
+        )}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
