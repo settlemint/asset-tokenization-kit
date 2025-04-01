@@ -32,15 +32,14 @@ export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
   const user = await getUser();
 
-  // Enhanced user debugging
+  // Remove or comment out debug logs
   // console.log("USER OBJECT:", JSON.stringify(user, null, 2));
   // console.log("USER WALLET:", user.wallet ? user.wallet : "NO WALLET");
   // console.log("USER ROLE:", user.role ? user.role : "NO ROLE");
   // console.log("ADDRESS:", address);
 
-  // Check if the user is an admin
   const userIsAdmin = user.role === "admin";
-  console.log("USER IS ADMIN:", userIsAdmin);
+  // console.log("USER IS ADMIN:", userIsAdmin);
 
   // Fetch asset details and translations first
   const [assetDetails, t] = await Promise.all([
@@ -81,11 +80,12 @@ export default async function AssetDetailsPage({ params }: PageProps) {
     getLocale(),
   ]);
 
-  console.log("data1", assetDetails);
-  console.log("data2", t);
-  console.log("data3", userBalance);
-  console.log("data4", assetStats);
-  console.log("data5", locale);
+  // Remove or comment out debug logs
+  // console.log("data1", assetDetails);
+  // console.log("data2", t);
+  // console.log("data3", userBalance);
+  // console.log("data4", assetStats);
+  // console.log("data5", locale);
 
   return (
     <>

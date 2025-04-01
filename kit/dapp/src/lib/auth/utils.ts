@@ -9,35 +9,31 @@ import type { User } from "./types";
  * @throws {AuthError} If user is not authenticated
  */
 export async function getUser() {
-  console.log("Getting user session...");
+  // Remove logs
+  // console.log("Getting user session...");
 
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    console.log("Session result:", JSON.stringify(session, null, 2));
+    // console.log("Session result:", JSON.stringify(session, null, 2));
 
     if (!session?.user) {
-      console.log("No user in session, redirecting to login");
+      // console.log("No user in session, redirecting to login");
       unauthorized();
     }
 
-    // Check if wallet exists in the user object
-    if (!session.user.wallet) {
-      console.log("User session found but no wallet address is present");
-    } else if (
-      typeof session.user.wallet !== "string" ||
-      !session.user.wallet.startsWith("0x")
-    ) {
-      console.log(
-        "User has a wallet but it's not a valid Ethereum address:",
-        session.user.wallet
-      );
-    }
+    // Remove checks/logs for wallet
+    // if (!session.user.wallet) {
+    //   console.log("User session found but no wallet address is present");
+    // } else if (typeof session.user.wallet !== 'string' || !session.user.wallet.startsWith('0x')) {
+    //   console.log("User has a wallet but it's not a valid Ethereum address:", session.user.wallet);
+    // }
 
     return session.user as User;
   } catch (error) {
+    // Keep error logging for actual errors
     console.error("Error getting user session:", error);
     unauthorized();
   }

@@ -24,7 +24,6 @@ export async function BondsRelated({
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
-  console.log("BONDS", userBalance);
   const userIsSupplyManager = userBalance?.asset.supplyManagers.some(
     (manager) => manager.id === userBalance?.account.id
   );
