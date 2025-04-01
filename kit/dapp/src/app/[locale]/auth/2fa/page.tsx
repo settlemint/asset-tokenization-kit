@@ -21,7 +21,7 @@ import { VerifyTwoFactorOTPSchema } from "@/lib/mutations/user/verify-two-factor
 import { AuthUIContext } from "@daveyplate/better-auth-ui";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -32,6 +32,7 @@ export default function TwoFactorAuthPage() {
     resolver: typeboxResolver(VerifyTwoFactorOTPSchema()),
   });
   const { navigate } = useContext(AuthUIContext);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const redirect = useCallback(() => {
     const redirectTo = new URLSearchParams(window.location.search).get(
@@ -42,6 +43,7 @@ export default function TwoFactorAuthPage() {
 
   const onSubmit = () => {
     return new Promise<void>((resolve, reject) => {
+      setIsSubmitting(true);
       authClient.twoFactor.verifyTotp(
         { code: form.getValues("code").toString() },
         {
@@ -52,6 +54,7 @@ export default function TwoFactorAuthPage() {
           onError() {
             toast.error(t("error"));
             reject(new Error("Failed to verify 2FA"));
+            setIsSubmitting(false);
           },
         }
       );
@@ -83,6 +86,7 @@ export default function TwoFactorAuthPage() {
                       value={field.value?.toString() ?? ""}
                       onChange={field.onChange}
                       autoFocus
+                      disabled={isSubmitting}
                     />
                   </FormControl>
                   <FormMessage />
@@ -91,9 +95,9 @@ export default function TwoFactorAuthPage() {
             />
             <Button
               type="submit"
-              disabled={form.formState.isSubmitting || !form.formState.isValid}
+              disabled={isSubmitting || !form.formState.isValid}
             >
-              {form.formState.isSubmitting ? t("submitting") : t("submit")}
+              {isSubmitting ? t("submitting") : t("submit")}
             </Button>
           </form>
         </Form>
