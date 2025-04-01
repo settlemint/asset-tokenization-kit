@@ -30,5 +30,5 @@ export type WalletVerification = StaticDecode<typeof WalletVerificationSchema>;
  */
 export const hasWalletVerification = cache(async () => {
   const user = await getUser();
-  return user.pincodeEnabled || user.twoFactorEnabled;
+  return user.pincodeEnabled ?? user.twoFactorEnabled ?? false;
 });
