@@ -417,11 +417,19 @@ export function Form<
                   open={showFormSecurityConfirmation}
                   onOpenChange={setShowFormSecurityConfirmation}
                   control={form.control as Control<Infer<S>>}
-                  onSubmit={() => {
-                    handleSubmitWithAction().catch((error: Error) => {
-                      console.error("Error submitting form:", error);
-                    });
-                  }}
+                  onSubmit={() =>
+                    handleSubmitWithAction()
+                      .catch((error: Error) => {
+                        console.error("Error submitting form:", error);
+                      })
+                      .finally(() => {
+                        form.resetField(
+                          "verificationCode" as Path<
+                            S extends Schema ? Infer<S> : any
+                          >
+                        );
+                      })
+                  }
                 />
               )}
             </div>
