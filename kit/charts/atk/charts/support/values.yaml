@@ -2,6 +2,9 @@
 postgresql-ha:
   enabled: true
   fullnameOverride: postgresql
+  commonAnnotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "-10"
   postgresql:
     username: "postgres"
     password: "atk"
