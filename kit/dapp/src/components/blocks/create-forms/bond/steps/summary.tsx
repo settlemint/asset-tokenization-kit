@@ -11,6 +11,7 @@ import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
+import type { Address } from "viem";
 import { AssetAdminsCard } from "../../common/asset-admins/asset-admins-card";
 
 export function Summary({ userDetails }: { userDetails: User }) {
@@ -72,7 +73,7 @@ export function Summary({ userDetails }: { userDetails: User }) {
           label={t("parameters.bonds.underlying-asset-label")}
           value={
             values.underlyingAsset?.id ? (
-              <EvmAddress address={values.underlyingAsset.id} />
+              <EvmAddress address={values.underlyingAsset.id as Address} />
             ) : (
               "-"
             )
@@ -87,7 +88,10 @@ export function Summary({ userDetails }: { userDetails: User }) {
         />
       </FormSummaryDetailCard>
 
-      <AssetAdminsCard userDetails={userDetails} assetAdmins={values.assetAdmins} />
+      <AssetAdminsCard
+        userDetails={userDetails}
+        assetAdmins={values.assetAdmins}
+      />
     </FormStep>
   );
 }
