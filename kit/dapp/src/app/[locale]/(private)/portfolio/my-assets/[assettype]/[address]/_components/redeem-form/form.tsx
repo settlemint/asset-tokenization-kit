@@ -18,6 +18,7 @@ interface RedeemFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   disabled?: boolean;
+  decimals?: number;
 }
 
 export function RedeemForm({
@@ -27,6 +28,7 @@ export function RedeemForm({
   open,
   onOpenChange,
   disabled = false,
+  decimals,
 }: RedeemFormProps) {
   const t = useTranslations("portfolio.my-assets.bond");
   const isExternallyControlled =
@@ -49,7 +51,7 @@ export function RedeemForm({
     >
       <Form
         action={redeem}
-        resolver={typeboxResolver(RedeemBondSchema())}
+        resolver={typeboxResolver(RedeemBondSchema({ decimals }))}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

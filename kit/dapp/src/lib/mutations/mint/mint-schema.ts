@@ -11,11 +11,9 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  */
 export function MintSchema({
   maxAmount,
-  minAmount,
   decimals,
 }: {
   maxAmount?: number;
-  minAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -23,7 +21,9 @@ export function MintSchema({
       address: t.EthereumAddress({
         description: "The contract address",
       }),
-      amount: t.Amount(maxAmount, minAmount, decimals, {
+      amount: t.Amount({
+        max: maxAmount,
+        decimals,
         description: "The amount of tokens to mint",
       }),
       to: t.EthereumAddress({

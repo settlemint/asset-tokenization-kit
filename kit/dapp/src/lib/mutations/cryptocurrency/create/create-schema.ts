@@ -14,10 +14,8 @@ import { AssetAdminsSchemaFragment } from "../../common/asset-admins-schema";
  * @property {Address} predictedAddress - Predicted address of the cryptocurrency
  */
 export function CreateCryptoCurrencySchema({
-  maxInitialSupply,
   decimals,
 }: {
-  maxInitialSupply?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -41,7 +39,8 @@ export function CreateCryptoCurrencySchema({
       verificationType: t.VerificationType({
         description: "The type of verification",
       }),
-      initialSupply: t.Amount(maxInitialSupply, 0, decimals, {
+      initialSupply: t.Amount({
+        decimals,
         description: "Initial supply of tokens",
         default: 0,
       }),

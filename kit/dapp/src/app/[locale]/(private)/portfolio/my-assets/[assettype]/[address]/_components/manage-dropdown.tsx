@@ -117,6 +117,7 @@ export function ManageDropdown({
           open={openMenuItem === "redeem"}
           onOpenChange={onFormOpenChange}
           disabled={isBlocked || isPaused}
+          decimals={assetDetails.decimals}
         />
       )}
     </>

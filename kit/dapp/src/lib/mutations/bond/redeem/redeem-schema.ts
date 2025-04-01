@@ -1,12 +1,8 @@
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 export function RedeemBondSchema({
-  maxAmount,
-  minAmount,
   decimals,
 }: {
-  maxAmount?: number;
-  minAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -14,7 +10,8 @@ export function RedeemBondSchema({
       address: t.EthereumAddress({
         description: "The bond contract address",
       }),
-      amount: t.Amount(maxAmount, minAmount, decimals, {
+      amount: t.Amount({
+        decimals,
         description: "The amount to redeem",
       }),
       verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
