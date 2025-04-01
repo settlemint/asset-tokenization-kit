@@ -11,11 +11,9 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  */
 export function TransferSchema({
   maxAmount,
-  minAmount,
   decimals,
 }: {
   maxAmount?: number;
-  minAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -26,11 +24,17 @@ export function TransferSchema({
       to: t.EthereumAddress({
         description: "The recipient address",
       }),
-      value: t.Amount(maxAmount, minAmount, decimals, {
+      value: t.Amount({
+        max: maxAmount,
+        decimals,
         description: "The amount to transfer",
       }),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
+      }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
       }),
       assettype: t.AssetType({
         description: "The type of asset",

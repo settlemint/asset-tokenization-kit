@@ -157,7 +157,7 @@ const DepositWithdrawToken = portalGraphql(`
 /**
  * Function to withdraw tokens or underlying assets from a contract
  *
- * @param input - Validated input containing address, pincode, amount, to, underlyingAssetAddress, and assettype
+ * @param input - Validated input containing address, verificationCode, amount, to, underlyingAssetAddress, and assettype
  * @param user - The user executing the withdraw operation
  * @returns Array of transaction hashes
  */
@@ -172,7 +172,8 @@ export const withdrawFunction = withAccessControl(
       assettype,
       target,
       targetAddress,
-      pincode,
+      verificationCode,
+      verificationType,
       amount,
       to,
       underlyingAssetAddress,
@@ -200,7 +201,11 @@ export const withdrawFunction = withAccessControl(
       address: targetAddress,
       from: user.wallet,
       input: tokenInput,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {
@@ -232,7 +237,11 @@ export const withdrawFunction = withAccessControl(
                 to,
                 amount: bondFormattedAmount,
               },
-              challengeResponse: await handleChallenge(user.wallet, pincode),
+              challengeResponse: await handleChallenge(
+                user.wallet,
+                verificationCode,
+                verificationType
+              ),
             }
           );
 
@@ -253,7 +262,11 @@ export const withdrawFunction = withAccessControl(
                 to,
                 amount: bondFormattedAmount,
               },
-              challengeResponse: await handleChallenge(user.wallet, pincode),
+              challengeResponse: await handleChallenge(
+                user.wallet,
+                verificationCode,
+                verificationType
+              ),
             }
           );
 

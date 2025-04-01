@@ -33,6 +33,7 @@ const DepositsModule = buildModule("DepositsModule", (m) => {
   // Set up roles for the tokenized deposit
   const supplyManagementRole = keccak256(toUtf8Bytes("SUPPLY_MANAGEMENT_ROLE"));
   const userManagementRole = keccak256(toUtf8Bytes("USER_MANAGEMENT_ROLE"));
+  const auditorRole = keccak256(toUtf8Bytes("AUDITOR_ROLE"));
 
   // Grant roles to the deployer
   m.call(EURD, "grantRole", [supplyManagementRole, deployer], {
@@ -40,6 +41,9 @@ const DepositsModule = buildModule("DepositsModule", (m) => {
   });
   m.call(EURD, "grantRole", [userManagementRole, deployer], {
     id: "grantUserRole",
+  });
+  m.call(EURD, "grantRole", [auditorRole, deployer], {
+    id: "grantAuditorRole",
   });
 
   // Mint and burn some tokens

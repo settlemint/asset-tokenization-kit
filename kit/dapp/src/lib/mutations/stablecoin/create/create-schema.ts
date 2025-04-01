@@ -23,9 +23,11 @@ export function CreateStablecoinSchema() {
         assetName: t.String({
           description: "The name of the stablecoin",
           minLength: 1,
+          maxLength: 50,
         }),
         symbol: t.AssetSymbol({
           description: "The symbol of the stablecoin (ticker)",
+          maxLength: 10,
         }),
         decimals: t.Decimals({
           description: "The number of decimal places for the token",
@@ -38,8 +40,12 @@ export function CreateStablecoinSchema() {
           description: "The time unit for collateral validity duration",
           default: "months",
         }),
-        pincode: t.Pincode({
-          description: "The pincode for signing the transaction",
+        verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+          description:
+            "The two factor code or pincode for signing the transaction",
+        }),
+        verificationType: t.VerificationType({
+          description: "The type of verification",
         }),
         predictedAddress: t.EthereumAddress({
           description: "The predicted contract address",

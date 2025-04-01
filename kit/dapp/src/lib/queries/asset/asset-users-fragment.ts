@@ -70,6 +70,16 @@ export const AssetUsersFragment = theGraphGraphqlKit(
         id
       }
     }
+    ... on StableCoin {
+      auditors {
+        ...PermissionFragment
+      }
+    }
+    ... on Deposit {
+      auditors {
+        ...PermissionFragment
+      }
+    }
   }
 `,
   [PermissionFragment, BlockedUserFragment, AllowedUserFragment]

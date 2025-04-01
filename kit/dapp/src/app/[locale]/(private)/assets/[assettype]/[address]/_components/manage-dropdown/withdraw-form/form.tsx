@@ -78,7 +78,11 @@ export function WithdrawForm({
     >
       <Form
         action={withdraw}
-        resolver={typeboxResolver(WithdrawSchema())}
+        resolver={typeboxResolver(
+          WithdrawSchema({
+            decimals: bondDetails.underlyingAsset.decimals,
+          })
+        )}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }

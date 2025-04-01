@@ -8,24 +8,39 @@ import type { SchemaOptions } from "@sinclair/typebox";
 import { t } from "elysia/type-system";
 
 /**
+ * Options for the Amount schema
+ */
+interface AmountOptions extends SchemaOptions {
+  min?: number;
+  max?: number;
+  decimals?: number;
+}
+
+/**
  * Validates a positive amount with specific boundaries
- *
- * @param max - Maximum allowed value
- * @param min - Minimum allowed value
- * @param options - Additional schema options
+
+ * @param options - Schema options
  * @returns A TypeBox schema that validates positive amounts with specific boundaries
  */
-export const Amount = (
+export const Amount = ({
   max = Number.MAX_SAFE_INTEGER,
-  min?: number,
-  decimals?: number,
-  options?: SchemaOptions
-) =>
-  t.Number({
-    minimum: min ? min : decimals ? 10 ** -decimals : 0,
+  min,
+  decimals,
+  ...options
+}: AmountOptions = {}) => {
+  const minimum =
+    typeof min === "number"
+      ? min
+      : typeof decimals === "number"
+        ? 10 ** -decimals
+        : 0;
+  return t.Number({
+    minimum,
     maximum: max,
     title: "Amount",
-    description: `A positive numerical amount between ${min} and ${max}`,
+    description: `A positive numerical amount between ${minimum} and ${max}`,
     examples: [1.5, Math.min(10, max), Math.min(100.25, max)],
+    errorMessage: `Must be at least ${minimum}`,
     ...options,
   });
+};

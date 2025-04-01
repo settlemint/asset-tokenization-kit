@@ -180,6 +180,23 @@ export function TimeSeriesTitle({
               </Tooltip>
             </TooltipProvider>
           )}
+        </div>
+        <div className="flex items-center gap-2">
+          <Select
+            value={timeRange}
+            onValueChange={(value) => setTimeRange(value as TimeRange)}
+          >
+            <SelectTrigger className="w-[5rem]">
+              <SelectValue placeholder={t("select-time-range")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="24h">{t("time-range.24h")}</SelectItem>
+              <SelectItem value="7d">{t("time-range.7d")}</SelectItem>
+              <SelectItem value="30d">{t("time-range.30d")}</SelectItem>
+              <SelectItem value="90d">{t("time-range.90d")}</SelectItem>
+            </SelectContent>
+          </Select>
+
           {lastUpdated && (
             <TooltipProvider>
               <Tooltip>

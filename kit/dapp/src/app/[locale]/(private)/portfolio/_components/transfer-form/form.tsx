@@ -40,7 +40,7 @@ export function TransferForm({
   disabled = false,
   userAddress,
 }: TransferFormProps) {
-  const t = useTranslations("portfolio.my-assets.bond");
+  const t = useTranslations("portfolio.transfer-form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -72,11 +72,9 @@ export function TransferForm({
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
       onOpenChange={handleSheetOpenChange}
-      triggerLabel={
-        isExternallyControlled ? undefined : t("transfer-form.trigger-label")
-      }
-      title={t("transfer-form.title")}
-      description={t("transfer-form.description")}
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
+      title={t("title")}
+      description={t("description")}
       asButton={asButton}
       disabled={disabled}
     >
@@ -85,10 +83,15 @@ export function TransferForm({
       ) : (
         <Form
           action={transfer}
-          resolver={typeboxResolver(TransferSchema())}
+          resolver={typeboxResolver(
+            TransferSchema({
+              maxAmount: Number(userBalance),
+              decimals: selectedAsset?.decimals,
+            })
+          )}
           onOpenChange={handleSheetOpenChange}
           buttonLabels={{
-            label: t("transfer-form.button-label"),
+            label: t("button-label"),
           }}
           defaultValues={{
             address: assetAddress,

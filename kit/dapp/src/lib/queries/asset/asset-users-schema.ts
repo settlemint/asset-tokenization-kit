@@ -142,6 +142,13 @@ export const AssetUsersSchema = t.Object(
     userManagers: t.Array(PermissionSchema, {
       description: "Accounts that can manage users for the asset",
     }),
+    auditors: t.Optional(
+      t.MaybeEmpty(
+        t.Array(PermissionSchema, {
+          description: "Accounts that can audit the asset",
+        })
+      )
+    ),
     holders: t.Array(HolderSchema, {
       description: "Accounts holding this asset",
     }),

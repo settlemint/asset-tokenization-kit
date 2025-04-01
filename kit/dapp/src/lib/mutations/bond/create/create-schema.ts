@@ -1,4 +1,4 @@
-import { AssetAdminsSchemaFragment } from '@/lib/mutations/common/asset-admins-schema';
+import { AssetAdminsSchemaFragment } from "@/lib/mutations/common/asset-admins-schema";
 import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 import { addHours, isFuture } from "date-fns";
@@ -10,23 +10,21 @@ import { addHours, isFuture } from "date-fns";
  * @property {string} symbol - The symbol of the bond (ticker)
  * @property {number} decimals - The number of decimal places for the token
  * @property {string} [isin] - Optional International Securities Identification Number
- * @property {string} pincode - The pincode for signing the transaction
+ * @property {string} verificationCode - The verification code for signing the transaction
+ * @property {string} verificationType - The type of verification used
  * @property {string} cap - Maximum issuance amount
  * @property {string} faceValue - Face value of the bond
  * @property {string} maturityDate - Maturity date of the bond
- * @property {string} underlyingAsset - Underlying asset of the bond
+ * @property {object} underlyingAsset - Underlying asset of the bond
+ * @property {object} price - Price information for the bond
+ * @property {number} price.amount - The price amount
+ * @property {string} price.currency - The currency of the price
+ * @property {object[]} assetAdmins - List of administrators for the asset
+ * @property {string} predictedAddress - The predicted contract address
  */
 export function CreateBondSchema({
-  maxCap,
-  minCap,
-  maxFaceValue,
-  minFaceValue,
   decimals,
 }: {
-  maxCap?: number;
-  minCap?: number;
-  maxFaceValue?: number;
-  minFaceValue?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -34,9 +32,11 @@ export function CreateBondSchema({
       assetName: t.String({
         description: "The name of the bond",
         minLength: 1,
+        maxLength: 50,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the bond (ticker)",
+        maxLength: 10,
       }),
       decimals: t.Decimals({
         description: "The number of decimal places for the token",
@@ -46,16 +46,20 @@ export function CreateBondSchema({
           description: "International Securities Identification Number",
         })
       ),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
       }),
-      cap: t.Amount(maxCap, minCap, decimals, {
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
+      cap: t.Amount({
+        decimals,
         description: "Maximum issuance amount",
-        errorMessage: "Must be at least 1",
       }),
-      faceValue: t.Amount(maxFaceValue, minFaceValue, decimals, {
+      faceValue: t.Amount({
+        decimals,
         description: "Face value of the bond",
-        errorMessage: "Must be at least 1",
       }),
       maturityDate: t.String({
         description: "Maturity date of the bond",
@@ -68,9 +72,17 @@ export function CreateBondSchema({
           message: "Maturity date must be at least 1 hour in the future",
         },
       }),
-      underlyingAsset: t.Any({
-        description: "Underlying asset of the bond",
-      }),
+      underlyingAsset: t.Object(
+        {
+          id: t.EthereumAddress({
+            minLength: 1,
+            errorMessage: "Underlying asset is required",
+          }),
+        },
+        {
+          description: "Underlying asset of the bond",
+        }
+      ),
       predictedAddress: t.EthereumAddress({
         description: "Predicted address of the bond",
         refinement: {

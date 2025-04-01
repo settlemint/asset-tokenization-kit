@@ -24,11 +24,18 @@ const CryptocurrencyExists = theGraphGraphqlKit(`
 `);
 
 export const isAddressAvailable = cache(async (address: Address) => {
-  const data = await theGraphClientKit.request(CryptocurrencyExists, {
-    token: address,
-  });
+  try {
+    const data = await theGraphClientKit.request(CryptocurrencyExists, {
+      token: address,
+    });
 
-  const cryptocurrencyExists = safeParse(CryptocurrencyExistsSchema, data);
+    const cryptocurrencyExists = safeParse(CryptocurrencyExistsSchema, data);
 
-  return !cryptocurrencyExists.cryptocurrency;
+    return !cryptocurrencyExists.cryptocurrency;
+  } catch (error) {
+    // Log the error but don't fail validation
+    console.error("Error checking if address is available:", error);
+    // Return true to allow form submission to proceed
+    return true;
+  }
 });

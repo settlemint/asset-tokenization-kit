@@ -15,11 +15,9 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
  */
 export function WithdrawSchema({
   maxAmount,
-  minAmount,
   decimals,
 }: {
   maxAmount?: number;
-  minAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -36,7 +34,9 @@ export function WithdrawSchema({
       to: t.EthereumAddress({
         description: "The recipient address",
       }),
-      amount: t.Amount(maxAmount, minAmount, decimals, {
+      amount: t.Amount({
+        max: maxAmount,
+        decimals,
         description: "The amount of underlying asset to withdraw",
       }),
       underlyingAssetAddress: t.EthereumAddress({
@@ -45,18 +45,16 @@ export function WithdrawSchema({
       underlyingAssetType: t.AssetType({
         description: "The type of the underlying asset",
       }),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
       }),
-      target: t.Union(
-        [
-          t.Literal("bond"),
-          t.Literal("yield"),
-        ],
-        {
-          description: "The target type (bond or yield)",
-        }
-      ),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
+      target: t.Union([t.Literal("bond"), t.Literal("yield")], {
+        description: "The target type (bond or yield)",
+      }),
     },
     {
       description:

@@ -44,7 +44,13 @@ export function CreateCryptoCurrencyForm({
     >
       <Form
         action={createCryptoCurrency}
-        resolver={typeboxResolver(CreateCryptoCurrencySchema())}
+        resolver={(...args) =>
+          typeboxResolver(
+            CreateCryptoCurrencySchema({
+              decimals: args[0].decimals,
+            })
+          )(...args)
+        }
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("trigger-label.cryptocurrencies"),
@@ -54,6 +60,9 @@ export function CreateCryptoCurrencyForm({
             amount: 1,
             currency: userDetails.currency,
           },
+          verificationType: "pincode",
+          predictedAddress: "0x0000000000000000000000000000000000000000",
+          assetAdmins: [],
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);

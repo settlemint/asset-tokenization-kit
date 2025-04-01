@@ -11,12 +11,8 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  * @property {string} pincode - The pincode for signing the transaction
  */
 export function TopUpSchema({
-  maxAmount,
-  minAmount,
   decimals,
 }: {
-  maxAmount?: number;
-  minAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -34,13 +30,19 @@ export function TopUpSchema({
         description: "The address of the underlying asset contract",
       }),
       underlyingAssetType: t.AssetType({
-        description: "The type of the underlying asset (bond or yield schedule)",
+        description:
+          "The type of the underlying asset (bond or yield schedule)",
       }),
-      amount: t.Amount(maxAmount, minAmount, decimals, {
+      amount: t.Amount({
+        decimals,
         description: "The amount of underlying asset to top up",
       }),
-      pincode: t.Pincode({
-        description: "The pincode for signing the transaction",
+      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+        description:
+          "The two factor code or pincode for signing the transaction",
+      }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
       }),
     },
     {

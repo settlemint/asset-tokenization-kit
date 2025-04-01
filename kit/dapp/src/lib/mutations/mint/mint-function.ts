@@ -106,7 +106,7 @@ const DepositMint = portalGraphql(`
 /**
  * Function to mint new tokens for a specific asset type
  *
- * @param input - Validated input containing address, pincode, amount, to, and assettype
+ * @param input - Validated input containing address, verificationCode, amount, to, and assettype
  * @param user - The user executing the mint operation
  * @returns Array of transaction hashes
  */
@@ -117,7 +117,14 @@ export const mintFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { address, pincode, amount, to, assettype },
+    parsedInput: {
+      address,
+      verificationCode,
+      verificationType,
+      amount,
+      to,
+      assettype,
+    },
     ctx: { user },
   }: {
     parsedInput: MintInput;
@@ -135,7 +142,11 @@ export const mintFunction = withAccessControl(
       from: user.wallet,
       amount: parseUnits(amount.toString(), decimals).toString(),
       to,
-      challengeResponse: await handleChallenge(user.wallet, pincode),
+      challengeResponse: await handleChallenge(
+        user.wallet,
+        verificationCode,
+        verificationType
+      ),
     };
 
     switch (assettype) {

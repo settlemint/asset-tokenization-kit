@@ -840,6 +840,21 @@ export function handleRoleGranted(event: RoleGranted): void {
     if (!found) {
       deposit.userManagers = deposit.userManagers.concat([account.id]);
     }
+  } else if (
+    event.params.role.toHexString() ==
+    crypto.keccak256(ByteArray.fromUTF8("AUDITOR_ROLE")).toHexString()
+  ) {
+    // AUDITOR_ROLE
+    let found = false;
+    for (let i = 0; i < deposit.auditors.length; i++) {
+      if (deposit.auditors[i].equals(account.id)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      deposit.auditors = deposit.auditors.concat([account.id]);
+    }
   }
 
   deposit.lastActivity = event.block.timestamp;
@@ -919,6 +934,15 @@ export function handleRoleRevoked(event: RoleRevoked): void {
       }
     }
     deposit.userManagers = newUserManagers;
+  } else if(event.params.role.toHexString() == crypto.keccak256(ByteArray.fromUTF8("AUDITOR_ROLE")).toHexString()){
+    // AUDITOR_ROLE
+    const newAuditors: Bytes[] = [];
+    for (let i = 0; i < deposit.auditors.length; i++) {
+      if (!deposit.auditors[i].equals(account.id)) {
+        newAuditors.push(deposit.auditors[i]);
+      }
+    }
+    deposit.auditors = newAuditors;
   }
 
   deposit.lastActivity = event.block.timestamp;
