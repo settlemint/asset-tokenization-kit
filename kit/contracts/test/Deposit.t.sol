@@ -332,5 +332,21 @@ contract DepositTest is Test {
         vm.stopPrank();
     }
 
+    function test_DepositClawback() public {
+        vm.startPrank(owner);
+        deposit.allowUser(user1);
+        deposit.allowUser(user2);
+        deposit.updateCollateral(INITIAL_SUPPLY);
+        deposit.mint(user1, INITIAL_SUPPLY);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        deposit.clawback(user1, user2, INITIAL_SUPPLY);
+        vm.stopPrank();
+
+        assertEq(deposit.balanceOf(user1), 0);
+        assertEq(deposit.balanceOf(user2), INITIAL_SUPPLY);
+    }
+
     receive() external payable { }
 }

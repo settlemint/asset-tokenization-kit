@@ -292,5 +292,17 @@ contract StableCoinTest is Test {
         assertEq(stableCoin.allowance(user1, spender), 50);
     }
 
-    receive() external payable { }
+    function test_StableCoinClawback() public {
+        vm.startPrank(owner);
+        stableCoin.updateCollateral(INITIAL_SUPPLY);
+        stableCoin.mint(user1, INITIAL_SUPPLY);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        stableCoin.clawback(user1, user2, INITIAL_SUPPLY);
+        vm.stopPrank();
+
+        assertEq(stableCoin.balanceOf(user1), 0);
+        assertEq(stableCoin.balanceOf(user2), INITIAL_SUPPLY);
+    }
 }

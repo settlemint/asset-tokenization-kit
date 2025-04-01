@@ -166,4 +166,17 @@ contract FundTest is Test {
 
         vm.stopPrank();
     }
+
+    function test_FundClawback() public {
+        vm.startPrank(owner);
+        fund.mint(investor1, INVESTMENT_AMOUNT);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        fund.clawback(investor1, investor2, INVESTMENT_AMOUNT);
+        vm.stopPrank();
+
+        assertEq(fund.balanceOf(investor1), 0);
+        assertEq(fund.balanceOf(investor2), INVESTMENT_AMOUNT);
+    }
 }

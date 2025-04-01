@@ -399,4 +399,17 @@ contract EquityTest is Test {
         equity.unblockUser(user1);
         vm.stopPrank();
     }
+
+    function test_EquityClawback() public {
+        vm.startPrank(owner);
+        equity.mint(user1, 1000e18);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        equity.clawback(user1, user2, 1000e18);
+        vm.stopPrank();
+
+        assertEq(equity.balanceOf(user1), 0);
+        assertEq(equity.balanceOf(user2), 1000e18);
+    }
 }
