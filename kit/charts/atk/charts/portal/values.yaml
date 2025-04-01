@@ -125,6 +125,12 @@ tolerations: []
 
 affinity: {}
 
+# Define any init containers needed
+initContainers:
+  # - name: wait-for-postgres
+  #   image: ghcr.io/settlemint/btp-waitforit:v7.7.2
+  #   command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
+
 network:
   networkId: "53771311147"
   networkName: "ATK"
