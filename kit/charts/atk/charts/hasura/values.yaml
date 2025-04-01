@@ -30,3 +30,7 @@ graphql-engine:
     imagePullSecrets: []
   postgres:
     enabled: false
+  initContainers:
+    - name: wait-for-postgresql
+      image: ghcr.io/settlemint/btp-waitforit:v7.7.2
+      command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
