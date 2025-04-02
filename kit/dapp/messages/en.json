@@ -1334,6 +1334,9 @@
               "unpause": "Unpause",
               "update-collateral": "Update collateral",
               "withdraw": "Withdraw"
+            },
+            "errors": {
+              "supply-manager-required": "Supply manager role required"
             }
           },
           "roles": {

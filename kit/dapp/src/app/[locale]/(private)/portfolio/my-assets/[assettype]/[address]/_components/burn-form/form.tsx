@@ -42,7 +42,6 @@ export function BurnForm({
   onOpenChange,
 }: BurnFormProps) {
   const t = useTranslations("private.assets.details.forms.form");
-  const tRoles = useTranslations("private.assets.details.related");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -89,7 +88,7 @@ export function BurnForm({
             <span tabIndex={0}>{formSheet}</span>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Supply manager role required</p>
+            <p>{t("errors.supply-manager-required")}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
