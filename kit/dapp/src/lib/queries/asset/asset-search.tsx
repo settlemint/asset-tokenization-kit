@@ -23,6 +23,7 @@ const AssetSearch = theGraphGraphqlKit(
         or: [
           { name_contains_nocase: $search },
           { symbol_contains_nocase: $search },
+          { symbol: $search },
           { id: $searchAddress }
         ]
       },
