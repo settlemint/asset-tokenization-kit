@@ -18,6 +18,7 @@ import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { userRoles } from "@/lib/utils/typebox/user-roles";
+import { AlertTriangle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
 import { toast } from "sonner";
@@ -35,6 +36,10 @@ export function ChangeRoleAction({
   const [selectedRole, setSelectedRole] = useState<string>(user.role || "user");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { data: session } = authClient.useSession();
+
+  // Check if the user is editing their own role
+  const isSelfRoleChange = session?.user?.id === user.id;
 
   const handleRoleChange = async (e: MouseEvent) => {
     e.preventDefault();
@@ -50,7 +55,13 @@ export function ChangeRoleAction({
       });
       toast.success(t("actions.change-role.success"));
       onOpenChange(false);
-      router.refresh();
+
+      // If the user changed their own role to a non-admin role, redirect to dashboard
+      if (isSelfRoleChange && selectedRole !== "admin") {
+        window.location.href = "/assets";
+      } else {
+        router.refresh();
+      }
     } catch (error) {
       toast.error(
         t("actions.change-role.error", {
@@ -72,6 +83,13 @@ export function ChangeRoleAction({
               {t("actions.change-role.description", {
                 userName: user.name,
               })}
+
+              {isSelfRoleChange && selectedRole !== "admin" && (
+                <div className="mt-2 p-3 rounded-md border bg-warning/10 border-warning/20 text-sm text-warning-foreground flex items-start gap-2">
+                  <AlertTriangle className="size-4 mt-0.5 flex-shrink-0" />
+                  <span>{t("actions.change-role.self-change-warning")}</span>
+                </div>
+              )}
             </DialogDescription>
           </DialogHeader>
 
