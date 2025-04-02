@@ -4,7 +4,7 @@ import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { ContactFragment } from "./contact-fragment";
-import { ContactSchema } from "./contact-schema";
+import { ContactSchema, type Contact } from "./contact-schema";
 
 /**
  * GraphQL query to fetch contact list from Hasura
@@ -34,17 +34,19 @@ const ContactListQuery = hasuraGraphql(
  * @param userId - The ID of the user whose contacts to fetch
  * @returns An array of contacts belonging to the user
  */
-export const getContactsList = cache(async (userId: string) => {
-  const contacts = await fetchAllHasuraPages(async (pageLimit, offset) => {
-    const result = await hasuraClient.request(ContactListQuery, {
-      userId,
-      limit: pageLimit,
-      offset,
+export const getContactsList = cache(
+  async (userId: string, searchTerm?: string): Promise<Contact[]> => {
+    const contacts = await fetchAllHasuraPages(async (pageLimit, offset) => {
+      const result = await hasuraClient.request(ContactListQuery, {
+        userId,
+        limit: pageLimit,
+        offset,
+      });
+
+      // Parse and validate the contacts with TypeBox
+      return safeParse(t.Array(ContactSchema), result.contact || []);
     });
 
-    // Parse and validate the contacts with TypeBox
-    return safeParse(t.Array(ContactSchema), result.contact || []);
-  });
-
-  return contacts;
-});
+    return contacts;
+  }
+);
