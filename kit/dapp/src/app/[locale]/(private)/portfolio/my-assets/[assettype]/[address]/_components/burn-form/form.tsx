@@ -2,6 +2,12 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { burn } from "@/lib/mutations/burn/burn-action";
 import { BurnSchema } from "@/lib/mutations/burn/burn-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -36,11 +42,12 @@ export function BurnForm({
   onOpenChange,
 }: BurnFormProps) {
   const t = useTranslations("private.assets.details.forms.form");
+  const tRoles = useTranslations("private.assets.details.related");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
 
-  return (
+  const formSheet = (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
       onOpenChange={
@@ -73,4 +80,21 @@ export function BurnForm({
       </Form>
     </FormSheet>
   );
+
+  if (disabled && asButton) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span tabIndex={0}>{formSheet}</span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Supply manager role required</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return formSheet;
 }

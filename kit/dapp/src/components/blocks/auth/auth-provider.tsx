@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 // eslint-disable-next-line no-restricted-imports
 import { useRouter } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { toast } from "sonner";
 
 interface AuthProviderProps extends PropsWithChildren {
   emailEnabled: boolean;
@@ -36,9 +37,10 @@ export const AuthProvider = ({
       navigate={router.push}
       replace={router.replace}
       onSessionChange={() => router.refresh()}
-      LinkComponent={Link}
+      Link={Link}
       settingsUrl="/portfolio/settings/profile"
-      defaultRedirectTo="/portfolio"
+      redirectTo="/portfolio"
+      confirmPassword={true}
       optimistic={true}
       rememberMe={true}
       forgotPassword={emailEnabled}
@@ -55,6 +57,17 @@ export const AuthProvider = ({
             ] as SocialProvider[])
           : undefined
       }
+      toast={({ variant, message }) => {
+        if (variant === "success") {
+          toast.success(message);
+        } else if (variant === "error") {
+          toast.error(message);
+        } else if (variant === "warning") {
+          toast.warning(message);
+        } else {
+          toast.info(message);
+        }
+      }}
       localization={{
         account: t("account"),
         addAccount: t("add-account"),

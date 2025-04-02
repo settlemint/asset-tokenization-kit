@@ -1,0 +1,488 @@
+# Default values for atk.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global values shared across all subcharts
+global:
+  labels:
+    kots.io/app-slug: settlemint-atk
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: settlemint-atk
+
+imagePullCredentials:
+  registries:
+    # -- lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more
+    harbor:
+      # -- Enable this if you want this chart to create an image pull secret for you (harbor is the default registry for the platform)
+      enabled: false
+      # -- The registry hosting the packages, e.g docker.io or ghcr.io
+      registryUrl: 'harbor.settlemint.com'
+      # -- The username to access the registry
+      username: ''
+      # -- The password or access token to access the registry
+      password: ''
+      # -- The email to access the registry
+      email: ''
+    # -- lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more
+    ghcr:
+      # -- Enable this if you want this chart to create an image pull secret for you
+      enabled: false
+      # -- The registry hosting the packages, e.g docker.io or ghcr.io
+      registryUrl: 'ghcr.io'
+      # -- The username to access the registry
+      username: ''
+      # -- The password or access token to access the registry
+      password: ''
+      # -- The email to access the registry
+      email: ''
+    # -- lowercase, no points or special caracters unique identifier for the registry, harbor, ghcr and docker have special meaning, but you can add more
+    docker:
+      # -- Enable this if you want this chart to create an image pull secret for you
+      enabled: false
+      # -- The registry hosting the packages, e.g docker.io or ghcr.io
+      registryUrl: 'docker.io'
+      # -- The username to access the registry
+      username: ''
+      # -- The password or access token to access the registry
+      password: ''
+      # -- The email to access the registry
+      email: ''
+
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+
+fullnameOverride: ""
+nameOverride: ""
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: nginx
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  type: ClusterIP
+  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  port: 80
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: false
+  className: ""
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+besu-network:
+  enabled: true
+  besu-validator-1:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
+  besu-validator-2:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
+  besu-validator-3:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
+  besu-validator-4:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
+  besu-rpc-1:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
+  besu-rpc-2:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    storage:
+      sizeLimit: "5Gi"
+      pvcSizeLimit: "5Gi"
+    resources: {}
+
+erpc:
+  enabled: true
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+  ingress:
+    enabled: true
+    className: "settlemint-nginx"
+    hosts:
+      - host: rpc.k8s.orb.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+
+blockscout:
+  enabled: true
+  blockscout-stack:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    blockscout:
+      # Add an extra init container to wait for PostgreSQL
+      init:
+        enabled: true
+        command:
+          - /bin/sh
+        args:
+          - -c
+          - |  # Using YAML multiline string for clarity
+            echo "Waiting for postgresql-pgpool:5432..."
+            while ! nc -z postgresql-pgpool 5432; do
+              sleep 2;
+            done;
+            echo "PostgreSQL is ready!"
+            # Original command:
+            bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
+      ingress:
+        hostname: explorer.k8s.orb.local
+      resources: {}
+      env:
+        API_URL: https://explorer.k8s.orb.local
+        WEBAPP_URL: https://explorer.k8s.orb.local
+    frontend:
+      ingress:
+        hostname: explorer.k8s.orb.local
+
+thegraph:
+  enabled: true
+  graph-node:
+    graphNodeDefaults:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+      podMetadata:
+        labels:
+          app.kubernetes.io/part-of: thegraph
+          environment: production
+    graphNodeGroups:
+      query:
+        enabled: true
+        podMetadata:
+          labels:
+            role: query-node
+            custom-label: custom-value
+      index:
+        enabled: true
+        podMetadata:
+          labels:
+            role: index-node
+            custom-label: custom-value
+      block-ingestor:
+        enabled: true
+        podMetadata:
+          labels:
+            role: block-ingestor
+            custom-label: custom-value
+    ingress:
+      hosts:
+        - host: graph.k8s.orb.local
+          paths:
+            - path: /(.*)
+              pathType: ImplementationSpecific
+              port: 8000
+              serviceName: graph-node-query
+            - path: /ws/?(.*)
+              pathType: ImplementationSpecific
+              port: 8001
+              serviceName: graph-node-query
+            - path: /admin/?(.*)
+              pathType: ImplementationSpecific
+              port: 8020
+              serviceName: graph-node-query
+            - path: /indexer/?(.*)
+              pathType: ImplementationSpecific
+              port: 8030
+              serviceName: graph-node-index
+            - path: /graphman/?(.*)
+              pathType: ImplementationSpecific
+              port: 8050
+              serviceName: graph-node-index
+
+hasura:
+  enabled: true
+  graphql-engine:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+    ingress:
+      hostName: "hasura.k8s.orb.local"
+
+portal:
+  enabled: true
+  initContainers:
+    - name: wait-for-postgres
+      image: ghcr.io/settlemint/btp-waitforit:v7.7.2
+      command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
+
+support:
+  enabled: true
+
+  # https://github.com/bitnami/charts/blob/main/bitnami/postgresql-ha/values.yaml
+  postgresql-ha:
+    postgresql:
+      pullSecrets:
+        - image-pull-secret-docker
+        - image-pull-secret-ghcr
+        - image-pull-secret-harbor
+      resources: {}
+    pgpool:
+      pullSecrets:
+        - image-pull-secret-docker
+        - image-pull-secret-ghcr
+        - image-pull-secret-harbor
+      resources: {}
+
+  # https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
+  redis:
+    global:
+      imagePullSecrets:
+        - image-pull-secret-docker
+        - image-pull-secret-ghcr
+        - image-pull-secret-harbor
+    master:
+      resources: {}
+    replica:
+      resources: {}
+
+  # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+  ingress-nginx:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    controller:
+      resources: {}
+
+observability:
+  enabled: true
+
+  # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
+  metrics-server:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+
+  # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
+  kube-state-metrics:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+    resources: {}
+
+  # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
+  victoria-metrics-single:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+    server:
+      persistentVolume:
+        storageClass: ""
+        size: 10Gi
+      resources: {}
+
+  # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
+  loki:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  singleBinary:
+    persistence:
+      size: 10Gi
+    resources: {}
+    extraEnv: {}
+      # Keep a little bit lower than memory limits
+      # - name: GOMEMLIMIT
+      #   value: 3750MiB
+
+  # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
+  alloy:
+    global:
+      image:
+        pullSecrets:
+          - name: image-pull-secret-docker
+          - name: image-pull-secret-ghcr
+          - name: image-pull-secret-harbor
+    alloy:
+      resources: {}
+
+  alertmanager:
+    alertmanager:
+      global:
+        imagePullSecrets:
+          - name: image-pull-secret-docker
+          - name: image-pull-secret-ghcr
+          - name: image-pull-secret-harbor
+  prometheus-stack:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  grafana:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+    ingress:
+      hosts:
+        - grafana.k8s.orb.local
+    adminUser: settlemint
+    adminPassword: atk
+  tempo:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+  promtail:
+    global:
+      imagePullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor

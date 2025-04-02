@@ -90,12 +90,15 @@ export function ManageDropdown({
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
+
   const userRoles =
     assetUsersDetails.roles.find((role) => getAddress(role.id) === userAddress)
       ?.roles ?? [];
+
   const userIsSupplyManager = userRoles.includes(
     ROLES.SUPPLY_MANAGEMENT_ROLE.contractRole
   );
+
   const userIsUserManager = userRoles.includes(
     ROLES.USER_MANAGEMENT_ROLE.contractRole
   );

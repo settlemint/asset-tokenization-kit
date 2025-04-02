@@ -55,6 +55,7 @@ export function CreateFundForm({
             amount: 1,
             currency: userDetails.currency,
           },
+          assetAdmins: [],
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);

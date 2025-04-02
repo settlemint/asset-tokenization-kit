@@ -1,0 +1,36 @@
+# https://github.com/hasura/helm-charts/blob/main/charts/graphql-engine/values.yaml
+graphql-engine:
+  nameOverride: hasura
+  replicas: 2
+  labels:
+    kots.io/app-slug: settlemint-atk
+    app.kubernetes.io/part-of: settlemint-atk
+    app.kubernetes.io/managed-by: helm
+  ingress:
+    enabled: true
+    ingressClassName: "settlemint-nginx"
+    hostName: "hasura.k8s.orb.local"
+  config:
+    metadataOnly: true
+    enableInternalConsoleAssets: true
+    devMode: true
+  secret:
+    enabled: true
+    adminSecret: "atk"
+    redisUrl: "redis://default:atk@redis-master:6379"
+    rateLimitRedisUrl: "redis://default:atk@redis-master:6379"
+    metadataDbUrl: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
+  extraEnvs:
+    - name: HASURA_GRAPHQL_PG_CONNECTIONS
+      value: "10"
+  extraSecrets:
+    - name: HASURA_GRAPHQL_DATABASE_URL
+      value: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
+  global:
+    imagePullSecrets: []
+  postgres:
+    enabled: false
+  initContainers:
+    - name: wait-for-postgresql
+      image: ghcr.io/settlemint/btp-waitforit:v7.7.2
+      command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]

@@ -53,6 +53,7 @@ export function CreateEquityForm({
             amount: 1,
             currency: userDetails.currency,
           },
+          assetAdmins: [],
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
