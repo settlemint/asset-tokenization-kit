@@ -1,0 +1,11 @@
+apiVersion: v2
+name: erpc
+description: A Helm chart for the erpc load balancer
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+icon: https://console.settlemint.com/android-chrome-512x512.png
+maintainers:
+  - name: SettleMint
+    email: support@settlemint.com
+    url: https://settlemint.com

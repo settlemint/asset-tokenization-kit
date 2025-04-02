@@ -172,10 +172,11 @@ function FormAssetsList({
 
       // Filter by user wallet if provided
       if (userWallet) {
-        return results.filter(asset =>
-          asset.holders.some(holder =>
-            holder.account.id.toLowerCase() === userWallet.toLowerCase() &&
-            BigInt(holder.value) > 0n
+        return results.filter((asset) =>
+          asset.holders.some(
+            (holder) =>
+              holder.account.id.toLowerCase() === userWallet.toLowerCase() &&
+              BigInt(holder.value) > 0n
           )
         );
       } else {

@@ -2,26 +2,27 @@ import { BurnForm } from "@/app/[locale]/(private)/portfolio/my-assets/[assettyp
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
-import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { isBefore } from "date-fns";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { UpdateCollateralForm } from "../../../_components/manage-dropdown/update-collateral-form/form";
 import { MintForm } from "../../../_components/mint-form/form";
 
 interface StablecoinsRelatedProps {
   address: Address;
-  assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
+  assetDetails: Awaited<ReturnType<typeof getStableCoinDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
+  userIsAdmin: boolean;
 }
 
-export async function StablecoinsRelated({
+export function StablecoinsRelated({
   address,
   assetDetails,
   userBalance,
+  userIsAdmin,
 }: StablecoinsRelatedProps) {
-  const t = await getTranslations("private.assets.details.related");
+  const t = useTranslations("private.assets.details.related");
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
@@ -33,9 +34,7 @@ export async function StablecoinsRelated({
     assetDetails.collateralProofValidity !== undefined &&
     isBefore(assetDetails.collateralProofValidity, new Date());
 
-  const stablecoin = assetDetails as Awaited<
-    ReturnType<typeof getStableCoinDetail>
-  >;
+  const stablecoin = assetDetails;
   const maxMint = stablecoin.freeCollateral;
 
   return (
@@ -65,7 +64,10 @@ export async function StablecoinsRelated({
           assettype="stablecoin"
           asButton
           disabled={
-            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
+            isBlocked ||
+            isPaused ||
+            (!userIsSupplyManager && !userIsAdmin) ||
+            collateralIsExpired
           }
         />
       </RelatedGridItem>

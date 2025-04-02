@@ -18,8 +18,10 @@ export function Configuration() {
 
   // Calculate default maturity date (1 hour from now)
   const oneHourFromNow = addHours(new Date(), 1);
-  const defaultMaturityDate = oneHourFromNow.toLocaleDateString('sv').replace(/\//g, '-') + 'T' +
-    oneHourFromNow.toLocaleTimeString('sv').slice(0, 5);
+  const defaultMaturityDate =
+    oneHourFromNow.toLocaleDateString("sv").replace(/\//g, "-") +
+    "T" +
+    oneHourFromNow.toLocaleTimeString("sv").slice(0, 5);
   const minMaturityDate = defaultMaturityDate;
 
   return (

@@ -1441,6 +1441,7 @@
           "decrease-supply": {
             "description": {
               "bonds": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
+              "cryptocurrencies": "A supply manager can burn existing cryptocurrency tokens to decrease the total supply.",
               "equities": "An equity manager can reduce the total supply of shares through a buyback program or capital reduction.",
               "funds": "A fund manager can reduce the total supply through fund redemption at maturity or early repurchase programs.",
               "stablecoins": "A supply manager can burn existing stablecoins, provided sufficient collateral is available.",
@@ -1448,6 +1449,7 @@
             },
             "title": {
               "bonds": "Redeem bonds",
+              "cryptocurrencies": "Decrease supply",
               "equities": "Reduce share supply",
               "funds": "Redeem bonds",
               "stablecoins": "Decrease the supply",

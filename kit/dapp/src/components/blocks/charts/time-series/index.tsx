@@ -145,8 +145,22 @@ export function TimeSeriesTitle({
   return (
     <CardHeader>
       <div className="flex items-center justify-between">
+        <CardTitle>{title}</CardTitle>
         <div className="flex items-center gap-2">
-          <CardTitle>{title}</CardTitle>
+          <Select
+            value={timeRange}
+            onValueChange={(value) => setTimeRange(value as TimeRange)}
+          >
+            <SelectTrigger className="w-[5rem]">
+              <SelectValue placeholder={t("select-time-range")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="24h">{t("time-range.24h")}</SelectItem>
+              <SelectItem value="7d">{t("time-range.7d")}</SelectItem>
+              <SelectItem value="30d">{t("time-range.30d")}</SelectItem>
+              <SelectItem value="90d">{t("time-range.90d")}</SelectItem>
+            </SelectContent>
+          </Select>
           {description && (
             <TooltipProvider>
               <Tooltip>

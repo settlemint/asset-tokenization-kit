@@ -1,0 +1,32 @@
+apiVersion: v2
+name: besu-network
+description: A Helm chart for the besu network components
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+icon: https://console.settlemint.com/android-chrome-512x512.png
+maintainers:
+  - name: SettleMint
+    email: support@settlemint.com
+    url: https://settlemint.com
+dependencies:
+  - name: besu-genesis
+    version: "*"
+  - name: besu-node
+    alias: besu-validator-1
+    version: "*"
+  - name: besu-node
+    alias: besu-validator-2
+    version: "*"
+  - name: besu-node
+    alias: besu-validator-3
+    version: "*"
+  - name: besu-node
+    alias: besu-validator-4
+    version: "*"
+  - name: besu-node
+    alias: besu-rpc-1
+    version: "*"
+  - name: besu-node
+    alias: besu-rpc-2
+    version: "*"

@@ -1,0 +1,22 @@
+{{- range $path, $_ := .Files.Glob "dashboards/**/*.json" }}
+{{- $filename := base $path }}
+{{- $pathParts := splitList "/" $path }}
+{{- $folder := "" }}
+{{- if gt (len $pathParts) 2 }}
+  {{- $folder = index $pathParts 1 | title }}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-{{ $filename | trimSuffix ".json" | lower | replace "_" "-" }}
+  labels:
+    grafana_dashboard: "1"
+  {{- if $folder }}
+  annotations:
+    grafana_folder: {{ $folder | quote }}
+  {{- end }}
+data:
+  {{ $filename }}: |
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}
