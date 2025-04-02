@@ -38,9 +38,9 @@ export function DataTableToolbar<TData>({
     )
     .map((column) => {
       const metaFilterOptions =
-        (column.columnDef.meta as any)?.filterComponentOptions?.options ?? null;
+        column.columnDef.meta?.filterComponentOptions?.options ?? null;
       const metaFilterTitle =
-        (column.columnDef.meta as any)?.filterComponentOptions?.title ?? null;
+        column.columnDef.meta?.filterComponentOptions?.title ?? null;
 
       const options = metaFilterOptions
         ? metaFilterOptions // Use predefined options if available

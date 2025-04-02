@@ -59,7 +59,7 @@ export function columns({
             value: role.contractRole,
           })),
         },
-      } as any,
+      },
     }),
     columnHelper.accessor("lastActivity", {
       header: t("last-activity-header"),
