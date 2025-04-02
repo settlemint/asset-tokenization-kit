@@ -17,6 +17,7 @@ export const AssetActivityFragment = theGraphGraphqlKit(`
     transferEventCount
     frozenEventCount
     unfrozenEventCount
+    clawbackEventCount
   }
 `);
 

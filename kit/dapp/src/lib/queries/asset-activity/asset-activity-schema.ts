@@ -29,6 +29,9 @@ export const AssetActivitySchema = t.Object(
     unfrozenEventCount: t.Number({
       description: "Number of token unfreezing events",
     }),
+    clawbackEventCount: t.Number({
+      description: "Number of token clawback events",
+    }),
   },
   {
     description:
