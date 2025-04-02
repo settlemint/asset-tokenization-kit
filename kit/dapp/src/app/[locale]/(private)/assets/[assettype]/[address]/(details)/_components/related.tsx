@@ -1,5 +1,6 @@
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -16,6 +17,8 @@ interface RelatedProps {
   address: Address;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
+  assetUsersDetails?: Awaited<ReturnType<typeof getAssetUsersDetail>>;
+  currentUserWallet?: Address;
 }
 
 export function Related({
@@ -23,6 +26,8 @@ export function Related({
   address,
   assetDetails,
   userBalance,
+  assetUsersDetails,
+  currentUserWallet,
 }: RelatedProps) {
   switch (assettype) {
     case "bond":
@@ -31,6 +36,8 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
+          assetUsersDetails={assetUsersDetails}
+          currentUserWallet={currentUserWallet}
         />
       );
     case "cryptocurrency":
@@ -39,6 +46,8 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
+          assetUsersDetails={assetUsersDetails}
+          currentUserWallet={currentUserWallet}
         />
       );
     case "stablecoin":
@@ -49,6 +58,8 @@ export function Related({
             assetDetails as Awaited<ReturnType<typeof getStableCoinDetail>>
           }
           userBalance={userBalance}
+          assetUsersDetails={assetUsersDetails}
+          currentUserWallet={currentUserWallet}
         />
       );
     case "deposit":
@@ -59,6 +70,8 @@ export function Related({
             assetDetails as Awaited<ReturnType<typeof getDepositDetail>>
           }
           userBalance={userBalance}
+          assetUsersDetails={assetUsersDetails}
+          currentUserWallet={currentUserWallet}
         />
       );
     case "equity":
@@ -67,6 +80,8 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
+          assetUsersDetails={assetUsersDetails}
+          currentUserWallet={currentUserWallet}
         />
       );
     case "fund":
@@ -75,6 +90,8 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
+          assetUsersDetails={assetUsersDetails}
+          currentUserWallet={currentUserWallet}
         />
       );
     default:
