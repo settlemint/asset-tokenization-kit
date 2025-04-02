@@ -58,6 +58,7 @@ export function CreateDepositForm({
             amount: 1,
             currency: userDetails.currency,
           },
+          assetAdmins: [],
         }}
       >
         <Basics />
