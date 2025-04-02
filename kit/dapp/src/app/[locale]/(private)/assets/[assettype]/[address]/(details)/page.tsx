@@ -32,8 +32,6 @@ export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
   const user = await getUser();
 
-  const userIsAdmin = user.role === "admin";
-
   // Fetch asset details and translations first
   const [assetDetails, t] = await Promise.all([
     getAssetDetail({ address, assettype }),
@@ -91,7 +89,6 @@ export default async function AssetDetailsPage({ params }: PageProps) {
         address={address}
         assetDetails={assetDetails}
         userBalance={userBalance}
-        userIsAdmin={userIsAdmin}
       />
     </>
   );

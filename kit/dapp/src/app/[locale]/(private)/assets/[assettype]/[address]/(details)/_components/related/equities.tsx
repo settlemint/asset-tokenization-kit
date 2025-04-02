@@ -10,14 +10,12 @@ export interface EquitiesRelatedProps {
   address: `0x${string}`;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-  userIsAdmin: boolean;
 }
 
 export function EquitiesRelated({
   address,
   assetDetails,
   userBalance,
-  userIsAdmin,
 }: EquitiesRelatedProps) {
   const t = useTranslations("private.assets.details.related");
 
@@ -39,9 +37,7 @@ export function EquitiesRelated({
           decimals={assetDetails.decimals}
           symbol={assetDetails.symbol}
           asButton
-          disabled={
-            isBlocked || isPaused || (!userIsSupplyManager && !userIsAdmin)
-          }
+          disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
       <RelatedGridItem

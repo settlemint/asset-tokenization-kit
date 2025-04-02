@@ -16,8 +16,6 @@ interface RelatedProps {
   address: Address;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-  /** Whether the current user is an admin */
-  userIsAdmin: boolean;
 }
 
 export function Related({
@@ -25,7 +23,6 @@ export function Related({
   address,
   assetDetails,
   userBalance,
-  userIsAdmin,
 }: RelatedProps) {
   switch (assettype) {
     case "bond":
@@ -34,7 +31,6 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
-          userIsAdmin={userIsAdmin}
         />
       );
     case "cryptocurrency":
@@ -43,7 +39,6 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
-          userIsAdmin={userIsAdmin}
         />
       );
     case "stablecoin":
@@ -54,7 +49,6 @@ export function Related({
             assetDetails as Awaited<ReturnType<typeof getStableCoinDetail>>
           }
           userBalance={userBalance}
-          userIsAdmin={userIsAdmin}
         />
       );
     case "deposit":
@@ -65,7 +59,6 @@ export function Related({
             assetDetails as Awaited<ReturnType<typeof getDepositDetail>>
           }
           userBalance={userBalance}
-          userIsAdmin={userIsAdmin}
         />
       );
     case "equity":
@@ -74,7 +67,6 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
-          userIsAdmin={userIsAdmin}
         />
       );
     case "fund":
@@ -83,7 +75,6 @@ export function Related({
           address={address}
           assetDetails={assetDetails}
           userBalance={userBalance}
-          userIsAdmin={userIsAdmin}
         />
       );
     default:

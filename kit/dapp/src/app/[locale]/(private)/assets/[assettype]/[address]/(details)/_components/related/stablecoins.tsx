@@ -13,14 +13,12 @@ interface StablecoinsRelatedProps {
   address: Address;
   assetDetails: Awaited<ReturnType<typeof getStableCoinDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-  userIsAdmin: boolean;
 }
 
 export function StablecoinsRelated({
   address,
   assetDetails,
   userBalance,
-  userIsAdmin,
 }: StablecoinsRelatedProps) {
   const t = useTranslations("private.assets.details.related");
 
@@ -64,10 +62,7 @@ export function StablecoinsRelated({
           assettype="stablecoin"
           asButton
           disabled={
-            isBlocked ||
-            isPaused ||
-            (!userIsSupplyManager && !userIsAdmin) ||
-            collateralIsExpired
+            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
           }
         />
       </RelatedGridItem>

@@ -11,14 +11,12 @@ interface BondsRelatedProps {
   address: Address;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-  userIsAdmin: boolean;
 }
 
 export async function BondsRelated({
   address,
   assetDetails,
   userBalance,
-  userIsAdmin,
 }: BondsRelatedProps) {
   const t = await getTranslations("private.assets.details.related");
 
@@ -40,9 +38,7 @@ export async function BondsRelated({
           decimals={assetDetails.decimals}
           symbol={assetDetails.symbol}
           asButton
-          disabled={
-            isBlocked || isPaused || (!userIsSupplyManager && !userIsAdmin)
-          }
+          disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
       <RelatedGridItem
@@ -56,9 +52,7 @@ export async function BondsRelated({
           symbol={assetDetails.symbol}
           assettype="bond"
           asButton
-          disabled={
-            isBlocked || isPaused || (!userIsSupplyManager && !userIsAdmin)
-          }
+          disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
     </RelatedGrid>
