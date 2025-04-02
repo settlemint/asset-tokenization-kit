@@ -270,7 +270,7 @@ export const cryptocurrencyData = {
   name: generateCryptoName(),
   symbol: generateSymbol(generateCryptoName()),
   decimals: "6",
-  initialSupply: "0",
+  initialSupply: "1",
   price: "100",
   pincode: pincode,
   sidebarAssetTypes: "Cryptocurrencies",
