@@ -305,4 +305,20 @@ contract StableCoinTest is Test {
         assertEq(stableCoin.balanceOf(user1), 0);
         assertEq(stableCoin.balanceOf(user2), INITIAL_SUPPLY);
     }
+
+    function test_onlySupplyManagementCanClawback() public {
+        vm.startPrank(owner);
+        stableCoin.updateCollateral(INITIAL_SUPPLY);
+        stableCoin.mint(user1, INITIAL_SUPPLY);
+        vm.stopPrank();
+
+        vm.startPrank(user2);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user2, stableCoin.SUPPLY_MANAGEMENT_ROLE()
+            )
+        );
+        stableCoin.clawback(user1, user2, INITIAL_SUPPLY);
+        vm.stopPrank();
+    }
 }

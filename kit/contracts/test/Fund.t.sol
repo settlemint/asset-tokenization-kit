@@ -179,4 +179,19 @@ contract FundTest is Test {
         assertEq(fund.balanceOf(investor1), 0);
         assertEq(fund.balanceOf(investor2), INVESTMENT_AMOUNT);
     }
+
+    function test_onlySupplyManagementCanClawback() public {
+        vm.startPrank(owner);
+        fund.mint(investor1, INVESTMENT_AMOUNT);
+        vm.stopPrank();
+
+        vm.startPrank(investor2);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", investor2, fund.SUPPLY_MANAGEMENT_ROLE()
+            )
+        );
+        fund.clawback(investor1, investor2, INVESTMENT_AMOUNT);
+        vm.stopPrank();
+    }
 }

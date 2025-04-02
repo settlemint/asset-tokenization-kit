@@ -35,6 +35,7 @@ export class EventName {
   static UserUnblocked: string = "User Unblocked";
   static UserAllowed: string = "User Allowed";
   static UserDisallowed: string = "User Disallowed";
+  static Clawback: string = "Clawback";
   // Bond specific events
   static BondMatured: string = "Bond Matured";
   static BondRedeemed: string = "Bond Redeemed";

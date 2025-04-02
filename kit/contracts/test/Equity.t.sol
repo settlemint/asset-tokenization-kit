@@ -412,4 +412,19 @@ contract EquityTest is Test {
         assertEq(equity.balanceOf(user1), 0);
         assertEq(equity.balanceOf(user2), 1000e18);
     }
+
+    function test_onlySupplyManagementCanClawback() public {
+        vm.startPrank(owner);
+        equity.mint(user1, 1000e18);
+        vm.stopPrank();
+
+        vm.startPrank(user2);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user2, equity.SUPPLY_MANAGEMENT_ROLE()
+            )
+        );
+        equity.clawback(user1, user2, 1000e18);
+        vm.stopPrank();
+    }
 }
