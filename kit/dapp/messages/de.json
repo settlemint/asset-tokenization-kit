@@ -29,7 +29,8 @@
           "description": "Die Anzahl der durchgeführten Aktionen in den verschiedenen Anlageklassen",
           "mint": "Prägen",
           "title": "Vermögensaktivität",
-          "transfer": "Übertragen"
+          "transfer": "Übertragen",
+          "clawback": "Rückforderung"
         },
         "asset-types": {
           "bonds": "Anleihen",
@@ -2078,10 +2079,11 @@
   "asset-events": {
     "ApprovalEvent": "Genehmigung",
     "AssetCreatedEvent": "Erstellen",
-    "BondMaturedEvent": "Reif",
+    "BondMaturedEvent": "Fällig",
     "BondRedeemedEvent": "Eingelöst",
     "BurnEvent": "Verbrennen",
-    "CollateralUpdatedEvent": "Sicherheiten aktualisiert",
+    "ClawbackEvent": "Rückforderung",
+    "CollateralUpdatedEvent": "Sicherheit aktualisiert",
     "ManagementFeeCollectedEvent": "Verwaltungsgebühr eingezogen",
     "MintEvent": "Prägen",
     "PausedEvent": "Pausiert",
