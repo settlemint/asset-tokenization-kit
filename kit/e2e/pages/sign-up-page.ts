@@ -20,10 +20,7 @@ export class SignUpPage extends BasePage {
     await this.page.getByLabel("Password").fill(options.password);
     await this.page.getByRole("button", { name: "Create an account" }).click();
     await this.page.waitForURL("**/portfolio");
-    await this.page.waitForSelector('label:has-text("Pincode Name")', {
-      state: "visible",
-    });
-    await this.page.getByLabel("Pincode Name").fill(options.pincodeName);
+    await this.page.getByRole("button", { name: "PIN-code" }).click();
     await this.page.locator('[data-input-otp="true"]').fill(options.pincode);
     await this.page.getByRole("button", { name: "Setup Pincode" }).click();
     await expect(
