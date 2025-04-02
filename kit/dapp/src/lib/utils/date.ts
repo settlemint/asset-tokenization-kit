@@ -1,10 +1,12 @@
 import {
+  addHours,
   formatDistance,
   formatDuration as formatDurationFns,
   formatRelative,
   fromUnixTime,
+  isBefore,
   parseISO,
-  setDefaultOptions,
+  setDefaultOptions
 } from "date-fns";
 import { ar, de, ja } from "date-fns/locale";
 import {
@@ -183,4 +185,59 @@ export function getTimeUnitSeconds(unit: TimeUnit): number {
     case "months":
       return 2592000; // 30 days
   }
+}
+
+/**
+ * Formats a Date object for usage in datetime-local input elements
+ * Returns a string in the format "YYYY-MM-DDThh:mm"
+ *
+ * @param date - The date to format
+ * @returns String formatted for datetime-local inputs
+ */
+export function formatForDatetimeLocal(date: Date): string {
+  return (
+    date.toLocaleDateString("sv").replace(/\//g, "-") +
+    "T" +
+    date.toLocaleTimeString("sv").slice(0, 5)
+  );
+}
+
+/**
+ * Returns a Date object that is a specified number of hours in the future
+ * Also provides the formatted string for datetime-local inputs
+ *
+ * @param hours - Number of hours in the future (default: 1)
+ * @returns Object containing the Date and its formatted string
+ */
+export function getMinFutureDate(hours: number = 1): {
+  date: Date;
+  formatted: string;
+} {
+  const futureDate = addHours(new Date(), hours);
+  return {
+    date: futureDate,
+    formatted: formatForDatetimeLocal(futureDate)
+  };
+}
+
+/**
+ * Validates if a date string or Date object is at least the specified number of hours in the future
+ * Can also update a form value if provided
+ *
+ * @param date - Date to validate (string from datetime-local input or Date object)
+ * @param hours - Minimum hours in the future (default: 1)
+ * @returns Boolean indicating if the date is valid
+ */
+export function validateFutureDate(
+  date: string | Date,
+  hours: number = 1,
+): boolean {
+  const selectedDate = typeof date === 'string' ? new Date(date) : date;
+  const minDate = getMinFutureDate(hours);
+
+  if (isBefore(selectedDate, minDate.date)) {
+    return false;
+  }
+
+  return true;
 }

@@ -1,7 +1,7 @@
 import { AssetAdminsSchemaFragment } from "@/lib/mutations/common/asset-admins-schema";
 import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
+import { validateFutureDate } from "@/lib/utils/date";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
-import { addHours, isFuture } from "date-fns";
 
 /**
  * TypeBox schema for validating bond creation inputs
@@ -65,9 +65,7 @@ export function CreateBondSchema({
         description: "Maturity date of the bond",
         refinement: {
           predicate: (value: string) => {
-            const selectedDate = new Date(value);
-            const minDate = addHours(new Date(), 1);
-            return isFuture(selectedDate) && selectedDate >= minDate;
+            return validateFutureDate(value, 1);
           },
           message: "Maturity date must be at least 1 hour in the future",
         },
