@@ -1,0 +1,89 @@
+# https://github.com/blockscout/helm-charts/blob/main/charts/blockscout-stack/values.yaml
+blockscout-stack:
+  fullnameOverride: blockscout
+  imagePullSecrets: []
+  config:
+    prometheus:
+      enabled: false
+      blackbox:
+        enabled: false
+    network:
+      id: 53771311147
+      name: Asset Tokenization Kit
+      shortname: ATK
+      currency:
+        name: Native Token
+        symbol: NT
+        decimals: 18
+  blockscout:
+    replicaCount: 1
+    image:
+      repository: blockscout/blockscout
+      tag: "7.0.2"
+    ingress:
+      enabled: true
+      className: "settlemint-nginx"
+      hostname: explorer.k8s.orb.local
+    resources: {}
+    env:
+      NETWORK: "mainnet"
+      SUBNETWORK: "ATK"
+      ETHEREUM_JSONRPC_VARIANT: besu
+      ETHEREUM_JSONRPC_HTTP_INSECURE: 'true'
+      ETHEREUM_JSONRPC_HTTP_GZIP_ENABLED: 'true'
+      SHOW_TXS_CHART: 'true'
+      TXS_STATS_ENABLED: 'true'
+      OTHER_EXPLORERS: '{}'
+      SUPPORTED_CHAINS: '{}'
+      ADMIN_PANEL_ENABLED: 'true'
+      EMISSION_FORMAT: 'DEFAULT'
+      FETCH_REWARDS_WAY: 'trace_block'
+      DISABLE_EXCHANGE_RATES: 'true'
+      ECTO_USE_SSL: 'false'
+      POOL_SIZE: '5'
+      POOL_SIZE_API: '5'
+      POOL_TIMEOUT: '30000'
+      POOL_MAX_OVERFLOW: '40'
+      ECTO_ADAPTER_TIMEOUT: '60000'
+      DATABASE_TIMEOUT: '60000'
+      QUEUE_TARGET: '5000'
+      QUEUE_INTERVAL: '1000'
+      MIX_ENV: 'prod'
+      API_GRAPHQL_MAX_COMPLEXITY: '1000'
+      INDEXER_DISABLE_INTERNAL_TRANSACTIONS_FETCHER: 'false'
+      IPFS_GATEWAY_URL: 'https://ipfs.io/ipfs'
+      IPFS_PUBLIC_GATEWAY_URL: 'https://ipfs.io/ipfs'
+      INDEXER_TOKEN_INSTANCE_RETRY_MAX_REFETCH_INTERVAL: '1h'
+      INDEXER_TOKEN_INSTANCE_USE_BASE_URI_RETRY: 'true'
+      API_URL: https://explorer.k8s.orb.local
+      WEBAPP_URL: https://explorer.k8s.orb.local
+      BLOCKSCOUT_PROTOCOL: 'https'
+    envFromSecret:
+      DATABASE_URL: postgresql://blockscout:atk@postgresql-pgpool:5432/blockscout?sslmode=disable
+      ETHEREUM_JSONRPC_HTTP_URL: http://besu-loadbalancer:4000
+      ETHEREUM_JSONRPC_TRACE_URL: http://besu-loadbalancer:4000
+      SECRET_KEY_BASE: atk
+  frontend:
+    image:
+      repository: ghcr.io/blockscout/frontend
+      tag: "v1.38.2"
+    replicaCount: 1
+    env:
+      NEXT_PUBLIC_IS_ACCOUNT_SUPPORTED: 'false'
+      NEXT_PUBLIC_IS_TESTNET: 'false'
+      NEXT_PUBLIC_AD_BANNER_PROVIDER: 'none'
+      NEXT_PUBLIC_AD_TEXT_PROVIDER: 'none'
+      NEXT_PUBLIC_HAS_BEACON_CHAIN: 'false'
+      NEXT_PUBLIC_TRANSACTION_INTERPRETATION_PROVIDER: 'blockscout'
+      NEXT_PUBLIC_HOMEPAGE_CHARTS: '["daily_txs"]'
+      NEXT_PUBLIC_HOMEPAGE_STATS: '["total_blocks","average_block_time","total_txs","wallet_addresses","gas_tracker"]'
+      NEXT_PUBLIC_PROMOTE_BLOCKSCOUT_IN_TITLE: 'false'
+      NEXT_PUBLIC_OG_ENHANCED_DATA_ENABLED: 'true'
+      NEXT_PUBLIC_SEO_ENHANCED_DATA_ENABLED: 'true'
+      NEXT_PUBLIC_HAS_CONTRACT_AUDIT_REPORTS: 'true'
+      NEXT_PUBLIC_FONT_FAMILY_HEADING: "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
+      NEXT_PUBLIC_FONT_FAMILY_BODY: "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
+    ingress:
+      enabled: true
+      className: "settlemint-nginx"
+      hostname: explorer.k8s.orb.local

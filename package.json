@@ -44,7 +44,8 @@
     "deploy:local": "turbo deploy:local",
     "deploy:remote": "turbo deploy:remote",
     "test:e2e": "bun run --cwd kit/e2e test:e2e",
-    "test:e2e:ui": "bun run --cwd kit/e2e test:e2e:ui"
+    "test:e2e:ui": "bun run --cwd kit/e2e test:e2e:ui",
+    "secrets": "op inject --force -i kit/charts/atk/values-example.1p.yaml -o kit/charts/atk/values-example.yaml"
   },
   "dependencies": {},
   "devDependencies": {

@@ -10,6 +10,10 @@
         "typescript": "5.8.2",
       },
     },
+    "kit/charts": {
+      "name": "charts",
+      "version": "1.0.0",
+    },
     "kit/contracts": {
       "name": "contracts",
       "version": "1.0.0",
@@ -84,7 +88,7 @@
         "react": "19.1.0",
         "react-awesome-gravatar": "2.0.3",
         "react-dom": "19.1.0",
-        "react-hook-form": "7.54.0",
+        "react-hook-form": "7.55.0",
         "react-qr-code": "2.0.15",
         "recharts": "2.15.1",
         "resend": "4.2.0",
@@ -1619,6 +1623,8 @@
     "chardet": ["chardet@0.7.0", "", {}, "sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA=="],
 
     "charenc": ["charenc@0.0.2", "", {}, "sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA=="],
+
+    "charts": ["charts@workspace:kit/charts"],
 
     "check-error": ["check-error@1.0.3", "", { "dependencies": { "get-func-name": "^2.0.2" } }, "sha512-iKEoDYaRmd1mxM90a2OEfWhjsjPpYPuQ+lMYsoxB126+t8fw7ySEO48nmDg5COTjxDI65/Y2OWpeEHk3ZOe8zg=="],
 
@@ -3854,7 +3860,11 @@
 
     "@pnpm/network.ca-file/graceful-fs": ["graceful-fs@4.2.10", "", {}, "sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA=="],
 
+    "@scalar/api-client/@scalar/themes": ["@scalar/themes@0.9.82", "", { "dependencies": { "@scalar/types": "0.1.4" } }, "sha512-VbzDVyF6yQMeqsr9nj+twyMXmO5k0AEmL6Zsjf3alzOAMuiN4ee5Hcssd7XE44cnUrHiwm1i578bU6949N+7lQ=="],
+
     "@scalar/api-client/nanoid": ["nanoid@5.1.5", "", { "bin": { "nanoid": "bin/nanoid.js" } }, "sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw=="],
+
+    "@scalar/api-reference/@scalar/themes": ["@scalar/themes@0.9.82", "", { "dependencies": { "@scalar/types": "0.1.4" } }, "sha512-VbzDVyF6yQMeqsr9nj+twyMXmO5k0AEmL6Zsjf3alzOAMuiN4ee5Hcssd7XE44cnUrHiwm1i578bU6949N+7lQ=="],
 
     "@scalar/api-reference/nanoid": ["nanoid@5.1.5", "", { "bin": { "nanoid": "bin/nanoid.js" } }, "sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw=="],
 
@@ -3862,9 +3872,13 @@
 
     "@scalar/components/tailwind-merge": ["tailwind-merge@2.6.0", "", {}, "sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA=="],
 
+    "@scalar/oas-utils/@scalar/themes": ["@scalar/themes@0.9.82", "", { "dependencies": { "@scalar/types": "0.1.4" } }, "sha512-VbzDVyF6yQMeqsr9nj+twyMXmO5k0AEmL6Zsjf3alzOAMuiN4ee5Hcssd7XE44cnUrHiwm1i578bU6949N+7lQ=="],
+
     "@scalar/oas-utils/nanoid": ["nanoid@5.1.5", "", { "bin": { "nanoid": "bin/nanoid.js" } }, "sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw=="],
 
     "@scalar/types/nanoid": ["nanoid@5.1.5", "", { "bin": { "nanoid": "bin/nanoid.js" } }, "sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw=="],
+
+    "@scalar/use-hooks/@scalar/themes": ["@scalar/themes@0.9.82", "", { "dependencies": { "@scalar/types": "0.1.4" } }, "sha512-VbzDVyF6yQMeqsr9nj+twyMXmO5k0AEmL6Zsjf3alzOAMuiN4ee5Hcssd7XE44cnUrHiwm1i578bU6949N+7lQ=="],
 
     "@scalar/use-toasts/nanoid": ["nanoid@5.1.5", "", { "bin": { "nanoid": "bin/nanoid.js" } }, "sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw=="],
 
