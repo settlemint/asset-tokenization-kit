@@ -32,13 +32,35 @@ export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
   const user = await getUser();
 
-  const [assetDetails, t, userBalance, assetStats, locale] = await Promise.all([
+  const userIsAdmin = user.role === "admin";
+
+  // Fetch asset details and translations first
+  const [assetDetails, t] = await Promise.all([
     getAssetDetail({ address, assettype }),
     getTranslations("private.assets"),
-    getAssetBalanceDetail({
-      address,
-      account: user.wallet as Address,
-    }),
+  ]);
+
+  // Conditionally fetch user balance
+  let userBalance = undefined;
+
+  // Check if wallet exists and is a valid address
+  if (
+    user.wallet &&
+    typeof user.wallet === "string" &&
+    user.wallet.startsWith("0x")
+  ) {
+    try {
+      userBalance = await getAssetBalanceDetail({
+        address,
+        account: user.wallet as Address,
+      });
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+    }
+  }
+
+  // Fetch remaining data
+  const [assetStats, locale] = await Promise.all([
     getAssetStats({ address }),
     getLocale(),
   ]);
@@ -69,6 +91,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
         address={address}
         assetDetails={assetDetails}
         userBalance={userBalance}
+        userIsAdmin={userIsAdmin}
       />
     </>
   );

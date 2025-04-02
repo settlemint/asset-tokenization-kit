@@ -9,13 +9,22 @@ import type { User } from "./types";
  * @throws {AuthError} If user is not authenticated
  */
 export async function getUser() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  // Remove logs
+  // console.log("Getting user session...");
 
-  if (!session?.user) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      unauthorized();
+    }
+
+    return session.user as User;
+  } catch (error) {
+    // Keep error logging for actual errors
+    console.error("Error getting user session:", error);
     unauthorized();
   }
-
-  return session.user as User;
 }
