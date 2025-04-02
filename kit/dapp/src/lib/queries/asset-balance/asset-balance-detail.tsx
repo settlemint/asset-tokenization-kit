@@ -42,33 +42,54 @@ export interface AssetBalanceDetailProps {
  */
 export const getAssetBalanceDetail = cache(
   async ({ address, account }: AssetBalanceDetailProps) => {
+    // Remove logs
+    // console.log("ASSET BALANCE QUERY - Inputs:", { address, account });
+
     if (!account) {
+      // console.log("ASSET BALANCE QUERY - No account provided, returning undefined");
       return undefined;
     }
 
-    const normalizedAddress = getAddress(address);
-    const normalizedAccount = getAddress(account);
+    try {
+      const normalizedAddress = getAddress(address);
+      const normalizedAccount = getAddress(account);
 
-    const result = await theGraphClientKit.request(AssetBalanceDetail, {
-      address: normalizedAddress,
-      account: normalizedAccount,
-    });
+      const result = await theGraphClientKit.request(AssetBalanceDetail, {
+        address: normalizedAddress,
+        account: normalizedAccount,
+      });
 
-    // Return undefined if no balance found
-    if (result.assetBalances.length === 0) {
+      if (result.assetBalances.length === 0) {
+        return undefined;
+      }
+
+      try {
+        const validatedBalance = safeParse(
+          AssetBalanceSchema,
+          result.assetBalances[0]
+        );
+
+        const formattedBalance = {
+          ...validatedBalance,
+          available: validatedBalance.value - validatedBalance.frozen,
+        };
+
+        return formattedBalance;
+      } catch (parseError) {
+        // Keep error logging for actual errors
+        console.error(
+          "ASSET BALANCE QUERY - Error parsing balance data:",
+          parseError
+        );
+        return undefined;
+      }
+    } catch (error) {
+      // Keep error logging for actual errors
+      console.error(
+        "ASSET BALANCE QUERY - Error fetching asset balance:",
+        error
+      );
       return undefined;
     }
-
-    // Parse and validate the balance data
-    const validatedBalance = safeParse(
-      AssetBalanceSchema,
-      result.assetBalances[0]
-    );
-
-    // Format BigDecimal values
-    return {
-      ...validatedBalance,
-      available: validatedBalance.value - validatedBalance.frozen,
-    };
   }
 );

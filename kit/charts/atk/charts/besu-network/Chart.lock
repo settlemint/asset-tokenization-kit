@@ -1,0 +1,24 @@
+dependencies:
+- name: besu-genesis
+  repository: ""
+  version: '*'
+- name: besu-node
+  repository: ""
+  version: '*'
+- name: besu-node
+  repository: ""
+  version: '*'
+- name: besu-node
+  repository: ""
+  version: '*'
+- name: besu-node
+  repository: ""
+  version: '*'
+- name: besu-node
+  repository: ""
+  version: '*'
+- name: besu-node
+  repository: ""
+  version: '*'
+digest: sha256:e336443604043037bcc80fc8df203c486e71dba3857ab1aaa87ed125a2045014
+generated: "2025-03-30T14:21:07.504214+02:00"

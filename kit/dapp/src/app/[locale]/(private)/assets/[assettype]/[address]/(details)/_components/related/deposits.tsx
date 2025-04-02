@@ -2,26 +2,26 @@ import { BurnForm } from "@/app/[locale]/(private)/portfolio/my-assets/[assettyp
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
-import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import { isBefore } from "date-fns";
-import { getTranslations } from "next-intl/server";
-import type { Address } from "viem";
+import { useTranslations } from "next-intl";
 import { UpdateCollateralForm } from "../../../_components/manage-dropdown/update-collateral-form/form";
 import { MintForm } from "../../../_components/mint-form/form";
 
-interface DepositsRelatedProps {
-  address: Address;
-  assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
+export interface DepositsRelatedProps {
+  address: `0x${string}`;
+  assetDetails: Awaited<ReturnType<typeof getDepositDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
+  userIsAdmin: boolean;
 }
 
-export async function DepositsRelated({
+export function DepositsRelated({
   address,
   assetDetails,
   userBalance,
+  userIsAdmin,
 }: DepositsRelatedProps) {
-  const t = await getTranslations("private.assets.details.related");
+  const t = useTranslations("private.assets.details.related");
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
@@ -33,7 +33,7 @@ export async function DepositsRelated({
     assetDetails.collateralProofValidity !== undefined &&
     isBefore(assetDetails.collateralProofValidity, new Date());
 
-  const deposit = assetDetails as Awaited<ReturnType<typeof getDepositDetail>>;
+  const deposit = assetDetails;
   const maxMint = deposit.freeCollateral;
 
   return (
@@ -57,14 +57,14 @@ export async function DepositsRelated({
       >
         <MintForm
           address={address}
+          max={maxMint}
           assettype="deposit"
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           asButton
           disabled={
-            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
+            isBlocked || isPaused || (!userIsSupplyManager && !userIsAdmin)
           }
-          max={maxMint}
-          decimals={deposit.decimals}
-          symbol={deposit.symbol}
         />
       </RelatedGridItem>
       <RelatedGridItem
@@ -74,13 +74,11 @@ export async function DepositsRelated({
         <BurnForm
           address={address}
           max={userBalance?.available ?? 0}
-          decimals={deposit.decimals}
-          symbol={deposit.symbol}
+          decimals={assetDetails.decimals}
+          symbol={assetDetails.symbol}
           assettype="deposit"
           asButton
-          disabled={
-            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
-          }
+          disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
     </RelatedGrid>

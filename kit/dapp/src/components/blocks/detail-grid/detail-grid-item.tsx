@@ -1,4 +1,9 @@
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -17,6 +22,7 @@ interface DetailGridItemProps extends PropsWithChildren {
 
 export function DetailGridItem({ label, children, info, className }: DetailGridItemProps) {
   const t = useTranslations("components.detail-grid");
+  const contentIsString = typeof children === 'string';
 
   return (
     <div className={cn("space-y-1", className)}>
@@ -40,7 +46,18 @@ export function DetailGridItem({ label, children, info, className }: DetailGridI
           </TooltipProvider>
         )}
       </div>
-      <div className="text-md">{children}</div>
+      {contentIsString ? (
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <div className="text-md truncate cursor-default">{children}</div>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-auto max-w-96">
+            <div className="font-mono break-all text-sm">{children}</div>
+          </HoverCardContent>
+        </HoverCard>
+      ) : (
+        <div className="text-md truncate">{children}</div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,232 @@
+# https://github.com/bitnami/charts/blob/main/bitnami/postgresql-ha/values.yaml
+postgresql-ha:
+  enabled: true
+  fullnameOverride: postgresql
+  commonLabels:
+    kots.io/app-slug: settlemint-atk
+    app.kubernetes.io/part-of: settlemint-atk
+    app.kubernetes.io/managed-by: helm
+  postgresql:
+    username: "postgres"
+    password: "atk"
+    repmgrUsername: repmgr
+    repmgrPassword: "atk"
+    maxConnections: 1000
+    postgresConnectionLimit: 1000
+    dbUserConnectionLimit: 1000
+    pullSecrets: []
+    resourcesPreset: none
+    initdbScripts:
+      create_blockscout_db.sql: |
+        CREATE DATABASE blockscout;
+        CREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;
+        GRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;
+        \c blockscout;
+        GRANT ALL ON SCHEMA public TO blockscout;
+        CREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;
+        CREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;
+        GRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;
+        \c thegraph;
+        GRANT ALL ON SCHEMA public TO thegraph;
+        CREATE DATABASE hasura;
+        CREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;
+        GRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;
+        \c hasura;
+        GRANT ALL ON SCHEMA public TO hasura;
+        CREATE DATABASE portal;
+        CREATE USER portal WITH PASSWORD 'atk' SUPERUSER;
+        GRANT ALL PRIVILEGES ON DATABASE portal TO portal;
+        \c portal;
+        GRANT ALL ON SCHEMA public TO portal;
+  pgpool:
+    replicaCount: 2
+    adminUsername: "pgpool"
+    adminPassword: "atk"
+    customUsers:
+      usernames: "blockscout,hasura,thegraph,portal"
+      passwords: "atk,atk,atk,atk"
+    maxPool: 500
+    numInitChildren: 500
+    logConnections: true
+    resourcesPreset: none
+    pullSecrets: []
+
+# https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
+redis:
+  enabled: true
+  fullnameOverride: redis
+  commonLabels:
+    kots.io/app-slug: settlemint-atk
+    app.kubernetes.io/part-of: settlemint-atk
+    app.kubernetes.io/managed-by: helm
+  auth:
+    password: "atk"
+  master:
+    resourcesPreset: "none"
+  replica:
+    replicaCount: 1
+    resourcesPreset: "none"
+  global:
+    imagePullSecrets: []
+
+# https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+ingress-nginx:
+  enabled: true
+  fullnameOverride: 'ingress-nginx'
+  imagePullSecrets: []
+  defaultBackend:
+    enabled: false
+  controller:
+    allowSnippetAnnotations: true
+    runAsUser: 2016
+    admissionWebhooks:
+      enabled: false
+    replicaCount: 2
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
+      behaviour:
+        scaleDown:
+          stabilizationWindowSeconds: 300
+          policies:
+            - type: Pods
+              value: 1
+              periodSeconds: 180
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          policies:
+            - type: Pods
+              value: 2
+              periodSeconds: 60
+    updateStrategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: "100%"
+        maxUnavailable: "0%"
+    resources: {}
+    podLabels:
+      kots.io/app-slug: settlemint-atk
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "10254"
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                      - controller
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - ingress-nginx
+              topologyKey: kubernetes.io/hostname
+    config:
+      proxy-body-size: '500M'
+      http2-push-preload: 'true'
+      proxy-send-timeout: '3600'
+      proxy-read-timeout: '3600'
+      proxy-buffering: 'on'
+      proxy-buffer-size: '128k'
+      proxy-buffers-number: '4'
+      proxy-max-temp-file-size: '1024m'
+      client-body-buffer-size: '128k'
+      tcp-fast-open: '3000'
+      worker-processes: auto
+      max-worker-connections: '65536'
+      upstream-keepalive-connections: '64'
+      upstream-keepalive-timeout: '120'
+      limit-req-status-code: '429'
+      use-http2: 'true'
+      use-forwarded-headers: 'false'
+      log-format-escape-json: 'true'
+      log-format-upstream: '{"proxyUpstreamName": "$proxy_upstream_name", "httpRequest":{"requestMethod": "$request_method", "requestUrl": "$host$request_uri", "status": $status, "requestBody": "${request_body_filtered}"}, "cloudflare": {"cfConnectingIp": "$http_cf_connecting_ip", "cfIpCountry": "$http_cf_ipcountry", "cfRay": "$http_cf_ray", "trueClientIp": "$http_true_client_ip"}, "meta": {"timestamp": "$time_iso8601", "latency": "$upstream_response_time s", "requestID": "$req_id", "requestSize": "$request_length", "responseSize": "$upstream_response_length", "userAgent": "$http_user_agent", "referer": "$http_referer", "protocol":"$server_protocol", "proxyAlternativeUpstreamName": "$proxy_alternative_upstream_name", "upstreamStatus": "$upstream_status", "upstreamAddr": "$upstream_addr", "cfVisitor": "$http_cf_visitor", "cfRequestId": "$http_cf_request_id"}}'
+      ignore-invalid-headers: 'false'
+      enable-underscores-in-headers: 'true'
+      annotations-risk-level: Critical
+      ssl-ciphers: 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:AES128-GCM-SHA256:AES128-GCM-SHA384'
+      nginx-status-ipv4-whitelist: '0.0.0.0'
+      http-snippet: |
+        lua_need_request_body on;
+
+        map $status $request_body_filtered {
+            204     "";
+            default $request_body_binary_check;
+        }
+
+        map $request_body $request_body_binary_check {
+            ~[^[:print:]]  "[binary data]";
+            default       $request_body;
+        }
+
+        server {
+            listen 18080;
+
+            location /nginx_status {
+                allow all;
+                stub_status on;
+            }
+            location / {
+                return 404;
+            }
+        }
+      ssl-redirect: 'false'
+      enable-opentelemetry: 'true'
+      enable-access-log-for-default-backend: 'true'
+      otlp-collector-host: 'o11y-alloy'
+      otlp-collector-port: '4317'
+      otel-sampler: AlwaysOn
+      otel-sampler-ratio: '1.0'
+      otel-sampler-parent-based: 'false'
+      opentelemetry-trust-incoming-span: 'true'
+      otel-max-queuesize: '2048'
+      otel-schedule-delay-millis: '5000'
+      otel-max-export-batch-size: '512'
+      enable-brotli: 'true'
+      proxy_next_upstream: 'error timeout http_500 http_502 http_503 http_504'
+      proxy_next_upstream_timeout: '30'
+      proxy_next_upstream_tries: '3'
+    extraArgs:
+      enable-ssl-passthrough: 'true'
+    service:
+      externalTrafficPolicy: "Local" # Use if not ClusterIP
+      type: LoadBalancer # Or ClusterIP if there is an external LB
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: 'settlemint.local, *.settlemint.local'
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: 'true'
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: 'tcp'
+        service.beta.kubernetes.io/aws-load-balancer-type: 'external'
+        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: 'ip'
+        service.beta.kubernetes.io/aws-load-balancer-scheme: 'internet-facing'
+        service.beta.kubernetes.io/azure-load-balancer-disable-tcp-reset: 'true'
+        service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout: '30'
+        service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: '/healthz'
+    ingressClassResource:
+      # -- If you run more than one platform versions on a single cluster, you need to make sure these are unique
+      name: settlemint-nginx
+      enabled: true
+      default: false
+      controllerValue: 'k8s.io/settlemint-nginx'
+    ingressClass: settlemint-nginx
+    opentelemetry:
+      enabled: true
+      image:
+        registry: registry.k8s.io
+    patch:
+      image:
+        registry: registry.k8s.io
+    metrics:
+      enabled: true
+      service:
+        labels:
+          kots.io/app-slug: settlemint-atk
+        annotations:
+          prometheus.io/scrape: 'true'
+          prometheus.io/port: '10254'

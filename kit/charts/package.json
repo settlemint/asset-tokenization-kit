@@ -1,0 +1,17 @@
+{
+  "name": "charts",
+  "version": "1.0.0",
+  "private": false,
+  "license": "FSL-1.1-MIT",
+  "author": {
+    "name": "SettleMint",
+    "email": "support@settlemint.com",
+    "url": "https://settlemint.com"
+  },
+  "scripts": {
+    "helm:deps": "bash -c 'set -eo pipefail; error_count=0; for d in ./{atk}; do if [ -d \"$d\" ]; then echo \"Updating dependencies for $d...\"; if ! helm dependency update \"$d\"; then echo \"Error updating dependencies for $d\"; error_count=$((error_count+1)); fi; fi; done; for d in ./atk/charts/*; do if [ -d \"$d\" ]; then echo \"Updating dependencies for $d...\"; if ! helm dependency update \"$d\"; then echo \"Error updating dependencies for $d\"; error_count=$((error_count+1)); fi; fi; done; if [ $error_count -gt 0 ]; then echo \"$error_count dependency update errors occurred\"; exit 1; fi'"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {}
+}

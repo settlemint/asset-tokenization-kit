@@ -3,22 +3,23 @@ import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import { getTranslations } from "next-intl/server";
-import type { Address } from "viem";
+import { useTranslations } from "next-intl";
 import { MintForm } from "../../../_components/mint-form/form";
 
-interface EquitiesRelatedProps {
-  address: Address;
+export interface EquitiesRelatedProps {
+  address: `0x${string}`;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
+  userIsAdmin: boolean;
 }
 
-export async function EquitiesRelated({
+export function EquitiesRelated({
   address,
   assetDetails,
   userBalance,
+  userIsAdmin,
 }: EquitiesRelatedProps) {
-  const t = await getTranslations("private.assets.details.related");
+  const t = useTranslations("private.assets.details.related");
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
@@ -34,11 +35,13 @@ export async function EquitiesRelated({
       >
         <MintForm
           address={address}
+          assettype="equity"
           decimals={assetDetails.decimals}
           symbol={assetDetails.symbol}
-          assettype="equity"
           asButton
-          disabled={isBlocked || isPaused || !userIsSupplyManager}
+          disabled={
+            isBlocked || isPaused || (!userIsSupplyManager && !userIsAdmin)
+          }
         />
       </RelatedGridItem>
       <RelatedGridItem
