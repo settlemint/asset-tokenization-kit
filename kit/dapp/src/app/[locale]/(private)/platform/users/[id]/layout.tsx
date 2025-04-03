@@ -3,6 +3,7 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import { PageHeader } from "@/components/layout/page-header";
+import { getUser } from "@/lib/auth/utils";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -57,6 +58,7 @@ export default async function UserDetailLayout({
   params,
 }: LayoutProps) {
   const { id } = await params;
+  const currentUser = await getUser();
   const user = await getUserDetail({ id });
   const t = await getTranslations("private.users.detail");
   const tabs = await getTabs(user);
@@ -71,7 +73,9 @@ export default async function UserDetailLayout({
           </EvmAddress>
         }
         section={t("platform-management")}
-        button={<EditUserDropdown user={user} />}
+        button={
+          currentUser.role === "admin" && <EditUserDropdown user={user} />
+        }
       />
 
       <div className="relative mt-4 space-y-2">
