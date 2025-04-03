@@ -3,7 +3,7 @@
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import { defineMeta } from "@/lib/filters";
+import { defineMeta, filterFn } from "@/lib/filters";
 import type { getCryptoCurrencyList } from "@/lib/queries/cryptocurrency/cryptocurrency-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -33,7 +33,8 @@ export function CryptocurrencyColumns() {
           <EvmAddressBalances address={getValue()} />
         </EvmAddress>
       ),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
       meta: defineMeta((row) => row.id, {
         displayName: t("address-header"),
         icon: WalletIcon,
@@ -43,7 +44,8 @@ export function CryptocurrencyColumns() {
     columnHelper.accessor("name", {
       header: t("name-header"),
       cell: ({ getValue }) => getValue(),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
       meta: defineMeta((row) => row.name, {
         displayName: t("name-header"),
         icon: AsteriskIcon,
@@ -53,7 +55,8 @@ export function CryptocurrencyColumns() {
     columnHelper.accessor("symbol", {
       header: t("symbol-header"),
       cell: ({ getValue }) => getValue(),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
       meta: defineMeta((row) => row.symbol, {
         displayName: t("symbol-header"),
         icon: AsteriskIcon,
@@ -84,7 +87,8 @@ export function CryptocurrencyColumns() {
         variant: "numeric",
       }),
       cell: ({ getValue }) => formatNumber(getValue(), { locale }),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("number"),
     }),
     columnHelper.display({
       id: "actions",
