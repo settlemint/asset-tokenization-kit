@@ -13,6 +13,7 @@ import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -32,16 +33,16 @@ export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
   const user = await getUser();
 
-  const userIsAdmin = user.role === "admin";
-
-  // Fetch asset details and translations first
-  const [assetDetails, t] = await Promise.all([
+  // Fetch asset details, translations, and asset users details
+  const [assetDetails, t, assetUsersDetails] = await Promise.all([
     getAssetDetail({ address, assettype }),
     getTranslations("private.assets"),
+    getAssetUsersDetail({ address }),
   ]);
 
   // Conditionally fetch user balance
-  let userBalance = undefined;
+  let userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>> =
+    undefined;
 
   // Check if wallet exists and is a valid address
   if (
@@ -91,7 +92,8 @@ export default async function AssetDetailsPage({ params }: PageProps) {
         address={address}
         assetDetails={assetDetails}
         userBalance={userBalance}
-        userIsAdmin={userIsAdmin}
+        assetUsersDetails={assetUsersDetails}
+        currentUserWallet={user.wallet as Address | undefined}
       />
     </>
   );
