@@ -71,7 +71,7 @@
     "date-fns": "4.1.0",
     "drizzle-orm": "0.41.0",
     "elysia": "1.2.25",
-    "fast-xml-parser": "5.0.9",
+    "fast-xml-parser": "5.1.0",
     "framer-motion": "12.6.3",
     "input-otp": "1.4.2",
     "lucide-react": "0.487.0",
