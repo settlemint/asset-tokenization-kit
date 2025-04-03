@@ -19,7 +19,7 @@ interface TableProps {
   assettype: AssetType;
 }
 
-export async function Table({ assettype }: TableProps) {
+export async function AssetsTable({ assettype }: TableProps) {
   const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
 
   switch (assettype) {
@@ -71,6 +71,7 @@ export async function Table({ assettype }: TableProps) {
     case "fund":
       return (
         <DataTable
+          // @ts-expect-error TODO: fix column typing issues
           columns={fundColumns}
           data={await getFundList()}
           name={assettype}
