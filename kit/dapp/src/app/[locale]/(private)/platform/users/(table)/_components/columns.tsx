@@ -6,6 +6,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { authClient } from "@/lib/auth/client";
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,7 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
 
 export function Columns() {
   const t = useTranslations("private.users");
+  const { data: session } = authClient.useSession();
 
   const STATUS_OPTIONS = [
     { label: t("status.active"), value: "active" },
@@ -187,6 +189,7 @@ export function Columns() {
       },
       enableColumnFilter: false,
     }),
+    session?.user.role === "admin" &&
     columnHelper.display({
       id: "actions",
       header: () => "",
@@ -237,5 +240,5 @@ export function Columns() {
         enableCsvExport: false,
       } as ColumnMeta<User, unknown>,
     }),
-  ];
+  ].filter((column) => !!column);
 }

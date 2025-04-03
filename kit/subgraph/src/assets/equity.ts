@@ -9,6 +9,7 @@ import {
 } from "@graphprotocol/graph-ts";
 import {
   Approval,
+  Clawback,
   Paused,
   RoleAdminChanged,
   RoleGranted,
@@ -29,6 +30,7 @@ import { calculateConcentration } from "./calculations/concentration";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { burnEvent } from "./events/burn";
+import { clawbackEvent } from "./events/clawback";
 import { mintEvent } from "./events/mint";
 import { pausedEvent } from "./events/paused";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
@@ -874,6 +876,141 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   accountActivityEvent(
     user,
     EventName.UserUnblocked,
+    event.block.timestamp,
+    AssetType.equity,
+    equity.id
+  );
+}
+
+export function handleClawback(event: Clawback): void {
+  const equity = fetchEquity(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const from = fetchAccount(event.params.from);
+  const to = fetchAccount(event.params.to);
+  const assetActivity = fetchAssetActivity(AssetType.equity);
+
+  const assetStats = newAssetStatsData(
+    equity.id,
+    AssetType.equity,
+    equity.equityCategory,
+    equity.equityClass
+  );
+
+  // Create clawback event record
+  const clawback = clawbackEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.equity,
+    from.id,
+    to.id,
+    event.params.amount,
+    equity.decimals
+  );
+
+  log.info(
+    "Equity clawback event: amount={}, from={}, to={}, sender={}, equity={}",
+    [
+      clawback.amount.toString(),
+      clawback.from.toHexString(),
+      clawback.to.toHexString(),
+      clawback.sender.toHexString(),
+      event.address.toHexString(),
+    ]
+  );
+
+  if (!hasBalance(equity.id, to.id, equity.decimals, false)) {
+    equity.totalHolders = equity.totalHolders + 1;
+    to.balancesCount = to.balancesCount + 1;
+  }
+
+  to.totalBalanceExact = to.totalBalanceExact.plus(clawback.amountExact);
+  to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+  to.save();
+
+  from.totalBalanceExact = from.totalBalanceExact.minus(clawback.amountExact);
+  from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+  from.save();
+
+  const fromBalance = fetchAssetBalance(
+    equity.id,
+    from.id,
+    equity.decimals,
+    false
+  );
+  fromBalance.valueExact = fromBalance.valueExact.minus(clawback.amountExact);
+  fromBalance.value = toDecimals(fromBalance.valueExact, equity.decimals);
+  fromBalance.lastActivity = event.block.timestamp;
+  fromBalance.save();
+
+  if (fromBalance.valueExact.equals(BigInt.zero())) {
+    equity.totalHolders = equity.totalHolders - 1;
+    store.remove("AssetBalance", fromBalance.id.toHexString());
+    from.balancesCount = from.balancesCount - 1;
+    from.save();
+  }
+
+  const fromPortfolioStats = newPortfolioStatsData(
+    from.id,
+    equity.id,
+    AssetType.equity
+  );
+  fromPortfolioStats.balance = fromBalance.value;
+  fromPortfolioStats.balanceExact = fromBalance.valueExact;
+  fromPortfolioStats.save();
+
+  const toBalance = fetchAssetBalance(equity.id, to.id, equity.decimals, false);
+  toBalance.valueExact = toBalance.valueExact.plus(clawback.amountExact);
+  toBalance.value = toDecimals(toBalance.valueExact, equity.decimals);
+  toBalance.lastActivity = event.block.timestamp;
+  toBalance.save();
+
+  const toPortfolioStats = newPortfolioStatsData(
+    to.id,
+    equity.id,
+    AssetType.equity
+  );
+  toPortfolioStats.balance = toBalance.value;
+  toPortfolioStats.balanceExact = toBalance.valueExact;
+  toPortfolioStats.save();
+
+  // Update asset stats for clawback event
+  assetStats.volume = clawback.amount;
+  assetStats.volumeExact = clawback.amountExact;
+  assetActivity.clawbackEventCount = assetActivity.clawbackEventCount + 1;
+
+  equity.lastActivity = event.block.timestamp;
+  equity.concentration = calculateConcentration(
+    equity.holders.load(),
+    equity.totalSupplyExact
+  );
+  equity.save();
+
+  assetStats.supply = equity.totalSupply;
+  assetStats.supplyExact = equity.totalSupplyExact;
+  assetStats.save();
+
+  assetActivity.save();
+
+  // Record account activity events for all involved parties
+  accountActivityEvent(
+    to,
+    EventName.Clawback,
+    event.block.timestamp,
+    AssetType.equity,
+    equity.id
+  );
+  accountActivityEvent(
+    from,
+    EventName.Clawback,
+    event.block.timestamp,
+    AssetType.equity,
+    equity.id
+  );
+  accountActivityEvent(
+    sender,
+    EventName.Clawback,
     event.block.timestamp,
     AssetType.equity,
     equity.id

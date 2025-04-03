@@ -29,7 +29,8 @@
           "description": "عدد الإجراءات المتخذة على فئات الأصول المختلفة",
           "mint": "سك",
           "title": "نشاط الأصول",
-          "transfer": "نقل"
+          "transfer": "نقل",
+          "clawback": "استرداد"
         },
         "asset-types": {
           "bonds": "السندات",
@@ -2081,6 +2082,7 @@
     "BondMaturedEvent": "نضج",
     "BondRedeemedEvent": "استرداد",
     "BurnEvent": "حرق",
+    "ClawbackEvent": "استرداد إجباري",
     "CollateralUpdatedEvent": "تم تحديث الضمان",
     "ManagementFeeCollectedEvent": "تم تحصيل رسوم الإدارة",
     "MintEvent": "سك",

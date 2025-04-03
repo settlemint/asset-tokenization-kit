@@ -9,6 +9,7 @@ import {
 } from "@graphprotocol/graph-ts";
 import {
   Approval,
+  Clawback,
   CollateralUpdated,
   Paused,
   RoleAdminChanged,
@@ -32,6 +33,7 @@ import { calculateConcentration } from "./calculations/concentration";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { burnEvent } from "./events/burn";
+import { clawbackEvent } from "./events/clawback";
 import { collateralUpdatedEvent } from "./events/collateralupdated";
 import { mintEvent } from "./events/mint";
 import { pausedEvent } from "./events/paused";
@@ -934,7 +936,10 @@ export function handleRoleRevoked(event: RoleRevoked): void {
       }
     }
     deposit.userManagers = newUserManagers;
-  } else if(event.params.role.toHexString() == crypto.keccak256(ByteArray.fromUTF8("AUDITOR_ROLE")).toHexString()){
+  } else if (
+    event.params.role.toHexString() ==
+    crypto.keccak256(ByteArray.fromUTF8("AUDITOR_ROLE")).toHexString()
+  ) {
     // AUDITOR_ROLE
     const newAuditors: Bytes[] = [];
     for (let i = 0; i < deposit.auditors.length; i++) {
@@ -1042,6 +1047,147 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   accountActivityEvent(
     sender,
     EventName.CollateralUpdated,
+    event.block.timestamp,
+    AssetType.deposit,
+    deposit.id
+  );
+}
+
+export function handleClawback(event: Clawback): void {
+  const deposit = fetchDeposit(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const from = fetchAccount(event.params.from);
+  const to = fetchAccount(event.params.to);
+  const assetActivity = fetchAssetActivity(AssetType.deposit);
+
+  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
+
+  // Create clawback event record
+  const clawback = clawbackEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.deposit,
+    from.id,
+    to.id,
+    event.params.amount,
+    deposit.decimals
+  );
+
+  log.info(
+    "Deposit clawback event: amount={}, from={}, to={}, sender={}, deposit={}",
+    [
+      clawback.amount.toString(),
+      clawback.from.toHexString(),
+      clawback.to.toHexString(),
+      clawback.sender.toHexString(),
+      event.address.toHexString(),
+    ]
+  );
+
+  if (!hasBalance(deposit.id, to.id, deposit.decimals, true)) {
+    deposit.totalHolders = deposit.totalHolders + 1;
+    to.balancesCount = to.balancesCount + 1;
+  }
+
+  to.totalBalanceExact = to.totalBalanceExact.plus(clawback.amountExact);
+  to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+  to.save();
+
+  from.totalBalanceExact = from.totalBalanceExact.minus(clawback.amountExact);
+  from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+  from.save();
+
+  const fromBalance = fetchAssetBalance(
+    deposit.id,
+    from.id,
+    deposit.decimals,
+    true
+  );
+  fromBalance.valueExact = fromBalance.valueExact.minus(clawback.amountExact);
+  fromBalance.value = toDecimals(fromBalance.valueExact, deposit.decimals);
+  fromBalance.lastActivity = event.block.timestamp;
+  fromBalance.save();
+
+  if (fromBalance.valueExact.equals(BigInt.zero())) {
+    deposit.totalHolders = deposit.totalHolders - 1;
+    store.remove("AssetBalance", fromBalance.id.toHexString());
+    from.balancesCount = from.balancesCount - 1;
+    from.save();
+  }
+
+  const fromPortfolioStats = newPortfolioStatsData(
+    from.id,
+    deposit.id,
+    AssetType.deposit
+  );
+  fromPortfolioStats.balance = fromBalance.value;
+  fromPortfolioStats.balanceExact = fromBalance.valueExact;
+  fromPortfolioStats.save();
+
+  const toBalance = fetchAssetBalance(
+    deposit.id,
+    to.id,
+    deposit.decimals,
+    true
+  );
+  toBalance.valueExact = toBalance.valueExact.plus(clawback.amountExact);
+  toBalance.value = toDecimals(toBalance.valueExact, deposit.decimals);
+  toBalance.lastActivity = event.block.timestamp;
+  toBalance.save();
+
+  const toPortfolioStats = newPortfolioStatsData(
+    to.id,
+    deposit.id,
+    AssetType.deposit
+  );
+  toPortfolioStats.balance = toBalance.value;
+  toPortfolioStats.balanceExact = toBalance.valueExact;
+  toPortfolioStats.save();
+
+  // Update asset stats for clawback event
+  assetStats.volume = clawback.amount;
+  assetStats.volumeExact = clawback.amountExact;
+  assetActivity.clawbackEventCount = assetActivity.clawbackEventCount + 1;
+
+  // Update deposit state
+  deposit.lastActivity = event.block.timestamp;
+  deposit.concentration = calculateConcentration(
+    deposit.holders.load(),
+    deposit.totalSupplyExact
+  );
+
+  // Update collateral calculated fields
+  depositCollateralCalculatedFields(deposit);
+  deposit.save();
+
+  // Update asset stats
+  assetStats.supply = deposit.totalSupply;
+  assetStats.supplyExact = deposit.totalSupplyExact;
+  updateDepositCollateralData(assetStats, deposit);
+  assetStats.save();
+
+  assetActivity.save();
+
+  // Record account activity events for all involved parties
+  accountActivityEvent(
+    to,
+    EventName.Clawback,
+    event.block.timestamp,
+    AssetType.deposit,
+    deposit.id
+  );
+  accountActivityEvent(
+    from,
+    EventName.Clawback,
+    event.block.timestamp,
+    AssetType.deposit,
+    deposit.id
+  );
+  accountActivityEvent(
+    sender,
+    EventName.Clawback,
     event.block.timestamp,
     AssetType.deposit,
     deposit.id

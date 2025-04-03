@@ -88,6 +88,12 @@ contract Fund is
     /// @param amount The amount of tokens withdrawn
     event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
 
+    /// @notice Emitted when tokens are forcibly transferred from one address to another
+    /// @param from The address tokens are taken from
+    /// @param to The address tokens are sent to
+    /// @param amount The amount of tokens transferred
+    event Clawback(address indexed from, address indexed to, uint256 amount);
+
     /// @notice Deploys a new Fund token contract
     /// @dev Sets up the token with specified parameters and initializes governance capabilities.
     /// The deployer receives DEFAULT_ADMIN_ROLE, SUPPLY_MANAGEMENT_ROLE, and USER_MANAGEMENT_ROLE.
@@ -302,5 +308,23 @@ contract Fund is
 
         IERC20(token).safeTransfer(to, amount);
         emit TokenWithdrawn(token, to, amount);
+    }
+
+    /// @notice Forcibly transfers tokens from one address to another
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Requires sufficient balance.
+    /// @param from The address to take tokens from
+    /// @param to The recipient address
+    /// @param amount The amount to clawback
+    function clawback(address from, address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (from == address(0)) revert InvalidTokenAddress();
+        if (to == address(0)) revert InvalidTokenAddress();
+        if (amount == 0) return;
+
+        uint256 balance = super.balanceOf(from);
+        if (balance < amount) revert InsufficientTokenBalance();
+
+        /// @dev using _transfer to bypass allowance checks
+        _transfer(from, to, amount);
+        emit Clawback(from, to, amount);
     }
 }

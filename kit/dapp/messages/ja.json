@@ -29,7 +29,8 @@
           "description": "異なる資産クラスに対して行われたアクションの量",
           "mint": "ミント",
           "title": "資産アクティビティ",
-          "transfer": "転送"
+          "transfer": "転送",
+          "clawback": "クローバック"
         },
         "asset-types": {
           "bonds": "債券",
@@ -2078,10 +2079,11 @@
   "asset-events": {
     "ApprovalEvent": "承認",
     "AssetCreatedEvent": "作成",
-    "BondMaturedEvent": "成熟",
+    "BondMaturedEvent": "満期",
     "BondRedeemedEvent": "償還",
-    "BurnEvent": "焼却",
-    "CollateralUpdatedEvent": "担保が更新されました",
+    "BurnEvent": "バーン",
+    "ClawbackEvent": "クローバック",
+    "CollateralUpdatedEvent": "担保更新",
     "ManagementFeeCollectedEvent": "管理手数料が徴収されました",
     "MintEvent": "ミント",
     "PausedEvent": "一時停止",

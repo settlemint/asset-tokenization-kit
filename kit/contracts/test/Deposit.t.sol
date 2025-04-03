@@ -332,5 +332,37 @@ contract DepositTest is Test {
         vm.stopPrank();
     }
 
-    receive() external payable { }
+    function test_DepositClawback() public {
+        vm.startPrank(owner);
+        deposit.allowUser(user1);
+        deposit.allowUser(user2);
+        deposit.updateCollateral(INITIAL_SUPPLY);
+        deposit.mint(user1, INITIAL_SUPPLY);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        deposit.clawback(user1, user2, INITIAL_SUPPLY);
+        vm.stopPrank();
+
+        assertEq(deposit.balanceOf(user1), 0);
+        assertEq(deposit.balanceOf(user2), INITIAL_SUPPLY);
+    }
+
+    function test_onlySupplyManagementCanClawback() public {
+        vm.startPrank(owner);
+        deposit.allowUser(user1);
+        deposit.allowUser(user2);
+        deposit.updateCollateral(INITIAL_SUPPLY);
+        deposit.mint(user1, INITIAL_SUPPLY);
+        vm.stopPrank();
+
+        vm.startPrank(user2);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user2, deposit.SUPPLY_MANAGEMENT_ROLE()
+            )
+        );
+        deposit.clawback(user1, user2, INITIAL_SUPPLY);
+        vm.stopPrank();
+    }
 }
