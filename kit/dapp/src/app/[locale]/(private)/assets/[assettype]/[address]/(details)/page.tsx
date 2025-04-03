@@ -41,9 +41,8 @@ export default async function AssetDetailsPage({ params }: PageProps) {
   ]);
 
   // Conditionally fetch user balance
-  let userBalance:
-    | Awaited<ReturnType<typeof getAssetBalanceDetail>>
-    | undefined = undefined;
+  let userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>> =
+    undefined;
 
   // Check if wallet exists and is a valid address
   if (
