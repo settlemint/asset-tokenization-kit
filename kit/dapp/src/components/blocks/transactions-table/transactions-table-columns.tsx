@@ -2,10 +2,20 @@
 
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { TransactionHash } from "@/components/blocks/transaction-hash/transaction-hash";
+import { defineMeta, filterFn } from "@/lib/filters";
 import type { getRecentTransactions } from "@/lib/queries/transactions/transactions-recent";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
-import { CheckCircle, Clock, MoreHorizontal, XCircle } from "lucide-react";
+import {
+  CheckCircle,
+  Clock,
+  CodeIcon,
+  CreditCard,
+  Hash,
+  MoreHorizontal,
+  User2Icon,
+  XCircle,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { TransactionDetailSheet } from "./transaction-table-detail-sheet";
 
@@ -46,6 +56,18 @@ export function Columns() {
           </div>
         );
       },
+      enableColumnFilter: true,
+      filterFn: filterFn("option"),
+      meta: defineMeta((row) => row.receipt?.status || "Pending", {
+        displayName: t("columns.status"),
+        icon: Clock,
+        type: "option",
+        options: [
+          { label: "Success", value: "Success" },
+          { label: "Reverted", value: "Reverted" },
+          { label: "Pending", value: "Pending" },
+        ],
+      }),
     }),
     columnHelper.accessor("createdAt", {
       header: t("columns.created-at"),
@@ -54,18 +76,46 @@ export function Columns() {
     }),
     columnHelper.accessor("functionName", {
       header: t("columns.function"),
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.functionName, {
+        displayName: t("columns.function"),
+        icon: CodeIcon,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("from", {
       header: t("columns.from"),
       cell: ({ getValue }) => <EvmAddress address={getValue()} />,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.from, {
+        displayName: t("columns.from"),
+        icon: User2Icon,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("address", {
       header: t("columns.contract"),
       cell: ({ getValue }) => <EvmAddress address={getValue()} />,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.address, {
+        displayName: t("columns.contract"),
+        icon: CreditCard,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("transactionHash", {
       header: t("columns.transaction-hash"),
       cell: ({ getValue }) => <TransactionHash hash={getValue()} />,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.transactionHash, {
+        displayName: t("columns.transaction-hash"),
+        icon: Hash,
+        type: "text",
+      }),
     }),
     columnHelper.display({
       id: "actions",

@@ -3,14 +3,18 @@
 import { EventDetailSheet } from "@/components/blocks/asset-events-table/detail-sheet";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import { defineMeta, filterFn } from "@/lib/filters";
 import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
+  CalendarClock,
+  CreditCard,
   Lock,
   MoreHorizontal,
   PauseCircle,
   PlayCircle,
   Unlock,
+  User2Icon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
@@ -48,10 +52,22 @@ export function Columns() {
         );
       },
       enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.asset, {
+        displayName: t("asset"),
+        icon: CreditCard,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("event", {
       header: t("event"),
       enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.event, {
+        displayName: t("event"),
+        icon: CalendarClock,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("sender", {
       header: t("sender"),
@@ -65,6 +81,12 @@ export function Columns() {
         );
       },
       enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.sender, {
+        displayName: t("sender"),
+        icon: User2Icon,
+        type: "text",
+      }),
     }),
     columnHelper.display({
       id: "actions",
