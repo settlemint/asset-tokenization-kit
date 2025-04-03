@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/routing";
+import type { User } from "@/lib/auth/types";
 import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
+import type { Contact } from "@/lib/queries/contact/contact-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { shortHex } from "@/lib/utils/hex";
 import type { FC, PropsWithChildren } from "react";
@@ -89,7 +91,7 @@ export function EvmAddress({
   const displayName = prettyNames
     ? (name ?? asset?.name ?? user?.name)
     : undefined;
-  const displayEmail = prettyNames ? user?.email : undefined;
+  const displayEmail = prettyNames && isUser(user) ? user?.email : undefined;
   const explorerLink = getBlockExplorerAddressUrl(
     getAddress(address),
     explorerUrl
@@ -200,4 +202,11 @@ export function EvmAddress({
       </HoverCardContent>
     </HoverCard>
   );
+}
+
+function isUser(user: User | Contact | null | undefined): user is User {
+  if (!user) {
+    return false;
+  }
+  return "email" in user;
 }

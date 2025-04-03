@@ -72,7 +72,9 @@ export const Search = () => {
   const { data: users, isLoading: isLoadingUsers } = useSWR(
     sanitizedSearchTerm ? [`user-search`, sanitizedSearchTerm] : null,
     async () => {
-      const result = await getUserSearch({ searchTerm: sanitizedSearchTerm });
+      const result = await getUserSearch({
+        searchTerm: sanitizedSearchTerm,
+      });
       return result || [];
     },
     {

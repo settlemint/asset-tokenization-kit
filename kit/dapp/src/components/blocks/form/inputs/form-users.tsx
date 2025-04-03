@@ -21,6 +21,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import type { User } from "@/lib/auth/types";
+import type { Contact } from "@/lib/queries/contact/contact-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
@@ -159,7 +161,9 @@ function FormUsersList({
     debounced ? [`user-search`, debounced, role] : null,
     async () => {
       const results = await getUserSearch({ searchTerm: debounced });
-      return role ? results.filter((user) => user.role === role) : results;
+      return role
+        ? results.filter((user) => isUser(user) && user.role === role)
+        : results;
     },
     {
       revalidateOnFocus: false,
@@ -252,4 +256,8 @@ function FormUsersList({
       )}
     </CommandList>
   );
+}
+
+function isUser(user: User | Contact): user is User {
+  return "role" in user;
 }
