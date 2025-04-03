@@ -59,7 +59,7 @@
     "@settlemint/sdk-next": "2.0.0",
     "@settlemint/sdk-portal": "2.0.0",
     "@settlemint/sdk-thegraph": "2.0.0",
-    "@sinclair/typebox": "0.34.31",
+    "@sinclair/typebox": "0.34.33",
     "@tanstack/react-table": "8.21.2",
     "ajv": "8.17.1",
     "better-auth": "1.2.5",
@@ -125,6 +125,6 @@
   ],
   "overrides": {
     "react-is": "19.1.0",
-    "@sinclair/typebox": "0.34.31"
+    "@sinclair/typebox": "0.34.33"
   }
 }
