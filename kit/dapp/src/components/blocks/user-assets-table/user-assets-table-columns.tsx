@@ -16,7 +16,6 @@ import {
   WalletIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { ColumnAssetStatus } from "../asset-info/column-asset-status";
 import { ColumnAssetType } from "../asset-info/column-asset-type";
 import { ColumnHolderType } from "../asset-info/column-holder-type";
 
@@ -32,11 +31,42 @@ const ASSET_STATUSES_OPTIONS = [
   { label: "Blocked", value: "blocked" },
 ];
 
+// Extract status value without using hooks
+function getAssetStatus(assetOrBalance: UserAsset): string {
+  if (assetOrBalance.blocked) {
+    return "blocked";
+  }
+  if (assetOrBalance.asset.paused) {
+    return "paused";
+  }
+  return "active";
+}
+
 export function Columns() {
   const t = useTranslations("private.users.holdings.table");
   const tAssetType = useTranslations("asset-type");
   const tAssetStatus = useTranslations("asset-status");
   const locale = useLocale();
+
+  // Helper function to get the correct translation key for each asset type
+  const getAssetTypeLabel = (type: string) => {
+    switch (type) {
+      case "bond":
+        return tAssetType("bonds");
+      case "cryptocurrency":
+        return tAssetType("cryptocurrencies");
+      case "stablecoin":
+        return tAssetType("stablecoins");
+      case "deposit":
+        return tAssetType("deposits");
+      case "equity":
+        return tAssetType("equities");
+      case "fund":
+        return tAssetType("funds");
+      default:
+        return tAssetType("unknown");
+    }
+  };
 
   const getHolderTypeString = (row: UserAsset): "owner" | "holder" => {
     return row.account.id === row.asset.creator.id ? "owner" : "holder";
@@ -76,7 +106,7 @@ export function Columns() {
         icon: ShapesIcon,
         type: "option",
         options: assetTypes.map((type: string) => ({
-          label: tAssetType(type as any),
+          label: getAssetTypeLabel(type),
           value: type,
         })),
       }),
@@ -112,15 +142,16 @@ export function Columns() {
         options: HOLDER_TYPES_OPTIONS,
       }),
     }),
-    columnHelper.accessor((row) => ColumnAssetStatus({ assetOrBalance: row }), {
+    columnHelper.accessor(getAssetStatus, {
       id: t("status-header"),
       header: t("status-header"),
       cell: ({ row }) => {
+        // Use the component only in the cell renderer
         return <AssetStatusPill assetBalance={row.original} />;
       },
       enableColumnFilter: true,
       filterFn: filterFn("option"),
-      meta: defineMeta((row) => ColumnAssetStatus({ assetOrBalance: row }), {
+      meta: defineMeta(getAssetStatus, {
         displayName: t("status-header"),
         icon: ActivityIcon,
         type: "option",
