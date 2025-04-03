@@ -7,9 +7,12 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth/client";
+import { defineMeta, filterFn } from "@/lib/filters";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/lib/utils/typebox/user-roles";
+import { userRoles } from "@/lib/utils/typebox/user-roles";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   BadgeCheck,
@@ -17,6 +20,7 @@ import {
   BadgeX,
   Ban,
   Check,
+  MoreHorizontal,
   ShieldCheck,
   User2,
 } from "lucide-react";
@@ -43,6 +47,19 @@ export function Columns() {
   const t = useTranslations("private.users");
   const { data: session } = authClient.useSession();
 
+  const STATUS_OPTIONS = [
+    { label: t("status.active"), value: "active" },
+    { label: t("status.banned"), value: "banned" },
+  ];
+
+  const ROLE_OPTIONS = userRoles.map((role) => ({
+    label: t(`roles.${role}`),
+    value: role,
+  }));
+
+  // For shorter type alias
+  type User = Awaited<ReturnType<typeof getUserList>>[number];
+
   return [
     columnHelper.accessor("name", {
       header: t("columns.name"),
@@ -63,7 +80,13 @@ export function Columns() {
           )}
         </>
       ),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.name, {
+        displayName: t("columns.name"),
+        icon: User2,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("wallet", {
       header: t("columns.wallet"),
@@ -79,11 +102,23 @@ export function Columns() {
             </EvmAddress>
           </div>
         ),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.wallet || "", {
+        displayName: t("columns.wallet"),
+        icon: ShieldCheck,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("email", {
       header: t("columns.email"),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.email, {
+        displayName: t("columns.email"),
+        icon: User2,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("role", {
       header: t("columns.role"),
@@ -98,30 +133,43 @@ export function Columns() {
         );
       },
       enableColumnFilter: true,
+      filterFn: filterFn("option"),
+      meta: defineMeta((row) => row.role as UserRole, {
+        displayName: t("columns.role"),
+        icon: ShieldCheck,
+        type: "option",
+        options: ROLE_OPTIONS,
+      }),
     }),
-    columnHelper.accessor(
-      (row) => (row.banned ? t("status.banned") : t("status.active")),
-      {
-        header: t("columns.status"),
-        cell: ({ row }) => {
-          const { banned } = row.original;
-          const status = banned ? "banned" : "active";
-          const Icon = icons[status];
-          return (
-            <Badge
-              variant={banned ? "destructive" : "default"}
-              className={cn(
-                "bg-destructive/80 text-destructive-foreground",
-                !banned && "bg-success/80 text-success-foreground"
-              )}
-            >
-              {Icon && <Icon className="size-4 text-muted-foreground" />}
-              <span>{t(`status.${status}`)}</span>
-            </Badge>
-          );
-        },
-      }
-    ),
+    columnHelper.accessor((row) => (row.banned ? "banned" : "active"), {
+      id: "status",
+      header: t("columns.status"),
+      cell: ({ row }) => {
+        const { banned } = row.original;
+        const status = banned ? "banned" : "active";
+        const Icon = icons[status];
+        return (
+          <Badge
+            variant={banned ? "destructive" : "default"}
+            className={cn(
+              "bg-destructive/80 text-destructive-foreground",
+              !banned && "bg-success/80 text-success-foreground"
+            )}
+          >
+            {Icon && <Icon className="size-4 text-muted-foreground" />}
+            <span>{t(`status.${status}`)}</span>
+          </Badge>
+        );
+      },
+      enableColumnFilter: true,
+      filterFn: filterFn("option"),
+      meta: defineMeta((row) => (row.banned ? "banned" : "active"), {
+        displayName: t("columns.status"),
+        icon: Check,
+        type: "option",
+        options: STATUS_OPTIONS,
+      }),
+    }),
     columnHelper.accessor("kyc_verified_at", {
       header: t("columns.kyc_status"),
       cell: ({ getValue }) => {
@@ -142,52 +190,55 @@ export function Columns() {
       enableColumnFilter: false,
     }),
     session?.user.role === "admin" &&
-      columnHelper.display({
-        id: "actions",
-        header: () => "",
-        cell: ({ row }) => (
-          <DataTableRowActions
-            detailUrl={`/platform/users/${row.original.id}`}
-            actions={[
-              {
-                id: "ban-user",
-                label: row.original.banned ? "Unban User" : "Ban User",
-                component: ({ open, onOpenChange }) => (
-                  <BanUserAction
-                    user={row.original}
-                    open={open}
-                    onOpenChange={onOpenChange}
-                  />
-                ),
-              },
-              {
-                id: "change-role",
-                label: "Change Role",
-                component: ({ open, onOpenChange }) => (
-                  <ChangeRoleAction
-                    user={row.original}
-                    open={open}
-                    onOpenChange={onOpenChange}
-                  />
-                ),
-              },
-              {
-                id: "update-kyc-status",
-                label: "Update KYC Status",
-                component: ({ open, onOpenChange }) => (
-                  <UpdateKycStatusAction
-                    user={row.original}
-                    open={open}
-                    onOpenChange={onOpenChange}
-                  />
-                ),
-              },
-            ]}
-          />
-        ),
-        meta: {
-          enableCsvExport: false,
-        },
-      }),
+    columnHelper.display({
+      id: "actions",
+      header: () => "",
+      cell: ({ row }) => (
+        <DataTableRowActions
+          detailUrl={`/platform/users/${row.original.id}`}
+          actions={[
+            {
+              id: "ban-user",
+              label: row.original.banned ? "Unban User" : "Ban User",
+              component: ({ open, onOpenChange }) => (
+                <BanUserAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
+              ),
+            },
+            {
+              id: "change-role",
+              label: "Change Role",
+              component: ({ open, onOpenChange }) => (
+                <ChangeRoleAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
+              ),
+            },
+            {
+              id: "update-kyc-status",
+              label: "Update KYC Status",
+              component: ({ open, onOpenChange }) => (
+                <UpdateKycStatusAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
+              ),
+            },
+          ]}
+        />
+      ),
+      meta: {
+        displayName: "Actions",
+        icon: MoreHorizontal,
+        type: "text",
+        enableCsvExport: false,
+      } as ColumnMeta<User, unknown>,
+    }),
   ].filter((column) => !!column);
 }

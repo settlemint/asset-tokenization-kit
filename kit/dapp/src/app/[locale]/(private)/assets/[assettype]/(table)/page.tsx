@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Related } from "./_components/related";
-import { Table } from "./_components/table";
+import { AssetsTable } from "./_components/table";
 
 interface PageProps {
   params: Promise<{
@@ -33,7 +33,7 @@ export default async function AssetTypeTablePage({ params }: PageProps) {
       <TopInfo title={t(`topinfo-title.${assettype}`)}>
         <p>{t(`topinfo-description.${assettype}`)}</p>
       </TopInfo>
-      <Table assettype={assettype} />
+      <AssetsTable assettype={assettype} />
       <Related assettype={assettype} />
     </>
   );

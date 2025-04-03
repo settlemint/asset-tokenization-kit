@@ -10,7 +10,16 @@ import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-bala
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { Price } from "@/lib/utils/typebox/price";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
+import {
+  CalendarIcon,
+  CoinsIcon,
+  DollarSignIcon,
+  MoreHorizontal,
+  TagIcon,
+  TriangleIcon,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { getAddress } from "viem";
 import { BlockForm } from "../../_components/block-form/form";
@@ -36,6 +45,9 @@ export function columns({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
+  // For shorter type alias
+  type AssetBalance = Awaited<ReturnType<typeof getAssetBalanceList>>[number];
+
   return [
     columnHelper.accessor("account.id", {
       header: t("holders.fields.wallet-header"),
@@ -58,6 +70,9 @@ export function columns({
         }),
       enableColumnFilter: false,
       meta: {
+        displayName: t("holders.fields.balance-header"),
+        icon: CoinsIcon,
+        type: "number",
         variant: "numeric",
       },
     }),
@@ -71,6 +86,9 @@ export function columns({
         });
       },
       meta: {
+        displayName: t("holders.price-header"),
+        icon: DollarSignIcon,
+        type: "number",
         enableCsvExport: false,
         variant: "numeric",
       },
@@ -80,6 +98,11 @@ export function columns({
       header: t("holders.holder-type-header"),
       cell: ({ row }) => {
         return <ColumnHolderType assetBalance={row.original} />;
+      },
+      meta: {
+        displayName: t("holders.holder-type-header"),
+        icon: TagIcon,
+        type: "text",
       },
     }),
     columnHelper.accessor("frozen", {
@@ -91,6 +114,9 @@ export function columns({
         }),
       enableColumnFilter: false,
       meta: {
+        displayName: t("holders.frozen-header"),
+        icon: CoinsIcon,
+        type: "number",
         variant: "numeric",
       },
     }),
@@ -99,6 +125,11 @@ export function columns({
       header: t("holders.status-header"),
       cell: ({ row }) => {
         return <AssetStatusPill assetBalance={row.original} />;
+      },
+      meta: {
+        displayName: t("holders.status-header"),
+        icon: TriangleIcon,
+        type: "text",
       },
     }),
     columnHelper.accessor("lastActivity", {
@@ -110,6 +141,11 @@ export function columns({
           : "-";
       },
       enableColumnFilter: false,
+      meta: {
+        displayName: t("holders.last-activity-header"),
+        icon: CalendarIcon,
+        type: "date",
+      },
     }),
 
     columnHelper.display({
@@ -174,8 +210,11 @@ export function columns({
         );
       },
       meta: {
+        displayName: t("holders.actions-header"),
+        icon: MoreHorizontal,
+        type: "text",
         enableCsvExport: false,
-      },
+      } as ColumnMeta<AssetBalance, unknown>,
     }),
   ];
 }

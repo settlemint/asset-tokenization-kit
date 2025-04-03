@@ -1,25 +1,25 @@
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { bondColumns } from "./columns/bonds";
-import { cryptocurrencyColumns } from "./columns/cryptocurrencies";
-import { depositColumns } from "./columns/deposits";
-import { equityColumns } from "./columns/equities";
-import { fundColumns } from "./columns/funds";
-import { stablecoinColumns } from "./columns/stablecoins";
+import { BondColumns } from "./columns/bonds";
+import { CryptocurrencyColumns } from "./columns/cryptocurrencies";
+import { DepositColumns } from "./columns/deposits";
+import { EquityColumns } from "./columns/equities";
+import { FundColumns } from "./columns/funds";
+import { StablecoinColumns } from "./columns/stablecoins";
 
 export function getTableColumns(assettype: AssetType) {
   switch (assettype) {
     case "bond":
-      return bondColumns;
+      return BondColumns;
     case "cryptocurrency":
-      return cryptocurrencyColumns;
+      return CryptocurrencyColumns;
     case "stablecoin":
-      return stablecoinColumns;
+      return StablecoinColumns;
     case "deposit":
-      return depositColumns;
+      return DepositColumns;
     case "equity":
-      return equityColumns;
+      return EquityColumns;
     case "fund":
-      return fundColumns;
+      return FundColumns;
     default:
       throw new Error("Invalid asset type");
   }
