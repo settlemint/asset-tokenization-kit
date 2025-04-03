@@ -58,7 +58,7 @@ export function ChangeRoleAction({
 
       // If the user changed their own role to a non-admin role, redirect to dashboard
       if (isSelfRoleChange && selectedRole !== "admin") {
-        window.location.href = "/assets";
+        router.push("/assets");
       } else {
         router.refresh();
       }
