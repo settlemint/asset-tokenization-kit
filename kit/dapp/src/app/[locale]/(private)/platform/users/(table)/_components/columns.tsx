@@ -6,6 +6,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { authClient } from "@/lib/auth/client";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/lib/utils/typebox/user-roles";
@@ -40,6 +41,7 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
 
 export function Columns() {
   const t = useTranslations("private.users");
+  const { data: session } = authClient.useSession();
 
   return [
     columnHelper.accessor("name", {
@@ -139,52 +141,53 @@ export function Columns() {
       },
       enableColumnFilter: false,
     }),
-    columnHelper.display({
-      id: "actions",
-      header: () => "",
-      cell: ({ row }) => (
-        <DataTableRowActions
-          detailUrl={`/platform/users/${row.original.id}`}
-          actions={[
-            {
-              id: "ban-user",
-              label: row.original.banned ? "Unban User" : "Ban User",
-              component: ({ open, onOpenChange }) => (
-                <BanUserAction
-                  user={row.original}
-                  open={open}
-                  onOpenChange={onOpenChange}
-                />
-              ),
-            },
-            {
-              id: "change-role",
-              label: "Change Role",
-              component: ({ open, onOpenChange }) => (
-                <ChangeRoleAction
-                  user={row.original}
-                  open={open}
-                  onOpenChange={onOpenChange}
-                />
-              ),
-            },
-            {
-              id: "update-kyc-status",
-              label: "Update KYC Status",
-              component: ({ open, onOpenChange }) => (
-                <UpdateKycStatusAction
-                  user={row.original}
-                  open={open}
-                  onOpenChange={onOpenChange}
-                />
-              ),
-            },
-          ]}
-        />
-      ),
-      meta: {
-        enableCsvExport: false,
-      },
-    }),
-  ];
+    session?.user.role === "admin" &&
+      columnHelper.display({
+        id: "actions",
+        header: () => "",
+        cell: ({ row }) => (
+          <DataTableRowActions
+            detailUrl={`/platform/users/${row.original.id}`}
+            actions={[
+              {
+                id: "ban-user",
+                label: row.original.banned ? "Unban User" : "Ban User",
+                component: ({ open, onOpenChange }) => (
+                  <BanUserAction
+                    user={row.original}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+              {
+                id: "change-role",
+                label: "Change Role",
+                component: ({ open, onOpenChange }) => (
+                  <ChangeRoleAction
+                    user={row.original}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+              {
+                id: "update-kyc-status",
+                label: "Update KYC Status",
+                component: ({ open, onOpenChange }) => (
+                  <UpdateKycStatusAction
+                    user={row.original}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+            ]}
+          />
+        ),
+        meta: {
+          enableCsvExport: false,
+        },
+      }),
+  ].filter((column) => !!column);
 }
