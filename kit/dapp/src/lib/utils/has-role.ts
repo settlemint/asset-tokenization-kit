@@ -29,4 +29,5 @@ export function isSupplyManager(
       return false;
     }
   }
+  return false;
 }
