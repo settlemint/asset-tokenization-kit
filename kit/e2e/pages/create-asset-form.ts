@@ -93,4 +93,16 @@ export class CreateAssetForm extends BasePage {
     await this.page.getByRole("button", { name: "Asset Designer" }).click();
     await this.page.getByRole("menuitem", { name: assetType }).click();
   }
+
+  async fillCryptocurrencyDetails(options: {
+    initialSupply?: string;
+    price?: string;
+  }) {
+    if (options.initialSupply !== undefined) {
+      await this.page.getByLabel("Initial supply").fill(options.initialSupply);
+    }
+    if (options.price !== undefined) {
+      await this.page.getByLabel("Price").fill(options.price);
+    }
+  }
 }
