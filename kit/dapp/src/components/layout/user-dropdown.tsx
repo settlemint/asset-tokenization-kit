@@ -34,7 +34,6 @@ import {
   type BookTextIconHandle,
 } from "../ui/animated-icons/book-text";
 import { LogoutIcon, type LogoutIconHandle } from "../ui/animated-icons/logout";
-import type { SquareStackIconHandle } from "../ui/animated-icons/square-stack";
 
 // Custom text component that renders either content or a skeleton with consistent DOM structure
 function TextOrSkeleton({
@@ -68,7 +67,6 @@ export function UserDropdown({ user }: { user: User }) {
   const t = useTranslations("layout.user-dropdown");
 
   // Create refs for each icon
-  const stackIconRef = useRef<SquareStackIconHandle>(null);
   const bookIconRef = useRef<BookTextIconHandle>(null);
   const logoutIconRef = useRef<LogoutIconHandle>(null);
 
