@@ -88,7 +88,7 @@ export function UpdateCollateralForm({
             <span tabIndex={0}>{formSheet}</span>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Supply manager role required</p>
+            <p>{t("errors.supply-manager-required")}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

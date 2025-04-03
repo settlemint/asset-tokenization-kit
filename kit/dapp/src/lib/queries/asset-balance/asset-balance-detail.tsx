@@ -42,11 +42,7 @@ export interface AssetBalanceDetailProps {
  */
 export const getAssetBalanceDetail = cache(
   async ({ address, account }: AssetBalanceDetailProps) => {
-    // Remove logs
-    // console.log("ASSET BALANCE QUERY - Inputs:", { address, account });
-
     if (!account) {
-      // console.log("ASSET BALANCE QUERY - No account provided, returning undefined");
       return undefined;
     }
 
@@ -63,26 +59,17 @@ export const getAssetBalanceDetail = cache(
         return undefined;
       }
 
-      try {
-        const validatedBalance = safeParse(
-          AssetBalanceSchema,
-          result.assetBalances[0]
-        );
+      const validatedBalance = safeParse(
+        AssetBalanceSchema,
+        result.assetBalances[0]
+      );
 
-        const formattedBalance = {
-          ...validatedBalance,
-          available: validatedBalance.value - validatedBalance.frozen,
-        };
+      const formattedBalance = {
+        ...validatedBalance,
+        available: validatedBalance.value - validatedBalance.frozen,
+      };
 
-        return formattedBalance;
-      } catch (parseError) {
-        // Keep error logging for actual errors
-        console.error(
-          "ASSET BALANCE QUERY - Error parsing balance data:",
-          parseError
-        );
-        return undefined;
-      }
+      return formattedBalance;
     } catch (error) {
       // Keep error logging for actual errors
       console.error(

@@ -4,7 +4,7 @@ import { Link } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import {
   AuthUIProvider,
-  type SocialProvider,
+  type AuthUIProviderProps,
 } from "@daveyplate/better-auth-ui";
 import { useTranslations } from "next-intl";
 // eslint-disable-next-line no-restricted-imports
@@ -31,6 +31,14 @@ export const AuthProvider = ({
   const router = useRouter();
   const t = useTranslations("private.auth");
 
+  const providers: AuthUIProviderProps["providers"] = [];
+  if (googleEnabled) {
+    providers.push("google");
+  }
+  if (githubEnabled) {
+    providers.push("github");
+  }
+
   return (
     <AuthUIProvider
       authClient={authClient}
@@ -49,14 +57,7 @@ export const AuthProvider = ({
       avatar={false}
       magicLink={emailEnabled}
       passkey={true}
-      providers={
-        googleEnabled || githubEnabled
-          ? ([
-              ...(googleEnabled ? ["google"] : []),
-              ...(githubEnabled ? ["github"] : []),
-            ] as SocialProvider[])
-          : undefined
-      }
+      providers={providers.length > 0 ? providers : undefined}
       toast={({ variant, message }) => {
         if (variant === "success") {
           toast.success(message);

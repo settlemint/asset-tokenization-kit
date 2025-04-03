@@ -53,7 +53,7 @@ export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
     });
 
     // Race the actual request against the timeout
-    const data = (await Promise.race([
+    const data = await Promise.race([
       portalClient.request(CreateCryptoCurrencyPredictAddress, {
         address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
         sender: user.wallet as Address,
@@ -63,7 +63,7 @@ export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
         initialSupply: initialSupplyExact,
       }),
       timeoutPromise,
-    ])) as any;
+    ]);
 
     if (!data) throw new Error("No data returned from prediction");
 

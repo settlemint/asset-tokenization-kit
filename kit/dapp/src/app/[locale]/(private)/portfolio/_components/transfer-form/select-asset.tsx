@@ -1,7 +1,6 @@
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { authClient } from "@/lib/auth/client";
 import {
   AssetUsersSchema,
   type AssetUsers,
@@ -19,7 +18,6 @@ interface SelectAssetProps {
 
 export function SelectAsset({ onSelect, userWallet }: SelectAssetProps) {
   const t = useTranslations("portfolio.transfer-form.select-asset");
-  const { data: session } = authClient.useSession();
   const form = useForm<{ asset: AssetUsers }>({
     resolver: typeboxResolver(tb.Object({ asset: AssetUsersSchema })),
     mode: "onChange",

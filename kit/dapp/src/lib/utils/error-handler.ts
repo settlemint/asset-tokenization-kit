@@ -31,9 +31,9 @@ export function getErrorCode(error: unknown): string {
   if (
     error instanceof Error &&
     "code" in error &&
-    typeof (error as any).code === "string"
+    typeof error.code === "string"
   ) {
-    return (error as ExtendedError).code || "unknown";
+    return error.code || "unknown";
   }
 
   return "unknown";
@@ -49,9 +49,9 @@ export function getErrorContext(error: unknown): Record<string, unknown> {
   if (
     error instanceof Error &&
     "context" in error &&
-    typeof (error as any).context === "object"
+    typeof error.context === "object"
   ) {
-    return (error as ExtendedError).context || {};
+    return (error.context as Record<string, unknown>) || {};
   }
 
   return {};

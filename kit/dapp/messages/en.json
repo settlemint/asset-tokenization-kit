@@ -1334,6 +1334,9 @@
               "unpause": "Unpause",
               "update-collateral": "Update collateral",
               "withdraw": "Withdraw"
+            },
+            "errors": {
+              "supply-manager-required": "Supply manager role required"
             }
           },
           "roles": {
@@ -1922,7 +1925,8 @@
           "error": "Failed to update role: {error}",
           "select-role": "Select role",
           "success": "User role updated successfully",
-          "title": "Change user role"
+          "title": "Change user role",
+          "self-change-warning": "Changing your own role may restrict your access to this page."
         },
         "update-kyc-status": {
           "buttons": {
