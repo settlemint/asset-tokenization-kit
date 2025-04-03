@@ -12,6 +12,7 @@ import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
+import { ContactSchema } from "../queries/contact/contact-schema";
 
 export const UserApi = new Elysia({
   detail: {
@@ -122,7 +123,7 @@ export const UserApi = new Elysia({
         }),
       }),
       response: {
-        200: t.Array(UserSchema),
+        200: t.Union([t.Array(UserSchema), t.Array(ContactSchema)]),
         ...defaultErrorSchema,
       },
     }

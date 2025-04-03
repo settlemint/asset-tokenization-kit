@@ -2,9 +2,10 @@ import { fetchAllHasuraPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
+import type { VariablesOf } from "gql.tada";
 import { cache } from "react";
 import { ContactFragment } from "./contact-fragment";
-import { ContactSchema } from "./contact-schema";
+import { ContactSchema, type Contact } from "./contact-schema";
 
 /**
  * GraphQL query to fetch contact list from Hasura
@@ -14,9 +15,9 @@ import { ContactSchema } from "./contact-schema";
  */
 const ContactListQuery = hasuraGraphql(
   `
-  query ContactList($userId: String, $limit: Int, $offset: Int) {
+  query ContactList($limit: Int, $offset: Int, $where: contact_bool_exp!) {
     contact(
-      where: {user_id: {_eq: $userId}},
+      where: $where,
       order_by: {created_at: desc},
       limit: $limit,
       offset: $offset
@@ -34,17 +35,28 @@ const ContactListQuery = hasuraGraphql(
  * @param userId - The ID of the user whose contacts to fetch
  * @returns An array of contacts belonging to the user
  */
-export const getContactsList = cache(async (userId: string) => {
-  const contacts = await fetchAllHasuraPages(async (pageLimit, offset) => {
-    const result = await hasuraClient.request(ContactListQuery, {
-      userId,
-      limit: pageLimit,
-      offset,
+export const getContactsList = cache(
+  async (userId: string, searchTerm?: string): Promise<Contact[]> => {
+    return fetchAllHasuraPages(async (pageLimit, offset) => {
+      const where: VariablesOf<typeof ContactListQuery>["where"] = {
+        user_id: { _eq: userId },
+      };
+      if (searchTerm) {
+        const searchValue = `%${searchTerm}%`;
+        where._or = [
+          { name: { _ilike: searchValue } },
+          { wallet: { _ilike: searchValue } },
+        ];
+      }
+
+      const result = await hasuraClient.request(ContactListQuery, {
+        limit: pageLimit,
+        offset,
+        where,
+      });
+
+      // Parse and validate the contacts with TypeBox
+      return safeParse(t.Array(ContactSchema), result.contact || []);
     });
-
-    // Parse and validate the contacts with TypeBox
-    return safeParse(t.Array(ContactSchema), result.contact || []);
-  });
-
-  return contacts;
-});
+  }
+);

@@ -1,10 +1,14 @@
 "use server";
 
+import { getUser } from "@/lib/auth/utils";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
+import type { User } from "../../auth/types";
 import { withAccessControl } from "../../utils/access-control";
+import { getContactsList } from "../contact/contact-list";
+import type { Contact } from "../contact/contact-schema";
 import { UserFragment } from "./user-fragment";
 import { UserSchema } from "./user-schema";
 
@@ -44,14 +48,14 @@ export interface UserSearchProps {
 }
 
 /**
- * Searches for users by address, name, or email
+ * Searches for all users by address, name, or email
  *
  * @param params - Object containing the search string
  * @returns Array of matching users
  * @remarks
  * Returns an empty array if no address is provided or if an error occurs
  */
-export const getUserSearch = withAccessControl(
+export const getAllUsersSearch = withAccessControl(
   {
     requiredPermissions: {
       user: ["list"],
@@ -72,4 +76,27 @@ export const getUserSearch = withAccessControl(
     // Parse and validate users using TypeBox schema
     return safeParse(t.Array(UserSchema), result.user || []);
   })
+);
+
+/**
+ * Searches for users by address, name, or email
+ *
+ * @param params - Object containing the search string
+ * @returns Array of matching users
+ * @remarks
+ * Returns an empty array if no address is provided or if an error occurs
+ */
+export const getUserSearch = cache(
+  async ({
+    searchTerm,
+    ctx,
+  }: UserSearchProps & { ctx?: { user: User } }): Promise<
+    (User | Contact)[]
+  > => {
+    const user = ctx?.user ?? (await getUser());
+    if (user.role === "user") {
+      return getContactsList(user.id, searchTerm);
+    }
+    return getAllUsersSearch({ searchTerm, ctx: { user } });
+  }
 );
