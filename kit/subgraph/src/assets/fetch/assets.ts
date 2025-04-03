@@ -13,6 +13,7 @@ export function fetchAssetActivity(assetType: string): AssetActivityData {
     assetActivity.burnEventCount = 0;
     assetActivity.frozenEventCount = 0;
     assetActivity.unfrozenEventCount = 0;
+    assetActivity.clawbackEventCount = 0;
 
     assetActivity.totalSupply = BigDecimal.zero();
     assetActivity.totalSupplyExact = BigInt.zero();

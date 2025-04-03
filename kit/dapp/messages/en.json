@@ -97,7 +97,8 @@
           "description": "The amount of actions taken on the different asset classes",
           "mint": "Mint",
           "title": "Asset activity",
-          "transfer": "Transfer"
+          "transfer": "Transfer",
+          "clawback": "Clawback"
         },
         "asset-types": {
           "bonds": "Bonds",
@@ -228,6 +229,7 @@
     "BondMaturedEvent": "Matured",
     "BondRedeemedEvent": "Redeemed",
     "BurnEvent": "Burn",
+    "ClawbackEvent": "Clawback",
     "CollateralUpdatedEvent": "Collateral updated",
     "ManagementFeeCollectedEvent": "Management fee collected",
     "MintEvent": "Mint",

@@ -561,6 +561,23 @@ type AssetCreatedEvent implements AssetEvent @entity(immutable: true) {
   assetType: String!
 }
 
+"""
+Entity for clawback events.
+Emitted when tokens are forcibly transferred from one address to another.
+"""
+type ClawbackEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  from: Account! # The address tokens are taken from
+  to: Account! # The address tokens are sent to
+  amount: BigDecimal! # The amount of tokens transferred
+  amountExact: BigInt! # The amount of tokens transferred in exact precision
+}
+
 # --------------------------------------------------
 # StableCoin-Specific Custom Event
 # --------------------------------------------------
@@ -834,6 +851,7 @@ type AssetActivityData @entity {
   burnEventCount: Int!
   frozenEventCount: Int!
   unfrozenEventCount: Int!
+  clawbackEventCount: Int!
 
   ## Supply
   totalSupply: BigDecimal!
