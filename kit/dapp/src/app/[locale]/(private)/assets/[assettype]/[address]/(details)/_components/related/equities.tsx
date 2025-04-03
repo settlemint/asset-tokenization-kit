@@ -3,28 +3,35 @@ import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import { useTranslations } from "next-intl";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
+import { isSupplyManager } from "@/lib/utils/has-role";
+import { getTranslations } from "next-intl/server";
+import type { Address } from "viem";
 import { MintForm } from "../../../_components/mint-form/form";
 
 export interface EquitiesRelatedProps {
   address: `0x${string}`;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-  userIsAdmin: boolean;
+  assetUsersDetails?: Awaited<ReturnType<typeof getAssetUsersDetail>>;
+  currentUserWallet?: Address;
 }
 
-export function EquitiesRelated({
+export async function EquitiesRelated({
   address,
   assetDetails,
   userBalance,
-  userIsAdmin,
+  assetUsersDetails,
+  currentUserWallet,
 }: EquitiesRelatedProps) {
-  const t = useTranslations("private.assets.details.related");
+  const t = await getTranslations("private.assets.details.related");
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
-  const userIsSupplyManager = userBalance?.asset.supplyManagers.some(
-    (manager) => manager.id === userBalance?.account.id
+
+  const userIsSupplyManager = isSupplyManager(
+    currentUserWallet,
+    assetUsersDetails
   );
 
   return (
@@ -39,9 +46,7 @@ export function EquitiesRelated({
           decimals={assetDetails.decimals}
           symbol={assetDetails.symbol}
           asButton
-          disabled={
-            isBlocked || isPaused || (!userIsSupplyManager && !userIsAdmin)
-          }
+          disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
       <RelatedGridItem

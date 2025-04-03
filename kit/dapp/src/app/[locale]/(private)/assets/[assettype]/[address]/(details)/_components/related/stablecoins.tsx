@@ -2,9 +2,11 @@ import { BurnForm } from "@/app/[locale]/(private)/portfolio/my-assets/[assettyp
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
+import { isSupplyManager } from "@/lib/utils/has-role";
 import { isBefore } from "date-fns";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { UpdateCollateralForm } from "../../../_components/manage-dropdown/update-collateral-form/form";
 import { MintForm } from "../../../_components/mint-form/form";
@@ -13,22 +15,27 @@ interface StablecoinsRelatedProps {
   address: Address;
   assetDetails: Awaited<ReturnType<typeof getStableCoinDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-  userIsAdmin: boolean;
+  assetUsersDetails?: Awaited<ReturnType<typeof getAssetUsersDetail>>;
+  currentUserWallet?: Address;
 }
 
-export function StablecoinsRelated({
+export async function StablecoinsRelated({
   address,
   assetDetails,
   userBalance,
-  userIsAdmin,
+  assetUsersDetails,
+  currentUserWallet,
 }: StablecoinsRelatedProps) {
-  const t = useTranslations("private.assets.details.related");
+  const t = await getTranslations("private.assets.details.related");
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
-  const userIsSupplyManager = userBalance?.asset.supplyManagers.some(
-    (manager) => manager.id === userBalance?.account.id
+
+  const userIsSupplyManager = isSupplyManager(
+    currentUserWallet,
+    assetUsersDetails
   );
+
   const collateralIsExpired =
     "collateralProofValidity" in assetDetails &&
     assetDetails.collateralProofValidity !== undefined &&
@@ -64,10 +71,7 @@ export function StablecoinsRelated({
           assettype="stablecoin"
           asButton
           disabled={
-            isBlocked ||
-            isPaused ||
-            (!userIsSupplyManager && !userIsAdmin) ||
-            collateralIsExpired
+            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
           }
         />
       </RelatedGridItem>

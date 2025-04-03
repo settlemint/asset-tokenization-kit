@@ -2,6 +2,12 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { mint } from "@/lib/mutations/mint/mint-action";
 import { MintSchema } from "@/lib/mutations/mint/mint-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -52,7 +58,8 @@ export function MintForm({
         <Recipients key="recipients" />,
         <Summary key="summary" address={address} />,
       ];
-  return (
+
+  const formSheet = (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
       onOpenChange={
@@ -85,4 +92,21 @@ export function MintForm({
       </Form>
     </FormSheet>
   );
+
+  if (disabled && asButton) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span tabIndex={0}>{formSheet}</span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{t("errors.supply-manager-required")}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return formSheet;
 }

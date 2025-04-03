@@ -3,6 +3,8 @@ import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
+import { isSupplyManager } from "@/lib/utils/has-role";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { MintForm } from "../../../_components/mint-form/form";
@@ -11,21 +13,25 @@ interface BondsRelatedProps {
   address: Address;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-  userIsAdmin: boolean;
+  assetUsersDetails?: Awaited<ReturnType<typeof getAssetUsersDetail>>;
+  currentUserWallet?: Address;
 }
 
 export async function BondsRelated({
   address,
   assetDetails,
   userBalance,
-  userIsAdmin,
+  assetUsersDetails,
+  currentUserWallet,
 }: BondsRelatedProps) {
   const t = await getTranslations("private.assets.details.related");
 
-  const isBlocked = userBalance?.blocked ?? false;
+  const isBlocked = userBalance?.blocked ?? false; // Still useful for general blocking
   const isPaused = "paused" in assetDetails && assetDetails.paused;
-  const userIsSupplyManager = userBalance?.asset.supplyManagers.some(
-    (manager) => manager.id === userBalance?.account.id
+
+  const userIsSupplyManager = isSupplyManager(
+    currentUserWallet,
+    assetUsersDetails
   );
 
   return (
@@ -40,9 +46,7 @@ export async function BondsRelated({
           decimals={assetDetails.decimals}
           symbol={assetDetails.symbol}
           asButton
-          disabled={
-            isBlocked || isPaused || (!userIsSupplyManager && !userIsAdmin)
-          }
+          disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
       <RelatedGridItem
@@ -51,14 +55,12 @@ export async function BondsRelated({
       >
         <BurnForm
           address={address}
-          max={userBalance?.available ?? 0}
+          max={userBalance?.available ?? 0} // Keep userBalance for balance info
           decimals={assetDetails.decimals}
           symbol={assetDetails.symbol}
           assettype="bond"
           asButton
-          disabled={
-            isBlocked || isPaused || (!userIsSupplyManager && !userIsAdmin)
-          }
+          disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
     </RelatedGrid>

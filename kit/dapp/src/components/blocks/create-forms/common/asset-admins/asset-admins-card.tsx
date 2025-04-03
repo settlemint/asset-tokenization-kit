@@ -18,7 +18,10 @@ interface TokenAdminsCardProps {
   assetAdmins?: AssetAdmin[];
 }
 
-export function AssetAdminsCard({ userDetails, assetAdmins }: TokenAdminsCardProps) {
+export function AssetAdminsCard({
+  userDetails,
+  assetAdmins,
+}: TokenAdminsCardProps) {
   const t = useTranslations("private.assets.create");
 
   if (!assetAdmins) {
@@ -48,23 +51,24 @@ export function AssetAdminsCard({ userDetails, assetAdmins }: TokenAdminsCardPro
           </div>
         }
       />
-      {assetAdmins.map((admin) => (
-        admin.wallet && (
-          <FormSummaryDetailItem
-            key={admin.wallet}
-            label={<EvmAddress address={admin.wallet} prettyNames />}
-            value={
-              <div className="flex flex-wrap gap-1">
-                {admin.roles?.map((role) => (
-                  <Badge key={role} variant="outline" className="text-xs">
-                    {t(`form.steps.asset-admins.roles.${role}` as any)}
-                  </Badge>
-                ))}
-              </div>
-            }
-          />
-        )
-      ))}
+      {assetAdmins.map(
+        (admin) =>
+          admin.wallet && (
+            <FormSummaryDetailItem
+              key={admin.wallet}
+              label={<EvmAddress address={admin.wallet} prettyNames />}
+              value={
+                <div className="flex flex-wrap gap-1">
+                  {admin.roles?.map((role) => (
+                    <Badge key={role} variant="outline" className="text-xs">
+                      {t(`form.steps.asset-admins.roles.${role}`)}
+                    </Badge>
+                  ))}
+                </div>
+              }
+            />
+          )
+      )}
     </FormSummaryDetailCard>
   );
 }

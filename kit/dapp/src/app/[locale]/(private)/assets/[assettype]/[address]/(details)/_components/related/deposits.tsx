@@ -2,9 +2,12 @@ import { BurnForm } from "@/app/[locale]/(private)/portfolio/my-assets/[assettyp
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
+import { isSupplyManager } from "@/lib/utils/has-role";
 import { isBefore } from "date-fns";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import type { Address } from "viem";
 import { UpdateCollateralForm } from "../../../_components/manage-dropdown/update-collateral-form/form";
 import { MintForm } from "../../../_components/mint-form/form";
 
@@ -12,22 +15,27 @@ export interface DepositsRelatedProps {
   address: `0x${string}`;
   assetDetails: Awaited<ReturnType<typeof getDepositDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
-  userIsAdmin: boolean;
+  assetUsersDetails?: Awaited<ReturnType<typeof getAssetUsersDetail>>;
+  currentUserWallet?: Address;
 }
 
-export function DepositsRelated({
+export async function DepositsRelated({
   address,
   assetDetails,
   userBalance,
-  userIsAdmin,
+  assetUsersDetails,
+  currentUserWallet,
 }: DepositsRelatedProps) {
-  const t = useTranslations("private.assets.details.related");
+  const t = await getTranslations("private.assets.details.related");
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
-  const userIsSupplyManager = userBalance?.asset.supplyManagers.some(
-    (manager) => manager.id === userBalance?.account.id
+
+  const userIsSupplyManager = isSupplyManager(
+    currentUserWallet,
+    assetUsersDetails
   );
+
   const collateralIsExpired =
     "collateralProofValidity" in assetDetails &&
     assetDetails.collateralProofValidity !== undefined &&
@@ -46,7 +54,9 @@ export function DepositsRelated({
           address={address}
           assettype="deposit"
           asButton
-          disabled={isBlocked || isPaused || !userIsSupplyManager}
+          disabled={
+            isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
+          }
           decimals={deposit.decimals}
           symbol={deposit.symbol}
         />
@@ -62,9 +72,7 @@ export function DepositsRelated({
           decimals={assetDetails.decimals}
           symbol={assetDetails.symbol}
           asButton
-          disabled={
-            isBlocked || isPaused || (!userIsSupplyManager && !userIsAdmin)
-          }
+          disabled={isBlocked || isPaused || !userIsSupplyManager}
         />
       </RelatedGridItem>
       <RelatedGridItem

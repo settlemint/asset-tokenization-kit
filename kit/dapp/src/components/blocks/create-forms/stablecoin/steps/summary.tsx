@@ -53,10 +53,10 @@ export function Summary({ userDetails }: { userDetails: User }) {
               ? `${values.collateralLivenessValue} ${
                   Number(values.collateralLivenessValue) === 1
                     ? t(
-                        `parameters.common.time-units.singular.${values.collateralLivenessTimeUnit}` as any
+                        `parameters.common.time-units.singular.${values.collateralLivenessTimeUnit}`
                       )
                     : t(
-                        `parameters.common.time-units.plural.${values.collateralLivenessTimeUnit}` as any
+                        `parameters.common.time-units.plural.${values.collateralLivenessTimeUnit}`
                       )
                 }`
               : "-"
@@ -71,12 +71,17 @@ export function Summary({ userDetails }: { userDetails: User }) {
         />
       </FormSummaryDetailCard>
 
-      <AssetAdminsCard userDetails={userDetails} assetAdmins={values.assetAdmins} />
+      <AssetAdminsCard
+        userDetails={userDetails}
+        assetAdmins={values.assetAdmins}
+      />
     </FormStep>
   );
 }
 
-Summary.validatedFields = ["predictedAddress"] satisfies (keyof CreateStablecoinInput)[];
+Summary.validatedFields = [
+  "predictedAddress",
+] satisfies (keyof CreateStablecoinInput)[];
 Summary.beforeValidate = [
   async ({ setValue, getValues }: UseFormReturn<CreateStablecoinInput>) => {
     const values = getValues();

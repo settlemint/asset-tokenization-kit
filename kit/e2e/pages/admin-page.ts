@@ -58,8 +58,8 @@ export class AdminPage extends BasePage {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const formattedDate = tomorrow.toISOString().split("T")[0];
-    await this.page.getByLabel("Maturity date").fill(formattedDate);
+    const formattedDateTime = tomorrow.toISOString().slice(0, 16);
+    await this.page.getByLabel("Maturity date").fill(formattedDateTime);
     await this.page
       .locator('[id="underlyingAsset"]')
       .waitFor({ state: "visible" });
@@ -74,6 +74,7 @@ export class AdminPage extends BasePage {
       .getByRole("option", { name: `Avatar ${options.underlyingAsset}` })
       .click();
     await this.page.getByLabel("Price").fill(options.price);
+    await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
@@ -96,6 +97,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByLabel("Initial supply").fill(options.initialSupply);
     await this.page.getByLabel("Price").fill(options.price);
+    await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
@@ -134,6 +136,7 @@ export class AdminPage extends BasePage {
       .click();
     await this.page.getByLabel("Price").fill(options.price);
     await this.page.getByRole("button", { name: "Next" }).click();
+    await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
@@ -171,6 +174,7 @@ export class AdminPage extends BasePage {
     await this.page.getByLabel("Management fee").fill(options.managementFee);
     await this.page.getByLabel("Price").fill(options.price);
     await this.page.getByRole("button", { name: "Next" }).click();
+    await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
@@ -195,6 +199,7 @@ export class AdminPage extends BasePage {
       .getByLabel("Collateral Proof Validity")
       .fill(options.validityPeriod);
     await this.page.getByLabel("Price").fill(options.price);
+    await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
@@ -222,6 +227,7 @@ export class AdminPage extends BasePage {
       .getByLabel("Collateral Proof Validity")
       .fill(options.validityPeriod);
     await this.page.getByLabel("Price").fill(options.price);
+    await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
