@@ -27,6 +27,7 @@ import type { ColumnOption, ElementType } from "@/lib/filters";
 import {
   type ColumnDataType,
   type FilterValue,
+  type TextFilterOperator,
   dateFilterDetails,
   determineNewOperator,
   filterTypeOperatorDetails,
@@ -1546,15 +1547,30 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
     ? (column.getFilterValue() as FilterValue<"text", TData>)
     : undefined;
 
+  const [operator, setOperator] = useState<TextFilterOperator>(
+    filter?.operator || "contains"
+  );
+
   const changeText = (value: string | number) => {
     column.setFilterValue((old: undefined | FilterValue<"text", TData>) => {
       if (!old || old.values.length === 0)
         return {
-          operator: "contains",
+          operator,
           values: [String(value)],
           columnMeta: column.columnDef.meta,
         } satisfies FilterValue<"text", TData>;
-      return { operator: old.operator, values: [String(value)] };
+      return { operator, values: [String(value)] };
+    });
+  };
+
+  const handleOperatorChange = (newOperator: TextFilterOperator) => {
+    setOperator(newOperator);
+    column.setFilterValue((old: undefined | FilterValue<"text", TData>) => {
+      if (!old || old.values.length === 0) return undefined;
+      return {
+        ...old,
+        operator: newOperator,
+      };
     });
   };
 
@@ -1562,14 +1578,35 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
     <Command>
       <CommandList className="max-h-fit">
         <CommandGroup>
-          <CommandItem>
+          <div className="flex flex-col gap-2 p-2">
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant={operator === "contains" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleOperatorChange("contains")}
+                className="text-xs"
+              >
+                Contains
+              </Button>
+              <Button
+                variant={
+                  operator === "does not contain" ? "default" : "outline"
+                }
+                size="sm"
+                onClick={() => handleOperatorChange("does not contain")}
+                className="text-xs"
+              >
+                Does not contain
+              </Button>
+            </div>
             <DebouncedInput
               placeholder="Search..."
               autoFocus
               value={filter?.values[0] ?? ""}
               onChange={changeText}
+              className="w-full mt-1"
             />
-          </CommandItem>
+          </div>
         </CommandGroup>
       </CommandList>
     </Command>
