@@ -3,6 +3,7 @@
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
+import { CoinsIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { ColumnAssetType } from "../asset-info/column-asset-type";
 
@@ -31,8 +32,11 @@ export function ColumnsSmall() {
     columnHelper.accessor("value", {
       header: t("balance-header"),
       meta: {
+        displayName: t("balance-header"),
+        icon: CoinsIcon,
+        type: "number",
         variant: "numeric",
-      },
+      } as any,
       cell: ({ getValue, row }) =>
         formatNumber(getValue(), {
           token: row.original.asset.symbol,

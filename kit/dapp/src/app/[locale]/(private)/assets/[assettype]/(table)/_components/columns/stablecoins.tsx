@@ -8,7 +8,6 @@ import { PercentageProgressBar } from "@/components/blocks/percentage-progress/p
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { getStableCoinList } from "@/lib/queries/stablecoin/stablecoin-list";
 import { formatNumber } from "@/lib/utils/number";
-import type { CellContext } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   ActivityIcon,
@@ -30,7 +29,7 @@ const ASSET_STATUSES_OPTIONS = [
   { label: "Paused", value: "paused" },
 ];
 
-export function stablecoinColumns() {
+export function StablecoinColumns() {
   const t = useTranslations("private.assets.fields");
   const tAssetStatus = useTranslations("asset-status");
   const locale = useLocale();
@@ -133,7 +132,7 @@ export function stablecoinColumns() {
     columnHelper.display({
       id: "actions",
       header: t("actions-header"),
-      cell: ({ row }: CellContext<Stablecoin, unknown>) => {
+      cell: ({ row }) => {
         return (
           <DataTableRowActions
             detailUrl={`/assets/stablecoin/${row.original.id}`}

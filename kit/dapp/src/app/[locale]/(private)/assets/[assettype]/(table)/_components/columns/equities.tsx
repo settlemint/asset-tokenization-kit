@@ -9,7 +9,6 @@ import type { getEquityList } from "@/lib/queries/equity/equity-list";
 import { formatNumber } from "@/lib/utils/number";
 import { equityCategories } from "@/lib/utils/typebox/equity-categories";
 import { equityClasses } from "@/lib/utils/typebox/equity-classes";
-import type { CellContext } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   ActivityIcon,
@@ -35,7 +34,7 @@ const ASSET_STATUSES_OPTIONS = [
   { label: "Paused", value: "paused" },
 ];
 
-export function equityColumns() {
+export function EquityColumns() {
   const t = useTranslations("private.assets.fields");
   const tAssetStatus = useTranslations("asset-status");
   const locale = useLocale();
@@ -173,8 +172,7 @@ export function equityColumns() {
     }),
     columnHelper.accessor("equityCategory", {
       header: t("category-header"),
-      cell: ({ getValue }: CellContext<Equity, EquityCategory>) =>
-        translatedEquityCategories[getValue()],
+      cell: ({ getValue }) => translatedEquityCategories[getValue()],
       enableColumnFilter: true,
       filterFn: filterFn("option"),
       meta: defineMeta((row) => row.equityCategory, {
@@ -189,8 +187,7 @@ export function equityColumns() {
     }),
     columnHelper.accessor("equityClass", {
       header: t("class-header"),
-      cell: ({ getValue }: CellContext<Equity, EquityClass>) =>
-        translatedEquityClasses[getValue()],
+      cell: ({ getValue }) => translatedEquityClasses[getValue()],
       enableColumnFilter: true,
       filterFn: filterFn("option"),
       meta: defineMeta((row) => row.equityClass, {
@@ -205,7 +202,7 @@ export function equityColumns() {
     }),
     columnHelper.accessor((row) => (row.paused ? "paused" : "active"), {
       header: t("status-header"),
-      cell: ({ row }: CellContext<Equity, string>) => {
+      cell: ({ row }) => {
         return <ActivePill paused={row.original.paused} />;
       },
       enableColumnFilter: true,
@@ -223,7 +220,7 @@ export function equityColumns() {
     columnHelper.display({
       id: "actions",
       header: t("actions-header"),
-      cell: ({ row }: CellContext<Equity, unknown>) => {
+      cell: ({ row }) => {
         return (
           <DataTableRowActions
             detailUrl={`/assets/equity/${row.original.id}`}

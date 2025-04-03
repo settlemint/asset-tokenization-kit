@@ -3,9 +3,17 @@
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import { defineMeta } from "@/lib/filters";
 import type { getCryptoCurrencyList } from "@/lib/queries/cryptocurrency/cryptocurrency-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
+import {
+  AsteriskIcon,
+  CoinsIcon,
+  DollarSignIcon,
+  MoreHorizontal,
+  WalletIcon,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 const columnHelper =
@@ -13,10 +21,8 @@ const columnHelper =
     Awaited<ReturnType<typeof getCryptoCurrencyList>>[number]
   >();
 
-export function cryptocurrencyColumns() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export function CryptocurrencyColumns() {
   const t = useTranslations("private.assets.fields");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
   return [
@@ -28,16 +34,31 @@ export function cryptocurrencyColumns() {
         </EvmAddress>
       ),
       enableColumnFilter: false,
+      meta: defineMeta((row) => row.id, {
+        displayName: t("address-header"),
+        icon: WalletIcon,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("name", {
       header: t("name-header"),
       cell: ({ getValue }) => getValue(),
       enableColumnFilter: false,
+      meta: defineMeta((row) => row.name, {
+        displayName: t("name-header"),
+        icon: AsteriskIcon,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("symbol", {
       header: t("symbol-header"),
       cell: ({ getValue }) => getValue(),
       enableColumnFilter: false,
+      meta: defineMeta((row) => row.symbol, {
+        displayName: t("symbol-header"),
+        icon: AsteriskIcon,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("price", {
       header: t("price-header"),
@@ -48,12 +69,20 @@ export function cryptocurrencyColumns() {
           locale: locale,
         }),
       enableColumnFilter: false,
+      meta: {
+        displayName: t("price-header"),
+        icon: DollarSignIcon,
+        type: "number",
+      },
     }),
     columnHelper.accessor("totalSupply", {
       header: t("total-supply-header"),
-      meta: {
+      meta: defineMeta((row) => Number(row.totalSupply), {
+        displayName: t("total-supply-header"),
+        icon: CoinsIcon,
+        type: "number",
         variant: "numeric",
-      },
+      }),
       cell: ({ getValue }) => formatNumber(getValue(), { locale }),
       enableColumnFilter: false,
     }),
@@ -68,8 +97,11 @@ export function cryptocurrencyColumns() {
         );
       },
       meta: {
+        displayName: t("actions-header"),
+        icon: MoreHorizontal,
+        type: "text",
         enableCsvExport: false,
-      },
+      } as any,
     }),
   ];
 }

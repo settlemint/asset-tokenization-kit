@@ -26,7 +26,7 @@ const ASSET_STATUSES_OPTIONS = [
   { label: "Paused", value: "paused" },
 ];
 
-export function bondColumns() {
+export function BondColumns() {
   const t = useTranslations("private.assets.fields");
   const tAssetStatus = useTranslations("asset-status");
   const locale = useLocale();

@@ -8,6 +8,7 @@ import type { BlockedUser } from "@/lib/queries/asset/asset-users-schema";
 import { formatDate } from "@/lib/utils/date";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { createColumnHelper } from "@tanstack/react-table";
+import { MoreHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { UnblockForm } from "../../_components/unblock-form/form";
@@ -74,8 +75,11 @@ export function columns({
         );
       },
       meta: {
+        displayName: t("actions-header"),
+        icon: MoreHorizontal,
+        type: "text",
         enableCsvExport: false,
-      },
+      } as any,
     }),
   ];
 }

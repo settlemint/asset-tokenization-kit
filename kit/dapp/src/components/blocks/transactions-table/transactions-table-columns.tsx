@@ -5,7 +5,7 @@ import { TransactionHash } from "@/components/blocks/transaction-hash/transactio
 import type { getRecentTransactions } from "@/lib/queries/transactions/transactions-recent";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
-import { CheckCircle, Clock, XCircle } from "lucide-react";
+import { CheckCircle, Clock, MoreHorizontal, XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { TransactionDetailSheet } from "./transaction-table-detail-sheet";
 
@@ -82,8 +82,11 @@ export function Columns() {
         />
       ),
       meta: {
+        displayName: t("columns.actions"),
+        icon: MoreHorizontal,
+        type: "text",
         enableCsvExport: false,
-      },
+      } as any,
     }),
   ];
 }

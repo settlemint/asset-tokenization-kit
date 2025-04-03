@@ -1,10 +1,10 @@
 "use client";
 "use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
-import { DataTableFilter } from "@/components/data-table-filter";
 import type { Table } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { DataTableExport } from "./data-table-export";
+import { DataTableFilter } from "./data-table-filter";
 import { DataTableViewOptions } from "./data-table-view-options";
 
 export interface DataTableToolbarOptions {

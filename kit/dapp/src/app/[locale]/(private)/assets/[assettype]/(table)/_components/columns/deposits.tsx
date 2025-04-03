@@ -7,7 +7,6 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { getDepositList } from "@/lib/queries/deposit/deposit-list";
 import { formatNumber } from "@/lib/utils/number";
-import type { CellContext } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   ActivityIcon,
@@ -28,7 +27,7 @@ const ASSET_STATUSES_OPTIONS = [
   { label: "Paused", value: "paused" },
 ];
 
-export function depositColumns() {
+export function DepositColumns() {
   const t = useTranslations("private.assets.fields");
   const tAssetStatus = useTranslations("asset-status");
   const locale = useLocale();
@@ -118,7 +117,7 @@ export function depositColumns() {
     columnHelper.display({
       id: "actions",
       header: t("actions-header"),
-      cell: ({ row }: CellContext<Deposit, unknown>) => {
+      cell: ({ row }) => {
         return (
           <DataTableRowActions
             detailUrl={`/assets/deposit/${row.original.id}`}

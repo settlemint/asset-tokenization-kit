@@ -5,7 +5,13 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Lock, PauseCircle, PlayCircle, Unlock } from "lucide-react";
+import {
+  Lock,
+  MoreHorizontal,
+  PauseCircle,
+  PlayCircle,
+  Unlock,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 
@@ -75,8 +81,11 @@ export function Columns() {
         />
       ),
       meta: {
+        displayName: "Details",
+        icon: MoreHorizontal,
+        type: "text",
         enableCsvExport: false,
-      },
+      } as any,
     }),
   ];
 }

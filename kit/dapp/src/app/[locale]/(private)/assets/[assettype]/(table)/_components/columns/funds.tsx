@@ -34,7 +34,7 @@ const ASSET_STATUSES_OPTIONS = [
 type FundCategory = (typeof fundCategories)[number];
 type FundClass = (typeof fundClasses)[number];
 
-export function fundColumns() {
+export function FundColumns() {
   const t = useTranslations("private.assets.fields");
   const locale = useLocale();
   const tAssetStatus = useTranslations("asset-status");

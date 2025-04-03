@@ -16,6 +16,7 @@ import {
   BadgeX,
   Ban,
   Check,
+  MoreHorizontal,
   ShieldCheck,
   User2,
 } from "lucide-react";
@@ -183,8 +184,11 @@ export function Columns() {
         />
       ),
       meta: {
+        displayName: "Actions",
+        icon: MoreHorizontal,
+        type: "text",
         enableCsvExport: false,
-      },
+      } as any,
     }),
   ];
 }

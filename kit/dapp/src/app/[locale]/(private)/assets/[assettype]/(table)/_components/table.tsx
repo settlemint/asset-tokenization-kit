@@ -8,12 +8,12 @@ import { getEquityList } from "@/lib/queries/equity/equity-list";
 import { getFundList } from "@/lib/queries/fund/fund-list";
 import { getStableCoinList } from "@/lib/queries/stablecoin/stablecoin-list";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { bondColumns } from "./columns/bonds";
-import { cryptocurrencyColumns } from "./columns/cryptocurrencies";
-import { depositColumns } from "./columns/deposits";
-import { equityColumns } from "./columns/equities";
-import { fundColumns } from "./columns/funds";
-import { stablecoinColumns } from "./columns/stablecoins";
+import { BondColumns } from "./columns/bonds";
+import { CryptocurrencyColumns } from "./columns/cryptocurrencies";
+import { DepositColumns } from "./columns/deposits";
+import { EquityColumns } from "./columns/equities";
+import { FundColumns } from "./columns/funds";
+import { StablecoinColumns } from "./columns/stablecoins";
 
 interface TableProps {
   assettype: AssetType;
@@ -26,7 +26,7 @@ export async function AssetsTable({ assettype }: TableProps) {
     case "bond":
       return (
         <DataTable
-          columns={bondColumns}
+          columns={BondColumns}
           data={await getBondList()}
           name={assettype}
           columnParams={{ baseCurrency }}
@@ -35,7 +35,7 @@ export async function AssetsTable({ assettype }: TableProps) {
     case "cryptocurrency":
       return (
         <DataTable
-          columns={cryptocurrencyColumns}
+          columns={CryptocurrencyColumns}
           data={await getCryptoCurrencyList()}
           name={assettype}
           columnParams={{ baseCurrency }}
@@ -44,7 +44,7 @@ export async function AssetsTable({ assettype }: TableProps) {
     case "stablecoin":
       return (
         <DataTable
-          columns={stablecoinColumns}
+          columns={StablecoinColumns}
           data={await getStableCoinList()}
           name={assettype}
           columnParams={{ baseCurrency }}
@@ -53,7 +53,7 @@ export async function AssetsTable({ assettype }: TableProps) {
     case "deposit":
       return (
         <DataTable
-          columns={depositColumns}
+          columns={DepositColumns}
           data={await getDepositList()}
           name={assettype}
           columnParams={{ baseCurrency }}
@@ -62,7 +62,7 @@ export async function AssetsTable({ assettype }: TableProps) {
     case "equity":
       return (
         <DataTable
-          columns={equityColumns}
+          columns={EquityColumns}
           data={await getEquityList()}
           name={assettype}
           columnParams={{ baseCurrency }}
@@ -71,8 +71,7 @@ export async function AssetsTable({ assettype }: TableProps) {
     case "fund":
       return (
         <DataTable
-          // @ts-expect-error TODO: fix column typing issues
-          columns={fundColumns}
+          columns={FundColumns}
           data={await getFundList()}
           name={assettype}
           columnParams={{ baseCurrency }}
