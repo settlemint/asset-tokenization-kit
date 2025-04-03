@@ -50,7 +50,6 @@ export const getContactsList = cache(
       }
 
       const result = await hasuraClient.request(ContactListQuery, {
-        userId,
         limit: pageLimit,
         offset,
         where,
