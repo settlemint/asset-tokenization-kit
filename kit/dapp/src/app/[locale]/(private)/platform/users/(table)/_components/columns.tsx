@@ -11,6 +11,7 @@ import type { getUserList } from "@/lib/queries/user/user-list";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/lib/utils/typebox/user-roles";
 import { userRoles } from "@/lib/utils/typebox/user-roles";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   BadgeCheck,
@@ -53,6 +54,9 @@ export function Columns() {
     label: t(`roles.${role}`),
     value: role,
   }));
+
+  // For shorter type alias
+  type User = Awaited<ReturnType<typeof getUserList>>[number];
 
   return [
     columnHelper.accessor("name", {
@@ -231,7 +235,7 @@ export function Columns() {
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      } as ColumnMeta<User, unknown>,
     }),
   ];
 }

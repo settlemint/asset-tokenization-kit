@@ -5,6 +5,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   CalendarClock,
@@ -31,6 +32,9 @@ export const icons = {
 
 export function Columns() {
   const t = useTranslations("components.asset-events-table");
+
+  // For shorter type alias
+  type AssetEvent = Awaited<ReturnType<typeof getAssetEventsList>>[number];
 
   return [
     columnHelper.accessor("timestamp", {
@@ -107,7 +111,7 @@ export function Columns() {
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      } as ColumnMeta<AssetEvent, unknown>,
     }),
   ];
 }

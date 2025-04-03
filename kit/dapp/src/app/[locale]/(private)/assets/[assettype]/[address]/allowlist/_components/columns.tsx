@@ -7,6 +7,7 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import type { AllowedUser } from "@/lib/queries/asset/asset-users-schema";
 import { formatDate } from "@/lib/utils/date";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -81,7 +82,7 @@ export function columns({
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      } as ColumnMeta<AllowedUser, unknown>,
     }),
   ];
 }

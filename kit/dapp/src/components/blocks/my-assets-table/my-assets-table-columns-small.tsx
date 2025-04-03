@@ -2,6 +2,7 @@
 
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatNumber } from "@/lib/utils/number";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CoinsIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -36,7 +37,7 @@ export function ColumnsSmall() {
         icon: CoinsIcon,
         type: "number",
         variant: "numeric",
-      } as any,
+      } as ColumnMeta<UserAsset, number>,
       cell: ({ getValue, row }) =>
         formatNumber(getValue(), {
           token: row.original.asset.symbol,

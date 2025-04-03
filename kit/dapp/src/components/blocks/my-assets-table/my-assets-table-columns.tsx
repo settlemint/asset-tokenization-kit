@@ -6,6 +6,7 @@ import { defineMeta, filterFn } from "@/lib/filters";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatNumber } from "@/lib/utils/number";
 import { assetTypes } from "@/lib/utils/typebox/asset-types";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   ActivityIcon,
@@ -148,7 +149,7 @@ export function Columns() {
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      } as ColumnMeta<UserAsset, unknown>,
     }),
   ];
 }

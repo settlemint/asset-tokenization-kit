@@ -9,6 +9,7 @@ import type { getFundList } from "@/lib/queries/fund/fund-list";
 import { formatNumber } from "@/lib/utils/number";
 import { fundCategories } from "@/lib/utils/typebox/fund-categories";
 import { fundClasses } from "@/lib/utils/typebox/fund-classes";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   ActivityIcon,
@@ -237,7 +238,7 @@ export function FundColumns() {
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      } as ColumnMeta<Awaited<ReturnType<typeof getFundList>>[number], unknown>,
     }),
   ];
 }

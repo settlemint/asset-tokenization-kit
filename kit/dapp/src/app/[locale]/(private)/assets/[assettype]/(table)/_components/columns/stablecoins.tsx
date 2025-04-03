@@ -8,6 +8,7 @@ import { PercentageProgressBar } from "@/components/blocks/percentage-progress/p
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { getStableCoinList } from "@/lib/queries/stablecoin/stablecoin-list";
 import { formatNumber } from "@/lib/utils/number";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   ActivityIcon,
@@ -144,7 +145,7 @@ export function StablecoinColumns() {
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      } as ColumnMeta<Stablecoin, unknown>,
     }),
   ];
 }

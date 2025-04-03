@@ -10,6 +10,7 @@ import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-bala
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { Price } from "@/lib/utils/typebox/price";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   CalendarIcon,
@@ -43,6 +44,9 @@ export function columns({
   const t = useTranslations("private.assets.details");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
+
+  // For shorter type alias
+  type AssetBalance = Awaited<ReturnType<typeof getAssetBalanceList>>[number];
 
   return [
     columnHelper.accessor("account.id", {
@@ -210,7 +214,7 @@ export function columns({
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      } as ColumnMeta<AssetBalance, unknown>,
     }),
   ];
 }

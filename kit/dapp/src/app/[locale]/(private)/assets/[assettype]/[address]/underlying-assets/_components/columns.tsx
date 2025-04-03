@@ -9,6 +9,7 @@ import { defineMeta, filterFn } from "@/lib/filters";
 import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   ActivityIcon,
@@ -33,6 +34,9 @@ export function Columns() {
   const t = useTranslations("private.assets.fields");
   const tAssetStatus = useTranslations("asset-status");
   const locale = useLocale();
+
+  // For shorter type alias
+  type AssetBalance = Awaited<ReturnType<typeof getAssetBalanceList>>[number];
 
   return [
     columnHelper.accessor("asset.id", {
@@ -134,7 +138,7 @@ export function Columns() {
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      } as ColumnMeta<AssetBalance, unknown>,
     }),
   ];
 }

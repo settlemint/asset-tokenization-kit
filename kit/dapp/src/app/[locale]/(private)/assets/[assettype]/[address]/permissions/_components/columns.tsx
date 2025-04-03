@@ -12,6 +12,7 @@ import { defineMeta, filterFn } from "@/lib/filters";
 import type { PermissionWithRoles } from "@/lib/queries/asset/asset-users-detail";
 import { formatDate } from "@/lib/utils/date";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ClockIcon, MoreHorizontal, UsersIcon, WalletIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -141,7 +142,7 @@ export function columns({
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      } as ColumnMeta<PermissionWithRoles, unknown>,
     }),
   ];
 }
