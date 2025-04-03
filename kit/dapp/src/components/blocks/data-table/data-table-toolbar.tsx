@@ -39,13 +39,12 @@ export function DataTableToolbar<TData>({
         <DataTableFilter table={table} />
         {hasFilters && (
           <Button
-            variant="destructive"
+            variant="outline"
             size="sm"
             onClick={clearFilters}
-            className="h-7 px-2"
+            className="group h-7 w-7 p-0 border-none hover:bg-primary"
           >
-            <FilterXIcon className="h-4 w-4 mr-1" />
-            <span>Clear</span>
+            <FilterXIcon className="h-4 w-4 text-muted-foreground group-hover:text-white" />
           </Button>
         )}
       </div>
