@@ -4,9 +4,9 @@ import type { GenericEndpointContext } from "better-auth";
 import { createAuthEndpoint } from "better-auth/api";
 import { setSessionCookie } from "better-auth/cookies";
 import { twoFactor } from "better-auth/plugins/two-factor";
-import { disableTwoFactorFunction } from "../mutations/user/disable-two-factor-function";
-import { verifyTwoFactorOTPFunction } from "../mutations/user/verify-two-factor-otp-function";
-import type { User } from "./types";
+import { disableTwoFactorFunction } from "../../mutations/user/disable-two-factor-function";
+import { verifyTwoFactorOTPFunction } from "../../mutations/user/verify-two-factor-otp-function";
+import type { User } from "../types";
 
 const plugin = twoFactor({
   totpOptions: {
@@ -37,28 +37,12 @@ plugin.endpoints = {
         },
         ctx: { user },
       });
-      const newSession = await ctx.context.internalAdapter.createSession(
-        user.id,
-        ctx.request,
-        false,
-        ctx.context.session.session
-      );
-
-      await ctx.context.internalAdapter.deleteSession(
-        ctx.context.session.session.token
-      );
-      const updatedUser: User = {
-        ...user,
+      await revokeSession(ctx as GenericEndpointContext, {
         twoFactorVerificationId: verificationId,
-      };
-      await setSessionCookie(ctx as GenericEndpointContext, {
-        session: newSession,
-        user: updatedUser,
       });
       for (const [name, value] of headers.entries()) {
         ctx.setHeader(name, value);
       }
-
       return ctx.json({ backupCodes: response.backupCodes, totpURI });
     }
   ),
@@ -93,31 +77,41 @@ plugin.endpoints = {
         return ctx.context.invalid();
       }
       if (!user.twoFactorEnabled) {
-        const updatedUser = await ctx.context.internalAdapter.updateUser(
-          user.id,
-          {
-            twoFactorEnabled: true,
-          },
-          ctx
-        );
-        const newSession = await ctx.context.internalAdapter.createSession(
-          user.id,
-          ctx.request,
-          false,
-          ctx.context.session.session
-        );
-
-        await ctx.context.internalAdapter.deleteSession(
-          ctx.context.session.session.token
-        );
-        await setSessionCookie(ctx as GenericEndpointContext, {
-          session: newSession,
-          user: updatedUser,
+        await revokeSession(ctx as GenericEndpointContext, {
+          twoFactorEnabled: true,
         });
       }
       return ctx.context.valid(ctx);
     }
   ),
 };
+
+async function revokeSession(
+  ctx: GenericEndpointContext,
+  updatedUserFields: Partial<User>
+) {
+  if (!ctx.context.session) {
+    return;
+  }
+  const user = ctx.context.session.user;
+  const updatedUser = await ctx.context.internalAdapter.updateUser(
+    user.id,
+    updatedUserFields,
+    ctx
+  );
+  const newSession = await ctx.context.internalAdapter.createSession(
+    user.id,
+    ctx.request,
+    false,
+    ctx.context.session.session
+  );
+  await ctx.context.internalAdapter.deleteSession(
+    ctx.context.session.session.token
+  );
+  await setSessionCookie(ctx as GenericEndpointContext, {
+    session: newSession,
+    user: updatedUser,
+  });
+}
 
 export default plugin;

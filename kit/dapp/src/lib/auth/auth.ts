@@ -17,8 +17,8 @@ import { getServerEnvironment } from "../config/environment";
 import { metadata } from "../config/metadata";
 import { db } from "../db";
 import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
+import twoFactorPlugin from "./plugins/two-factor";
 import { createUserWallet } from "./portal";
-import twoFactorPlugin from "./two-factor";
 
 const env = getServerEnvironment();
 
@@ -98,17 +98,17 @@ export const auth = betterAuth({
         type: "boolean",
         required: false,
         default: false,
-        input: false,
+        input: true,
       },
       pincodeVerificationId: {
         type: "string",
         required: false,
-        input: false,
+        input: true,
       },
       twoFactorVerificationId: {
         type: "string",
         required: false,
-        input: false,
+        input: true,
       },
     },
   },
