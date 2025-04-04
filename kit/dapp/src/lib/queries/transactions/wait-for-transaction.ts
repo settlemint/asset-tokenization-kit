@@ -5,6 +5,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
 import type { FragmentOf } from "gql.tada";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { ApiError } from "next/dist/server/api-utils";
 import { ReceiptFragment, ReceiptFragmentSchema } from "./transaction-fragment";
 
 /**
@@ -100,7 +101,7 @@ export async function waitForTransactions(
   options: TransactionMonitoringOptions = {}
 ) {
   if (!transactionHashes.length) {
-    throw new Error("No transaction hashes provided");
+    throw new ApiError(500, "No transaction hashes provided");
   }
 
   // Wait for all transactions to be mined in parallel
