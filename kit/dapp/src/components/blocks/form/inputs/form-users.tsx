@@ -48,6 +48,7 @@ type RecentUser = {
 
 const MAX_RECENT_USERS = 5;
 const LOCAL_STORAGE_KEY = "recently-selected-users";
+const LOCAL_STORAGE_CONTACTS_KEY = "recently-selected-contacts";
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
@@ -159,16 +160,25 @@ function FormUsersList({
   const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
   const t = useTranslations("components.form.users");
+  const { data: session } = authClient.useSession();
+  const userRole = session?.user?.role;
+
+  // Use different storage keys based on user role
+  const storageKey =
+    userRole === "user" ? LOCAL_STORAGE_CONTACTS_KEY : LOCAL_STORAGE_KEY;
 
   // Get recently selected users from local storage
   const [recentUsers, setRecentUsers] = useLocalStorage<RecentUser[]>(
-    LOCAL_STORAGE_KEY,
+    storageKey,
     []
   );
 
   const { data: users = [], isLoading } = useSWR(
     debounced ? [`user-search`, debounced, role] : null,
     async () => {
+      // getUserSearch already filters based on user role
+      // If user role is "user", it returns contacts
+      // If user role is "admin" or "issuer", it returns all users
       const results = await getUserSearch({ searchTerm: debounced });
       return role
         ? results.filter((user) => isUser(user) && user.role === role)
@@ -206,6 +216,10 @@ function FormUsersList({
     setOpen(false);
   };
 
+  // Prepare the heading text based on user role
+  const recentHeading =
+    userRole === "user" ? t("recent-contacts") : t("recent-users");
+
   return (
     <CommandList>
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
@@ -216,6 +230,8 @@ function FormUsersList({
               <Skeleton className="h-6 w-full bg-muted/50" />
             </div>
           </>
+        ) : userRole === "user" ? (
+          t("no-contact-found")
         ) : (
           t("no-user-found")
         )}
@@ -223,7 +239,7 @@ function FormUsersList({
 
       {/* Show recent users when no search is entered */}
       {!debounced && recentUsers.length > 0 && (
-        <CommandGroup heading={t("recent-users")}>
+        <CommandGroup heading={recentHeading}>
           {recentUsers.map((user) => (
             <CommandItem
               key={user.wallet}

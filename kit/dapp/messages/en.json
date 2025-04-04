@@ -529,7 +529,9 @@
       "users": {
         "default-placeholder": "Select an option",
         "loading": "Loading...",
+        "no-contact-found": "No contact found.",
         "no-user-found": "No user found.",
+        "recent-contacts": "Recently selected contacts",
         "recent-users": "Recently selected",
         "search-contact-placeholder": "Search for a contact...",
         "search-placeholder": "Search for a user..."
