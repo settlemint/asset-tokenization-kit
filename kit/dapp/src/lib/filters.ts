@@ -21,6 +21,7 @@ import { intersection, uniq } from "./array";
 export type ElementType<T> = T extends (infer U)[] ? U : T;
 
 declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     /* The display name of the column. */
     displayName: string;
@@ -69,7 +70,6 @@ export function defineMeta<
   // : never,
   TType extends ColumnDataType,
 >(
-  accessor: TAccessor,
   meta: Omit<ColumnMeta<TData, TVal>, "type"> & {
     type: TType;
   }
