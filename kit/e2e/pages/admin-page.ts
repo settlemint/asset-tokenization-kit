@@ -357,7 +357,9 @@ export class AdminPage extends BasePage {
     await this.chooseAssetTypeFromSidebar({
       sidebarAssetTypes: options.sidebarAssetTypes,
     });
-
+    await this.page.getByRole("button", { name: "Filter" }).click();
+    await this.page.getByRole("option", { name: "Name" }).click();
+    await this.page.getByRole("button", { name: "Contains" }).click();
     const searchInput = this.page.getByPlaceholder("Search...");
     let currentSearchAttempts = 0;
     const maxSearchAttempts = 3;
@@ -756,7 +758,7 @@ export class AdminPage extends BasePage {
     await this.page.waitForURL(`**/${singularForm}`);
     await Promise.all([
       this.page.waitForSelector("table tbody"),
-      this.page.waitForSelector('[data-testid="data-table-search-input"]'),
+      this.page.getByRole("button", { name: "Filter" }),
     ]);
   }
 
