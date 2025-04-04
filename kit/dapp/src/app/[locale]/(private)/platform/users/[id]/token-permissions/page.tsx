@@ -8,9 +8,12 @@ interface PageProps {
 }
 
 export default async function PermissionsPage({ params }: PageProps) {
-  const { id } = await params;
+  const { id, locale } = await params;
   const user = await getUserDetail({ id });
-  const t = await getTranslations("private.users.permissions.table");
+  const t = await getTranslations({
+    namespace: "private.users.permissions.table",
+    locale,
+  });
 
   return <UserPermissionsTable wallet={user.wallet} title={t("title")} />;
 }
