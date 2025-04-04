@@ -5,8 +5,7 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage,
+  FormLabel
 } from "@/components/ui/form";
 import {
   Select,
@@ -19,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import type { FieldValues } from "react-hook-form";
+import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import {
   type BaseFormInputProps,
   type WithPlaceholderProps,
@@ -128,7 +128,7 @@ export function FormSelect<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage />
+            <TranslatableFormFieldMessage />
           </FormItem>
         );
       }}

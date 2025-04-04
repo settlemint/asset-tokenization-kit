@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import { CopyToClipboard } from "@/components/blocks/copy/copy";
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,8 +20,7 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage,
+  FormLabel
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -144,7 +144,7 @@ export function CreateApiKeyForm({
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <TranslatableFormFieldMessage />
                   </FormItem>
                 )}
               />
@@ -174,7 +174,7 @@ export function CreateApiKeyForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <TranslatableFormFieldMessage />
                   </FormItem>
                 )}
               />

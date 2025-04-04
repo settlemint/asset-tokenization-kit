@@ -336,6 +336,18 @@ export function Form<
       )
     );
 
+    // Validate using the custom validation function
+    const customValidation = CurrentStep.customValidation ?? [];
+    const customValidationResults = await Promise.all(
+      customValidation.map((validate) =>
+        validate(form as UseFormReturn<Infer<S>>)
+      )
+    );
+    if (customValidationResults.some((result) => result === false)) {
+      return;
+    }
+
+    // Validate using the schema
     for (const field of fieldsToValidate) {
       const value = form.getValues(
         field as Path<S extends Schema ? Infer<S> : any>

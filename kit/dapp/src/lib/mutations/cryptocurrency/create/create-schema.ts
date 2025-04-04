@@ -48,7 +48,7 @@ export function CreateCryptoCurrencySchema({
         description: "Predicted address of the cryptocurrency",
         refinement: {
           predicate: isAddressAvailable,
-          message: "cryptocurrency.duplicate",
+          message: "Address already in use",
         },
       }),
       price: t.Price({

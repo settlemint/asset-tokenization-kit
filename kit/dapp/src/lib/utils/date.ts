@@ -1,10 +1,14 @@
 import {
+  addDays,
+  addHours,
   formatDistance,
   formatDuration as formatDurationFns,
   formatRelative,
   fromUnixTime,
+  isFuture,
   parseISO,
   setDefaultOptions,
+  startOfDay,
 } from "date-fns";
 import { ar, de, ja } from "date-fns/locale";
 import {
@@ -182,5 +186,68 @@ export function getTimeUnitSeconds(unit: TimeUnit): number {
       return 604800;
     case "months":
       return 2592000; // 30 days
+    default:
+      throw new Error("Unsupported time unit");
+  }
+}
+
+/**
+ * Generates a formatted date string for a future date with specified hours offset
+ * Returns date in ISO-like format: "YYYY-MM-DDThh:mm"
+ *
+ * @param hoursFromNow - Number of hours from current time (default: 1)
+ * @returns Formatted date string suitable for datetime inputs
+ */
+export function getFormattedFutureDate(hoursFromNow = 1): string {
+  const futureDate = addHours(new Date(), hoursFromNow);
+  return formatToDateTimeInput(futureDate);
+}
+
+/**
+ * Generates a formatted date string for tomorrow at midnight (00:00)
+ * Returns date in ISO-like format: "YYYY-MM-DDT00:00"
+ *
+ * @returns Formatted date string suitable for datetime inputs
+ */
+export function getTomorrowMidnight(): string {
+  const tomorrow = startOfDay(addDays(new Date(), 1));
+  return formatToDateTimeInput(tomorrow);
+}
+
+/**
+ * Formats a Date object to ISO-like string suitable for datetime-local inputs
+ * Format: "YYYY-MM-DDThh:mm"
+ *
+ * @param date - The date to format
+ * @returns Formatted date string for datetime inputs
+ */
+export function formatToDateTimeInput(date: Date): string {
+  return date.toLocaleDateString("sv").replace(/\//g, "-") +
+         "T" +
+         date.toLocaleTimeString("sv").slice(0, 5);
+}
+
+/**
+ * Validates if a date is in the future and at least a specified number of hours from now
+ *
+ * @param date - The date to validate (string or Date object)
+ * @param minHoursInFuture - Minimum hours the date must be in the future (default: 0)
+ * @returns true if date is valid and meets the criteria, false otherwise
+ */
+export function isValidFutureDate(
+  date: string | Date,
+  minHoursInFuture = 0
+): boolean {
+  try {
+    const dateObj = typeof date === "string" ? new Date(date) : date;
+
+    if (Number.isNaN(dateObj.getTime())) {
+      return false;
+    }
+
+    const minDate = addHours(new Date(), minHoursInFuture);
+    return isFuture(dateObj) && dateObj >= minDate;
+  } catch {
+    return false;
   }
 }
