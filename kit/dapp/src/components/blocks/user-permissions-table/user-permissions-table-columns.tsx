@@ -115,7 +115,12 @@ export function columns({
           );
         }
 
-        const isOnlyAdmin = row.original.asset.admins.length === 1;
+        const isOnlyAdmin =
+          row.original.asset.admins.length === 1 &&
+          row.original.asset.admins.some(
+            (admin) =>
+              getAddress(admin.id) === getAddress(row.original.account.id)
+          );
         return (
           <DataTableRowActions
             actions={[
