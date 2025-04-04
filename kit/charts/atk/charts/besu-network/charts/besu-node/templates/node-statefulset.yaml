@@ -42,10 +42,7 @@ spec:
 {{- else }}
       serviceAccountName: {{ include "besu-node.fullname" . }}-sa
 {{- end }}
-      imagePullSecrets:
-        {{- with .Values.imagePullSecrets }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+      {{- include "atk.imagePullSecrets" . | nindent 6 }}
       initContainers:
 
 {{- if has .Values.cluster.provider .Values.volumePermissionsFix }}
