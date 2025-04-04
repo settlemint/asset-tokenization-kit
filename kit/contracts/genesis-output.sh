@@ -4,6 +4,16 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ALL_ALLOCATIONS_FILE="${SCRIPT_DIR}/genesis-output.json"
 
+# Check if anvil is running, if not start it
+if ! nc -z localhost 8545 2>/dev/null; then
+    echo "Starting Anvil..."
+    anvil --block-time 1 > /dev/null 2>&1 &
+    ANVIL_PID=$!
+    # Wait for anvil to start
+    sleep 2
+    echo "Anvil started with PID: $ANVIL_PID"
+fi
+
 rm -Rf "${ALL_ALLOCATIONS_FILE}"
 
 declare -A CONTRACT_ADDRESSES
@@ -28,11 +38,9 @@ process_sol_file() {
     local contract_name="$(basename "${sol_file%.*}")"
     local target_address
 
-
     target_address="${CONTRACT_ADDRESSES[$contract_name]}"
 
     local args_file="${sol_file%.*}.args"
-    local forge_args=("${sol_file}:${contract_name}" --broadcast --unlocked --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --json --rpc-url "http://localhost:8545")
 
     # Skip if the contract is not in the CONTRACT_ADDRESSES list
     if [[ -z "$target_address" ]]; then
@@ -40,31 +48,88 @@ process_sol_file() {
         return
     fi
 
+    echo "Processing $contract_name..."
+
+    # Print contract size before deployment
+    echo "Checking size for $contract_name..."
+    local CONTRACT_BYTECODE
+    if ! CONTRACT_BYTECODE=$(forge inspect "${sol_file}:${contract_name}" bytecode 2>&1); then
+        echo "Error getting bytecode for $contract_name: $CONTRACT_BYTECODE"
+        return
+    fi
+
+    local BYTECODE_SIZE=$((${#CONTRACT_BYTECODE} / 2 - 1))  # Divide by 2 because hex, subtract 1 for '0x'
+    echo "Contract $contract_name bytecode size: $BYTECODE_SIZE bytes"
+
+    # if [ $BYTECODE_SIZE -gt 24576 ]; then  # 24KB = 24576 bytes (EIP-170 limit)
+    #     echo "Error: $contract_name bytecode size ($BYTECODE_SIZE bytes) exceeds 24KB EIP-170 limit"
+    #     echo "Try using a proxy pattern or optimizing the contract"
+    #     return
+    # fi
+
+    # Build forge arguments
+    local forge_args=(
+        "${sol_file}:${contract_name}"
+        --broadcast
+        --unlocked
+        --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+        --json
+        --rpc-url "http://localhost:8545"
+        --optimize
+        --optimizer-runs 200
+    )
+
     # Add constructor args if they exist
     if [[ -f "$args_file" ]]; then
         forge_args+=(--constructor-args-path "$args_file")
     fi
 
     # Deploy the contract to a temporary blockchain
-    local DEPLOYED_ADDRESS=$(forge create "${forge_args[@]}" | jq -r .deployedTo)
-    if [[ -z "$DEPLOYED_ADDRESS" ]]; then
-        echo "Error: Unable to deploy $contract_name"
+    echo "Deploying $contract_name..."
+    local DEPLOY_OUTPUT
+    if ! DEPLOY_OUTPUT=$(forge create "${forge_args[@]}" 2>&1); then
+        echo "Error deploying $contract_name:"
+        echo "$DEPLOY_OUTPUT"
         return
     fi
 
+    local DEPLOYED_ADDRESS
+    if ! DEPLOYED_ADDRESS=$(echo "$DEPLOY_OUTPUT" | jq -r .deployedTo 2>/dev/null); then
+        echo "Error parsing deployment output for $contract_name:"
+        echo "$DEPLOY_OUTPUT"
+        return
+    fi
+
+    if [[ -z "$DEPLOYED_ADDRESS" || "$DEPLOYED_ADDRESS" == "null" ]]; then
+        echo "Error: Unable to get deployed address for $contract_name"
+        echo "Deploy output: $DEPLOY_OUTPUT"
+        return
+    fi
+
+    echo "$contract_name deployed to: $DEPLOYED_ADDRESS"
+
     # Get storage layout
-    local STORAGE_LAYOUT=$(forge inspect "${sol_file}:${contract_name}" storageLayout --force --json)
-    if [[ -z "$STORAGE_LAYOUT" ]]; then
-        echo "Error: Unable to get storage layout for $contract_name"
+    local STORAGE_LAYOUT
+    if ! STORAGE_LAYOUT=$(forge inspect "${sol_file}:${contract_name}" storageLayout --force --json 2>&1); then
+        echo "Error getting storage layout for $contract_name: $STORAGE_LAYOUT"
         return
     fi
 
     # Process storage slots without using a pipe
     local STORAGE_JSON="{}"
-    local slots=($(echo "$STORAGE_LAYOUT" | jq -r '.storage[] | .slot'))
+    local slots
+    if ! slots=($(echo "$STORAGE_LAYOUT" | jq -r '.storage[] | .slot' 2>/dev/null)); then
+        echo "Error processing storage slots for $contract_name"
+        return
+    fi
 
     for slot in "${slots[@]}"; do
-        local SLOT_VALUE=$(cast storage --rpc-url "http://localhost:8545" "$DEPLOYED_ADDRESS" "$slot")
+        local SLOT_VALUE
+        if ! SLOT_VALUE=$(cast storage --rpc-url "http://localhost:8545" "$DEPLOYED_ADDRESS" "$slot" 2>&1); then
+            echo "Error reading storage slot $slot for $contract_name: $SLOT_VALUE"
+            continue
+        fi
+
         # Validate and pad if needed
         if [[ "$SLOT_VALUE" =~ ^0x ]]; then
             SLOT_VALUE="${SLOT_VALUE#0x}"  # Remove 0x prefix
@@ -76,9 +141,14 @@ process_sol_file() {
     done
 
     # Get bytecode from the deployed contract
-    local BYTECODE=$(cast code --rpc-url "http://localhost:8545" "$DEPLOYED_ADDRESS" | sed 's/^0x//')
+    local BYTECODE
+    if ! BYTECODE=$(cast code --rpc-url "http://localhost:8545" "$DEPLOYED_ADDRESS" 2>&1 | sed 's/^0x//'); then
+        echo "Error getting deployed bytecode for $contract_name: $BYTECODE"
+        return
+    fi
+
     if [[ -z "$BYTECODE" ]]; then
-        echo "Error: Unable to get bytecode for deployed $contract_name"
+        echo "Error: Empty bytecode for deployed $contract_name"
         return
     fi
 
@@ -107,5 +177,10 @@ for sol_file in contracts/*.sol; do
 done
 
 echo "Complete genesis allocation has been written to ${ALL_ALLOCATIONS_FILE}"
+
+# Kill anvil if we started it
+if [[ -n "$ANVIL_PID" ]]; then
+    kill $ANVIL_PID
+fi
 
 cat "${ALL_ALLOCATIONS_FILE}"

@@ -58,10 +58,36 @@ spec:
 
 {{- if .Values.quorumFlags.removeGenesisOnDelete }}
 
-              echo "Deleting genesis configmap in k8s ..."
-              kubectl delete configmap --namespace {{ .Release.Namespace }} besu-genesis
+              echo "Checking and deleting genesis configmap in k8s ..."
+              if kubectl get configmap --namespace {{ .Release.Namespace }} besu-genesis &>/dev/null; then
+                kubectl delete configmap --namespace {{ .Release.Namespace }} besu-genesis
+                echo "Genesis configmap deleted"
+              else
+                echo "Genesis configmap not found, skipping"
+              fi
 
-              echo "Deleting node-enodes configmap in k8s ..."
-              kubectl delete configmap --namespace {{ .Release.Namespace }} besu-peers
+              echo "Checking and deleting bootnodes configmap in k8s ..."
+              if kubectl get configmap --namespace {{ .Release.Namespace }} besu-bootnodes &>/dev/null; then
+                kubectl delete configmap --namespace {{ .Release.Namespace }} besu-bootnodes
+                echo "Bootnodes configmap deleted"
+              else
+                echo "Bootnodes configmap not found, skipping"
+              fi
+
+              echo "Checking and deleting node-enodes configmap in k8s ..."
+              if kubectl get configmap --namespace {{ .Release.Namespace }} besu-peers &>/dev/null; then
+                kubectl delete configmap --namespace {{ .Release.Namespace }} besu-peers
+                echo "Node-enodes configmap deleted"
+              else
+                echo "Node-enodes configmap not found, skipping"
+              fi
+
+              echo "Checking and deleting contracts genesis configmap in k8s ..."
+              if kubectl get configmap --namespace {{ .Release.Namespace }} contracts-genesis &>/dev/null; then
+                kubectl delete configmap --namespace {{ .Release.Namespace }} contracts-genesis
+                echo "Contracts genesis configmap deleted"
+              else
+                echo "Contracts genesis configmap not found, skipping"
+              fi
 
 {{- end}}

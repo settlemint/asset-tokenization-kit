@@ -39,8 +39,23 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.global }}
 {{- if .Values.global.labels }}
 {{ toYaml .Values.global.labels }}
 {{- end }}
+{{- end }}
 {{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "besu-genesis.serviceAccountName" -}}
+{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
+{{- .Values.azure.serviceAccountName }}
+{{- else if and (eq .Values.cluster.provider "aws") (.Values.cluster.cloudNativeServices) }}
+{{- .Values.aws.serviceAccountName }}
+{{- else }}
+{{- include "besu-genesis.name" . }}-sa
+{{- end }}
+{{- end }}
 
