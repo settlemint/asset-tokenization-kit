@@ -308,6 +308,21 @@ h3: text-xl
 
   [data-slot="sidebar-container"] {
     position: sticky;
+    transition: width 0.2s ease;
+  }
+
+  [data-slot="sidebar-inset"] {
+    transition: all 0.2s ease;
+    width: 100%;
+    position: relative;
+  }
+
+  [data-state="expanded"] + [data-slot="sidebar-inset"] {
+    max-width: calc(100vw - var(--sidebar-width));
+  }
+
+  [data-state="collapsed"] + [data-slot="sidebar-inset"] {
+    max-width: calc(100vw - var(--sidebar-width-icon));
   }
 
   [dir="rtl"] [data-slot="collapsible-trigger"] {
