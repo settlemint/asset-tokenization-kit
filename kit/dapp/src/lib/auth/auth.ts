@@ -100,6 +100,11 @@ export const auth = betterAuth({
         default: false,
         input: false,
       },
+      pincodeVerificationId: {
+        type: "string",
+        required: false,
+        input: false,
+      },
       twoFactorVerificationId: {
         type: "string",
         required: false,
