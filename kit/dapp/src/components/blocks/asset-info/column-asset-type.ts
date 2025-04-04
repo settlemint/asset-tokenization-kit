@@ -11,23 +11,20 @@ interface AssetTypeProps {
 export function ColumnAssetType({ assettype, plural }: AssetTypeProps) {
   const t = useTranslations("asset-type");
 
-  if (assettype === "bond") {
-    return plural ? t("bonds-plural") : t("bonds");
+  switch (assettype) {
+    case "bond":
+      return plural ? t("bonds-plural") : t("bonds");
+    case "cryptocurrency":
+      return plural ? t("cryptocurrencies-plural") : t("cryptocurrencies");
+    case "stablecoin":
+      return plural ? t("stablecoins-plural") : t("stablecoins");
+    case "deposit":
+      return plural ? t("deposits-plural") : t("deposits");
+    case "equity":
+      return plural ? t("equities-plural") : t("equities");
+    case "fund":
+      return plural ? t("funds-plural") : t("funds");
+    default:
+      return t("unknown");
   }
-  if (assettype === "cryptocurrency") {
-    return plural ? t("cryptocurrencies-plural") : t("cryptocurrencies");
-  }
-  if (assettype === "stablecoin") {
-    return plural ? t("stablecoins-plural") : t("stablecoins");
-  }
-  if (assettype === "deposit") {
-    return plural ? t("deposits-plural") : t("deposits");
-  }
-  if (assettype === "equity") {
-    return plural ? t("equities-plural") : t("equities");
-  }
-  if (assettype === "fund") {
-    return plural ? t("funds-plural") : t("funds");
-  }
-  return t("unknown");
 }

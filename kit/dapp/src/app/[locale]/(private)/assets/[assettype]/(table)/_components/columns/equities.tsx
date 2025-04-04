@@ -1,27 +1,43 @@
 "use client";
 
 import { ActivePill } from "@/components/blocks/active-pill/active-pill";
-import { ColumnAssetStatus } from "@/components/blocks/asset-info/column-asset-status";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import { defineMeta, filterFn } from "@/lib/filters";
 import type { getEquityList } from "@/lib/queries/equity/equity-list";
 import { formatNumber } from "@/lib/utils/number";
-import type { equityCategories } from "@/lib/utils/typebox/equity-categories";
-import type { equityClasses } from "@/lib/utils/typebox/equity-classes";
+import { equityCategories } from "@/lib/utils/typebox/equity-categories";
+import { equityClasses } from "@/lib/utils/typebox/equity-classes";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
+import {
+  ActivityIcon,
+  AsteriskIcon,
+  CoinsIcon,
+  DollarSignIcon,
+  LayersIcon,
+  MoreHorizontal,
+  ShapesIcon,
+  WalletIcon,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
-const columnHelper =
-  createColumnHelper<Awaited<ReturnType<typeof getEquityList>>[number]>();
+type Equity = Awaited<ReturnType<typeof getEquityList>>[number];
+
+const columnHelper = createColumnHelper<Equity>();
 
 type EquityCategory = (typeof equityCategories)[number];
 type EquityClass = (typeof equityClasses)[number];
 
-export function equityColumns() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+const ASSET_STATUSES_OPTIONS = [
+  { label: "Active", value: "active" },
+  { label: "Paused", value: "paused" },
+];
+
+export function EquityColumns() {
   const t = useTranslations("private.assets.fields");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tAssetStatus = useTranslations("asset-status");
   const locale = useLocale();
 
   const translatedEquityCategories: Record<EquityCategory, string> = {
@@ -98,51 +114,109 @@ export function equityColumns() {
           <EvmAddressBalances address={getValue()} />
         </EvmAddress>
       ),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.id, {
+        displayName: t("address-header"),
+        icon: WalletIcon,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("name", {
       header: t("name-header"),
       cell: ({ getValue }) => getValue(),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.name, {
+        displayName: t("name-header"),
+        icon: AsteriskIcon,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("symbol", {
       header: t("symbol-header"),
       cell: ({ getValue }) => getValue(),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("text"),
+      meta: defineMeta((row) => row.symbol, {
+        displayName: t("symbol-header"),
+        icon: AsteriskIcon,
+        type: "text",
+      }),
     }),
-    columnHelper.accessor("price", {
+    columnHelper.accessor((row) => row.price.amount, {
       header: t("price-header"),
-      cell: ({ getValue }) =>
-        formatNumber(getValue().amount, {
-          currency: getValue().currency,
+      cell: ({ row }) =>
+        formatNumber(row.original.price.amount, {
+          currency: row.original.price.currency,
           decimals: 2,
           locale: locale,
         }),
       enableColumnFilter: false,
+      meta: defineMeta((row) => row.price.amount, {
+        displayName: t("price-header"),
+        icon: DollarSignIcon,
+        type: "number",
+      }),
     }),
     columnHelper.accessor("totalSupply", {
       header: t("total-supply-header"),
-      meta: {
-        variant: "numeric",
-      },
       cell: ({ getValue }) => formatNumber(getValue(), { locale }),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("number"),
+      meta: defineMeta((row) => Number(row.totalSupply), {
+        displayName: t("total-supply-header"),
+        icon: CoinsIcon,
+        type: "number",
+        variant: "numeric",
+      }),
     }),
     columnHelper.accessor("equityCategory", {
       header: t("category-header"),
       cell: ({ getValue }) => translatedEquityCategories[getValue()],
       enableColumnFilter: true,
+      filterFn: filterFn("option"),
+      meta: defineMeta((row) => row.equityCategory, {
+        displayName: t("category-header"),
+        icon: LayersIcon,
+        type: "option",
+        options: equityCategories.map((cat: EquityCategory) => ({
+          label: translatedEquityCategories[cat],
+          value: cat,
+        })),
+      }),
     }),
     columnHelper.accessor("equityClass", {
       header: t("class-header"),
       cell: ({ getValue }) => translatedEquityClasses[getValue()],
       enableColumnFilter: true,
+      filterFn: filterFn("option"),
+      meta: defineMeta((row) => row.equityClass, {
+        displayName: t("class-header"),
+        icon: ShapesIcon,
+        type: "option",
+        options: equityClasses.map((cls: EquityClass) => ({
+          label: translatedEquityClasses[cls],
+          value: cls,
+        })),
+      }),
     }),
-    columnHelper.accessor((row) => <ColumnAssetStatus assetOrBalance={row} />, {
+    columnHelper.accessor((row) => (row.paused ? "paused" : "active"), {
       header: t("status-header"),
       cell: ({ row }) => {
         return <ActivePill paused={row.original.paused} />;
       },
+      enableColumnFilter: true,
+      filterFn: filterFn("option"),
+      meta: defineMeta((row) => (row.paused ? "paused" : "active"), {
+        displayName: t("status-header"),
+        icon: ActivityIcon,
+        type: "option",
+        options: ASSET_STATUSES_OPTIONS.map((status) => ({
+          label: tAssetStatus(status.value as any),
+          value: status.value,
+        })),
+      }),
     }),
     columnHelper.display({
       id: "actions",
@@ -155,8 +229,11 @@ export function equityColumns() {
         );
       },
       meta: {
+        displayName: t("actions-header"),
+        icon: MoreHorizontal,
+        type: "text",
         enableCsvExport: false,
-      },
+      } as ColumnMeta<Equity, unknown>,
     }),
   ];
 }

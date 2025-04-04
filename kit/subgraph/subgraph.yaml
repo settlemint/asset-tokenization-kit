@@ -247,6 +247,8 @@ templates:
           handler: handleUnderlyingAssetTopUp
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
+        - event: Clawback(indexed address,indexed address,uint256)
+          handler: handleClawback
       file: ./src/assets/bond.ts
   - kind: ethereum/contract
     name: CryptoCurrency
@@ -359,6 +361,7 @@ templates:
         - AccountActivityStats
         - RoleActivityStats
         - EquityActivityStats
+        - ClawbackEvent
       abis:
         - name: Equity
           file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
@@ -383,6 +386,8 @@ templates:
           handler: handleRoleRevoked
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
+        - event: Clawback(indexed address,indexed address,uint256)
+          handler: handleClawback
       file: ./src/assets/equity.ts
   - kind: ethereum/contract
     name: StableCoin
@@ -460,6 +465,8 @@ templates:
           handler: handleRoleAdminChanged
         - event: CollateralUpdated(uint256,uint256,uint256)
           handler: handleCollateralUpdated
+        - event: Clawback(indexed address,indexed address,uint256)
+          handler: handleClawback
       file: ./src/assets/stablecoin.ts
   - kind: ethereum/contract
     name: FixedYield
@@ -565,6 +572,8 @@ templates:
           handler: handlePerformanceFeeCollected
         - event: TokenWithdrawn(indexed address,indexed address,uint256)
           handler: handleTokenWithdrawn
+        - event: Clawback(indexed address,indexed address,uint256)
+          handler: handleClawback
       file: ./src/assets/fund.ts
   - kind: ethereum/contract
     name: Deposit
@@ -636,4 +645,6 @@ templates:
           handler: handleTokenWithdrawn
         - event: CollateralUpdated(uint256,uint256,uint256)
           handler: handleCollateralUpdated
+        - event: Clawback(indexed address,indexed address,uint256)
+          handler: handleClawback
       file: ./src/assets/deposit.ts

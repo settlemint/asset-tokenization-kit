@@ -7,7 +7,7 @@ export function newAssetStatsData(
   assetCategory: string = "",
   assetClass: string = ""
 ): AssetStatsData {
-  const assetStats = new AssetStatsData("auto");
+  const assetStats = new AssetStatsData(1); // id is set by the indexer
 
   // Filters
   assetStats.asset = asset;

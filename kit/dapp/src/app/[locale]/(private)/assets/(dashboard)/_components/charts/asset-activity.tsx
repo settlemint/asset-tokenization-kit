@@ -21,13 +21,18 @@ export async function AssetActivity() {
       label: t("asset-activity.burn"),
       color: "var(--chart-3)",
     },
+    clawbackEventCount: {
+      label: t("asset-activity.clawback"),
+      color: "var(--chart-4)",
+    },
   } satisfies ChartConfig;
 
   const isEmpty = data.every(
     (asset) =>
       asset.mintEventCount === 0 &&
       asset.burnEventCount === 0 &&
-      asset.transferEventCount === 0
+      asset.transferEventCount === 0 &&
+      asset.clawbackEventCount === 0
   );
 
   if (isEmpty) {
@@ -43,6 +48,7 @@ export async function AssetActivity() {
     transferEventCount: asset.transferEventCount,
     frozenEventCount: asset.frozenEventCount,
     unfrozenEventCount: asset.unfrozenEventCount,
+    clawbackEventCount: asset.clawbackEventCount,
   }));
 
   return (

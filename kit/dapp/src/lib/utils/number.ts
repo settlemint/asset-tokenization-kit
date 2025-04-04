@@ -1,4 +1,4 @@
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
 import { createFormatter, useFormatter, type Locale } from "next-intl";
 import type { CurrencyCode } from "../db/schema-settings";
 

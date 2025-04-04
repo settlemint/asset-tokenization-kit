@@ -1,4 +1,4 @@
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
 import { Elysia } from "elysia";
 import SuperJSON from "superjson";
 import { auth } from "../auth/auth";

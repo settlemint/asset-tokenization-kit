@@ -3,6 +3,7 @@
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { auth } from "@/lib/auth/auth";
 import { formatDate } from "@/lib/utils/date";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   BadgeCheck,
@@ -10,6 +11,7 @@ import {
   BadgeX,
   Ban,
   Check,
+  MoreHorizontal,
   ShieldCheck,
   User2,
 } from "lucide-react";
@@ -35,6 +37,9 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
 export function Columns() {
   const t = useTranslations("portfolio.settings.api-keys");
   const locale = useLocale();
+
+  // For shorter type alias
+  type ApiKey = Awaited<ReturnType<typeof auth.api.listApiKeys>>[number];
 
   return [
     columnHelper.accessor("name", {
@@ -93,8 +98,11 @@ export function Columns() {
         />
       ),
       meta: {
+        displayName: "Actions",
+        icon: MoreHorizontal,
+        type: "text",
         enableCsvExport: false,
-      },
+      } as ColumnMeta<ApiKey, unknown>,
     }),
   ];
 }

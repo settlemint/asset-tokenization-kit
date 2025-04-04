@@ -28,7 +28,7 @@ interface Asset {
   concentration: BigDecimal!
 }
 
-type Factory @entity {
+type Factory @entity(immutable: false) {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -38,7 +38,7 @@ type Factory @entity {
 # Assets
 # --------------------------------------------------
 
-type Bond implements Asset @entity {
+type Bond implements Asset @entity(immutable: false) {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -78,7 +78,7 @@ type Bond implements Asset @entity {
   hasSufficientUnderlying: Boolean!
 }
 
-type Equity implements Asset @entity {
+type Equity implements Asset @entity(immutable: false) {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -108,7 +108,7 @@ type Equity implements Asset @entity {
   paused: Boolean!
 }
 
-type Fund implements Asset @entity {
+type Fund implements Asset @entity(immutable: false) {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -140,7 +140,7 @@ type Fund implements Asset @entity {
   lastFeeCollection: BigInt!
 }
 
-type StableCoin implements Asset @entity {
+type StableCoin implements Asset @entity(immutable: false) {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -176,7 +176,7 @@ type StableCoin implements Asset @entity {
   paused: Boolean!
 }
 
-type CryptoCurrency implements Asset @entity {
+type CryptoCurrency implements Asset @entity(immutable: false) {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -203,7 +203,7 @@ type CryptoCurrency implements Asset @entity {
   # CryptoCurrency-Specific Fields
 }
 
-type Deposit implements Asset @entity {
+type Deposit implements Asset @entity(immutable: false) {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -244,7 +244,7 @@ type Deposit implements Asset @entity {
 # Accounts
 # --------------------------------------------------
 
-type Account @entity {
+type Account @entity(immutable: false) {
   id: Bytes!
   isContract: Boolean!
   asAsset: Asset
@@ -262,7 +262,7 @@ type Account @entity {
   activityEventsCount: Int!
 }
 
-type AssetBalance @entity {
+type AssetBalance @entity(immutable: false) {
   id: Bytes!
   asset: Asset!
   account: Account!
@@ -280,7 +280,7 @@ type AssetBalance @entity {
 # Yields
 # --------------------------------------------------
 
-type FixedYield @entity {
+type FixedYield @entity(immutable: false) {
   id: Bytes!
   token: Asset!
   underlyingAsset: Asset!
@@ -297,7 +297,7 @@ type FixedYield @entity {
   periods: [YieldPeriod!]! @derivedFrom(field: "schedule")
 }
 
-type YieldPeriod @entity {
+type YieldPeriod @entity(immutable: false) {
   id: Bytes!
   schedule: FixedYield!
   periodId: BigInt!
@@ -561,6 +561,23 @@ type AssetCreatedEvent implements AssetEvent @entity(immutable: true) {
   assetType: String!
 }
 
+"""
+Entity for clawback events.
+Emitted when tokens are forcibly transferred from one address to another.
+"""
+type ClawbackEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  from: Account! # The address tokens are taken from
+  to: Account! # The address tokens are sent to
+  amount: BigDecimal! # The amount of tokens transferred
+  amountExact: BigInt! # The amount of tokens transferred in exact precision
+}
+
 # --------------------------------------------------
 # StableCoin-Specific Custom Event
 # --------------------------------------------------
@@ -719,7 +736,7 @@ type UnderlyingAssetWithdrawnEvent implements AssetEvent
 # FixedYield-Specific Custom Event
 # --------------------------------------------------
 
-type FixedYieldCreatedEvent @entity {
+type FixedYieldCreatedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -824,7 +841,7 @@ type AssetStats
 # Asset Activity
 # --------------------------------------------------
 
-type AssetActivityData @entity {
+type AssetActivityData @entity(immutable: false) {
   id: String!
   assetType: String! @unique
 
@@ -834,6 +851,7 @@ type AssetActivityData @entity {
   burnEventCount: Int!
   frozenEventCount: Int!
   unfrozenEventCount: Int!
+  clawbackEventCount: Int!
 
   ## Supply
   totalSupply: BigDecimal!
@@ -844,7 +862,7 @@ type AssetActivityData @entity {
 # Asset count
 # --------------------------------------------------
 
-type AssetCount @entity {
+type AssetCount @entity(immutable: false) {
   id: String!
   assetType: String! @unique
   count: Int!
@@ -890,14 +908,14 @@ type PortfolioStats
 # Blocked and Allowed Users
 # --------------------------------------------------
 
-type BlockedUser @entity {
+type BlockedUser @entity(immutable: false) {
   id: Bytes!
   asset: Asset!
   user: Account!
   blockedAt: BigInt!
 }
 
-type AllowedUser @entity {
+type AllowedUser @entity(immutable: false) {
   id: Bytes!
   asset: Asset!
   user: Account!

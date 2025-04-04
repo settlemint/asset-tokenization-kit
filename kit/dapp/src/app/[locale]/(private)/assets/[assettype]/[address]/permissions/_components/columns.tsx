@@ -8,10 +8,13 @@ import { DataTableRowActions } from "@/components/blocks/data-table/data-table-r
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { ROLES } from "@/lib/config/roles";
+import { defineMeta, filterFn } from "@/lib/filters";
 import type { PermissionWithRoles } from "@/lib/queries/asset/asset-users-detail";
 import { formatDate } from "@/lib/utils/date";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
+import { ClockIcon, MoreHorizontal, UsersIcon, WalletIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { Address } from "viem";
 
@@ -41,6 +44,11 @@ export function columns({
         );
       },
       enableColumnFilter: false,
+      meta: defineMeta((row) => row.id, {
+        displayName: t("wallet-header"),
+        icon: WalletIcon,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("roles", {
       header: ({ column }) => (
@@ -50,16 +58,16 @@ export function columns({
       ),
       cell: ({ getValue }) => <AssetRolePill roles={getValue()} />,
       enableColumnFilter: true,
-      filterFn: "arrIncludesSome",
-      meta: {
-        filterComponentOptions: {
-          title: t("roles-header"),
-          options: Object.values(ROLES).map((role) => ({
-            label: role.displayName,
-            value: role.contractRole,
-          })),
-        },
-      },
+      filterFn: filterFn("multiOption"),
+      meta: defineMeta((row) => row.roles, {
+        displayName: t("roles-header"),
+        icon: UsersIcon,
+        type: "multiOption",
+        options: Object.values(ROLES).map((role) => ({
+          label: role.displayName,
+          value: role.contractRole,
+        })),
+      }),
     }),
     columnHelper.accessor("lastActivity", {
       header: t("last-activity-header"),
@@ -68,6 +76,11 @@ export function columns({
           ? formatDate(getValue(), { type: "distance", locale: locale })
           : "-",
       enableColumnFilter: false,
+      meta: defineMeta((row) => row.lastActivity, {
+        displayName: t("last-activity-header"),
+        icon: ClockIcon,
+        type: "date",
+      }),
     }),
     columnHelper.display({
       id: "actions",
@@ -125,8 +138,11 @@ export function columns({
         );
       },
       meta: {
+        displayName: "Actions",
+        icon: MoreHorizontal,
+        type: "text",
         enableCsvExport: false,
-      },
+      } as ColumnMeta<PermissionWithRoles, unknown>,
     }),
   ];
 }

@@ -850,4 +850,17 @@ contract BondTest is Test {
 
         vm.stopPrank();
     }
+
+    function test_BondClawback() public {
+        vm.startPrank(owner);
+        bond.mint(user1, 1);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        bond.clawback(user1, user2, 1);
+        vm.stopPrank();
+
+        assertEq(bond.balanceOf(user1), 0);
+        assertEq(bond.balanceOf(user2), 1);
+    }
 }

@@ -35,6 +35,18 @@
   "hostRules": [
     {
       "timeout": 3000000
+    },
+    {
+      "hostType": "docker",
+      "matchHost": "ghcr.io",
+      "username": "{{ secrets.GITHUB_USER }}",
+      "password": "{{ secrets.GITHUB_PASS }}"
+    },
+    {
+      "hostType": "docker",
+      "matchHost": "docker.io",
+      "username": "{{ secrets.DOCKER_USER }}",
+      "password": "{{ secrets.DOCKER_PASS }}"
     }
   ]
 }
