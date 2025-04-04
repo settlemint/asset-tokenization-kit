@@ -18,12 +18,19 @@ import type { CreateDepositInput } from "./create-schema";
  * Creates a new tokenized deposit contract through the tokenized deposit factory
  */
 const DepositFactoryCreate = portalGraphql(`
-  mutation DepositFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!) {
+  mutation DepositFactoryCreate(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: DepositFactoryCreateInput!
+  ) {
     DepositFactoryCreate(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      input: { name: $name, symbol: $symbol, decimals: $decimals, collateralLivenessSeconds: $collateralLivenessSeconds}
-      challengeResponse: $challengeResponse
+      input: $input
     ) {
       transactionHash
     }
@@ -91,15 +98,18 @@ export const createDepositFunction = withAccessControl(
       {
         address: DEPOSIT_FACTORY_ADDRESS,
         from: user.wallet,
-        name: assetName,
-        symbol: symbol.toString(),
-        decimals,
-        collateralLivenessSeconds,
-        challengeResponse: await handleChallenge(
+        input: {
+          name: assetName,
+          symbol: symbol.toString(),
+          decimals,
+          collateralLivenessSeconds,
+        },
+        ...(await handleChallenge(
+          user,
           user.wallet,
           verificationCode,
           verificationType
-        ),
+        )),
       }
     );
 

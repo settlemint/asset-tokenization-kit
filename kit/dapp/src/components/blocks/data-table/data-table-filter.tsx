@@ -53,11 +53,7 @@ import {
 } from "react";
 import type { DateRange } from "react-day-picker";
 
-export function DataTableFilter<TData, TValue>({
-  table,
-}: {
-  table: Table<TData>;
-}) {
+export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   const isMobile = useIsMobile();
 
   if (isMobile) {
@@ -693,14 +689,11 @@ function PropertyFilterNumberOperatorMenu<TData>({
   column,
   closeController,
 }: PropertyFilterOperatorMenuProps<TData>) {
-  const filter = column.getFilterValue() as FilterValue<"number", TData>;
-
   // Show all related operators
   const relatedFilters = Object.values(numberFilterDetails);
-  const relatedFilterOperators = relatedFilters.map((r) => r.value);
 
-  const changeValue = (value: (typeof relatedFilterOperators)[number]) => {
-    column.setFilterValue((old: typeof filter) => ({
+  const changeValue = (value: keyof typeof numberFilterDetails) => {
+    column.setFilterValue((old: FilterValue<"number", TData>) => ({
       ...old,
       values: [value],
     }));
@@ -1614,7 +1607,6 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
 }
 
 export function PropertyFilterNumberValueMenu<TData, TValue>({
-  table,
   column,
   columnMeta,
 }: ProperFilterValueMenuProps<TData, TValue>) {

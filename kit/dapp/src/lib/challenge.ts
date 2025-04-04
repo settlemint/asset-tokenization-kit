@@ -1,5 +1,6 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
+import type { User } from "./auth/types";
 import type { VerificationType } from "./utils/typebox/verification-type";
 
 /**
@@ -84,6 +85,8 @@ async function generateChallengeResponse(
 
 /**
  * Handles a wallet verification challenge by generating an appropriate response
+ *
+ * @param user - The user to verify
  * @param userWalletAddress - The wallet address to verify
  * @param otpCode - The user's OTP code
  * @param verificationType - The type of verification
@@ -91,13 +94,20 @@ async function generateChallengeResponse(
  * @throws {ChallengeError} If the challenge cannot be created or is invalid
  */
 export async function handleChallenge(
+  user: User,
   userWalletAddress: Address,
   otpCode: number,
   verificationType: VerificationType
-): Promise<string> {
+): Promise<{
+  challengeResponse: string;
+  verificationId?: string;
+}> {
   try {
     if (verificationType === "two-factor") {
-      return otpCode.toString();
+      return {
+        challengeResponse: otpCode.toString(),
+        verificationId: user.twoFactorVerificationId ?? undefined,
+      };
     }
 
     const verificationChallenges =
@@ -126,7 +136,15 @@ export async function handleChallenge(
     }
 
     const { secret, salt } = challenge;
-    return generateChallengeResponse(otpCode, salt, secret);
+    const challengeResponse = await generateChallengeResponse(
+      otpCode,
+      salt,
+      secret
+    );
+    return {
+      challengeResponse,
+      verificationId: user.pincodeVerificationId ?? undefined,
+    };
   } catch (error) {
     if (error instanceof ChallengeError) {
       throw error;

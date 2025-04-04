@@ -18,12 +18,19 @@ import type { CreateStablecoinInput } from "./create-schema";
  * Creates a new stablecoin contract through the stablecoin factory
  */
 const StableCoinFactoryCreate = portalGraphql(`
-  mutation StableCoinFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!) {
+  mutation StableCoinFactoryCreate(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: StableCoinFactoryCreateInput!
+  ) {
     StableCoinFactoryCreate(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      input: {collateralLivenessSeconds: $collateralLivenessSeconds, name: $name, symbol: $symbol, decimals: $decimals}
-      challengeResponse: $challengeResponse
+      input: $input
     ) {
       transactionHash
     }
@@ -101,17 +108,20 @@ export const createStablecoinFunction = withAccessControl(
       {
         address: STABLE_COIN_FACTORY_ADDRESS,
         from: user.wallet,
-        name: assetName,
-        symbol: symbol.toString(),
-        decimals: decimals || 6,
-        collateralLivenessSeconds:
-          (collateralLivenessValue || 12) *
-          getTimeUnitSeconds(collateralLivenessTimeUnit || "months"),
-        challengeResponse: await handleChallenge(
+        input: {
+          name: assetName,
+          symbol: symbol.toString(),
+          decimals: decimals || 6,
+          collateralLivenessSeconds:
+            (collateralLivenessValue || 12) *
+            getTimeUnitSeconds(collateralLivenessTimeUnit || "months"),
+        },
+        ...(await handleChallenge(
+          user,
           user.wallet,
           verificationCode,
           verificationType
-        ),
+        )),
       }
     );
 
