@@ -5,7 +5,7 @@
  * with precision handling using BigNumber.js.
  */
 import type { SchemaOptions } from "@sinclair/typebox";
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
 import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
 
 // BigDecimal format validator
