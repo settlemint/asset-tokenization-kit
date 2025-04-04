@@ -68,9 +68,13 @@ export const AssetBalanceSchema = t.Object(
           description:
             "Accounts that can manage user permissions for the asset",
         }),
-        auditors: t.Array(PermissionSchema, {
-          description: "Accounts that can audit the asset",
-        }),
+        auditors: t.Optional(
+          t.MaybeEmpty(
+            t.Array(PermissionSchema, {
+              description: "Accounts that can audit the asset",
+            })
+          )
+        ),
         paused: t.Optional(
           t.Boolean({
             description: "Whether the asset contract is paused",
