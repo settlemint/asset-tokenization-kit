@@ -83,7 +83,7 @@ export function Configuration() {
 const validateMaturityDate = async (form: UseFormReturn<CreateBondInput>) => {
   const maturityDate = form.getValues("maturityDate");
   if (!maturityDate) {
-    return;
+    return false;
   }
 
   if (!isValidFutureDate(maturityDate, 1)) {
@@ -93,7 +93,11 @@ const validateMaturityDate = async (form: UseFormReturn<CreateBondInput>) => {
       type: "manual",
       message: "private.assets.create.parameters.bonds.maturity-date-error"
     });
+
+    return false;
   }
+
+  return true;
 };
 
 Configuration.validatedFields = [

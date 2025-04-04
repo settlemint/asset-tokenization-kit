@@ -330,11 +330,16 @@ export function Form<
     }
 
     const beforeValidate = CurrentStep.beforeValidate ?? [];
-    await Promise.all(
+    const validationResults = await Promise.all(
       beforeValidate.map((validate) =>
         validate(form as UseFormReturn<Infer<S>>)
       )
     );
+
+    // Check if any validation returned false to halt the process
+    if (validationResults.some((result) => result === false)) {
+      return;
+    }
 
     for (const field of fieldsToValidate) {
       const value = form.getValues(
