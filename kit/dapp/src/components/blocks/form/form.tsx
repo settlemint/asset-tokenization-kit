@@ -343,7 +343,6 @@ export function Form<
         validate(form as UseFormReturn<Infer<S>>)
       )
     );
-    console.log("customValidationResults", customValidationResults);
     if (customValidationResults.some((result) => result === false)) {
       return;
     }

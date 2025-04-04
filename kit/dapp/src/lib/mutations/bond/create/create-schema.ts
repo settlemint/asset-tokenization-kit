@@ -64,7 +64,7 @@ export function CreateBondSchema({
       maturityDate: t.String({
         description: "Maturity date of the bond",
         // NOTE: This refinement validation doesn't work reliably with @hookform/typebox resolver.
-        // We implement a custom validation in the Configuration component using beforeValidate
+        // We implement a custom validation in the Configuration component using customValidation
         // to ensure proper validation and error display.
         refinement: {
           predicate: (date: string | Date) => isValidFutureDate(date, 1),
