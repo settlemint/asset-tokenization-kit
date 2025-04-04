@@ -9,6 +9,7 @@ export type ValidatedFields<S extends Schema> = {
 export type FormStepComponent<S extends Schema> = ComponentType & {
   validatedFields: readonly (keyof Infer<S>)[];
   beforeValidate?: ((form: UseFormReturn<Infer<S>>) => Promise<unknown>)[];
+  customValidation?: ((form: UseFormReturn<Infer<S>>) => Promise<boolean>)[];
 };
 
 export type FormStepElement<S extends Schema> = ReactElement<

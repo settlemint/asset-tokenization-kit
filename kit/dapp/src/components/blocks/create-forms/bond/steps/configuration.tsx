@@ -75,7 +75,7 @@ export function Configuration() {
 /**
  * Custom validation function for maturity date
  *
- * Note: We use this custom validation approach with beforeValidate instead of
+ * Note: We use this custom validation approach instead of
  * relying on the schema refinement defined in create-schema.ts because
  * refinement properties don't work reliably with @hookform/typebox resolver.
  * This ensures the validation is properly applied and error messages are displayed.
@@ -107,5 +107,5 @@ Configuration.validatedFields = [
   "price",
 ] satisfies (keyof CreateBondInput)[];
 
-// Using beforeValidate for custom validation as TypeBox refinement doesn't work well with @hookform/typebox resolver
-Configuration.beforeValidate = [validateMaturityDate];
+// Using customValidation as TypeBox refinement doesn't work well with @hookform/typebox resolver
+Configuration.customValidation = [validateMaturityDate];

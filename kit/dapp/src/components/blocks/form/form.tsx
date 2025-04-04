@@ -330,17 +330,25 @@ export function Form<
     }
 
     const beforeValidate = CurrentStep.beforeValidate ?? [];
-    const validationResults = await Promise.all(
+    await Promise.all(
       beforeValidate.map((validate) =>
         validate(form as UseFormReturn<Infer<S>>)
       )
     );
 
-    // Check if any validation returned false to halt the process
-    if (validationResults.some((result) => result === false)) {
+    // Validate using the custom validation function
+    const customValidation = CurrentStep.customValidation ?? [];
+    const customValidationResults = await Promise.all(
+      customValidation.map((validate) =>
+        validate(form as UseFormReturn<Infer<S>>)
+      )
+    );
+    console.log("customValidationResults", customValidationResults);
+    if (customValidationResults.some((result) => result === false)) {
       return;
     }
 
+    // Validate using the schema
     for (const field of fieldsToValidate) {
       const value = form.getValues(
         field as Path<S extends Schema ? Infer<S> : any>
