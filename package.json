@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/asset-tokenization-kit",
   "description": "SettleMint Kit - Asset Tokenization",
-  "version": "0.3.15",
+  "version": "0.4.0",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -48,7 +48,7 @@
     "secrets": "op inject --force -i kit/charts/atk/values-example.1p.yaml -o kit/charts/atk/values-example.yaml",
     "abis": "bun run --cwd kit/contracts dependencies && bun run --cwd kit/contracts compile:forge && bun run --cwd kit/contracts abi-output && mkdir -p kit/charts/atk/charts/portal/abis && cp kit/contracts/portal/*.json kit/charts/atk/charts/portal/abis/",
     "helm:install": "bun run secrets && bun run abis && helm upgrade --install atk kit/charts/atk -f kit/charts/atk/values-example.yaml -n atk --create-namespace",
-    "helm:delete": "helm uninstall atk -n atk --wait && kubectl delete pvc --all -n atk",
+    "helm:delete": "helm uninstall atk -n atk --wait && kubectl delete pvc --all -n atk && kubectl delete namespace atk",
     "helm:reset": "bun run helm:delete && bun run helm:install"
   },
   "dependencies": {},
