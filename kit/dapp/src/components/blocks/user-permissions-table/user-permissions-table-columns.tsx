@@ -6,6 +6,12 @@ import { AssetRolePill } from "@/components/blocks/asset-role-pill/asset-role-pi
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ROLES } from "@/lib/config/roles";
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
@@ -13,13 +19,23 @@ import type { PermissionWithRoles } from "@/lib/queries/asset/asset-users-detail
 import { formatDate } from "@/lib/utils/date";
 import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ClockIcon, MoreHorizontal, UsersIcon, WalletIcon } from "lucide-react";
+import {
+  ClockIcon,
+  InfoIcon,
+  MoreHorizontal,
+  UsersIcon,
+  WalletIcon,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 
 const columnHelper = createColumnHelper<UserAsset>();
 
-export function columns() {
+export function columns({
+  currentUserWalletAddress,
+}: {
+  currentUserWalletAddress: Address;
+}) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.users.permissions.table");
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -75,9 +91,31 @@ export function columns() {
       id: "actions",
       header: t("columns.actions-header"),
       cell: ({ row }) => {
-        const isOnlyAdmin =
-          row.original.asset.admins.length === 1 &&
-          row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole);
+        const currentUserIsAdmin = row.original.asset.admins.some(
+          (admin) => getAddress(admin.id) === currentUserWalletAddress
+        );
+        const currentUserIsUserManager = row.original.asset.userManagers.some(
+          (userManager) =>
+            getAddress(userManager.id) === currentUserWalletAddress
+        );
+
+        if (!currentUserIsAdmin || !currentUserIsUserManager) {
+          // User has no onchain permissions to do this
+          return (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoIcon className="h-4 w-4" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t("not-enough-permissions")}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          );
+        }
+
+        const isOnlyAdmin = row.original.asset.admins.length === 1;
         return (
           <DataTableRowActions
             actions={[

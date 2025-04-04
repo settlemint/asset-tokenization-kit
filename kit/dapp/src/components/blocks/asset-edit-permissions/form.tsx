@@ -1,6 +1,6 @@
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import type { Role } from "@/lib/config/roles";
+import { type Role, ROLES } from "@/lib/config/roles";
 import { updateRoles } from "@/lib/mutations/asset/access-control/update-role/update-role-action";
 import { UpdateRolesSchema } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -56,13 +56,20 @@ export function EditPermissionsForm({
           address,
           userAddress: account,
           assettype,
-          roles: currentRoles.reduce(
-            (acc, role) => {
-              acc[role] = true;
-              return acc;
-            },
-            {} as Record<Role, boolean>
-          ),
+          roles: {
+            DEFAULT_ADMIN_ROLE: currentRoles.includes(
+              ROLES.DEFAULT_ADMIN_ROLE.contractRole
+            ),
+            SUPPLY_MANAGEMENT_ROLE: currentRoles.includes(
+              ROLES.SUPPLY_MANAGEMENT_ROLE.contractRole
+            ),
+            USER_MANAGEMENT_ROLE: currentRoles.includes(
+              ROLES.USER_MANAGEMENT_ROLE.contractRole
+            ),
+            AUDITOR_ROLE: currentRoles.includes(
+              ROLES.AUDITOR_ROLE.contractRole
+            ),
+          },
         }}
       >
         <Roles disableEditAdminRole={disableEditAdminRole} />

@@ -2018,7 +2018,8 @@
           "actions": {
             "edit-roles": "Edit roles",
             "revoke-all": "Revoke all"
-          }
+          },
+          "not-enough-permissions": "You need to be an admin or a user manager for this asset to change permissions."
         }
       },
       "platform-management": "Platform management",

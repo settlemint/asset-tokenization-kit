@@ -1,6 +1,6 @@
 "use server";
 
-import { Role, ROLES } from "@/lib/config/roles";
+import { ROLES, type Role } from "@/lib/config/roles";
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import { AssetBalanceFragment } from "@/lib/queries/asset-balance/asset-balance-fragment";
 import {
