@@ -1,6 +1,7 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
+import { authClient } from "@/lib/auth/client";
 import type { TransferInput } from "@/lib/mutations/transfer/transfer-schema";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -9,8 +10,18 @@ import { useFormContext } from "react-hook-form";
 export function Recipients() {
   const { control } = useFormContext<TransferInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
+  const { data: session } = authClient.useSession();
+  const userRole = session?.user?.role;
 
   const t = useTranslations("portfolio.transfer-form.recipients");
+
+  // Determine placeholder text based on user role
+  const placeholder =
+    userRole === "user" ? t("search-in-contacts") : t("address-placeholder");
+
+  // Determine search link text based on user role
+  const searchLinkText =
+    userRole === "user" ? t("search-contact-link") : t("search-user-link");
 
   return (
     <FormStep title={t("title")} description={t("description")}>
@@ -28,7 +39,7 @@ export function Recipients() {
               control={control}
               name="to"
               label={t("wallet-address-label")}
-              placeholder={t("address-placeholder")}
+              placeholder={placeholder}
             />
           )}
           <div className="flex justify-end">
@@ -37,7 +48,7 @@ export function Recipients() {
               onClick={() => setIsManualEntry(!isManualEntry)}
               className="text-muted-foreground text-xs transition-colors hover:text-foreground"
             >
-              {isManualEntry ? t("search-user-link") : t("manual-entry-link")}
+              {isManualEntry ? searchLinkText : t("manual-entry-link")}
             </button>
           </div>
         </div>

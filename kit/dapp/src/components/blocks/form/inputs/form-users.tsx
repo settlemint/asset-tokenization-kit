@@ -21,6 +21,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { authClient } from "@/lib/auth/client";
 import type { User } from "@/lib/auth/types";
 import type { Contact } from "@/lib/queries/contact/contact-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
@@ -46,7 +47,8 @@ type RecentUser = {
 };
 
 const MAX_RECENT_USERS = 5;
-const LOCAL_STORAGE_KEY = "recently-selected-users";
+const LOCAL_STORAGE_USERS_KEY = "recently-selected-users";
+const LOCAL_STORAGE_CONTACTS_KEY = "recently-selected-contacts";
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
@@ -69,6 +71,13 @@ export function FormUsers<T extends FieldValues>({
   const [open, setOpen] = useState(false);
   const t = useTranslations("components.form.users");
   const defaultPlaceholder = t("default-placeholder");
+  const { data: session } = authClient.useSession();
+  const userRole = session?.user?.role;
+
+  const searchPlaceholder =
+    userRole === "user"
+      ? t("search-contact-placeholder")
+      : t("search-placeholder");
 
   return (
     <FormField
@@ -111,7 +120,7 @@ export function FormUsers<T extends FieldValues>({
               <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                 <Command shouldFilter={false}>
                   <CommandInput
-                    placeholder={t("search-placeholder")}
+                    placeholder={searchPlaceholder}
                     className="h-9"
                   />
                   <FormUsersList
@@ -150,16 +159,25 @@ function FormUsersList({
   const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
   const t = useTranslations("components.form.users");
+  const { data: session } = authClient.useSession();
+  const userRole = session?.user?.role;
+
+  // Use different storage keys based on user role
+  const storageKey =
+    userRole === "user" ? LOCAL_STORAGE_CONTACTS_KEY : LOCAL_STORAGE_USERS_KEY;
 
   // Get recently selected users from local storage
   const [recentUsers, setRecentUsers] = useLocalStorage<RecentUser[]>(
-    LOCAL_STORAGE_KEY,
+    storageKey,
     []
   );
 
   const { data: users = [], isLoading } = useSWR(
     debounced ? [`user-search`, debounced, role] : null,
     async () => {
+      // getUserSearch already filters based on user role
+      // If user role is "user", it returns contacts
+      // If user role is "admin" or "issuer", it returns all users
       const results = await getUserSearch({ searchTerm: debounced });
       return role
         ? results.filter((user) => isUser(user) && user.role === role)
@@ -197,6 +215,10 @@ function FormUsersList({
     setOpen(false);
   };
 
+  // Prepare the heading text based on user role
+  const recentHeading =
+    userRole === "user" ? t("recent-contacts") : t("recent-users");
+
   return (
     <CommandList>
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
@@ -207,6 +229,8 @@ function FormUsersList({
               <Skeleton className="h-6 w-full bg-muted/50" />
             </div>
           </>
+        ) : userRole === "user" ? (
+          t("no-contact-found")
         ) : (
           t("no-user-found")
         )}
@@ -214,7 +238,7 @@ function FormUsersList({
 
       {/* Show recent users when no search is entered */}
       {!debounced && recentUsers.length > 0 && (
-        <CommandGroup heading={t("recent-users")}>
+        <CommandGroup heading={recentHeading}>
           {recentUsers.map((user) => (
             <CommandItem
               key={user.wallet}
