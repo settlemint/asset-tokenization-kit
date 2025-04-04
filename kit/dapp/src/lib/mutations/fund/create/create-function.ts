@@ -18,30 +18,18 @@ import type { CreateFundInput } from "./create-schema";
  */
 const FundFactoryCreate = portalGraphql(`
   mutation FundFactoryCreate(
-    $address: String!,
-    $from: String!,
-    $name: String!,
-    $symbol: String!,
-    $decimals: Int!,
-    $challengeResponse: String!,
-    $fundCategory: String!,
-    $fundClass: String!,
-    $managementFeeBps: Int!,
+    $challengeResponse: String!
     $verificationId: String
+    $address: String!
+    $from: String!
+    $input: FundFactoryCreateInput!
   ) {
     FundFactoryCreate(
-      address: $address
-      from: $from
-      input: {
-        name: $name,
-        symbol: $symbol,
-        decimals: $decimals,
-        fundCategory: $fundCategory,
-        fundClass: $fundClass,
-        managementFeeBps: $managementFeeBps
-      }
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -110,18 +98,20 @@ export const createFundFunction = withAccessControl(
     const data = await portalClient.request(FundFactoryCreate, {
       address: FUND_FACTORY_ADDRESS,
       from: user.wallet,
-      name: assetName,
-      symbol: symbol.toString(),
-      decimals,
+      input: {
+        name: assetName,
+        symbol: symbol.toString(),
+        decimals,
+        fundCategory,
+        fundClass,
+        managementFeeBps,
+      },
       ...(await handleChallenge(
         user,
         user.wallet,
         verificationCode,
         verificationType
       )),
-      fundCategory,
-      fundClass,
-      managementFeeBps,
     });
 
     const createTxHash = data.FundFactoryCreate?.transactionHash;

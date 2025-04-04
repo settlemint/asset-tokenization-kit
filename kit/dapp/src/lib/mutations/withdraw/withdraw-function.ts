@@ -13,18 +13,18 @@ import type { WithdrawInput } from "./withdraw-schema";
  */
 const BondWithdrawUnderlyingAsset = portalGraphql(`
   mutation BondWithdrawUnderlyingAsset(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
-    $input: BondWithdrawUnderlyingAssetInput!,
+    $challengeResponse: String!
     $verificationId: String
+    $address: String!
+    $from: String!
+    $input: BondWithdrawUnderlyingAssetInput!
   ) {
     BondWithdrawUnderlyingAsset(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -36,18 +36,18 @@ const BondWithdrawUnderlyingAsset = portalGraphql(`
  */
 const FixedYieldWithdrawUnderlyingAsset = portalGraphql(`
   mutation FixedYieldWithdrawUnderlyingAsset(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
-    $input: FixedYieldWithdrawUnderlyingAssetInput!,
+    $challengeResponse: String!
     $verificationId: String
+    $address: String!
+    $from: String!
+    $input: FixedYieldWithdrawUnderlyingAssetInput!
   ) {
     FixedYieldWithdrawUnderlyingAsset(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -59,18 +59,18 @@ const FixedYieldWithdrawUnderlyingAsset = portalGraphql(`
  */
 const EquityWithdrawToken = portalGraphql(`
   mutation EquityWithdrawToken(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
-    $input: EquityWithdrawTokenInput!,
+    $challengeResponse: String!
     $verificationId: String
+    $address: String!
+    $from: String!
+    $input: EquityWithdrawTokenInput!
   ) {
     EquityWithdrawToken(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -82,18 +82,18 @@ const EquityWithdrawToken = portalGraphql(`
  */
 const FundWithdrawToken = portalGraphql(`
   mutation FundWithdrawToken(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
-    $input: FundWithdrawTokenInput!,
+    $challengeResponse: String!
     $verificationId: String
+    $address: String!
+    $from: String!
+    $input: FundWithdrawTokenInput!
   ) {
     FundWithdrawToken(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -105,18 +105,18 @@ const FundWithdrawToken = portalGraphql(`
  */
 const CryptoCurrencyWithdrawToken = portalGraphql(`
   mutation CryptoCurrencyWithdrawToken(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
-    $input: CryptoCurrencyWithdrawTokenInput!,
+    $challengeResponse: String!
     $verificationId: String
+    $address: String!
+    $from: String!
+    $input: CryptoCurrencyWithdrawTokenInput!
   ) {
     CryptoCurrencyWithdrawToken(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -128,18 +128,18 @@ const CryptoCurrencyWithdrawToken = portalGraphql(`
  */
 const StableCoinWithdrawToken = portalGraphql(`
   mutation StableCoinWithdrawToken(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
-    $input: StableCoinWithdrawTokenInput!,
+    $challengeResponse: String!
     $verificationId: String
+    $address: String!
+    $from: String!
+    $input: StableCoinWithdrawTokenInput!
   ) {
     StableCoinWithdrawToken(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -151,18 +151,18 @@ const StableCoinWithdrawToken = portalGraphql(`
  */
 const DepositWithdrawToken = portalGraphql(`
   mutation DepositWithdrawToken(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
-    $input: DepositWithdrawTokenInput!,
+    $challengeResponse: String!
     $verificationId: String
+    $address: String!
+    $from: String!
+    $input: DepositWithdrawTokenInput!
   ) {
     DepositWithdrawToken(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
-      verificationId: $verificationId
     ) {
       transactionHash
     }

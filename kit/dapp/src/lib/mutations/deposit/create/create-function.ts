@@ -19,26 +19,18 @@ import type { CreateDepositInput } from "./create-schema";
  */
 const DepositFactoryCreate = portalGraphql(`
   mutation DepositFactoryCreate(
-    $address: String!,
-    $from: String!,
-    $name: String!,
-    $symbol: String!,
-    $decimals: Int!,
-    $challengeResponse: String!,
-    $collateralLivenessSeconds: Float!,
+    $challengeResponse: String!
     $verificationId: String
+    $address: String!
+    $from: String!
+    $input: DepositFactoryCreateInput!
   ) {
     DepositFactoryCreate(
-      address: $address
-      from: $from
-      input: {
-        name: $name,
-        symbol: $symbol,
-        decimals: $decimals,
-        collateralLivenessSeconds: $collateralLivenessSeconds
-      }
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -106,10 +98,12 @@ export const createDepositFunction = withAccessControl(
       {
         address: DEPOSIT_FACTORY_ADDRESS,
         from: user.wallet,
-        name: assetName,
-        symbol: symbol.toString(),
-        decimals,
-        collateralLivenessSeconds,
+        input: {
+          name: assetName,
+          symbol: symbol.toString(),
+          decimals,
+          collateralLivenessSeconds,
+        },
         ...(await handleChallenge(
           user,
           user.wallet,

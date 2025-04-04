@@ -14,17 +14,17 @@ import type { TopUpInput } from "./top-up-schema";
  */
 const BondApprove = portalGraphql(`
   mutation BondApprove(
-    $address: String!,
-    $from: String!,
     $challengeResponse: String!,
     $verificationId: String,
+    $address: String!,
+    $from: String!,
     $input: BondApproveInput!
   ) {
     BondApprove(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
       input: $input
     ) {
       transactionHash
@@ -34,17 +34,17 @@ const BondApprove = portalGraphql(`
 
 const CryptoCurrencyApprove = portalGraphql(`
   mutation CryptoCurrencyApprove(
-    $address: String!,
-    $from: String!,
     $challengeResponse: String!,
     $verificationId: String,
+    $address: String!,
+    $from: String!,
     $input: CryptoCurrencyApproveInput!
   ) {
     CryptoCurrencyApprove(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
       input: $input
     ) {
       transactionHash
@@ -54,17 +54,17 @@ const CryptoCurrencyApprove = portalGraphql(`
 
 const EquityApprove = portalGraphql(`
   mutation EquityApprove(
-    $address: String!,
-    $from: String!,
     $challengeResponse: String!,
     $verificationId: String,
+    $address: String!,
+    $from: String!,
     $input: EquityApproveInput!
   ) {
     EquityApprove(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
       input: $input
     ) {
       transactionHash
@@ -74,17 +74,17 @@ const EquityApprove = portalGraphql(`
 
 const FundApprove = portalGraphql(`
   mutation FundApprove(
-    $address: String!,
-    $from: String!,
     $challengeResponse: String!,
     $verificationId: String,
+    $address: String!,
+    $from: String!,
     $input: FundApproveInput!
   ) {
     FundApprove(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
       input: $input
     ) {
       transactionHash
@@ -94,17 +94,17 @@ const FundApprove = portalGraphql(`
 
 const StableCoinApprove = portalGraphql(`
   mutation StableCoinApprove(
-    $address: String!,
-    $from: String!,
     $challengeResponse: String!,
     $verificationId: String,
+    $address: String!,
+    $from: String!,
     $input: StableCoinApproveInput!
   ) {
     StableCoinApprove(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
       input: $input
     ) {
       transactionHash
@@ -114,17 +114,17 @@ const StableCoinApprove = portalGraphql(`
 
 const DepositApprove = portalGraphql(`
   mutation DepositApprove(
-    $address: String!,
-    $from: String!,
     $challengeResponse: String!,
     $verificationId: String,
+    $address: String!,
+    $from: String!,
     $input: DepositApproveInput!
   ) {
     DepositApprove(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
       input: $input
     ) {
       transactionHash
@@ -140,17 +140,17 @@ const DepositApprove = portalGraphql(`
  */
 const BondTopUpUnderlyingAsset = portalGraphql(`
   mutation TopUpUnderlyingAsset(
-    $address: String!,
-    $from: String!,
     $challengeResponse: String!,
     $verificationId: String,
+    $address: String!,
+    $from: String!,
     $input: BondTopUpUnderlyingAssetInput!
   ) {
     BondTopUpUnderlyingAsset(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
       input: $input
     ) {
       transactionHash
@@ -166,17 +166,17 @@ const BondTopUpUnderlyingAsset = portalGraphql(`
  */
 const FixedYieldTopUpUnderlyingAsset = portalGraphql(`
   mutation FixedYieldTopUpUnderlyingAsset(
-    $address: String!,
-    $from: String!,
     $challengeResponse: String!,
     $verificationId: String,
+    $address: String!,
+    $from: String!,
     $input: FixedYieldTopUpUnderlyingAssetInput!
   ) {
     FixedYieldTopUpUnderlyingAsset(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
       input: $input
     ) {
       transactionHash
