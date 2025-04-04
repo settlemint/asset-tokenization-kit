@@ -47,7 +47,7 @@ type RecentUser = {
 };
 
 const MAX_RECENT_USERS = 5;
-const LOCAL_STORAGE_KEY = "recently-selected-users";
+const LOCAL_STORAGE_USERS_KEY = "recently-selected-users";
 const LOCAL_STORAGE_CONTACTS_KEY = "recently-selected-contacts";
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
@@ -74,7 +74,6 @@ export function FormUsers<T extends FieldValues>({
   const { data: session } = authClient.useSession();
   const userRole = session?.user?.role;
 
-  // Determine search placeholder text based on user role
   const searchPlaceholder =
     userRole === "user"
       ? t("search-contact-placeholder")
@@ -165,7 +164,7 @@ function FormUsersList({
 
   // Use different storage keys based on user role
   const storageKey =
-    userRole === "user" ? LOCAL_STORAGE_CONTACTS_KEY : LOCAL_STORAGE_KEY;
+    userRole === "user" ? LOCAL_STORAGE_CONTACTS_KEY : LOCAL_STORAGE_USERS_KEY;
 
   // Get recently selected users from local storage
   const [recentUsers, setRecentUsers] = useLocalStorage<RecentUser[]>(
