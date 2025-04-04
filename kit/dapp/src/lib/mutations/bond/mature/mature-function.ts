@@ -13,16 +13,16 @@ import type { MatureFormInput } from "./mature-schema";
  */
 const MatureBond = portalGraphql(`
   mutation MatureBond(
-    $address: String!,
-    $from: String!,
     $challengeResponse: String!,
     $verificationId: String
+    $address: String!,
+    $from: String!,
   ) {
     BondMature(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
     ) {
       transactionHash
     }

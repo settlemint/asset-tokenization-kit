@@ -16,28 +16,18 @@ import type { SetYieldScheduleInput } from "./set-yield-schedule-schema";
  */
 const FixedYieldFactoryCreate = portalGraphql(`
   mutation FixedYieldFactoryCreate(
+    $challengeResponse: String!,
+    $verificationId: String,
     $address: String!,
     $from: String!,
-    $token: String!,
-    $startTime: String!,
-    $endTime: String!,
-    $rate: String!,
-    $interval: String!,
-    $challengeResponse: String!,
-    $verificationId: String
+    $input: FixedYieldFactoryCreateInput!
   ) {
     FixedYieldFactoryCreate(
-      address: $address
-      from: $from
-      input: {
-        token: $token,
-        startTime: $startTime,
-        endTime: $endTime,
-        rate: $rate,
-        interval: $interval
-      }
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -82,11 +72,13 @@ export const setYieldScheduleFunction = withAccessControl(
     const data = await portalClient.request(FixedYieldFactoryCreate, {
       address: FIXED_YIELD_FACTORY_ADDRESS,
       from: user.wallet,
-      token: address,
-      startTime: startTimeTimestamp,
-      endTime: endTimeTimestamp,
-      rate: percentageToBasisPoints(Number(rate)),
-      interval: intervalToSeconds(interval),
+      input: {
+        token: address,
+        startTime: startTimeTimestamp,
+        endTime: endTimeTimestamp,
+        rate: percentageToBasisPoints(Number(rate)),
+        interval: intervalToSeconds(interval),
+      },
       ...(await handleChallenge(
         user,
         user.wallet,

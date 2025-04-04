@@ -14,13 +14,13 @@ import type { RevokeRoleInput } from "./revoke-role-schema";
  * Removes permissions from an account for interacting with the bond
  */
 const BondRevokeRole = portalGraphql(`
-  mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: BondRevokeRoleInput!) {
+  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondRevokeRoleInput!) {
     BondRevokeRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -34,13 +34,13 @@ const BondRevokeRole = portalGraphql(`
  * Removes permissions from an account for interacting with the cryptocurrency
  */
 const CryptoCurrencyRevokeRole = portalGraphql(`
-  mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: CryptoCurrencyRevokeRoleInput!) {
+  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: CryptoCurrencyRevokeRoleInput!) {
     CryptoCurrencyRevokeRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -54,13 +54,13 @@ const CryptoCurrencyRevokeRole = portalGraphql(`
  * Removes permissions from an account for interacting with the stablecoin
  */
 const StableCoinRevokeRole = portalGraphql(`
-  mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: StableCoinRevokeRoleInput!) {
+  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: StableCoinRevokeRoleInput!) {
     StableCoinRevokeRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -74,13 +74,13 @@ const StableCoinRevokeRole = portalGraphql(`
  * Removes permissions from an account for interacting with the fund
  */
 const FundRevokeRole = portalGraphql(`
-  mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: FundRevokeRoleInput!) {
+  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: FundRevokeRoleInput!) {
     FundRevokeRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -94,13 +94,13 @@ const FundRevokeRole = portalGraphql(`
  * Removes permissions from an account for interacting with the equity
  */
 const EquityRevokeRole = portalGraphql(`
-  mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: EquityRevokeRoleInput!) {
+  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: EquityRevokeRoleInput!) {
     EquityRevokeRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -114,13 +114,13 @@ const EquityRevokeRole = portalGraphql(`
  * Removes permissions from an account for interacting with the tokenized deposit
  */
 const DepositRevokeRole = portalGraphql(`
-  mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: DepositRevokeRoleInput!) {
+  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: DepositRevokeRoleInput!) {
     DepositRevokeRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }

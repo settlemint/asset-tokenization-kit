@@ -10,12 +10,12 @@ import type { UnpauseInput } from "./unpause-schema";
  * GraphQL mutation for unpausing a bond contract
  */
 const BondUnpause = portalGraphql(`
-  mutation BondUnpause($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation BondUnpause($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
     BondUnpause(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
     ) {
       transactionHash
     }
@@ -26,12 +26,12 @@ const BondUnpause = portalGraphql(`
  * GraphQL mutation for unpausing an equity contract
  */
 const EquityUnpause = portalGraphql(`
-  mutation EquityUnpause($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation EquityUnpause($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
     EquityUnpause(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
     ) {
       transactionHash
     }
@@ -42,12 +42,12 @@ const EquityUnpause = portalGraphql(`
  * GraphQL mutation for unpausing a fund contract
  */
 const FundUnpause = portalGraphql(`
-  mutation FundUnpause($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation FundUnpause($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
     FundUnpause(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
     ) {
       transactionHash
     }
@@ -58,12 +58,12 @@ const FundUnpause = portalGraphql(`
  * GraphQL mutation for unpausing a stablecoin contract
  */
 const StableCoinUnpause = portalGraphql(`
-  mutation StableCoinUnpause($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation StableCoinUnpause($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
     StableCoinUnpause(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
     ) {
       transactionHash
     }
@@ -74,12 +74,12 @@ const StableCoinUnpause = portalGraphql(`
  * GraphQL mutation for unpausing a tokenized deposit contract
  */
 const DepositUnpause = portalGraphql(`
-  mutation DepositUnpause($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation DepositUnpause($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
     DepositUnpause(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
     ) {
       transactionHash
     }

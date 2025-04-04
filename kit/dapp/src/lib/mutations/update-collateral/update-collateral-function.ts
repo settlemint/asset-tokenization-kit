@@ -12,13 +12,13 @@ import type { UpdateCollateralInput } from "./update-collateral-schema";
  * GraphQL mutation for updating a stablecoin's collateral amount
  */
 const StableCoinUpdateCollateral = portalGraphql(`
-  mutation StableCoinUpdateCollateral($address: String!, $from: String!, $challengeResponse: String!, $input: StableCoinUpdateCollateralInput!, $verificationId: String) {
+  mutation StableCoinUpdateCollateral($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: StableCoinUpdateCollateralInput!) {
     StableCoinUpdateCollateral(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
       input: $input
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -29,13 +29,13 @@ const StableCoinUpdateCollateral = portalGraphql(`
  * GraphQL mutation for updating a tokenized deposit's collateral amount
  */
 const DepositUpdateCollateral = portalGraphql(`
-  mutation DepositUpdateCollateral($address: String!, $from: String!, $challengeResponse: String!, $input: DepositUpdateCollateralInput!, $verificationId: String) {
+  mutation DepositUpdateCollateral($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: DepositUpdateCollateralInput!) {
     DepositUpdateCollateral(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
       input: $input
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }

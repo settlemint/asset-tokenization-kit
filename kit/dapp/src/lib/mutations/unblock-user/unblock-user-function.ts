@@ -10,13 +10,13 @@ import type { UnblockUserInput } from "./unblock-user-schema";
  * GraphQL mutation to unblock a user from a bond token
  */
 const BondUnblockUser = portalGraphql(`
-  mutation BondUnblockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation BondUnblockUser($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondUnblockUserInput!) {
     BondUnblockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      input: $input
+      from: $from
     ) {
       transactionHash
     }
@@ -27,13 +27,13 @@ const BondUnblockUser = portalGraphql(`
  * GraphQL mutation to unblock a user from a stablecoin token
  */
 const StableCoinUnblockUser = portalGraphql(`
-  mutation StableCoinUnblockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation StableCoinUnblockUser($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: StableCoinUnblockUserInput!) {
     StableCoinUnblockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      input: $input
+      from: $from
     ) {
       transactionHash
     }
@@ -44,13 +44,13 @@ const StableCoinUnblockUser = portalGraphql(`
  * GraphQL mutation to unblock a user from an equity token
  */
 const EquityUnblockUser = portalGraphql(`
-  mutation EquityUnblockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation EquityUnblockUser($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: EquityUnblockUserInput!) {
     EquityUnblockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      input: $input
+      from: $from
     ) {
       transactionHash
     }
@@ -61,13 +61,13 @@ const EquityUnblockUser = portalGraphql(`
  * GraphQL mutation to unblock a user from a fund token
  */
 const FundUnblockUser = portalGraphql(`
-  mutation FundUnblockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation FundUnblockUser($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: FundUnblockUserInput!) {
     FundUnblockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      input: $input
+      from: $from
     ) {
       transactionHash
     }
@@ -108,7 +108,7 @@ export const unblockUserFunction = withAccessControl(
       | typeof FundUnblockUser
     > = {
       address,
-      account: userAddress,
+      input: { user: userAddress },
       from: user.wallet,
       ...(await handleChallenge(
         user,

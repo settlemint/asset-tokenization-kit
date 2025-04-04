@@ -12,13 +12,13 @@ import type { BurnInput } from "./burn-schema";
  * GraphQL mutation for burning bond tokens
  */
 const BondBurn = portalGraphql(`
-  mutation BondBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $verificationId: String) {
+  mutation BondBurn($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondBurnInput!) {
     BondBurn(
-      address: $address
-      from: $from
-      input: {value: $amount}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -29,13 +29,13 @@ const BondBurn = portalGraphql(`
  * GraphQL mutation for burning equity tokens
  */
 const EquityBurn = portalGraphql(`
-  mutation EquityBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $verificationId: String) {
+  mutation EquityBurn($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: EquityBurnInput!) {
     EquityBurn(
-      address: $address
-      from: $from
-      input: {value: $amount}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -46,13 +46,13 @@ const EquityBurn = portalGraphql(`
  * GraphQL mutation for burning fund tokens
  */
 const FundBurn = portalGraphql(`
-  mutation FundBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $verificationId: String) {
+  mutation FundBurn($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: FundBurnInput!) {
     FundBurn(
-      address: $address
-      from: $from
-      input: {value: $amount}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -63,13 +63,13 @@ const FundBurn = portalGraphql(`
  * GraphQL mutation for burning stablecoin tokens
  */
 const StableCoinBurn = portalGraphql(`
-  mutation StableCoinBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $verificationId: String) {
+  mutation StableCoinBurn($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: StableCoinBurnInput!) {
     StableCoinBurn(
-      address: $address
-      from: $from
-      input: {value: $amount}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -80,13 +80,13 @@ const StableCoinBurn = portalGraphql(`
  * GraphQL mutation for burning tokenized deposit tokens
  */
 const DepositBurn = portalGraphql(`
-  mutation DepositBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $verificationId: String) {
+  mutation DepositBurn($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: DepositBurnInput!) {
     DepositBurn(
-      address: $address
-      from: $from
-      input: {value: $amount}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -135,7 +135,9 @@ export const burnFunction = withAccessControl(
     > = {
       address,
       from: user.wallet,
-      amount: parseUnits(amount.toString(), decimals).toString(),
+      input: {
+        value: parseUnits(amount.toString(), decimals).toString(),
+      },
       ...(await handleChallenge(
         user,
         user.wallet,

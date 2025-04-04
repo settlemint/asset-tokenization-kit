@@ -12,13 +12,19 @@ import type { TransferInput } from "./transfer-schema";
  * GraphQL mutation to transfer bond tokens
  */
 const BondTransfer = portalGraphql(`
-  mutation BondTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!, $verificationId: String) {
+  mutation BondTransfer(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: BondTransferInput!
+  ) {
     Transfer: BondTransfer(
-      address: $address
-      from: $from
-      input: { to: $to, value: $value }
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -29,13 +35,19 @@ const BondTransfer = portalGraphql(`
  * GraphQL mutation to transfer cryptocurrency tokens
  */
 const CryptoCurrencyTransfer = portalGraphql(`
-  mutation CryptoCurrencyTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!, $verificationId: String) {
+  mutation CryptoCurrencyTransfer(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: CryptoCurrencyTransferInput!
+  ) {
     Transfer: CryptoCurrencyTransfer(
-      address: $address
-      from: $from
-      input: { to: $to, value: $value }
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -46,13 +58,19 @@ const CryptoCurrencyTransfer = portalGraphql(`
  * GraphQL mutation to transfer equity tokens
  */
 const EquityTransfer = portalGraphql(`
-  mutation EquityTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!, $verificationId: String) {
+  mutation EquityTransfer(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: EquityTransferInput!
+  ) {
     Transfer: EquityTransfer(
-      address: $address
-      from: $from
-      input: { to: $to, value: $value }
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -63,13 +81,19 @@ const EquityTransfer = portalGraphql(`
  * GraphQL mutation to transfer fund tokens
  */
 const FundTransfer = portalGraphql(`
-  mutation FundTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!, $verificationId: String) {
+  mutation FundTransfer(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: FundTransferInput!
+  ) {
     Transfer: FundTransfer(
-      address: $address
-      from: $from
-      input: { to: $to, value: $value }
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -80,13 +104,19 @@ const FundTransfer = portalGraphql(`
  * GraphQL mutation to transfer stablecoin tokens
  */
 const StableCoinTransfer = portalGraphql(`
-  mutation StableCoinTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!, $verificationId: String) {
+  mutation StableCoinTransfer(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: StableCoinTransferInput!
+  ) {
     Transfer: StableCoinTransfer(
-      address: $address
-      from: $from
-      input: { to: $to, value: $value }
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -97,13 +127,19 @@ const StableCoinTransfer = portalGraphql(`
  * GraphQL mutation to transfer tokenized deposit tokens
  */
 const DepositTransfer = portalGraphql(`
-  mutation DepositTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!, $verificationId: String) {
+  mutation DepositTransfer(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: DepositTransferInput!
+  ) {
     Transfer: DepositTransfer(
-      address: $address
-      from: $from
-      input: { to: $to, value: $value }
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -154,8 +190,10 @@ export const transferAssetFunction = withAccessControl(
     > = {
       address,
       from: user.wallet,
-      value: parseUnits(value.toString(), decimals).toString(),
-      to,
+      input: {
+        value: parseUnits(value.toString(), decimals).toString(),
+        to,
+      },
       ...(await handleChallenge(
         user,
         user.wallet,

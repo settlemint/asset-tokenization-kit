@@ -12,13 +12,19 @@ import type { MintInput } from "./mint-schema";
  * GraphQL mutation to mint new bond tokens
  */
 const BondMint = portalGraphql(`
-  mutation BondMint($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!, $verificationId: String) {
+  mutation BondMint(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $address: String!,
+    $from: String!,
+    $input: BondMintInput!
+  ) {
     BondMint(
-      address: $address
-      from: $from
-      input: {amount: $amount, to: $to}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -29,13 +35,19 @@ const BondMint = portalGraphql(`
  * GraphQL mutation to mint new cryptocurrency tokens
  */
 const CryptoCurrencyMint = portalGraphql(`
-  mutation CryptoCurrencyMint($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!, $verificationId: String) {
+  mutation CryptoCurrencyMint(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $address: String!,
+    $from: String!,
+    $input: CryptoCurrencyMintInput!
+  ) {
     CryptoCurrencyMint(
-      address: $address
-      from: $from
-      input: {amount: $amount, to: $to}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -46,13 +58,19 @@ const CryptoCurrencyMint = portalGraphql(`
  * GraphQL mutation to mint new equity tokens
  */
 const EquityMint = portalGraphql(`
-  mutation EquityMint($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!, $verificationId: String) {
+  mutation EquityMint(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $address: String!,
+    $from: String!,
+    $input: EquityMintInput!
+  ) {
     EquityMint(
-      address: $address
-      from: $from
-      input: {amount: $amount, to: $to}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -63,13 +81,19 @@ const EquityMint = portalGraphql(`
  * GraphQL mutation to mint new fund tokens
  */
 const FundMint = portalGraphql(`
-  mutation FundMint($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!, $verificationId: String) {
+  mutation FundMint(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $address: String!,
+    $from: String!,
+    $input: FundMintInput!
+  ) {
     FundMint(
-      address: $address
-      from: $from
-      input: {amount: $amount, to: $to}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -80,13 +104,19 @@ const FundMint = portalGraphql(`
  * GraphQL mutation to mint new stablecoin tokens
  */
 const StableCoinMint = portalGraphql(`
-  mutation StableCoinMint($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!, $verificationId: String) {
+  mutation StableCoinMint(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $address: String!,
+    $from: String!,
+    $input: StableCoinMintInput!
+  ) {
     StableCoinMint(
-      address: $address
-      from: $from
-      input: {amount: $amount, to: $to}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -97,13 +127,19 @@ const StableCoinMint = portalGraphql(`
  * GraphQL mutation to mint new tokenized deposit tokens
  */
 const DepositMint = portalGraphql(`
-  mutation DepositMint($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!, $verificationId: String) {
+  mutation DepositMint(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $address: String!,
+    $from: String!,
+    $input: DepositMintInput!
+  ) {
     DepositMint(
-      address: $address
-      from: $from
-      input: {amount: $amount, to: $to}
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -154,8 +190,10 @@ export const mintFunction = withAccessControl(
     > = {
       address,
       from: user.wallet,
-      amount: parseUnits(amount.toString(), decimals).toString(),
-      to,
+      input: {
+        amount: parseUnits(amount.toString(), decimals).toString(),
+        to,
+      },
       ...(await handleChallenge(
         user,
         user.wallet,

@@ -14,13 +14,13 @@ import type { GrantRoleInput } from "./grant-role-schema";
  * Assigns permissions to an account for interacting with the stablecoin
  */
 const StableCoinGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: StableCoinGrantRoleInput!) {
+  mutation GrantRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: StableCoinGrantRoleInput!) {
     StableCoinGrantRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -34,13 +34,13 @@ const StableCoinGrantRole = portalGraphql(`
  * Assigns permissions to an account for interacting with the bond
  */
 const BondGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: BondGrantRoleInput!) {
+  mutation GrantRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondGrantRoleInput!) {
     BondGrantRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -54,13 +54,13 @@ const BondGrantRole = portalGraphql(`
  * Assigns permissions to an account for interacting with the cryptocurrency
  */
 const CryptoCurrencyGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: CryptoCurrencyGrantRoleInput!) {
+  mutation GrantRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: CryptoCurrencyGrantRoleInput!) {
     CryptoCurrencyGrantRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -74,13 +74,13 @@ const CryptoCurrencyGrantRole = portalGraphql(`
  * Assigns permissions to an account for interacting with the fund
  */
 const FundGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: FundGrantRoleInput!) {
+  mutation GrantRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: FundGrantRoleInput!) {
     FundGrantRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -94,13 +94,13 @@ const FundGrantRole = portalGraphql(`
  * Assigns permissions to an account for interacting with the equity
  */
 const EquityGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: EquityGrantRoleInput!) {
+  mutation GrantRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: EquityGrantRoleInput!) {
     EquityGrantRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -114,13 +114,13 @@ const EquityGrantRole = portalGraphql(`
  * Assigns permissions to an account for interacting with the tokenized deposit
  */
 const DepositGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: DepositGrantRoleInput!) {
+  mutation GrantRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: DepositGrantRoleInput!) {
     DepositGrantRole(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       from: $from
       input: $input
       address: $address
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }

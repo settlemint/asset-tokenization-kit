@@ -10,13 +10,19 @@ import type { DisallowUserInput } from "./disallow-user-schema";
  * GraphQL mutation to disallow a user from a tokenized deposit
  */
 const DepositDisallowUser = portalGraphql(`
-  mutation DepositDisallowUser($address: String!, $user: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation DepositDisallowUser(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: DepositDisallowUserInput!
+  ) {
     DepositDisallowUser(
-      address: $address
-      input: { user: $user }
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -52,8 +58,10 @@ export const disallowUserFunction = withAccessControl(
     // Common parameters for all mutations
     const params: VariablesOf<typeof DepositDisallowUser> = {
       address,
-      user: userAddress,
       from: user.wallet,
+      input: {
+        user: userAddress,
+      },
       ...(await handleChallenge(
         user,
         user.wallet,

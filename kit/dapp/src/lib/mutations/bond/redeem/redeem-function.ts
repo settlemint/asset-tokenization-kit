@@ -14,13 +14,13 @@ import type { RedeemBondInput } from "./redeem-schema";
  * This mutation requires authentication via challenge response
  */
 const BondRedeem = portalGraphql(`
-  mutation BondRedeem($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: BondRedeemInput!) {
+  mutation BondRedeem($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondRedeemInput!) {
     BondRedeem(
-      address: $address
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      from: $from
       input: $input
+      address: $address
     ) {
       transactionHash
     }

@@ -7,22 +7,25 @@ import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { BlockUserInput } from "./block-user-schema";
 
 /**
- * GraphQL mutation to block a user from a bond
- */
-/**
  * GraphQL mutation for blocking a user from a bond
  *
  * @remarks
  * Prevents a user from interacting with the bond
  */
 const BondBlockUser = portalGraphql(`
-  mutation BondBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation BondBlockUser(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: BondBlockUserInput!
+  ) {
     BondBlockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -36,13 +39,19 @@ const BondBlockUser = portalGraphql(`
  * Prevents a user from interacting with the stablecoin
  */
 const StableCoinBlockUser = portalGraphql(`
-  mutation StableCoinBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation StableCoinBlockUser(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: StableCoinBlockUserInput!
+  ) {
     StableCoinBlockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -56,13 +65,19 @@ const StableCoinBlockUser = portalGraphql(`
  * Prevents a user from interacting with the equity
  */
 const EquityBlockUser = portalGraphql(`
-  mutation EquityBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation EquityBlockUser(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: EquityBlockUserInput!
+  ) {
     EquityBlockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -76,13 +91,19 @@ const EquityBlockUser = portalGraphql(`
  * Prevents a user from interacting with the fund
  */
 const FundBlockUser = portalGraphql(`
-  mutation FundBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation FundBlockUser(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: FundBlockUserInput!
+  ) {
     FundBlockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -123,8 +144,10 @@ export const blockUserFunction = withAccessControl(
       | typeof FundBlockUser
     > = {
       address,
-      account: userAddress,
       from: user.wallet,
+      input: {
+        user: userAddress,
+      },
       ...(await handleChallenge(
         user,
         user.wallet,

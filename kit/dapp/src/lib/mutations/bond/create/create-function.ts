@@ -20,32 +20,18 @@ import type { CreateBondInput } from "./create-schema";
  */
 const BondFactoryCreate = portalGraphql(`
   mutation BondFactoryCreate(
-    $address: String!,
-    $from: String!,
-    $name: String!,
-    $symbol: String!,
-    $decimals: Int!,
     $challengeResponse: String!,
     $verificationId: String,
-    $cap: String!,
-    $faceValue: String!,
-    $maturityDate: String!,
-    $underlyingAsset: String!
+    $address: String!,
+    $from: String!,
+    $input: BondFactoryCreateInput!
   ) {
     BondFactoryCreate(
-      address: $address
-      from: $from
-      input: {
-        name: $name,
-        symbol: $symbol,
-        decimals: $decimals,
-        cap: $cap,
-        faceValue: $faceValue,
-        maturityDate: $maturityDate,
-        underlyingAsset: $underlyingAsset
-      }
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -120,13 +106,15 @@ export const createBondFunction = withAccessControl(
     const createBondResult = await portalClient.request(BondFactoryCreate, {
       address: BOND_FACTORY_ADDRESS,
       from: user.wallet,
-      name: assetName,
-      symbol: String(symbol),
-      decimals,
-      cap: capExact,
-      faceValue: String(faceValue),
-      maturityDate: maturityDateTimestamp,
-      underlyingAsset: underlyingAsset.id,
+      input: {
+        name: assetName,
+        symbol: String(symbol),
+        decimals,
+        cap: capExact,
+        faceValue: String(faceValue),
+        maturityDate: maturityDateTimestamp,
+        underlyingAsset: underlyingAsset.id,
+      },
       ...(await handleChallenge(
         user,
         user.wallet,

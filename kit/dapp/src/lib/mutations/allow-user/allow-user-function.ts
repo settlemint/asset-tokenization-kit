@@ -10,13 +10,19 @@ import type { AllowUserInput } from "./allow-user-schema";
  * GraphQL mutation to allow a user to a tokenized deposit
  */
 const DepositAllowUser = portalGraphql(`
-  mutation DepositAllowUser($address: String!, $user: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation DepositAllowUser(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: DepositAllowUserInput!
+  ) {
     DepositAllowUser(
-      address: $address
-      input: { user: $user }
-      from: $from
       challengeResponse: $challengeResponse
       verificationId: $verificationId
+      address: $address
+      from: $from
+      input: $input
     ) {
       transactionHash
     }
@@ -52,8 +58,10 @@ export const allowUserFunction = withAccessControl(
     // Common parameters for all mutations
     const params: VariablesOf<typeof DepositAllowUser> = {
       address,
-      user: userAddress,
       from: user.wallet,
+      input: {
+        user: userAddress,
+      },
       ...(await handleChallenge(
         user,
         user.wallet,
