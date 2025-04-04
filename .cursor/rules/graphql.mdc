@@ -1,0 +1,45 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Mutation Structure and Naming
+
+- Example:
+```graphql
+mutation OperationName(
+  $challengeResponse: String!
+  $verificationId: String
+  $address: String!
+  $from: String!
+  $input: InputType!
+) {
+  OperationName(
+    challengeResponse: $challengeResponse
+    verificationId: $verificationId
+    address: $address
+    from: $from
+    input: $input
+  ) {
+    transactionHash
+  }
+}
+```
+
+# Input Organization
+
+- Group related fields into input types rather than passing them as separate arguments
+- Example:
+```graphql
+# Bad
+mutation Transfer($to: String!, $amount: String!, $from: String!)
+
+# Good
+mutation Transfer($input: TransferInput!)
+```
+
+# Consistent Parameter Ordering
+
+- Security-related parameters first (challengeResponse, verificationId)
+- Context parameters next (address, from)
+- Operation-specific input last (input object)
