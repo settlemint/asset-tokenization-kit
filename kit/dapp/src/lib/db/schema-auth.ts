@@ -23,6 +23,7 @@ export const user = pgTable("user", {
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   currency: text("currency").notNull().default("EUR"),
   pincodeEnabled: boolean("pincode_enabled").notNull().default(false),
+  pincodeVerificationId: text("pincode_verification_id"),
   twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
   twoFactorVerificationId: text("two_factor_verification_id"),
 });
