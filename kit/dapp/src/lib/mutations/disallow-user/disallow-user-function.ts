@@ -3,18 +3,20 @@ import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
+import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { DisallowUserInput } from "./disallow-user-schema";
 
 /**
  * GraphQL mutation to disallow a user from a tokenized deposit
  */
 const DepositDisallowUser = portalGraphql(`
-  mutation DepositDisallowUser($address: String!, $user: String!, $from: String!, $challengeResponse: String!) {
+  mutation DepositDisallowUser($address: String!, $user: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
     DepositDisallowUser(
       address: $address
       input: { user: $user }
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -48,15 +50,16 @@ export const disallowUserFunction = withAccessControl(
     ctx: { user: User };
   }) => {
     // Common parameters for all mutations
-    const params = {
+    const params: VariablesOf<typeof DepositDisallowUser> = {
       address,
       user: userAddress,
       from: user.wallet,
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
     };
 
     switch (assettype) {

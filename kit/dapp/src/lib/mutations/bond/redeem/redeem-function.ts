@@ -14,11 +14,12 @@ import type { RedeemBondInput } from "./redeem-schema";
  * This mutation requires authentication via challenge response
  */
 const BondRedeem = portalGraphql(`
-  mutation BondRedeem($address: String!, $from: String!, $challengeResponse: String!, $input: BondRedeemInput!) {
+  mutation BondRedeem($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: BondRedeemInput!) {
     BondRedeem(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
       input: $input
     ) {
       transactionHash
@@ -54,11 +55,12 @@ export const redeemFunction = withAccessControl(
       input: {
         amount: parseUnits(amount.toString(), decimals).toString(),
       },
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
     });
 
     return safeParse(t.Hashes(), [response.BondRedeem?.transactionHash]);

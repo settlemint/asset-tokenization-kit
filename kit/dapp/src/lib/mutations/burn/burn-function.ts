@@ -3,6 +3,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
+import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import { withAccessControl } from "../../utils/access-control";
 import type { BurnInput } from "./burn-schema";
@@ -11,12 +12,13 @@ import type { BurnInput } from "./burn-schema";
  * GraphQL mutation for burning bond tokens
  */
 const BondBurn = portalGraphql(`
-  mutation BondBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
+  mutation BondBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $verificationId: String) {
     BondBurn(
       address: $address
       from: $from
       input: {value: $amount}
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -27,12 +29,13 @@ const BondBurn = portalGraphql(`
  * GraphQL mutation for burning equity tokens
  */
 const EquityBurn = portalGraphql(`
-  mutation EquityBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
+  mutation EquityBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $verificationId: String) {
     EquityBurn(
       address: $address
       from: $from
       input: {value: $amount}
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -43,12 +46,13 @@ const EquityBurn = portalGraphql(`
  * GraphQL mutation for burning fund tokens
  */
 const FundBurn = portalGraphql(`
-  mutation FundBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
+  mutation FundBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $verificationId: String) {
     FundBurn(
       address: $address
       from: $from
       input: {value: $amount}
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -59,12 +63,13 @@ const FundBurn = portalGraphql(`
  * GraphQL mutation for burning stablecoin tokens
  */
 const StableCoinBurn = portalGraphql(`
-  mutation StableCoinBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
+  mutation StableCoinBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $verificationId: String) {
     StableCoinBurn(
       address: $address
       from: $from
       input: {value: $amount}
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -75,12 +80,13 @@ const StableCoinBurn = portalGraphql(`
  * GraphQL mutation for burning tokenized deposit tokens
  */
 const DepositBurn = portalGraphql(`
-  mutation DepositBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
+  mutation DepositBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $verificationId: String) {
     DepositBurn(
       address: $address
       from: $from
       input: {value: $amount}
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -120,15 +126,22 @@ export const burnFunction = withAccessControl(
     });
 
     // Common parameters for all mutations
-    const params = {
+    const params: VariablesOf<
+      | typeof BondBurn
+      | typeof EquityBurn
+      | typeof FundBurn
+      | typeof StableCoinBurn
+      | typeof DepositBurn
+    > = {
       address,
       from: user.wallet,
       amount: parseUnits(amount.toString(), decimals).toString(),
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
     };
 
     switch (assettype) {

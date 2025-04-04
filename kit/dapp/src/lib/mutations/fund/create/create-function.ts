@@ -17,12 +17,31 @@ import type { CreateFundInput } from "./create-schema";
  * Creates a new fund contract through the fund factory
  */
 const FundFactoryCreate = portalGraphql(`
-  mutation FundFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $fundCategory: String!, $fundClass: String!, $managementFeeBps: Int!) {
+  mutation FundFactoryCreate(
+    $address: String!,
+    $from: String!,
+    $name: String!,
+    $symbol: String!,
+    $decimals: Int!,
+    $challengeResponse: String!,
+    $fundCategory: String!,
+    $fundClass: String!,
+    $managementFeeBps: Int!,
+    $verificationId: String
+  ) {
     FundFactoryCreate(
       address: $address
       from: $from
-      input: {name: $name, symbol: $symbol, decimals: $decimals, fundCategory: $fundCategory, fundClass: $fundClass, managementFeeBps: $managementFeeBps}
+      input: {
+        name: $name,
+        symbol: $symbol,
+        decimals: $decimals,
+        fundCategory: $fundCategory,
+        fundClass: $fundClass,
+        managementFeeBps: $managementFeeBps
+      }
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -94,11 +113,12 @@ export const createFundFunction = withAccessControl(
       name: assetName,
       symbol: symbol.toString(),
       decimals,
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
       fundCategory,
       fundClass,
       managementFeeBps,

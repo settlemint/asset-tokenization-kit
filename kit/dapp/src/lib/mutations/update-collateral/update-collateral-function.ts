@@ -4,6 +4,7 @@ import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
+import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { UpdateCollateralInput } from "./update-collateral-schema";
 
@@ -11,12 +12,13 @@ import type { UpdateCollateralInput } from "./update-collateral-schema";
  * GraphQL mutation for updating a stablecoin's collateral amount
  */
 const StableCoinUpdateCollateral = portalGraphql(`
-  mutation StableCoinUpdateCollateral($address: String!, $from: String!, $challengeResponse: String!, $input: StableCoinUpdateCollateralInput!) {
+  mutation StableCoinUpdateCollateral($address: String!, $from: String!, $challengeResponse: String!, $input: StableCoinUpdateCollateralInput!, $verificationId: String) {
     StableCoinUpdateCollateral(
       address: $address
       from: $from
       input: $input
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -27,12 +29,13 @@ const StableCoinUpdateCollateral = portalGraphql(`
  * GraphQL mutation for updating a tokenized deposit's collateral amount
  */
 const DepositUpdateCollateral = portalGraphql(`
-  mutation DepositUpdateCollateral($address: String!, $from: String!, $challengeResponse: String!, $input: DepositUpdateCollateralInput!) {
+  mutation DepositUpdateCollateral($address: String!, $from: String!, $challengeResponse: String!, $input: DepositUpdateCollateralInput!, $verificationId: String) {
     DepositUpdateCollateral(
       address: $address
       from: $from
       input: $input
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -73,15 +76,18 @@ export const updateCollateralFunction = withAccessControl(
     };
 
     // Common parameters for collateral update mutations
-    const params = {
+    const params: VariablesOf<
+      typeof StableCoinUpdateCollateral | typeof DepositUpdateCollateral
+    > = {
       address,
       from: user.wallet,
       input: collateralInput,
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
     };
 
     switch (assettype) {

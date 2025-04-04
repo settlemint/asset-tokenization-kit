@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { getUser } from "@/lib/auth/utils";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { revalidateTag } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
 import { headers } from "next/headers";
 import { auth } from "../../auth/auth";
@@ -54,5 +55,6 @@ export async function setPincodeFunction({
     headers: headersList,
     body: updatedUser,
   });
+  revalidateTag("user");
   return { success: true };
 }

@@ -19,12 +19,33 @@ import type { CreateBondInput } from "./create-schema";
  * Creates a new bond contract through the bond factory
  */
 const BondFactoryCreate = portalGraphql(`
-  mutation BondFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $cap: String!, $faceValue: String!, $maturityDate: String!, $underlyingAsset: String!) {
+  mutation BondFactoryCreate(
+    $address: String!,
+    $from: String!,
+    $name: String!,
+    $symbol: String!,
+    $decimals: Int!,
+    $challengeResponse: String!,
+    $verificationId: String,
+    $cap: String!,
+    $faceValue: String!,
+    $maturityDate: String!,
+    $underlyingAsset: String!
+  ) {
     BondFactoryCreate(
       address: $address
       from: $from
-      input: {name: $name, symbol: $symbol, decimals: $decimals, cap: $cap, faceValue: $faceValue, maturityDate: $maturityDate, underlyingAsset: $underlyingAsset}
+      input: {
+        name: $name,
+        symbol: $symbol,
+        decimals: $decimals,
+        cap: $cap,
+        faceValue: $faceValue,
+        maturityDate: $maturityDate,
+        underlyingAsset: $underlyingAsset
+      }
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -106,11 +127,12 @@ export const createBondFunction = withAccessControl(
       faceValue: String(faceValue),
       maturityDate: maturityDateTimestamp,
       underlyingAsset: underlyingAsset.id,
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
     });
 
     const createTxHash = createBondResult.BondFactoryCreate?.transactionHash;

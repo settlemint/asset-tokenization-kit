@@ -5,6 +5,7 @@ import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transac
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
+import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { TopUpInput } from "./top-up-schema";
 
@@ -16,12 +17,14 @@ const BondApprove = portalGraphql(`
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
+    $verificationId: String,
     $input: BondApproveInput!
   ) {
     BondApprove(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
       input: $input
     ) {
       transactionHash
@@ -34,12 +37,14 @@ const CryptoCurrencyApprove = portalGraphql(`
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
+    $verificationId: String,
     $input: CryptoCurrencyApproveInput!
   ) {
     CryptoCurrencyApprove(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
       input: $input
     ) {
       transactionHash
@@ -52,12 +57,14 @@ const EquityApprove = portalGraphql(`
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
+    $verificationId: String,
     $input: EquityApproveInput!
   ) {
     EquityApprove(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
       input: $input
     ) {
       transactionHash
@@ -70,12 +77,14 @@ const FundApprove = portalGraphql(`
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
+    $verificationId: String,
     $input: FundApproveInput!
   ) {
     FundApprove(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
       input: $input
     ) {
       transactionHash
@@ -88,12 +97,14 @@ const StableCoinApprove = portalGraphql(`
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
+    $verificationId: String,
     $input: StableCoinApproveInput!
   ) {
     StableCoinApprove(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
       input: $input
     ) {
       transactionHash
@@ -106,12 +117,14 @@ const DepositApprove = portalGraphql(`
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
+    $verificationId: String,
     $input: DepositApproveInput!
   ) {
     DepositApprove(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
       input: $input
     ) {
       transactionHash
@@ -130,12 +143,14 @@ const BondTopUpUnderlyingAsset = portalGraphql(`
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
+    $verificationId: String,
     $input: BondTopUpUnderlyingAssetInput!
   ) {
     BondTopUpUnderlyingAsset(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
       input: $input
     ) {
       transactionHash
@@ -154,12 +169,14 @@ const FixedYieldTopUpUnderlyingAsset = portalGraphql(`
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
+    $verificationId: String,
     $input: FixedYieldTopUpUnderlyingAssetInput!
   ) {
     FixedYieldTopUpUnderlyingAsset(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
       input: $input
     ) {
       transactionHash
@@ -221,14 +238,22 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
     ).toString();
 
     // Common parameters for all approve mutations
-    const approveParams = {
+    const approveParams: VariablesOf<
+      | typeof BondApprove
+      | typeof CryptoCurrencyApprove
+      | typeof EquityApprove
+      | typeof FundApprove
+      | typeof StableCoinApprove
+      | typeof DepositApprove
+    > = {
       address: underlyingAssetAddress,
       from: user.wallet,
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
       input: {
         spender: targetAddress,
         value: formattedAmount,
@@ -300,11 +325,12 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
         input: {
           amount: formattedAmount,
         },
-        challengeResponse: await handleChallenge(
+        ...(await handleChallenge(
+          user,
           user.wallet,
           verificationCode,
           verificationType
-        ),
+        )),
       });
 
       if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
@@ -323,11 +349,12 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
           input: {
             amount: formattedAmount,
           },
-          challengeResponse: await handleChallenge(
+          ...(await handleChallenge(
+            user,
             user.wallet,
             verificationCode,
             verificationType
-          ),
+          )),
         }
       );
 

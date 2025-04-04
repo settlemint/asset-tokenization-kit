@@ -4,6 +4,7 @@ import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
+import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { FreezeInput } from "./freeze-schema";
 
@@ -11,12 +12,13 @@ import type { FreezeInput } from "./freeze-schema";
  * GraphQL mutation to freeze a specific user account from a bond
  */
 const BondFreeze = portalGraphql(`
-  mutation BondFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+  mutation BondFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!, $verificationId: String) {
     BondFreeze(
       address: $address
       from: $from
       input: {user: $user, amount: $amount}
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -27,12 +29,13 @@ const BondFreeze = portalGraphql(`
  * GraphQL mutation to freeze a specific user account from an equity
  */
 const EquityFreeze = portalGraphql(`
-  mutation EquityFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+  mutation EquityFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!, $verificationId: String) {
     EquityFreeze(
       address: $address
       from: $from
       input: {user: $user, amount: $amount}
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -43,12 +46,13 @@ const EquityFreeze = portalGraphql(`
  * GraphQL mutation to freeze a specific user account from a fund
  */
 const FundFreeze = portalGraphql(`
-  mutation FundFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+  mutation FundFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!, $verificationId: String) {
     FundFreeze(
       address: $address
       from: $from
       input: {user: $user, amount: $amount}
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -59,12 +63,13 @@ const FundFreeze = portalGraphql(`
  * GraphQL mutation to freeze a specific user account from a stablecoin
  */
 const StableCoinFreeze = portalGraphql(`
-  mutation StableCoinFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+  mutation StableCoinFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!, $verificationId: String) {
     StableCoinFreeze(
       address: $address
       from: $from
       input: {user: $user, amount: $amount}
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -75,12 +80,13 @@ const StableCoinFreeze = portalGraphql(`
  * GraphQL mutation to freeze a specific user account from a tokenized deposit
  */
 const DepositFreeze = portalGraphql(`
-  mutation DepositFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+  mutation DepositFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!, $verificationId: String) {
     DepositFreeze(
       address: $address
       from: $from
       input: {user: $user, amount: $amount}
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -121,16 +127,23 @@ export const freezeFunction = withAccessControl(
     });
 
     // Common parameters for all mutations
-    const params = {
+    const params: VariablesOf<
+      | typeof BondFreeze
+      | typeof EquityFreeze
+      | typeof FundFreeze
+      | typeof StableCoinFreeze
+      | typeof DepositFreeze
+    > = {
       address,
       user: userAddress,
       from: user.wallet,
       amount: parseUnits(amount.toString(), decimals).toString(),
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
     };
 
     switch (assettype) {

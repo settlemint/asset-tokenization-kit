@@ -15,12 +15,14 @@ const MatureBond = portalGraphql(`
   mutation MatureBond(
     $address: String!,
     $from: String!,
-    $challengeResponse: String!
+    $challengeResponse: String!,
+    $verificationId: String
   ) {
     BondMature(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -50,11 +52,12 @@ export const matureFunction = withAccessControl(
     const response = await portalClient.request(MatureBond, {
       address: address,
       from: user.wallet,
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
     });
 
     return safeParse(t.Hashes(), [response.BondMature?.transactionHash]);

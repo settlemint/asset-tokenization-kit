@@ -4,6 +4,7 @@ import { type Role, getRoleIdentifier } from "@/lib/config/roles";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
+import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { GrantRoleInput } from "./grant-role-schema";
 
 /**
@@ -13,12 +14,13 @@ import type { GrantRoleInput } from "./grant-role-schema";
  * Assigns permissions to an account for interacting with the stablecoin
  */
 const StableCoinGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: StableCoinGrantRoleInput!) {
+  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: StableCoinGrantRoleInput!) {
     StableCoinGrantRole(
       from: $from
       input: $input
       address: $address
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -32,12 +34,13 @@ const StableCoinGrantRole = portalGraphql(`
  * Assigns permissions to an account for interacting with the bond
  */
 const BondGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: BondGrantRoleInput!) {
+  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: BondGrantRoleInput!) {
     BondGrantRole(
       from: $from
       input: $input
       address: $address
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -51,12 +54,13 @@ const BondGrantRole = portalGraphql(`
  * Assigns permissions to an account for interacting with the cryptocurrency
  */
 const CryptoCurrencyGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: CryptoCurrencyGrantRoleInput!) {
+  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: CryptoCurrencyGrantRoleInput!) {
     CryptoCurrencyGrantRole(
       from: $from
       input: $input
       address: $address
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -70,12 +74,13 @@ const CryptoCurrencyGrantRole = portalGraphql(`
  * Assigns permissions to an account for interacting with the fund
  */
 const FundGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: FundGrantRoleInput!) {
+  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: FundGrantRoleInput!) {
     FundGrantRole(
       from: $from
       input: $input
       address: $address
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -89,12 +94,13 @@ const FundGrantRole = portalGraphql(`
  * Assigns permissions to an account for interacting with the equity
  */
 const EquityGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: EquityGrantRoleInput!) {
+  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: EquityGrantRoleInput!) {
     EquityGrantRole(
       from: $from
       input: $input
       address: $address
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -108,12 +114,13 @@ const EquityGrantRole = portalGraphql(`
  * Assigns permissions to an account for interacting with the tokenized deposit
  */
 const DepositGrantRole = portalGraphql(`
-  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: DepositGrantRoleInput!) {
+  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String, $input: DepositGrantRoleInput!) {
     DepositGrantRole(
       from: $from
       input: $input
       address: $address
       challengeResponse: $challengeResponse
+      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -148,18 +155,26 @@ export const grantRoleFunction = withAccessControl(
     ctx: { user: User };
   }) => {
     const grantRoleFn = async (role: Role) => {
-      const params = {
+      const params: VariablesOf<
+        | typeof DepositGrantRole
+        | typeof StableCoinGrantRole
+        | typeof BondGrantRole
+        | typeof CryptoCurrencyGrantRole
+        | typeof FundGrantRole
+        | typeof EquityGrantRole
+      > = {
         address: address,
         from: user.wallet,
         input: {
           role: getRoleIdentifier(role),
           account: userAddress,
         },
-        challengeResponse: await handleChallenge(
+        ...(await handleChallenge(
+          user,
           user.wallet,
           verificationCode,
           verificationType
-        ),
+        )),
       };
 
       switch (assettype) {
