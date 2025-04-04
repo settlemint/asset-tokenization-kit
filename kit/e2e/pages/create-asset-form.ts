@@ -105,4 +105,34 @@ export class CreateAssetForm extends BasePage {
       await this.page.getByLabel("Price").fill(options.price);
     }
   }
+
+  async fillEquityConfigurationFields(options: {
+    equityClass?: string;
+    equityCategory?: string;
+    price?: string;
+  }) {
+    if (options.equityClass !== undefined) {
+      await this.page.getByRole("combobox", { name: "Equity class" }).click();
+      await this.page
+        .getByRole("option", { name: options.equityClass })
+        .click();
+    }
+    if (options.equityCategory !== undefined) {
+      await this.page
+        .getByRole("combobox", { name: "Equity category" })
+        .click();
+      await this.page
+        .getByRole("option", { name: options.equityCategory })
+        .click();
+    }
+    if (options.price !== undefined) {
+      await this.page.getByLabel("Price").fill(options.price);
+    }
+  }
+
+  async verifyCurrencyValue(expected: string) {
+    await expect(
+      this.page.locator('select[name="price.currency"]')
+    ).toHaveValue(expected);
+  }
 }
