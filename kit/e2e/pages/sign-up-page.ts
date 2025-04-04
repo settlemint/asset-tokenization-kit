@@ -18,6 +18,7 @@ export class SignUpPage extends BasePage {
     await this.page.getByLabel("Name").fill(options.name);
     await this.page.getByLabel("Email").fill(options.email);
     await this.page.getByLabel("Password").fill(options.password);
+    await this.page.locator("#confirmPassword").fill(options.password);
     await this.page.getByRole("button", { name: "Create an account" }).click();
     await this.page.waitForURL("**/portfolio");
     await this.page.getByRole("button", { name: "PIN-code" }).click();
