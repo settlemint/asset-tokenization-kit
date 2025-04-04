@@ -88,12 +88,12 @@ const validateMaturityDate = async (form: UseFormReturn<CreateBondInput>) => {
   }
 
   if (!isValidFutureDate(maturityDate, 1)) {
+    // Using the translation key directly, which will be resolved by the Form component's
+    // error formatting mechanism that automatically handles translations
     form.setError("maturityDate", {
       type: "manual",
-      message: "Maturity date must be at least 1 hour in the future"
+      message: "private.assets.create.parameters.bonds.maturity-date-error"
     });
-
-    return Promise.reject(new Error("Maturity date must be at least 1 hour in the future"));
   }
 };
 

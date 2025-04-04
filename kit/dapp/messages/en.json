@@ -1131,6 +1131,7 @@
             "face-value-label": "Face value",
             "isin-placeholder": "US000000AA00",
             "maturity-date-label": "Maturity date",
+            "maturity-date-error": "Maturity date must be at least 1 hour in the future",
             "name-placeholder": "Company XYZ Bond 2023",
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "Address of the asset that backs this bond",
