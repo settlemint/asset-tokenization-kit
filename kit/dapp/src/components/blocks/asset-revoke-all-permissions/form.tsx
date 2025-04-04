@@ -2,7 +2,7 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { Role, ROLES } from "@/lib/config/roles";
+import { type Role, ROLES } from "@/lib/config/roles";
 import { revokeRole } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-action";
 import { RevokeRoleSchema } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";

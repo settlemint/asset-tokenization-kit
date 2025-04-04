@@ -1,7 +1,7 @@
 import type { User } from "@/lib/auth/types";
+import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { RoleMap } from "@/lib/utils/typebox/roles";
-import { withAccessControl } from "../../../../utils/access-control";
 import { grantRoleFunction } from "../grant-role/grant-role-function";
 import { revokeRoleFunction } from "../revoke-role/revoke-role-function";
 import type { UpdateRolesInput } from "./update-role-schema";
