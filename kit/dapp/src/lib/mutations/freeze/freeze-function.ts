@@ -4,6 +4,7 @@ import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
+import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { FreezeInput } from "./freeze-schema";
 
@@ -11,12 +12,19 @@ import type { FreezeInput } from "./freeze-schema";
  * GraphQL mutation to freeze a specific user account from a bond
  */
 const BondFreeze = portalGraphql(`
-  mutation BondFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+  mutation BondFreeze(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: BondFreezeInput!
+  ) {
     BondFreeze(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      input: {user: $user, amount: $amount}
-      challengeResponse: $challengeResponse
+      input: $input
     ) {
       transactionHash
     }
@@ -27,12 +35,19 @@ const BondFreeze = portalGraphql(`
  * GraphQL mutation to freeze a specific user account from an equity
  */
 const EquityFreeze = portalGraphql(`
-  mutation EquityFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+  mutation EquityFreeze(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: EquityFreezeInput!
+  ) {
     EquityFreeze(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      input: {user: $user, amount: $amount}
-      challengeResponse: $challengeResponse
+      input: $input
     ) {
       transactionHash
     }
@@ -43,12 +58,19 @@ const EquityFreeze = portalGraphql(`
  * GraphQL mutation to freeze a specific user account from a fund
  */
 const FundFreeze = portalGraphql(`
-  mutation FundFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+  mutation FundFreeze(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: FundFreezeInput!
+  ) {
     FundFreeze(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      input: {user: $user, amount: $amount}
-      challengeResponse: $challengeResponse
+      input: $input
     ) {
       transactionHash
     }
@@ -59,12 +81,19 @@ const FundFreeze = portalGraphql(`
  * GraphQL mutation to freeze a specific user account from a stablecoin
  */
 const StableCoinFreeze = portalGraphql(`
-  mutation StableCoinFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+  mutation StableCoinFreeze(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: StableCoinFreezeInput!
+  ) {
     StableCoinFreeze(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      input: {user: $user, amount: $amount}
-      challengeResponse: $challengeResponse
+      input: $input
     ) {
       transactionHash
     }
@@ -75,12 +104,19 @@ const StableCoinFreeze = portalGraphql(`
  * GraphQL mutation to freeze a specific user account from a tokenized deposit
  */
 const DepositFreeze = portalGraphql(`
-  mutation DepositFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
+  mutation DepositFreeze(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: DepositFreezeInput!
+  ) {
     DepositFreeze(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      input: {user: $user, amount: $amount}
-      challengeResponse: $challengeResponse
+      input: $input
     ) {
       transactionHash
     }
@@ -121,16 +157,25 @@ export const freezeFunction = withAccessControl(
     });
 
     // Common parameters for all mutations
-    const params = {
+    const params: VariablesOf<
+      | typeof BondFreeze
+      | typeof EquityFreeze
+      | typeof FundFreeze
+      | typeof StableCoinFreeze
+      | typeof DepositFreeze
+    > = {
       address,
-      user: userAddress,
       from: user.wallet,
-      amount: parseUnits(amount.toString(), decimals).toString(),
-      challengeResponse: await handleChallenge(
+      input: {
+        user: userAddress,
+        amount: parseUnits(amount.toString(), decimals).toString(),
+      },
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
     };
 
     switch (assettype) {

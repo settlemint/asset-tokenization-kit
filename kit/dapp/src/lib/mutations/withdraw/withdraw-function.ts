@@ -4,6 +4,7 @@ import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
+import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { WithdrawInput } from "./withdraw-schema";
 
@@ -12,15 +13,17 @@ import type { WithdrawInput } from "./withdraw-schema";
  */
 const BondWithdrawUnderlyingAsset = portalGraphql(`
   mutation BondWithdrawUnderlyingAsset(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
     $input: BondWithdrawUnderlyingAssetInput!
   ) {
     BondWithdrawUnderlyingAsset(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
     ) {
       transactionHash
@@ -33,15 +36,17 @@ const BondWithdrawUnderlyingAsset = portalGraphql(`
  */
 const FixedYieldWithdrawUnderlyingAsset = portalGraphql(`
   mutation FixedYieldWithdrawUnderlyingAsset(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
     $input: FixedYieldWithdrawUnderlyingAssetInput!
   ) {
     FixedYieldWithdrawUnderlyingAsset(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
     ) {
       transactionHash
@@ -54,15 +59,17 @@ const FixedYieldWithdrawUnderlyingAsset = portalGraphql(`
  */
 const EquityWithdrawToken = portalGraphql(`
   mutation EquityWithdrawToken(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
     $input: EquityWithdrawTokenInput!
   ) {
     EquityWithdrawToken(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
     ) {
       transactionHash
@@ -75,15 +82,17 @@ const EquityWithdrawToken = portalGraphql(`
  */
 const FundWithdrawToken = portalGraphql(`
   mutation FundWithdrawToken(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
     $input: FundWithdrawTokenInput!
   ) {
     FundWithdrawToken(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
     ) {
       transactionHash
@@ -96,15 +105,17 @@ const FundWithdrawToken = portalGraphql(`
  */
 const CryptoCurrencyWithdrawToken = portalGraphql(`
   mutation CryptoCurrencyWithdrawToken(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
     $input: CryptoCurrencyWithdrawTokenInput!
   ) {
     CryptoCurrencyWithdrawToken(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
     ) {
       transactionHash
@@ -117,15 +128,17 @@ const CryptoCurrencyWithdrawToken = portalGraphql(`
  */
 const StableCoinWithdrawToken = portalGraphql(`
   mutation StableCoinWithdrawToken(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
     $input: StableCoinWithdrawTokenInput!
   ) {
     StableCoinWithdrawToken(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
     ) {
       transactionHash
@@ -138,15 +151,17 @@ const StableCoinWithdrawToken = portalGraphql(`
  */
 const DepositWithdrawToken = portalGraphql(`
   mutation DepositWithdrawToken(
-    $address: String!,
-    $from: String!,
-    $challengeResponse: String!,
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
     $input: DepositWithdrawTokenInput!
   ) {
     DepositWithdrawToken(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
       input: $input
     ) {
       transactionHash
@@ -190,22 +205,35 @@ export const withdrawFunction = withAccessControl(
     });
 
     // Token input format (for tokens)
-    const tokenInput = {
+    const tokenInput: VariablesOf<
+      | typeof EquityWithdrawToken
+      | typeof FundWithdrawToken
+      | typeof CryptoCurrencyWithdrawToken
+      | typeof StableCoinWithdrawToken
+      | typeof DepositWithdrawToken
+    >["input"] = {
       token: underlyingAssetAddress,
       to,
       amount: parseUnits(amount.toString(), asset.decimals).toString(),
     };
 
     // Common parameters for token mutations
-    const tokenParams = {
+    const tokenParams: VariablesOf<
+      | typeof EquityWithdrawToken
+      | typeof FundWithdrawToken
+      | typeof CryptoCurrencyWithdrawToken
+      | typeof StableCoinWithdrawToken
+      | typeof DepositWithdrawToken
+    > = {
       address: targetAddress,
       from: user.wallet,
       input: tokenInput,
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
     };
 
     switch (assettype) {
@@ -237,11 +265,12 @@ export const withdrawFunction = withAccessControl(
                 to,
                 amount: bondFormattedAmount,
               },
-              challengeResponse: await handleChallenge(
+              ...(await handleChallenge(
+                user,
                 user.wallet,
                 verificationCode,
                 verificationType
-              ),
+              )),
             }
           );
 
@@ -262,11 +291,12 @@ export const withdrawFunction = withAccessControl(
                 to,
                 amount: bondFormattedAmount,
               },
-              challengeResponse: await handleChallenge(
+              ...(await handleChallenge(
+                user,
                 user.wallet,
                 verificationCode,
                 verificationType
-              ),
+              )),
             }
           );
 

@@ -18,12 +18,19 @@ import type { CreateCryptoCurrencyInput } from "./create-schema";
  * Creates a new cryptocurrency contract through the cryptocurrency factory
  */
 const CryptoCurrencyFactoryCreate = portalGraphql(`
-  mutation CryptoCurrencyFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $initialSupply: String!) {
+  mutation CryptoCurrencyFactoryCreate(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: CryptoCurrencyFactoryCreateInput!
+  ) {
     CryptoCurrencyFactoryCreate(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      input: {name: $name, symbol: $symbol, decimals: $decimals, initialSupply: $initialSupply}
-      challengeResponse: $challengeResponse
+      input: $input
     ) {
       transactionHash
     }
@@ -93,15 +100,18 @@ export const createCryptoCurrencyFunction = withAccessControl(
       {
         address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
         from: user.wallet,
-        name: assetName,
-        symbol: String(symbol),
-        decimals,
-        initialSupply: initialSupplyExact,
-        challengeResponse: await handleChallenge(
+        input: {
+          name: assetName,
+          symbol: String(symbol),
+          decimals,
+          initialSupply: initialSupplyExact,
+        },
+        ...(await handleChallenge(
+          user,
           user.wallet,
           verificationCode,
           verificationType
-        ),
+        )),
       }
     );
 

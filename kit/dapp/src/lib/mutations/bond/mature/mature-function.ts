@@ -13,14 +13,16 @@ import type { MatureFormInput } from "./mature-schema";
  */
 const MatureBond = portalGraphql(`
   mutation MatureBond(
+    $challengeResponse: String!,
+    $verificationId: String
     $address: String!,
     $from: String!,
-    $challengeResponse: String!
   ) {
     BondMature(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
     ) {
       transactionHash
     }
@@ -50,11 +52,12 @@ export const matureFunction = withAccessControl(
     const response = await portalClient.request(MatureBond, {
       address: address,
       from: user.wallet,
-      challengeResponse: await handleChallenge(
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
+      )),
     });
 
     return safeParse(t.Hashes(), [response.BondMature?.transactionHash]);

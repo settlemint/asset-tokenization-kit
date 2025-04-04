@@ -85,3 +85,13 @@ Common annotations
 {{- toYaml .Values.global.annotations }}
 {{- end }}
 {{- end }}
+
+{{/*
+Common image pull secrets for all deployments/statefulsets
+*/}}
+{{- define "atk.imagePullSecrets" -}}
+imagePullSecrets:
+  - name: image-pull-secret-docker
+  - name: image-pull-secret-ghcr
+  - name: image-pull-secret-harbor
+{{- end }}

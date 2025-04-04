@@ -1,8 +1,10 @@
 import type { User } from "@/lib/auth/types";
 import { getUser } from "@/lib/auth/utils";
-import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { hasuraClient } from "../../settlemint/hasura";
+import { revalidateTag } from "next/cache";
+import { ApiError } from "next/dist/server/api-utils";
+import { headers } from "next/headers";
+import { auth } from "../../auth/auth";
 import type { SetPincodeInput } from "./set-pincode-schema";
 
 /**
@@ -23,17 +25,6 @@ const SetPinCode = portalGraphql(`
 `);
 
 /**
- * GraphQL mutation to update the pincode enabled status for a user
- */
-const UpdateUserPincodeEnabled = hasuraGraphql(`
-  mutation UpdateUserPincodeEnabled($id: String!) {
-    update_user(where: { id: {_eq: $id} }, _set:{ pincode_enabled: true }) {
-      affected_rows
-    }
-  }
-`);
-
-/**
  * Function to set a pincode for wallet verification
  *
  * @param parsedInput - Validated input containing pincode
@@ -48,12 +39,22 @@ export async function setPincodeFunction({
   ctx?: { user: User };
 }) {
   const currentUser = ctx?.user ?? (await getUser());
-  await portalClient.request(SetPinCode, {
+  const { createWalletVerification } = await portalClient.request(SetPinCode, {
     address: currentUser.wallet,
     pincode: pincode.toString(),
   });
-  await hasuraClient.request(UpdateUserPincodeEnabled, {
-    id: currentUser.id,
+  if (!createWalletVerification?.id) {
+    throw new ApiError(500, "Failed to create wallet verification");
+  }
+  const updatedUser: Partial<User> = {
+    pincodeEnabled: true,
+    pincodeVerificationId: createWalletVerification.id,
+  };
+  const headersList = await headers();
+  await auth.api.updateUser({
+    headers: headersList,
+    body: updatedUser,
   });
+  revalidateTag("user");
   return { success: true };
 }

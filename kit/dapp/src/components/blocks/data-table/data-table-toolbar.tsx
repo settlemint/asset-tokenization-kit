@@ -4,7 +4,6 @@
 import { Button } from "@/components/ui/button";
 import type { Table } from "@tanstack/react-table";
 import { FilterXIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { DataTableExport } from "./data-table-export";
 import { DataTableFilter } from "./data-table-filter";
 import { DataTableViewOptions } from "./data-table-view-options";
@@ -21,7 +20,6 @@ export function DataTableToolbar<TData>({
   table,
   enableToolbar = true,
 }: DataTableToolbarProps<TData>) {
-  const t = useTranslations("components.data-table");
   const hasFilters = table.getState().columnFilters.length > 0;
 
   function clearFilters() {

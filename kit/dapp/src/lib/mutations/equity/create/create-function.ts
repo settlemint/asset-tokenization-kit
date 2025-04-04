@@ -17,12 +17,19 @@ import type { CreateEquityInput } from "./create-schema";
  * Creates a new equity contract through the equity factory
  */
 const EquityFactoryCreate = portalGraphql(`
-  mutation EquityFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $equityCategory: String!, $equityClass: String!) {
+  mutation EquityFactoryCreate(
+    $challengeResponse: String!
+    $verificationId: String
+    $address: String!
+    $from: String!
+    $input: EquityFactoryCreateInput!
+  ) {
     EquityFactoryCreate(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
-      input: {name: $name, symbol: $symbol, decimals: $decimals, equityCategory: $equityCategory, equityClass: $equityClass}
-      challengeResponse: $challengeResponse
+      input: $input
     ) {
       transactionHash
     }
@@ -89,16 +96,19 @@ export const createEquityFunction = withAccessControl(
     const createEquityResult = await portalClient.request(EquityFactoryCreate, {
       address: EQUITY_FACTORY_ADDRESS,
       from: user.wallet,
-      name: assetName,
-      symbol: symbol.toString(),
-      decimals,
-      challengeResponse: await handleChallenge(
+      input: {
+        name: assetName,
+        symbol: symbol.toString(),
+        decimals,
+        equityCategory,
+        equityClass,
+      },
+      ...(await handleChallenge(
+        user,
         user.wallet,
         verificationCode,
         verificationType
-      ),
-      equityCategory,
-      equityClass,
+      )),
     });
 
     const createTxHash =
