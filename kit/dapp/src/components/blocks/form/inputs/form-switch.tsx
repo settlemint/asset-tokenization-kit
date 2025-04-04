@@ -5,13 +5,13 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage,
+  FormLabel
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import type { ComponentPropsWithoutRef } from "react";
 import type { FieldValues } from "react-hook-form";
+import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import {
   type BaseFormInputProps,
   type WithHelperTextProps,
@@ -99,7 +99,7 @@ export function FormSwitch<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage />
+            <TranslatableFormFieldMessage />
           </FormItem>
         );
       }}

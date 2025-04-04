@@ -2,7 +2,6 @@
 
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
-import { useTranslations } from "next-intl";
 import * as React from "react";
 import {
   Controller,
@@ -139,20 +138,9 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField();
-  const t = useTranslations();
+  const body = error ? String(error?.message ?? "") : props.children;
 
-  // Process the error message - translate if it's a translation key
-  let displayMessage: string | React.ReactNode = props.children;
-
-  if (error?.message) {
-    const errorMessage = String(error.message);
-    // Check if this is a translation key and translate it if so
-    displayMessage = t.has(errorMessage as never)
-      ? t(errorMessage as never)
-      : errorMessage;
-  }
-
-  if (!displayMessage) {
+  if (!body) {
     return null;
   }
 
@@ -163,7 +151,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
       className={cn("text-destructive text-sm", className)}
       {...props}
     >
-      {displayMessage}
+      {body}
     </p>
   );
 }
@@ -178,4 +166,3 @@ export {
   FormMessage,
   useFormField
 };
-

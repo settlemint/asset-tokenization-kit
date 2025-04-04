@@ -10,8 +10,7 @@ import {
 import {
   FormControl,
   FormField,
-  FormItem,
-  FormMessage,
+  FormItem
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { InputOTP } from "@/components/ui/input-otp";
@@ -23,6 +22,7 @@ import { useCallback, useState } from "react";
 import type { FieldValues, Path, PathValue } from "react-hook-form";
 import { PincodeInput } from "../../auth/pincode-input";
 import { TwoFactorOTPInput } from "../../auth/two-factor-otp-input";
+import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import type { BaseFormInputProps } from "./types";
 
 type InputProps = ComponentPropsWithoutRef<typeof InputOTP>;
@@ -91,7 +91,7 @@ export function FormOtpDialog<T extends FieldValues>({
                     disabled={disabled}
                   />
                 </FormControl>
-                <FormMessage />
+                <TranslatableFormFieldMessage />
               </div>
             </FormItem>
           )}

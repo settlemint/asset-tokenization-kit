@@ -1,4 +1,5 @@
 import {
+  addDays,
   addHours,
   formatDistance,
   formatDuration as formatDurationFns,
@@ -7,6 +8,7 @@ import {
   isFuture,
   parseISO,
   setDefaultOptions,
+  startOfDay,
 } from "date-fns";
 import { ar, de, ja } from "date-fns/locale";
 import {
@@ -185,7 +187,7 @@ export function getTimeUnitSeconds(unit: TimeUnit): number {
     case "months":
       return 2592000; // 30 days
     default:
-      return 0;
+      throw new Error("Unsupported time unit");
   }
 }
 
@@ -208,10 +210,7 @@ export function getFormattedFutureDate(hoursFromNow = 1): string {
  * @returns Formatted date string suitable for datetime inputs
  */
 export function getTomorrowMidnight(): string {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-
+  const tomorrow = startOfDay(addDays(new Date(), 1));
   return formatToDateTimeInput(tomorrow);
 }
 

@@ -20,7 +20,7 @@ const serverEnvironmentSchema = t.Object(
     }),
 
     // Define APP_URL as part of the schema with a default value
-    APP_URL: t.String(),
+    APP_URL: t.String({ format: "uri" }),
   },
   { $id: "ServerEnvironment" }
 );

@@ -10,9 +10,9 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage,
+  FormLabel
 } from "@/components/ui/form";
+import { TranslatableFormFieldMessage } from "../form/form-field-translatable-message";
 import { PincodeInput } from "./pincode-input";
 
 // TypeBox schema for the pincode form
@@ -51,7 +51,7 @@ export function PincodeForm({ onSubmit }: PincodeFormProps) {
               <FormControl>
                 <PincodeInput value={field.value} onChange={field.onChange} />
               </FormControl>
-              <FormMessage />
+              <TranslatableFormFieldMessage />
             </FormItem>
           )}
         />

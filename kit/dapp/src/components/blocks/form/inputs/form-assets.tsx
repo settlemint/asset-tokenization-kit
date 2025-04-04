@@ -10,8 +10,7 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage,
+  FormLabel
 } from "@/components/ui/form";
 import {
   Popover,
@@ -32,6 +31,7 @@ import type { FieldValues } from "react-hook-form";
 import useSWR from "swr";
 import type { Address } from "viem";
 import { EvmAddress } from "../../evm-address/evm-address";
+import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import {
   type BaseFormInputProps,
   type WithPlaceholderProps,
@@ -131,7 +131,7 @@ export function FormAssets<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage />
+            <TranslatableFormFieldMessage />
           </FormItem>
         );
       }}
