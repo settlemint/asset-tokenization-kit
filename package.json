@@ -46,7 +46,10 @@
     "test:e2e": "bun run --cwd kit/e2e test:e2e",
     "test:e2e:ui": "bun run --cwd kit/e2e test:e2e:ui",
     "secrets": "op inject --force -i kit/charts/atk/values-example.1p.yaml -o kit/charts/atk/values-example.yaml",
-    "helm:delete": "helm uninstall atk -n atk --wait && kubectl delete pvc --all -n atk"
+    "abis": "bun run --cwd kit/contracts dependencies && bun run --cwd kit/contracts compile:forge && bun run --cwd kit/contracts abi-output && mkdir -p kit/charts/atk/charts/portal/abis && cp kit/contracts/portal/*.json kit/charts/atk/charts/portal/abis/",
+    "helm:install": "bun run secrets && bun run abis && helm upgrade --install atk kit/charts/atk -f kit/charts/atk/values-example.yaml -n atk --create-namespace",
+    "helm:delete": "helm uninstall atk -n atk --wait && kubectl delete pvc --all -n atk",
+    "helm:reset": "bun run helm:delete && bun run helm:install"
   },
   "dependencies": {},
   "devDependencies": {
