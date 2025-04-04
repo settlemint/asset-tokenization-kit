@@ -8,7 +8,6 @@ import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
-// Export the component directly with static properties
 export function Configuration() {
   const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
