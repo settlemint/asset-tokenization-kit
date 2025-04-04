@@ -24,9 +24,9 @@ import { PortfolioStatsData } from "../../../generated/schema";
 export function newPortfolioStatsData(
   account: Bytes,
   asset: Bytes,
-  assetType: string,
+  assetType: string
 ): PortfolioStatsData {
-  const portfolioStats = new PortfolioStatsData("auto");
+  const portfolioStats = new PortfolioStatsData(1); // id is set by the indexer
 
   // Filters
   portfolioStats.account = account;
