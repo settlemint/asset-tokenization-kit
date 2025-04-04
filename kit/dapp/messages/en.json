@@ -2013,6 +2013,22 @@
       "latest-events": {
         "view-all": "View more events"
       },
+      "permissions": {
+        "table": {
+          "title": "Token permissions",
+          "columns": {
+            "asset-header": "Asset",
+            "actions-header": "Actions",
+            "last-activity-header": "Last activity",
+            "roles-header": "Roles"
+          },
+          "actions": {
+            "edit-roles": "Edit roles",
+            "revoke-all": "Revoke all"
+          },
+          "not-enough-permissions": "You need to be an admin or a user manager for this asset to change permissions."
+        }
+      },
       "platform-management": "Platform management",
       "roles": {
         "admin": "Admin",
