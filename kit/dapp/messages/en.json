@@ -2006,6 +2006,21 @@
       "latest-events": {
         "view-all": "View more events"
       },
+      "permissions": {
+        "table": {
+          "title": "Token permissions",
+          "columns": {
+            "asset-header": "Asset",
+            "actions-header": "Actions",
+            "last-activity-header": "Last activity",
+            "roles-header": "Roles"
+          },
+          "actions": {
+            "edit-roles": "Edit roles",
+            "revoke-all": "Revoke all"
+          }
+        }
+      },
       "platform-management": "Platform management",
       "roles": {
         "admin": "Admin",

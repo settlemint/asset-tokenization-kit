@@ -1,5 +1,6 @@
 "use server";
 
+import { Role, ROLES } from "@/lib/config/roles";
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import { AssetBalanceFragment } from "@/lib/queries/asset-balance/asset-balance-fragment";
 import {
@@ -25,7 +26,7 @@ const UserAssetsBalance = theGraphGraphqlKit(
   [AssetBalanceFragment]
 );
 
-export type UserAsset = AssetBalance;
+export type UserAsset = AssetBalance & { roles: Role[] };
 
 type AssetType = AssetBalance["asset"]["type"];
 
@@ -88,9 +89,50 @@ export const getUserAssetsBalance = cache(async (wallet: Address) => {
     })
   );
 
+  const balancesWithRoles = validatedUserAssetsBalance.map(
+    (balance): UserAsset => ({
+      ...balance,
+      roles: getRoles(wallet, balance),
+    })
+  );
+
   return {
-    balances: validatedUserAssetsBalance,
+    balances: balancesWithRoles,
     distribution,
     total: total.toString(),
   };
 });
+
+function getRoles(wallet: Address, balance: AssetBalance): Role[] {
+  const roles: Role[] = [];
+  const userWalletAddress = getAddress(wallet);
+  const roleConfigs = [
+    {
+      permissions: balance.asset.admins,
+      role: ROLES.DEFAULT_ADMIN_ROLE.contractRole,
+    },
+    {
+      permissions: balance.asset.supplyManagers,
+      role: ROLES.SUPPLY_MANAGEMENT_ROLE.contractRole,
+    },
+    {
+      permissions: balance.asset.userManagers,
+      role: ROLES.USER_MANAGEMENT_ROLE.contractRole,
+    },
+    {
+      permissions: balance.asset.auditors,
+      role: ROLES.AUDITOR_ROLE.contractRole,
+    },
+  ];
+
+  for (const { permissions, role } of roleConfigs) {
+    if (
+      permissions?.some(
+        (permission) => getAddress(permission.id) === userWalletAddress
+      )
+    ) {
+      roles.push(role);
+    }
+  }
+  return roles;
+}

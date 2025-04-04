@@ -32,6 +32,7 @@ export const AssetBalanceFragment = theGraphGraphqlKit(
       userManagers { ...PermissionFragment }
       ... on StableCoin {
         paused
+        auditors { ...PermissionFragment }
       }
       ... on Bond {
         paused
@@ -44,6 +45,7 @@ export const AssetBalanceFragment = theGraphGraphqlKit(
       }
       ... on Deposit {
         paused
+        auditors { ...PermissionFragment }
       }
     }
   }
