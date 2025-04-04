@@ -736,7 +736,7 @@ type UnderlyingAssetWithdrawnEvent implements AssetEvent
 # FixedYield-Specific Custom Event
 # --------------------------------------------------
 
-type FixedYieldCreatedEvent @entity {
+type FixedYieldCreatedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
