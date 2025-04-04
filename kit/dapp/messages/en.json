@@ -531,6 +531,7 @@
         "loading": "Loading...",
         "no-user-found": "No user found.",
         "recent-users": "Recently selected",
+        "search-contact-placeholder": "Search for a contact...",
         "search-placeholder": "Search for a user..."
       }
     },
@@ -875,6 +876,8 @@
             "address-placeholder": "Search for a user",
             "description": "Choose who will receive the assets",
             "manual-entry-link": "Enter address manually...",
+            "search-contact-link": "Search for a contact instead...",
+            "search-in-contacts": "Search in my contacts",
             "search-user-link": "Search for a user instead...",
             "title": "Select Recipients"
           }
@@ -1024,6 +1027,8 @@
         "address-placeholder": "Search for a user",
         "description": "Enter a wallet address to send assets directly.",
         "manual-entry-link": "Enter address manually...",
+        "search-contact-link": "Search for a contact instead...",
+        "search-in-contacts": "Search in my contacts",
         "search-user-link": "Search for a user instead...",
         "title": "Select Recipients",
         "wallet-address-label": "Wallet Address"

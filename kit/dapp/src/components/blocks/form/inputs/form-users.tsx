@@ -21,6 +21,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { authClient } from "@/lib/auth/client";
 import type { User } from "@/lib/auth/types";
 import type { Contact } from "@/lib/queries/contact/contact-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
@@ -69,6 +70,14 @@ export function FormUsers<T extends FieldValues>({
   const [open, setOpen] = useState(false);
   const t = useTranslations("components.form.users");
   const defaultPlaceholder = t("default-placeholder");
+  const { data: session } = authClient.useSession();
+  const userRole = session?.user?.role;
+
+  // Determine search placeholder text based on user role
+  const searchPlaceholder =
+    userRole === "user"
+      ? t("search-contact-placeholder")
+      : t("search-placeholder");
 
   return (
     <FormField
@@ -111,7 +120,7 @@ export function FormUsers<T extends FieldValues>({
               <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                 <Command shouldFilter={false}>
                   <CommandInput
-                    placeholder={t("search-placeholder")}
+                    placeholder={searchPlaceholder}
                     className="h-9"
                   />
                   <FormUsersList
