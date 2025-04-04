@@ -3,11 +3,12 @@ import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
+import { isValidFutureDate } from "@/lib/utils/date";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
-import { addHours } from "date-fns";
 import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, type UseFormReturn } from "react-hook-form";
 
+// Export the component directly with static properties
 export function Configuration() {
   const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
@@ -15,14 +16,6 @@ export function Configuration() {
     value: currency,
     label: currency,
   }));
-
-  // Calculate default maturity date (1 hour from now)
-  const oneHourFromNow = addHours(new Date(), 1);
-  const defaultMaturityDate =
-    oneHourFromNow.toLocaleDateString("sv").replace(/\//g, "-") +
-    "T" +
-    oneHourFromNow.toLocaleTimeString("sv").slice(0, 5);
-  const minMaturityDate = defaultMaturityDate;
 
   return (
     <FormStep
@@ -52,8 +45,6 @@ export function Configuration() {
           name="maturityDate"
           label={t("parameters.bonds.maturity-date-label")}
           required
-          min={minMaturityDate}
-          defaultValue={defaultMaturityDate}
         />
         <FormAssets
           control={control}
@@ -82,10 +73,36 @@ export function Configuration() {
   );
 }
 
+/**
+ * Custom validation function for maturity date
+ *
+ * Note: We use this custom validation approach with beforeValidate instead of
+ * relying on the schema refinement defined in create-schema.ts because
+ * refinement properties don't work reliably with @hookform/typebox resolver.
+ * This ensures the validation is properly applied and error messages are displayed.
+ */
+const validateMaturityDate = async (form: UseFormReturn<CreateBondInput>) => {
+  const maturityDate = form.getValues("maturityDate");
+  if (!maturityDate) {
+    return;
+  }
+
+  if (!isValidFutureDate(maturityDate, 1)) {
+    form.setError("maturityDate", {
+      type: "manual",
+      message: "Maturity date must be at least 1 hour in the future"
+    });
+
+    return Promise.reject(new Error("Maturity date must be at least 1 hour in the future"));
+  }
+};
+
 Configuration.validatedFields = [
   "cap",
   "faceValue",
-  "maturityDate",
   "underlyingAsset",
   "price",
 ] satisfies (keyof CreateBondInput)[];
+
+// Using beforeValidate for custom validation as TypeBox refinement doesn't work well with @hookform/typebox resolver
+Configuration.beforeValidate = [validateMaturityDate];

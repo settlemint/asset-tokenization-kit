@@ -5,6 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { createBond } from "@/lib/mutations/bond/create/create-action";
 import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
 import type { User } from "@/lib/queries/user/user-schema";
+import { getTomorrowMidnight } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -60,6 +61,7 @@ export function CreateBondForm({
             amount: 1,
             currency: userDetails.currency,
           },
+          maturityDate: getTomorrowMidnight(),
           verificationType: "pincode",
           predictedAddress: "0x0000000000000000000000000000000000000000",
           assetAdmins: [],

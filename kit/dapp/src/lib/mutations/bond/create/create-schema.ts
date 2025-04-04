@@ -1,7 +1,7 @@
 import { AssetAdminsSchemaFragment } from "@/lib/mutations/common/asset-admins-schema";
 import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
+import { isValidFutureDate } from "@/lib/utils/date";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
-import { addHours, isFuture } from "date-fns";
 
 /**
  * TypeBox schema for validating bond creation inputs
@@ -63,12 +63,11 @@ export function CreateBondSchema({
       }),
       maturityDate: t.String({
         description: "Maturity date of the bond",
+        // NOTE: This refinement validation doesn't work reliably with @hookform/typebox resolver.
+        // We implement a custom validation in the Configuration component using beforeValidate
+        // to ensure proper validation and error display.
         refinement: {
-          predicate: (value: string) => {
-            const selectedDate = new Date(value);
-            const minDate = addHours(new Date(), 1);
-            return isFuture(selectedDate) && selectedDate >= minDate;
-          },
+          predicate: (date: string | Date) => isValidFutureDate(date, 1),
           message: "Maturity date must be at least 1 hour in the future",
         },
       }),
@@ -87,7 +86,7 @@ export function CreateBondSchema({
         description: "Predicted address of the bond",
         refinement: {
           predicate: isAddressAvailable,
-          message: "bond.duplicate",
+          message: "Address already in use",
         },
       }),
       price: t.Price({
