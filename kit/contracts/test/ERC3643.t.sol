@@ -3,12 +3,8 @@ pragma solidity ^0.8.27;
 
 import { Test, console, Vm } from "forge-std/Test.sol";
 import { TREXGateway } from "../contracts/shared/erc3643/factory/TREXGateway.sol";
-import { TREXFactory } from "../contracts/shared/erc3643/factory/TREXFactory.sol";
-import { ImplementationAuthority } from "../contracts/shared/onchainid/proxy/ImplementationAuthority.sol";
-import { IdFactory } from "../contracts/shared/onchainid/factory/IdFactory.sol";
 import { TREXImplementationAuthority } from
     "../contracts/shared/erc3643/proxy/authority/TREXImplementationAuthority.sol";
-import { Identity } from "../contracts/shared/onchainid/Identity.sol";
 import { ClaimTopicsRegistry } from "../contracts/shared/erc3643/registry/implementation/ClaimTopicsRegistry.sol";
 import { TrustedIssuersRegistry } from "../contracts/shared/erc3643/registry/implementation/TrustedIssuersRegistry.sol";
 import { IdentityRegistryStorage } from
@@ -17,14 +13,19 @@ import { ModularCompliance } from "../contracts/shared/erc3643/compliance/modula
 import { Token } from "../contracts/shared/erc3643/token/Token.sol";
 import { ITREXImplementationAuthority } from
     "../contracts/shared/erc3643/proxy/authority/ITREXImplementationAuthority.sol";
-import { ITREXFactory } from "../contracts/shared/erc3643/factory/ITREXFactory.sol";
 import { IdentityRegistry } from "../contracts/shared/erc3643/registry/implementation/IdentityRegistry.sol";
+import { PlatformFactory } from "../contracts/shared/PlatformFactory.sol";
+import { ITREXFactory } from "../contracts/shared/erc3643/factory/ITREXFactory.sol";
 
 contract GatewayTest is Test {
-    TREXGateway public gateway;
+    TREXImplementationAuthority public tokenImplementationAuthority;
+    PlatformFactory public platformFactory;
 
     address public predeployer = makeAddr("Predeployer");
-    address public organizationAdmin = makeAddr("Organization Admin");
+    address public platformAdmin = makeAddr("Platform Admin");
+    address public issuer1 = makeAddr("Issuer 1");
+    address public issuer2 = makeAddr("Issuer 2");
+    address public issuer3 = makeAddr("Issuer 3");
     address public tokenAgent1 = makeAddr("Token Agent 1");
     address public tokenAgent2 = makeAddr("Token Agent 2");
     address public tokenAgent3 = makeAddr("Token Agent 3");
@@ -47,8 +48,7 @@ contract GatewayTest is Test {
         ModularCompliance modularCompliance = new ModularCompliance();
         Token token = new Token();
 
-        TREXImplementationAuthority tokenImplementationAuthority =
-            new TREXImplementationAuthority(true, address(0), address(0));
+        tokenImplementationAuthority = new TREXImplementationAuthority(true, address(0), address(0));
         tokenImplementationAuthority.addAndUseTREXVersion(
             ITREXImplementationAuthority.Version({ major: 4, minor: 2, patch: 0 }),
             ITREXImplementationAuthority.TREXContracts({
@@ -61,30 +61,40 @@ contract GatewayTest is Test {
             })
         );
 
-        // Onchain ID
+        platformFactory = new PlatformFactory();
 
-        Identity identity = new Identity(organizationAdmin, true);
-        ImplementationAuthority identityImplementationAuthority = new ImplementationAuthority(address(identity));
-        IdFactory identityFactory = new IdFactory(address(identityImplementationAuthority));
+        vm.stopPrank();
+    }
 
-        // Factory
-        TREXFactory factory = new TREXFactory(address(tokenImplementationAuthority), address(identityFactory));
-        identityFactory.addTokenFactory(address(factory));
+    function onboardFirstAdmin(
+        address platformAdmin_,
+        address tokenImplementationAuthority_
+    )
+        public
+        returns (TREXGateway gateway)
+    {
+        vm.startPrank(platformAdmin_);
+        gateway = platformFactory.createPlatform(platformAdmin_, tokenImplementationAuthority_);
+        vm.stopPrank();
+        return gateway;
+    }
 
-        // Gateway
-        gateway = new TREXGateway(address(factory), true);
+    function onboardIssuer(TREXGateway gateway_, address platformAdmin_, address issuer_) public {
+        vm.startPrank(platformAdmin_);
+        gateway_.addDeployer(issuer_);
+        vm.stopPrank();
+    }
 
-        // Transfer ownership of the factory to the gateway
-        factory.transferOwnership(address(gateway));
-
+    function deployTokenSuite(TREXGateway gateway_, address issuer_, address[] memory managers_) public {
+        vm.startPrank(issuer_);
         // Start recording logs to capture events
         vm.recordLogs();
 
         // Deploy token
-        gateway.deployTREXSuite(
+        gateway_.deployTREXSuite(
             ITREXFactory.TokenDetails({
                 // address of the owner of all contracts
-                owner: predeployer,
+                owner: issuer_,
                 // name of the token
                 name: "Test Token",
                 // symbol / ticker of the token
@@ -100,7 +110,7 @@ contract GatewayTest is Test {
                 // list of agents of the identity registry (can be set to an AgentManager contract)
                 irAgents: new address[](0),
                 // list of agents of the token
-                tokenAgents: new address[](0),
+                tokenAgents: managers_,
                 // modules to bind to the compliance, indexes are corresponding to the settings callData indexes
                 // if a module doesn't require settings, it can be added at the end of the array, at index >
                 // settings.length
@@ -164,9 +174,28 @@ contract GatewayTest is Test {
         console.log("modularComplianceAddress", modularComplianceAddress);
     }
 
-    function test_Mint() public {
-        vm.startPrank(predeployer);
-        // Mint 1000 tokens to the owner
-        Token(tokenAddress).mint(address(this), 1000);
+    function test_OnboardFirstAdmin() public {
+        TREXGateway gateway = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        assertTrue(gateway.getPublicDeploymentStatus());
     }
+
+    function test_OnboardIssuer() public {
+        TREXGateway gateway = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        onboardIssuer(gateway, platformAdmin, issuer1);
+    }
+
+    function test_DeployTokenSuite() public {
+        TREXGateway gateway = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        onboardIssuer(gateway, platformAdmin, issuer1);
+
+        address[] memory tokenAgents = new address[](1);
+        tokenAgents[0] = tokenAgent1;
+        deployTokenSuite(gateway, issuer1, tokenAgents);
+    }
+
+    // function test_Mint() public {
+    //     vm.startPrank(predeployer);
+    //     // Mint 1000 tokens to the owner
+    //     Token(tokenAddress).mint(address(this), 1000);
+    // }
 }
