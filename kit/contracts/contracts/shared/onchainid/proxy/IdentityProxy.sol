@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.27;
 
-import "../interface/IImplementationAuthority.sol";
+import { IImplementationAuthority } from "../interface/IImplementationAuthority.sol";
+
+error ZeroAddressNotAllowed();
+error InitializationFailed();
 
 contract IdentityProxy {
     /**
@@ -12,8 +15,8 @@ contract IdentityProxy {
      *  deployed at an address listed in the ImplementationAuthority contract
      */
     constructor(address _implementationAuthority, address initialManagementKey) {
-        require(_implementationAuthority != address(0), "invalid argument - zero address");
-        require(initialManagementKey != address(0), "invalid argument - zero address");
+        if (_implementationAuthority == address(0)) revert ZeroAddressNotAllowed();
+        if (initialManagementKey == address(0)) revert ZeroAddressNotAllowed();
 
         // solhint-disable-next-line no-inline-assembly
         assembly {
@@ -24,7 +27,7 @@ contract IdentityProxy {
 
         // solhint-disable-next-line avoid-low-level-calls
         (bool success,) = logic.delegatecall(abi.encodeWithSignature("initialize(address)", initialManagementKey));
-        require(success, "Initialization failed.");
+        if (!success) revert InitializationFailed();
     }
 
     /**
@@ -52,6 +55,7 @@ contract IdentityProxy {
     /**
      * @dev receive function to handle direct ETH transfers
      */
+    // solhint-disable-next-line no-complex-fallback
     receive() external payable {
         address logic = IImplementationAuthority(implementationAuthority()).getImplementation();
 

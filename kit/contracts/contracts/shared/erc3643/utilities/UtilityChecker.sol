@@ -13,7 +13,7 @@ import { IUtilityChecker } from "./IUtilityChecker.sol";
 
 contract UtilityChecker is IUtilityChecker, OwnableUpgradeable, UUPSUpgradeable {
     function initialize() external initializer {
-        __Ownable_init();
+        __Ownable_init(_msgSender());
     }
 
     /// @inheritdoc IUtilityChecker

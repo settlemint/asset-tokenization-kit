@@ -6,8 +6,6 @@ import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { IdFactory } from "../factory/IdFactory.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
-using ECDSA for bytes32;
-
 /// A required parameter was set to the Zero address.
 error ZeroAddress();
 /// The maximum number of signers was reached at deployment.
@@ -28,6 +26,8 @@ error ExpiredSignature(bytes signature);
 error SignatureAlreadyRevoked(bytes signature);
 /// Attempted to approve a signature that was not revoked.
 error SignatureNotRevoked(bytes signature);
+/// Call to factory failed.
+error FactoryCallFailed();
 
 contract Gateway is Ownable {
     using Strings for uint256;
@@ -123,11 +123,11 @@ contract Gateway is Ownable {
             revert ExpiredSignature(signature);
         }
 
-        address signer = ECDSA.recover(
-            keccak256(abi.encode("Authorize ONCHAINID deployment", identityOwner, salt, signatureExpiry))
-                .toEthSignedMessageHash(),
-            signature
-        );
+        bytes32 messageHash =
+            keccak256(abi.encode("Authorize ONCHAINID deployment", identityOwner, salt, signatureExpiry));
+        // Ethereum signed message prefix
+        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", messageHash));
+        address signer = ECDSA.recover(prefixedHash, signature);
 
         if (!approvedSigners[signer]) {
             revert UnapprovedSigner(signer);
@@ -169,12 +169,12 @@ contract Gateway is Ownable {
             revert ExpiredSignature(signature);
         }
 
-        address signer = ECDSA.recover(
-            keccak256(
-                abi.encode("Authorize ONCHAINID deployment", identityOwner, salt, managementKeys, signatureExpiry)
-            ).toEthSignedMessageHash(),
-            signature
+        bytes32 messageHash = keccak256(
+            abi.encode("Authorize ONCHAINID deployment", identityOwner, salt, managementKeys, signatureExpiry)
         );
+        // Ethereum signed message prefix
+        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", messageHash));
+        address signer = ECDSA.recover(prefixedHash, signature);
 
         if (!approvedSigners[signer]) {
             revert UnapprovedSigner(signer);
@@ -240,7 +240,8 @@ contract Gateway is Ownable {
      *  @param data the data to call on the factory.
      */
     function callFactory(bytes memory data) external onlyOwner {
+        // solhint-disable-next-line avoid-low-level-calls
         (bool success,) = address(idFactory).call(data);
-        require(success, "Gateway: call to factory failed");
+        if (!success) revert FactoryCallFailed();
     }
 }
