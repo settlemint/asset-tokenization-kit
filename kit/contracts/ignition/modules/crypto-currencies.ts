@@ -16,13 +16,13 @@ const CryptoCurrenciesModule = buildModule("CryptoCurrenciesModule", (m) => {
     {
       id: "createBTC",
       from: deployer,
-    },
+    }
   );
   const readBTCAddress = m.readEventArgument(
     createBTC,
     "CryptoCurrencyCreated",
     "token",
-    { id: "readBTCAddress" },
+    { id: "readBTCAddress" }
   );
   const btc = m.contractAt("CryptoCurrency", readBTCAddress, { id: "btc" });
 
