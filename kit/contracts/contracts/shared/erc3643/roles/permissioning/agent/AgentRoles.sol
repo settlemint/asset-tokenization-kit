@@ -33,7 +33,7 @@ contract AgentRoles is Ownable {
     /// modifiers
 
     modifier onlyAdmin() {
-        require(owner() == msg.sender || isAgentAdmin(_msgSender()), SenderIsNotAdmin());
+        require(owner() == _msgSender() || isAgentAdmin(_msgSender()), SenderIsNotAdmin());
         _;
     }
 

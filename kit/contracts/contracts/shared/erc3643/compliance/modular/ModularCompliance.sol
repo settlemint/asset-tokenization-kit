@@ -3,12 +3,7 @@ pragma solidity ^0.8.27;
 
 import { OwnableOnceNext2StepUpgradeable } from "../../utils/OwnableOnceNext2StepUpgradeable.sol";
 import { TokenBound, TokenUnbound } from "../../ERC-3643/IERC3643Compliance.sol";
-import {
-    IModularCompliance,
-    ModuleRemoved,
-    ModuleAdded,
-    ModuleInteraction
-} from "./IModularCompliance.sol";
+import { IModularCompliance, ModuleRemoved, ModuleAdded, ModuleInteraction } from "./IModularCompliance.sol";
 import { MCStorage } from "./MCStorage.sol";
 import { IModule } from "./modules/IModule.sol";
 import { ZeroAddress, ZeroValue } from "../../errors/InvalidArgumentErrors.sol";
@@ -46,7 +41,7 @@ contract ModularCompliance is IModularCompliance, OwnableOnceNext2StepUpgradeabl
      * @dev Throws if called by any address that is not a token bound to the compliance.
      */
     modifier onlyToken() {
-        require(msg.sender == _tokenBound, AddressNotATokenBoundToComplianceContract());
+        require(_msgSender() == _tokenBound, AddressNotATokenBoundToComplianceContract());
         _;
     }
 
@@ -58,7 +53,9 @@ contract ModularCompliance is IModularCompliance, OwnableOnceNext2StepUpgradeabl
      *  @dev See {IERC3643Compliance-bindToken}.
      */
     function bindToken(address _token) external override {
-        require(owner() == msg.sender || (_tokenBound == address(0) && msg.sender == _token), OnlyOwnerOrTokenCanCall());
+        require(
+            owner() == _msgSender() || (_tokenBound == address(0) && _msgSender() == _token), OnlyOwnerOrTokenCanCall()
+        );
         require(_token != address(0), ZeroAddress());
         _tokenBound = _token;
         emit TokenBound(_token);
@@ -68,7 +65,7 @@ contract ModularCompliance is IModularCompliance, OwnableOnceNext2StepUpgradeabl
      *  @dev See {IERC3643Compliance-unbindToken}.
      */
     function unbindToken(address _token) external override {
-        require(owner() == msg.sender || msg.sender == _token, OnlyOwnerOrTokenCanCall());
+        require(owner() == _msgSender() || _msgSender() == _token, OnlyOwnerOrTokenCanCall());
         require(_token == _tokenBound, TokenNotBound());
         require(_token != address(0), ZeroAddress());
         delete _tokenBound;

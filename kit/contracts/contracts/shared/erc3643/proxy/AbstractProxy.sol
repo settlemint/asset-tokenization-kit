@@ -7,18 +7,19 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 import { ZeroAddress } from "../errors/InvalidArgumentErrors.sol";
 import { InvalidImplementationAuthority } from "../errors/CommonErrors.sol";
 import { ImplementationAuthoritySet } from "../events/CommonEvents.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
 /// Errors
 
 /// @dev Thrown when called by other than the current implementation authority.
 error OnlyCurrentImplementationAuthorityCanCall();
 
-abstract contract AbstractProxy is IProxy, Initializable {
+abstract contract AbstractProxy is IProxy, Initializable, Context {
     /**
      *  @dev See {IProxy-setImplementationAuthority}.
      */
     function setImplementationAuthority(address _newImplementationAuthority) external override {
-        require(msg.sender == getImplementationAuthority(), OnlyCurrentImplementationAuthorityCanCall());
+        require(_msgSender() == getImplementationAuthority(), OnlyCurrentImplementationAuthorityCanCall());
         require(_newImplementationAuthority != address(0), ZeroAddress());
         require(
             (ITREXImplementationAuthority(_newImplementationAuthority)).getTokenImplementation() != address(0)

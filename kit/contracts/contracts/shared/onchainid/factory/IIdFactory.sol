@@ -73,8 +73,8 @@ interface IIdFactory {
     /**
      *  @dev function used to link a new wallet to an existing identity
      *  @param _newWallet the address of the wallet to link
-     *  requires msg.sender to be linked to an existing onchainid
-     *  the _newWallet will be linked to the same OID contract as msg.sender
+     *  requires _msgSender() to be linked to an existing onchainid
+     *  the _newWallet will be linked to the same OID contract as _msgSender()
      *  _newWallet cannot be linked to an OID yet
      *  _newWallet cannot be address 0
      *  cannot link more than 100 wallets to an OID, for gas consumption reason
@@ -84,8 +84,8 @@ interface IIdFactory {
     /**
      *  @dev function used to unlink a wallet from an existing identity
      *  @param _oldWallet the address of the wallet to unlink
-     *  requires msg.sender to be linked to the same onchainid as _oldWallet
-     *  msg.sender cannot be _oldWallet to keep at least 1 wallet linked to any OID
+     *  requires _msgSender() to be linked to the same onchainid as _oldWallet
+     *  _msgSender() cannot be _oldWallet to keep at least 1 wallet linked to any OID
      *  _oldWallet cannot be address 0
      */
     function unlinkWallet(address _oldWallet) external;

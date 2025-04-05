@@ -46,10 +46,10 @@ contract OwnableOnceNext2StepUpgradeable is Initializable, ContextUpgradeable {
 
     /// * @dev The new owner accepts the ownership transfer.
     function acceptOwnership() public virtual {
-        if (_getStorage().pendingOwner != msg.sender) {
-            revert OwnableUnauthorizedAccount(msg.sender);
+        if (_getStorage().pendingOwner != _msgSender()) {
+            revert OwnableUnauthorizedAccount(_msgSender());
         }
-        _transferOwnership(msg.sender);
+        _transferOwnership(_msgSender());
     }
 
     /// @dev Returns the address of the owner.
@@ -60,7 +60,7 @@ contract OwnableOnceNext2StepUpgradeable is Initializable, ContextUpgradeable {
 
     // solhint-disable-next-line func-name-mixedcase
     function __Ownable_init() internal onlyInitializing {
-        _transferOwnership(msg.sender);
+        _transferOwnership(_msgSender());
     }
 
     /// @dev Transfers ownership of the contract to a new address.
@@ -74,7 +74,7 @@ contract OwnableOnceNext2StepUpgradeable is Initializable, ContextUpgradeable {
 
     /// @dev Checks if the caller is the owner.
     function _checkOwner() internal view virtual {
-        require(_owner == msg.sender, OwnableUnauthorizedAccount(msg.sender));
+        require(_owner == _msgSender(), OwnableUnauthorizedAccount(_msgSender()));
     }
 
     function _getStorage() internal pure returns (Ownable2StepsStorage storage s) {

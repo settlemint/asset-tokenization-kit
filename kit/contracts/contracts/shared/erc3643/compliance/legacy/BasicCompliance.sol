@@ -25,7 +25,7 @@ abstract contract BasicCompliance is AgentRole, ICompliance {
      */
     modifier onlyAdmin() {
         require(
-            owner() == msg.sender || (AgentRole(address(tokenBound))).isAgent(msg.sender),
+            owner() == _msgSender() || (AgentRole(address(tokenBound))).isAgent(_msgSender()),
             "can be called only by Admin address"
         );
         _;
@@ -55,7 +55,7 @@ abstract contract BasicCompliance is AgentRole, ICompliance {
      */
     function bindToken(address _token) external override {
         require(
-            owner() == msg.sender || (address(tokenBound) == address(0) && msg.sender == _token),
+            owner() == _msgSender() || (address(tokenBound) == address(0) && _msgSender() == _token),
             "only owner or token can call"
         );
         tokenBound = IToken(_token);
@@ -66,7 +66,7 @@ abstract contract BasicCompliance is AgentRole, ICompliance {
      *  @dev See {ICompliance-unbindToken}.
      */
     function unbindToken(address _token) external override {
-        require(owner() == msg.sender || msg.sender == _token, "only owner or token can call");
+        require(owner() == _msgSender() || _msgSender() == _token, "only owner or token can call");
         require(_token == address(tokenBound), "This token is not bound");
         delete tokenBound;
         emit TokenUnbound(_token);
@@ -96,7 +96,7 @@ abstract contract BasicCompliance is AgentRole, ICompliance {
      *  @dev Returns true if the sender corresponds to a token that is bound with the Compliance contract
      */
     function _isToken() internal view returns (bool) {
-        return isTokenBound(msg.sender);
+        return isTokenBound(_msgSender());
     }
 
     /**

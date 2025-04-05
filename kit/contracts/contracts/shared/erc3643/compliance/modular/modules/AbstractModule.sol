@@ -10,8 +10,9 @@ import {
     OnlyComplianceContractCanCall
 } from "../../../errors/ComplianceErrors.sol";
 import { ZeroAddress } from "../../../errors/InvalidArgumentErrors.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
-abstract contract AbstractModule is IModule, IERC165 {
+abstract contract AbstractModule is IModule, IERC165, Context {
     /// compliance contract binding status
     mapping(address => bool) private _complianceBound;
 
@@ -27,7 +28,7 @@ abstract contract AbstractModule is IModule, IERC165 {
      * @dev Throws if called from an address that is not a bound compliance contract.
      */
     modifier onlyComplianceCall() {
-        require(_complianceBound[msg.sender], OnlyBoundComplianceCanCall());
+        require(_complianceBound[_msgSender()], OnlyBoundComplianceCanCall());
         _;
     }
 
@@ -37,7 +38,7 @@ abstract contract AbstractModule is IModule, IERC165 {
     function bindCompliance(address _compliance) external override {
         require(_compliance != address(0), ZeroAddress());
         require(!_complianceBound[_compliance], ComplianceAlreadyBound());
-        require(msg.sender == _compliance, OnlyComplianceContractCanCall());
+        require(_msgSender() == _compliance, OnlyComplianceContractCanCall());
         _complianceBound[_compliance] = true;
         emit ComplianceBound(_compliance);
     }
@@ -47,7 +48,7 @@ abstract contract AbstractModule is IModule, IERC165 {
      */
     function unbindCompliance(address _compliance) external override onlyComplianceCall {
         require(_compliance != address(0), ZeroAddress());
-        require(msg.sender == _compliance, OnlyComplianceContractCanCall());
+        require(_msgSender() == _compliance, OnlyComplianceContractCanCall());
         _complianceBound[_compliance] = false;
         emit ComplianceUnbound(_compliance);
     }

@@ -107,7 +107,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
 
     /**
      *  @dev the constructor initiates the token contract
-     *  msg.sender is set automatically as the owner of the smart contract
+     *  _msgSender() is set automatically as the owner of the smart contract
      *  @param _identityRegistry the address of the Identity registry linked to the token
      *  @param _compliance the address of the compliance contract linked to the token
      *  @param _name the name of the token
@@ -157,7 +157,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      *  @dev See {IERC20-approve}.
      */
     function approve(address _spender, uint256 _amount) external virtual override returns (bool) {
-        _approve(msg.sender, _spender, _amount);
+        _approve(_msgSender(), _spender, _amount);
         return true;
     }
 
@@ -165,7 +165,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      *  @dev See {ERC20-increaseAllowance}.
      */
     function increaseAllowance(address _spender, uint256 _addedValue) external virtual returns (bool) {
-        _approve(msg.sender, _spender, _allowances[msg.sender][_spender] + (_addedValue));
+        _approve(_msgSender(), _spender, _allowances[_msgSender()][_spender] + (_addedValue));
         return true;
     }
 
@@ -173,7 +173,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      *  @dev See {ERC20-decreaseAllowance}.
      */
     function decreaseAllowance(address _spender, uint256 _subtractedValue) external virtual returns (bool) {
-        _approve(msg.sender, _spender, _allowances[msg.sender][_spender] - _subtractedValue);
+        _approve(_msgSender(), _spender, _allowances[_msgSender()][_spender] - _subtractedValue);
         return true;
     }
 
@@ -208,18 +208,18 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      *  @dev See {IToken-pause}.
      */
     function pause() external override onlyAgent whenNotPaused {
-        require(!getAgentRestrictions(msg.sender).disablePause, AgentNotAuthorized(msg.sender, "pause disabled"));
+        require(!getAgentRestrictions(_msgSender()).disablePause, AgentNotAuthorized(_msgSender(), "pause disabled"));
         _tokenPaused = true;
-        emit Paused(msg.sender);
+        emit Paused(_msgSender());
     }
 
     /**
      *  @dev See {IToken-unpause}.
      */
     function unpause() external override onlyAgent whenPaused {
-        require(!getAgentRestrictions(msg.sender).disablePause, AgentNotAuthorized(msg.sender, "pause disabled"));
+        require(!getAgentRestrictions(_msgSender()).disablePause, AgentNotAuthorized(_msgSender(), "pause disabled"));
         _tokenPaused = false;
-        emit Unpaused(msg.sender);
+        emit Unpaused(_msgSender());
     }
 
     /**
@@ -267,8 +267,8 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
         uint256 balance = balanceOf(_from) - (_frozenTokens[_from]);
         require(_amount <= balance, ERC20InsufficientBalance(_from, balance, _amount));
         if (_tokenIdentityRegistry.isVerified(_to) && _tokenCompliance.canTransfer(_from, _to, _amount)) {
-            if (!_defaultAllowances[msg.sender] || _defaultAllowanceOptOuts[_from]) {
-                _approve(_from, msg.sender, _allowances[_from][msg.sender] - (_amount));
+            if (!_defaultAllowances[_msgSender()] || _defaultAllowanceOptOuts[_from]) {
+                _approve(_from, _msgSender(), _allowances[_from][_msgSender()] - (_amount));
             }
             _transfer(_from, _to, _amount);
             _tokenCompliance.transferred(_from, _to, _amount);
@@ -363,7 +363,9 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
         onlyAgent
         returns (bool)
     {
-        require(!getAgentRestrictions(msg.sender).disableRecovery, AgentNotAuthorized(msg.sender, "recovery disabled"));
+        require(
+            !getAgentRestrictions(_msgSender()).disableRecovery, AgentNotAuthorized(_msgSender(), "recovery disabled")
+        );
         require(balanceOf(_lostWallet) != 0, NoTokenToRecover());
         require(
             _tokenIdentityRegistry.contains(_lostWallet) || _tokenIdentityRegistry.contains(_newWallet),
@@ -412,16 +414,16 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
 
     /// @dev See {IToken-disableDefaultAllowance}.
     function disableDefaultAllowance() external override {
-        require(!_defaultAllowanceOptOuts[msg.sender], DefaultAllowanceAlreadyDisabled(msg.sender));
-        _defaultAllowanceOptOuts[msg.sender] = true;
-        emit DefaultAllowanceDisabled(msg.sender);
+        require(!_defaultAllowanceOptOuts[_msgSender()], DefaultAllowanceAlreadyDisabled(_msgSender()));
+        _defaultAllowanceOptOuts[_msgSender()] = true;
+        emit DefaultAllowanceDisabled(_msgSender());
     }
 
     /// @dev See {IToken-enableDefaultAllowance}.
     function enableDefaultAllowance() external override {
-        require(_defaultAllowanceOptOuts[msg.sender], DefaultAllowanceAlreadyEnabled(msg.sender));
-        _defaultAllowanceOptOuts[msg.sender] = false;
-        emit DefaultAllowanceEnabled(msg.sender);
+        require(_defaultAllowanceOptOuts[_msgSender()], DefaultAllowanceAlreadyEnabled(_msgSender()));
+        _defaultAllowanceOptOuts[_msgSender()] = false;
+        emit DefaultAllowanceEnabled(_msgSender());
     }
 
     /**
@@ -500,7 +502,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
 
     /**
      *  @notice ERC-20 overridden function that include logic to check for trade validity.
-     *  Require that the msg.sender and to addresses are not frozen.
+     *  Require that the _msgSender() and to addresses are not frozen.
      *  Require that the value should not exceed available balance .
      *  Require that the to address is a verified address
      *  @param _to The address of the receiver
@@ -508,12 +510,12 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      *  @return `true` if successful and revert if unsuccessful
      */
     function transfer(address _to, uint256 _amount) public override whenNotPaused returns (bool) {
-        require(!_frozen[_to] && !_frozen[msg.sender], FrozenWallet());
-        uint256 balance = balanceOf(msg.sender) - _frozenTokens[msg.sender];
-        require(_amount <= balance, ERC20InsufficientBalance(msg.sender, balance, _amount));
-        if (_tokenIdentityRegistry.isVerified(_to) && _tokenCompliance.canTransfer(msg.sender, _to, _amount)) {
-            _transfer(msg.sender, _to, _amount);
-            _tokenCompliance.transferred(msg.sender, _to, _amount);
+        require(!_frozen[_to] && !_frozen[_msgSender()], FrozenWallet());
+        uint256 balance = balanceOf(_msgSender()) - _frozenTokens[_msgSender()];
+        require(_amount <= balance, ERC20InsufficientBalance(_msgSender(), balance, _amount));
+        if (_tokenIdentityRegistry.isVerified(_to) && _tokenCompliance.canTransfer(_msgSender(), _to, _amount)) {
+            _transfer(_msgSender(), _to, _amount);
+            _tokenCompliance.transferred(_msgSender(), _to, _amount);
             return true;
         }
 
@@ -525,8 +527,8 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      */
     function forcedTransfer(address _from, address _to, uint256 _amount) public override onlyAgent returns (bool) {
         require(
-            !getAgentRestrictions(msg.sender).disableForceTransfer,
-            AgentNotAuthorized(msg.sender, "forceTransfer disabled")
+            !getAgentRestrictions(_msgSender()).disableForceTransfer,
+            AgentNotAuthorized(_msgSender(), "forceTransfer disabled")
         );
         require(balanceOf(_from) >= _amount, ERC20InsufficientBalance(_from, balanceOf(_from), _amount));
         uint256 freeBalance = balanceOf(_from) - (_frozenTokens[_from]);
@@ -547,7 +549,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      *  @dev See {IToken-mint}.
      */
     function mint(address _to, uint256 _amount) public override onlyAgent {
-        require(!getAgentRestrictions(msg.sender).disableMint, AgentNotAuthorized(msg.sender, "mint disabled"));
+        require(!getAgentRestrictions(_msgSender()).disableMint, AgentNotAuthorized(_msgSender(), "mint disabled"));
         require(_tokenIdentityRegistry.isVerified(_to), UnverifiedIdentity());
         require(_tokenCompliance.canTransfer(address(0), _to, _amount), ComplianceNotFollowed());
         _mint(_to, _amount);
@@ -558,7 +560,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      *  @dev See {IToken-burn}.
      */
     function burn(address _userAddress, uint256 _amount) public override onlyAgent {
-        require(!getAgentRestrictions(msg.sender).disableBurn, AgentNotAuthorized(msg.sender, "burn disabled"));
+        require(!getAgentRestrictions(_msgSender()).disableBurn, AgentNotAuthorized(_msgSender(), "burn disabled"));
         require(
             balanceOf(_userAddress) >= _amount, ERC20InsufficientBalance(_userAddress, balanceOf(_userAddress), _amount)
         );
@@ -577,12 +579,12 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      */
     function setAddressFrozen(address _userAddress, bool _freeze) public override onlyAgent {
         require(
-            !getAgentRestrictions(msg.sender).disableAddressFreeze,
-            AgentNotAuthorized(msg.sender, "address freeze disabled")
+            !getAgentRestrictions(_msgSender()).disableAddressFreeze,
+            AgentNotAuthorized(_msgSender(), "address freeze disabled")
         );
         _frozen[_userAddress] = _freeze;
 
-        emit AddressFrozen(_userAddress, _freeze, msg.sender);
+        emit AddressFrozen(_userAddress, _freeze, _msgSender());
     }
 
     /**
@@ -590,8 +592,8 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      */
     function freezePartialTokens(address _userAddress, uint256 _amount) public override onlyAgent {
         require(
-            !getAgentRestrictions(msg.sender).disablePartialFreeze,
-            AgentNotAuthorized(msg.sender, "partial freeze disabled")
+            !getAgentRestrictions(_msgSender()).disablePartialFreeze,
+            AgentNotAuthorized(_msgSender(), "partial freeze disabled")
         );
         uint256 balance = balanceOf(_userAddress);
         require(
@@ -606,8 +608,8 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
      */
     function unfreezePartialTokens(address _userAddress, uint256 _amount) public override onlyAgent {
         require(
-            !getAgentRestrictions(msg.sender).disablePartialFreeze,
-            AgentNotAuthorized(msg.sender, "partial freeze disabled")
+            !getAgentRestrictions(_msgSender()).disablePartialFreeze,
+            AgentNotAuthorized(_msgSender(), "partial freeze disabled")
         );
         require(_frozenTokens[_userAddress] >= _amount, AmountAboveFrozenTokens(_amount, _frozenTokens[_userAddress]));
         _frozenTokens[_userAddress] = _frozenTokens[_userAddress] - (_amount);

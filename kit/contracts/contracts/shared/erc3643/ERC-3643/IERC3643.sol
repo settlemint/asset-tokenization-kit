@@ -288,7 +288,7 @@ interface IERC3643 is IERC20, IERC20Metadata {
 
     /**
      *  @dev function allowing to issue transfers in batch
-     *  Require that the msg.sender and `to` addresses are not frozen.
+     *  Require that the _msgSender() and `to` addresses are not frozen.
      *  Require that the total value should not exceed available balance.
      *  Require that the `to` addresses are all verified addresses,
      *  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_toList.length` IS TOO HIGH,

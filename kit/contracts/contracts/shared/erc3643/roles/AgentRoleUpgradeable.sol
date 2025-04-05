@@ -22,7 +22,7 @@ contract AgentRoleUpgradeable is OwnableOnceNext2StepUpgradeable {
     Roles.Role private _agents;
 
     modifier onlyAgent() {
-        require(isAgent(msg.sender), CallerDoesNotHaveAgentRole());
+        require(isAgent(_msgSender()), CallerDoesNotHaveAgentRole());
         _;
     }
 

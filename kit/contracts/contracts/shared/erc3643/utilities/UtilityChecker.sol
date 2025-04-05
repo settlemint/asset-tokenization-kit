@@ -18,7 +18,7 @@ contract UtilityChecker is IUtilityChecker, OwnableUpgradeable, UUPSUpgradeable 
 
     /// @inheritdoc IUtilityChecker
     /// @dev This function is not gas optimized and should be called only OFF chain.
-    function testTransfer(
+    function checkTransfer(
         address _token,
         address _from,
         address _to,
@@ -33,13 +33,13 @@ contract UtilityChecker is IUtilityChecker, OwnableUpgradeable, UUPSUpgradeable 
 
         _freezeStatus = !token.paused();
 
-        (bool frozen,) = testFreeze(_token, _from, _to, _amount);
+        (bool frozen,) = checkFreeze(_token, _from, _to, _amount);
         _freezeStatus = _freezeStatus && !frozen;
 
         IERC3643IdentityRegistry ir = token.identityRegistry();
         _eligibilityStatus = ir.isVerified(_to);
 
-        ComplianceCheckDetails[] memory details = testTransferDetails(_token, _from, _to, _amount);
+        ComplianceCheckDetails[] memory details = checkTransferDetails(_token, _from, _to, _amount);
         for (uint256 i; i < details.length; i++) {
             if (!details[i].pass) {
                 _complianceStatus = false;
@@ -50,7 +50,7 @@ contract UtilityChecker is IUtilityChecker, OwnableUpgradeable, UUPSUpgradeable 
     }
 
     /// @inheritdoc IUtilityChecker
-    function testVerifiedDetails(
+    function checkVerifiedDetails(
         address _token,
         address _userAddress
     )
@@ -95,7 +95,7 @@ contract UtilityChecker is IUtilityChecker, OwnableUpgradeable, UUPSUpgradeable 
     }
 
     /// @inheritdoc IUtilityChecker
-    function testFreeze(
+    function checkFreeze(
         address _token,
         address _from,
         address _to,
@@ -118,7 +118,7 @@ contract UtilityChecker is IUtilityChecker, OwnableUpgradeable, UUPSUpgradeable 
     }
 
     /// @inheritdoc IUtilityChecker
-    function testTransferDetails(
+    function checkTransferDetails(
         address _token,
         address _from,
         address _to,

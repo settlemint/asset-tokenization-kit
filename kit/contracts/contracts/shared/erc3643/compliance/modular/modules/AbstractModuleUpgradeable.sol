@@ -48,7 +48,7 @@ abstract contract AbstractModuleUpgradeable is
      */
     modifier onlyComplianceCall() {
         AbstractModuleStorage storage s = _getAbstractModuleStorage();
-        require(s.complianceBound[msg.sender], OnlyBoundComplianceCanCall());
+        require(s.complianceBound[_msgSender()], OnlyBoundComplianceCanCall());
         _;
     }
 
@@ -59,7 +59,7 @@ abstract contract AbstractModuleUpgradeable is
         AbstractModuleStorage storage s = _getAbstractModuleStorage();
         require(_compliance != address(0), ZeroAddress());
         require(!s.complianceBound[_compliance], ComplianceAlreadyBound());
-        require(msg.sender == _compliance, OnlyComplianceContractCanCall());
+        require(_msgSender() == _compliance, OnlyComplianceContractCanCall());
         s.complianceBound[_compliance] = true;
         emit ComplianceBound(_compliance);
     }
@@ -70,7 +70,7 @@ abstract contract AbstractModuleUpgradeable is
     function unbindCompliance(address _compliance) external override onlyComplianceCall {
         AbstractModuleStorage storage s = _getAbstractModuleStorage();
         require(_compliance != address(0), ZeroAddress());
-        require(msg.sender == _compliance, OnlyComplianceContractCanCall());
+        require(_msgSender() == _compliance, OnlyComplianceContractCanCall());
 
         s.complianceBound[_compliance] = false;
         s.nonces[_compliance]++;

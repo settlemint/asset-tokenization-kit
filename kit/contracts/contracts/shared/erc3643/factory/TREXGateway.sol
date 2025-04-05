@@ -145,7 +145,7 @@ contract TREXGateway is ITREXGateway, AgentRole, IERC165 {
      *  @dev See {ITREXGateway-batchAddDeployer}.
      */
     function batchAddDeployer(address[] calldata deployers) external override {
-        require(isAgent(msg.sender) || msg.sender == owner(), SenderIsNotAdmin());
+        require(isAgent(_msgSender()) || _msgSender() == owner(), SenderIsNotAdmin());
         require(deployers.length <= 500, BatchMaxLengthExceeded(500));
 
         for (uint256 i = 0; i < deployers.length; i++) {
@@ -160,7 +160,7 @@ contract TREXGateway is ITREXGateway, AgentRole, IERC165 {
      *  @dev See {ITREXGateway-addDeployer}.
      */
     function addDeployer(address deployer) external override {
-        require(isAgent(msg.sender) || msg.sender == owner(), SenderIsNotAdmin());
+        require(isAgent(_msgSender()) || _msgSender() == owner(), SenderIsNotAdmin());
         require(!isDeployer(deployer), DeployerAlreadyExists(deployer));
 
         _deployers[deployer] = true;
@@ -171,7 +171,7 @@ contract TREXGateway is ITREXGateway, AgentRole, IERC165 {
      *  @dev See {ITREXGateway-batchRemoveDeployer}.
      */
     function batchRemoveDeployer(address[] calldata deployers) external override {
-        require(isAgent(msg.sender) || msg.sender == owner(), SenderIsNotAdmin());
+        require(isAgent(_msgSender()) || _msgSender() == owner(), SenderIsNotAdmin());
         require(deployers.length <= 500, BatchMaxLengthExceeded(500));
 
         for (uint256 i = 0; i < deployers.length; i++) {
@@ -186,7 +186,7 @@ contract TREXGateway is ITREXGateway, AgentRole, IERC165 {
      *  @dev See {ITREXGateway-removeDeployer}.
      */
     function removeDeployer(address deployer) external override {
-        require(isAgent(msg.sender) || msg.sender == owner(), SenderIsNotAdmin());
+        require(isAgent(_msgSender()) || _msgSender() == owner(), SenderIsNotAdmin());
         require(isDeployer(deployer), DeployerDoesNotExist(deployer));
 
         delete _deployers[deployer];
@@ -197,7 +197,7 @@ contract TREXGateway is ITREXGateway, AgentRole, IERC165 {
      *  @dev See {ITREXGateway-batchApplyFeeDiscount}.
      */
     function batchApplyFeeDiscount(address[] calldata deployers, uint16[] calldata discounts) external override {
-        require(isAgent(msg.sender) || msg.sender == owner(), SenderIsNotAdmin());
+        require(isAgent(_msgSender()) || _msgSender() == owner(), SenderIsNotAdmin());
         require(deployers.length <= 500, BatchMaxLengthExceeded(500));
 
         for (uint256 i = 0; i < deployers.length; i++) {
@@ -212,7 +212,7 @@ contract TREXGateway is ITREXGateway, AgentRole, IERC165 {
      *  @dev See {ITREXGateway-applyFeeDiscount}.
      */
     function applyFeeDiscount(address deployer, uint16 discount) external override {
-        require(isAgent(msg.sender) || msg.sender == owner(), SenderIsNotAdmin());
+        require(isAgent(_msgSender()) || _msgSender() == owner(), SenderIsNotAdmin());
         require(discount <= 10_000, DiscountOutOfRange());
 
         _feeDiscount[deployer] = discount;
@@ -274,22 +274,22 @@ contract TREXGateway is ITREXGateway, AgentRole, IERC165 {
         public
         override
     {
-        require(_publicDeploymentStatus || isDeployer(msg.sender), PublicDeploymentsNotAllowed());
+        require(_publicDeploymentStatus || isDeployer(_msgSender()), PublicDeploymentsNotAllowed());
         require(
-            !_publicDeploymentStatus || msg.sender == _tokenDetails.owner || isDeployer(msg.sender),
+            !_publicDeploymentStatus || _msgSender() == _tokenDetails.owner || isDeployer(_msgSender()),
             PublicCannotDeployOnBehalf()
         );
 
         uint256 feeApplied = 0;
         if (_deploymentFeeEnabled) {
-            if (_deploymentFee.fee > 0 && _feeDiscount[msg.sender] < 10_000) {
-                feeApplied = calculateFee(msg.sender);
-                IERC20(_deploymentFee.feeToken).transferFrom(msg.sender, _deploymentFee.feeCollector, feeApplied);
+            if (_deploymentFee.fee > 0 && _feeDiscount[_msgSender()] < 10_000) {
+                feeApplied = calculateFee(_msgSender());
+                IERC20(_deploymentFee.feeToken).transferFrom(_msgSender(), _deploymentFee.feeCollector, feeApplied);
             }
         }
         string memory _salt = string(abi.encodePacked(Strings.toHexString(_tokenDetails.owner), _tokenDetails.name));
         ITREXFactory(_factory).deployTREXSuite(_salt, _tokenDetails, _claimDetails);
-        emit GatewaySuiteDeploymentProcessed(msg.sender, _tokenDetails.owner, feeApplied);
+        emit GatewaySuiteDeploymentProcessed(_msgSender(), _tokenDetails.owner, feeApplied);
     }
 
     /**

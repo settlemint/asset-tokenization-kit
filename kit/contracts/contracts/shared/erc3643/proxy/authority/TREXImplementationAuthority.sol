@@ -155,9 +155,9 @@ contract TREXImplementationAuthority is ITREXImplementationAuthority, Ownable, I
 
         // calling this function requires ownership of ALL contracts of the T-REX suite
         require(
-            Ownable(_token).owner() == msg.sender && Ownable(_ir).owner() == msg.sender
-                && Ownable(_mc).owner() == msg.sender && Ownable(_irs).owner() == msg.sender
-                && Ownable(_ctr).owner() == msg.sender && Ownable(_tir).owner() == msg.sender,
+            Ownable(_token).owner() == _msgSender() && Ownable(_ir).owner() == _msgSender()
+                && Ownable(_mc).owner() == _msgSender() && Ownable(_irs).owner() == _msgSender()
+                && Ownable(_ctr).owner() == _msgSender() && Ownable(_tir).owner() == _msgSender(),
             CallerNotOwnerOfAllImpactedContracts()
         );
 

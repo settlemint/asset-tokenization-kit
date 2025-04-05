@@ -7,8 +7,9 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ITREXFactory } from "../../factory/ITREXFactory.sol";
 import { ITREXImplementationAuthority } from "./ITREXImplementationAuthority.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
-contract IAFactory is IIAFactory, IERC165 {
+contract IAFactory is IIAFactory, IERC165, Context {
     /// variables
 
     /// address of the trex factory
@@ -31,12 +32,12 @@ contract IAFactory is IIAFactory, IERC165 {
      *  @dev See {IIAFactory-deployIA}.
      */
     function deployIA(address _token) external override returns (address) {
-        require(ITREXFactory(_trexFactory).getImplementationAuthority() == msg.sender, OnlyReferenceIACanDeploy());
+        require(ITREXFactory(_trexFactory).getImplementationAuthority() == _msgSender(), OnlyReferenceIACanDeploy());
         TREXImplementationAuthority _newIA = new TREXImplementationAuthority(
-            false, ITREXImplementationAuthority(msg.sender).getTREXFactory(), address(this)
+            false, ITREXImplementationAuthority(_msgSender()).getTREXFactory(), address(this)
         );
-        _newIA.fetchVersion(ITREXImplementationAuthority(msg.sender).getCurrentVersion());
-        _newIA.useTREXVersion(ITREXImplementationAuthority(msg.sender).getCurrentVersion());
+        _newIA.fetchVersion(ITREXImplementationAuthority(_msgSender()).getCurrentVersion());
+        _newIA.useTREXVersion(ITREXImplementationAuthority(_msgSender()).getCurrentVersion());
         Ownable(_newIA).transferOwnership(Ownable(_token).owner());
         _deployedByFactory[address(_newIA)] = true;
         emit ImplementationAuthorityDeployed(address(_newIA));

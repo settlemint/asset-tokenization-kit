@@ -142,7 +142,7 @@ contract IdFactory is IIdFactory, Ownable {
         override
         returns (address)
     {
-        if (!isTokenFactory(msg.sender) && msg.sender != owner()) revert OnlyFactoryOrOwnerCanCall();
+        if (!isTokenFactory(_msgSender()) && _msgSender() != owner()) revert OnlyFactoryOrOwnerCanCall();
         if (_token == address(0)) revert ZeroAddressNotAllowed();
         if (_tokenOwner == address(0)) revert ZeroAddressNotAllowed();
         if (keccak256(abi.encode(_salt)) == keccak256(abi.encode(""))) revert EmptyString();
@@ -164,11 +164,11 @@ contract IdFactory is IIdFactory, Ownable {
      */
     function linkWallet(address _newWallet) external override {
         if (_newWallet == address(0)) revert ZeroAddressNotAllowed();
-        if (_userIdentity[msg.sender] == address(0)) revert WalletNotLinked();
+        if (_userIdentity[_msgSender()] == address(0)) revert WalletNotLinked();
         if (_userIdentity[_newWallet] != address(0)) revert NewWalletAlreadyLinked();
         if (_tokenIdentity[_newWallet] != address(0)) revert TokenAddress();
 
-        address identity = _userIdentity[msg.sender];
+        address identity = _userIdentity[_msgSender()];
         if (_wallets[identity].length >= 101) revert MaxWalletsExceeded(101);
 
         _userIdentity[_newWallet] = identity;
@@ -181,8 +181,8 @@ contract IdFactory is IIdFactory, Ownable {
      */
     function unlinkWallet(address _oldWallet) external override {
         if (_oldWallet == address(0)) revert ZeroAddressNotAllowed();
-        if (_oldWallet == msg.sender) revert CannotUnlinkSender();
-        if (_userIdentity[msg.sender] != _userIdentity[_oldWallet]) revert OnlyLinkedWalletCanUnlink();
+        if (_oldWallet == _msgSender()) revert CannotUnlinkSender();
+        if (_userIdentity[_msgSender()] != _userIdentity[_oldWallet]) revert OnlyLinkedWalletCanUnlink();
 
         address _identity = _userIdentity[_oldWallet];
         delete _userIdentity[_oldWallet];

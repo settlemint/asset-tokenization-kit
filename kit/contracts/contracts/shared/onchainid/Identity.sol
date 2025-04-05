@@ -5,6 +5,7 @@ import { IIdentity } from "./interface/IIdentity.sol";
 import { IClaimIssuer } from "./interface/IClaimIssuer.sol";
 import { Version } from "./version/Version.sol";
 import { Storage } from "./storage/Storage.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
 error LibraryInteractionForbidden();
 error ZeroAddressNotAllowed();
@@ -26,7 +27,7 @@ error NonExistingClaim();
  * This implementation has a separate contract were it declares all storage,
  * allowing for it to be used as an upgradable logic contract.
  */
-contract Identity is Storage, IIdentity, Version {
+contract Identity is Storage, IIdentity, Version, Context {
     /**
      * @notice Prevent any direct calls to the implementation contract (marked by _canInteract = false).
      */
@@ -39,7 +40,7 @@ contract Identity is Storage, IIdentity, Version {
      * @notice requires management key to call this function, or internal call
      */
     modifier onlyManager() {
-        if (msg.sender != address(this) && !keyHasPurpose(keccak256(abi.encode(msg.sender)), 1)) {
+        if (_msgSender() != address(this) && !keyHasPurpose(keccak256(abi.encode(_msgSender())), 1)) {
             revert SenderMissingManagementKey();
         }
         _;
@@ -49,7 +50,7 @@ contract Identity is Storage, IIdentity, Version {
      * @notice requires claim key to call this function, or internal call
      */
     modifier onlyClaimKey() {
-        if (msg.sender != address(this) && !keyHasPurpose(keccak256(abi.encode(msg.sender)), 3)) {
+        if (_msgSender() != address(this) && !keyHasPurpose(keccak256(abi.encode(_msgSender())), 3)) {
             revert SenderMissingClaimKey();
         }
         _;
@@ -110,9 +111,9 @@ contract Identity is Storage, IIdentity, Version {
 
         emit ExecutionRequested(_executionId, _to, _value, _data);
 
-        if (keyHasPurpose(keccak256(abi.encode(msg.sender)), 1)) {
+        if (keyHasPurpose(keccak256(abi.encode(_msgSender())), 1)) {
             approve(_executionId, true);
-        } else if (_to != address(this) && keyHasPurpose(keccak256(abi.encode(msg.sender)), 2)) {
+        } else if (_to != address(this) && keyHasPurpose(keccak256(abi.encode(_msgSender())), 2)) {
             approve(_executionId, true);
         }
 
@@ -229,9 +230,9 @@ contract Identity is Storage, IIdentity, Version {
         if (_executions[_id].executed) revert ExecutionAlreadyDone();
 
         if (_executions[_id].to == address(this)) {
-            if (!keyHasPurpose(keccak256(abi.encode(msg.sender)), 1)) revert SenderNotManagementKey();
+            if (!keyHasPurpose(keccak256(abi.encode(_msgSender())), 1)) revert SenderNotManagementKey();
         } else {
-            if (!keyHasPurpose(keccak256(abi.encode(msg.sender)), 2)) revert SenderNotActionKey();
+            if (!keyHasPurpose(keccak256(abi.encode(_msgSender())), 2)) revert SenderNotActionKey();
         }
 
         emit Approved(_id, _approve);
@@ -317,7 +318,7 @@ contract Identity is Storage, IIdentity, Version {
     /**
      * @dev See {IERC735-addClaim}.
      * @notice Implementation of the addClaim function from the ERC-735 standard
-     *  Require that the msg.sender has claim signer key.
+     *  Require that the _msgSender() has claim signer key.
      *
      * @param _topic The type of claim
      * @param _scheme The scheme with which this claim SHOULD be verified or how it should be processed.
@@ -374,7 +375,7 @@ contract Identity is Storage, IIdentity, Version {
     /**
      * @dev See {IERC735-removeClaim}.
      * @notice Implementation of the removeClaim function from the ERC-735 standard
-     * Require that the msg.sender has management key.
+     * Require that the _msgSender() has management key.
      * Can only be removed by the claim issuer, or the claim holder itself.
      *
      * @param _claimId The identity of the claim i.e. keccak256(abi.encode(_issuer, _topic))
