@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 import { IClaimIssuer } from "../../../onchainid/interface/IClaimIssuer.sol";
-import { OwnableOnceNext2StepUpgradeable } from "../../utils/OwnableOnceNext2StepUpgradeable.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { ITrustedIssuersRegistry } from "../interface/ITrustedIssuersRegistry.sol";
 import { TIRStorage } from "../storage/TIRStorage.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -40,11 +40,11 @@ error TrustedIssuerAlreadyExists();
 /// @dev Thrown when trusted issuer doesn"t exist.
 error TrustedIssuerDoesNotExist();
 
-contract TrustedIssuersRegistry is ITrustedIssuersRegistry, OwnableOnceNext2StepUpgradeable, TIRStorage, IERC165 {
+contract TrustedIssuersRegistry is ITrustedIssuersRegistry, OwnableUpgradeable, TIRStorage, IERC165 {
     /// Functions
 
     function init() external initializer {
-        __Ownable_init();
+        __Ownable_init(_msgSender());
     }
 
     /**

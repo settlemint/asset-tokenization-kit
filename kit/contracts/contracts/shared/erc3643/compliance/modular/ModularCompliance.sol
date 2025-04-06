@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.27;
 
-import { OwnableOnceNext2StepUpgradeable } from "../../utils/OwnableOnceNext2StepUpgradeable.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { TokenBound, TokenUnbound } from "../../ERC-3643/IERC3643Compliance.sol";
 import { IModularCompliance, ModuleRemoved, ModuleAdded, ModuleInteraction } from "./IModularCompliance.sol";
 import { MCStorage } from "./MCStorage.sol";
@@ -34,7 +34,7 @@ error OnlyOwnerOrTokenCanCall();
 /// @dev Thrown when token is not bound.
 error TokenNotBound();
 
-contract ModularCompliance is IModularCompliance, OwnableOnceNext2StepUpgradeable, MCStorage, IERC165 {
+contract ModularCompliance is IModularCompliance, OwnableUpgradeable, MCStorage, IERC165 {
     /// modifiers
 
     /**
@@ -46,7 +46,7 @@ contract ModularCompliance is IModularCompliance, OwnableOnceNext2StepUpgradeabl
     }
 
     function init() external initializer {
-        __Ownable_init();
+        __Ownable_init(_msgSender());
     }
 
     /**

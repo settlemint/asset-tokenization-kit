@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { OwnableOnceNext2StepUpgradeable } from "../../../utils/OwnableOnceNext2StepUpgradeable.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import { IModule } from "./IModule.sol";
 import { ZeroAddress } from "../../../errors/InvalidArgumentErrors.sol";
@@ -16,13 +16,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IERC173 } from "../../../roles/IERC173.sol";
 import { ComplianceBound, ComplianceUnbound } from "./IModule.sol";
 
-abstract contract AbstractModuleUpgradeable is
-    IModule,
-    Initializable,
-    OwnableOnceNext2StepUpgradeable,
-    UUPSUpgradeable,
-    IERC165
-{
+abstract contract AbstractModuleUpgradeable is IModule, Initializable, OwnableUpgradeable, UUPSUpgradeable, IERC165 {
     struct AbstractModuleStorage {
         /// compliance contract binding status
         mapping(address => bool) complianceBound;
@@ -101,7 +95,7 @@ abstract contract AbstractModuleUpgradeable is
 
     // solhint-disable-next-line func-name-mixedcase
     function __AbstractModule_init() internal onlyInitializing {
-        __Ownable_init();
+        __Ownable_init(_msgSender());
         __AbstractModule_init_unchained();
     }
 

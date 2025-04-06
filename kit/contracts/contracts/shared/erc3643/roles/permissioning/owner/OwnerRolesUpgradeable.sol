@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.27;
 
-import { OwnableOnceNext2StepUpgradeable } from "../../../utils/OwnableOnceNext2StepUpgradeable.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { Roles } from "../../Roles.sol";
 import { SenderIsNotAdmin } from "../../../errors/RoleErrors.sol";
 
@@ -17,7 +17,7 @@ event RoleAdded(address indexed _owner, string _role);
 /// @param _role Role label.
 event RoleRemoved(address indexed _owner, string _role);
 
-contract OwnerRolesUpgradeable is OwnableOnceNext2StepUpgradeable {
+contract OwnerRolesUpgradeable is OwnableUpgradeable {
     using Roles for Roles.Role;
 
     /// variables

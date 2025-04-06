@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.27;
 
-import { OwnableOnceNext2StepUpgradeable } from "../utils/OwnableOnceNext2StepUpgradeable.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { Roles } from "./Roles.sol";
 import { ZeroAddress } from "../errors/InvalidArgumentErrors.sol";
 import { CallerDoesNotHaveAgentRole } from "../errors/RoleErrors.sol";
@@ -16,7 +16,7 @@ event AgentAdded(address indexed _agent);
 /// @param _agent Address of agent contract
 event AgentRemoved(address indexed _agent);
 
-contract AgentRoleUpgradeable is OwnableOnceNext2StepUpgradeable {
+contract AgentRoleUpgradeable is OwnableUpgradeable {
     using Roles for Roles.Role;
 
     Roles.Role private _agents;

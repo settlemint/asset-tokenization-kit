@@ -35,7 +35,7 @@ error MaxIRByIRSReached(uint256 _max);
 
 contract IdentityRegistryStorage is IIdentityRegistryStorage, AgentRoleUpgradeable, IRSStorage, IERC165 {
     function init() external initializer {
-        __Ownable_init();
+        __Ownable_init(_msgSender());
     }
 
     /**

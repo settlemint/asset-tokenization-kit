@@ -65,7 +65,7 @@ contract IdentityRegistry is IIdentityRegistry, AgentRoleUpgradeable, IRStorage,
         emit TrustedIssuersRegistrySet(_trustedIssuersRegistry);
         emit IdentityStorageSet(_identityStorage);
         emit EligibilityChecksEnabled();
-        __Ownable_init();
+        __Ownable_init(_msgSender());
     }
 
     /**

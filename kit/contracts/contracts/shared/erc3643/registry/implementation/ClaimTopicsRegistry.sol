@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.27;
 
-import { OwnableOnceNext2StepUpgradeable } from "../../utils/OwnableOnceNext2StepUpgradeable.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { CTRStorage } from "../storage/CTRStorage.sol";
 import { IClaimTopicsRegistry } from "../interface/IClaimTopicsRegistry.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -21,9 +21,9 @@ error MaxTopicsReached(uint256 _max);
 /// @dev Thrown whern claim topic already exists.
 error ClaimTopicAlreadyExists();
 
-contract ClaimTopicsRegistry is IClaimTopicsRegistry, OwnableOnceNext2StepUpgradeable, CTRStorage, IERC165 {
+contract ClaimTopicsRegistry is IClaimTopicsRegistry, OwnableUpgradeable, CTRStorage, IERC165 {
     function init() external initializer {
-        __Ownable_init();
+        __Ownable_init(_msgSender());
     }
 
     /**

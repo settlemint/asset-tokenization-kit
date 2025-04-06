@@ -142,7 +142,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage, IERC165, TokenPerm
             EmptyString()
         );
         require(0 <= _decimals && _decimals <= 18, DecimalsOutOfRange(_decimals));
-        __Ownable_init();
+        __Ownable_init(_msgSender());
         _tokenName = _name;
         _tokenSymbol = _symbol;
         _tokenDecimals = _decimals;

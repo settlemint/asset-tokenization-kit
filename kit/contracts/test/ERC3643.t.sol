@@ -16,6 +16,8 @@ import { ITREXImplementationAuthority } from
 import { IdentityRegistry } from "../contracts/shared/erc3643/registry/implementation/IdentityRegistry.sol";
 import { PlatformFactory } from "../contracts/shared/PlatformFactory.sol";
 import { ITREXFactory } from "../contracts/shared/erc3643/factory/ITREXFactory.sol";
+import { IdFactory } from "../contracts/shared/onchainid/factory/IdFactory.sol";
+import { TREXFactory } from "../contracts/shared/erc3643/factory/TREXFactory.sol";
 
 contract GatewayTest is Test {
     TREXImplementationAuthority public tokenImplementationAuthority;
@@ -29,6 +31,7 @@ contract GatewayTest is Test {
     address public tokenAgent1 = makeAddr("Token Agent 1");
     address public tokenAgent2 = makeAddr("Token Agent 2");
     address public tokenAgent3 = makeAddr("Token Agent 3");
+    address public client1 = makeAddr("Client 1");
 
     // Store deployed contract addresses globally
     address public tokenAddress;
@@ -74,9 +77,8 @@ contract GatewayTest is Test {
         returns (TREXGateway gateway)
     {
         vm.startPrank(platformAdmin_);
-        gateway = platformFactory.createPlatform(platformAdmin_, tokenImplementationAuthority_);
+        (gateway) = platformFactory.createPlatform(platformAdmin_, tokenImplementationAuthority_);
         vm.stopPrank();
-        return gateway;
     }
 
     function onboardIssuer(TREXGateway gateway_, address platformAdmin_, address issuer_) public {
@@ -108,7 +110,7 @@ contract GatewayTest is Test {
                 // ONCHAINID of the token
                 ONCHAINID: address(0),
                 // list of agents of the identity registry (can be set to an AgentManager contract)
-                irAgents: new address[](0),
+                irAgents: managers_,
                 // list of agents of the token
                 tokenAgents: managers_,
                 // modules to bind to the compliance, indexes are corresponding to the settings callData indexes
@@ -158,34 +160,34 @@ contract GatewayTest is Test {
             }
         }
 
-        // solhint-disable-next-line no-console
-        console.log("Final addresses:");
-        // solhint-disable-next-line no-console
-        console.log("tokenAddress", tokenAddress);
-        // solhint-disable-next-line no-console
-        console.log("identityRegistryAddress", identityRegistryAddress);
-        // solhint-disable-next-line no-console
-        console.log("identityRegistryStorageAddress", identityRegistryStorageAddress);
-        // solhint-disable-next-line no-console
-        console.log("claimTopicsRegistryAddress", claimTopicsRegistryAddress);
-        // solhint-disable-next-line no-console
-        console.log("trustedIssuersRegistryAddress", trustedIssuersRegistryAddress);
-        // solhint-disable-next-line no-console
-        console.log("modularComplianceAddress", modularComplianceAddress);
+        // // solhint-disable-next-line no-console
+        // console.log("Final addresses:");
+        // // solhint-disable-next-line no-console
+        // console.log("tokenAddress", tokenAddress);
+        // // solhint-disable-next-line no-console
+        // console.log("identityRegistryAddress", identityRegistryAddress);
+        // // solhint-disable-next-line no-console
+        // console.log("identityRegistryStorageAddress", identityRegistryStorageAddress);
+        // // solhint-disable-next-line no-console
+        // console.log("claimTopicsRegistryAddress", claimTopicsRegistryAddress);
+        // // solhint-disable-next-line no-console
+        // console.log("trustedIssuersRegistryAddress", trustedIssuersRegistryAddress);
+        // // solhint-disable-next-line no-console
+        // console.log("modularComplianceAddress", modularComplianceAddress);
     }
 
     function test_OnboardFirstAdmin() public {
-        TREXGateway gateway = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         assertTrue(gateway.getPublicDeploymentStatus());
     }
 
     function test_OnboardIssuer() public {
-        TREXGateway gateway = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, issuer1);
     }
 
     function test_DeployTokenSuite() public {
-        TREXGateway gateway = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, issuer1);
 
         address[] memory tokenAgents = new address[](1);
@@ -193,9 +195,44 @@ contract GatewayTest is Test {
         deployTokenSuite(gateway, issuer1, tokenAgents);
     }
 
-    // function test_Mint() public {
-    //     vm.startPrank(predeployer);
-    //     // Mint 1000 tokens to the owner
-    //     Token(tokenAddress).mint(address(this), 1000);
-    // }
+    function test_AddSecondIssuer() public {
+        (TREXGateway gateway) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        onboardIssuer(gateway, platformAdmin, issuer1);
+
+        address[] memory tokenAgents = new address[](1);
+        tokenAgents[0] = tokenAgent1;
+        deployTokenSuite(gateway, issuer1, tokenAgents);
+
+        // Now add a second agent to the token
+        vm.startPrank(issuer1); // The issuer1 is the owner of the token
+        Token(tokenAddress).addAgent(tokenAgent2);
+        vm.stopPrank();
+
+        // Verify that tokenAgent2 is now an agent
+        assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
+    }
+
+    function test_Mint() public {
+        (TREXGateway gateway) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        onboardIssuer(gateway, platformAdmin, issuer1);
+
+        address[] memory tokenAgents = new address[](1);
+        tokenAgents[0] = tokenAgent1;
+        deployTokenSuite(gateway, issuer1, tokenAgents);
+
+        // Now add a second agent to the token
+        vm.startPrank(issuer1); // The issuer1 is the owner of the token
+        Token(tokenAddress).addAgent(tokenAgent2);
+        vm.stopPrank();
+
+        // Verify that tokenAgent2 is now an agent
+        assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
+
+        IdFactory idFactory = IdFactory(TREXFactory(gateway.getFactory()).getIdFactory());
+        idFactory.createIdentity(client1, "test");
+
+        vm.startPrank(tokenAgent2);
+        // Mint 1000 tokens to the owner
+        Token(tokenAddress).mint(client1, 1000);
+    }
 }
