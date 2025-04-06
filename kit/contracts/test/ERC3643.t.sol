@@ -190,20 +190,17 @@ contract GatewayTest is Test {
     }
 
     function test_OnboardFirstAdmin() public {
-        (TREXGateway gateway, Gateway identityGateway) =
-            onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway,) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         assertTrue(gateway.getPublicDeploymentStatus());
     }
 
     function test_OnboardIssuer() public {
-        (TREXGateway gateway, Gateway identityGateway) =
-            onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway,) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, issuer1);
     }
 
     function test_DeployTokenSuite() public {
-        (TREXGateway gateway, Gateway identityGateway) =
-            onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway,) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, issuer1);
 
         address[] memory tokenAgents = new address[](1);
@@ -214,8 +211,7 @@ contract GatewayTest is Test {
     }
 
     function test_AddSecondIssuer() public {
-        (TREXGateway gateway, Gateway identityGateway) =
-            onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway,) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, issuer1);
 
         address[] memory tokenAgents = new address[](1);
