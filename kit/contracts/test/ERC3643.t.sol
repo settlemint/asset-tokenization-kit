@@ -18,6 +18,7 @@ import { PlatformFactory } from "../contracts/shared/PlatformFactory.sol";
 import { ITREXFactory } from "../contracts/shared/erc3643/factory/ITREXFactory.sol";
 import { IdFactory } from "../contracts/shared/onchainid/factory/IdFactory.sol";
 import { TREXFactory } from "../contracts/shared/erc3643/factory/TREXFactory.sol";
+import { Gateway } from "../contracts/shared/onchainid/gateway/Gateway.sol";
 
 contract GatewayTest is Test {
     TREXImplementationAuthority public tokenImplementationAuthority;
@@ -25,12 +26,14 @@ contract GatewayTest is Test {
 
     address public predeployer = makeAddr("Predeployer");
     address public platformAdmin = makeAddr("Platform Admin");
+
     address public issuer1 = makeAddr("Issuer 1");
-    address public issuer2 = makeAddr("Issuer 2");
-    address public issuer3 = makeAddr("Issuer 3");
+
     address public tokenAgent1 = makeAddr("Token Agent 1");
     address public tokenAgent2 = makeAddr("Token Agent 2");
-    address public tokenAgent3 = makeAddr("Token Agent 3");
+
+    address public identityAgent1 = makeAddr("Identity Agent 1");
+
     address public client1 = makeAddr("Client 1");
 
     // Store deployed contract addresses globally
@@ -74,10 +77,13 @@ contract GatewayTest is Test {
         address tokenImplementationAuthority_
     )
         public
-        returns (TREXGateway gateway)
+        returns (TREXGateway gateway, Gateway identityGateway)
     {
         vm.startPrank(platformAdmin_);
-        (gateway) = platformFactory.createPlatform(platformAdmin_, tokenImplementationAuthority_);
+        address[] memory identityManagers = new address[](1);
+        identityManagers[0] = identityAgent1;
+        (gateway, identityGateway) =
+            platformFactory.createPlatform(platformAdmin_, tokenImplementationAuthority_, identityManagers);
         vm.stopPrank();
     }
 
@@ -87,7 +93,14 @@ contract GatewayTest is Test {
         vm.stopPrank();
     }
 
-    function deployTokenSuite(TREXGateway gateway_, address issuer_, address[] memory managers_) public {
+    function deployTokenSuite(
+        TREXGateway gateway_,
+        address issuer_,
+        address[] memory tokenManagers_,
+        address[] memory identityManagers_
+    )
+        public
+    {
         vm.startPrank(issuer_);
         // Start recording logs to capture events
         vm.recordLogs();
@@ -102,7 +115,7 @@ contract GatewayTest is Test {
                 // symbol / ticker of the token
                 symbol: "TT",
                 // decimals of the token (can be between 0 and 18)
-                decimals: 18,
+                decimals: 8,
                 // identity registry storage address
                 // set it to ZERO address if you want to deploy a new storage
                 // if an address is provided, please ensure that the factory is set as owner of the contract
@@ -110,9 +123,9 @@ contract GatewayTest is Test {
                 // ONCHAINID of the token
                 ONCHAINID: address(0),
                 // list of agents of the identity registry (can be set to an AgentManager contract)
-                irAgents: managers_,
+                irAgents: identityManagers_,
                 // list of agents of the token
-                tokenAgents: managers_,
+                tokenAgents: tokenManagers_,
                 // modules to bind to the compliance, indexes are corresponding to the settings callData indexes
                 // if a module doesn't require settings, it can be added at the end of the array, at index >
                 // settings.length
@@ -177,31 +190,39 @@ contract GatewayTest is Test {
     }
 
     function test_OnboardFirstAdmin() public {
-        (TREXGateway gateway) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway, Gateway identityGateway) =
+            onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         assertTrue(gateway.getPublicDeploymentStatus());
     }
 
     function test_OnboardIssuer() public {
-        (TREXGateway gateway) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway, Gateway identityGateway) =
+            onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, issuer1);
     }
 
     function test_DeployTokenSuite() public {
-        (TREXGateway gateway) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway, Gateway identityGateway) =
+            onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, issuer1);
 
         address[] memory tokenAgents = new address[](1);
         tokenAgents[0] = tokenAgent1;
-        deployTokenSuite(gateway, issuer1, tokenAgents);
+        address[] memory identityManagers = new address[](1);
+        identityManagers[0] = identityAgent1;
+        deployTokenSuite(gateway, issuer1, tokenAgents, identityManagers);
     }
 
     function test_AddSecondIssuer() public {
-        (TREXGateway gateway) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway, Gateway identityGateway) =
+            onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, issuer1);
 
         address[] memory tokenAgents = new address[](1);
         tokenAgents[0] = tokenAgent1;
-        deployTokenSuite(gateway, issuer1, tokenAgents);
+        address[] memory identityManagers = new address[](1);
+        identityManagers[0] = identityAgent1;
+        deployTokenSuite(gateway, issuer1, tokenAgents, identityManagers);
 
         // Now add a second agent to the token
         vm.startPrank(issuer1); // The issuer1 is the owner of the token
@@ -213,12 +234,15 @@ contract GatewayTest is Test {
     }
 
     function test_Mint() public {
-        (TREXGateway gateway) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        (TREXGateway gateway, Gateway identityGateway) =
+            onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, issuer1);
 
         address[] memory tokenAgents = new address[](1);
         tokenAgents[0] = tokenAgent1;
-        deployTokenSuite(gateway, issuer1, tokenAgents);
+        address[] memory identityManagers = new address[](1);
+        identityManagers[0] = identityAgent1;
+        deployTokenSuite(gateway, issuer1, tokenAgents, identityManagers);
 
         // Now add a second agent to the token
         vm.startPrank(issuer1); // The issuer1 is the owner of the token
@@ -228,8 +252,9 @@ contract GatewayTest is Test {
         // Verify that tokenAgent2 is now an agent
         assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
 
-        IdFactory idFactory = IdFactory(TREXFactory(gateway.getFactory()).getIdFactory());
-        idFactory.createIdentity(client1, "test");
+        vm.startPrank(tokenAgent1);
+        identityGateway.deployIdentityForWallet(client1);
+        vm.stopPrank();
 
         vm.startPrank(tokenAgent2);
         // Mint 1000 tokens to the owner

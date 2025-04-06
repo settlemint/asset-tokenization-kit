@@ -6,6 +6,7 @@ import { ImplementationAuthority } from "./onchainid/proxy/ImplementationAuthori
 import { IdFactory } from "./onchainid/factory/IdFactory.sol";
 import { TREXFactory } from "./erc3643/factory/TREXFactory.sol";
 import { TREXGateway } from "./erc3643/factory/TREXGateway.sol";
+import { Gateway } from "./onchainid/gateway/Gateway.sol";
 
 contract PlatformFactory {
     bool public isInitialized;
@@ -14,10 +15,11 @@ contract PlatformFactory {
 
     function createPlatform(
         address platformAdmin_,
-        address tokenImplementationAuthority_
+        address tokenImplementationAuthority_,
+        address[] memory identityAgents_
     )
         external
-        returns (TREXGateway gateway)
+        returns (TREXGateway gateway, Gateway identityGateway)
     {
         require(!isInitialized, PlatformFactoryAlreadyInitialized());
         isInitialized = true;
@@ -27,10 +29,12 @@ contract PlatformFactory {
         // Factory
         TREXFactory factory = new TREXFactory(tokenImplementationAuthority_, address(identityFactory));
         identityFactory.addTokenFactory(address(factory));
+        identityGateway = new Gateway(address(identityFactory), identityAgents_);
 
         // Gateway
         gateway = new TREXGateway(address(factory), true);
         gateway.addAgent(platformAdmin_);
         factory.transferOwnership(address(gateway));
+        identityFactory.transferOwnership(address(identityGateway));
     }
 }
