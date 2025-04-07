@@ -302,6 +302,14 @@ export function Form<
               errorMessage = "Validation error";
             }
 
+            form.setValue(
+              "verificationCode" as Path<S extends Schema ? Infer<S> : string>,
+              "" as PathValue<
+                S extends Schema ? Infer<S> : string,
+                Path<S extends Schema ? Infer<S> : string>
+              >
+            );
+
             toast.error(`Failed to submit: ${errorMessage}`);
           },
         },
@@ -376,19 +384,6 @@ export function Form<
       }, 10);
     }
   }, [form, isLastStep, secureForm, currentStep, totalSteps, children]);
-
-  useEffect(() => {
-    // Reset the verification code when the security dialog is opened
-    if (showFormSecurityConfirmation) {
-      form.setValue(
-        "verificationCode" as Path<S extends Schema ? Infer<S> : string>,
-        "" as PathValue<
-          S extends Schema ? Infer<S> : string,
-          Path<S extends Schema ? Infer<S> : string>
-        >
-      );
-    }
-  }, [form, showFormSecurityConfirmation]);
 
   useEffect(() => {
     if (!onAnyFieldChange) return;

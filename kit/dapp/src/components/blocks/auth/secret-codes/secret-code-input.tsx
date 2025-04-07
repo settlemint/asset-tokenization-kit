@@ -5,6 +5,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { cn } from "@/lib/utils";
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 
 type SecretCodeInputProps = Omit<
   Parameters<typeof InputOTP>[0],
@@ -17,6 +18,7 @@ export function SecretCodeInput(props: SecretCodeInputProps) {
       {...props}
       minLength={10}
       maxLength={10}
+      pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
       className={cn("justify-center gap-1.5", props.className)}
       autoComplete="off"
       required

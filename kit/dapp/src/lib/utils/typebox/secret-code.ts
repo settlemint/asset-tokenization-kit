@@ -12,13 +12,13 @@ if (!FormatRegistry.Has("secret-code")) {
   FormatRegistry.Set("secret-code", (value) => {
     if (typeof value !== "string") return false;
     // 10 random string characters with - separator in the middle
-    return /^\d{5}-\d{5}$/.test(value);
+    return /^[a-zA-Z0-9]{10}$/.test(value);
   });
 }
 
 if (!TypeRegistry.Has("secret-code")) {
   TypeRegistry.Set<string>("secret-code", (_schema, value) => {
-    return typeof value === "string" && /^\d{5}-\d{5}$/.test(value);
+    return typeof value === "string" && /^[a-zA-Z0-9]{10}$/.test(value);
   });
 }
 

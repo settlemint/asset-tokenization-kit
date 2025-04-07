@@ -55,11 +55,6 @@ export function FormOtpDialog<T extends FieldValues>({
   const [activeVerificationType, setActiveVerificationType] =
     useState<VerificationType>(isTwoFactorEnabled ? "two-factor" : "pincode");
 
-  // Get the current path to check if we're in cryptocurrency creation
-  const pathname = window.location.pathname;
-  const isCryptocurrencyCreation =
-    pathname.includes("/portfolio") || pathname.includes("/cryptocurrency");
-
   function getTitle(verificationType: VerificationType) {
     switch (verificationType) {
       case "two-factor":
@@ -166,7 +161,7 @@ export function FormOtpDialog<T extends FieldValues>({
             >
           }
           name={"verificationType" as Path<T>}
-          render={({ field, formState: { isValid } }) => (
+          render={({ field }) => (
             <FormItem>
               <FormControl hidden>
                 <Input type="hidden" value={field.value} />
@@ -201,7 +196,7 @@ export function FormOtpDialog<T extends FieldValues>({
                 <Button
                   onClick={handleSubmit}
                   // Always enable the button for cryptocurrency creation, otherwise use validation
-                  disabled={isCryptocurrencyCreation ? false : !isValid}
+                  disabled={field.value === ""}
                 >
                   {t("confirm")}
                 </Button>
