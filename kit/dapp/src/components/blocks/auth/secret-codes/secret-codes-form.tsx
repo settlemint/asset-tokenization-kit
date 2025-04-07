@@ -5,24 +5,10 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CopySecretCodes } from "./copy-secret-codes";
 
-interface SecretCodesFormProps {
-  onSecretCodesChange?: (secretCodes: string[]) => void;
-}
-
-export function SecretCodesForm({ onSecretCodesChange }: SecretCodesFormProps) {
+export function SecretCodesForm() {
   const [secretCodes, setSecretCodes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations("portfolio.settings.profile.secret-codes");
-
-  useEffect(() => {
-    if (
-      secretCodes.length > 0 &&
-      !isLoading &&
-      typeof onSecretCodesChange === "function"
-    ) {
-      onSecretCodesChange(secretCodes);
-    }
-  }, [secretCodes, onSecretCodesChange, isLoading]);
 
   const fetchSecretCodes = async () => {
     try {

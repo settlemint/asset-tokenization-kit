@@ -39,11 +39,7 @@ export function SecretCodesCard() {
         />
       </CardContent>
       <CardFooter className="flex items-center p-6 py-4 md:py-3 bg-transparent border-none justify-end">
-        <Button
-          variant="secondary"
-          onClick={() => setIsSecretCodesDialogOpen(true)}
-          size="sm"
-        >
+        <Button onClick={() => setIsSecretCodesDialogOpen(true)} size="sm">
           {t("generate")}
         </Button>
       </CardFooter>
