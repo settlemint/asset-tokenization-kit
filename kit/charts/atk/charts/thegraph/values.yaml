@@ -58,7 +58,7 @@ graph-node:
             # -- Type of Provider: web3
             type: web3
             # -- URL for JSON-RPC endpoint
-            url: http://besu-loadbalancer:4000
+            url: http://erpc:4000
             # -- Data capabilities this node has
             features: [archive, traces]
   ingress:
