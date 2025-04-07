@@ -234,17 +234,19 @@ export class AdminPage extends BasePage {
   }
 
   private async getColumnIndices() {
+    const nameColumn = this.page.locator("th", { hasText: "Name" });
+    const supplyColumn = this.page.locator("th", { hasText: "Total Supply" });
+
+    await nameColumn.waitFor({ state: "visible", timeout: 40000 });
+    await supplyColumn.waitFor({ state: "visible", timeout: 40000 });
+
     return {
-      nameColumnIndex: await this.page
-        .locator("th", { hasText: "Name" })
-        .evaluate((el) => {
-          return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
-        }),
-      supplyColumnIndex: await this.page
-        .locator("th", { hasText: "Total Supply" })
-        .evaluate((el) => {
-          return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
-        }),
+      nameColumnIndex: await nameColumn.evaluate((el: HTMLElement) => {
+        return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
+      }),
+      supplyColumnIndex: await supplyColumn.evaluate((el: HTMLElement) => {
+        return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
+      }),
     };
   }
 
@@ -543,9 +545,6 @@ export class AdminPage extends BasePage {
     amount: string;
     pincode: string;
   }) {
-    await this.chooseAssetTypeFromSidebar({
-      sidebarAssetTypes: options.sidebarAssetTypes,
-    });
     await this.chooseAssetFromTable({
       name: options.name,
       sidebarAssetTypes: options.sidebarAssetTypes,
@@ -749,7 +748,7 @@ export class AdminPage extends BasePage {
 
     await viewAllLink.waitFor({ state: "visible", timeout: 15000 });
 
-    await viewAllLink.evaluate((element) => {
+    await viewAllLink.evaluate((element: HTMLElement) => {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
       return new Promise((resolve) => setTimeout(resolve, 100));
     });
@@ -766,7 +765,6 @@ export class AdminPage extends BasePage {
     name: string;
     sidebarAssetTypes: string;
   }) {
-    await this.page.getByPlaceholder("Search...").fill(options.name);
     const detailsLink = this.page
       .locator("tr")
       .filter({ has: this.page.getByText(options.name, { exact: true }) })
