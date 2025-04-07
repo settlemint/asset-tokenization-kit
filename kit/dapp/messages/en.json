@@ -973,14 +973,6 @@
             "enabled": "Two-factor authentication is enabled",
             "disabled": "Two-factor authentication is disabled"
           },
-          "backup-codes": {
-            "title": "Backup codes",
-            "description": "These codes can be used to access your account if you lose your phone. Make sure to store them in a safe place.",
-            "copy": "Copy backup codes",
-            "copied": "Backup codes copied to clipboard",
-            "generate": "Generate backup codes",
-            "error-message": "Failed to generate backup codes: {error}"
-          },
           "enter-password": {
             "title": "Enter password",
             "description": "Enter your password to enable two-factor authentication.",
@@ -1007,6 +999,14 @@
             "success-message": "Two-factor authentication disabled successfully",
             "error-message": "Failed to disable two-factor authentication: {error}"
           }
+        },
+        "secret-codes": {
+          "title": "Security codes",
+          "description": "These codes can be used to access your wallet if you lose your phone or forget your pincode. Make sure to store them in a safe place.",
+          "copy": "Copy security codes",
+          "copied": "Security codes copied to clipboard",
+          "generate": "Generate security codes",
+          "error-message": "Failed to generate security codes"
         }
       }
     },
@@ -1921,7 +1921,7 @@
           "button-label": "Start using my wallet",
           "setup": {
             "title": "Complete your wallet security",
-            "description": "To keep your wallet safe, you need to finish setting up its security. Either set up your preferred verification method or download your backup codes to ensure you're always in control. Let's get it done now to protect your assets.",
+            "description": "To keep your wallet safe, you need to finish setting up its security. Either set up your preferred verification method or download your security codes to ensure you're always in control. Let's get it done now to protect your assets.",
             "button-label": "Secure my wallet"
           },
           "select-method": {
@@ -1940,7 +1940,7 @@
               "description": "Create a secure 6 digit PIN for your wallet. This PIN will be required whenever you authorize transactions."
             }
           },
-          "security-codes": {
+          "secret-codes": {
             "title": "Backup your security codes",
             "description": "These one-time-use codes can verify transactions or recover your wallet. Store them securely, like in a password manager or written down. If lost, recovery will be difficult."
           },

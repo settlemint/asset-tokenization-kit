@@ -11,6 +11,7 @@ import {
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { SecretCodesCard } from "./_components/secret-codes-card";
 import { TwoFactorCard } from "./_components/two-factor-card";
 
 export async function generateMetadata({
@@ -60,8 +61,9 @@ export default async function SecuritySettingsPage() {
           }}
         />
       </div>
-      <div className="mb-4 grid grid-cols-1 gap-4">
+      <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
         <TwoFactorCard />
+        <SecretCodesCard />
       </div>
       <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
         <ProvidersCard

@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { authClient } from "@/lib/auth/client";
-import type { VerifyTwoFactorOTPInput } from "@/lib/mutations/user/verify-two-factor-otp-schema";
-import { VerifyTwoFactorOTPSchema } from "@/lib/mutations/user/verify-two-factor-otp-schema";
+import type { VerifyTwoFactorOTPInput } from "@/lib/mutations/user/two-factor/verify-two-factor-otp-schema";
+import { VerifyTwoFactorOTPSchema } from "@/lib/mutations/user/two-factor/verify-two-factor-otp-schema";
 import { AuthUIContext } from "@daveyplate/better-auth-ui";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";

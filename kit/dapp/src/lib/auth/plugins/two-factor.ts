@@ -1,11 +1,11 @@
 import { OTP_ALGORITHM, OTP_DIGITS, OTP_PERIOD } from "@/lib/auth/otp";
-import { enableTwoFactorFunction } from "@/lib/mutations/user/enable-two-factor-function";
+import { enableTwoFactorFunction } from "@/lib/mutations/user/two-factor/enable-two-factor-function";
 import type { GenericEndpointContext } from "better-auth";
 import { createAuthEndpoint } from "better-auth/api";
 import { setSessionCookie } from "better-auth/cookies";
 import { twoFactor } from "better-auth/plugins/two-factor";
-import { disableTwoFactorFunction } from "../../mutations/user/disable-two-factor-function";
-import { verifyTwoFactorOTPFunction } from "../../mutations/user/verify-two-factor-otp-function";
+import { disableTwoFactorFunction } from "../../mutations/user/two-factor/disable-two-factor-function";
+import { verifyTwoFactorOTPFunction } from "../../mutations/user/two-factor/verify-two-factor-otp-function";
 import type { User } from "../types";
 
 const plugin = twoFactor({
@@ -18,7 +18,7 @@ const plugin = twoFactor({
 const originalEnableTwoFactor = plugin.endpoints.enableTwoFactor;
 const originalDisableTwoFactor = plugin.endpoints.disableTwoFactor;
 const originalVerifyTOTP = plugin.endpoints.verifyTOTP;
-
+const originalGenerateBackupCodes = plugin.endpoints.generateBackupCodes;
 plugin.endpoints = {
   ...plugin.endpoints,
   enableTwoFactor: createAuthEndpoint(
@@ -81,6 +81,13 @@ plugin.endpoints = {
           twoFactorEnabled: true,
         });
       }
+      return ctx.context.valid(ctx);
+    }
+  ),
+  generateBackupCodes: createAuthEndpoint(
+    originalGenerateBackupCodes.path,
+    originalGenerateBackupCodes.options,
+    async (ctx) => {
       return ctx.context.valid(ctx);
     }
   ),

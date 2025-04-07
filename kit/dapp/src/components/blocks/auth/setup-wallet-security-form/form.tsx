@@ -3,7 +3,7 @@ import { setupWalletSecurity } from "@/lib/mutations/user/wallet/setup-wallet-se
 import { SetupWalletSecuritySchema } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { SecurityCodes } from "./steps/security-codes";
+import { SecretCodes } from "./steps/secret-codes";
 import { SelectMethod } from "./steps/select-method";
 import { SetupVerification } from "./steps/setup-verification";
 import { Summary } from "./steps/summary";
@@ -24,7 +24,7 @@ export function SetupWalletSecurityForm() {
       {({ goToNextStep }) => [
         <SelectMethod key="select-method" goToNextStep={goToNextStep} />,
         <SetupVerification key="setup-verification" />,
-        <SecurityCodes key="security-codes" />,
+        <SecretCodes key="security-codes" />,
         <Summary key="summary" />,
       ]}
     </Form>

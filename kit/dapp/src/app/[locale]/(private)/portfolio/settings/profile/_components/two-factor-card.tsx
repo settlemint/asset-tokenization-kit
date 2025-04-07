@@ -1,6 +1,7 @@
 "use client";
 
 import { SetupTwoFactorDialog } from "@/components/blocks/auth/two-factor/setup-two-factor-dialog";
+import { TwoFactorPasswordDialog } from "@/components/blocks/auth/two-factor/two-factor-password-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,8 +17,6 @@ import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
-import { TwoFactorBackupCodesDialog } from "./two-factor-backup-codes-dialog";
-import { TwoFactorPasswordDialog } from "./two-factor-password-dialog";
 
 export function TwoFactorCard() {
   const t = useTranslations(
@@ -28,7 +27,6 @@ export function TwoFactorCard() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEnabling, setIsEnabling] = useState(false);
   const [isDisabling, setIsDisabling] = useState(false);
-  const [isBackupCodesDialogOpen, setIsBackupCodesDialogOpen] = useState(false);
 
   const disableTwoFactorAuthentication = async (password: string) => {
     try {
@@ -72,26 +70,9 @@ export function TwoFactorCard() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3 flex-1">
-          {session?.user.twoFactorEnabled ? (
-            <>
-              <div>{t("status.enabled")}</div>
-              <div>
-                <TwoFactorBackupCodesDialog
-                  open={isBackupCodesDialogOpen}
-                  onOpenChange={setIsBackupCodesDialogOpen}
-                />
-                <Button
-                  variant="secondary"
-                  onClick={() => setIsBackupCodesDialogOpen(true)}
-                  size="sm"
-                >
-                  {t("backup-codes.generate")}
-                </Button>
-              </div>
-            </>
-          ) : (
-            t("status.disabled")
-          )}
+          {session?.user.twoFactorEnabled
+            ? t("status.enabled")
+            : t("status.disabled")}
         </CardContent>
         <CardFooter className="flex items-center p-6 py-4 md:py-3 bg-transparent border-none justify-end">
           <Button
