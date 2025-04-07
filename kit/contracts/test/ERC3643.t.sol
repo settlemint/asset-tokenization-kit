@@ -254,7 +254,9 @@ contract GatewayTest is Test {
         vm.startPrank(identityAgent1);
         IIdentity id = IIdentity(identityGateway.deployIdentityForWallet(client1));
         IERC3643IdentityRegistry identityRegistry = Token(tokenAddress).identityRegistry();
-        identityRegistry.registerIdentity(client1, id, 1);
+        // country numbers from https://en.wikipedia.org/wiki/ISO_3166-1_numeric
+        // Belgium
+        identityRegistry.registerIdentity(client1, id, 56);
 
         vm.stopPrank();
 
