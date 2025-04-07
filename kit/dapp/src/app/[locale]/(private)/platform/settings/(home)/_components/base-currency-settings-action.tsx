@@ -10,7 +10,7 @@ const schema = tb.Object({
   baseCurrency: tb.FiatCurrency(),
 });
 
-export const updateSettings = action
+export const updateBaseCurrencySettings = action
   .schema(schema)
   .outputSchema(tb.Object({ success: tb.Boolean() }))
   .action(async ({ parsedInput: { baseCurrency }, ctx }) => {

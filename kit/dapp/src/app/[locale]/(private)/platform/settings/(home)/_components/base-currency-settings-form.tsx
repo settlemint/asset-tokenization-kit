@@ -30,7 +30,7 @@ import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hoo
 import { DollarSign } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { updateSettings } from "./settings-action";
+import { updateBaseCurrencySettings } from "./base-currency-settings-action";
 
 const schema = tb.Object({
   baseCurrency: tb.FiatCurrency(),
@@ -51,11 +51,13 @@ interface SettingsFormProps {
   defaultBaseCurrency: CurrencyCode;
 }
 
-export function SettingsForm({ defaultBaseCurrency }: SettingsFormProps) {
+export function BaseCurrencySettingsForm({
+  defaultBaseCurrency,
+}: SettingsFormProps) {
   const t = useTranslations("admin.platform.settings");
 
   const { form, handleSubmitWithAction } = useHookFormAction(
-    updateSettings,
+    updateBaseCurrencySettings,
     typeboxResolver(schema),
     {
       formProps: {
