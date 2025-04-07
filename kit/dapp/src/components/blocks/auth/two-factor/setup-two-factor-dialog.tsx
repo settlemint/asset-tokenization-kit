@@ -65,44 +65,42 @@ export function SetupTwoFactorDialog({
     }
   };
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("setup-mfa.title")}</DialogTitle>
-            <DialogDescription>{t("setup-mfa.description")}</DialogDescription>
-          </DialogHeader>
-          <SetupTwoFactorForm
-            firstOtp={firstOtp}
-            onFirstOtpChange={setFirstOtp}
-          />
-          <DialogFooter>
-            <div className="flex w-full justify-between items-center">
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    onOpenChange(false);
-                  }}
-                  disabled={isLoading}
-                >
-                  {t("setup-mfa.cancel")}
-                </Button>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t("setup-mfa.title")}</DialogTitle>
+          <DialogDescription>{t("setup-mfa.description")}</DialogDescription>
+        </DialogHeader>
+        <SetupTwoFactorForm
+          firstOtp={firstOtp}
+          onFirstOtpChange={setFirstOtp}
+        />
+        <DialogFooter>
+          <div className="flex w-full justify-between items-center">
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  onOpenChange(false);
+                }}
+                disabled={isLoading}
+              >
+                {t("setup-mfa.cancel")}
+              </Button>
 
-                <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onSetupFinished();
-                  }}
-                  disabled={!firstOtp.trim() || isLoading}
-                >
-                  {isLoading ? t("setup-mfa.loading") : t("setup-mfa.enable")}
-                </Button>
-              </div>
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  onSetupFinished();
+                }}
+                disabled={!firstOtp.trim() || isLoading}
+              >
+                {isLoading ? t("setup-mfa.loading") : t("setup-mfa.enable")}
+              </Button>
             </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
