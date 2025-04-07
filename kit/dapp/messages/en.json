@@ -123,11 +123,12 @@
         }
       },
       "page": {
-        "asset-management": "Asset management",
-        "description": "Welcome to the dashboard",
-        "latest-events-heading": "Latest events",
-        "stats-heading": "Stats",
-        "title": "Dashboard"
+        "asset-management": "Asset Management",
+        "description": "Asset dashboard showing all assets and their statistics",
+        "title": "Dashboard",
+        "stats-heading": "Statistics",
+        "latest-events-heading": "Latest Events",
+        "asset-class-characteristics-description": "Shows return potential, volatility, and liquidity"
       },
       "table": {
         "latest-events": {
@@ -356,6 +357,8 @@
       "assets": {
         "asset-distribution": "Asset distribution",
         "asset-distribution-description": "Portfolio allocation by asset type",
+        "asset-class-characteristics": "Asset Class Characteristics",
+        "alternative": "Alternative",
         "bond": "Bond",
         "bond-issuance": "Bond issuance",
         "bond-issued": "Issued",
@@ -376,7 +379,11 @@
           "label": "Collateral Ratio",
           "no-data": "No collateral data available"
         },
+        "commodities": "Commodities",
+        "crypto": "Crypto",
         "cryptocurrency": "Cryptocurrency",
+        "debt": "Debt",
+        "deposit": "Deposit",
         "equity": "Equity",
         "error-loading-data": "Error loading data",
         "free-collateral-ratio": {
@@ -385,8 +392,8 @@
         "fund": "Fund",
         "last-updated": "Last updated",
         "loading": "Loading...",
+        "real-estate": "Real Estate",
         "stablecoin": "Stablecoin",
-        "deposit": "Deposit",
         "total-collateral": {
           "label": "Total Collateral"
         },

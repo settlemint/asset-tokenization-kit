@@ -1,3 +1,4 @@
+import { AssetClassCharacteristics } from "@/components/blocks/charts/assets/asset-class-characteristics";
 import { PageHeader } from "@/components/layout/page-header";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
@@ -56,9 +57,12 @@ export default async function AdminDashboard({
         <PriceWidget />
       </div>
       <p className="mt-8 mb-4 font-semibold text-2xl">{t("stats-heading")}</p>
-      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 2xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 2xl:grid-cols-5">
         <AssetsSupply />
         <AssetActivity />
+        <AssetClassCharacteristics
+          description={t("asset-class-characteristics-description")}
+        />
         <UsersHistory />
         <TransactionsHistory />
       </div>
