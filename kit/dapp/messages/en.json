@@ -515,6 +515,16 @@
           "description": "To sign the transaction, please enter your otp code from your authenticator app for verification and authorization.",
           "title": "Enter your OTP to confirm"
         },
+        "secret-codes": {
+          "description": "Please enter one of your secure codes to verify your identity. Each code can only be used once, so make sure to keep your unused codes safe.",
+          "title": "Enter a secure code"
+        },
+        "method-select": {
+          "title": "Switch wallet security method",
+          "pincode": "PIN-code",
+          "two-factor-authentication": "Authenticator app",
+          "use-secret-codes": "Or use one of your secure codes"
+        },
         "switch-method": "Switch method"
       },
       "progress": {
@@ -1001,12 +1011,12 @@
           }
         },
         "secret-codes": {
-          "title": "Security codes",
+          "title": "Secure codes",
           "description": "These codes can be used to access your wallet if you lose your phone or forget your pincode. Make sure to store them in a safe place.",
-          "copy": "Copy security codes",
-          "copied": "Security codes copied to clipboard",
-          "generate": "Generate security codes",
-          "error-message": "Failed to generate security codes"
+          "copy": "Copy secure codes",
+          "copied": "Secure codes copied to clipboard",
+          "generate": "Generate secure codes",
+          "error-message": "Failed to generate secure codes"
         }
       }
     },

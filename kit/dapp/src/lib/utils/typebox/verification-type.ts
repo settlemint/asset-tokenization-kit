@@ -1,15 +1,16 @@
 import type { SchemaOptions } from "@sinclair/typebox";
 import { t } from "elysia/type-system";
 
-export type VerificationType = "two-factor" | "pincode";
+export type VerificationType = "two-factor" | "pincode" | "secret-code";
 
 /**
  * Enum of valid user roles
  */
-export const verificationTypes: [VerificationType, VerificationType] = [
-  "two-factor",
-  "pincode",
-];
+export const verificationTypes: [
+  VerificationType,
+  VerificationType,
+  VerificationType,
+] = ["two-factor", "pincode", "secret-code"];
 
 /**
  * Validates a verification method
