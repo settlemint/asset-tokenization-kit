@@ -192,6 +192,15 @@ contract GatewayTest is Test {
         // console.log("modularComplianceAddress", modularComplianceAddress);
     }
 
+    function createIdentity(Gateway identityGateway_, address clientWalletAddress_, uint8 countryCode_) public {
+        vm.startPrank(identityAgent1);
+        IIdentity id = IIdentity(identityGateway_.deployIdentityForWallet(clientWalletAddress_));
+        IERC3643IdentityRegistry identityRegistry = Token(tokenAddress).identityRegistry();
+        // country numbers from https://en.wikipedia.org/wiki/ISO_3166-1_numeric
+        identityRegistry.registerIdentity(clientWalletAddress_, id, countryCode_);
+        vm.stopPrank();
+    }
+
     function test_OnboardFirstAdmin() public {
         (TREXGateway gateway,) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         assertTrue(gateway.getPublicDeploymentStatus());
@@ -251,14 +260,7 @@ contract GatewayTest is Test {
         // Verify that tokenAgent2 is now an agent
         assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
 
-        vm.startPrank(identityAgent1);
-        IIdentity id = IIdentity(identityGateway.deployIdentityForWallet(client1));
-        IERC3643IdentityRegistry identityRegistry = Token(tokenAddress).identityRegistry();
-        // country numbers from https://en.wikipedia.org/wiki/ISO_3166-1_numeric
-        // Belgium
-        identityRegistry.registerIdentity(client1, id, 56);
-
-        vm.stopPrank();
+        createIdentity(identityGateway, client1, 56); // 56 is Belgium
 
         vm.startPrank(tokenAgent2);
         // Mint 1000 tokens to the owner
