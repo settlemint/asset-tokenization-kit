@@ -3,7 +3,6 @@ import { setupWalletSecurity } from "@/lib/mutations/user/wallet/setup-wallet-se
 import { SetupWalletSecuritySchema } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { SecretCodes } from "./steps/secret-codes";
 import { SelectMethod } from "./steps/select-method";
 import { SetupVerification } from "./steps/setup-verification";
@@ -11,7 +10,7 @@ import { Summary } from "./steps/summary";
 
 export function SetupWalletSecurityForm() {
   const t = useTranslations("private.auth.wallet-security.form");
-  const [isChangingStep, setIsChangingStep] = useState(false);
+
   return (
     <Form
       action={setupWalletSecurity}
@@ -25,18 +24,14 @@ export function SetupWalletSecurityForm() {
       secureForm={false}
       onAnyFieldChange={(
         { getValues },
-        { step, goToNextStep, changedFieldName }
+        { step, goToStep, changedFieldName }
       ) => {
-        if (isChangingStep) {
-          return;
-        }
         if (
           step === 0 &&
           changedFieldName === "method" &&
           !!getValues("method")
         ) {
-          setIsChangingStep(true);
-          goToNextStep().finally(() => setIsChangingStep(false));
+          goToStep(1);
         }
       }}
     >

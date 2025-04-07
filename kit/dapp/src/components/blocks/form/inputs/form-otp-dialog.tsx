@@ -177,8 +177,8 @@ export function FormOtpDialog<T extends FieldValues>({
                     variant="link"
                     onClick={() => {
                       setIsSwitchingVerificationType(false);
-                      field.onChange("secret-code");
                       setActiveVerificationType("secret-code");
+                      field.onChange("secret-code");
                     }}
                   >
                     {t("method-select.use-secret-codes")}
@@ -192,7 +192,7 @@ export function FormOtpDialog<T extends FieldValues>({
                   >
                     {t("switch-method")}
                   </Button>
-                )}{" "}
+                )}
               </div>
               <DialogFooter className="gap-2 mt-4">
                 <Button variant="outline" onClick={() => onOpenChange(false)}>

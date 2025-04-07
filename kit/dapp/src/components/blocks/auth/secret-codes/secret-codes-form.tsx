@@ -7,7 +7,7 @@ import { CopySecretCodes } from "./copy-secret-codes";
 
 export function SecretCodesForm() {
   const [secretCodes, setSecretCodes] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const t = useTranslations("portfolio.settings.profile.secret-codes");
 
   const generate = async () => {

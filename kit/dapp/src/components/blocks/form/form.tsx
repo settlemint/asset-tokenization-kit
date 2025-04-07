@@ -14,6 +14,7 @@ import type {
   Control,
   DefaultValues,
   Path,
+  PathValue,
   Resolver,
   UseFormReturn,
 } from "react-hook-form";
@@ -48,7 +49,7 @@ interface FormProps<
     form: UseFormReturn<Infer<S>>,
     context: {
       step: number;
-      goToNextStep: () => Promise<void>;
+      goToStep: (step: number) => void;
       changedFieldName: Path<S extends Schema ? Infer<S> : any> | undefined;
     }
   ) => void;
@@ -281,8 +282,8 @@ export function Form<
         },
         actionProps: {
           onSuccess: ({ data }) => {
-            const hashes = safeParse(tb.Hashes(), data);
             if (secureForm) {
+              const hashes = safeParse(tb.Hashes(), data);
               toast.promise(waitForTransactions(hashes), {
                 loading: toastMessages?.loading || t("transactions.sending"),
                 success: toastMessages?.success || t("transactions.success"),
@@ -377,13 +378,28 @@ export function Form<
   }, [form, isLastStep, secureForm, currentStep, totalSteps, children]);
 
   useEffect(() => {
+    // Reset the verification code when the security dialog is opened
+    if (showFormSecurityConfirmation) {
+      form.setValue(
+        "verificationCode" as Path<S extends Schema ? Infer<S> : string>,
+        "" as PathValue<
+          S extends Schema ? Infer<S> : string,
+          Path<S extends Schema ? Infer<S> : string>
+        >
+      );
+    }
+  }, [form, showFormSecurityConfirmation]);
+
+  useEffect(() => {
     if (!onAnyFieldChange) return;
 
     const subscription = form.watch((_value, { name }) => {
       onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
         changedFieldName: name,
         step: currentStep,
-        goToNextStep: handleNext,
+        goToStep: (step: number) => {
+          setCurrentStep(step);
+        },
       });
     });
 
