@@ -31,10 +31,23 @@ export function CreateDepositSchema() {
         description: "The number of decimal places for the token",
       }),
       isin: t.Optional(
-        t.Isin({
-          description:
-            "Optional International Securities Identification Number",
-        })
+        t.Union(
+          [
+            t.String({
+              pattern: "^$",
+              description: "Empty ISIN value",
+            }),
+            t.Isin({
+              description:
+                "Optional International Securities Identification Number",
+              error:
+                "Please enter text in the correct ISIN format or leave it empty",
+            }),
+          ],
+          {
+            description: "Either an empty string or a valid ISIN",
+          }
+        )
       ),
       verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
         description:
