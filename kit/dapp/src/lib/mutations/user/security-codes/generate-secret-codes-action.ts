@@ -5,7 +5,5 @@ import { action } from "../../safe-action";
 import { generateSecretCodesFunction } from "./generate-secret-codes-function";
 
 export const generateSecretCodes = action
-  .outputSchema(
-    t.Object({ success: t.Boolean(), secretCodes: t.Array(t.String()) })
-  )
+  .outputSchema(t.Object({ secretCodes: t.Array(t.String()) }))
   .action(generateSecretCodesFunction);

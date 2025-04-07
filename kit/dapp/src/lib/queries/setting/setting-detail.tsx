@@ -4,7 +4,7 @@ import type { SettingKey } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse } from "@/lib/utils/typebox";
-import { NotFoundError } from "elysia";
+import { ApiError } from "next/dist/server/api-utils";
 import { cache } from "react";
 import { SettingSchema } from "./setting-schema";
 
@@ -33,7 +33,7 @@ export const getSetting = cache(
     async ({ key }: { key: SettingKey }) => {
       const result = await hasuraClient.request(GetSetting, { _eq: key });
       if (result.settings.length === 0) {
-        throw new NotFoundError();
+        throw new ApiError(404, `Setting '${key}' not found`);
       }
       return safeParse(SettingSchema, result.settings[0]);
     }

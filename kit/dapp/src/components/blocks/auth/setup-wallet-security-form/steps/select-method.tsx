@@ -8,7 +8,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function SelectMethod({ goToNextStep }: { goToNextStep: () => void }) {
+export function SelectMethod() {
   const { control, setValue } = useFormContext<SetupWalletSecurityInput>();
   const t = useTranslations("private.auth.wallet-security.form.select-method");
 
@@ -27,7 +27,6 @@ export function SelectMethod({ goToNextStep }: { goToNextStep: () => void }) {
                     "method",
                     WalletSecurityMethodOptions.TwoFactorAuthentication
                   );
-                  goToNextStep();
                 }}
               >
                 {t("two-factor-authentication")}
@@ -36,7 +35,6 @@ export function SelectMethod({ goToNextStep }: { goToNextStep: () => void }) {
                 variant="outline"
                 onClick={() => {
                   setValue("method", WalletSecurityMethodOptions.Pincode);
-                  goToNextStep();
                 }}
               >
                 {t("pincode")}

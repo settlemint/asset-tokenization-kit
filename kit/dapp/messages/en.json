@@ -1953,7 +1953,7 @@
             }
           },
           "secret-codes": {
-            "title": "Backup your security codes",
+            "title": "Backup your secure codes",
             "description": "These one-time-use codes can verify transactions or recover your wallet. Store them securely, like in a password manager or written down. If lost, recovery will be difficult."
           },
           "summary": {

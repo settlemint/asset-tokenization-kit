@@ -37,6 +37,9 @@ export async function enableTwoFactorFunction({
   ctx?: { user: User };
 }) {
   const currentUser = ctx?.user ?? (await getUser());
+  if (currentUser.twoFactorVerificationId) {
+    throw new ApiError(400, "Two-factor verification already enabled");
+  }
   const result = await portalClient.request(EnableTwoFactor, {
     address: currentUser.wallet,
     algorithm,

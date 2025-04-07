@@ -9,7 +9,7 @@ import { SetErrorFunction, ValueErrorType } from "@sinclair/typebox/errors";
 import { useTranslations } from "next-intl";
 import type { Infer, Schema } from "next-safe-action/adapters/types";
 import type { HookSafeActionFn } from "next-safe-action/hooks";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type {
   Control,
   DefaultValues,
@@ -23,10 +23,6 @@ import { FormProgress } from "./form-progress";
 import { FormOtpDialog } from "./inputs/form-otp-dialog";
 import type { FormStepElement } from "./types";
 
-interface FormRenderProps {
-  goToNextStep: () => void;
-}
-
 interface FormProps<
   ServerError,
   S extends Schema,
@@ -36,12 +32,7 @@ interface FormProps<
   Data,
   FormContext = unknown,
 > {
-  children:
-    | FormStepElement<S>
-    | FormStepElement<S>[]
-    | ((
-        renderProps: FormRenderProps
-      ) => FormStepElement<S> | FormStepElement<S>[]);
+  children: FormStepElement<S> | FormStepElement<S>[];
   defaultValues?: DefaultValues<Infer<S>>;
   action: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
   resolver: Resolver<Infer<S>, FormContext>;
@@ -53,7 +44,14 @@ interface FormProps<
     success?: string;
   };
   secureForm?: boolean;
-  onAnyFieldChange?: (form: UseFormReturn<Infer<S>>) => void;
+  onAnyFieldChange?: (
+    form: UseFormReturn<Infer<S>>,
+    context: {
+      step: number;
+      goToNextStep: () => Promise<void>;
+      changedFieldName: Path<S extends Schema ? Infer<S> : any> | undefined;
+    }
+  ) => void;
 }
 
 export function Form<
@@ -78,15 +76,7 @@ export function Form<
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations();
-  const childrenToRender =
-    typeof children === "function"
-      ? children({
-          goToNextStep: () => {},
-        })
-      : children;
-  const totalSteps = Array.isArray(childrenToRender)
-    ? childrenToRender.length
-    : 1;
+  const totalSteps = Array.isArray(children) ? children.length : 1;
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
 
@@ -317,32 +307,16 @@ export function Form<
       }
     );
 
-  useEffect(() => {
-    if (!onAnyFieldChange) return;
-
-    const subscription = form.watch(() => {
-      onAnyFieldChange(form as UseFormReturn<Infer<S>>);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [form, onAnyFieldChange]);
-
   const isLastStep = currentStep === totalSteps - 1;
 
   const handlePrev = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const handleNext = async () => {
-    const renderedChildren =
-      typeof children === "function"
-        ? children({
-            goToNextStep: handleNext,
-          })
-        : children;
-    const CurrentStep = Array.isArray(renderedChildren)
-      ? renderedChildren[currentStep].type
-      : renderedChildren.type;
+  const handleNext = useCallback(async () => {
+    const CurrentStep = Array.isArray(children)
+      ? children[currentStep].type
+      : children.type;
     const fieldsToValidate = CurrentStep.validatedFields;
     if (!fieldsToValidate?.length) {
       if (isLastStep && secureForm) {
@@ -400,7 +374,21 @@ export function Form<
         setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
       }, 10);
     }
-  };
+  }, [form, isLastStep, secureForm, currentStep, totalSteps, children]);
+
+  useEffect(() => {
+    if (!onAnyFieldChange) return;
+
+    const subscription = form.watch((_value, { name }) => {
+      onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
+        changedFieldName: name,
+        step: currentStep,
+        goToNextStep: handleNext,
+      });
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, onAnyFieldChange, handleNext, currentStep]);
 
   const hasError = Object.keys(form.formState.errors).length > 0;
   const formatError = (key: string, errorMessage?: string, type?: string) => {
@@ -412,13 +400,6 @@ export function Form<
 
     return `${errorKey}${translatedErrorMessage}`;
   };
-
-  const renderedChildren =
-    typeof children === "function"
-      ? children({
-          goToNextStep: handleNext,
-        })
-      : children;
 
   return (
     <div className="h-full space-y-6">
@@ -453,9 +434,7 @@ export function Form<
                   </AlertDescription>
                 </Alert>
               )}
-              {Array.isArray(renderedChildren)
-                ? renderedChildren[currentStep]
-                : renderedChildren}
+              {Array.isArray(children) ? children[currentStep] : children}
               {showFormSecurityConfirmation && (
                 <FormOtpDialog
                   name={"verificationCode" as Path<Infer<S>>}

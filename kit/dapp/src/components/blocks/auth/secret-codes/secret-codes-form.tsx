@@ -32,7 +32,10 @@ export function SecretCodesForm() {
   };
 
   useEffect(() => {
-    generate();
+    const timeout = setTimeout(() => {
+      generate();
+    }, 1000);
+    return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

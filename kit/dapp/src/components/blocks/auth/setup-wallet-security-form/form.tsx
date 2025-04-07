@@ -3,6 +3,7 @@ import { setupWalletSecurity } from "@/lib/mutations/user/wallet/setup-wallet-se
 import { SetupWalletSecuritySchema } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { SecretCodes } from "./steps/secret-codes";
 import { SelectMethod } from "./steps/select-method";
 import { SetupVerification } from "./steps/setup-verification";
@@ -10,7 +11,7 @@ import { Summary } from "./steps/summary";
 
 export function SetupWalletSecurityForm() {
   const t = useTranslations("private.auth.wallet-security.form");
-
+  const [isChangingStep, setIsChangingStep] = useState(false);
   return (
     <Form
       action={setupWalletSecurity}
@@ -22,13 +23,27 @@ export function SetupWalletSecurityForm() {
       }}
       hideButtons={(step) => step === 0}
       secureForm={false}
+      onAnyFieldChange={(
+        { getValues },
+        { step, goToNextStep, changedFieldName }
+      ) => {
+        if (isChangingStep) {
+          return;
+        }
+        if (
+          step === 0 &&
+          changedFieldName === "method" &&
+          !!getValues("method")
+        ) {
+          setIsChangingStep(true);
+          goToNextStep().finally(() => setIsChangingStep(false));
+        }
+      }}
     >
-      {({ goToNextStep }) => [
-        <SelectMethod key="select-method" goToNextStep={goToNextStep} />,
-        <SetupVerification key="setup-verification" />,
-        <SecretCodes key="security-codes" />,
-        <Summary key="summary" />,
-      ]}
+      <SelectMethod key="select-method" />
+      <SetupVerification key="setup-verification" />
+      <SecretCodes key="security-codes" />
+      <Summary key="summary" />
     </Form>
   );
 }

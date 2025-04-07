@@ -24,6 +24,20 @@ const GenerateSecretCodes = portalGraphql(`
 `);
 
 /**
+ * GraphQL mutation to remove secret codes
+ */
+const RemoveSecretCodes = portalGraphql(`
+  mutation RemoveSecretCodes($address: String!, $verificationId: String!) {
+    deleteWalletVerification(
+      userWalletAddress: $address
+      verificationId: $verificationId
+    ) {
+      success
+    }
+  }
+`);
+
+/**
  * Function to generate secret codes
  *
  * @param ctx - Optional context containing user information
@@ -35,6 +49,12 @@ export async function generateSecretCodesFunction({
   ctx?: { user: User };
 }) {
   const currentUser = ctx?.user ?? (await getUser());
+  if (currentUser.secretCodeVerificationId) {
+    await portalClient.request(RemoveSecretCodes, {
+      address: currentUser.wallet,
+      verificationId: currentUser.secretCodeVerificationId,
+    });
+  }
   const { createWalletVerification } = await portalClient.request(
     GenerateSecretCodes,
     {
@@ -57,7 +77,6 @@ export async function generateSecretCodesFunction({
     secretCodes?: string;
   };
   return {
-    success: true,
     secretCodes: parameters?.secretCodes?.split(",") ?? [],
   };
 }
