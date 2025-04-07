@@ -425,9 +425,7 @@ export function Form<
       <div className="container flex h-full flex-col p-6">
         <UIForm {...form}>
           <form
-            onSubmit={
-              isLastStep ? handleSubmitWithAction : (e) => e.preventDefault()
-            }
+            onSubmit={(e) => e.preventDefault()}
             noValidate
             className="flex flex-1 flex-col"
           >
@@ -496,7 +494,7 @@ export function Form<
                   });
                 }}
                 labels={buttonLabels}
-                onLastStep={secureForm ? handleNext : undefined}
+                onLastStep={secureForm ? handleNext : handleSubmitWithAction}
                 isSecurityDialogOpen={showFormSecurityConfirmation}
               />
             </div>

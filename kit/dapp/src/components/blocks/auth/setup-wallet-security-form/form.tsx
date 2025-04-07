@@ -17,6 +17,8 @@ export function SetupWalletSecurityForm() {
       resolver={typeboxResolver(SetupWalletSecuritySchema())}
       buttonLabels={{
         label: t("button-label"),
+        submittingLabel: t("submitting-label"),
+        processingLabel: t("processing-label"),
       }}
       hideButtons={(step) => step === 0}
       secureForm={false}

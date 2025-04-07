@@ -1,5 +1,5 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { getSecretCodes } from "@/lib/mutations/user/security-codes/get-secret-codes-action";
-import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -38,7 +38,7 @@ export function SecretCodesForm() {
   return (
     <>
       {isLoading ? (
-        <Loader2 size={16} className="mr-2 animate-spin" />
+        <Skeleton className="h-40 w-full bg-muted/50" />
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 text-sm">

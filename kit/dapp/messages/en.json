@@ -1919,6 +1919,8 @@
         },
         "form": {
           "button-label": "Start using my wallet",
+          "submitting-label": "Setting up wallet security...",
+          "processing-label": "Validating...",
           "setup": {
             "title": "Complete your wallet security",
             "description": "To keep your wallet safe, you need to finish setting up its security. Either set up your preferred verification method or download your security codes to ensure you're always in control. Let's get it done now to protect your assets.",
