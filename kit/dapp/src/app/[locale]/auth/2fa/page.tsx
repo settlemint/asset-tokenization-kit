@@ -1,5 +1,6 @@
 "use client";
-import { TwoFactorOTPInput } from "@/components/blocks/auth/two-factor-otp-input";
+
+import { TwoFactorOTPInput } from "@/components/blocks/auth/two-factor/two-factor-otp-input";
 import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,12 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { authClient } from "@/lib/auth/client";
 import type { VerifyTwoFactorOTPInput } from "@/lib/mutations/user/verify-two-factor-otp-schema";
 import { VerifyTwoFactorOTPSchema } from "@/lib/mutations/user/verify-two-factor-otp-schema";

@@ -1,5 +1,5 @@
 import { TwoFactorPasswordDialog } from "@/app/[locale]/(private)/portfolio/settings/profile/_components/two-factor-password-dialog";
-import { CopyTwoFactorBackupCodes } from "@/components/blocks/auth/copy-two-tactor-backup-codes";
+import { CopyTwoFactorBackupCodes } from "@/components/blocks/auth/two-factor/copy-two-tactor-backup-codes";
 import {
   Dialog,
   DialogContent,

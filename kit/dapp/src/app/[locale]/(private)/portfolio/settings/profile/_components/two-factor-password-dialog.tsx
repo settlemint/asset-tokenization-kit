@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 
 interface TwoFactorPasswordDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
   onSubmit: (password: string) => Promise<void>;
   isLoading: boolean;
   submitButtonVariant?: "destructive" | "default";

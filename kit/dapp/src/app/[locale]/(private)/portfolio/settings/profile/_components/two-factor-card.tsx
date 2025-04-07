@@ -1,6 +1,6 @@
 "use client";
 
-import { SetupTwoFactorDialog } from "@/components/blocks/auth/setup-two-factor-dialog";
+import { SetupTwoFactorDialog } from "@/components/blocks/auth/two-factor/setup-two-factor-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,

@@ -1,4 +1,3 @@
-import { TwoFactorPasswordDialog } from "@/app/[locale]/(private)/portfolio/settings/profile/_components/two-factor-password-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,10 +11,8 @@ import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import QRCode from "react-qr-code";
 import { toast } from "sonner";
-import { CopyTwoFactorBackupCodes } from "./copy-two-tactor-backup-codes";
-import { TwoFactorOTPInput } from "./two-factor-otp-input";
+import { SetupTwoFactorForm } from "./setup-two-factor-form";
 
 interface SetupTwoFactorDialogProps {
   open: boolean;
@@ -34,36 +31,6 @@ export function SetupTwoFactorDialog({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [firstOtp, setFirstOtp] = useState("");
-  const [twoFactorData, setTwoFactorData] = useState<{
-    totpURI: string;
-    backupCodes: string[];
-  } | null>(null);
-
-  const enableTwoFactorAuthentication = async (password: string) => {
-    try {
-      setIsLoading(true);
-      const { data, error } = await authClient.twoFactor.enable({
-        password,
-      });
-      if (error) {
-        toast.error(
-          t("enable.error-message", {
-            error: error.message ?? "Unknown error",
-          })
-        );
-      } else {
-        setTwoFactorData(data);
-      }
-    } catch (error) {
-      toast.error(
-        t("enable.error-message", {
-          error: error instanceof Error ? error.message : "Unknown error",
-        })
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const onSetupFinished = async () => {
     try {
@@ -99,35 +66,18 @@ export function SetupTwoFactorDialog({
   };
   return (
     <>
-      <Dialog open={open && !!twoFactorData} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("setup-mfa.title")}</DialogTitle>
             <DialogDescription>{t("setup-mfa.description")}</DialogDescription>
           </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="flex justify-center w-full">
-              <QRCode
-                className="rounded-md bg-muted p-4"
-                value={twoFactorData?.totpURI ?? ""}
-                size={256}
-              />
-            </div>
-            <label className="flex justify-center w-full text-md font-semibold">
-              {t("setup-mfa.enter-code-title")}
-            </label>
-            <div className="flex justify-center w-full pb-6">
-              <TwoFactorOTPInput value={firstOtp} onChange={setFirstOtp} />
-            </div>
-          </div>
+          <SetupTwoFactorForm
+            firstOtp={firstOtp}
+            onFirstOtpChange={setFirstOtp}
+          />
           <DialogFooter>
             <div className="flex w-full justify-between items-center">
-              <div>
-                <CopyTwoFactorBackupCodes
-                  backupCodes={twoFactorData?.backupCodes ?? []}
-                />
-              </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -153,13 +103,6 @@ export function SetupTwoFactorDialog({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <TwoFactorPasswordDialog
-        open={open && !twoFactorData}
-        onOpenChange={onOpenChange}
-        onSubmit={enableTwoFactorAuthentication}
-        isLoading={isLoading}
-        submitButtonText={t("enable.title")}
-      />
     </>
   );
 }

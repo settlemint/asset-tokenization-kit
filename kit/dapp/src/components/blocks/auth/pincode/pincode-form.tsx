@@ -26,7 +26,7 @@ const pincodeSchema = t.Object(
 export type PincodeFormValues = StaticDecode<typeof pincodeSchema>;
 
 interface PincodeFormProps {
-  onSubmit: (data: PincodeFormValues) => Promise<void>;
+  onSubmit: (data: PincodeFormValues) => Promise<void> | void;
 }
 
 export function PincodeForm({ onSubmit }: PincodeFormProps) {

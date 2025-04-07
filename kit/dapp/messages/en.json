@@ -1911,15 +1911,43 @@
       "verify-your-email": "Verify Your Email",
       "verify-your-email-description": "Please verify your email address. Check your inbox for the verification email. If you haven't received the email, click the button below to resend.",
       "wallet-security": {
-        "pincode-instruction": "Enter a 6-digit pincode to secure your wallet.",
-        "pincode-set": "Pincode set successfully",
-        "pincode-set-error": "Failed to set pincode",
-        "setup-pincode": "Setup Pincode",
-        "security-method": {
-          "title": "Wallet security method",
-          "description": "Choose a security option to secure your wallet.",
-          "pincode": "PIN-code",
-          "two-factor-authentication": "Authenticator app"
+        "setup-pincode-dialog": {
+          "title": "Setup Pincode",
+          "description": "Enter a 6-digit pincode to secure your wallet.",
+          "pincode-set": "Pincode set successfully",
+          "pincode-set-error": "Failed to set pincode"
+        },
+        "form": {
+          "button-label": "Start using my wallet",
+          "setup": {
+            "title": "Complete your wallet security",
+            "description": "To keep your wallet safe, you need to finish setting up its security. Either set up your preferred verification method or download your backup codes to ensure you're always in control. Let's get it done now to protect your assets.",
+            "button-label": "Secure my wallet"
+          },
+          "select-method": {
+            "title": "Preferred wallet security",
+            "description": "Let's make sure your wallet is safe. Pick the security method that works best for you. It only takes a few quick steps to set up and protect your wallet.",
+            "pincode": "PIN-code",
+            "two-factor-authentication": "Authenticator app"
+          },
+          "set-verification": {
+            "authenticator-app": {
+              "title": "Set up an Authenticator app",
+              "description": "Scan the QR code below using your preferred app (like Google Authenticator or Authy). Once scanned, the app will generate time-based codes. These codes are required to verify your wallet transactions and keep your account secure."
+            },
+            "pincode": {
+              "title": "Enter a Pincode",
+              "description": "Create a secure 6 digit PIN for your wallet. This PIN will be required whenever you authorize transactions."
+            }
+          },
+          "security-codes": {
+            "title": "Backup your security codes",
+            "description": "These one-time-use codes can verify transactions or recover your wallet. Store them securely, like in a password manager or written down. If lost, recovery will be difficult."
+          },
+          "summary": {
+            "title": "Your Wallet is secured!",
+            "description": "You've successfully secured your wallet. Your transactions are now protected, and your recovery codes ensure you're always in control. You're all set to start using your wallet securely."
+          }
         }
       }
     },

@@ -23,6 +23,10 @@ import { FormProgress } from "./form-progress";
 import { FormOtpDialog } from "./inputs/form-otp-dialog";
 import type { FormStepElement } from "./types";
 
+interface FormRenderProps {
+  goToNextStep: () => void;
+}
+
 interface FormProps<
   ServerError,
   S extends Schema,
@@ -32,13 +36,18 @@ interface FormProps<
   Data,
   FormContext = unknown,
 > {
-  children: FormStepElement<S> | FormStepElement<S>[];
+  children:
+    | FormStepElement<S>
+    | FormStepElement<S>[]
+    | ((
+        renderProps: FormRenderProps
+      ) => FormStepElement<S> | FormStepElement<S>[]);
   defaultValues?: DefaultValues<Infer<S>>;
   action: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
   resolver: Resolver<Infer<S>, FormContext>;
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
-  hideButtons?: boolean;
+  hideButtons?: boolean | ((step: number) => boolean);
   toastMessages?: {
     loading?: string;
     success?: string;
@@ -69,7 +78,15 @@ export function Form<
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations();
-  const totalSteps = Array.isArray(children) ? children.length : 1;
+  const childrenToRender =
+    typeof children === "function"
+      ? children({
+          goToNextStep: () => {},
+        })
+      : children;
+  const totalSteps = Array.isArray(childrenToRender)
+    ? childrenToRender.length
+    : 1;
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
 
@@ -317,9 +334,15 @@ export function Form<
   };
 
   const handleNext = async () => {
-    const CurrentStep = Array.isArray(children)
-      ? children[currentStep].type
-      : children.type;
+    const renderedChildren =
+      typeof children === "function"
+        ? children({
+            goToNextStep: handleNext,
+          })
+        : children;
+    const CurrentStep = Array.isArray(renderedChildren)
+      ? renderedChildren[currentStep].type
+      : renderedChildren.type;
     const fieldsToValidate = CurrentStep.validatedFields;
     if (!fieldsToValidate?.length) {
       if (isLastStep && secureForm) {
@@ -389,12 +412,22 @@ export function Form<
 
     return `${errorKey}${translatedErrorMessage}`;
   };
+
+  const renderedChildren =
+    typeof children === "function"
+      ? children({
+          goToNextStep: handleNext,
+        })
+      : children;
+
   return (
     <div className="h-full space-y-6">
       <div className="container flex h-full flex-col p-6">
         <UIForm {...form}>
           <form
-            onSubmit={handleSubmitWithAction}
+            onSubmit={
+              isLastStep ? handleSubmitWithAction : (e) => e.preventDefault()
+            }
             noValidate
             className="flex flex-1 flex-col"
           >
@@ -422,7 +455,9 @@ export function Form<
                   </AlertDescription>
                 </Alert>
               )}
-              {Array.isArray(children) ? children[currentStep] : children}
+              {Array.isArray(renderedChildren)
+                ? renderedChildren[currentStep]
+                : renderedChildren}
               {showFormSecurityConfirmation && (
                 <FormOtpDialog
                   name={"verificationCode" as Path<Infer<S>>}
@@ -447,7 +482,11 @@ export function Form<
             </div>
             <div className="mt-auto pt-6">
               <FormButton
-                hideButtons={hideButtons}
+                hideButtons={
+                  typeof hideButtons === "function"
+                    ? hideButtons(currentStep)
+                    : hideButtons
+                }
                 currentStep={currentStep}
                 totalSteps={totalSteps}
                 onPreviousStep={handlePrev}

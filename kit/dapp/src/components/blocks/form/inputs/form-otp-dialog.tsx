@@ -1,3 +1,5 @@
+import { TwoFactorOTPInput } from "@/components/block/auth/two-factor/two-factor-otp-input";
+import { PincodeInput } from "@/components/blocks/auth/pincode/pincode-input";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -7,11 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  FormControl,
-  FormField,
-  FormItem
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { InputOTP } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/client";
@@ -20,8 +18,6 @@ import { useTranslations } from "next-intl";
 import type { ComponentPropsWithoutRef } from "react";
 import { useCallback, useState } from "react";
 import type { FieldValues, Path, PathValue } from "react-hook-form";
-import { PincodeInput } from "../../auth/pincode-input";
-import { TwoFactorOTPInput } from "../../auth/two-factor-otp-input";
 import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import type { BaseFormInputProps } from "./types";
 
