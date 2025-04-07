@@ -1,5 +1,5 @@
-import { TwoFactorOTPInput } from "@/components/block/auth/two-factor/two-factor-otp-input";
 import { PincodeInput } from "@/components/blocks/auth/pincode/pincode-input";
+import { TwoFactorOTPInput } from "@/components/blocks/auth/two-factor/two-factor-otp-input";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
