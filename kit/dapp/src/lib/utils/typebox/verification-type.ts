@@ -4,7 +4,7 @@ import { t } from "elysia/type-system";
 export type VerificationType = "two-factor" | "pincode" | "secret-code";
 
 /**
- * Enum of valid user roles
+ * Enum of valid verification types
  */
 export const verificationTypes: [
   VerificationType,

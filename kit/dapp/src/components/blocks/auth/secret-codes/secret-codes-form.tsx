@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { getSecretCodes } from "@/lib/mutations/user/security-codes/get-secret-codes-action";
+import { generateSecretCodes } from "@/lib/mutations/user/security-codes/generate-secret-codes-action";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -10,10 +10,11 @@ export function SecretCodesForm() {
   const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations("portfolio.settings.profile.secret-codes");
 
-  const fetchSecretCodes = async () => {
+  const generate = async () => {
     try {
+      console.log("generating secret codes");
       setIsLoading(true);
-      const response = await getSecretCodes();
+      const response = await generateSecretCodes();
       if (response?.serverError || response?.validationErrors) {
         toast.error(t("error-message"));
       } else {
@@ -31,7 +32,7 @@ export function SecretCodesForm() {
   };
 
   useEffect(() => {
-    fetchSecretCodes();
+    generate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

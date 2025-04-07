@@ -2,10 +2,10 @@
 
 import { t } from "@/lib/utils/typebox";
 import { action } from "../../safe-action";
-import { getSecretCodesFunction } from "./get-secret-codes-function";
+import { generateSecretCodesFunction } from "./generate-secret-codes-function";
 
-export const getSecretCodes = action
+export const generateSecretCodes = action
   .outputSchema(
     t.Object({ success: t.Boolean(), secretCodes: t.Array(t.String()) })
   )
-  .action(getSecretCodesFunction);
+  .action(generateSecretCodesFunction);

@@ -112,6 +112,12 @@ export const auth = betterAuth({
         unique: true,
         input: true,
       },
+      secretCodeVerificationId: {
+        type: "string",
+        required: false,
+        unique: true,
+        input: true,
+      },
     },
   },
   databaseHooks: {
