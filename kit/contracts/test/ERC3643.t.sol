@@ -19,6 +19,9 @@ import { ITREXFactory } from "../contracts/shared/erc3643/factory/ITREXFactory.s
 import { IdFactory } from "../contracts/shared/onchainid/factory/IdFactory.sol";
 import { TREXFactory } from "../contracts/shared/erc3643/factory/TREXFactory.sol";
 import { Gateway } from "../contracts/shared/onchainid/gateway/Gateway.sol";
+import { IIdentityRegistry } from "../contracts/shared/erc3643/registry/interface/IIdentityRegistry.sol";
+import { IERC3643IdentityRegistry } from "../contracts/shared/erc3643/ERC-3643/IERC3643IdentityRegistry.sol";
+import { IIdentity } from "../contracts/shared/onchainid/interface/IIdentity.sol";
 
 contract GatewayTest is Test {
     TREXImplementationAuthority public tokenImplementationAuthority;
@@ -248,8 +251,11 @@ contract GatewayTest is Test {
         // Verify that tokenAgent2 is now an agent
         assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
 
-        vm.startPrank(tokenAgent1);
-        identityGateway.deployIdentityForWallet(client1);
+        vm.startPrank(identityAgent1);
+        IIdentity id = IIdentity(identityGateway.deployIdentityForWallet(client1));
+        IERC3643IdentityRegistry identityRegistry = Token(tokenAddress).identityRegistry();
+        identityRegistry.registerIdentity(client1, id, 1);
+
         vm.stopPrank();
 
         vm.startPrank(tokenAgent2);
