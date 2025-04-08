@@ -4,8 +4,8 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getBondStatus } from "@/lib/utils/bond-status";
+import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
-import { format } from "date-fns";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
@@ -57,7 +57,10 @@ export async function BondsDetails({
           />
         </DetailGridItem>
         <DetailGridItem label={t("deployed-on")}>
-          {format(new Date(Number(bond.deployedOn) * 1000), "PPP")}
+          {formatDate(new Date(Number(bond.deployedOn) * 1000), {
+            locale: locale,
+            formatOptions: { dateStyle: "long" },
+          })}
         </DetailGridItem>
         <DetailGridItem label={t("decimals")}>{bond.decimals}</DetailGridItem>
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
@@ -89,7 +92,10 @@ export async function BondsDetails({
         </DetailGridItem>
         <DetailGridItem label={t("maturity-date")}>
           {bond.maturityDate
-            ? format(new Date(Number(bond.maturityDate) * 1000), "PPP")
+            ? formatDate(new Date(Number(bond.maturityDate) * 1000), {
+                locale: locale,
+                formatOptions: { dateStyle: "long" },
+              })
             : "-"}
         </DetailGridItem>
         <DetailGridItem label={t("yield-type")}>Fixed</DetailGridItem>
