@@ -1,5 +1,5 @@
-import { redirect } from "@/i18n/routing";
 import { auth } from "@/lib/auth/auth";
+import { redirectToSignIn } from "@/lib/auth/redirect";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { headers } from "next/headers";
@@ -51,8 +51,7 @@ export const hasWalletVerification = async () => {
     });
 
     if (!session || !session.user) {
-      redirect({ href: "/auth/sign-in", locale: "en" });
-      return false;
+      return redirectToSignIn();
     }
 
     if (session.user.twoFactorEnabled) {
@@ -61,22 +60,21 @@ export const hasWalletVerification = async () => {
     }
 
     // We need to get this info from hasura because the session data is only updated after a logout/login so we cannot rely on this for the pincode
-    try {
-      const result = await hasuraClient.request(GetUser, {
-        id: session.user.id,
-      });
-      const user = result.user[0];
-      if (!user) {
-        return false;
-      }
-      return user.pincode_enabled ?? user.two_factor_enabled ?? false;
-    } catch (err) {
-      // If we can't fetch the user data, assume they don't have verification
+
+    const result = await hasuraClient.request(GetUser, {
+      id: session.user.id,
+    });
+    const user = result.user[0];
+    if (!user) {
       return false;
     }
-  } catch (error) {
-    // If there's any error with the session, redirect to sign-in without showing an error
-    redirect({ href: "/auth/sign-in", locale: "en" });
-    return false;
+    return user.pincode_enabled ?? user.two_factor_enabled ?? false;
+  } catch (err) {
+    const error = err as Error;
+    console.error(
+      `Error getting wallet verification: ${error.message}`,
+      error.stack
+    );
+    return redirectToSignIn();
   }
 };

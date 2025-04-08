@@ -6,7 +6,7 @@ import {
 import { typeboxAdapter } from "next-safe-action/adapters/typebox";
 import type { Schema } from "next-safe-action/adapters/types";
 import { headers } from "next/headers";
-import { unauthorized } from "next/navigation";
+import { redirectToSignIn } from "../auth/redirect";
 import type { User } from "../auth/types";
 import { AccessControlError } from "../utils/access-control";
 import { redactSensitiveFields } from "../utils/redaction";
@@ -81,7 +81,7 @@ export const action = createSafeActionClient({
     });
 
     if (!session?.user) {
-      unauthorized();
+      return redirectToSignIn();
     }
 
     return next({
