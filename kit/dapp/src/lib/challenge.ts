@@ -88,7 +88,7 @@ async function generateChallengeResponse(
  *
  * @param user - The user to verify
  * @param userWalletAddress - The wallet address to verify
- * @param otpCode - The user's OTP code
+ * @param code - The code inputted by the user (can be a pincode, two factor code or secret code)
  * @param verificationType - The type of verification
  * @returns Promise resolving to the challenge response
  * @throws {ChallengeError} If the challenge cannot be created or is invalid
@@ -96,7 +96,7 @@ async function generateChallengeResponse(
 export async function handleChallenge(
   user: User,
   userWalletAddress: Address,
-  otpCode: number,
+  code: string | number,
   verificationType: VerificationType
 ): Promise<{
   challengeResponse: string;
@@ -105,8 +105,17 @@ export async function handleChallenge(
   try {
     if (verificationType === "two-factor") {
       return {
-        challengeResponse: otpCode.toString(),
+        challengeResponse: code.toString(),
         verificationId: user.twoFactorVerificationId ?? undefined,
+      };
+    }
+
+    if (verificationType === "secret-code") {
+      // Add - separator to the code
+      const formattedCode = code.toString().replace(/(.{5})(?=.)/, "$1-");
+      return {
+        challengeResponse: formattedCode,
+        verificationId: user.secretCodeVerificationId ?? undefined,
       };
     }
 
@@ -137,7 +146,7 @@ export async function handleChallenge(
 
     const { secret, salt } = challenge;
     const challengeResponse = await generateChallengeResponse(
-      otpCode,
+      Number(code),
       salt,
       secret
     );
