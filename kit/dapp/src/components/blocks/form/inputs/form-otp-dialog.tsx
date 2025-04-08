@@ -70,40 +70,33 @@ export function FormOtpDialog<T extends FieldValues>({
       isTwoFactorEnabled ? "two-factor" : "pincode"
     );
 
-  function getTitle(verificationType: VerificationType) {
-    switch (verificationType) {
-      case "two-factor":
-        return t("two-factor-authentication.title");
-      case "pincode":
-        return t("pincode.title");
-      default:
-        return t("secret-codes.title");
+  const verificationConfig: Record<
+    VerificationType,
+    {
+      title: string;
+      description: string;
+      InputComponent: React.ComponentType<InputProps>;
     }
-  }
+  > = {
+    "two-factor": {
+      title: t("two-factor-authentication.title"),
+      description: t("two-factor-authentication.description"),
+      InputComponent: TwoFactorOTPInput,
+    },
+    pincode: {
+      title: t("pincode.title"),
+      description: t("pincode.description"),
+      InputComponent: PincodeInput,
+    },
+    "secret-code": {
+      title: t("secret-codes.title"),
+      description: t("secret-codes.description"),
+      InputComponent: SecretCodeInput,
+    },
+  };
 
-  function getDescription(verificationType: VerificationType) {
-    switch (verificationType) {
-      case "two-factor":
-        return t("two-factor-authentication.description");
-      case "pincode":
-        return t("pincode.description");
-      default:
-        return t("secret-codes.description");
-    }
-  }
-
-  function getInputComponent(verificationType: VerificationType) {
-    switch (verificationType) {
-      case "two-factor":
-        return TwoFactorOTPInput;
-      case "pincode":
-        return PincodeInput;
-      default:
-        return SecretCodeInput;
-    }
-  }
-
-  const InputComponent = getInputComponent(activeVerificationType);
+  const { InputComponent, title, description } =
+    verificationConfig[activeVerificationType];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -113,10 +106,8 @@ export function FormOtpDialog<T extends FieldValues>({
             <DialogTitle>{t("method-select.title")}</DialogTitle>
           ) : (
             <>
-              <DialogTitle>{getTitle(activeVerificationType)}</DialogTitle>
-              <DialogDescription>
-                {getDescription(activeVerificationType)}
-              </DialogDescription>
+              <DialogTitle>{title}</DialogTitle>
+              <DialogDescription>{description}</DialogDescription>
             </>
           )}
         </DialogHeader>

@@ -113,7 +113,6 @@ export async function handleChallenge(
     if (verificationType === "secret-code") {
       // Add - separator to the code
       const formattedCode = code.toString().replace(/(.{5})(?=.)/, "$1-");
-      console.log("formattedCode", formattedCode);
       return {
         challengeResponse: formattedCode,
         verificationId: user.secretCodeVerificationId ?? undefined,

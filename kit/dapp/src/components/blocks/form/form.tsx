@@ -386,7 +386,9 @@ export function Form<
   }, [form, isLastStep, secureForm, currentStep, totalSteps, children]);
 
   useEffect(() => {
-    if (!onAnyFieldChange) return;
+    if (!onAnyFieldChange) {
+      return;
+    }
 
     const subscription = form.watch((_value, { name }) => {
       onAnyFieldChange(form as UseFormReturn<Infer<S>>, {

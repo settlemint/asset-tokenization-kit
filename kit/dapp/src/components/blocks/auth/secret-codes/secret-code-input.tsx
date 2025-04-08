@@ -44,6 +44,5 @@ export function SecretCodeInput(props: SecretCodeInputProps) {
 }
 
 function pasteTransformer(text: string) {
-  const withoutSeparator = text.replace(/-/g, "");
-  return withoutSeparator;
+  return text.replace(/-/g, "");
 }

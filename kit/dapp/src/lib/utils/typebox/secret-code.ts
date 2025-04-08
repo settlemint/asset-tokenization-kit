@@ -10,7 +10,9 @@ import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
 // Secret code format validator
 if (!FormatRegistry.Has("secret-code")) {
   FormatRegistry.Set("secret-code", (value) => {
-    if (typeof value !== "string") return false;
+    if (typeof value !== "string") {
+      return false;
+    }
     return /^[a-zA-Z0-9]{10}$/.test(value);
   });
 }
