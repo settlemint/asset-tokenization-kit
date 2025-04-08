@@ -143,6 +143,13 @@
         "my-contacts": "جهات الاتصال الخاصة بي",
         "profile": "الملف الشخصي",
         "settings": "الإعدادات"
+      },
+      "settings-management": {
+        "group-title": "الإعدادات",
+        "settings": "الإعدادات",
+        "profile": "الملف الشخصي",
+        "api": "واجهة برمجة التطبيقات",
+        "platform": "المنصة"
       }
     },
     "bonds": {
@@ -519,12 +526,35 @@
         "status": "الحالة",
         "transaction-hash": "هاش المعاملة"
       }
+    },
+    "pending-transactions": {
+      "aria-label": "عرض المعاملات المعلقة",
+      "title": "المعاملات المعلقة",
+      "no-pending": "لا توجد معاملات معلقة",
+      "from": "من",
+      "contract": "العقد",
+      "hash": "هاش",
+      "function": "وظيفة",
+      "created": "تم الإنشاء"
+    },
+    "chart": {
+      "switch-to-area-chart": "التبديل إلى مخطط المنطقة",
+      "switch-to-bar-chart": "التبديل إلى مخطط الأعمدة",
+      "info-icon-label": "معلومات",
+      "select-time-range": "اختر النطاق الزمني",
+      "last-updated-at": "آخر تحديث في: {lastUpdated}",
+      "time-range": {
+        "24h": "24 ساعة",
+        "7d": "7 أيام",
+        "30d": "30 يوم",
+        "90d": "90 يوم"
+      }
     }
   },
   "creator-owner": "المنشئ / المالك",
   "error": {
     "error-id": "معرف الخطأ",
-    "go-home": "اذهب إلى الصفحة الرئيسية",
+    "go-home": "اذهب إلى الصفحة لرئيسية",
     "sending": "جارٍ الإرسال",
     "success": "نجاح",
     "title": "حدث خطأ ما!",
@@ -2043,6 +2073,39 @@
         "view-all": "عرض المزيد من الأحداث"
       },
       "platform-management": "إدارة المنصة",
+      "actions": {
+        "update-kyc-status": {
+          "buttons": {
+            "cancel": "إلغاء",
+            "loading": "جارٍ التحديث...",
+            "set": "تحقق",
+            "remove": "إزالة التحقق"
+          },
+          "success": "تم تحديث حالة KYC بنجاح",
+          "error": "فشل تحديث حالة KYC: {error}",
+          "set-kyc-status": {
+            "title": "تحقق KYC",
+            "description": "هل أنت متأكد من أنك تريد التحقق من KYC لـ ${userName}؟"
+          },
+          "remove-kyc-status": {
+            "title": "إزالة حالة KYC",
+            "description": "هل أنت متأكد من أنك تريد إزالة التحقق من KYC لـ ${userName}؟"
+          }
+        },
+        "change-role": {
+          "title": "تغيير دور المستخدم",
+          "description": "اختر دورًا جديدًا لـ {userName}. سيؤدي هذا إلى تغيير أذوناتهم في النظام.",
+          "select-role": "اختر دور المستخدم الجديد",
+          "buttons": {
+            "cancel": "إلغاء",
+            "change": "تغيير الدور"
+          },
+          "success": "تم تحديث دور المستخدم بنجاح",
+          "error": "فشل تحديث الدور: {error}",
+          "self-change-warning": "تغيير دورك قد يقيد وصولك إلى هذه الصفحة.",
+          "loading": "جارٍ التحديث..."
+        }
+      },
       "roles": {
         "admin": "مدير",
         "issuer": "المصدر",

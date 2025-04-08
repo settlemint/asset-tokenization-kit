@@ -51,9 +51,7 @@ export const hasWalletVerification = async () => {
     });
 
     if (!session || !session.user) {
-      // Redirect to sign-in page without showing an error
       redirect({ href: "/auth/sign-in", locale: "en" });
-      // This line is never reached due to redirect, but helps TypeScript understand
       return false;
     }
 
@@ -79,7 +77,6 @@ export const hasWalletVerification = async () => {
   } catch (error) {
     // If there's any error with the session, redirect to sign-in without showing an error
     redirect({ href: "/auth/sign-in", locale: "en" });
-    // This line is never reached due to redirect, but helps TypeScript understand
     return false;
   }
 };
