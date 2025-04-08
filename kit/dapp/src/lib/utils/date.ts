@@ -9,7 +9,7 @@ import {
   parseISO,
   startOfDay,
 } from "date-fns";
-import { ar, de, ja } from "date-fns/locale";
+import { ar, de, enUS, ja } from "date-fns/locale";
 import {
   createFormatter,
   type DateTimeFormatOptions,
@@ -46,13 +46,13 @@ function formatDateWithFormatter(
   const { type = "absolute" } = options;
 
   if (type === "distance") {
-    const localeObj = getLocaleSetting(options.locale || "en");
-    return formatDistance(date, new Date(), { locale: localeObj });
+    const dateLocale = getDateLocale(options.locale ?? "en");
+    return formatDistance(date, new Date(), { locale: dateLocale });
   }
 
   if (type === "relative") {
-    const localeObj = getLocaleSetting(options.locale || "en");
-    return formatRelative(date, new Date(), { locale: localeObj });
+    const dateLocale = getDateLocale(options.locale ?? "en");
+    return formatRelative(date, new Date(), { locale: dateLocale });
   }
 
   if (type === "unixSeconds") {
@@ -64,22 +64,6 @@ function formatDateWithFormatter(
     timeStyle: "short",
     ...options.formatOptions,
   });
-}
-
-/**
- * Helper function to get the appropriate date-fns locale object
- */
-function getLocaleSetting(locale: string) {
-  switch (locale) {
-    case "de":
-      return de;
-    case "ja":
-      return ja;
-    case "ar":
-      return ar;
-    default:
-      return undefined; // date-fns defaults to English when locale is undefined
-  }
 }
 
 /**
@@ -259,4 +243,20 @@ export function isValidFutureDate(
   } catch {
     return false;
   }
+}
+
+/**
+ * Returns the date-fns locale for a given locale
+ * @param locale - The locale to get the date-fns locale for
+ * @returns The date-fns locale for the given locale
+ */
+export function getDateLocale(locale: Locale) {
+  if (locale === "ar") {
+    return ar;
+  } else if (locale === "de") {
+    return de;
+  } else if (locale === "ja") {
+    return ja;
+  }
+  return enUS;
 }
