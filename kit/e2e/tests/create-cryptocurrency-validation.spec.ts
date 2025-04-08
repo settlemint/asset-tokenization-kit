@@ -62,7 +62,15 @@ test.describe("Cryptocurrency Creation Validation", () => {
       await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
       await createAssetForm.verifyInputAttribute("Symbol", "maxlength", "10");
     });
-
+    test("validates empty decimals", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Cryptocurrency",
+        symbol: "TCC",
+        decimals: "",
+      });
+      await createAssetForm.clickNext();
+      await createAssetForm.expectErrorMessage("Please enter a valid value");
+    });
     test("validates decimals range", async () => {
       await createAssetForm.fillBasicFields({
         decimals: "19",
