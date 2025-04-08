@@ -1,6 +1,6 @@
+import { redirect } from "@/i18n/routing";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
-import { unauthorized } from "next/navigation";
 import type { User } from "./types";
 
 /**
@@ -9,22 +9,23 @@ import type { User } from "./types";
  * @throws {AuthError} If user is not authenticated
  */
 export async function getUser() {
-  // Remove logs
-  // console.log("Getting user session...");
-
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user) {
-      unauthorized();
+      redirect({ href: "/auth/sign-in", locale: "en" });
+      // This line is never reached due to redirect, but helps TypeScript understand
+      throw new Error("User not authenticated");
     }
 
     return session.user as User;
   } catch (error) {
-    // Keep error logging for actual errors
-    console.error("Error getting user session:", error);
-    unauthorized();
+    // Instead of unauthorized which can cause error messages to appear,
+    // use redirect for a smoother user experience
+    redirect({ href: "/auth/sign-in", locale: "en" });
+    // This line is never reached due to redirect, but helps TypeScript understand
+    throw new Error("User not authenticated");
   }
 }
