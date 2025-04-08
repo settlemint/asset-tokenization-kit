@@ -12,6 +12,7 @@ import {
   WalletSecurityMethodOptions,
 } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
 export function SetupVerification() {
@@ -20,7 +21,11 @@ export function SetupVerification() {
   const t = useTranslations(
     "private.auth.wallet-security.form.set-verification"
   );
-  const selectedMethod = getValues("method");
+  const selectedMethod = getValues("verificationType");
+
+  useEffect(() => {
+    setValue("verificationCode", "");
+  }, [setValue]);
 
   return (
     <FormStep
@@ -37,15 +42,26 @@ export function SetupVerification() {
     >
       {selectedMethod ===
         WalletSecurityMethodOptions.TwoFactorAuthentication && (
-        <SetupTwoFactorForm
-          firstOtp={getValues("firstOtp") ?? ""}
-          onFirstOtpChange={(firstOtp) => setValue("firstOtp", firstOtp)}
+        <FormField
+          control={control}
+          name="verificationCode"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <SetupTwoFactorForm
+                  firstOtp={field.value ?? ""}
+                  onFirstOtpChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
       )}
       {selectedMethod === WalletSecurityMethodOptions.Pincode && (
         <FormField
           control={control}
-          name="pincode"
+          name="verificationCode"
           render={({ field }) => (
             <FormItem>
               <FormControl>
@@ -64,4 +80,6 @@ export function SetupVerification() {
   );
 }
 
-SetupVerification.validatedFields = [] as (keyof SetupWalletSecurityInput)[];
+SetupVerification.validatedFields = [
+  "verificationCode",
+] as (keyof SetupWalletSecurityInput)[];

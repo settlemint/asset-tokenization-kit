@@ -8,16 +8,18 @@ export const WalletSecurityMethodOptions = {
 
 export function SetupWalletSecuritySchema() {
   return t.Object({
-    method: t.UnionEnum(
+    verificationType: t.UnionEnum(
       Object.values(WalletSecurityMethodOptions) as NonEmptyArray<
         (typeof WalletSecurityMethodOptions)[keyof typeof WalletSecurityMethodOptions]
       >,
       {
-        description: "The method to use for the wallet security",
+        description: "The verification method to use for the wallet security",
       }
     ),
-    firstOtp: t.Optional(t.String()),
-    pincode: t.Optional(t.String()),
+    verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+      description:
+        "The verification code to use for the wallet security (for OTP this is the first OTP)",
+    }),
   });
 }
 

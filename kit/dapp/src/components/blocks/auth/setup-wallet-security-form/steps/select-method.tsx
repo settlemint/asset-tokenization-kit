@@ -16,7 +16,7 @@ export function SelectMethod() {
     <FormStep title={t("title")} description={t("description")}>
       <FormField
         control={control}
-        name="method"
+        name="verificationType"
         render={() => (
           <FormItem className="flex flex-col space-y-1">
             <div className="flex flex-col gap-4">
@@ -24,7 +24,7 @@ export function SelectMethod() {
                 variant="outline"
                 onClick={() => {
                   setValue(
-                    "method",
+                    "verificationType",
                     WalletSecurityMethodOptions.TwoFactorAuthentication
                   );
                 }}
@@ -34,7 +34,10 @@ export function SelectMethod() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setValue("method", WalletSecurityMethodOptions.Pincode);
+                  setValue(
+                    "verificationType",
+                    WalletSecurityMethodOptions.Pincode
+                  );
                 }}
               >
                 {t("pincode")}
@@ -48,5 +51,5 @@ export function SelectMethod() {
 }
 
 SelectMethod.validatedFields = [
-  "method",
+  "verificationType",
 ] satisfies (keyof SetupWalletSecurityInput)[];

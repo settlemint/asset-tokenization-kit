@@ -39,7 +39,7 @@ export async function setPincodeFunction({
   ctx?: { user: User };
 }) {
   const currentUser = ctx?.user ?? (await getUser());
-  if (currentUser.pincodeVerificationId) {
+  if (currentUser.pincodeEnabled && currentUser.pincodeVerificationId) {
     throw new ApiError(400, "Pincode already set");
   }
   const { createWalletVerification } = await portalClient.request(SetPinCode, {

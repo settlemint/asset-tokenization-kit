@@ -1,5 +1,6 @@
-import { authClient } from "@/lib/auth/client";
 import { ApiError } from "next/dist/server/api-utils";
+import { headers } from "next/headers";
+import { auth } from "../../../auth/auth";
 import { setPincodeFunction } from "../set-pincode-function";
 import {
   WalletSecurityMethodOptions,
@@ -7,28 +8,33 @@ import {
 } from "./setup-wallet-security-schema";
 
 export async function setupWalletSecurityFunction({
-  parsedInput: { method, firstOtp, pincode },
+  parsedInput: { verificationType, verificationCode },
 }: {
   parsedInput: SetupWalletSecurityInput;
 }) {
-  if (method === WalletSecurityMethodOptions.TwoFactorAuthentication) {
-    if (!firstOtp) {
+  if (
+    verificationType === WalletSecurityMethodOptions.TwoFactorAuthentication
+  ) {
+    if (!verificationCode) {
       throw new ApiError(400, "First OTP is required");
     }
-    await authClient.twoFactor.verifyTotp({
-      code: firstOtp,
+    await auth.api.verifyTOTP({
+      headers: await headers(),
+      body: {
+        code: verificationCode,
+      },
     });
-  } else if (method === WalletSecurityMethodOptions.Pincode) {
-    if (!pincode) {
+  } else if (verificationType === WalletSecurityMethodOptions.Pincode) {
+    if (!verificationCode) {
       throw new ApiError(400, "Pincode is required");
     }
     await setPincodeFunction({
       parsedInput: {
-        pincode,
+        pincode: verificationCode,
       },
     });
   } else {
-    throw new ApiError(400, `Invalid method: '${method}'`);
+    throw new ApiError(400, `Invalid verification type: '${verificationType}'`);
   }
   return {
     success: true,

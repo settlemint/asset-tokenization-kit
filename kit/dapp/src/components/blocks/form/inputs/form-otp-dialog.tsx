@@ -70,14 +70,7 @@ export function FormOtpDialog<T extends FieldValues>({
       isTwoFactorEnabled ? "two-factor" : "pincode"
     );
 
-  const verificationConfig: Record<
-    VerificationType,
-    {
-      title: string;
-      description: string;
-      InputComponent: React.ComponentType<InputProps>;
-    }
-  > = {
+  const verificationConfig = {
     "two-factor": {
       title: t("two-factor-authentication.title"),
       description: t("two-factor-authentication.description"),

@@ -28,8 +28,8 @@ export function SetupWalletSecurityForm() {
       ) => {
         if (
           step === 0 &&
-          changedFieldName === "method" &&
-          !!getValues("method")
+          changedFieldName === "verificationType" &&
+          !!getValues("verificationType")
         ) {
           goToStep(1);
         }
