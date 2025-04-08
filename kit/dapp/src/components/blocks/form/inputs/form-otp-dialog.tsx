@@ -18,7 +18,12 @@ import type { VerificationType } from "@/lib/utils/typebox/verification-type";
 import { useTranslations } from "next-intl";
 import type { ComponentPropsWithoutRef } from "react";
 import { useCallback, useState } from "react";
-import type { FieldValues, Path, PathValue } from "react-hook-form";
+import {
+  type FieldValues,
+  type Path,
+  type PathValue,
+  useFormContext,
+} from "react-hook-form";
 import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import type { BaseFormInputProps } from "./types";
 
@@ -42,6 +47,10 @@ export function FormOtpDialog<T extends FieldValues>({
   disabled,
   ...props
 }: FormOtpDialogProps<T>) {
+  const {
+    setValue,
+    formState: { isValid },
+  } = useFormContext<{ verificationType: VerificationType }>();
   const handleSubmit = useCallback(() => {
     onSubmit();
     onOpenChange(false);
@@ -116,7 +125,8 @@ export function FormOtpDialog<T extends FieldValues>({
                       variant="outline"
                       onClick={() => {
                         setActiveVerificationType("two-factor");
-                        field.onChange("two-factor");
+                        setIsSwitchingVerificationType(false);
+                        setValue("verificationType", "two-factor");
                       }}
                     >
                       {t("method-select.two-factor-authentication")}
@@ -127,7 +137,8 @@ export function FormOtpDialog<T extends FieldValues>({
                       variant="outline"
                       onClick={() => {
                         setActiveVerificationType("pincode");
-                        field.onChange("pincode");
+                        setIsSwitchingVerificationType(false);
+                        setValue("verificationType", "pincode");
                       }}
                     >
                       {t("method-select.pincode")}
@@ -144,6 +155,7 @@ export function FormOtpDialog<T extends FieldValues>({
                       value={(field.value ?? "").toString()}
                       onChange={field.onChange}
                       disabled={disabled}
+                      autoFocus
                     />
                   </FormControl>
                   <TranslatableFormFieldMessage />
@@ -173,7 +185,7 @@ export function FormOtpDialog<T extends FieldValues>({
                     onClick={() => {
                       setIsSwitchingVerificationType(false);
                       setActiveVerificationType("secret-code");
-                      field.onChange("secret-code");
+                      setValue("verificationType", "secret-code");
                     }}
                   >
                     {t("method-select.use-secret-codes")}
@@ -193,11 +205,7 @@ export function FormOtpDialog<T extends FieldValues>({
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
                   {t("cancel")}
                 </Button>
-                <Button
-                  onClick={handleSubmit}
-                  // Always enable the button for cryptocurrency creation, otherwise use validation
-                  disabled={field.value === ""}
-                >
+                <Button onClick={handleSubmit} disabled={!isValid}>
                   {t("confirm")}
                 </Button>
               </DialogFooter>

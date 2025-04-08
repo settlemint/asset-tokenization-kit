@@ -21,6 +21,7 @@ export function SecretCodeInput(props: SecretCodeInputProps) {
       pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
       className={cn("justify-center gap-1.5", props.className)}
       autoComplete="off"
+      pasteTransformer={pasteTransformer}
       required
     >
       <InputOTPGroup>
@@ -40,4 +41,9 @@ export function SecretCodeInput(props: SecretCodeInputProps) {
       </InputOTPGroup>
     </InputOTP>
   );
+}
+
+function pasteTransformer(text: string) {
+  const withoutSeparator = text.replace(/-/g, "");
+  return withoutSeparator;
 }

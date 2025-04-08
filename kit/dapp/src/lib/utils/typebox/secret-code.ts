@@ -11,7 +11,6 @@ import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
 if (!FormatRegistry.Has("secret-code")) {
   FormatRegistry.Set("secret-code", (value) => {
     if (typeof value !== "string") return false;
-    // 10 random string characters with - separator in the middle
     return /^[a-zA-Z0-9]{10}$/.test(value);
   });
 }
@@ -34,5 +33,7 @@ export const SecretCode = (options?: SchemaOptions) =>
     title: "Secret Code",
     description: "A 10-digit secret code",
     examples: ["a1e2-f3g4", "b5h6-i7j8"],
+    minLength: 10,
+    maxLength: 10,
     ...options,
   });

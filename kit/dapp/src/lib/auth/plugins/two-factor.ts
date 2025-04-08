@@ -70,7 +70,7 @@ plugin.endpoints = {
       const user = ctx.context.session.user as User;
       const { code } = ctx.body;
       const result = await verifyTwoFactorOTPFunction({
-        parsedInput: { code: Number(code) },
+        parsedInput: { code },
         ctx: { user },
       });
       if (!result?.verified) {
