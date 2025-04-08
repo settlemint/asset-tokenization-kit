@@ -13,6 +13,7 @@ import {
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { InputOTP } from "@/components/ui/input-otp";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { authClient } from "@/lib/auth/client";
 import type { VerificationType } from "@/lib/utils/typebox/verification-type";
 import { useTranslations } from "next-intl";
@@ -26,6 +27,8 @@ import {
 } from "react-hook-form";
 import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import type { BaseFormInputProps } from "./types";
+
+const LOCAL_STORAGE_KEY = "selected-otp-input";
 
 type InputProps = ComponentPropsWithoutRef<typeof InputOTP>;
 
@@ -62,7 +65,10 @@ export function FormOtpDialog<T extends FieldValues>({
   const isTwoFactorEnabled = data?.user?.twoFactorEnabled ?? false;
   const isPincodeEnabled = data?.user?.pincodeEnabled ?? false;
   const [activeVerificationType, setActiveVerificationType] =
-    useState<VerificationType>(isTwoFactorEnabled ? "two-factor" : "pincode");
+    useLocalStorage<VerificationType>(
+      LOCAL_STORAGE_KEY,
+      isTwoFactorEnabled ? "two-factor" : "pincode"
+    );
 
   function getTitle(verificationType: VerificationType) {
     switch (verificationType) {
@@ -166,12 +172,7 @@ export function FormOtpDialog<T extends FieldValues>({
         />
         <FormField
           {...props}
-          defaultValue={
-            (isTwoFactorEnabled ? "two-factor" : "pincode") as PathValue<
-              T,
-              Path<T>
-            >
-          }
+          defaultValue={activeVerificationType as PathValue<T, Path<T>>}
           name={"verificationType" as Path<T>}
           render={({ field }) => (
             <FormItem>
