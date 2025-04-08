@@ -88,7 +88,10 @@ export function FormButton({
   };
 
   const disabled =
-    isSubmitting || (isLastStep && Object.keys(errors).length > 0);
+    isSubmitting ||
+    (isLastStep &&
+      Object.keys(errors).filter((key) => key !== "verificationCode").length >
+        0);
   return (
     <div className="flex justify-between space-x-4 pt-4">
       {currentStep > 0 && (

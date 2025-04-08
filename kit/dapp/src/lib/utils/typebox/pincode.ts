@@ -28,10 +28,12 @@ if (!TypeRegistry.Has("pincode")) {
  * @returns A TypeBox schema that validates PIN codes
  */
 export const Pincode = (options?: SchemaOptions) =>
-  t.Numeric({
+  t.String({
     format: "pincode",
     title: "PIN Code",
     description: "A 6-digit PIN code",
     examples: [123456, 999999],
+    minLength: 6,
+    maxLength: 6,
     ...options,
   });

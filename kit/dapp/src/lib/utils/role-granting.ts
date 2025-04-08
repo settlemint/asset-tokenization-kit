@@ -23,7 +23,7 @@ export interface AssetAdmin {
 export async function grantRolesToAdmins(
   assetAdmins: AssetAdmin[],
   predictedAddress: Hex,
-  verificationCode: number,
+  verificationCode: string,
   verificationType: VerificationType,
   assetType: AssetType,
   user: User

@@ -1,7 +1,7 @@
 import {
   PincodeForm,
   type PincodeFormValues,
-} from "@/components/blocks/auth/pincode-form";
+} from "@/components/blocks/auth/pincode/pincode-form";
 import {
   Dialog,
   DialogContent,
@@ -19,8 +19,10 @@ interface PincodeDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function PincodeDialog({ open, onOpenChange }: PincodeDialogProps) {
-  const t = useTranslations("private.auth.wallet-security");
+export function SetupPincodeDialog({ open, onOpenChange }: PincodeDialogProps) {
+  const t = useTranslations(
+    "private.auth.wallet-security.setup-pincode-dialog"
+  );
   const router = useRouter();
 
   const onSubmit = async (data: PincodeFormValues) => {
@@ -39,8 +41,8 @@ export function PincodeDialog({ open, onOpenChange }: PincodeDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("setup-pincode")}</DialogTitle>
-          <DialogDescription>{t("pincode-instruction")}</DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <PincodeForm onSubmit={onSubmit} />

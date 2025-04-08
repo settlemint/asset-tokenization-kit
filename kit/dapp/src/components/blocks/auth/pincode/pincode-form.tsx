@@ -1,18 +1,17 @@
-import type { StaticDecode } from "@/lib/utils/typebox";
-import { t } from "@/lib/utils/typebox";
-import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
-
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
 } from "@/components/ui/form";
-import { TranslatableFormFieldMessage } from "../form/form-field-translatable-message";
+import type { StaticDecode } from "@/lib/utils/typebox";
+import { t } from "@/lib/utils/typebox";
+import { typeboxResolver } from "@hookform/resolvers/typebox";
+import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
 import { PincodeInput } from "./pincode-input";
 
 // TypeBox schema for the pincode form
@@ -26,7 +25,7 @@ const pincodeSchema = t.Object(
 export type PincodeFormValues = StaticDecode<typeof pincodeSchema>;
 
 interface PincodeFormProps {
-  onSubmit: (data: PincodeFormValues) => Promise<void>;
+  onSubmit: (data: PincodeFormValues) => Promise<void> | void;
 }
 
 export function PincodeForm({ onSubmit }: PincodeFormProps) {

@@ -26,6 +26,7 @@ export const user = pgTable("user", {
   pincodeVerificationId: text("pincode_verification_id"),
   twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
   twoFactorVerificationId: text("two_factor_verification_id"),
+  secretCodeVerificationId: text("secret_code_verification_id"),
 });
 
 export const session = pgTable("session", {
