@@ -196,6 +196,11 @@ contract Gateway is Ownable {
             revert ZeroAddress();
         }
 
+        address _identity = idFactory.getIdentity(identityOwner);
+        if (_identity != address(0)) {
+            return _identity;
+        }
+
         return idFactory.createIdentity(identityOwner, Strings.toHexString(identityOwner));
     }
 

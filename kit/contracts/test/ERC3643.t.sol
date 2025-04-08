@@ -16,12 +16,9 @@ import { ITREXImplementationAuthority } from
 import { IdentityRegistry } from "../contracts/shared/erc3643/registry/implementation/IdentityRegistry.sol";
 import { PlatformFactory } from "../contracts/shared/PlatformFactory.sol";
 import { ITREXFactory } from "../contracts/shared/erc3643/factory/ITREXFactory.sol";
-import { IdFactory } from "../contracts/shared/onchainid/factory/IdFactory.sol";
-import { TREXFactory } from "../contracts/shared/erc3643/factory/TREXFactory.sol";
 import { Gateway } from "../contracts/shared/onchainid/gateway/Gateway.sol";
-import { IIdentityRegistry } from "../contracts/shared/erc3643/registry/interface/IIdentityRegistry.sol";
-import { IERC3643IdentityRegistry } from "../contracts/shared/erc3643/ERC-3643/IERC3643IdentityRegistry.sol";
 import { IIdentity } from "../contracts/shared/onchainid/interface/IIdentity.sol";
+import { AgentManager } from "../contracts/shared/erc3643/roles/permissioning/agent/AgentManager.sol";
 
 contract GatewayTest is Test {
     TREXImplementationAuthority public tokenImplementationAuthority;
@@ -35,8 +32,6 @@ contract GatewayTest is Test {
     address public tokenAgent1 = makeAddr("Token Agent 1");
     address public tokenAgent2 = makeAddr("Token Agent 2");
 
-    address public identityAgent1 = makeAddr("Identity Agent 1");
-
     address public client1 = makeAddr("Client 1");
 
     // Store deployed contract addresses globally
@@ -46,6 +41,7 @@ contract GatewayTest is Test {
     address public trustedIssuersRegistryAddress;
     address public identityRegistryStorageAddress;
     address public modularComplianceAddress;
+    address public agentManagerAddress;
 
     function setUp() public {
         vm.startPrank(predeployer);
@@ -94,14 +90,7 @@ contract GatewayTest is Test {
         vm.stopPrank();
     }
 
-    function deployTokenSuite(
-        TREXGateway gateway_,
-        address issuer_,
-        address[] memory tokenManagers_,
-        address[] memory identityManagers_
-    )
-        public
-    {
+    function deployTokenSuite(TREXGateway gateway_, address issuer_) public {
         vm.startPrank(issuer_);
         // Start recording logs to capture events
         vm.recordLogs();
@@ -123,10 +112,6 @@ contract GatewayTest is Test {
                 irs: address(0),
                 // ONCHAINID of the token
                 ONCHAINID: address(0),
-                // list of agents of the identity registry (can be set to an AgentManager contract)
-                irAgents: identityManagers_,
-                // list of agents of the token
-                tokenAgents: tokenManagers_,
                 // modules to bind to the compliance, indexes are corresponding to the settings callData indexes
                 // if a module doesn't require settings, it can be added at the end of the array, at index >
                 // settings.length
@@ -152,7 +137,8 @@ contract GatewayTest is Test {
         // event TREXSuiteDeployed(address indexed _token, address _ir, address _irs, address _tir, address _ctr,
         // address _mc, string indexed _salt);
 
-        bytes32 eventSignature = keccak256("TREXSuiteDeployed(address,address,address,address,address,address,string)");
+        bytes32 eventSignature =
+            keccak256("TREXSuiteDeployed(address,address,address,address,address,address,address,string)");
 
         // Loop through logs to find TREXSuiteDeployed event
         for (uint256 i = 0; i < entries.length; i++) {
@@ -161,41 +147,73 @@ contract GatewayTest is Test {
                 tokenAddress = address(uint160(uint256(entries[i].topics[1])));
 
                 // Decode the non-indexed parameters
-                // The data contains: _ir, _irs, _tir, _ctr, _mc (the _salt is indexed so it's in topics)
+                // The data contains: _ir, _irs, _tir, _ctr, _mc, _am (the _salt is indexed so it's in topics)
                 (
                     identityRegistryAddress,
                     identityRegistryStorageAddress,
                     trustedIssuersRegistryAddress,
                     claimTopicsRegistryAddress,
-                    modularComplianceAddress
-                ) = abi.decode(entries[i].data, (address, address, address, address, address));
+                    modularComplianceAddress,
+                    agentManagerAddress
+                ) = abi.decode(entries[i].data, (address, address, address, address, address, address));
 
                 break;
             }
         }
 
-        // // solhint-disable-next-line no-console
-        // console.log("Final addresses:");
-        // // solhint-disable-next-line no-console
-        // console.log("tokenAddress", tokenAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("identityRegistryAddress", identityRegistryAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("identityRegistryStorageAddress", identityRegistryStorageAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("claimTopicsRegistryAddress", claimTopicsRegistryAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("trustedIssuersRegistryAddress", trustedIssuersRegistryAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("modularComplianceAddress", modularComplianceAddress);
+        // solhint-disable-next-line no-console
+        console.log("Final addresses:");
+        // solhint-disable-next-line no-console
+        console.log("tokenAddress", tokenAddress);
+        // solhint-disable-next-line no-console
+        console.log("identityRegistryAddress", identityRegistryAddress);
+        // solhint-disable-next-line no-console
+        console.log("identityRegistryStorageAddress", identityRegistryStorageAddress);
+        // solhint-disable-next-line no-console
+        console.log("claimTopicsRegistryAddress", claimTopicsRegistryAddress);
+        // solhint-disable-next-line no-console
+        console.log("trustedIssuersRegistryAddress", trustedIssuersRegistryAddress);
+        // solhint-disable-next-line no-console
+        console.log("modularComplianceAddress", modularComplianceAddress);
+        // solhint-disable-next-line no-console
+        console.log("agentManagerAddress", agentManagerAddress);
     }
 
-    function createIdentity(Gateway identityGateway_, address clientWalletAddress_, uint8 countryCode_) public {
-        vm.startPrank(identityAgent1);
-        IIdentity id = IIdentity(identityGateway_.deployIdentityForWallet(clientWalletAddress_));
-        IERC3643IdentityRegistry identityRegistry = Token(tokenAddress).identityRegistry();
+    function createClientIdentity(
+        Gateway identityGateway_,
+        address clientWalletAddress_,
+        uint8 countryCode_,
+        address agentWalletAddress_,
+        IIdentity agent_
+    )
+        public
+    {
+        IIdentity clientId = IIdentity(identityGateway_.deployIdentityForWallet(clientWalletAddress_));
+
+        vm.startPrank(agentWalletAddress_);
         // country numbers from https://en.wikipedia.org/wiki/ISO_3166-1_numeric
-        identityRegistry.registerIdentity(clientWalletAddress_, id, countryCode_);
+        AgentManager(agentManagerAddress).callRegisterIdentity(clientWalletAddress_, clientId, countryCode_, agent_);
+        vm.stopPrank();
+    }
+
+    function setupAgent(
+        Gateway identityGateway_,
+        address agentWalletAddress,
+        bool whiteListManager,
+        bool supplyModifier
+    )
+        public
+        returns (IIdentity agentId)
+    {
+        agentId = IIdentity(identityGateway_.deployIdentityForWallet(agentWalletAddress));
+
+        vm.startPrank(organization1);
+        if (whiteListManager) {
+            AgentManager(agentManagerAddress).addWhiteListManager(address(agentId));
+        }
+        if (supplyModifier) {
+            AgentManager(agentManagerAddress).addSupplyModifier(address(agentId));
+        }
         vm.stopPrank();
     }
 
@@ -264,34 +282,7 @@ contract GatewayTest is Test {
     function test_DeployTokenSuite() public {
         (TREXGateway gateway,) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, organization1);
-
-        address[] memory tokenAgents = new address[](1);
-        tokenAgents[0] = tokenAgent1;
-        address[] memory identityManagers = new address[](1);
-        identityManagers[0] = identityAgent1;
-        deployTokenSuite(gateway, organization1, tokenAgents, identityManagers);
-    }
-
-    /*
-    * @dev there needs to be tabs in the details to manage agents
-    */
-    function test_AddSecondIssuer() public {
-        (TREXGateway gateway,) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
-        onboardIssuer(gateway, platformAdmin, organization1);
-
-        address[] memory tokenAgents = new address[](1);
-        tokenAgents[0] = tokenAgent1;
-        address[] memory identityManagers = new address[](1);
-        identityManagers[0] = identityAgent1;
-        deployTokenSuite(gateway, organization1, tokenAgents, identityManagers);
-
-        // Now add a second agent to the token
-        vm.startPrank(organization1); // The issuer1 is the owner of the token
-        Token(tokenAddress).addAgent(tokenAgent2);
-        vm.stopPrank();
-
-        // Verify that tokenAgent2 is now an agent
-        assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
+        deployTokenSuite(gateway, organization1);
     }
 
     /**
@@ -308,25 +299,19 @@ contract GatewayTest is Test {
         (TREXGateway gateway, Gateway identityGateway) =
             onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
         onboardIssuer(gateway, platformAdmin, organization1);
-
-        address[] memory tokenAgents = new address[](1);
-        tokenAgents[0] = tokenAgent1;
-        address[] memory identityManagers = new address[](1);
-        identityManagers[0] = identityAgent1;
-        deployTokenSuite(gateway, organization1, tokenAgents, identityManagers);
+        deployTokenSuite(gateway, organization1);
 
         // Now add a second agent to the token
         vm.startPrank(organization1); // The issuer1 is the owner of the token
-        Token(tokenAddress).addAgent(tokenAgent2);
+        IIdentity tokenAgent2Id = setupAgent(identityGateway, tokenAgent2, true, true);
         vm.stopPrank();
 
-        // Verify that tokenAgent2 is now an agent
-        assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
-
-        createIdentity(identityGateway, client1, 56); // 56 is Belgium
+        createClientIdentity(identityGateway, client1, 56, tokenAgent2, tokenAgent2Id); // 56 is Belgium
 
         vm.startPrank(tokenAgent2);
         // Mint 1000 tokens to the owner
-        Token(tokenAddress).mint(client1, 1000);
+        AgentManager(agentManagerAddress).callMint(client1, 1000, tokenAgent2Id);
+
+        vm.stopPrank();
     }
 }

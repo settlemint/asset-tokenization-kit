@@ -22,6 +22,7 @@ import { IClaimIssuer } from "../../onchainid/interface/IClaimIssuer.sol";
 import { ZeroAddress } from "../errors/InvalidArgumentErrors.sol";
 import { InvalidImplementationAuthority } from "../errors/CommonErrors.sol";
 import { ImplementationAuthoritySet } from "../events/CommonEvents.sol";
+import { AgentManager } from "../roles/permissioning/agent/AgentManager.sol";
 
 /// Errors
 
@@ -83,7 +84,6 @@ contract TREXFactory is ITREXFactory, Ownable {
         require((_claimDetails.issuers).length == (_claimDetails.issuerClaims).length, InvalidClaimPattern());
         require((_claimDetails.issuers).length <= 5, MaxClaimIssuersReached(5));
         require((_claimDetails.claimTopics).length <= 5, MaxClaimTopicsReached(5));
-        require((_tokenDetails.irAgents).length <= 5 && (_tokenDetails.tokenAgents).length <= 5, MaxAgentsReached(5));
         require((_tokenDetails.complianceModules).length <= 30, MaxModuleActionsReached(30));
         require(
             (_tokenDetails.complianceModules).length >= (_tokenDetails.complianceSettings).length,
@@ -125,12 +125,12 @@ contract TREXFactory is ITREXFactory, Ownable {
         }
         irs.bindIdentityRegistry(address(ir));
         AgentRole(address(ir)).addAgent(address(token));
-        for (uint256 i = 0; i < (_tokenDetails.irAgents).length; i++) {
-            AgentRole(address(ir)).addAgent(_tokenDetails.irAgents[i]);
-        }
-        for (uint256 i = 0; i < (_tokenDetails.tokenAgents).length; i++) {
-            AgentRole(address(token)).addAgent(_tokenDetails.tokenAgents[i]);
-        }
+
+        AgentManager am = new AgentManager(address(token));
+        am.addAgentAdmin(_tokenDetails.owner);
+        AgentRole(address(token)).addAgent(address(am));
+        AgentRole(address(ir)).addAgent(address(am));
+
         for (uint256 i = 0; i < (_tokenDetails.complianceModules).length; i++) {
             if (!mc.isModuleBound(_tokenDetails.complianceModules[i])) {
                 mc.addModule(_tokenDetails.complianceModules[i]);
@@ -139,14 +139,16 @@ contract TREXFactory is ITREXFactory, Ownable {
                 mc.callModuleFunction(_tokenDetails.complianceSettings[i], _tokenDetails.complianceModules[i]);
             }
         }
+
         tokenDeployed[_salt] = address(token);
         (Ownable(address(token))).transferOwnership(_tokenDetails.owner);
         (Ownable(address(ir))).transferOwnership(_tokenDetails.owner);
         (Ownable(address(tir))).transferOwnership(_tokenDetails.owner);
         (Ownable(address(ctr))).transferOwnership(_tokenDetails.owner);
         (Ownable(address(mc))).transferOwnership(_tokenDetails.owner);
+        (Ownable(address(am))).transferOwnership(_tokenDetails.owner);
         emit TREXSuiteDeployed(
-            address(token), address(ir), address(irs), address(tir), address(ctr), address(mc), _salt
+            address(token), address(ir), address(irs), address(tir), address(ctr), address(mc), address(am), _salt
         );
     }
 
