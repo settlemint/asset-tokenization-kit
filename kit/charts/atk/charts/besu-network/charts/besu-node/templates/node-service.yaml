@@ -5,18 +5,16 @@ metadata:
   name: {{ include "besu-node.fullname" . }}
   labels:
     app.kubernetes.io/name: {{ include "besu-node.fullname" . }}
-    app.kubernetes.io/component: service
-    app.kubernetes.io/part-of: {{ include "besu-node.fullname" . }}
-    app.kubernetes.io/namespace: {{ .Release.Namespace }}
-    app.kubernetes.io/release: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: helm    
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: besu
+    app.kubernetes.io/part-of: settlemint-atk
+    helm.sh/chart: {{ include "besu-node.chart" . }}
+    statefulset.kubernetes.io/pod-name: {{ include "besu-node.fullname" . }}-0
   namespace: {{ .Release.Namespace }}
 spec:
   type: ClusterIP
   selector:
-    app.kubernetes.io/part-of: {{ include "besu-node.fullname" . }}
-    app.kubernetes.io/namespace: {{ .Release.Namespace }}
-    app.kubernetes.io/release: {{ .Release.Name }}
+    statefulset.kubernetes.io/pod-name: {{ include "besu-node.fullname" . }}-0
   ports:
     - name: json-rpc
       port: {{ .Values.node.besu.rpc.port }}
@@ -42,8 +40,8 @@ spec:
       port: {{ .Values.node.besu.metrics.port }}
       targetPort: metrics
       protocol: TCP
-      
-{{- if .Values.quorumFlags.privacy }}          
+
+{{- if .Values.quorumFlags.privacy }}
     - name: tessera
       port: {{ .Values.node.tessera.port }}
       targetPort: tessera
@@ -58,7 +56,6 @@ spec:
       protocol: TCP
 {{- end }}
 
-
 {{- if and .Values.node.besu.metrics.enabled .Values.node.besu.metrics.serviceMonitorEnabled }}
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -67,16 +64,12 @@ metadata:
   name: {{ include "besu-node.fullname" . }}-servicemonitor
   labels:
     release: monitoring
-    helm.sh/chart: {{ include "besu-node.chart" . }}
-    app: {{ template "besu-node.fullname" . }}
-    chart: {{ template "besu-node.chart" . }}
-    heritage: {{ .Release.Service }}
-    namespace: {{ .Release.Namespace }}
     app.kubernetes.io/name: {{ include "besu-node.fullname" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: besu
+    app.kubernetes.io/part-of: settlemint-atk
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-    app.kubernetes.io/component: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   namespaceSelector:
@@ -84,9 +77,7 @@ spec:
     - {{ .Release.Namespace }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "besu-node.fullname" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
-      app.kubernetes.io/component: {{ .Release.Name }}
+      statefulset.kubernetes.io/pod-name: {{ include "besu-node.fullname" . }}-0
   endpoints:
   - port: metrics
     interval: 15s

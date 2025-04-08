@@ -25,7 +25,7 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@daveyplate/better-auth-ui": "1.3.19",
+    "@daveyplate/better-auth-ui": "1.3.22",
     "@elysiajs/server-timing": "1.2.1",
     "@elysiajs/swagger": "1.2.2",
     "@hookform/resolvers": "5.0.1",
@@ -51,7 +51,7 @@
     "@radix-ui/react-tabs": "1.1.3",
     "@radix-ui/react-tooltip": "1.1.8",
     "@react-email/components": "0.0.36",
-    "@scalar/api-reference-react": "0.6.9",
+    "@scalar/api-reference-react": "0.6.10",
     "@scalar/types": "0.1.6",
     "@settlemint/sdk-blockscout": "2.0.0",
     "@settlemint/sdk-hasura": "2.0.0",
@@ -91,7 +91,7 @@
     "recharts": "2.15.2",
     "resend": "4.2.0",
     "rtl-detect": "1.1.2",
-    "sharp": "0.34.0",
+    "sharp": "0.34.1",
     "simple-icons": "14.12.1",
     "sonner": "2.0.3",
     "superjson": "2.2.2",
@@ -99,7 +99,7 @@
     "tailwind-merge": "3.2.0",
     "tailwindcss-animate": "1.0.7",
     "tw-animate-css": "1.2.5",
-    "viem": "2.26.0"
+    "viem": "2.26.1"
   },
   "devDependencies": {
     "@better-auth/cli": "1.2.5",
@@ -111,7 +111,7 @@
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
     "@types/rtl-detect": "1.0.3",
-    "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250328",
+    "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250405",
     "dotenv": "16.4.7",
     "drizzle-kit": "0.30.6",
     "eslint": "9.24.0",
