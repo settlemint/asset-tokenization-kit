@@ -7,10 +7,9 @@ import {
   fromUnixTime,
   isFuture,
   parseISO,
-  setDefaultOptions,
   startOfDay,
 } from "date-fns";
-import { ar, de, ja } from "date-fns/locale";
+import { ar, de, enUS, ja } from "date-fns/locale";
 import {
   createFormatter,
   type DateTimeFormatOptions,
@@ -47,11 +46,13 @@ function formatDateWithFormatter(
   const { type = "absolute" } = options;
 
   if (type === "distance") {
-    return formatDistance(date, new Date());
+    const dateLocale = getDateLocale(options.locale ?? "en");
+    return formatDistance(date, new Date(), { locale: dateLocale });
   }
 
   if (type === "relative") {
-    return formatRelative(date, new Date());
+    const dateLocale = getDateLocale(options.locale ?? "en");
+    return formatRelative(date, new Date(), { locale: dateLocale });
   }
 
   if (type === "unixSeconds") {
@@ -90,16 +91,6 @@ export function formatDate(
     }
 
     const locale = options.locale || "en";
-
-    if (locale !== "en") {
-      if (locale === "de") {
-        setDefaultOptions({ locale: de });
-      } else if (locale === "ja") {
-        setDefaultOptions({ locale: ja });
-      } else if (locale === "ar") {
-        setDefaultOptions({ locale: ar });
-      }
-    }
 
     const formatter = createFormatter({
       locale: locale,
@@ -222,9 +213,11 @@ export function getTomorrowMidnight(): string {
  * @returns Formatted date string for datetime inputs
  */
 export function formatToDateTimeInput(date: Date): string {
-  return date.toLocaleDateString("sv").replace(/\//g, "-") +
-         "T" +
-         date.toLocaleTimeString("sv").slice(0, 5);
+  return (
+    date.toLocaleDateString("sv").replace(/\//g, "-") +
+    "T" +
+    date.toLocaleTimeString("sv").slice(0, 5)
+  );
 }
 
 /**
@@ -250,4 +243,20 @@ export function isValidFutureDate(
   } catch {
     return false;
   }
+}
+
+/**
+ * Returns the date-fns locale for a given locale
+ * @param locale - The locale to get the date-fns locale for
+ * @returns The date-fns locale for the given locale
+ */
+export function getDateLocale(locale: Locale) {
+  if (locale === "ar") {
+    return ar;
+  } else if (locale === "de") {
+    return de;
+  } else if (locale === "ja") {
+    return ja;
+  }
+  return enUS;
 }
