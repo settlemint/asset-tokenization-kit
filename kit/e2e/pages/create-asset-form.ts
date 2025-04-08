@@ -135,4 +135,39 @@ export class CreateAssetForm extends BasePage {
       this.page.locator('select[name="price.currency"]')
     ).toHaveValue(expected);
   }
+
+  async fillFundConfigurationFields(
+    options: {
+      fundCategory?: string;
+      fundClass?: string;
+      managementFeeBps?: string;
+      price?: string;
+    } = {}
+  ) {
+    if (options.fundCategory) {
+      await this.page.getByLabel("Fund category", { exact: false }).click();
+      await this.page
+        .getByRole("option", { name: options.fundCategory })
+        .click();
+    }
+
+    if (options.fundClass) {
+      await this.page.getByLabel("Fund class", { exact: false }).click();
+      await this.page.getByRole("option", { name: options.fundClass }).click();
+    }
+
+    if (options.managementFeeBps) {
+      await this.page
+        .getByLabel("Management fee", { exact: false })
+        .fill(options.managementFeeBps);
+    }
+
+    if (options.price) {
+      await this.page.getByLabel("Price", { exact: false }).fill(options.price);
+    }
+  }
+
+  async clearField(label: string) {
+    await this.page.getByLabel(label, { exact: false }).fill("");
+  }
 }
