@@ -1,4 +1,5 @@
 import { Form } from "@/components/blocks/form/form";
+import { useRouter } from "@/i18n/routing";
 import { setupWalletSecurity } from "@/lib/mutations/user/wallet/setup-wallet-security-action";
 import { SetupWalletSecuritySchema } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
@@ -10,7 +11,7 @@ import { Summary } from "./steps/summary";
 
 export function SetupWalletSecurityForm() {
   const t = useTranslations("private.auth.wallet-security.form");
-
+  const router = useRouter();
   return (
     <Form
       action={setupWalletSecurity}
@@ -32,6 +33,11 @@ export function SetupWalletSecurityForm() {
           !!getValues("verificationType")
         ) {
           goToStep(1);
+        }
+      }}
+      onOpenChange={(open) => {
+        if (!open) {
+          router.refresh();
         }
       }}
     >
