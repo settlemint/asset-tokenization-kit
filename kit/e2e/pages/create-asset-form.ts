@@ -144,26 +144,29 @@ export class CreateAssetForm extends BasePage {
       price?: string;
     } = {}
   ) {
-    if (options.fundCategory) {
-      await this.page.getByLabel("Fund category", { exact: false }).click();
-      await this.page
-        .getByRole("option", { name: options.fundCategory })
-        .click();
-    }
-
-    if (options.fundClass) {
-      await this.page.getByLabel("Fund class", { exact: false }).click();
-      await this.page.getByRole("option", { name: options.fundClass }).click();
-    }
-
-    if (options.managementFeeBps) {
-      await this.page
-        .getByLabel("Management fee", { exact: false })
-        .fill(options.managementFeeBps);
-    }
-
-    if (options.price) {
-      await this.page.getByLabel("Price", { exact: false }).fill(options.price);
+    const actions: Record<string, (value: string) => Promise<void>> = {
+      fundCategory: async (value) => {
+        await this.page.getByLabel("Fund category", { exact: false }).click();
+        await this.page.getByRole("option", { name: value }).click();
+      },
+      fundClass: async (value) => {
+        await this.page.getByLabel("Fund class", { exact: false }).click();
+        await this.page.getByRole("option", { name: value }).click();
+      },
+      managementFeeBps: async (value) => {
+        await this.page
+          .getByLabel("Management fee", { exact: false })
+          .fill(value);
+      },
+      price: async (value) => {
+        await this.page.getByLabel("Price", { exact: false }).fill(value);
+      },
+    };
+    for (const key in options) {
+      const value = options[key as keyof typeof options];
+      if (value && actions[key]) {
+        await actions[key](value);
+      }
     }
   }
 
