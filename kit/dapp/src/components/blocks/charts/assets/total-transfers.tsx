@@ -46,7 +46,7 @@ export function TotalTransfers({ data, locale }: TotalTransfersProps) {
       <TimeSeriesTitle
         title={t("total-transfers.title")}
         description={t("total-transfers.description")}
-        lastUpdated={formatDate(startOfHour(new Date()))}
+        lastUpdated={formatDate(startOfHour(new Date()), { locale })}
       />
       <TimeSeriesChart
         rawData={data}
