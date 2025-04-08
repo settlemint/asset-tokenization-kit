@@ -15,9 +15,14 @@ export function Amount({ max, decimals, symbol }: AmountProps) {
   const { control } = useFormContext<MintInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();
-  const description = max
-    ? t("max-limit.mint", { limit: formatNumber(max, { locale }) })
-    : undefined;
+
+  const noCollateralAvailable = max === 0;
+  const description = noCollateralAvailable
+    ? t("max-limit.mint-no-collateral")
+    : max
+      ? t("max-limit.mint", { limit: formatNumber(max, { locale }) })
+      : undefined;
+
   return (
     <FormStep title={t("title")} description={t("description.mint")}>
       <FormInput
@@ -30,6 +35,7 @@ export function Amount({ max, decimals, symbol }: AmountProps) {
         description={description}
         required
         postfix={symbol}
+        disabled={noCollateralAvailable}
       />
     </FormStep>
   );
