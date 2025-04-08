@@ -1280,8 +1280,10 @@
             "label": "Amount",
             "max-limit": {
               "burn": "Balance available to burn: {limit}",
+              "burn-no-balance": "No balance available for burning.",
               "freeze": "Balance available to freeze: {limit}",
-              "mint": "Collateral available to mint: {limit}"
+              "mint": "Collateral available to mint: {limit}",
+              "mint-no-collateral": "No collateral available. Add collateral before minting."
             },
             "title": "Enter amount",
             "wallet-balance": "Wallet balance"
