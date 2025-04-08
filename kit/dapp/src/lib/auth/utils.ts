@@ -16,16 +16,12 @@ export async function getUser() {
 
     if (!session?.user) {
       redirect({ href: "/auth/sign-in", locale: "en" });
-      // This line is never reached due to redirect, but helps TypeScript understand
       throw new Error("User not authenticated");
     }
 
     return session.user as User;
   } catch (error) {
-    // Instead of unauthorized which can cause error messages to appear,
-    // use redirect for a smoother user experience
     redirect({ href: "/auth/sign-in", locale: "en" });
-    // This line is never reached due to redirect, but helps TypeScript understand
     throw new Error("User not authenticated");
   }
 }
