@@ -7,7 +7,6 @@ import {
   fromUnixTime,
   isFuture,
   parseISO,
-  setDefaultOptions,
   startOfDay,
 } from "date-fns";
 import { ar, de, ja } from "date-fns/locale";
@@ -47,11 +46,13 @@ function formatDateWithFormatter(
   const { type = "absolute" } = options;
 
   if (type === "distance") {
-    return formatDistance(date, new Date());
+    const localeObj = getLocaleSetting(options.locale || "en");
+    return formatDistance(date, new Date(), { locale: localeObj });
   }
 
   if (type === "relative") {
-    return formatRelative(date, new Date());
+    const localeObj = getLocaleSetting(options.locale || "en");
+    return formatRelative(date, new Date(), { locale: localeObj });
   }
 
   if (type === "unixSeconds") {
@@ -63,6 +64,22 @@ function formatDateWithFormatter(
     timeStyle: "short",
     ...options.formatOptions,
   });
+}
+
+/**
+ * Helper function to get the appropriate date-fns locale object
+ */
+function getLocaleSetting(locale: string) {
+  switch (locale) {
+    case "de":
+      return de;
+    case "ja":
+      return ja;
+    case "ar":
+      return ar;
+    default:
+      return undefined; // date-fns defaults to English when locale is undefined
+  }
 }
 
 /**
@@ -90,16 +107,6 @@ export function formatDate(
     }
 
     const locale = options.locale || "en";
-
-    if (locale !== "en") {
-      if (locale === "de") {
-        setDefaultOptions({ locale: de });
-      } else if (locale === "ja") {
-        setDefaultOptions({ locale: ja });
-      } else if (locale === "ar") {
-        setDefaultOptions({ locale: ar });
-      }
-    }
 
     const formatter = createFormatter({
       locale: locale,
@@ -222,9 +229,11 @@ export function getTomorrowMidnight(): string {
  * @returns Formatted date string for datetime inputs
  */
 export function formatToDateTimeInput(date: Date): string {
-  return date.toLocaleDateString("sv").replace(/\//g, "-") +
-         "T" +
-         date.toLocaleTimeString("sv").slice(0, 5);
+  return (
+    date.toLocaleDateString("sv").replace(/\//g, "-") +
+    "T" +
+    date.toLocaleTimeString("sv").slice(0, 5)
+  );
 }
 
 /**
