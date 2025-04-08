@@ -18,7 +18,7 @@ const plugin = twoFactor({
 const originalEnableTwoFactor = plugin.endpoints.enableTwoFactor;
 const originalDisableTwoFactor = plugin.endpoints.disableTwoFactor;
 const originalVerifyTOTP = plugin.endpoints.verifyTOTP;
-const originalGenerateBackupCodes = plugin.endpoints.generateBackupCodes;
+
 plugin.endpoints = {
   ...plugin.endpoints,
   enableTwoFactor: createAuthEndpoint(
@@ -81,13 +81,6 @@ plugin.endpoints = {
           twoFactorEnabled: true,
         });
       }
-      return ctx.context.valid(ctx);
-    }
-  ),
-  generateBackupCodes: createAuthEndpoint(
-    originalGenerateBackupCodes.path,
-    originalGenerateBackupCodes.options,
-    async (ctx) => {
       return ctx.context.valid(ctx);
     }
   ),

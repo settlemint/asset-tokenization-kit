@@ -8,7 +8,7 @@ import {
 import { useTranslations } from "next-intl";
 import { SecretCodesForm } from "./secret-codes-form";
 
-interface TwoFactorBackupCodesDialogProps {
+interface SecretCodesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -16,7 +16,7 @@ interface TwoFactorBackupCodesDialogProps {
 export function SecretCodesDialog({
   open,
   onOpenChange,
-}: TwoFactorBackupCodesDialogProps) {
+}: SecretCodesDialogProps) {
   const t = useTranslations("portfolio.settings.profile.secret-codes");
 
   return (
