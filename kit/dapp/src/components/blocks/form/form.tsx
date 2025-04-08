@@ -394,14 +394,12 @@ export function Form<
       onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
         changedFieldName: name,
         step: currentStep,
-        goToStep: (step: number) => {
-          setCurrentStep(step);
-        },
+        goToStep: setCurrentStep,
       });
     });
 
     return () => subscription.unsubscribe();
-  }, [form, onAnyFieldChange, handleNext, currentStep]);
+  }, [form, onAnyFieldChange, currentStep]);
 
   const hasError = Object.keys(form.formState.errors).length > 0;
   const formatError = (key: string, errorMessage?: string, type?: string) => {
