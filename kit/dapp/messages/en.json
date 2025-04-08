@@ -978,7 +978,7 @@
         "title": "Profile",
         "two-factor-authentication": {
           "title": "Two-Factor Authentication",
-          "description": "Add an additional layer of security to your account by enabling two-factor authentication.",
+          "description": "Enhance your account security by enabling two-factor authentication. When activated, you'll need to enter a verification code from your authenticator app each time you access the application or your wallet.",
           "status": {
             "enabled": "Two-factor authentication is enabled",
             "disabled": "Two-factor authentication is disabled"
@@ -1017,6 +1017,16 @@
           "copied": "Secure codes copied to clipboard",
           "generate": "Generate secure codes",
           "error-message": "Failed to generate secure codes"
+        },
+        "pincode": {
+          "title": "Pincode",
+          "description": "Use a pincode to access your wallet.",
+          "enabled": "You have enabled pincode access to your wallet.",
+          "disabled": "No pincode is set.",
+          "setup-pincode": "Setup pincode",
+          "remove-pincode": "Remove pincode",
+          "pincode-set": "Pincode set successfully",
+          "pincode-set-error": "Failed to set pincode"
         }
       }
     },

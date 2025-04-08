@@ -2,6 +2,7 @@
 
 import { SetupTwoFactorDialog } from "@/components/blocks/auth/two-factor/setup-two-factor-dialog";
 import { TwoFactorPasswordDialog } from "@/components/blocks/auth/two-factor/two-factor-password-dialog";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -70,9 +71,13 @@ export function TwoFactorCard() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3 flex-1">
-          {session?.user.twoFactorEnabled
-            ? t("status.enabled")
-            : t("status.disabled")}
+          <Alert className="mb-4 bg-info/80 text-info-foreground">
+            <AlertTitle>
+              {session?.user.twoFactorEnabled
+                ? t("status.enabled")
+                : t("status.disabled")}
+            </AlertTitle>
+          </Alert>
         </CardContent>
         <CardFooter className="flex items-center p-6 py-4 md:py-3 bg-transparent border-none justify-end">
           <Button
