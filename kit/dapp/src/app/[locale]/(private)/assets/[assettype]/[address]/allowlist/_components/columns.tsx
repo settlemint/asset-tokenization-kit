@@ -10,7 +10,7 @@ import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { DisallowForm } from "../../_components/disallow-form/form";
 
@@ -25,6 +25,8 @@ export function columns({
 }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const locale = useLocale();
 
   return [
     columnHelper.accessor("user.id", {
@@ -42,9 +44,7 @@ export function columns({
     columnHelper.accessor("allowedAt", {
       header: t("allowed-since-header"),
       cell: ({ getValue }) =>
-        getValue()
-          ? formatDate(getValue(), { type: "distance", locale: "en" })
-          : "-",
+        getValue() ? formatDate(getValue(), { type: "distance", locale }) : "-",
       enableColumnFilter: false,
     }),
     columnHelper.display({
