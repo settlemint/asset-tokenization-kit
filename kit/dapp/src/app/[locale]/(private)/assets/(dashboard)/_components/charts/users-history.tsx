@@ -8,7 +8,6 @@ import { getLocale, getTranslations } from "next-intl/server";
 export async function UsersHistory() {
   const t = await getTranslations("admin.dashboard.charts");
   const locale = await getLocale();
-  // Using current date end of day to include all registrations for today
   const today = endOfDay(new Date());
   const sevenDaysAgo = startOfDay(subDays(today, 7));
 
