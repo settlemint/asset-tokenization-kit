@@ -14,9 +14,9 @@ export function RedeemBondSchema({
         decimals,
         description: "The amount to redeem",
       }),
-      verificationCode: t.Union([t.TwoFactorCode(), t.Pincode()], {
+      verificationCode: t.VerificationCode({
         description:
-          "The two factor code or pincode for signing the transaction",
+          "The verification code (PIN, 2FA, or secret code) for signing the transaction",
       }),
       verificationType: t.VerificationType({
         description: "The type of verification",

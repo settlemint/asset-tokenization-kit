@@ -104,7 +104,7 @@ function getErrorMessage(error: Error): string {
   }
 
   if (error.message.includes("Invalid challenge response")) {
-    return "Invalid pincode or OTP";
+    return "Invalid pincode, OTP or secure code";
   }
 
   const revertReason = getRevertReason(error);

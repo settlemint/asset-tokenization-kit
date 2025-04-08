@@ -28,10 +28,12 @@ if (!TypeRegistry.Has("two-factor-code")) {
  * @returns A TypeBox schema that validates two factor codes
  */
 export const TwoFactorCode = (options?: SchemaOptions) =>
-  t.Numeric({
+  t.String({
     format: "two-factor-code",
     title: "Two Factor Code",
     description: "A 6-digit two factor code",
     examples: [123456, 999999],
+    minLength: 6,
+    maxLength: 6,
     ...options,
   });
