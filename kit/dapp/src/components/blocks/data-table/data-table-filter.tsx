@@ -25,9 +25,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { take, uniq } from "@/lib/array";
 import type { ColumnOption, ElementType } from "@/lib/filters";
 import {
-  type ColumnDataType,
-  type FilterValue,
-  type TextFilterOperator,
   dateFilterDetails,
   determineNewOperator,
   filterTypeOperatorDetails,
@@ -38,11 +35,16 @@ import {
   numberFilterDetails,
   optionFilterDetails,
   textFilterDetails,
+  type ColumnDataType,
+  type FilterValue,
+  type TextFilterOperator,
 } from "@/lib/filters";
 import { cn } from "@/lib/utils";
+import { getDateLocale } from "@/lib/utils/date";
 import type { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
-import { format, isEqual } from "date-fns";
+import { formatDate, isEqual } from "date-fns";
 import { ArrowRight, Ellipsis, Filter, FilterXIcon, X } from "lucide-react";
+import { useLocale, type Locale } from "next-intl";
 import {
   cloneElement,
   isValidElement,
@@ -1000,24 +1002,26 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
   );
 }
 
-function formatDateRange(start: Date, end: Date) {
+function formatDateRange(start: Date, end: Date, locale: Locale) {
   const sameMonth = start.getMonth() === end.getMonth();
   const sameYear = start.getFullYear() === end.getFullYear();
+  const dateLocale = getDateLocale(locale);
 
   if (sameMonth && sameYear) {
-    return `${format(start, "MMM d")} - ${format(end, "d, yyyy")}`;
+    return `${formatDate(start, "MMM d", { locale: dateLocale })} - ${formatDate(end, "d, yyyy", { locale: dateLocale })}`;
   }
 
   if (sameYear) {
-    return `${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`;
+    return `${formatDate(start, "MMM d", { locale: dateLocale })} - ${formatDate(end, "MMM d, yyyy", { locale: dateLocale })}`;
   }
 
-  return `${format(start, "MMM d, yyyy")} - ${format(end, "MMM d, yyyy")}`;
+  return `${formatDate(start, "MMM d, yyyy", { locale: dateLocale })} - ${formatDate(end, "MMM d, yyyy", { locale: dateLocale })}`;
 }
 
 export function PropertyFilterDateValueDisplay<TData, TValue>({
   column,
 }: PropertyFilterValueDisplayProps<TData, TValue>) {
+  const locale = useLocale();
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"date", TData>)
     : undefined;
@@ -1026,13 +1030,19 @@ export function PropertyFilterDateValueDisplay<TData, TValue>({
   if (filter.values.length === 0) return <Ellipsis className="size-4" />;
   if (filter.values.length === 1) {
     const value = filter.values[0];
-
-    const formattedDateStr = format(value, "MMM d, yyyy");
+    const dateLocale = getDateLocale(locale);
+    const formattedDateStr = formatDate(value, "MMM d, yyyy", {
+      locale: dateLocale,
+    });
 
     return <span>{formattedDateStr}</span>;
   }
 
-  const formattedRangeStr = formatDateRange(filter.values[0], filter.values[1]);
+  const formattedRangeStr = formatDateRange(
+    filter.values[0],
+    filter.values[1],
+    locale
+  );
 
   return <span>{formattedRangeStr}</span>;
 }
