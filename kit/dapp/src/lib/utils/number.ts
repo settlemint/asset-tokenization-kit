@@ -108,7 +108,6 @@ function formatNumberWithFormatter(
 
   // Use compact notation for large numbers if requested
   if (compact && !percentage) {
-    // Custom compact formatting logic for large numbers
     const absValue = Math.abs(numberValue);
     let formattedValue: string;
     let suffix = "";
