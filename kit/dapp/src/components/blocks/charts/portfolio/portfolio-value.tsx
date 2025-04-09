@@ -1,5 +1,6 @@
 "use client";
 
+import { formatCompactForYAxis } from "@/app/[locale]/(private)/assets/(dashboard)/_components/utils/format-compact";
 import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
@@ -170,6 +171,17 @@ export function PortfolioValue({
     }));
   };
 
+  // Get currency from the first price object in the map
+  const currency =
+    assetPriceMap.size > 0
+      ? assetPriceMap.values().next().value?.currency
+      : undefined;
+
+  // Get a formatter for the Y-axis that uses our compact formatter
+  const yAxisTickFormatter = (value: string) => {
+    return formatCompactForYAxis(value, locale, currency);
+  };
+
   return (
     <TimeSeriesRoot locale={locale}>
       <TimeSeriesTitle
@@ -199,6 +211,7 @@ export function PortfolioValue({
           config={chartConfig}
           chartContainerClassName="h-[16rem] w-full"
           roundedBars={false}
+          yAxisTickFormatter={yAxisTickFormatter}
         />
       ) : aggregationType === "stackByType" ? (
         <TimeSeriesChart
@@ -208,6 +221,7 @@ export function PortfolioValue({
           chartContainerClassName="h-[16rem] w-full"
           stacked={true}
           roundedBars={false}
+          yAxisTickFormatter={yAxisTickFormatter}
         />
       ) : (
         <TimeSeriesChart
@@ -218,6 +232,7 @@ export function PortfolioValue({
           stacked={false}
           roundedBars={false}
           chartTooltipCursor={true}
+          yAxisTickFormatter={yAxisTickFormatter}
         />
       )}
     </TimeSeriesRoot>
