@@ -77,7 +77,7 @@ export function BarChartContainer({
   colors,
   chartContainerClassName,
   showLegend = true,
-  stacked = true,
+  stacked = false,
   roundedBars = true,
   chartTooltipCursor = false,
   yAxisTickFormatter,

@@ -51,6 +51,11 @@ export function TotalSupplyChanged({
     );
   }
 
+  const modifiedData = data.map((d) => ({
+    ...d,
+    totalBurned: d.totalBurned * -1,
+  }));
+
   return (
     <TimeSeriesRoot locale={locale} maxRange={maxRange}>
       <TimeSeriesTitle
@@ -59,7 +64,7 @@ export function TotalSupplyChanged({
         lastUpdated={formatDate(startOfHour(new Date()), { locale })}
       />
       <TimeSeriesChart
-        rawData={data}
+        rawData={modifiedData}
         processData={(rawData, timeRange, locale) => {
           return createTimeSeries(
             rawData,
