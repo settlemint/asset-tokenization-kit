@@ -1,5 +1,6 @@
 "use server";
 
+import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import type { AssetPrice } from "@/lib/queries/asset-price/asset-price-fragment";
 import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
@@ -14,15 +15,31 @@ import { AssetPriceSchema } from "./asset-price-schema";
 
 const AssetPrices = hasuraGraphql(
   `
-  query AssetPrices($assetIds: [String!]!) {
+  query AssetPrices($assetIds: [String!]!, $limit: Int, $offset: Int) {
     asset_price(
       where: { asset_id: { _in: $assetIds } }
-      order_by: { created_at: desc }
+      order_by: { created_at: desc },
+      limit: $limit,
+      offset: $offset
     ) {
       ...AssetPriceFragment
     }
   }
 `,
+  [AssetPriceFragment]
+);
+
+const AssetPrice = hasuraGraphql(
+  `
+    query AssetPrice($assetId: String!) {
+      asset_price(
+        where: { asset_id: { _eq: $assetId } }
+        order_by: { created_at: desc }
+      ) {
+        ...AssetPriceFragment
+      }
+    }
+  `,
   [AssetPriceFragment]
 );
 
@@ -43,19 +60,28 @@ export const getAvailableAssetsPriceInUserCurrency = cache(
 export const getAssetsPricesInUserCurrency = cache(
   async (assetIds: string[]): Promise<Map<string, Price>> => {
     const userDetails = await getCurrentUserDetail();
-    const assetIdsWithoutDuplicates = Array.from(
-      new Set(assetIds.map(getAddress))
+    const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
+    const assetPricesData = await fetchAllHasuraPages(
+      async (pageLimit, offset) => {
+        const assetIds = assetIdsWithoutDuplicates.map((address) => {
+          return getAddress(address);
+        });
+        const pageResult = await hasuraClient.request(AssetPrices, {
+          assetIds,
+          limit: pageLimit,
+          offset,
+        });
+        return pageResult.asset_price ?? [];
+      }
     );
-    const assetPricesData = await hasuraClient.request(AssetPrices, {
-      assetIds: assetIdsWithoutDuplicates,
-    });
     const exchangeRates = await getExchangeRates(
-      assetPricesData.asset_price,
+      assetPricesData,
       userDetails.currency
     );
     const pricesForAssetIds = new Map();
+
     for (const assetId of assetIds) {
-      const assetPrice = assetPricesData.asset_price.find(
+      const assetPrice = assetPricesData.find(
         (assetPrice) => getAddress(assetPrice.asset_id) === getAddress(assetId)
       );
       if (!assetPrice) {
