@@ -4,7 +4,7 @@ dependencies:
   version: 0.17.0
 - name: alloy
   repository: https://grafana.github.io/helm-charts
-  version: 0.12.6
+  version: 1.0.0
 - name: metrics-server
   repository: https://kubernetes-sigs.github.io/metrics-server/
   version: 3.12.2
@@ -20,5 +20,5 @@ dependencies:
 - name: prometheus-node-exporter
   repository: https://prometheus-community.github.io/helm-charts
   version: 4.45.2
-digest: sha256:e3db934a71554a93ea98a8674e5cb45499b63058a00d49e41a7697333b654736
-generated: "2025-04-09T17:45:32.539171272Z"
+digest: sha256:551de1b765ffedce51d0f8bd7195672acd515c0f31951d4c9e355ca82dc05e9d
+generated: "2025-04-09T19:22:46.576007803Z"
