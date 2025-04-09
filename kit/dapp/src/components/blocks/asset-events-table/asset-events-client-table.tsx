@@ -2,7 +2,6 @@
 
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
-import { AddressNameCacheProvider } from "@/lib/utils/address-name-cache";
 import { useTranslations } from "next-intl";
 import { Columns, icons } from "./asset-events-columns";
 
@@ -24,18 +23,16 @@ export function AssetEventsClientTable({
   const t = useTranslations("components.asset-events-table");
 
   return (
-    <AddressNameCacheProvider>
-      <DataTable
-        columns={Columns}
-        data={events}
-        icons={icons}
-        name={t("events")}
-        toolbar={{
-          enableToolbar: !disableToolbarAndPagination,
-        }}
-        pagination={{ enablePagination: !disableToolbarAndPagination }}
-        initialColumnFilters={initialColumnFilters}
-      />
-    </AddressNameCacheProvider>
+    <DataTable
+      columns={Columns}
+      data={events}
+      icons={icons}
+      name={t("events")}
+      toolbar={{
+        enableToolbar: !disableToolbarAndPagination,
+      }}
+      pagination={{ enablePagination: !disableToolbarAndPagination }}
+      initialColumnFilters={initialColumnFilters}
+    />
   );
 }
