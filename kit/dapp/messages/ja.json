@@ -42,7 +42,7 @@
           "deposit": "預金"
         },
         "assets-supply": {
-          "description": "資産クラスごとのトークンの分布",
+          "description": "資産クラスごとの資産の分配",
           "title": "資産供給"
         },
         "transaction-history": {
@@ -104,7 +104,9 @@
         "save": "保存",
         "save-changes": "変更を保存",
         "saving": "保存中...",
-        "select-base-currency": "基本通貨を選択"
+        "select-base-currency": "基本通貨を選択",
+        "base-currency-title": "基本通貨",
+        "base-currency-description": "プラットフォーム全体で資産の価値を表示するためのデフォルト通貨を設定します"
       }
     },
     "sidebar": {
@@ -131,7 +133,7 @@
       },
       "platform-management": {
         "group-title": "プラットフォーム管理",
-        "settings": "設定",
+        "settings": "プラットフォーム",
         "user-management": "ユーザー管理"
       },
       "portfolio-management": {
@@ -143,6 +145,13 @@
         "my-contacts": "私の連絡先",
         "profile": "プロフィール",
         "settings": "設定"
+      },
+      "settings-management": {
+        "group-title": "設定",
+        "settings": "設定",
+        "profile": "プロフィール",
+        "api": "API",
+        "platform": "プラットフォーム"
       }
     },
     "bonds": {
@@ -285,7 +294,8 @@
         "token": "トークン",
         "underlying-amount": "基礎金額",
         "user": "ユーザー",
-        "value": "値"
+        "value": "値",
+        "asset": "資産"
       },
       "event": "イベント",
       "events": "イベント",
@@ -324,26 +334,26 @@
         "stablecoin": "ステーブルコイン",
         "tokenizeddeposit": "トークン化された預金",
         "total-supply": {
-          "description": "トークンの総供給量を表示",
+          "description": "資産の総供給量を表示",
           "label": "総供給量",
           "no-data": "このウィンドウにはデータがありません",
           "title": "総供給量"
         },
         "total-supply-changed": {
           "burned-label": "総焼却量",
-          "description": "トークンの供給変化を表示",
+          "description": "資産の供給変化を表示",
           "minted-label": "総ミント量",
           "no-data": "このウィンドウにはデータがありません",
           "title": "供給変化"
         },
         "total-transfers": {
-          "description": "トークンの総転送を表示",
+          "description": "資産の総転送数を表示",
           "label": "総転送",
           "no-data": "このウィンドウにはデータがありません",
           "title": "総転送"
         },
         "total-volume": {
-          "description": "トークンの総ボリュームを表示",
+          "description": "資産の総取引量を表示",
           "label": "総ボリューム",
           "no-data": "このウィンドウにはデータがありません",
           "title": "総ボリューム"
@@ -394,6 +404,18 @@
           "label": "総担保"
         },
         "deposit": "預金"
+      },
+      "portfolio": {
+        "portfolio-value": "ポートフォリオの価値",
+        "portfolio-value-description": "時間の経過に伴うポートフォリオの最大価値（現在の価格に基づく）",
+        "portfolio-value-error": "ポートフォリオの価値データの読み込みエラー",
+        "portfolio-value-no-data": "ポートフォリオデータは利用できません",
+        "portfolio-value-title": "ポートフォリオの価値",
+        "aggregation-options": {
+          "compare-asset-types": "資産タイプを比較",
+          "stacked-asset-types": "資産タイプ別に積み上げ",
+          "total-value": "総価値"
+        }
       }
     },
     "data-table": {
@@ -465,7 +487,33 @@
         "loading": "読み込み中...",
         "no-user-found": "ユーザーが見つかりません。",
         "recent-users": "最近選択された",
-        "search-placeholder": "ユーザーを検索..."
+        "search-placeholder": "ユーザーを検索...",
+        "no-contact-found": "連絡先が見つかりません。",
+        "recent-contacts": "最近選択した連絡先",
+        "search-contact-placeholder": "連絡先を検索..."
+      },
+      "otp-dialog": {
+        "cancel": "キャンセル",
+        "confirm": "はい、確認",
+        "pincode": {
+          "description": "取引に署名するには、確認と承認のためにピンコードを入力してください。",
+          "title": "確認のためにピンコードを入力してください"
+        },
+        "two-factor-authentication": {
+          "description": "取引に署名するには、確認と承認のために認証アプリからのOTPコードを入力してください。",
+          "title": "確認のためにOTPを入力してください"
+        },
+        "secret-codes": {
+          "description": "あなたの身元を確認するために、セキュアコードのいずれかを入力してください。各コードは一度しか使用できないため、未使用のコードを安全に保管してください。",
+          "title": "セキュアコードを入力してください"
+        },
+        "method-select": {
+          "title": "ウォレットのセキュリティ方法を切り替え",
+          "pincode": "PINコード",
+          "two-factor-authentication": "認証アプリ",
+          "use-secret-codes": "または、セキュアコードのいずれかを使用"
+        },
+        "switch-method": "方法を切り替え"
       }
     },
     "logo": {
@@ -519,6 +567,29 @@
         "status": "ステータス",
         "transaction-hash": "トランザクションハッシュ"
       }
+    },
+    "chart": {
+      "switch-to-area-chart": "エリアチャートに切り替え",
+      "switch-to-bar-chart": "棒グラフに切り替え",
+      "info-icon-label": "情報",
+      "select-time-range": "時間範囲を選択",
+      "last-updated-at": "最終更新日時: {lastUpdated}",
+      "time-range": {
+        "24h": "24時間",
+        "7d": "7日",
+        "30d": "30日",
+        "90d": "90日"
+      }
+    },
+    "pending-transactions": {
+      "aria-label": "保留中の取引を表示",
+      "title": "保留中の取引",
+      "no-pending": "保留中の取引はありません",
+      "from": "から",
+      "contract": "契約",
+      "hash": "ハッシュ",
+      "function": "関数",
+      "created": "作成日"
     }
   },
   "creator-owner": "作成者 / 所有者",
@@ -647,7 +718,7 @@
       "afternoon": "こんにちは",
       "evening": "こんばんは",
       "morning": "おはようございます",
-      "you-have": "あなたは"
+      "you-have": "あなたの資産は"
     },
     "my-assets": {
       "bond": {
@@ -659,7 +730,7 @@
             "title": "金額を入力"
           },
           "button-label": "資産を引き換える",
-          "description": "基礎資産に対してあなたの債券トークンを引き換えます。",
+          "description": "債券資産を基礎資産に引き換えます。",
           "summary": {
             "asset-label": "資産",
             "description": "進む前に引き換えの詳細を確認してください",
@@ -673,7 +744,7 @@
         },
         "transfer-form": {
           "button-label": "転送",
-          "description": "あなたの債券トークンを別のアドレスに転送します",
+          "description": "債券資産を別のアドレスに転送します",
           "summary": {
             "asset-label": "資産",
             "description": "進む前に転送の詳細を確認してください",
@@ -692,16 +763,18 @@
           "amount": {
             "amount-label": "金額",
             "balance-description": "利用可能残高:",
-            "description": "転送したいトークンの金額を入力してください",
+            "description": "転送したい資産の量を入力してください",
             "title": "金額"
           },
           "recipients": {
             "address-label": "受取人アドレス",
             "address-placeholder": "ユーザーを検索",
-            "description": "トークンを受け取る人を選択",
+            "description": "資産を受け取る人を選択してください",
             "manual-entry-link": "アドレスを手動で入力...",
             "search-user-link": "代わりにユーザーを検索...",
-            "title": "受取人を選択"
+            "title": "受取人を選択",
+            "search-contact-link": "代わりに連絡先を検索...",
+            "search-in-contacts": "私の連絡先を検索"
           }
         }
       },
@@ -709,7 +782,8 @@
         "forms": {
           "actions": {
             "redeem": "引き換える",
-            "transfer": "転送"
+            "transfer": "転送",
+            "burn": "バーン"
           }
         },
         "manage": "管理"
@@ -784,42 +858,127 @@
       },
       "profile": {
         "portfolio-management": "ポートフォリオ管理",
-        "title": "プロフィール"
+        "title": "プロフィール",
+        "enter-password": {
+          "title": "パスワードを入力してください",
+          "placeholder": "パスワード",
+          "cancel": "キャンセル"
+        },
+        "two-factor-authentication": {
+          "title": "二要素認証",
+          "description": "二要素認証を有効にしてアカウントのセキュリティを強化します。これを有効にすると、アプリケーションやウォレットにアクセスするたびに認証アプリからの確認コードを入力する必要があります。",
+          "status": {
+            "enabled": "二要素認証が有効になっています",
+            "disabled": "二要素認証が無効になっています"
+          },
+          "setup-mfa": {
+            "title": "二要素認証を設定",
+            "description": "QRコードをスマートフォンの認証アプリでスキャンして二要素認証を有効にします。",
+            "cancel": "キャンセル",
+            "enable": "有効にする",
+            "loading": "有効化中...",
+            "enter-code-title": "認証アプリからのコードを入力してください"
+          },
+          "enable": {
+            "title": "有効にする",
+            "description": "アカウントに追加のセキュリティ層を追加するために二要素認証を有効にします。",
+            "success-message": "二要素認証が正常に有効になりました",
+            "error-message": "二要素認証の有効化に失敗しました: {error}",
+            "password-description": "二要素認証を有効にするには、パスワードを入力してください。"
+          },
+          "disable": {
+            "title": "無効にする",
+            "description": "アカウントから追加のセキュリティ層を削除するために二要素認証を無効にします。",
+            "success-message": "二要素認証が正常に無効になりました",
+            "error-message": "二要素認証を無効にできませんでした: {error}",
+            "password-description": "二要素認証を無効にするには、パスワードを入力してください。",
+            "disable-two-factor-tooltip": "ピンコードが設定されている場合のみ、二要素認証を無効にできます。"
+          }
+        },
+        "secret-codes": {
+          "title": "セキュアコード",
+          "description": "これらのコードは、電話を失ったりピンコードを忘れた場合にウォレットにアクセスするために使用できます。安全な場所に保管してください。",
+          "copy": "セキュアコードをコピー",
+          "copied": "セキュアコードがクリップボードにコピーされました",
+          "generate": "セキュアコードを生成",
+          "error-message": "セキュアコードの生成に失敗しました"
+        },
+        "pincode": {
+          "title": "ピンコード",
+          "description": "ウォレットにアクセスするためにピンコードを使用してください。",
+          "error": "ピンコードのステータスを取得できませんでした",
+          "setup-pincode": {
+            "title": "ピンコードを設定",
+            "success-message": "ピンコードが正常に設定されました",
+            "error-message": "ピンコードの設定に失敗しました"
+          },
+          "update-pincode": {
+            "title": "ピンコードを更新",
+            "success-message": "ピンコードが正常に更新されました",
+            "error-message": "ピンコードの更新に失敗しました"
+          },
+          "disable-pincode": {
+            "title": "ピンコードを無効にする",
+            "description": "ピンコードを無効にするには、パスワードを入力してください。",
+            "cancel": "キャンセル",
+            "remove": "無効にする",
+            "loading": "無効にしています...",
+            "disable-pincode-tooltip": "二要素認証が有効な場合のみ、ピンコードを無効にできます。",
+            "success-message": "ピンコードが正常に無効になりました",
+            "error-message": "ピンコードを無効にできませんでした: {error}"
+          },
+          "status": {
+            "enabled": "ピンコードを設定しました。",
+            "disabled": "ピンコードは設定されていません。"
+          }
+        }
       }
     },
     "transfer-form": {
       "amount": {
         "amount-label": "金額",
         "balance-description": "残高:",
-        "decimals-description": "トークンの小数点以下の桁数",
+        "decimals-description": "資産の小数点以下の桁数",
         "decimals-label": "小数",
         "description": "転送したい金額を指定してください",
         "title": "金額を入力"
       },
       "asset-types": "{type} {name} ({symbol})",
-      "description": "受取人を選択し、金額を指定することで、{name} ({symbol})の金額を簡単に転送できます。",
+      "description": "受取人を選択し、金額を指定することで、資産の金額を簡単に転送できます。",
       "recipients": {
-        "description": "トークンを直接送信するためのウォレットアドレスを入力してください。",
+        "description": "資産を直接送信するためのウォレットアドレスを入力してください。",
         "title": "受取人を選択",
         "wallet-address-label": "ウォレットアドレス",
         "address-placeholder": "ユーザーを検索",
         "manual-entry-link": "アドレスを手動で入力...",
-        "search-user-link": "代わりにユーザーを検索..."
+        "search-user-link": "代わりにユーザーを検索...",
+        "address-label": "受取人アドレス",
+        "search-contact-link": "代わりに連絡先を検索...",
+        "search-in-contacts": "私の連絡先を検索"
       },
       "select-asset": {
         "asset-description": "ポートフォリオから資産を選択",
         "asset-label": "資産",
         "description": "転送したい資産を選択",
-        "title": "資産を選択"
+        "title": "資産を選択",
+        "confirm-button": "確認"
       },
       "summary": {
         "address": "アドレス",
         "amount": "金額",
         "description": "転送を進める前に、詳細を確認してください。受取人と金額が正しいことを確認してください。",
-        "title": "転送を確認して承認する"
+        "title": "転送を確認して承認する",
+        "asset-label": "資産",
+        "recipient-label": "受取人",
+        "transfer-description": "転送操作の詳細",
+        "transfer-title": "転送",
+        "value-label": "金額"
       },
       "transfer": "転送",
-      "transfer-title": "転送 {name} ({symbol})"
+      "transfer-title": "転送 {name} ({symbol})",
+      "button-label": "資産を転送",
+      "title": "資産を転送",
+      "trigger-label": "転送"
     },
     "assets-count-assets": "資産"
   },
@@ -888,11 +1047,27 @@
             "stablecoins": "新しいステーブルコインを発行する",
             "tokenizeddeposits": "新しいトークン化された預金を発行する",
             "deposits": "新しい預金を発行する"
+          },
+          "steps": {
+            "asset-admins": {
+              "title": "資産の権限",
+              "description": "この資産を管理するための管理役割と権限を定義します。",
+              "add-first-admin": "資産管理者を追加",
+              "add-another-admin": "別の管理者を追加",
+              "select-user-placeholder": "ユーザーを検索して選択",
+              "remove-role": "この役割を削除",
+              "add-role": "この役割を追加",
+              "roles": {
+                "admin": "管理者",
+                "user-manager": "ユーザー管理者",
+                "issuer": "供給管理者"
+              }
+            }
           }
         },
         "parameters": {
           "bonds": {
-            "cap-description": "発行可能なトークンの最大数",
+            "cap-description": "発行できる資産の最大量",
             "cap-label": "最大供給量",
             "face-value-description": "単一の債券ユニットの名目価値",
             "face-value-label": "額面価値",
@@ -901,7 +1076,8 @@
             "name-placeholder": "会社XYZ債券2023",
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "この債券を裏付ける資産のアドレス",
-            "underlying-asset-label": "基礎資産"
+            "underlying-asset-label": "基礎資産",
+            "maturity-date-error": "満期日は少なくとも1時間先でなければなりません"
           },
           "common": {
             "collateral-proof-validity-label": "担保証明の有効性",
@@ -930,7 +1106,7 @@
             "price-label": "価格"
           },
           "cryptocurrencies": {
-            "initial-supply-description": "鋳造されるトークンの初期数量",
+            "initial-supply-description": "発行される資産の初期量",
             "initial-supply-label": "初期供給量",
             "name-placeholder": "ビットコイン",
             "symbol-placeholder": "BTC"
@@ -974,7 +1150,9 @@
           "configuration-description": "資産に特有のパラメータ。",
           "configuration-title": "設定",
           "description": "これは資産を作成する前の最終ステップです。入力したすべての詳細を確認してください。",
-          "title": "概要"
+          "title": "概要",
+          "asset-admins-description": "この資産を管理するための管理役割と権限。",
+          "asset-admins-title": "資産の権限"
         }
       },
       "detail": {
@@ -1179,11 +1357,11 @@
           },
           "form": {
             "description": {
-              "burn": "供給を減らすためにトークンを流通から永久に削除します。",
+              "burn": "供給を減らすために資産を流通から永久に削除します。",
               "grant-role": "新しいユーザーに管理権限を割り当てます。",
               "block": "このユーザーが取引や相互作用を行うのを防ぎます。",
               "mature": "ボンドを満期にして基礎資産を受け取ります。",
-              "mint": "資産の流通供給を増やすために新しいトークンを発行します。",
+              "mint": "資産の流通供給を増やすために新しい資産を発行します。",
               "freeze": "ユーザーの資金へのアクセスを一時的に制限します。",
               "pause": "この資産のすべての取引と相互作用を一時的に停止します。",
               "unpause": "この資産の取引と相互作用を再開します。",
@@ -1225,6 +1403,9 @@
               "allow": "許可する",
               "disallow": "拒否する",
               "unblock": "ユーザーのブロックを解除する"
+            },
+            "errors": {
+              "supply-manager-required": "供給管理者の役割が必要です"
             }
           },
           "account": {
@@ -1242,12 +1423,12 @@
               "default": "ユーザーを選択する"
             },
             "description": {
-              "mint": "トークンを直接送信するためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
-              "burn": "トークンを燃やすためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
+              "mint": "資産を直接送信するためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
+              "burn": "資産を焼却するためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
               "grant-role": "役割を付与するためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
-              "freeze": "トークンを凍結するためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
+              "freeze": "資産を凍結するためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
               "block": "ブロックするウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
-              "withdraw": "トークンを引き出すためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
+              "withdraw": "資産を引き出すためのウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索します。",
               "allow": "許可するウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索してください。",
               "disallow": "拒否するウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索してください。",
               "unblock": "ブロックを解除するウォレットアドレスを入力するか、名前、メールアドレス、またはウォレットアドレスでユーザーを検索してください。"
@@ -1272,7 +1453,9 @@
             "max-limit": {
               "mint": "ミント可能な担保: {limit}",
               "burn": "燃やすために利用可能な残高: {limit}",
-              "freeze": "凍結するために利用可能な残高: {limit}"
+              "freeze": "凍結するために利用可能な残高: {limit}",
+              "burn-no-balance": "焼却するための残高がありません。",
+              "mint-no-collateral": "担保がありません。発行する前に担保を追加してください。"
             },
             "label": "金額"
           },
@@ -1504,7 +1687,8 @@
               "funds": "債券を償還する",
               "stablecoins": "供給を減少させる",
               "tokenizeddeposits": "トークン化された預金供給を減少させる",
-              "deposits": "預金供給を減少させる"
+              "deposits": "預金供給を減少させる",
+              "cryptocurrencies": "供給を減少させる"
             },
             "description": {
               "bonds": "債券マネージャーは、満期時の債券償還や早期買戻しプログラムを通じて総供給を減少させることができます。",
@@ -1512,13 +1696,14 @@
               "funds": "ファンドマネージャーは、満期時のファンド償還や早期買戻しプログラムを通じて総供給を減少させることができます。",
               "stablecoins": "供給マネージャーは、十分な担保がある場合に既存のステーブルコインをバーンすることができます。",
               "tokenizeddeposits": "供給マネージャーは、十分な担保がある場合に既存のトークン化された預金をバーンすることができます。",
-              "deposits": "供給マネージャーは、十分な担保がある場合に既存の預金を焼却できます。"
+              "deposits": "供給マネージャーは、十分な担保がある場合に既存の預金を焼却できます。",
+              "cryptocurrencies": "供給管理者は、既存の暗号通貨トークンを焼却して総供給量を減少させることができます。"
             }
           },
           "increase-supply": {
             "title": {
               "bonds": "債券を発行する",
-              "cryptocurrencies": "トークンをミントする",
+              "cryptocurrencies": "資産を発行",
               "equities": "新しい株式を発行する",
               "funds": "債券を発行する",
               "stablecoins": "供給を増加させる",
@@ -1527,7 +1712,7 @@
             },
             "description": {
               "bonds": "債券マネージャーは、定義された額面と満期を持つプライマリー発行またはタップ発行を通じて新しい債券を発行することができます。",
-              "cryptocurrencies": "トークンマネージャーは、トークノミクス計画と発行スケジュールに従って新しいトークンをミントすることができます。",
+              "cryptocurrencies": "資産管理者は、トークノミクス計画および発行スケジュールに従って新しい資産を発行できます。",
               "equities": "株式マネージャーは、権利発行、プライベートプレースメント、または株式分割などのさまざまなメカニズムを通じて新しい株式を発行することができます。",
               "funds": "ファンドマネージャーは、定義された額面と満期を持つプライマリー発行またはタップ発行を通じて新しいファンドを発行することができます。",
               "stablecoins": "供給マネージャーは、十分な担保がある場合に新しいステーブルコインをミントすることができます。",
@@ -1569,7 +1754,7 @@
         "collateral-proof-validity-info": "担保証明が有効な期間",
         "committed-collateral-header": "コミットされた担保",
         "committed-collateral-ratio": "コミットされた担保比率",
-        "committed-collateral-ratio-info": "トークンの総供給に対する担保の比率",
+        "committed-collateral-ratio-info": "資産の総供給に対する担保の比率",
         "contract-address": "アドレス",
         "creator": "クリエイター",
         "decimals": "小数点以下の桁数",
@@ -1695,7 +1880,7 @@
         "ownership-concentration": "所有集中",
         "ownership-concentration-info": "上位5名の保有者による所有割合",
         "proven-collateral": "証明された担保",
-        "proven-collateral-info": "トークンによって保有されていることが証明された担保の額",
+        "proven-collateral-info": "資産によって保持されていることが証明された担保の量",
         "redeemed": "償還済み",
         "redeemed-info": "償還された資産の総額",
         "redemption-readiness": "償還準備状況",
@@ -1709,7 +1894,7 @@
         "symbol": "シンボル",
         "symbol-header": "シンボル",
         "total-burned": "総焼却",
-        "total-burned-info": "流通から永久に除去されたトークンの量",
+        "total-burned-info": "流通から永久に削除された資産の量",
         "total-holders": "#の保有者",
         "total-holders-info": "現在資産を保有しているアドレスの量",
         "total-issued": "総発行",
@@ -1758,13 +1943,13 @@
           },
           "cryptocurrency": {
             "issue-new": {
-              "description": "カスタマイズ可能なパラメータとセキュリティ機能を持つ新しい暗号通貨トークンを作成して発行します。構成可能な供給メカニズムと転送制御でトークンの展開を効率化します。",
+              "description": "カスタマイズ可能なパラメータとセキュリティ機能を持つ新しい暗号通貨資産を作成して立ち上げます。構成可能な供給メカニズムと転送制御を使用して資産の展開を合理化します。",
               "title": "新しい暗号通貨を発行"
             },
             "mechanics": {
               "button": "詳細を学ぶ",
-              "description": "暗号通貨のトークン経済、供給制御、転送制限、セキュリティ機能を管理する方法を学びます。",
-              "title": "トークンメカニクス"
+              "description": "暗号通貨の資産経済、供給管理、転送制限、セキュリティ機能を管理する方法を学びます。",
+              "title": "資産メカニクス"
             },
             "usecases": {
               "button": "探る",
@@ -1774,8 +1959,8 @@
           },
           "equity": {
             "issue-new": {
-              "description": "定義された株式クラスと所有権を持つ新しいエクイティトークンを作成して発行します。株主分配と企業ガバナンスをサポートするためにエクイティ発行を効率化します。",
-              "title": "新しいエクイティトークンを発行"
+              "description": "定義された株式クラスと所有権を持つ新しい株式資産を作成して立ち上げます。株主分配と企業ガバナンスをサポートするために株式発行を合理化します。",
+              "title": "新しい株式資産を発行"
             },
             "mechanics": {
               "button": "詳細を学ぶ",
@@ -1806,7 +1991,7 @@
           },
           "stablecoin": {
             "issue-new": {
-              "description": "定義されたパラメータと担保の裏付けを持つ新しいステーブルコインを作成して発行します。新しいプロジェクトと市場セグメントをサポートするためにトークン展開を効率化します。",
+              "description": "定義されたパラメータと担保の裏付けを持つ新しいステーブルコインを作成して立ち上げます。新しいプロジェクトや市場セグメントをサポートするために資産の展開を合理化します。",
               "title": "新しいステーブルコインを発行"
             },
             "mechanics": {
@@ -1968,7 +2153,62 @@
       "wallet-security": {
         "pincode-instruction": "ウォレットを保護するために6桁のピンコードを入力してください。",
         "pincode-set": "ピンコードが正常に設定されました",
-        "setup-pincode": "ピンコードを設定"
+        "setup-pincode": "ピンコードを設定",
+        "set-pincode-dialog": {
+          "description": "ウォレットを保護するために6桁のピンコードを入力してください。",
+          "cancel": "キャンセル",
+          "enable": {
+            "title": "ピンコードを設定",
+            "pincode-set": "ピンコードが正常に設定されました",
+            "pincode-set-error": "ピンコードの設定に失敗しました: {error}",
+            "setting-up": "設定中...",
+            "submit": "ピンコードを設定"
+          },
+          "update": {
+            "title": "ピンコードを更新",
+            "pincode-update": "ピンコードが正常に更新されました",
+            "pincode-update-error": "ピンコードの更新に失敗しました: {error}",
+            "setting-up": "更新中...",
+            "submit": "ピンコードを更新"
+          },
+          "pincode-label": "ピンコード",
+          "password-description": "ピンコードを設定するためにパスワードを入力してください。",
+          "password-submit": "確認"
+        },
+        "form": {
+          "button-label": "ウォレットの使用を開始",
+          "submitting-label": "ウォレットのセキュリティを設定中...",
+          "processing-label": "検証中...",
+          "setup": {
+            "title": "ウォレットのセキュリティを完了してください",
+            "description": "ウォレットを安全に保つために、セキュリティの設定を完了する必要があります。希望する確認方法を設定するか、セキュリティコードをダウンロードして常に管理できるようにしてください。資産を保護するために今すぐ完了させましょう。",
+            "button-label": "ウォレットを保護する"
+          },
+          "select-method": {
+            "title": "好ましいウォレットのセキュリティ",
+            "description": "あなたのウォレットが安全であることを確認しましょう。あなたに最適なセキュリティ方法を選んでください。設定してウォレットを保護するのに数ステップしかかかりません。",
+            "pincode": "PINコード",
+            "two-factor-authentication": "認証アプリ"
+          },
+          "set-verification": {
+            "authenticator-app": {
+              "title": "認証アプリを設定する",
+              "description": "お好みのアプリ（Google AuthenticatorやAuthyなど）を使用して、下のQRコードをスキャンしてください。スキャンが完了すると、アプリが時間ベースのコードを生成します。これらのコードは、ウォレットの取引を確認し、アカウントを安全に保つために必要です。"
+            },
+            "pincode": {
+              "title": "PINコードを入力する",
+              "description": "ウォレット用に安全な6桁のPINを作成してください。このPINは、取引を承認する際に必要です。"
+            }
+          },
+          "secret-codes": {
+            "title": "安全なコードのバックアップ",
+            "description": "これらの一度限りのコードは、取引を確認したり、ウォレットを復元したりすることができます。パスワードマネージャーに保存するか、書き留めて安全に保管してください。失われた場合、復元は困難になります。"
+          },
+          "summary": {
+            "title": "あなたのウォレットは保護されています！",
+            "description": "ウォレットを無事に保護しました。あなたの取引は現在保護されており、復元コードにより常にコントロールできます。安全にウォレットを使用する準備が整いました。"
+          }
+        }
       },
       "passkeys": "パスキー",
       "passkeys-description": "安全なアクセスのためのパスキーを管理します。",
@@ -2035,7 +2275,13 @@
           "name-header": "名前",
           "status-header": "ステータス",
           "symbol-header": "シンボル",
-          "type-header": "タイプ"
+          "type-header": "タイプ",
+          "actions-header": "アクション",
+          "trigger-label": {
+            "block": "ユーザーをブロックする",
+            "freeze": "凍結",
+            "mint": "ミント"
+          }
         },
         "title": "保有資産"
       },
@@ -2055,7 +2301,56 @@
         "not_verified": "未確認",
         "verified": "確認済み"
       },
-      "title": "ユーザー"
+      "title": "ユーザー",
+      "actions": {
+        "change-role": {
+          "buttons": {
+            "cancel": "キャンセル",
+            "change": "役割を変更する",
+            "loading": "更新中..."
+          },
+          "description": "新しい役割を{userName}に選択してください。これにより、システム内の権限が変更されます。",
+          "error": "役割の更新に失敗しました: {error}",
+          "select-role": "役割を選択",
+          "success": "ユーザーの役割が正常に更新されました",
+          "title": "ユーザーの役割を変更する",
+          "self-change-warning": "自分の役割を変更すると、このページへのアクセスが制限される場合があります。"
+        },
+        "update-kyc-status": {
+          "buttons": {
+            "cancel": "キャンセル",
+            "loading": "更新中...",
+            "set": "確認する",
+            "remove": "確認を削除する"
+          },
+          "success": "KYCステータスが正常に更新されました",
+          "error": "KYCステータスの更新に失敗しました: {error}",
+          "set-kyc-status": {
+            "title": "KYCを確認する",
+            "description": "${userName}のKYCを確認してもよろしいですか？"
+          },
+          "remove-kyc-status": {
+            "title": "KYCステータスを削除する",
+            "description": "${userName}のKYC確認を削除してもよろしいですか？"
+          }
+        }
+      },
+      "permissions": {
+        "table": {
+          "title": "トークンの権限",
+          "columns": {
+            "asset-header": "資産",
+            "actions-header": "アクション",
+            "last-activity-header": "最終活動",
+            "roles-header": "役割"
+          },
+          "actions": {
+            "edit-roles": "役割を編集する",
+            "revoke-all": "すべてを取り消す"
+          },
+          "not-enough-permissions": "この資産の権限を変更するには、管理者またはユーザー管理者である必要があります。"
+        }
+      }
     }
   },
   "regular": "ユーザー",
@@ -2187,5 +2482,26 @@
     "go-back": "戻る",
     "go-home": "ホームに戻る",
     "title": "ページが見つかりません"
+  },
+  "auth-2fa": {
+    "title": "コードを入力してください",
+    "description": "認証アプリからの6桁のセキュリティコードを入力してください。",
+    "submit": "続ける",
+    "submitting": "確認中...",
+    "error": "無効なセキュリティコード"
+  },
+  "error-pages": {
+    "forbidden": {
+      "title": "禁止",
+      "description": "このページにアクセスする権限がありません。",
+      "go-back": "戻る",
+      "go-home": "ホームに戻る"
+    },
+    "not-found": {
+      "title": "ページが見つかりません",
+      "description": "お探しのページは存在しないか、移動されました。",
+      "go-back": "戻る",
+      "go-home": "ホームに戻る"
+    }
   }
 }
