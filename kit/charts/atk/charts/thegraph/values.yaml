@@ -110,7 +110,7 @@ job:
   # Image configuration
   image:
     repository: node
-    tag: "23-slim"
+    tag: "23.11.0-slim"
     pullPolicy: IfNotPresent
 
   # Pod annotations
