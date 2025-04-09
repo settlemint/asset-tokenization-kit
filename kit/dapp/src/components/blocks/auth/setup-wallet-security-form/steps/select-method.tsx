@@ -20,7 +20,7 @@ export function SelectMethod() {
         render={() => (
           <FormItem className="flex flex-col space-y-1">
             <div className="flex flex-col gap-4">
-              <Button
+              {/*<Button
                 variant="outline"
                 onClick={() => {
                   setValue(
@@ -30,7 +30,7 @@ export function SelectMethod() {
                 }}
               >
                 {t("two-factor-authentication")}
-              </Button>
+              </Button>*/}
               <Button
                 variant="outline"
                 onClick={() => {
