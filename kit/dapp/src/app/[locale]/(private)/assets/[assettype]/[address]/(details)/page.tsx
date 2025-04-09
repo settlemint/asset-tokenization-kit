@@ -15,6 +15,7 @@ import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import { calculateMaxRange } from "@/utils/timeRange";
 import type { Locale } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Address } from "viem";
@@ -66,6 +67,8 @@ export default async function AssetDetailsPage({ params }: PageProps) {
     getLocale(),
   ]);
 
+  const calculatedMaxRange = calculateMaxRange(assetDetails.deployedOn);
+
   return (
     <>
       <Details assettype={assettype} address={address} />
@@ -81,11 +84,27 @@ export default async function AssetDetailsPage({ params }: PageProps) {
             <BondYieldDistribution address={address} />
           </>
         )}
-        <TotalSupply data={assetStats} locale={locale} />
-        <TotalSupplyChanged data={assetStats} locale={locale} />
+        <TotalSupply
+          data={assetStats}
+          locale={locale}
+          maxRange={calculatedMaxRange}
+        />
+        <TotalSupplyChanged
+          data={assetStats}
+          locale={locale}
+          maxRange={calculatedMaxRange}
+        />
         <WalletDistribution address={address} />
-        <TotalTransfers data={assetStats} locale={locale} />
-        <TotalVolume data={assetStats} locale={locale} />
+        <TotalTransfers
+          data={assetStats}
+          locale={locale}
+          maxRange={calculatedMaxRange}
+        />
+        <TotalVolume
+          data={assetStats}
+          locale={locale}
+          maxRange={calculatedMaxRange}
+        />
       </ChartGrid>
       <Related
         assettype={assettype}
