@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { routing, usePathname, useRouter } from "@/i18n/routing";
 import { Check } from "lucide-react";
-import { useTranslations, type Locale } from "next-intl";
-import { useParams } from "next/navigation";
+import { useLocale, useTranslations, type Locale } from "next-intl";
 import { useRef, useTransition } from "react";
 
 // Language display names mapping
@@ -28,10 +27,7 @@ export function LanguageMenuItem() {
   const router = useRouter();
   const pathname = usePathname();
   const languagesIconRef = useRef<LanguagesIconHandle>(null);
-  // Get locale from params which will be updated correctly after navigation
-  const params = useParams();
-  const currentLocale = ((params.locale as string) ||
-    routing.defaultLocale) as (typeof routing.locales)[number];
+  const currentLocale = useLocale();
   const [isPending, startTransition] = useTransition();
   const t = useTranslations("language");
 
@@ -39,10 +35,20 @@ export function LanguageMenuItem() {
     // Use React's useTransition to avoid blocking the UI during navigation
     startTransition(() => {
       // Navigate to the same page but with the new locale
-      router.push(pathname, {
-        locale: locale as (typeof routing.locales)[number],
-        scroll: false, // Prevent scroll jumping during navigation
-      });
+      router.push(
+        pathname.startsWith(`/${currentLocale}`)
+          ? pathname.replace(`/${currentLocale}`, "/")
+          : pathname,
+        {
+          locale: locale as (typeof routing.locales)[number],
+          scroll: false, // Prevent scroll jumping during navigation
+        }
+      );
+
+      setTimeout(() => {
+        // Force a full page refresh to ensure all components are re-rendered
+        router.refresh();
+      }, 3_000);
     });
   };
 

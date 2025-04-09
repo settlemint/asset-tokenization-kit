@@ -114,15 +114,32 @@ test.describe("Update collateral, mint and transfer assets", () => {
     }
   });
   test("Transfer assets to user and verify balance", async () => {
+    const [firstName, lastName] = testData.transferUserName
+      .split(" ")
+      .slice(0, 2);
+    const contactName = `${firstName} ${lastName}`.trim();
+
     await userPages.portfolioPage.goto();
     await userPages.portfolioPage.verifyPortfolioAssetAmount({
       expectedAmount: stableCoinMintTokenData.amount,
       price: stablecoinData.price,
     });
+
+    await userPages.portfolioPage.addContact({
+      address: testData.transferUserWalletAddress,
+      firstName: firstName ?? "",
+      lastName: lastName ?? "",
+    });
+
+    await userPages.portfolioPage.verifyContactExists({
+      name: contactName,
+      walletAddress: testData.transferUserWalletAddress,
+    });
+
     await userPages.portfolioPage.transferAsset({
       asset: testData.stablecoinName,
       walletAddress: testData.transferUserWalletAddress,
-      user: testData.transferUserName,
+      user: contactName,
       ...stableCoinTransferData,
     });
     await userPages.adminPage.verifySuccessMessage(assetMessage.successMessage);

@@ -9,11 +9,12 @@ import { SetErrorFunction, ValueErrorType } from "@sinclair/typebox/errors";
 import { useTranslations } from "next-intl";
 import type { Infer, Schema } from "next-safe-action/adapters/types";
 import type { HookSafeActionFn } from "next-safe-action/hooks";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type {
   Control,
   DefaultValues,
   Path,
+  PathValue,
   Resolver,
   UseFormReturn,
 } from "react-hook-form";
@@ -38,13 +39,20 @@ interface FormProps<
   resolver: Resolver<Infer<S>, FormContext>;
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
-  hideButtons?: boolean;
+  hideButtons?: boolean | ((step: number) => boolean);
   toastMessages?: {
     loading?: string;
     success?: string;
   };
   secureForm?: boolean;
-  onAnyFieldChange?: (form: UseFormReturn<Infer<S>>) => void;
+  onAnyFieldChange?: (
+    form: UseFormReturn<Infer<S>>,
+    context: {
+      step: number;
+      goToStep: (step: number) => void;
+      changedFieldName: Path<S extends Schema ? Infer<S> : any> | undefined;
+    }
+  ) => void;
 }
 
 export function Form<
@@ -274,8 +282,8 @@ export function Form<
         },
         actionProps: {
           onSuccess: ({ data }) => {
-            const hashes = safeParse(tb.Hashes(), data);
             if (secureForm) {
+              const hashes = safeParse(tb.Hashes(), data);
               toast.promise(waitForTransactions(hashes), {
                 loading: toastMessages?.loading || t("transactions.sending"),
                 success: toastMessages?.success || t("transactions.success"),
@@ -294,21 +302,19 @@ export function Form<
               errorMessage = "Validation error";
             }
 
+            form.setValue(
+              "verificationCode" as Path<S extends Schema ? Infer<S> : string>,
+              "" as PathValue<
+                S extends Schema ? Infer<S> : string,
+                Path<S extends Schema ? Infer<S> : string>
+              >
+            );
+
             toast.error(`Failed to submit: ${errorMessage}`);
           },
         },
       }
     );
-
-  useEffect(() => {
-    if (!onAnyFieldChange) return;
-
-    const subscription = form.watch(() => {
-      onAnyFieldChange(form as UseFormReturn<Infer<S>>);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [form, onAnyFieldChange]);
 
   const isLastStep = currentStep === totalSteps - 1;
 
@@ -316,7 +322,7 @@ export function Form<
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const handleNext = async () => {
+  const handleNext = useCallback(async () => {
     const CurrentStep = Array.isArray(children)
       ? children[currentStep].type
       : children.type;
@@ -377,7 +383,23 @@ export function Form<
         setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
       }, 10);
     }
-  };
+  }, [form, isLastStep, secureForm, currentStep, totalSteps, children]);
+
+  useEffect(() => {
+    if (!onAnyFieldChange) {
+      return;
+    }
+
+    const subscription = form.watch((_value, { name }) => {
+      onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
+        changedFieldName: name,
+        step: currentStep,
+        goToStep: setCurrentStep,
+      });
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, onAnyFieldChange, currentStep]);
 
   const hasError = Object.keys(form.formState.errors).length > 0;
   const formatError = (key: string, errorMessage?: string, type?: string) => {
@@ -389,12 +411,13 @@ export function Form<
 
     return `${errorKey}${translatedErrorMessage}`;
   };
+
   return (
     <div className="h-full space-y-6">
       <div className="container flex h-full flex-col p-6">
         <UIForm {...form}>
           <form
-            onSubmit={handleSubmitWithAction}
+            onSubmit={(e) => e.preventDefault()}
             noValidate
             className="flex flex-1 flex-col"
           >
@@ -447,7 +470,11 @@ export function Form<
             </div>
             <div className="mt-auto pt-6">
               <FormButton
-                hideButtons={hideButtons}
+                hideButtons={
+                  typeof hideButtons === "function"
+                    ? hideButtons(currentStep)
+                    : hideButtons
+                }
                 currentStep={currentStep}
                 totalSteps={totalSteps}
                 onPreviousStep={handlePrev}
@@ -457,7 +484,7 @@ export function Form<
                   });
                 }}
                 labels={buttonLabels}
-                onLastStep={secureForm ? handleNext : undefined}
+                onLastStep={secureForm ? handleNext : handleSubmitWithAction}
                 isSecurityDialogOpen={showFormSecurityConfirmation}
               />
             </div>
