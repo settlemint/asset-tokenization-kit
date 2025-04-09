@@ -1,11 +1,11 @@
 import type { User } from "@/lib/auth/types";
+import { removePincodeFunction } from "@/lib/mutations/user/pincode/remove-pincode-function";
+import { setPincodeFunction } from "@/lib/mutations/user/pincode/set-pincode-function";
+import { updatePincodeFunction } from "@/lib/mutations/user/pincode/update-pincode-function";
 import type { BetterAuthPlugin } from "better-auth";
 import { createAuthEndpoint, sessionMiddleware } from "better-auth/api";
 import { APIError } from "better-call";
 import { z } from "zod";
-import { removePincodeFunction } from "../../../mutations/user/pincode/remove-pincode-function";
-import { setPincodeFunction } from "../../../mutations/user/pincode/set-pincode-function";
-import { updatePincodeFunction } from "../../../mutations/user/pincode/update-pincode-function";
 import { revokeSession, validatePassword } from "../utils";
 
 export const pincode = () => {

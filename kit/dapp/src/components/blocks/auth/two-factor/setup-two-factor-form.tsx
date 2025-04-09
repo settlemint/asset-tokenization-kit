@@ -1,10 +1,10 @@
 import { PasswordDialog } from "@/components/blocks/auth/password-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
-import { Skeleton } from "../../../ui/skeleton";
 import { TwoFactorOTPInput } from "./two-factor-otp-input";
 
 interface SetupTwoFactorFormProps {

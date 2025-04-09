@@ -1,7 +1,7 @@
+import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
-import { authClient } from "../../../../lib/auth/client";
 import { PasswordDialog } from "../password-dialog";
 
 interface PincodeDialogProps {

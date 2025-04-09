@@ -1,10 +1,10 @@
 import { OTP_ALGORITHM, OTP_DIGITS, OTP_PERIOD } from "@/lib/auth/otp";
+import { disableTwoFactorFunction } from "@/lib/mutations/user/two-factor/disable-two-factor-function";
 import { enableTwoFactorFunction } from "@/lib/mutations/user/two-factor/enable-two-factor-function";
+import { verifyTwoFactorOTPFunction } from "@/lib/mutations/user/two-factor/verify-two-factor-otp-function";
 import type { GenericEndpointContext } from "better-auth";
 import { createAuthEndpoint } from "better-auth/api";
 import { twoFactor } from "better-auth/plugins/two-factor";
-import { disableTwoFactorFunction } from "../../mutations/user/two-factor/disable-two-factor-function";
-import { verifyTwoFactorOTPFunction } from "../../mutations/user/two-factor/verify-two-factor-otp-function";
 import type { User } from "../types";
 import { revokeSession } from "./utils";
 
