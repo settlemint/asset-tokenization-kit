@@ -109,6 +109,7 @@ export function ManageDropdown({
         max={Number(userBalance?.available ?? 0)}
         decimals={assetDetails.decimals}
         symbol={assetDetails.symbol}
+        disabled={Number(userBalance?.available ?? 0) === 0}
       />
       {assettype === "bond" && (
         <RedeemForm

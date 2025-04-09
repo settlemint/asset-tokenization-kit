@@ -185,7 +185,7 @@ export function columns({
                     onOpenChange={onOpenChange}
                   />
                 ),
-                disabled: row.original.asset.paused,
+                disabled: row.original.asset.paused || row.original.value === 0,
                 hidden: !hasFreeze(row.original.asset.type),
               },
               {
@@ -203,7 +203,7 @@ export function columns({
                     symbol={row.original.asset.symbol}
                   />
                 ),
-                disabled: row.original.asset.paused,
+                disabled: row.original.asset.paused || maxMint === 0,
               },
             ]}
           />

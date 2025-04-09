@@ -44,7 +44,7 @@ export function TotalVolume({ data, locale }: TotalVolumeProps) {
       <TimeSeriesTitle
         title={t("total-volume.title")}
         description={t("total-volume.description")}
-        lastUpdated={formatDate(startOfHour(new Date()))}
+        lastUpdated={formatDate(startOfHour(new Date()), { locale })}
       />
       <TimeSeriesChart
         rawData={data}

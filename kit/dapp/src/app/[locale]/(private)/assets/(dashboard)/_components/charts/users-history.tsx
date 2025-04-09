@@ -2,14 +2,16 @@ import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
 import type { ChartConfig } from "@/components/ui/chart";
 import { createTimeSeries } from "@/lib/charts";
 import { getUserCount } from "@/lib/queries/user/user-count";
-import { startOfDay, subDays } from "date-fns";
+import { endOfDay, startOfDay, subDays } from "date-fns";
 import { getLocale, getTranslations } from "next-intl/server";
 
 export async function UsersHistory() {
   const t = await getTranslations("admin.dashboard.charts");
   const locale = await getLocale();
-  const sevenDaysAgo = startOfDay(subDays(new Date(), 7));
-  const { users } = await getUserCount({
+  const today = endOfDay(new Date());
+  const sevenDaysAgo = startOfDay(subDays(today, 7));
+
+  const { users, totalUsersCount } = await getUserCount({
     since: sevenDaysAgo,
   });
 
@@ -29,8 +31,9 @@ export async function UsersHistory() {
           intervalType: "day",
           intervalLength: 7,
           granularity: "day",
-          aggregation: "count",
-          accumulation: "total",
+          aggregation: "last",
+          accumulation: "current",
+          historical: true,
         },
         locale
       )}

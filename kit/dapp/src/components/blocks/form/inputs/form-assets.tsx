@@ -10,7 +10,7 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
 } from "@/components/ui/form";
 import {
   Popover,
@@ -165,9 +165,8 @@ function FormAssetsList({
 
   // Use SWR for data fetching with caching
   const { data: assets = [], isLoading } = useSWR(
-    debounced ? [`asset-search`, debounced] : null,
+    [`asset-search`, debounced], // Always fetch, debounced will be empty string initially
     async () => {
-      if (!debounced) return [];
       const results = await getAssetSearch({ searchTerm: debounced });
 
       // Filter by user wallet if provided
