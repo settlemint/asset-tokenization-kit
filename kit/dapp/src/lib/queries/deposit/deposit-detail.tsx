@@ -80,7 +80,7 @@ export const getDepositDetail = cache(
 
     const calculatedFields = await depositsCalculateFields(
       [onChainDeposit],
-      []
+      [offChainDeposit]
     );
     const calculatedDeposit = calculatedFields.get(onChainDeposit.id);
 

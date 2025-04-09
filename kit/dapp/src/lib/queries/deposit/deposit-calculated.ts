@@ -16,7 +16,7 @@ import { CalculatedDepositSchema } from "./deposit-schema";
  */
 export async function depositsCalculateFields(
   onChainDeposits: OnChainDeposit[],
-  _offChainDeposits?: OffChainDeposit[]
+  _offChainDeposits?: (OffChainDeposit | undefined)[]
 ): Promise<Map<string, CalculatedDeposit>> {
   const prices = await getAssetsPricesInUserCurrency(
     onChainDeposits.map((deposit) => deposit.id)

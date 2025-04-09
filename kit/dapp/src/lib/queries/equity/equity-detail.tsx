@@ -77,7 +77,10 @@ export const getEquityDetail = cache(async ({ address }: EquityDetailProps) => {
     })(),
   ]);
 
-  const calculatedFields = await equitiesCalculateFields([onChainEquity], []);
+  const calculatedFields = await equitiesCalculateFields(
+    [onChainEquity],
+    [offChainEquity]
+  );
   const calculatedEquity = calculatedFields.get(onChainEquity.id);
 
   return {

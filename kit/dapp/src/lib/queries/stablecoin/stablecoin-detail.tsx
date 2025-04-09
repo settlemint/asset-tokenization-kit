@@ -86,7 +86,7 @@ export const getStableCoinDetail = cache(
 
     const calculatedFields = await stablecoinsCalculateFields(
       [onChainStableCoin],
-      []
+      [offChainStableCoin]
     );
     const calculatedStableCoin = calculatedFields.get(onChainStableCoin.id);
 

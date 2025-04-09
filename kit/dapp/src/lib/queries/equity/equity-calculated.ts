@@ -15,7 +15,7 @@ import { CalculatedEquitySchema } from "./equity-schema";
  */
 export async function equitiesCalculateFields(
   onChainEquities: OnChainEquity[],
-  _offChainEquities?: OffChainEquity[]
+  _offChainEquities?: (OffChainEquity | undefined)[]
 ): Promise<Map<string, CalculatedEquity>> {
   const prices = await getAssetsPricesInUserCurrency(
     onChainEquities.map((equity) => equity.id)

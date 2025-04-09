@@ -77,7 +77,10 @@ export const getFundDetail = cache(async ({ address }: FundDetailProps) => {
     })(),
   ]);
 
-  const calculatedFields = await fundsCalculateFields([onChainFund], []);
+  const calculatedFields = await fundsCalculateFields(
+    [onChainFund],
+    [offChainFund]
+  );
   const calculatedFund = calculatedFields.get(onChainFund.id);
 
   return {

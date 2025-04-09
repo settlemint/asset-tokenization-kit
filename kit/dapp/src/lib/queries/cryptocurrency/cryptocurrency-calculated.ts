@@ -15,7 +15,7 @@ import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
  */
 export async function cryptoCurrenciesCalculateFields(
   cryptocurrencies: OnChainCryptoCurrency[],
-  _offchainCryptocurrencies?: OffChainCryptoCurrency[]
+  _offchainCryptocurrencies?: (OffChainCryptoCurrency | undefined)[]
 ) {
   const prices = await getAssetsPricesInUserCurrency(
     cryptocurrencies.map((cryptocurrency) => cryptocurrency.id)

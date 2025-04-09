@@ -16,7 +16,7 @@ import { CalculatedStableCoinSchema } from "./stablecoin-schema";
  */
 export async function stablecoinsCalculateFields(
   onChainStableCoins: OnChainStableCoin[],
-  _offChainStableCoins?: OffChainStableCoin[]
+  _offChainStableCoins?: (OffChainStableCoin | undefined)[]
 ): Promise<Map<string, CalculatedStableCoin>> {
   const prices = await getAssetsPricesInUserCurrency(
     onChainStableCoins.map((stablecoin) => stablecoin.id)

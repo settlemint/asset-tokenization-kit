@@ -12,7 +12,7 @@ import { CalculatedFundSchema } from "./fund-schema";
  */
 export async function fundsCalculateFields(
   onChainFunds: OnChainFund[],
-  _offChainFunds?: OffChainFund[]
+  _offChainFunds?: (OffChainFund | undefined)[]
 ): Promise<Map<string, CalculatedFund>> {
   const prices = await getAssetsPricesInUserCurrency(
     onChainFunds.map((fund) => fund.id)

@@ -12,7 +12,7 @@ import { CalculatedBondSchema } from "./bond-schema";
  */
 export async function bondsCalculateFields(
   onChainBonds: OnChainBond[],
-  _offChainBonds?: OffChainBond[]
+  _offChainBonds?: (OffChainBond | undefined)[]
 ) {
   const prices = await getAssetsPricesInUserCurrency(
     onChainBonds.map((bond) => bond.id)
