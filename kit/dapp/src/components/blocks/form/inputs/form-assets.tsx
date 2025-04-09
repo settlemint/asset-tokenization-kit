@@ -10,7 +10,7 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
 } from "@/components/ui/form";
 import {
   Popover,
@@ -102,12 +102,14 @@ export function FormAssets<T extends FieldValues>({
                     props.disabled
                   )}
                 >
-                  {field.value ? (
-                    <EvmAddress address={field.value.id} />
-                  ) : (
-                    placeholder || defaultPlaceholder
-                  )}
-                  <ChevronsUpDown className="opacity-50" />
+                  <div className="flex-1 truncate overflow-hidden text-left pr-2">
+                    {field.value ? (
+                      <EvmAddress address={field.value.id} />
+                    ) : (
+                      placeholder || defaultPlaceholder
+                    )}
+                  </div>
+                  <ChevronsUpDown className="opacity-50 shrink-0" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
@@ -165,9 +167,8 @@ function FormAssetsList({
 
   // Use SWR for data fetching with caching
   const { data: assets = [], isLoading } = useSWR(
-    debounced ? [`asset-search`, debounced] : null,
+    [`asset-search`, debounced], // Always fetch, debounced will be empty string initially
     async () => {
-      if (!debounced) return [];
       const results = await getAssetSearch({ searchTerm: debounced });
 
       // Filter by user wallet if provided

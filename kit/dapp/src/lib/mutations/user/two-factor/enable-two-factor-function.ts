@@ -1,5 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { getUser } from "@/lib/auth/utils";
+import { metadata } from "@/lib/config/metadata";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { revalidateTag } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
@@ -9,10 +10,24 @@ import type { EnableTwoFactorInput } from "./enable-two-factor-schema";
  * GraphQL mutation to enable a two-factor authentication for wallet verification
  */
 const EnableTwoFactor = portalGraphql(`
-  mutation EnableTwoFactor($address: String!, $algorithm: OTPAlgorithm!, $digits: Int!, $period: Int!) {
+  mutation EnableTwoFactor(
+    $address: String!,
+    $algorithm: OTPAlgorithm!,
+    $digits: Int!,
+    $period: Int!,
+    $issuer: String!
+  ) {
     createWalletVerification(
       userWalletAddress: $address
-      verificationInfo: { otp: { name: "OTP", algorithm: $algorithm, digits: $digits, period: $period } }
+      verificationInfo: {
+        otp: {
+          name: "OTP",
+          algorithm: $algorithm,
+          digits: $digits,
+          period: $period,
+          issuer: $issuer
+        }
+      }
     ) {
       id
       name
@@ -45,6 +60,7 @@ export async function enableTwoFactorFunction({
     algorithm,
     digits,
     period,
+    issuer: metadata.title.default,
   });
   const parameters = result.createWalletVerification?.parameters as {
     uri?: string;
