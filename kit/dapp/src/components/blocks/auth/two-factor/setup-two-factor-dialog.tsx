@@ -60,6 +60,7 @@ export function SetupTwoFactorDialog({
         <SetupTwoFactorForm
           firstOtp={firstOtp}
           onFirstOtpChange={setFirstOtp}
+          onOpenChange={onOpenChange}
         />
         <DialogFooter>
           <Button

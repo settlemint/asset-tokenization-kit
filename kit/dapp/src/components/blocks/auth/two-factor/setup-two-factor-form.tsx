@@ -10,11 +10,13 @@ import { TwoFactorOTPInput } from "./two-factor-otp-input";
 interface SetupTwoFactorFormProps {
   firstOtp: string;
   onFirstOtpChange: (firstOtp: string) => void;
+  onOpenChange: (isOpen: boolean) => void;
 }
 
 export function SetupTwoFactorForm({
   firstOtp,
   onFirstOtpChange,
+  onOpenChange,
 }: SetupTwoFactorFormProps) {
   const { data: session } = authClient.useSession();
   const isInitialOnboardingFinished =
@@ -93,7 +95,12 @@ export function SetupTwoFactorForm({
       )}
       <PasswordDialog
         open={isSetPasswordOpen && !twoFactorData}
-        onOpenChange={setIsSetPasswordOpen}
+        onOpenChange={(isOpen) => {
+          setIsSetPasswordOpen(isOpen);
+          if (!isOpen && !twoFactorData) {
+            onOpenChange(false);
+          }
+        }}
         onSubmit={enableTwoFactorAuthentication}
         isLoading={isLoading}
         submitButtonText={t("enable.title")}
