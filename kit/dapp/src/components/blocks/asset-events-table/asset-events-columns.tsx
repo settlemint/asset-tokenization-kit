@@ -5,6 +5,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
+import { addressNameFilter } from "@/lib/utils/address-name-cache";
 import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
@@ -15,13 +16,13 @@ import {
   PauseCircle,
   PlayCircle,
   Unlock,
-  User2Icon,
+  User2Icon
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 
-const columnHelper =
-  createColumnHelper<Awaited<ReturnType<typeof getAssetEventsList>>[number]>();
+// Create a column helper for the event type
+const columnHelper = createColumnHelper<Awaited<ReturnType<typeof getAssetEventsList>>[number]>();
 
 export const icons = {
   active: PlayCircle,
@@ -44,9 +45,11 @@ export function Columns() {
       ),
       enableColumnFilter: false,
     }),
+
+    // Asset address column with name filtering
     columnHelper.accessor("asset", {
       header: t("asset"),
-      cell: ({ getValue }) => {
+      cell: ({ getValue, row }) => {
         const asset = getValue();
 
         return (
@@ -56,13 +59,14 @@ export function Columns() {
         );
       },
       enableColumnFilter: true,
-      filterFn: filterFn("text"),
+      filterFn: addressNameFilter,
       meta: defineMeta((row) => row.asset, {
         displayName: t("asset"),
         icon: CreditCard,
         type: "text",
       }),
     }),
+
     columnHelper.accessor("event", {
       header: t("event"),
       enableColumnFilter: true,
@@ -73,6 +77,8 @@ export function Columns() {
         type: "text",
       }),
     }),
+
+    // Sender address column with name filtering
     columnHelper.accessor("sender", {
       header: t("sender"),
       cell: ({ getValue }) => {
@@ -85,13 +91,14 @@ export function Columns() {
         );
       },
       enableColumnFilter: true,
-      filterFn: filterFn("text"),
+      filterFn: addressNameFilter,
       meta: defineMeta((row) => row.sender, {
         displayName: t("sender"),
         icon: User2Icon,
         type: "text",
       }),
     }),
+
     columnHelper.display({
       id: "actions",
       header: () => "",

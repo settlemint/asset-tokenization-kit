@@ -15,8 +15,13 @@ import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
 import type { Contact } from "@/lib/queries/contact/contact-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
+import {
+  AddressNameCacheProvider,
+  useAddressNameCache
+} from "@/lib/utils/address-name-cache";
 import { shortHex } from "@/lib/utils/hex";
 import type { FC, PropsWithChildren } from "react";
+import { useEffect } from "react";
 import useSWR from "swr";
 import type { Address } from "viem";
 import { getAddress } from "viem";
@@ -43,7 +48,19 @@ interface EvmAddressProps extends PropsWithChildren {
  * @param props - The component props.
  * @returns The rendered EvmAddress component.
  */
-export function EvmAddress({
+export function EvmAddress(props: EvmAddressProps) {
+  return (
+    <AddressNameCacheProvider>
+      <EvmAddressInner {...props} />
+    </AddressNameCacheProvider>
+  );
+}
+
+/**
+ * Inner component that uses the address cache context.
+ * This separation allows us to wrap the inner component with the provider.
+ */
+function EvmAddressInner({
   address,
   name,
   symbol,
@@ -57,6 +74,9 @@ export function EvmAddress({
   hoverCard = true,
   copyToClipboard = false,
 }: EvmAddressProps) {
+  // Get the address name cache
+  const { setNameForAddress } = useAddressNameCache();
+
   // Fetch user data with SWR
   const { data: user, isLoading: isLoadingUser } = useSWR(
     [`user-search`, address],
@@ -96,6 +116,13 @@ export function EvmAddress({
     getAddress(address),
     explorerUrl
   );
+
+  // Publish the name to the cache when it's available
+  useEffect(() => {
+    if (displayName) {
+      setNameForAddress(address, displayName);
+    }
+  }, [address, displayName, setNameForAddress]);
 
   const LoadingView: FC = () => {
     return (
