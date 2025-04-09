@@ -8,7 +8,7 @@ import {
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import { depositCalculateFields } from "./deposit-calculated";
+import { depositsCalculateFields } from "./deposit-calculated";
 import { DepositFragment, OffchainDepositFragment } from "./deposit-fragment";
 import { OffChainDepositSchema, OnChainDepositSchema } from "./deposit-schema";
 
@@ -78,15 +78,16 @@ export const getDepositDetail = cache(
       })(),
     ]);
 
-    const calculatedFields = await depositCalculateFields(
-      onChainDeposit,
-      offChainDeposit
+    const calculatedFields = await depositsCalculateFields(
+      [onChainDeposit],
+      []
     );
+    const calculatedDeposit = calculatedFields.get(onChainDeposit.id);
 
     return {
       ...onChainDeposit,
       ...offChainDeposit,
-      ...calculatedFields,
+      ...calculatedDeposit,
     };
   }
 );

@@ -26,7 +26,7 @@ export const getTotalAssetPrice = cache(async () => {
 
   const assets = assetsResult.flat();
   const totalPrice = assets.reduce((acc, asset) => {
-    return acc + asset.price.amount * asset.totalSupply;
+    return acc + (asset.price?.amount ?? 0) * asset.totalSupply;
   }, 0);
 
   return {

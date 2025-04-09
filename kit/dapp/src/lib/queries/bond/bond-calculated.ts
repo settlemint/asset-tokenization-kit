@@ -1,4 +1,4 @@
-import { getAssetPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
+import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { safeParse } from "@/lib/utils/typebox";
 import type { CalculatedBond, OffChainBond, OnChainBond } from "./bond-schema";
 import { CalculatedBondSchema } from "./bond-schema";
@@ -6,17 +6,24 @@ import { CalculatedBondSchema } from "./bond-schema";
 /**
  * Calculates additional fields for bond tokens
  *
- * @param onChainBond - On-chain bond data
- * @param offChainBond - Off-chain bond data (optional)
+ * @param onChainBonds - On-chain bond data
+ * @param offChainBonds - Off-chain bond data (optional)
  * @returns Calculated fields for the bond token
  */
-export async function bondCalculateFields(
-  onChainBond: OnChainBond,
-  _offChainBond?: OffChainBond
-): Promise<CalculatedBond> {
-  const price = await getAssetPriceInUserCurrency(onChainBond.id);
+export async function bondsCalculateFields(
+  onChainBonds: OnChainBond[],
+  _offChainBonds?: OffChainBond[]
+) {
+  const prices = await getAssetsPricesInUserCurrency(
+    onChainBonds.map((bond) => bond.id)
+  );
 
-  return safeParse(CalculatedBondSchema, {
-    price,
-  });
+  return onChainBonds.reduce((acc, bond) => {
+    const price = prices.get(bond.id);
+    const calculatedBond = safeParse(CalculatedBondSchema, {
+      price,
+    });
+    acc.set(bond.id, calculatedBond);
+    return acc;
+  }, new Map<string, CalculatedBond>());
 }
