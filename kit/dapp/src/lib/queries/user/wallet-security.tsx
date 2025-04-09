@@ -44,7 +44,7 @@ export const hasWalletVerification = async () => {
     }
 
     return (
-      session.user.pincodeEnabled ?? session.user.twoFactorEnabled ?? false
+      session.user.pincodeEnabled || session.user.twoFactorEnabled || false
     );
   } catch (err) {
     const error = err as Error;
