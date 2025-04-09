@@ -2,38 +2,23 @@ dependencies:
 - name: support
   repository: ""
   version: '*'
-- name: besu-genesis
+- name: observability
   repository: ""
   version: '*'
-- name: besu-node
-  repository: ""
-  version: '*'
-- name: besu-node
-  repository: ""
-  version: '*'
-- name: besu-node
-  repository: ""
-  version: '*'
-- name: besu-node
-  repository: ""
-  version: '*'
-- name: besu-node
-  repository: ""
-  version: '*'
-- name: besu-node
+- name: besu-network
   repository: ""
   version: '*'
 - name: erpc
   repository: ""
   version: '*'
-- name: blockscout-stack
-  repository: https://blockscout.github.io/helm-charts
-  version: 2.0.3
-- name: graph-node
-  repository: http://graphops.github.io/launchpad-charts
-  version: 0.5.9
-- name: graphql-engine
-  repository: https://hasura.github.io/helm-charts
-  version: 0.8.0
-digest: sha256:72bda5d742f2d28e411672de0f83aadfcb950b9425ffb5efd591ed3a0e20f75f
-generated: "2025-03-30T08:30:30.277189+02:00"
+- name: blockscout
+  repository: ""
+  version: '*'
+- name: thegraph
+  repository: ""
+  version: '*'
+- name: portal
+  repository: ""
+  version: '*'
+digest: sha256:192a456022084d224ece64f8bb7a2c14bf4f577d7fa5413618fe9292a1251483
+generated: "2025-04-09T15:26:01.166377+03:00"
