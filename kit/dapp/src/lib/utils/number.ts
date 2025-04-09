@@ -16,15 +16,6 @@ export interface FormatOptions {
   readonly decimals?: number;
   /** Whether to display the number as a percentage */
   readonly percentage?: boolean;
-  /** Whether to display the number in compact notation (K, M, B, T) */
-  readonly compact?: boolean;
-  /** Whether to include the full value when using compact notation */
-  readonly showFullValue?: boolean;
-}
-
-export interface FormattedNumberWithFull {
-  compactValue: string;
-  fullValue: string;
 }
 
 /**
@@ -36,15 +27,8 @@ function formatNumberWithFormatter(
     | ReturnType<typeof createFormatter>,
   amount: string | bigint | number | BigNumber | null | undefined,
   options: FormatOptions
-): string | FormattedNumberWithFull {
-  const {
-    currency,
-    token,
-    decimals = 2,
-    percentage = false,
-    compact = false,
-    showFullValue = false,
-  } = options;
+): string {
+  const { currency, token, decimals = 2, percentage = false } = options;
 
   // Convert input to BigNumber safely
   const value = (() => {
@@ -62,20 +46,6 @@ function formatNumberWithFormatter(
   // Format number with appropriate options
   const numberValue = percentage ? value.div(100).toNumber() : value.toNumber();
 
-  let fullFormattedNumber: string | undefined;
-  if (compact && showFullValue) {
-    fullFormattedNumber = formatter.number(numberValue, {
-      style: percentage ? "percent" : currency ? "currency" : "decimal",
-      currency,
-      maximumFractionDigits: decimals,
-      minimumFractionDigits: decimals,
-    });
-
-    if (token) {
-      fullFormattedNumber = `${fullFormattedNumber} ${token}`;
-    }
-  }
-
   // Check if the number is very small (less than the smallest displayable value based on decimals)
   const minimumValue = new BigNumber(1).div(10 ** decimals);
   if (
@@ -92,69 +62,7 @@ function formatNumberWithFormatter(
       }
     );
 
-    const compactValue = token
-      ? `< ${minFormatted} ${token}`
-      : `< ${minFormatted}`;
-
-    if (compact && showFullValue && fullFormattedNumber) {
-      return {
-        compactValue,
-        fullValue: fullFormattedNumber,
-      };
-    }
-
-    return compactValue;
-  }
-
-  // Use compact notation for large numbers if requested
-  if (compact && !percentage) {
-    const absValue = Math.abs(numberValue);
-    let formattedValue: string;
-    let suffix = "";
-
-    if (absValue >= 1e12) {
-      formattedValue = (numberValue / 1e12).toFixed(3);
-      suffix = "T";
-    } else if (absValue >= 1e9) {
-      formattedValue = (numberValue / 1e9).toFixed(3);
-      suffix = "B";
-    } else if (absValue >= 1e6) {
-      formattedValue = (numberValue / 1e6).toFixed(2);
-      suffix = "M";
-    } else if (absValue >= 1e3) {
-      formattedValue = (numberValue / 1e3).toFixed(2);
-      suffix = "K";
-    } else {
-      formattedValue = numberValue.toFixed(decimals);
-    }
-
-    let compactValue: string;
-    if (currency) {
-      // Get currency symbol
-      const currencySymbol = new Intl.NumberFormat(options.locale, {
-        style: "currency",
-        currency: currency,
-        currencyDisplay: "symbol",
-      })
-        .format(1)
-        .replace(/[0-9.,]/g, "")
-        .trim();
-
-      compactValue = `${currencySymbol}${formattedValue}${suffix}`;
-    } else {
-      compactValue = token
-        ? `${formattedValue}${suffix} ${token}`
-        : `${formattedValue}${suffix}`;
-    }
-
-    if (showFullValue && fullFormattedNumber) {
-      return {
-        compactValue,
-        fullValue: fullFormattedNumber,
-      };
-    }
-
-    return compactValue;
+    return token ? `< ${minFormatted} ${token}` : `< ${minFormatted}`;
   }
 
   const formattedNumber = formatter.number(numberValue, {
@@ -174,7 +82,7 @@ function formatNumberWithFormatter(
 export function formatNumber(
   amount: string | bigint | number | BigNumber | null | undefined,
   options: FormatOptions
-): string | FormattedNumberWithFull {
+): string {
   const formatter = createFormatter({
     locale: options.locale || "en",
     formats: {
