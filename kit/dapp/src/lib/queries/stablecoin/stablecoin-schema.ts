@@ -77,7 +77,7 @@ export const OnChainStableCoinSchema = t.Object(
         "The percentage of total supply held by the top holders, indicating ownership concentration",
     }),
     deployedOn: t.StringifiedBigInt({
-      description: "The timestamp when the bond was deployed",
+      description: "The timestamp when the stablecoin was deployed",
     }),
   },
   {
