@@ -2,9 +2,9 @@ import { type BrowserContext, test } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { equityData } from "../test-data/asset-data";
+import { assetMessage } from "../test-data/success-msg-data";
 import { adminUser } from "../test-data/user-data";
 import { ensureUserIsAdmin } from "../utils/db-utils";
-
 test.describe("Equity Creation Validation", () => {
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
@@ -28,49 +28,53 @@ test.describe("Equity Creation Validation", () => {
     test.beforeAll(async () => {
       await createAssetForm.selectAssetType(equityData.assetType);
     });
-    test("validates required fields are empty", async () => {
+    test("validates name field is empty", async () => {
       await createAssetForm.fillBasicFields({
         name: "",
-        symbol: "",
+        symbol: "TEQ",
         decimals: "18",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
+    test("validates symbol field is empty", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "",
+        decimals: "18",
+        isin: "",
+      });
+      await createAssetForm.clickNext();
+      await createAssetForm.expectErrorMessage("Please enter text");
+    });
+    test("validates symbol field is with lower case", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "teq",
+        decimals: "18",
+        isin: "",
+      });
+      await createAssetForm.clickNext();
+      await createAssetForm.expectErrorMessage(
+        "Please enter text in the correct asset-symbol format"
+      );
+    });
     test("verifies input length restrictions", async () => {
       await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
       await createAssetForm.verifyInputAttribute("Symbol", "maxlength", "10");
     });
-    test("validates incomplete ISIN", async () => {
+    test("validates ISIN format", async () => {
       await createAssetForm.fillBasicFields({
-        name: "Test Equity",
-        symbol: "TEQ",
-        isin: "US",
-        decimals: "18",
-      });
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage(
-        "Please enter text in the correct isin format"
-      );
-    });
-    test("validates invalid ISIN format", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Equity",
-        symbol: "TEQ",
         isin: "invalid-isin",
-        decimals: "18",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct isin format"
       );
     });
-    test("validates wrong ISIN length", async () => {
+    test("validates ISIN length constraints", async () => {
       await createAssetForm.fillBasicFields({
-        name: "Test Equity",
-        symbol: "TEQ",
-        isin: "US12345",
-        decimals: "18",
+        isin: "US0000000000000",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage(
@@ -95,7 +99,7 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
-    test("verifies decimals default value", async () => {
+    test("verifies default decimals field", async () => {
       await createAssetForm.verifyInputAttribute("Decimals", "value", "18");
     });
   });
@@ -144,6 +148,35 @@ test.describe("Equity Creation Validation", () => {
     });
     test("verifies default currency is EUR", async () => {
       await createAssetForm.verifyCurrencyValue("EUR");
+    });
+  });
+});
+
+test.describe("Create equity asset", () => {
+  let adminContext: BrowserContext;
+  let adminPages: ReturnType<typeof Pages>;
+
+  test.beforeAll(async ({ browser }) => {
+    await ensureUserIsAdmin(adminUser.email);
+    adminContext = await browser.newContext();
+    const adminPage = await adminContext.newPage();
+    adminPages = Pages(adminPage);
+    await adminPages.signInPage.signInAsAdmin(adminUser);
+    await adminPages.adminPage.goto();
+  });
+  test.afterAll(async () => {
+    await adminContext.close();
+  });
+
+  test("Create Equity asset", async () => {
+    await adminPages.adminPage.createEquity(equityData);
+    await adminPages.adminPage.verifySuccessMessage(
+      assetMessage.successMessage
+    );
+    await adminPages.adminPage.checkIfAssetExists({
+      sidebarAssetTypes: equityData.sidebarAssetTypes,
+      name: equityData.name,
+      totalSupply: equityData.initialSupply,
     });
   });
 });
