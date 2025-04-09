@@ -42,7 +42,7 @@
           "deposit": "Einzahlungen"
         },
         "assets-supply": {
-          "description": "Die Verteilung der Token pro Anlageklasse",
+          "description": "Die Verteilung der Vermögenswerte nach Vermögensklasse",
           "title": "Vermögensangebot"
         },
         "transaction-history": {
@@ -104,7 +104,9 @@
         "save": "Speichern",
         "save-changes": "Änderungen speichern",
         "saving": "Speichern...",
-        "select-base-currency": "Basiswährung auswählen"
+        "select-base-currency": "Basiswährung auswählen",
+        "base-currency-title": "Basiswährung",
+        "base-currency-description": "Legen Sie die Standardwährung für die Anzeige von Vermögenswerten auf der Plattform fest"
       }
     },
     "sidebar": {
@@ -131,7 +133,7 @@
       },
       "platform-management": {
         "group-title": "Plattformverwaltung",
-        "settings": "Einstellungen",
+        "settings": "Plattform",
         "user-management": "Benutzerverwaltung"
       },
       "portfolio-management": {
@@ -143,6 +145,13 @@
         "my-contacts": "Meine Kontakte",
         "profile": "Profil",
         "settings": "Einstellungen"
+      },
+      "settings-management": {
+        "group-title": "Einstellungen",
+        "settings": "Einstellungen",
+        "profile": "Profil",
+        "api": "API",
+        "platform": "Plattform"
       }
     },
     "bonds": {
@@ -285,7 +294,8 @@
         "token": "Token",
         "underlying-amount": "Unterliegender Betrag",
         "user": "Benutzer",
-        "value": "Wert"
+        "value": "Wert",
+        "asset": "Vermögenswert"
       },
       "event": "Ereignis",
       "events": "Ereignisse",
@@ -324,26 +334,26 @@
         "stablecoin": "Stablecoin",
         "tokenizeddeposit": "Tokenisierte Einzahlung",
         "total-supply": {
-          "description": "Zeigt das gesamte Angebot des Tokens an",
+          "description": "Gesamtangebot des Vermögenswerts anzeigen",
           "label": "Gesamtangebot",
           "no-data": "Keine Daten in diesem Fenster verfügbar",
           "title": "Gesamtangebot"
         },
         "total-supply-changed": {
           "burned-label": "Insgesamt verbrannt",
-          "description": "Zeigt die Angebotsänderung des Tokens an",
+          "description": "Änderung des Angebots des Vermögenswerts anzeigen",
           "minted-label": "Insgesamt geprägt",
           "no-data": "Keine Daten in diesem Fenster verfügbar",
           "title": "Angebotsänderungen"
         },
         "total-transfers": {
-          "description": "Zeigt die gesamten Übertragungen des Tokens an",
+          "description": "Gesamtübertragungen des Vermögenswerts anzeigen",
           "label": "Insgesamt Übertragungen",
           "no-data": "Keine Daten in diesem Fenster verfügbar",
           "title": "Insgesamt Übertragungen"
         },
         "total-volume": {
-          "description": "Zeigt das gesamte Volumen des Tokens an",
+          "description": "Gesamtvolumen des Vermögenswerts anzeigen",
           "label": "Insgesamt Volumen",
           "no-data": "Keine Daten in diesem Fenster verfügbar",
           "title": "Insgesamt Volumen"
@@ -394,6 +404,18 @@
           "label": "Gesamtes Sicherheiten"
         },
         "deposit": "Einzahlung"
+      },
+      "portfolio": {
+        "portfolio-value": "Portfoliowert",
+        "portfolio-value-description": "Der maximale Wert Ihres Portfolios im Laufe der Zeit (basierend auf aktuellen Preisen)",
+        "portfolio-value-error": "Fehler beim Laden der Portfoliowertdaten",
+        "portfolio-value-no-data": "Keine Portfoliodaten verfügbar",
+        "portfolio-value-title": "Portfoliowert",
+        "aggregation-options": {
+          "compare-asset-types": "Vermögensarten vergleichen",
+          "stacked-asset-types": "Gestapelt nach Vermögensart",
+          "total-value": "Gesamtwert"
+        }
       }
     },
     "data-table": {
@@ -465,7 +487,33 @@
         "loading": "Lade...",
         "no-user-found": "Kein Benutzer gefunden.",
         "recent-users": "Kürzlich ausgewählt",
-        "search-placeholder": "Suchen Sie nach einem Benutzer..."
+        "search-placeholder": "Suchen Sie nach einem Benutzer...",
+        "no-contact-found": "Kein Kontakt gefunden.",
+        "recent-contacts": "Kürzlich ausgewählte Kontakte",
+        "search-contact-placeholder": "Nach einem Kontakt suchen..."
+      },
+      "otp-dialog": {
+        "cancel": "Abbrechen",
+        "confirm": "Ja, bestätigen",
+        "pincode": {
+          "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Überprüfung und Autorisierung ein.",
+          "title": "Geben Sie Ihren PIN-Code zur Bestätigung ein"
+        },
+        "two-factor-authentication": {
+          "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren OTP-Code aus Ihrer Authentifizierungs-App zur Überprüfung und Autorisierung ein.",
+          "title": "Geben Sie Ihren OTP zur Bestätigung ein"
+        },
+        "secret-codes": {
+          "description": "Bitte geben Sie einen Ihrer Sicherheitscodes ein, um Ihre Identität zu überprüfen. Jeder Code kann nur einmal verwendet werden, also stellen Sie sicher, dass Sie Ihre ungenutzten Codes sicher aufbewahren.",
+          "title": "Geben Sie einen Sicherheitscode ein"
+        },
+        "method-select": {
+          "title": "Wechseln Sie die Sicherheitsmethode der Brieftasche",
+          "pincode": "PIN-Code",
+          "two-factor-authentication": "Authentifizierungs-App",
+          "use-secret-codes": "Oder verwenden Sie einen Ihrer Sicherheitscodes"
+        },
+        "switch-method": "Methode wechseln"
       }
     },
     "logo": {
@@ -519,6 +567,29 @@
         "status": "Status",
         "transaction-hash": "Transaktions-Hash"
       }
+    },
+    "chart": {
+      "switch-to-area-chart": "Zu Flächendiagramm wechseln",
+      "switch-to-bar-chart": "Zu Balkendiagramm wechseln",
+      "info-icon-label": "Info",
+      "select-time-range": "Zeitraum auswählen",
+      "last-updated-at": "Zuletzt aktualisiert am: {lastUpdated}",
+      "time-range": {
+        "24h": "24h",
+        "7d": "7d",
+        "30d": "30d",
+        "90d": "90d"
+      }
+    },
+    "pending-transactions": {
+      "aria-label": "Ausstehende Transaktionen anzeigen",
+      "title": "Ausstehende Transaktionen",
+      "no-pending": "Keine ausstehenden Transaktionen",
+      "from": "Von",
+      "contract": "Vertrag",
+      "hash": "Hash",
+      "function": "Funktion",
+      "created": "Erstellt"
     }
   },
   "creator-owner": "Ersteller / Eigentümer",
@@ -647,7 +718,7 @@
       "afternoon": "Guten Nachmittag",
       "evening": "Guten Abend",
       "morning": "Guten Morgen",
-      "you-have": "Sie haben"
+      "you-have": "Sie haben Vermögenswerte im Wert von"
     },
     "my-assets": {
       "bond": {
@@ -659,7 +730,7 @@
             "title": "Betrag eingeben"
           },
           "button-label": "Vermögenswerte einlösen",
-          "description": "Lösen Sie Ihre Anleihetokens gegen den zugrunde liegenden Vermögenswert ein.",
+          "description": "Lösen Sie Ihre Anleihevermögen in den zugrunde liegenden Vermögenswert ein.",
           "summary": {
             "asset-label": "Vermögenswert",
             "description": "Überprüfen Sie die Einzelheiten Ihrer Einlösung, bevor Sie fortfahren",
@@ -673,7 +744,7 @@
         },
         "transfer-form": {
           "button-label": "Übertragen",
-          "description": "Übertragen Sie Ihre Anleihetokens an eine andere Adresse",
+          "description": "Übertragen Sie Ihre Anleihevermögen auf eine andere Adresse",
           "summary": {
             "asset-label": "Vermögenswert",
             "description": "Überprüfen Sie die Einzelheiten Ihrer Übertragung, bevor Sie fortfahren",
@@ -692,16 +763,18 @@
           "amount": {
             "amount-label": "Betrag",
             "balance-description": "Verfügbarer Saldo:",
-            "description": "Geben Sie den Betrag der Tokens ein, den Sie übertragen möchten",
+            "description": "Geben Sie den Betrag der Vermögenswerte ein, die Sie übertragen möchten",
             "title": "Betrag"
           },
           "recipients": {
             "address-label": "Empfängeradresse",
             "address-placeholder": "Nach einem Benutzer suchen",
-            "description": "Wählen Sie, wer die Tokens erhalten soll",
+            "description": "Wählen Sie, wer die Vermögenswerte erhalten soll",
             "manual-entry-link": "Adresse manuell eingeben...",
             "search-user-link": "Stattdessen nach einem Benutzer suchen...",
-            "title": "Empfänger auswählen"
+            "title": "Empfänger auswählen",
+            "search-contact-link": "Suchen Sie stattdessen nach einem Kontakt...",
+            "search-in-contacts": "In meinen Kontakten suchen"
           }
         }
       },
@@ -709,7 +782,8 @@
         "forms": {
           "actions": {
             "redeem": "Einlösen",
-            "transfer": "Übertragen"
+            "transfer": "Übertragen",
+            "burn": "Verbrennen"
           }
         },
         "manage": "Verwalten"
@@ -784,42 +858,127 @@
       },
       "profile": {
         "portfolio-management": "Portfolioverwaltung",
-        "title": "Profil"
+        "title": "Profil",
+        "enter-password": {
+          "title": "Passwort eingeben",
+          "placeholder": "Passwort",
+          "cancel": "Abbrechen"
+        },
+        "two-factor-authentication": {
+          "title": "Zwei-Faktor-Authentifizierung",
+          "description": "Verbessern Sie die Sicherheit Ihres Kontos, indem Sie die Zwei-Faktor-Authentifizierung aktivieren. Wenn aktiviert, müssen Sie bei jedem Zugriff auf die Anwendung oder Ihre Brieftasche einen Bestätigungscode aus Ihrer Authentifizierungs-App eingeben.",
+          "status": {
+            "enabled": "Zwei-Faktor-Authentifizierung ist aktiviert",
+            "disabled": "Zwei-Faktor-Authentifizierung ist deaktiviert"
+          },
+          "setup-mfa": {
+            "title": "Zwei-Faktor-Authentifizierung einrichten",
+            "description": "Scannen Sie den QR-Code mit der Authentifizierungs-App auf Ihrem Telefon, um die Zwei-Faktor-Authentifizierung zu aktivieren.",
+            "cancel": "Abbrechen",
+            "enable": "Aktivieren",
+            "loading": "Aktivierung...",
+            "enter-code-title": "Geben Sie den Code aus der Authentifizierungs-App ein"
+          },
+          "enable": {
+            "title": "Aktivieren",
+            "description": "Aktivieren Sie die Zwei-Faktor-Authentifizierung, um eine zusätzliche Sicherheitsebene für Ihr Konto hinzuzufügen.",
+            "success-message": "Zwei-Faktor-Authentifizierung erfolgreich aktiviert",
+            "error-message": "Aktivierung der Zwei-Faktor-Authentifizierung fehlgeschlagen: {error}",
+            "password-description": "Geben Sie Ihr Passwort ein, um die Zwei-Faktor-Authentifizierung zu aktivieren."
+          },
+          "disable": {
+            "title": "Deaktivieren",
+            "description": "Deaktivieren Sie die Zwei-Faktor-Authentifizierung, um die zusätzliche Sicherheitsebene von Ihrem Konto zu entfernen.",
+            "success-message": "Zwei-Faktor-Authentifizierung erfolgreich deaktiviert",
+            "error-message": "Fehler beim Deaktivieren der Zwei-Faktor-Authentifizierung: {error}",
+            "password-description": "Geben Sie Ihr Passwort ein, um die Zwei-Faktor-Authentifizierung zu deaktivieren.",
+            "disable-two-factor-tooltip": "Die Zwei-Faktor-Authentifizierung kann nur deaktiviert werden, wenn ein PIN-Code festgelegt ist."
+          }
+        },
+        "secret-codes": {
+          "title": "Sichere Codes",
+          "description": "Diese Codes können verwendet werden, um auf Ihre Brieftasche zuzugreifen, wenn Sie Ihr Telefon verlieren oder Ihren PIN-Code vergessen. Stellen Sie sicher, dass Sie sie an einem sicheren Ort aufbewahren.",
+          "copy": "Sichere Codes kopieren",
+          "copied": "Sichere Codes in die Zwischenablage kopiert",
+          "generate": "Sichere Codes generieren",
+          "error-message": "Fehler beim Generieren sicherer Codes"
+        },
+        "pincode": {
+          "title": "PIN-Code",
+          "description": "Verwenden Sie einen PIN-Code, um auf Ihre Brieftasche zuzugreifen.",
+          "error": "Fehler beim Abrufen des PIN-Code-Status",
+          "setup-pincode": {
+            "title": "PIN-Code einrichten",
+            "success-message": "PIN-Code erfolgreich festgelegt",
+            "error-message": "Fehler beim Festlegen des PIN-Codes"
+          },
+          "update-pincode": {
+            "title": "PIN-Code aktualisieren",
+            "success-message": "PIN-Code erfolgreich aktualisiert",
+            "error-message": "Fehler beim Aktualisieren des PIN-Codes"
+          },
+          "disable-pincode": {
+            "title": "PIN-Code deaktivieren",
+            "description": "Geben Sie Ihr Passwort ein, um Ihren PIN-Code zu deaktivieren.",
+            "cancel": "Abbrechen",
+            "remove": "Deaktivieren",
+            "loading": "Deaktivierung...",
+            "disable-pincode-tooltip": "Ein PIN-Code kann nur deaktiviert werden, wenn die Zwei-Faktor-Authentifizierung aktiviert ist.",
+            "success-message": "PIN-Code erfolgreich deaktiviert",
+            "error-message": "Fehler beim Deaktivieren des PIN-Codes: {error}"
+          },
+          "status": {
+            "enabled": "Sie haben einen PIN-Code festgelegt.",
+            "disabled": "Es ist kein PIN-Code festgelegt."
+          }
+        }
       }
     },
     "transfer-form": {
       "amount": {
         "amount-label": "Betrag",
         "balance-description": "Saldo:",
-        "decimals-description": "Anzahl der Dezimalstellen für den Token",
+        "decimals-description": "Anzahl der Dezimalstellen für das Asset",
         "decimals-label": "Dezimalstellen",
         "description": "Geben Sie den Betrag an, den Sie übertragen möchten",
         "title": "Betrag eingeben"
       },
       "asset-types": "{type} {name} ({symbol})",
-      "description": "Übertragen Sie einfach einen Betrag von {name} ({symbol}), indem Sie einen Empfänger auswählen und den Betrag angeben.",
+      "description": "Übertragen Sie einfach einen Betrag an Assets, indem Sie einen Empfänger auswählen und den Betrag angeben.",
       "recipients": {
-        "description": "Geben Sie eine Brieftaschenadresse ein, um Tokens direkt zu senden.",
+        "description": "Geben Sie eine Brieftaschenadresse ein, um Assets direkt zu senden.",
         "title": "Empfänger auswählen",
         "wallet-address-label": "Brieftaschenadresse",
         "address-placeholder": "Nach einem Benutzer suchen",
         "manual-entry-link": "Adresse manuell eingeben...",
-        "search-user-link": "Stattdessen nach einem Benutzer suchen..."
+        "search-user-link": "Stattdessen nach einem Benutzer suchen...",
+        "address-label": "Empfängeradresse",
+        "search-contact-link": "Stattdessen nach einem Kontakt suchen...",
+        "search-in-contacts": "In meinen Kontakten suchen"
       },
       "select-asset": {
         "asset-description": "Wählen Sie einen Vermögenswert aus Ihrem Portfolio",
         "asset-label": "Vermögenswert",
         "description": "Wählen Sie den Vermögenswert aus, den Sie übertragen möchten",
-        "title": "Vermögenswert auswählen"
+        "title": "Vermögenswert auswählen",
+        "confirm-button": "Bestätigen"
       },
       "summary": {
         "address": "Adresse",
         "amount": "Betrag",
         "description": "Überprüfen Sie die Einzelheiten Ihrer Überweisung, bevor Sie fortfahren. Stellen Sie sicher, dass der Empfänger und der Betrag korrekt sind.",
-        "title": "Überweisung überprüfen und bestätigen"
+        "title": "Überweisung überprüfen und bestätigen",
+        "asset-label": "Asset",
+        "recipient-label": "Empfänger",
+        "transfer-description": "Details zur Übertragungsoperation",
+        "transfer-title": "Übertragen",
+        "value-label": "Betrag"
       },
       "transfer": "Überweisung",
-      "transfer-title": "Überweisung {name} ({symbol})"
+      "transfer-title": "Überweisung {name} ({symbol})",
+      "button-label": "Assets übertragen",
+      "title": "Assets übertragen",
+      "trigger-label": "Übertragen"
     },
     "assets-count-assets": "Vermögenswerte"
   },
@@ -888,11 +1047,27 @@
             "stablecoins": "Geben Sie eine neue Stablecoin aus",
             "tokenizeddeposits": "Geben Sie eine neue tokenisierte Einzahlung aus",
             "deposits": "Geben Sie eine neue einzahlung aus"
+          },
+          "steps": {
+            "asset-admins": {
+              "title": "Asset-Berechtigungen",
+              "description": "Definieren Sie administrative Rollen und Berechtigungen für die Verwaltung dieses Assets.",
+              "add-first-admin": "Asset-Administrator hinzufügen",
+              "add-another-admin": "Einen weiteren Administrator hinzufügen",
+              "select-user-placeholder": "Suchen und Benutzer auswählen",
+              "remove-role": "Diese Rolle entfernen",
+              "add-role": "Diese Rolle hinzufügen",
+              "roles": {
+                "admin": "Administrator",
+                "user-manager": "Benutzermanager",
+                "issuer": "Versorgungsmanager"
+              }
+            }
           }
         },
         "parameters": {
           "bonds": {
-            "cap-description": "Maximale Anzahl von Token, die ausgegeben werden können",
+            "cap-description": "Maximaler Betrag an Assets, die ausgegeben werden können",
             "cap-label": "Maximale Menge",
             "face-value-description": "Nennwert einer einzelnen Anleiheeinheit",
             "face-value-label": "Nennwert",
@@ -901,7 +1076,8 @@
             "name-placeholder": "Unternehmen XYZ Anleihe 2023",
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "Adresse des Vermögenswerts, der diese Anleihe absichert",
-            "underlying-asset-label": "Unterliegender Vermögenswert"
+            "underlying-asset-label": "Unterliegender Vermögenswert",
+            "maturity-date-error": "Das Fälligkeitsdatum muss mindestens 1 Stunde in der Zukunft liegen"
           },
           "common": {
             "collateral-proof-validity-label": "Gültigkeit des Sicherheitennachweises",
@@ -930,7 +1106,7 @@
             "price-label": "Preis"
           },
           "cryptocurrencies": {
-            "initial-supply-description": "Anfängliche Menge an Token, die geprägt werden sollen",
+            "initial-supply-description": "Anfangsbetrag an Assets, die geprägt werden sollen",
             "initial-supply-label": "Anfängliche Menge",
             "name-placeholder": "Bitcoin",
             "symbol-placeholder": "BTC"
@@ -974,7 +1150,9 @@
           "configuration-description": "Spezifische Parameter für Ihr Vermögen.",
           "configuration-title": "Konfiguration",
           "description": "Dies ist der letzte Schritt, bevor Sie Ihr Vermögen erstellen. Bitte überprüfen Sie alle eingegebenen Details.",
-          "title": "Zusammenfassung"
+          "title": "Zusammenfassung",
+          "asset-admins-description": "Administrative Rollen und Berechtigungen für die Verwaltung dieses Assets.",
+          "asset-admins-title": "Asset-Berechtigungen"
         }
       },
       "detail": {
@@ -1179,11 +1357,11 @@
           },
           "form": {
             "description": {
-              "burn": "Token dauerhaft aus dem Umlauf entfernen, um das Angebot zu reduzieren.",
+              "burn": "Assets dauerhaft aus dem Umlauf entfernen, um das Angebot zu reduzieren.",
               "grant-role": "Verwaltungsberechtigungen einem neuen Benutzer zuweisen.",
               "block": "Diesen Benutzer daran hindern, Transaktionen oder Interaktionen durchzuführen.",
               "mature": "Bonds fällig machen und den zugrunde liegenden Vermögenswert erhalten",
-              "mint": "Neue Token ausgeben, um das umlaufende Angebot des Vermögenswerts zu erhöhen.",
+              "mint": "Neue Assets ausgeben, um das umlaufende Angebot des Assets zu erhöhen.",
               "freeze": "Zugriff eines Benutzers auf seine Gelder vorübergehend einschränken.",
               "pause": "Alle Transaktionen und Interaktionen für diesen Vermögenswert vorübergehend einstellen.",
               "unpause": "Transaktionen und Interaktionen für diesen Vermögenswert wieder aufnehmen.",
@@ -1225,6 +1403,9 @@
               "allow": "Erlauben",
               "disallow": "Nicht erlauben",
               "unblock": "Benutzer entsperren"
+            },
+            "errors": {
+              "supply-manager-required": "Rolle des Versorgungsmanagers erforderlich"
             }
           },
           "account": {
@@ -1242,12 +1423,12 @@
               "default": "Benutzer auswählen"
             },
             "description": {
-              "mint": "Geben Sie eine Wallet-Adresse ein, um Token direkt zu senden, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
-              "burn": "Geben Sie eine Wallet-Adresse ein, von der die Token verbrannt werden, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
+              "mint": "Geben Sie eine Brieftaschenadresse ein, um Assets direkt zu senden, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder seiner Brieftaschenadresse.",
+              "burn": "Geben Sie eine Brieftaschenadresse ein, von der die Assets verbrannt werden, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder seiner Brieftaschenadresse.",
               "grant-role": "Geben Sie eine Wallet-Adresse ein, um Rollen zu gewähren, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
-              "freeze": "Geben Sie eine Wallet-Adresse ein, von der die Token eingefroren werden, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
+              "freeze": "Geben Sie eine Brieftaschenadresse ein, von der die Assets eingefroren werden, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder seiner Brieftaschenadresse.",
               "block": "Geben Sie eine Wallet-Adresse ein, um zu blockieren, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
-              "withdraw": "Geben Sie eine Wallet-Adresse ein, um Token abzuheben, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
+              "withdraw": "Geben Sie eine Brieftaschenadresse ein, um Assets abzuheben, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder seiner Brieftaschenadresse.",
               "allow": "Geben Sie eine Wallet-Adresse ein, um zu erlauben, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
               "disallow": "Geben Sie eine Wallet-Adresse ein, um nicht zu erlauben, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
               "unblock": "Geben Sie eine Wallet-Adresse ein, um zu entsperren, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse."
@@ -1272,7 +1453,9 @@
             "max-limit": {
               "mint": "Verfügbare Sicherheiten zum Minten: {limit}",
               "burn": "Verfügbares Guthaben zum Verbrennen: {limit}",
-              "freeze": "Verfügbares Guthaben zum Einfrieren: {limit}"
+              "freeze": "Verfügbares Guthaben zum Einfrieren: {limit}",
+              "burn-no-balance": "Kein Guthaben zum Verbrennen verfügbar.",
+              "mint-no-collateral": "Kein Sicherheiten verfügbar. Fügen Sie Sicherheiten hinzu, bevor Sie prägen."
             },
             "label": "Betrag"
           },
@@ -1504,7 +1687,8 @@
               "funds": "Anleihen einlösen",
               "stablecoins": "Die Menge reduzieren",
               "tokenizeddeposits": "Angebotsmenge der tokenisierten Einlagen reduzieren",
-              "deposits": "Einzahlungsangebot reduzieren"
+              "deposits": "Einzahlungsangebot reduzieren",
+              "cryptocurrencies": "Angebot verringern"
             },
             "description": {
               "bonds": "Ein Anleihemanager kann die Gesamtmenge durch Anleiheneinlösung bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
@@ -1512,13 +1696,14 @@
               "funds": "Ein Fondsmanager kann die Gesamtmenge durch Fondsrücknahme bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
               "stablecoins": "Ein Angebotsmanager kann bestehende Stablecoins verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
               "tokenizeddeposits": "Ein Angebotsmanager kann bestehende tokenisierte Einlagen verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
-              "deposits": "Ein Supply-Manager kann bestehende Einzahlungen verbrennen, sofern ausreichende Sicherheiten vorhanden sind."
+              "deposits": "Ein Supply-Manager kann bestehende Einzahlungen verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
+              "cryptocurrencies": "Ein Versorgungsmanager kann vorhandene Kryptowährungs-Token verbrennen, um das Gesamtangebot zu verringern."
             }
           },
           "increase-supply": {
             "title": {
               "bonds": "Anleihen ausgeben",
-              "cryptocurrencies": "Tokens minten",
+              "cryptocurrencies": "Assets prägen",
               "equities": "Neue Anteile ausgeben",
               "funds": "Anleihen ausgeben",
               "stablecoins": "Die Menge erhöhen",
@@ -1527,7 +1712,7 @@
             },
             "description": {
               "bonds": "Ein Anleihemanager kann neue Anleihen durch Primärausgabe oder Tap-Ausgabe mit festgelegtem Nennwert und Fälligkeit ausgeben.",
-              "cryptocurrencies": "Ein Tokenmanager kann neue Tokens gemäß dem Tokenomics-Plan und dem Emissionszeitplan minten.",
+              "cryptocurrencies": "Ein Asset-Manager kann neue Assets gemäß dem Tokenomics-Plan und dem Emissionszeitplan prägen.",
               "equities": "Ein Aktienmanager kann neue Anteile durch verschiedene Mechanismen wie Bezugsrechte, Privatplatzierungen oder Aktiensplits ausgeben.",
               "funds": "Ein Fondsmanager kann neue Fonds durch Primärausgabe oder Tap-Ausgabe mit festgelegtem Nennwert und Fälligkeit ausgeben.",
               "stablecoins": "Ein Angebotsmanager kann neue Stablecoins minten, sofern ausreichende Sicherheiten vorhanden sind.",
@@ -1569,7 +1754,7 @@
         "collateral-proof-validity-info": "Wie lange die Sicherheitenbestätigung gültig ist",
         "committed-collateral-header": "Verpflichtete Sicherheiten",
         "committed-collateral-ratio": "Verhältnis der verpflichteten Sicherheiten",
-        "committed-collateral-ratio-info": "Das Verhältnis der verpflichteten Sicherheiten zur Gesamtmenge des Tokens",
+        "committed-collateral-ratio-info": "Das Verhältnis der hinterlegten Sicherheiten zum Gesamtangebot des Assets",
         "contract-address": "Adresse",
         "creator": "Ersteller",
         "decimals": "Dezimalstellen",
@@ -1695,7 +1880,7 @@
         "ownership-concentration": "Besitzkonzentration",
         "ownership-concentration-info": "Prozentsatz, der von den 5 größten Inhabern gehalten wird",
         "proven-collateral": "Bewiesene Sicherheiten",
-        "proven-collateral-info": "Der Betrag an Sicherheiten, der nachgewiesen wurde, dass er vom Token gehalten wird",
+        "proven-collateral-info": "Der Betrag an Sicherheiten, der nachgewiesen wurde, dass er vom Asset gehalten wird",
         "redeemed": "Eingelöst",
         "redeemed-info": "Gesamtbetrag der eingelösten Vermögenswerte",
         "redemption-readiness": "Einlösungsbereitschaft",
@@ -1709,7 +1894,7 @@
         "symbol": "Symbol",
         "symbol-header": "Symbol",
         "total-burned": "Insgesamt verbrannt",
-        "total-burned-info": "Menge an Token, die dauerhaft aus dem Umlauf entfernt wurden",
+        "total-burned-info": "Menge an Assets, die dauerhaft aus dem Umlauf entfernt wurden",
         "total-holders": "# der Inhaber",
         "total-holders-info": "Menge an Adressen, die derzeit die Vermögenswerte halten",
         "total-issued": "Insgesamt ausgegeben",
@@ -1758,13 +1943,13 @@
           },
           "cryptocurrency": {
             "issue-new": {
-              "description": "Erstellen und starten Sie einen neuen Kryptowährungs-Token mit anpassbaren Parametern und Sicherheitsfunktionen. Optimieren Sie die Token-Bereitstellung mit konfigurierbaren Angebotsmechanismen und Übertragungssteuerungen.",
+              "description": "Erstellen und starten Sie ein neues Kryptowährungs-Asset mit anpassbaren Parametern und Sicherheitsfunktionen. Optimieren Sie die Bereitstellung von Assets mit konfigurierbaren Versorgungsmechanismen und Übertragungssteuerungen.",
               "title": "Neue Kryptowährung ausgeben"
             },
             "mechanics": {
               "button": "Erfahren Sie mehr",
-              "description": "Erfahren Sie, wie Sie Token-Ökonomie, Angebotskontrollen, Übertragungsbeschränkungen und Sicherheitsfunktionen für Ihre Kryptowährung verwalten.",
-              "title": "Tokenmechanik"
+              "description": "Erfahren Sie, wie Sie die Wirtschaftlichkeit von Assets, Angebotskontrollen, Übertragungsbeschränkungen und Sicherheitsfunktionen für Ihre Kryptowährung verwalten.",
+              "title": "Asset-Mechanik"
             },
             "usecases": {
               "button": "Entdecken",
@@ -1774,8 +1959,8 @@
           },
           "equity": {
             "issue-new": {
-              "description": "Erstellen und starten Sie einen neuen Equity-Token mit definierten Aktienklassen und Eigentumsrechten. Optimieren Sie die Aktienemission zur Unterstützung der Aktionärsverteilung und Unternehmensführung.",
-              "title": "Neue Equity-Token ausgeben"
+              "description": "Erstellen und starten Sie ein neues Eigenkapital-Asset mit definierten Aktienklassen und Eigentumsrechten. Optimieren Sie die Ausgabe von Eigenkapital zur Unterstützung der Aktionärsverteilung und Unternehmensführung.",
+              "title": "Neue Eigenkapital-Assets ausgeben"
             },
             "mechanics": {
               "button": "Erfahren Sie mehr",
@@ -1806,7 +1991,7 @@
           },
           "stablecoin": {
             "issue-new": {
-              "description": "Erstellen und starten Sie einen neuen Stablecoin mit definierten Parametern und Sicherheiten. Optimieren Sie die Token-Bereitstellung zur Unterstützung neuer Projekte und Marktsegmente.",
+              "description": "Erstellen und starten Sie einen neuen Stablecoin mit definierten Parametern und Sicherheiten. Optimieren Sie die Bereitstellung von Assets zur Unterstützung neuer Projekte und Marktsegmente.",
               "title": "Einen neuen Stablecoin ausgeben"
             },
             "mechanics": {
@@ -1968,7 +2153,62 @@
       "wallet-security": {
         "pincode-instruction": "Geben Sie einen 6-stelligen PIN-Code ein, um Ihre Brieftasche zu sichern.",
         "pincode-set": "PIN-Code erfolgreich festgelegt",
-        "setup-pincode": "PIN-Code einrichten"
+        "setup-pincode": "PIN-Code einrichten",
+        "set-pincode-dialog": {
+          "description": "Geben Sie einen 6-stelligen PIN-Code ein, um Ihre Brieftasche zu sichern.",
+          "cancel": "Abbrechen",
+          "enable": {
+            "title": "PIN-Code einrichten",
+            "pincode-set": "PIN-Code erfolgreich festgelegt",
+            "pincode-set-error": "Fehler beim Festlegen des PIN-Codes: {error}",
+            "setting-up": "Einrichten...",
+            "submit": "PIN-Code einrichten"
+          },
+          "update": {
+            "title": "PIN-Code aktualisieren",
+            "pincode-update": "PIN-Code erfolgreich aktualisiert",
+            "pincode-update-error": "Fehler beim Aktualisieren des PIN-Codes: {error}",
+            "setting-up": "Aktualisieren...",
+            "submit": "PIN-Code aktualisieren"
+          },
+          "pincode-label": "PIN-Code",
+          "password-description": "Geben Sie Ihr Passwort ein, um Ihren PIN-Code einzurichten.",
+          "password-submit": "Bestätigen"
+        },
+        "form": {
+          "button-label": "Beginnen Sie, meine Brieftasche zu verwenden",
+          "submitting-label": "Sicherheit der Brieftasche einrichten...",
+          "processing-label": "Validieren...",
+          "setup": {
+            "title": "Vervollständigen Sie die Sicherheit Ihrer Brieftasche",
+            "description": "Um Ihre Brieftasche sicher zu halten, müssen Sie die Sicherheitseinrichtung abschließen. Richten Sie entweder Ihre bevorzugte Verifizierungsmethode ein oder laden Sie Ihre Sicherheitscodes herunter, um sicherzustellen, dass Sie immer die Kontrolle haben. Lassen Sie uns das jetzt erledigen, um Ihre Assets zu schützen.",
+            "button-label": "Sichere meine Brieftasche"
+          },
+          "select-method": {
+            "title": "Bevorzugte Sicherheit der Brieftasche",
+            "description": "Lass uns sicherstellen, dass deine Brieftasche sicher ist. Wähle die Sicherheitsmethode, die am besten für dich funktioniert. Es sind nur ein paar schnelle Schritte erforderlich, um deine Brieftasche einzurichten und zu schützen.",
+            "pincode": "PIN-Code",
+            "two-factor-authentication": "Authenticator-App"
+          },
+          "set-verification": {
+            "authenticator-app": {
+              "title": "Richte eine Authenticator-App ein",
+              "description": "Scanne den QR-Code unten mit deiner bevorzugten App (wie Google Authenticator oder Authy). Nach dem Scannen generiert die App zeitbasierte Codes. Diese Codes sind erforderlich, um deine Brieftaschentransaktionen zu verifizieren und dein Konto sicher zu halten."
+            },
+            "pincode": {
+              "title": "Gib einen PIN-Code ein",
+              "description": "Erstelle einen sicheren 6-stelligen PIN für deine Brieftasche. Dieser PIN wird benötigt, wann immer du Transaktionen autorisierst."
+            }
+          },
+          "secret-codes": {
+            "title": "Sichere deine Codes",
+            "description": "Diese einmalig verwendbaren Codes können Transaktionen verifizieren oder deine Brieftasche wiederherstellen. Bewahre sie sicher auf, zum Beispiel in einem Passwortmanager oder schriftlich. Wenn sie verloren gehen, wird die Wiederherstellung schwierig sein."
+          },
+          "summary": {
+            "title": "Deine Brieftasche ist gesichert!",
+            "description": "Du hast deine Brieftasche erfolgreich gesichert. Deine Transaktionen sind jetzt geschützt, und deine Wiederherstellungscodes stellen sicher, dass du immer die Kontrolle hast. Du bist bereit, deine Brieftasche sicher zu nutzen."
+          }
+        }
       },
       "passkeys": "Passkeys",
       "passkeys-description": "Verwalten Sie Ihre Passkeys für einen sicheren Zugriff.",
@@ -2035,7 +2275,13 @@
           "name-header": "Name",
           "status-header": "Status",
           "symbol-header": "Symbol",
-          "type-header": "Typ"
+          "type-header": "Typ",
+          "actions-header": "Aktionen",
+          "trigger-label": {
+            "block": "Benutzer blockieren",
+            "freeze": "Einfrieren",
+            "mint": "Prägen"
+          }
         },
         "title": "Bestände"
       },
@@ -2055,7 +2301,56 @@
         "not_verified": "Nicht verifiziert",
         "verified": "Verifiziert"
       },
-      "title": "Benutzer"
+      "title": "Benutzer",
+      "actions": {
+        "change-role": {
+          "buttons": {
+            "cancel": "Abbrechen",
+            "change": "Rolle ändern",
+            "loading": "Aktualisiere..."
+          },
+          "description": "Wähle eine neue Rolle für {userName}. Dies wird ihre Berechtigungen im System ändern.",
+          "error": "Fehler beim Aktualisieren der Rolle: {error}",
+          "select-role": "Rolle auswählen",
+          "success": "Benutzerrolle erfolgreich aktualisiert",
+          "title": "Benutzerrolle ändern",
+          "self-change-warning": "Die Änderung deiner eigenen Rolle kann deinen Zugriff auf diese Seite einschränken."
+        },
+        "update-kyc-status": {
+          "buttons": {
+            "cancel": "Abbrechen",
+            "loading": "Aktualisiere...",
+            "set": "Verifizieren",
+            "remove": "Verifizierung entfernen"
+          },
+          "success": "KYC-Status erfolgreich aktualisiert",
+          "error": "Fehler beim Aktualisieren des KYC-Status: {error}",
+          "set-kyc-status": {
+            "title": "KYC verifizieren",
+            "description": "Bist du sicher, dass du KYC für ${userName} verifizieren möchtest?"
+          },
+          "remove-kyc-status": {
+            "title": "KYC-Status entfernen",
+            "description": "Bist du sicher, dass du die KYC-Verifizierung für ${userName} entfernen möchtest?"
+          }
+        }
+      },
+      "permissions": {
+        "table": {
+          "title": "Token-Berechtigungen",
+          "columns": {
+            "asset-header": "Vermögenswert",
+            "actions-header": "Aktionen",
+            "last-activity-header": "Letzte Aktivität",
+            "roles-header": "Rollen"
+          },
+          "actions": {
+            "edit-roles": "Rollen bearbeiten",
+            "revoke-all": "Alle widerrufen"
+          },
+          "not-enough-permissions": "Du musst ein Administrator oder ein Benutzerverwalter für dieses Asset sein, um die Berechtigungen zu ändern."
+        }
+      }
     }
   },
   "regular": "Benutzer",
@@ -2187,5 +2482,26 @@
     "go-back": "Zurückgehen",
     "go-home": "Nach Hause gehen",
     "title": "Seite nicht gefunden"
+  },
+  "auth-2fa": {
+    "title": "Geben Sie Ihren Code ein",
+    "description": "Geben Sie den 6-stelligen Sicherheitscode aus Ihrer Authentifizierungs-App ein.",
+    "submit": "Fortfahren",
+    "submitting": "Überprüfung...",
+    "error": "Ungültiger Sicherheitscode"
+  },
+  "error-pages": {
+    "forbidden": {
+      "title": "Verboten",
+      "description": "Sie sind nicht berechtigt, auf diese Seite zuzugreifen.",
+      "go-back": "Zurückgehen",
+      "go-home": "Nach Hause gehen"
+    },
+    "not-found": {
+      "title": "Seite nicht gefunden",
+      "description": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben.",
+      "go-back": "Zurückgehen",
+      "go-home": "Nach Hause gehen"
+    }
   }
 }
