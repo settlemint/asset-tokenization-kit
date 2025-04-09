@@ -20,14 +20,7 @@ event IdFactorySet(address _idFactory);
 /// @param _mc Address of modular compliance contract.
 /// @param _salt The salt string that was used to deploy the token.
 event TREXSuiteDeployed(
-    address indexed _token,
-    address _ir,
-    address _irs,
-    address _tir,
-    address _ctr,
-    address _mc,
-    address _am,
-    string indexed _salt
+    address indexed _token, address _ir, address _irs, address _tir, address _ctr, address _mc, string indexed _salt
 );
 
 interface ITREXFactory {
@@ -49,6 +42,10 @@ interface ITREXFactory {
         // ONCHAINID of the token
         // solhint-disable-next-line var-name-mixedcase
         address ONCHAINID;
+        // list of agents of the identity registry (can be set to an AgentManager contract)
+        address[] irAgents;
+        // list of agents of the token
+        address[] tokenAgents;
         // modules to bind to the compliance, indexes are corresponding to the settings callData indexes
         // if a module doesn't require settings, it can be added at the end of the array, at index > settings.length
         address[] complianceModules;
