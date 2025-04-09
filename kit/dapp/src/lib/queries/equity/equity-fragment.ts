@@ -25,6 +25,7 @@ export const EquityFragment = theGraphGraphqlKit(`
       id
     }
     concentration
+    deployedOn
   }
 `);
 

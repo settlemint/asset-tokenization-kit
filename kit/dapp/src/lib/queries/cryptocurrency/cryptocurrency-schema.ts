@@ -46,6 +46,9 @@ export const OnChainCryptoCurrencySchema = t.Object(
       description:
         "The percentage of total supply held by the top holders, indicating ownership concentration",
     }),
+    deployedOn: t.StringifiedBigInt({
+      description: "The timestamp when the bond was deployed",
+    }),
   },
   {
     description:

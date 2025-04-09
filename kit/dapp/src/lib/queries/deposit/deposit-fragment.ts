@@ -28,6 +28,7 @@ export const DepositFragment = theGraphGraphqlKit(`
       id
     }
     concentration
+    deployedOn
   }
 `);
 

@@ -88,6 +88,9 @@ export const OnChainFundSchema = t.Object(
         description: "Information about fund's own holdings as an account",
       }
     ),
+    deployedOn: t.StringifiedBigInt({
+      description: "The timestamp when the bond was deployed",
+    }),
   },
   {
     description:

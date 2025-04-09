@@ -9,12 +9,14 @@ import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supp
 import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
 import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
 import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-distribution";
+import type { TimeRange } from "@/components/blocks/charts/time-series";
 import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import { differenceInSeconds } from "date-fns";
 import type { Locale } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Address } from "viem";
@@ -66,6 +68,31 @@ export default async function AssetDetailsPage({ params }: PageProps) {
     getLocale(),
   ]);
 
+  const calculateMaxRange = (deployedOn: bigint): TimeRange => {
+    const now = new Date();
+    // Convert bigint seconds to milliseconds for Date constructor
+    const deployedDate = new Date(Number(deployedOn) * 1000);
+    const diffSeconds = differenceInSeconds(now, deployedDate);
+
+    // Determine the appropriate range based on the age of the asset
+    if (diffSeconds < 24 * 60 * 60) {
+      // Less than 24 hours
+      return "24h";
+    }
+    if (diffSeconds < 7 * 24 * 60 * 60) {
+      // Less than 7 days
+      return "7d";
+    }
+    if (diffSeconds < 30 * 24 * 60 * 60) {
+      // Less than 30 days
+      return "30d";
+    }
+    // Default to 90d if older than 30 days
+    return "90d";
+  };
+
+  const calculatedMaxRange = calculateMaxRange(assetDetails.deployedOn);
+
   return (
     <>
       <Details assettype={assettype} address={address} />
@@ -81,11 +108,27 @@ export default async function AssetDetailsPage({ params }: PageProps) {
             <BondYieldDistribution address={address} />
           </>
         )}
-        <TotalSupply data={assetStats} locale={locale} />
-        <TotalSupplyChanged data={assetStats} locale={locale} />
+        <TotalSupply
+          data={assetStats}
+          locale={locale}
+          maxRange={calculatedMaxRange}
+        />
+        <TotalSupplyChanged
+          data={assetStats}
+          locale={locale}
+          maxRange={calculatedMaxRange}
+        />
         <WalletDistribution address={address} />
-        <TotalTransfers data={assetStats} locale={locale} />
-        <TotalVolume data={assetStats} locale={locale} />
+        <TotalTransfers
+          data={assetStats}
+          locale={locale}
+          maxRange={calculatedMaxRange}
+        />
+        <TotalVolume
+          data={assetStats}
+          locale={locale}
+          maxRange={calculatedMaxRange}
+        />
       </ChartGrid>
       <Related
         assettype={assettype}

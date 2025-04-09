@@ -5,6 +5,7 @@ import {
   TimeSeriesChart,
   TimeSeriesRoot,
   TimeSeriesTitle,
+  type TimeRange,
 } from "@/components/blocks/charts/time-series";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
@@ -16,9 +17,14 @@ import { useTranslations, type Locale } from "next-intl";
 interface TotalVolumeProps {
   data: AssetStats[];
   locale: Locale;
+  maxRange?: TimeRange;
 }
 
-export function TotalVolume({ data, locale }: TotalVolumeProps) {
+export function TotalVolume({
+  data,
+  locale,
+  maxRange = "30d",
+}: TotalVolumeProps) {
   const t = useTranslations("components.charts.assets");
 
   const chartConfig = {
@@ -40,7 +46,7 @@ export function TotalVolume({ data, locale }: TotalVolumeProps) {
   }
 
   return (
-    <TimeSeriesRoot locale={locale}>
+    <TimeSeriesRoot locale={locale} maxRange={maxRange}>
       <TimeSeriesTitle
         title={t("total-volume.title")}
         description={t("total-volume.description")}

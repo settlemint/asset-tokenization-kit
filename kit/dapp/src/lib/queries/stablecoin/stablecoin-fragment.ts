@@ -28,6 +28,7 @@ export const StableCoinFragment = theGraphGraphqlKit(`
       id
     }
     concentration
+    deployedOn
   }
 `);
 
