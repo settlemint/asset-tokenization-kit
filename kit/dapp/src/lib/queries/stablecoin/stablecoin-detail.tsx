@@ -8,7 +8,7 @@ import {
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import { stablecoinCalculateFields } from "./stablecoin-calculated";
+import { stablecoinsCalculateFields } from "./stablecoin-calculated";
 import {
   OffchainStableCoinFragment,
   StableCoinFragment,
@@ -84,15 +84,16 @@ export const getStableCoinDetail = cache(
       })(),
     ]);
 
-    const calculatedFields = await stablecoinCalculateFields(
-      onChainStableCoin,
-      offChainStableCoin
+    const calculatedFields = await stablecoinsCalculateFields(
+      [onChainStableCoin],
+      [offChainStableCoin]
     );
+    const calculatedStableCoin = calculatedFields.get(onChainStableCoin.id)!;
 
     return {
       ...onChainStableCoin,
       ...offChainStableCoin,
-      ...calculatedFields,
+      ...calculatedStableCoin,
     };
   }
 );

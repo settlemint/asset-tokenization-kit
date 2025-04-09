@@ -8,7 +8,7 @@ import {
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import { equityCalculateFields } from "./equity-calculated";
+import { equitiesCalculateFields } from "./equity-calculated";
 import { EquityFragment, OffchainEquityFragment } from "./equity-fragment";
 import { OffChainEquitySchema, OnChainEquitySchema } from "./equity-schema";
 
@@ -77,14 +77,15 @@ export const getEquityDetail = cache(async ({ address }: EquityDetailProps) => {
     })(),
   ]);
 
-  const calculatedFields = await equityCalculateFields(
-    onChainEquity,
-    offChainEquity
+  const calculatedFields = await equitiesCalculateFields(
+    [onChainEquity],
+    [offChainEquity]
   );
+  const calculatedEquity = calculatedFields.get(onChainEquity.id)!;
 
   return {
     ...onChainEquity,
     ...offChainEquity,
-    ...calculatedFields,
+    ...calculatedEquity,
   };
 });

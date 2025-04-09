@@ -8,7 +8,7 @@ import {
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import { fundCalculateFields } from "./fund-calculated";
+import { fundsCalculateFields } from "./fund-calculated";
 import { FundFragment, OffchainFundFragment } from "./fund-fragment";
 import { OffChainFundSchema, OnChainFundSchema } from "./fund-schema";
 
@@ -77,11 +77,15 @@ export const getFundDetail = cache(async ({ address }: FundDetailProps) => {
     })(),
   ]);
 
-  const calculatedFields = await fundCalculateFields(onChainFund, offChainFund);
+  const calculatedFields = await fundsCalculateFields(
+    [onChainFund],
+    [offChainFund]
+  );
+  const calculatedFund = calculatedFields.get(onChainFund.id)!;
 
   return {
     ...onChainFund,
     ...offChainFund,
-    ...calculatedFields,
+    ...calculatedFund,
   };
 });

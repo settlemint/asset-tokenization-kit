@@ -9,7 +9,7 @@ import {
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { getAddress } from "viem";
-import { depositCalculateFields } from "./deposit-calculated";
+import { depositsCalculateFields } from "./deposit-calculated";
 import { DepositFragment, OffchainDepositFragment } from "./deposit-fragment";
 import { OffChainDepositSchema, OnChainDepositSchema } from "./deposit-schema";
 
@@ -81,22 +81,22 @@ export const getDepositList = cache(async () => {
     offChainDeposits.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const deposits = await Promise.all(
-    onChainDeposits.map(async (deposit) => {
-      const offChainDeposit = assetsById.get(getAddress(deposit.id));
-
-      const calculatedFields = await depositCalculateFields(
-        deposit,
-        offChainDeposit
-      );
-
-      return {
-        ...deposit,
-        ...offChainDeposit,
-        ...calculatedFields,
-      };
-    })
+  const calculatedFields = await depositsCalculateFields(
+    onChainDeposits,
+    offChainDeposits
   );
+
+  const deposits = onChainDeposits.map((deposit) => {
+    const offChainDeposit = assetsById.get(getAddress(deposit.id));
+
+    const calculatedDeposit = calculatedFields.get(deposit.id)!;
+
+    return {
+      ...deposit,
+      ...offChainDeposit,
+      ...calculatedDeposit,
+    };
+  });
 
   return deposits;
 });

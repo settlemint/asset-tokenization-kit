@@ -1,24 +1,32 @@
 import {
   CalculatedCryptoCurrencySchema,
+  type CalculatedCryptoCurrency,
   type OffChainCryptoCurrency,
   type OnChainCryptoCurrency,
 } from "@/lib/queries/cryptocurrency/cryptocurrency-schema";
-import { safeParse } from "@/lib/utils/typebox";
-import { getAssetPriceInUserCurrency } from "../asset-price/asset-price";
+import { safeParse } from "../../utils/typebox";
+import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
 /**
  * Calculates additional fields for a cryptocurrency
  *
- * @param cryptocurrency - The on-chain cryptocurrency data
- * @param offchainCryptocurrency - The off-chain cryptocurrency data
+ * @param cryptocurrencies - The on-chain cryptocurrencies data
+ * @param offchainCryptocurrencies - The off-chain cryptocurrencies data
  * @returns An object containing the calculated fields
  */
-export async function cryptoCurrencyCalculateFields(
-  cryptocurrency: OnChainCryptoCurrency,
-  _offchainCryptocurrency?: OffChainCryptoCurrency
+export async function cryptoCurrenciesCalculateFields(
+  cryptocurrencies: OnChainCryptoCurrency[],
+  _offchainCryptocurrencies?: (OffChainCryptoCurrency | undefined)[]
 ) {
-  const price = await getAssetPriceInUserCurrency(cryptocurrency.id);
+  const prices = await getAssetsPricesInUserCurrency(
+    cryptocurrencies.map((cryptocurrency) => cryptocurrency.id)
+  );
 
-  return safeParse(CalculatedCryptoCurrencySchema, {
-    price,
-  });
+  return cryptocurrencies.reduce((acc, cryptocurrency) => {
+    const price = prices.get(cryptocurrency.id);
+    const calculatedCryptoCurrency = safeParse(CalculatedCryptoCurrencySchema, {
+      price,
+    });
+    acc.set(cryptocurrency.id, calculatedCryptoCurrency);
+    return acc;
+  }, new Map<string, CalculatedCryptoCurrency>());
 }

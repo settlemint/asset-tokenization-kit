@@ -8,7 +8,7 @@ import {
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import { cryptoCurrencyCalculateFields } from "./cryptocurrency-calculated";
+import { cryptoCurrenciesCalculateFields } from "./cryptocurrency-calculated";
 import {
   CryptoCurrencyFragment,
   OffchainCryptoCurrencyFragment,
@@ -87,15 +87,18 @@ export const getCryptoCurrencyDetail = cache(
       })(),
     ]);
 
-    const calculatedFields = await cryptoCurrencyCalculateFields(
-      onChainCryptoCurrency,
-      offChainCryptoCurrency
+    const calculatedFields = await cryptoCurrenciesCalculateFields(
+      [onChainCryptoCurrency],
+      [offChainCryptoCurrency]
     );
+    const calculatedCryptoCurrency = calculatedFields.get(
+      onChainCryptoCurrency.id
+    )!;
 
     return {
       ...onChainCryptoCurrency,
       ...offChainCryptoCurrency,
-      ...calculatedFields,
+      ...calculatedCryptoCurrency,
     };
   }
 );
