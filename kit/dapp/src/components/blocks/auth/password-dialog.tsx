@@ -18,19 +18,19 @@ interface TwoFactorPasswordDialogProps {
   isLoading: boolean;
   submitButtonVariant?: "destructive" | "default";
   submitButtonText: string;
+  description: string;
 }
 
-export function TwoFactorPasswordDialog({
+export function PasswordDialog({
   open,
   onOpenChange,
   onSubmit,
   isLoading,
   submitButtonVariant,
   submitButtonText,
+  description,
 }: TwoFactorPasswordDialogProps) {
-  const t = useTranslations(
-    "portfolio.settings.profile.two-factor-authentication.enter-password"
-  );
+  const t = useTranslations("portfolio.settings.profile.enter-password");
   const [password, setPassword] = useState("");
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export function TwoFactorPasswordDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">

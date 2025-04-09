@@ -1,5 +1,5 @@
-import { redirect } from "@/i18n/routing";
 import { auth } from "@/lib/auth/auth";
+import { redirectToSignIn } from "@/lib/auth/redirect";
 import { headers } from "next/headers";
 import type { User } from "./types";
 
@@ -15,13 +15,13 @@ export async function getUser() {
     });
 
     if (!session?.user) {
-      redirect({ href: "/auth/sign-in", locale: "en" });
-      throw new Error("User not authenticated");
+      return redirectToSignIn();
     }
 
     return session.user as User;
-  } catch (error) {
-    redirect({ href: "/auth/sign-in", locale: "en" });
-    throw new Error("User not authenticated");
+  } catch (err) {
+    const error = err as Error;
+    console.error(`Error getting user: ${error.message}`, error.stack);
+    return redirectToSignIn();
   }
 }

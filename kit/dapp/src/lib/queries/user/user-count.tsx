@@ -60,16 +60,10 @@ function calculateCumulativeUsersByDay(users: { created_at: Date }[]) {
 
   const dailyCounts = new Map<string, number>();
 
-  let minDate = new Date();
-  let maxDate = new Date(0);
-
   // Group users by day and find min/max dates
   users.forEach((user) => {
     const date = new Date(user.created_at);
     const dateStr = format(date, "yyyy-MM-dd");
-
-    if (date < minDate) minDate = date;
-    if (date > maxDate) maxDate = date;
 
     dailyCounts.set(dateStr, (dailyCounts.get(dateStr) || 0) + 1);
   });

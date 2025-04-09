@@ -1,6 +1,4 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
-import { setPincodeFunction } from "@/lib/mutations/user/set-pincode-function";
-import { SetPincodeSchema } from "@/lib/mutations/user/set-pincode-schema";
 import {
   getCurrentUserDetail,
   getUserDetail,
@@ -124,28 +122,6 @@ export const UserApi = new Elysia({
       }),
       response: {
         200: t.Union([t.Array(UserSchema), t.Array(ContactSchema)]),
-        ...defaultErrorSchema,
-      },
-    }
-  )
-  .post(
-    "/set-pincode",
-    async ({ body, user }) => {
-      return setPincodeFunction({
-        parsedInput: body,
-        ctx: { user },
-      });
-    },
-    {
-      auth: true,
-      detail: {
-        summary: "Set pincode",
-        description: "Sets a pincode for a user.",
-        tags: ["user"],
-      },
-      body: SetPincodeSchema(),
-      response: {
-        200: t.Object({ success: t.Boolean() }),
         ...defaultErrorSchema,
       },
     }

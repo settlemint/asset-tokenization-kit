@@ -1,4 +1,5 @@
 import { SetupWalletSecurityForm } from "@/components/blocks/auth/setup-wallet-security-form/form";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,6 @@ import {
 import { WalletSecurityMethodOptions } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "../../ui/button";
 
 export type WalletSecurityMethod =
   (typeof WalletSecurityMethodOptions)[keyof typeof WalletSecurityMethodOptions];
