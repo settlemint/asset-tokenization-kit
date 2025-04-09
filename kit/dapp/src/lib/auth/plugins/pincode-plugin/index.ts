@@ -143,7 +143,7 @@ export const pincode = () => {
       updatePincode: createAuthEndpoint(
         "/pincode/update",
         {
-          method: "PUT",
+          method: "POST",
           body: z.object({
             password: z.string({
               description: "User password",

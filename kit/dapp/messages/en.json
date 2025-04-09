@@ -1950,6 +1950,7 @@
       "wallet-security": {
         "set-pincode-dialog": {
           "description": "Enter a 6-digit pincode to secure your wallet.",
+          "cancel": "Cancel",
           "enable": {
             "title": "Setup Pincode",
             "pincode-set": "Pincode set successfully",

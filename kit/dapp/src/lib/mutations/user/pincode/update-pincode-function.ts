@@ -23,6 +23,11 @@ export async function updatePincodeFunction({
   }
   return setPincodeFunction({
     parsedInput: { pincode },
-    ctx,
+    ctx: {
+      user: {
+        ...currentUser,
+        pincodeEnabled: false,
+      },
+    },
   });
 }

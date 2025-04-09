@@ -93,7 +93,7 @@ export function SetPincodeDialog({
   };
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open && !!password} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -114,6 +114,7 @@ export function SetPincodeDialog({
                       <PincodeInput
                         value={field.value}
                         onChange={field.onChange}
+                        autoFocus
                       />
                     </FormControl>
                     <TranslatableFormFieldMessage />
@@ -122,6 +123,18 @@ export function SetPincodeDialog({
               />
 
               <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    form.reset();
+                    setPassword("");
+                    onOpenChange(false);
+                  }}
+                  disabled={form.formState.isSubmitting}
+                >
+                  {t("cancel")}
+                </Button>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting
                     ? isUpdate
@@ -137,7 +150,11 @@ export function SetPincodeDialog({
         </DialogContent>
       </Dialog>
       <PasswordDialog
-        open={!password && (session?.user.initialOnboardingFinished ?? false)}
+        open={
+          open &&
+          !password &&
+          (session?.user.initialOnboardingFinished ?? false)
+        }
         onOpenChange={onOpenChange}
         onSubmit={async (password) => {
           setPassword(password);
