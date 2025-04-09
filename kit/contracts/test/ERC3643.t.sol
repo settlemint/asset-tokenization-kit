@@ -14,29 +14,23 @@ import { Token } from "../contracts/shared/erc3643/token/Token.sol";
 import { ITREXImplementationAuthority } from
     "../contracts/shared/erc3643/proxy/authority/ITREXImplementationAuthority.sol";
 import { IdentityRegistry } from "../contracts/shared/erc3643/registry/implementation/IdentityRegistry.sol";
-import { PlatformFactory } from "../contracts/shared/PlatformFactory.sol";
 import { ITREXFactory } from "../contracts/shared/erc3643/factory/ITREXFactory.sol";
-import { IdFactory } from "../contracts/shared/onchainid/factory/IdFactory.sol";
-import { TREXFactory } from "../contracts/shared/erc3643/factory/TREXFactory.sol";
 import { Gateway } from "../contracts/shared/onchainid/gateway/Gateway.sol";
-import { IIdentityRegistry } from "../contracts/shared/erc3643/registry/interface/IIdentityRegistry.sol";
-import { IERC3643IdentityRegistry } from "../contracts/shared/erc3643/ERC-3643/IERC3643IdentityRegistry.sol";
 import { IIdentity } from "../contracts/shared/onchainid/interface/IIdentity.sol";
+import { AgentManager } from "../contracts/shared/erc3643/roles/permissioning/agent/AgentManager.sol";
+import { TREXFactory } from "../contracts/shared/erc3643/factory/TREXFactory.sol";
+import { Identity } from "../contracts/shared/onchainid/Identity.sol";
+import { ImplementationAuthority } from "../contracts/shared/onchainid/proxy/ImplementationAuthority.sol";
+import { IdFactory } from "../contracts/shared/onchainid/factory/IdFactory.sol";
+import { AgentRole } from "../contracts/shared/erc3643/roles/AgentRole.sol";
 
 contract GatewayTest is Test {
     TREXImplementationAuthority public tokenImplementationAuthority;
-    PlatformFactory public platformFactory;
 
-    address public predeployer = makeAddr("Predeployer");
     address public platformAdmin = makeAddr("Platform Admin");
-
     address public organization1 = makeAddr("Organization 1");
-
     address public tokenAgent1 = makeAddr("Token Agent 1");
     address public tokenAgent2 = makeAddr("Token Agent 2");
-
-    address public identityAgent1 = makeAddr("Identity Agent 1");
-
     address public client1 = makeAddr("Client 1");
 
     // Store deployed contract addresses globally
@@ -46,9 +40,12 @@ contract GatewayTest is Test {
     address public trustedIssuersRegistryAddress;
     address public identityRegistryStorageAddress;
     address public modularComplianceAddress;
+    address public agentManagerAddress;
+    address public identityGateway;
+    address public gateway;
 
     function setUp() public {
-        vm.startPrank(predeployer);
+        vm.startPrank(platformAdmin);
         // ERC3643
         ClaimTopicsRegistry claimTopicsRegistry = new ClaimTopicsRegistry();
         TrustedIssuersRegistry trustedIssuersRegistry = new TrustedIssuersRegistry();
@@ -59,7 +56,7 @@ contract GatewayTest is Test {
 
         tokenImplementationAuthority = new TREXImplementationAuthority(true, address(0), address(0));
         tokenImplementationAuthority.addAndUseTREXVersion(
-            ITREXImplementationAuthority.Version({ major: 4, minor: 2, patch: 0 }),
+            ITREXImplementationAuthority.Version({ major: 1, minor: 0, patch: 0 }),
             ITREXImplementationAuthority.TREXContracts({
                 tokenImplementation: address(token),
                 ctrImplementation: address(claimTopicsRegistry),
@@ -70,21 +67,20 @@ contract GatewayTest is Test {
             })
         );
 
-        platformFactory = new PlatformFactory();
+        Identity identity = new Identity(address(0), true);
+        ImplementationAuthority identityImplementationAuthority = new ImplementationAuthority(address(identity));
+        IdFactory identityFactory = new IdFactory(address(identityImplementationAuthority));
+        // Factory
+        TREXFactory factory = new TREXFactory(address(tokenImplementationAuthority), address(identityFactory));
+        identityFactory.addTokenFactory(address(factory));
+        identityGateway = address(new Gateway(address(identityFactory), new address[](0)));
 
-        vm.stopPrank();
-    }
+        // Gateway
+        gateway = address(new TREXGateway(address(factory), true));
+        TREXGateway(gateway).addAgent(platformAdmin);
+        factory.transferOwnership(address(gateway));
+        identityFactory.transferOwnership(address(identityGateway));
 
-    function onboardFirstAdmin(
-        address platformAdmin_,
-        address tokenImplementationAuthority_
-    )
-        public
-        returns (TREXGateway gateway, Gateway identityGateway)
-    {
-        vm.startPrank(platformAdmin_);
-        (gateway, identityGateway) =
-            platformFactory.createPlatform(platformAdmin_, tokenImplementationAuthority_, new address[](0));
         vm.stopPrank();
     }
 
@@ -96,11 +92,10 @@ contract GatewayTest is Test {
 
     function deployTokenSuite(
         TREXGateway gateway_,
-        address issuer_,
-        address[] memory tokenManagers_,
-        address[] memory identityManagers_
+        address issuer_
     )
         public
+        returns (address deployedAgentManagerAddress)
     {
         vm.startPrank(issuer_);
         // Start recording logs to capture events
@@ -121,12 +116,12 @@ contract GatewayTest is Test {
                 // set it to ZERO address if you want to deploy a new storage
                 // if an address is provided, please ensure that the factory is set as owner of the contract
                 irs: address(0),
+                // list of agents of the identity registry (can be set to an AgentManager contract)
+                irAgents: new address[](0),
+                // list of agents of the token
+                tokenAgents: new address[](0),
                 // ONCHAINID of the token
                 ONCHAINID: address(0),
-                // list of agents of the identity registry (can be set to an AgentManager contract)
-                irAgents: identityManagers_,
-                // list of agents of the token
-                tokenAgents: tokenManagers_,
                 // modules to bind to the compliance, indexes are corresponding to the settings callData indexes
                 // if a module doesn't require settings, it can be added at the end of the array, at index >
                 // settings.length
@@ -174,28 +169,70 @@ contract GatewayTest is Test {
             }
         }
 
-        // // solhint-disable-next-line no-console
-        // console.log("Final addresses:");
-        // // solhint-disable-next-line no-console
-        // console.log("tokenAddress", tokenAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("identityRegistryAddress", identityRegistryAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("identityRegistryStorageAddress", identityRegistryStorageAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("claimTopicsRegistryAddress", claimTopicsRegistryAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("trustedIssuersRegistryAddress", trustedIssuersRegistryAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("modularComplianceAddress", modularComplianceAddress);
+        // solhint-disable-next-line no-console
+        console.log("Final addresses:");
+        // solhint-disable-next-line no-console
+        console.log("tokenAddress", tokenAddress);
+        // solhint-disable-next-line no-console
+        console.log("identityRegistryAddress", identityRegistryAddress);
+        // solhint-disable-next-line no-console
+        console.log("identityRegistryStorageAddress", identityRegistryStorageAddress);
+        // solhint-disable-next-line no-console
+        console.log("claimTopicsRegistryAddress", claimTopicsRegistryAddress);
+        // solhint-disable-next-line no-console
+        console.log("trustedIssuersRegistryAddress", trustedIssuersRegistryAddress);
+        // solhint-disable-next-line no-console
+        console.log("modularComplianceAddress", modularComplianceAddress);
+
+        AgentManager am = new AgentManager(tokenAddress);
+        deployedAgentManagerAddress = address(am);
+        AgentRole(tokenAddress).addAgent(address(am));
+        AgentRole(identityRegistryAddress).addAgent(address(am));
+
+        am.addAgentAdmin(issuer_);
+
+        vm.stopPrank();
     }
 
-    function createIdentity(Gateway identityGateway_, address clientWalletAddress_, uint8 countryCode_) public {
-        vm.startPrank(identityAgent1);
-        IIdentity id = IIdentity(identityGateway_.deployIdentityForWallet(clientWalletAddress_));
-        IERC3643IdentityRegistry identityRegistry = Token(tokenAddress).identityRegistry();
+    function createClientIdentity(
+        Gateway identityGateway_,
+        address clientWalletAddress_,
+        uint8 countryCode_,
+        address agentWalletAddress_,
+        IIdentity agent_,
+        address localAgentManagerAddress
+    )
+        public
+    {
+        IIdentity clientId = IIdentity(identityGateway_.deployIdentityForWallet(clientWalletAddress_));
+
+        vm.startPrank(agentWalletAddress_);
         // country numbers from https://en.wikipedia.org/wiki/ISO_3166-1_numeric
-        identityRegistry.registerIdentity(clientWalletAddress_, id, countryCode_);
+        AgentManager(localAgentManagerAddress).callRegisterIdentity(
+            clientWalletAddress_, clientId, countryCode_, agent_
+        );
+        vm.stopPrank();
+    }
+
+    function setupAgent(
+        Gateway identityGateway_,
+        address agentWalletAddress,
+        bool whiteListManager,
+        bool supplyModifier,
+        address localAgentManagerAddress
+    )
+        public
+        returns (IIdentity agentId)
+    {
+        agentId = IIdentity(identityGateway_.deployIdentityForWallet(agentWalletAddress));
+
+        vm.startPrank(organization1);
+        if (whiteListManager) {
+            AgentManager(localAgentManagerAddress).addWhiteListManager(address(agentId));
+        }
+        if (supplyModifier) {
+            AgentManager(localAgentManagerAddress).addSupplyModifier(address(agentId));
+        }
         vm.stopPrank();
     }
 
@@ -217,7 +254,7 @@ contract GatewayTest is Test {
     *      And how would me we make follow up deploys when devs start customizing more user friendly?
     */
     function test_OnboardFirstAdmin() public {
-        onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
+        // onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
     }
 
     /*
@@ -249,8 +286,7 @@ contract GatewayTest is Test {
     not? Single org would make a lot of sense too
     */
     function test_OnboardIssuer() public {
-        (TREXGateway gateway,) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
-        onboardIssuer(gateway, platformAdmin, organization1);
+        onboardIssuer(TREXGateway(gateway), platformAdmin, organization1);
     }
 
     /*
@@ -262,36 +298,9 @@ contract GatewayTest is Test {
     administrative actions (collateral, kyc, redemption, etc)
     */
     function test_DeployTokenSuite() public {
-        (TREXGateway gateway,) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
-        onboardIssuer(gateway, platformAdmin, organization1);
-
-        address[] memory tokenAgents = new address[](1);
-        tokenAgents[0] = tokenAgent1;
-        address[] memory identityManagers = new address[](1);
-        identityManagers[0] = identityAgent1;
-        deployTokenSuite(gateway, organization1, tokenAgents, identityManagers);
-    }
-
-    /*
-    * @dev there needs to be tabs in the details to manage agents
-    */
-    function test_AddSecondIssuer() public {
-        (TREXGateway gateway,) = onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
-        onboardIssuer(gateway, platformAdmin, organization1);
-
-        address[] memory tokenAgents = new address[](1);
-        tokenAgents[0] = tokenAgent1;
-        address[] memory identityManagers = new address[](1);
-        identityManagers[0] = identityAgent1;
-        deployTokenSuite(gateway, organization1, tokenAgents, identityManagers);
-
-        // Now add a second agent to the token
-        vm.startPrank(organization1); // The issuer1 is the owner of the token
-        Token(tokenAddress).addAgent(tokenAgent2);
-        vm.stopPrank();
-
-        // Verify that tokenAgent2 is now an agent
-        assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
+        onboardIssuer(TREXGateway(gateway), platformAdmin, organization1);
+        address localAgentManagerAddress = deployTokenSuite(TREXGateway(gateway), organization1);
+        assertTrue(localAgentManagerAddress != address(0)); // Add a simple check
     }
 
     /**
@@ -305,28 +314,23 @@ contract GatewayTest is Test {
      *      - should we create the identity on the fly when we create a wallet?
      */
     function test_Mint() public {
-        (TREXGateway gateway, Gateway identityGateway) =
-            onboardFirstAdmin(platformAdmin, address(tokenImplementationAuthority));
-        onboardIssuer(gateway, platformAdmin, organization1);
-
-        address[] memory tokenAgents = new address[](1);
-        tokenAgents[0] = tokenAgent1;
-        address[] memory identityManagers = new address[](1);
-        identityManagers[0] = identityAgent1;
-        deployTokenSuite(gateway, organization1, tokenAgents, identityManagers);
+        onboardIssuer(TREXGateway(gateway), platformAdmin, organization1);
+        address localAgentManagerAddress = deployTokenSuite(TREXGateway(gateway), organization1);
 
         // Now add a second agent to the token
         vm.startPrank(organization1); // The issuer1 is the owner of the token
-        Token(tokenAddress).addAgent(tokenAgent2);
+        IIdentity tokenAgent2Id =
+            setupAgent(Gateway(identityGateway), tokenAgent2, true, true, localAgentManagerAddress);
         vm.stopPrank();
 
-        // Verify that tokenAgent2 is now an agent
-        assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
-
-        createIdentity(identityGateway, client1, 56); // 56 is Belgium
+        createClientIdentity(
+            Gateway(identityGateway), client1, 56, tokenAgent2, tokenAgent2Id, localAgentManagerAddress
+        ); // 56 is Belgium
 
         vm.startPrank(tokenAgent2);
         // Mint 1000 tokens to the owner
-        Token(tokenAddress).mint(client1, 1000);
+        AgentManager(localAgentManagerAddress).callMint(client1, 1000, tokenAgent2Id);
+
+        vm.stopPrank();
     }
 }
