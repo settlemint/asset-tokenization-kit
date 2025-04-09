@@ -2,6 +2,7 @@
 pragma solidity ^0.8.27;
 
 import { Test, console, Vm } from "forge-std/Test.sol";
+import { console } from "forge-std/console.sol";
 import { TREXGateway } from "../contracts/shared/erc3643/factory/TREXGateway.sol";
 import { TREXImplementationAuthority } from
     "../contracts/shared/erc3643/proxy/authority/TREXImplementationAuthority.sol";
@@ -22,6 +23,8 @@ import { Gateway } from "../contracts/shared/onchainid/gateway/Gateway.sol";
 import { IIdentityRegistry } from "../contracts/shared/erc3643/registry/interface/IIdentityRegistry.sol";
 import { IERC3643IdentityRegistry } from "../contracts/shared/erc3643/ERC-3643/IERC3643IdentityRegistry.sol";
 import { IIdentity } from "../contracts/shared/onchainid/interface/IIdentity.sol";
+import { ClaimIssuer } from "../contracts/shared/onchainid/ClaimIssuer.sol";
+import { IClaimIssuer } from "../contracts/shared/onchainid/interface/IClaimIssuer.sol";
 
 contract GatewayTest is Test {
     TREXImplementationAuthority public tokenImplementationAuthority;
@@ -39,6 +42,15 @@ contract GatewayTest is Test {
 
     address public client1 = makeAddr("Client 1");
 
+    // Using a single key for all claim issuer operations
+    uint256 private claimIssuerPrivateKey = 0x12345;
+    address public claimIssuerAdmin = vm.addr(claimIssuerPrivateKey);
+
+    uint256 private claimIssuerPrivateKey2 = 0x67890;
+    address public claimIssuerAdmin2 = vm.addr(claimIssuerPrivateKey2);
+
+    ClaimIssuer public claimIssuerContract;
+
     // Store deployed contract addresses globally
     address public tokenAddress;
     address public identityRegistryAddress;
@@ -46,6 +58,14 @@ contract GatewayTest is Test {
     address public trustedIssuersRegistryAddress;
     address public identityRegistryStorageAddress;
     address public modularComplianceAddress;
+
+    uint256 public constant CLAIM_TOPIC_KYC = 1;
+    uint256 public constant CLAIM_TOPIC_AML = 2;
+
+    // Key types and purposes (from ERC-725)
+    uint256 constant MANAGEMENT_PURPOSE = 1;
+    uint256 constant CLAIM_SIGNER_PURPOSE = 3;
+    uint256 constant ECDSA_TYPE = 1;
 
     function setUp() public {
         vm.startPrank(predeployer);
@@ -94,6 +114,44 @@ contract GatewayTest is Test {
         vm.stopPrank();
     }
 
+    function addKeyToIdentity(IIdentity identity, bytes32 key, uint256 purpose, uint256 keyType) internal {
+        // Check if the key already exists with the given purpose
+        bool hasKey = identity.keyHasPurpose(key, purpose);
+        if (!hasKey) {
+            // Add the key if it doesn't exist
+            identity.addKey(key, purpose, keyType);
+            console.log("Key added:");
+            console.logBytes32(key);
+        } else {
+            console.log("Key already exists:");
+            console.logBytes32(key);
+        }
+    }
+
+    function createClaimIssuerAndAddtoRegistry(address issuer_, address trustedIssuersRegistryAddress_) public {
+        vm.startPrank(claimIssuerAdmin);
+        claimIssuerContract = new ClaimIssuer(claimIssuerAdmin);
+        console.log("ClaimIssuer deployed at:", address(claimIssuerContract));
+
+        // Add the claim issuer admin key directly to the identity
+        bytes32 signerKey = keccak256(abi.encode(claimIssuerAdmin));
+        addKeyToIdentity(IIdentity(address(claimIssuerContract)), signerKey, CLAIM_SIGNER_PURPOSE, ECDSA_TYPE);
+        vm.stopPrank();
+
+        vm.startPrank(issuer_);
+        uint256[] memory claimTopics = new uint256[](2);
+        claimTopics[0] = CLAIM_TOPIC_KYC;
+        claimTopics[1] = CLAIM_TOPIC_AML;
+        TrustedIssuersRegistry(trustedIssuersRegistryAddress_).addTrustedIssuer(claimIssuerContract, claimTopics);
+        vm.stopPrank();
+    }
+
+    function addClaimTopic(uint256 claimTopic_) public {
+        vm.startPrank(organization1);
+        ClaimTopicsRegistry(claimTopicsRegistryAddress).addClaimTopic(claimTopic_);
+        vm.stopPrank();
+    }
+
     function deployTokenSuite(
         TREXGateway gateway_,
         address issuer_,
@@ -103,65 +161,34 @@ contract GatewayTest is Test {
         public
     {
         vm.startPrank(issuer_);
-        // Start recording logs to capture events
         vm.recordLogs();
 
-        // Deploy token
         gateway_.deployTREXSuite(
             ITREXFactory.TokenDetails({
-                // address of the owner of all contracts
-                owner: issuer_,
-                // name of the token
-                name: "Test Token",
-                // symbol / ticker of the token
-                symbol: "TT",
-                // decimals of the token (can be between 0 and 18)
-                decimals: 8,
-                // identity registry storage address
-                // set it to ZERO address if you want to deploy a new storage
-                // if an address is provided, please ensure that the factory is set as owner of the contract
-                irs: address(0),
-                // ONCHAINID of the token
-                ONCHAINID: address(0),
-                // list of agents of the identity registry (can be set to an AgentManager contract)
-                irAgents: identityManagers_,
-                // list of agents of the token
-                tokenAgents: tokenManagers_,
-                // modules to bind to the compliance, indexes are corresponding to the settings callData indexes
-                // if a module doesn't require settings, it can be added at the end of the array, at index >
-                // settings.length
-                complianceModules: new address[](0),
-                // settings calls for compliance modules
-                complianceSettings: new bytes[](0)
-            }),
+                owner: issuer_, // The address of the issuer who will own the token.
+                name: "Test Token", // The name of the token being deployed.
+                symbol: "TT", // The symbol for the token, typically a short abbreviation.
+                decimals: 8, // The number of decimal places the token uses.
+                irs: address(0), // The address for the Identity Registry Storage, set to zero address for now.
+                ONCHAINID: address(0), // The address for the ONCHAINID, set to zero address for now.
+                irAgents: identityManagers_, // An array of addresses that are identity managers for the token.
+                tokenAgents: tokenManagers_, // An array of addresses that are token managers for the token.
+                complianceModules: new address[](0), // An array of compliance module addresses, empty for now.
+                complianceSettings: new bytes[](0) // An array of compliance settings, empty for now.
+             }),
             ITREXFactory.ClaimDetails({
-                // claim topics required
-                claimTopics: new uint256[](0),
-                // trusted issuers addresses
-                issuers: new address[](0),
-                // claims that issuers are allowed to emit, by index, index corresponds to the `issuers` indexes
-                issuerClaims: new uint256[][](0)
-            })
+                claimTopics: new uint256[](0), // An array of claim topics, empty for now.
+                issuers: new address[](0), // An array of issuer addresses, empty for now.
+                issuerClaims: new uint256[][](0) // A 2D array of issuer claims, empty for now.
+             })
         );
 
-        // Get the recorded logs
         Vm.Log[] memory entries = vm.getRecordedLogs();
-
-        // Find the TREXSuiteDeployed event
-        // The TREXSuiteDeployed event signature from ITREXFactory is:
-        // event TREXSuiteDeployed(address indexed _token, address _ir, address _irs, address _tir, address _ctr,
-        // address _mc, string indexed _salt);
-
         bytes32 eventSignature = keccak256("TREXSuiteDeployed(address,address,address,address,address,address,string)");
 
-        // Loop through logs to find TREXSuiteDeployed event
         for (uint256 i = 0; i < entries.length; i++) {
             if (entries[i].topics[0] == eventSignature) {
-                // Found the event, topic[1] has the indexed token address
                 tokenAddress = address(uint160(uint256(entries[i].topics[1])));
-
-                // Decode the non-indexed parameters
-                // The data contains: _ir, _irs, _tir, _ctr, _mc (the _salt is indexed so it's in topics)
                 (
                     identityRegistryAddress,
                     identityRegistryStorageAddress,
@@ -169,33 +196,106 @@ contract GatewayTest is Test {
                     claimTopicsRegistryAddress,
                     modularComplianceAddress
                 ) = abi.decode(entries[i].data, (address, address, address, address, address));
-
                 break;
             }
         }
-
-        // // solhint-disable-next-line no-console
-        // console.log("Final addresses:");
-        // // solhint-disable-next-line no-console
-        // console.log("tokenAddress", tokenAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("identityRegistryAddress", identityRegistryAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("identityRegistryStorageAddress", identityRegistryStorageAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("claimTopicsRegistryAddress", claimTopicsRegistryAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("trustedIssuersRegistryAddress", trustedIssuersRegistryAddress);
-        // // solhint-disable-next-line no-console
-        // console.log("modularComplianceAddress", modularComplianceAddress);
+        vm.stopPrank();
     }
 
     function createIdentity(Gateway identityGateway_, address clientWalletAddress_, uint8 countryCode_) public {
         vm.startPrank(identityAgent1);
         IIdentity id = IIdentity(identityGateway_.deployIdentityForWallet(clientWalletAddress_));
         IERC3643IdentityRegistry identityRegistry = Token(tokenAddress).identityRegistry();
-        // country numbers from https://en.wikipedia.org/wiki/ISO_3166-1_numeric
         identityRegistry.registerIdentity(clientWalletAddress_, id, countryCode_);
+        vm.stopPrank();
+    }
+
+    function createAndVerifySignature(
+        uint256 claimIssuerPrivKey,
+        IIdentity clientIdentity,
+        uint256 claimTopic,
+        string memory claimData
+    )
+        internal
+        pure
+        returns (bytes32 dataHash, bytes memory signature)
+    {
+        bytes memory data = abi.encode(claimData);
+        dataHash = keccak256(abi.encode(clientIdentity, claimTopic, data));
+
+        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", dataHash));
+
+        // Sign with the claim issuer private key
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(claimIssuerPrivKey, prefixedHash);
+        signature = abi.encodePacked(r, s, v);
+
+        // Verify signature
+        address recoveredAddr = ecrecover(prefixedHash, v, r, s);
+        address expectedSigner = vm.addr(claimIssuerPrivKey);
+
+        if (recoveredAddr != expectedSigner) {
+            console.log("Signature verification failed:");
+            console.log("Expected signer:", expectedSigner);
+            console.log("Recovered signer:", recoveredAddr);
+            revert("Signature verification failed");
+        }
+
+        return (dataHash, signature);
+    }
+
+    function verifyClaimWithIssuer(
+        IClaimIssuer claimIssuer,
+        IIdentity clientIdentity,
+        uint256 claimTopic,
+        bytes memory signature,
+        bytes memory data
+    )
+        internal
+        view
+        returns (bool)
+    {
+        try claimIssuer.isClaimValid(clientIdentity, claimTopic, signature, data) returns (bool result) {
+            console.log("Claim validation result:", result);
+            return result;
+        } catch Error(string memory reason) {
+            console.log("Claim validation error:", reason);
+            revert(string(abi.encodePacked("Claim validation failed: ", reason)));
+        }
+    }
+
+    function addClaimToIdentity(
+        address client,
+        ClaimIssuer claimIssuer,
+        uint256 claimIssuerPrivKey,
+        uint256 claimTopic,
+        string memory claimData
+    )
+        public
+    {
+        IIdentity clientIdentity = IIdentity(Token(tokenAddress).identityRegistry().identity(client));
+        console.log("Client identity at:", address(clientIdentity));
+
+        bytes memory data = abi.encode(claimData);
+        (bytes32 dataHash, bytes memory signature) =
+            createAndVerifySignature(claimIssuerPrivKey, clientIdentity, claimTopic, claimData);
+
+        console.log("Data hash:");
+        console.logBytes32(dataHash);
+
+        // Verify claim with issuer
+        vm.startPrank(client);
+        bool isValid =
+            verifyClaimWithIssuer(IClaimIssuer(address(claimIssuer)), clientIdentity, claimTopic, signature, data);
+
+        require(isValid, "Claim not valid with issuer");
+
+        // Add claim to identity
+        try clientIdentity.addClaim(claimTopic, ECDSA_TYPE, address(claimIssuer), signature, data, "") {
+            console.log("Claim successfully added to identity");
+        } catch Error(string memory reason) {
+            console.log("Failed to add claim:", reason);
+            revert(string(abi.encodePacked("Failed to add claim: ", reason)));
+        }
         vm.stopPrank();
     }
 
@@ -285,12 +385,10 @@ contract GatewayTest is Test {
         identityManagers[0] = identityAgent1;
         deployTokenSuite(gateway, organization1, tokenAgents, identityManagers);
 
-        // Now add a second agent to the token
-        vm.startPrank(organization1); // The issuer1 is the owner of the token
+        vm.startPrank(organization1);
         Token(tokenAddress).addAgent(tokenAgent2);
         vm.stopPrank();
 
-        // Verify that tokenAgent2 is now an agent
         assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
     }
 
@@ -314,19 +412,25 @@ contract GatewayTest is Test {
         address[] memory identityManagers = new address[](1);
         identityManagers[0] = identityAgent1;
         deployTokenSuite(gateway, organization1, tokenAgents, identityManagers);
+        createClaimIssuerAndAddtoRegistry(organization1, trustedIssuersRegistryAddress);
+        addClaimTopic(CLAIM_TOPIC_KYC);
+        addClaimTopic(CLAIM_TOPIC_AML);
 
-        // Now add a second agent to the token
-        vm.startPrank(organization1); // The issuer1 is the owner of the token
+        vm.startPrank(organization1);
         Token(tokenAddress).addAgent(tokenAgent2);
         vm.stopPrank();
 
-        // Verify that tokenAgent2 is now an agent
         assertTrue(Token(tokenAddress).isAgent(tokenAgent2));
 
-        createIdentity(identityGateway, client1, 56); // 56 is Belgium
+        createIdentity(identityGateway, client1, 56);
+
+        addClaimToIdentity(client1, claimIssuerContract, claimIssuerPrivateKey, CLAIM_TOPIC_KYC, "KYC_VERIFIED");
+        addClaimToIdentity(client1, claimIssuerContract, claimIssuerPrivateKey, CLAIM_TOPIC_AML, "AML_VERIFIED");
 
         vm.startPrank(tokenAgent2);
-        // Mint 1000 tokens to the owner
         Token(tokenAddress).mint(client1, 1000);
+        vm.stopPrank();
+
+        assertEq(Token(tokenAddress).balanceOf(client1), 1000);
     }
 }
