@@ -60,6 +60,8 @@ jobs:
         with:
           api-key: ${{ secrets.LANGUINE_API_KEY }}
           project-id: ${{ secrets.LANGUINE_PROJECT_ID }}
+          create-pull-request: true
+          working-directory: kit/dapp
 
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
