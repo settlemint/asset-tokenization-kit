@@ -8,13 +8,29 @@ export async function PriceWidget() {
   const { totalPrice, currency } = await getTotalAssetPrice();
   const locale = await getLocale();
 
+  const formattedValue = formatNumber(totalPrice, {
+    locale,
+    currency,
+    compact: true,
+    showFullValue: true,
+  });
+
+  const displayValue =
+    typeof formattedValue === "string" ? (
+      formattedValue
+    ) : (
+      <div>
+        <span>{formattedValue.compactValue}</span>
+        <div className="text-xs text-muted-foreground">
+          ({formattedValue.fullValue})
+        </div>
+      </div>
+    );
+
   return (
     <Widget
       label={t("price.label")}
-      value={formatNumber(totalPrice, {
-        locale,
-        currency,
-      })}
+      value={displayValue}
       subtext={t("price.subtext")}
     />
   );

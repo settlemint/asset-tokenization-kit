@@ -10,15 +10,28 @@ export function MyAssetsCount({
 }) {
   const locale = useLocale();
 
+  const formattedValue = formatNumber(totalValue.amount, {
+    locale,
+    currency: totalValue.currency,
+    compact: true,
+    showFullValue: true,
+  });
+
   return (
     <div className="flex items-center justify-between">
       <div>
-        <span className="mr-1 font-bold text-4xl">
-          {formatNumber(totalValue.amount, {
-            locale,
-            currency: totalValue.currency,
-          })}
-        </span>
+        {typeof formattedValue === "string" ? (
+          <span className="mr-1 font-bold text-4xl">{formattedValue}</span>
+        ) : (
+          <div>
+            <span className="mr-1 font-bold text-4xl">
+              {formattedValue.compactValue}
+            </span>
+            <div className="text-xs text-muted-foreground">
+              ({formattedValue.fullValue})
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
