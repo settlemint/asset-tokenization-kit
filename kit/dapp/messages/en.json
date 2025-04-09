@@ -1008,7 +1008,8 @@
             "description": "Disable two-factor authentication to remove the additional layer of security from your account.",
             "success-message": "Two-factor authentication disabled successfully",
             "error-message": "Failed to disable two-factor authentication: {error}",
-            "password-description": "Enter your password to disable two-factor authentication."
+            "password-description": "Enter your password to disable two-factor authentication.",
+            "disable-two-factor-tooltip": "Two-factor authentication can only be disabled if a pincode is set."
           }
         },
         "secret-codes": {

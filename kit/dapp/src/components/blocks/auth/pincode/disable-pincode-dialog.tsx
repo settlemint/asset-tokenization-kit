@@ -1,4 +1,3 @@
-import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -17,7 +16,6 @@ export function DisablePincodeDialog({
   const t = useTranslations(
     "portfolio.settings.profile.pincode.disable-pincode"
   );
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (password: string) => {
@@ -31,7 +29,6 @@ export function DisablePincodeDialog({
       }
       toast.success(t("success-message"));
       onOpenChange(false);
-      router.refresh();
     } catch (err) {
       const error = err as Error;
       console.error("Failed to disable pincode:", error);

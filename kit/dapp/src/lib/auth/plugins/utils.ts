@@ -9,6 +9,7 @@ export async function revokeSession(
   if (!ctx.context.session) {
     return;
   }
+  console.log("revoking session");
   const user = ctx.context.session.user;
   const updatedUser = await ctx.context.internalAdapter.updateUser(
     user.id,

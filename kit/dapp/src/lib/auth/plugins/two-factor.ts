@@ -26,9 +26,14 @@ plugin.endpoints = {
     originalEnableTwoFactor.options,
     async (ctx) => {
       const user = ctx.context.session.user as User;
-      const { response, headers } = await originalEnableTwoFactor(
-        ctx as typeof ctx & { returnHeaders: true }
-      );
+      if (!user.initialOnboardingFinished) {
+        const { headers } = await originalEnableTwoFactor(
+          ctx as typeof ctx & { returnHeaders: true }
+        );
+        for (const [name, value] of headers.entries()) {
+          ctx.setHeader(name, value);
+        }
+      }
       const { totpURI, verificationId } = await enableTwoFactorFunction({
         parsedInput: {
           algorithm: OTP_ALGORITHM,
@@ -40,10 +45,7 @@ plugin.endpoints = {
       await revokeSession(ctx as GenericEndpointContext, {
         twoFactorVerificationId: verificationId,
       });
-      for (const [name, value] of headers.entries()) {
-        ctx.setHeader(name, value);
-      }
-      return ctx.json({ backupCodes: response.backupCodes, totpURI });
+      return ctx.json({ backupCodes: [], totpURI });
     }
   ),
   disableTwoFactor: createAuthEndpoint(

@@ -48,7 +48,6 @@ export function SetPincodeDialog({
 }: PincodeDialogProps) {
   const { data: session } = authClient.useSession();
   const t = useTranslations("private.auth.wallet-security.set-pincode-dialog");
-
   const form = useForm<PincodeFormValues>({
     resolver: typeboxResolver(pincodeSchema),
     defaultValues: {

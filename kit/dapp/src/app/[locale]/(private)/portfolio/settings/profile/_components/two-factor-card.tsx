@@ -13,7 +13,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "@/i18n/routing";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
@@ -25,7 +30,6 @@ export function TwoFactorCard() {
     "portfolio.settings.profile.two-factor-authentication"
   );
   const { data: session, isPending } = authClient.useSession();
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isEnabling, setIsEnabling] = useState(false);
   const [isDisabling, setIsDisabling] = useState(false);
@@ -40,7 +44,6 @@ export function TwoFactorCard() {
         throw new Error(error.message);
       }
       toast.success(t("disable.success-message"));
-      router.refresh();
     } catch (error) {
       toast.error(
         t("disable.error-message", {
@@ -83,20 +86,39 @@ export function TwoFactorCard() {
           </Alert>
         </CardContent>
         <CardFooter className="flex items-center p-6 py-4 md:py-3 bg-transparent border-none justify-end">
-          <Button
-            onClick={() =>
-              session?.user.twoFactorEnabled
-                ? setIsDisabling(true)
-                : setIsEnabling(true)
-            }
-            disabled={isLoading}
-            variant={session?.user.twoFactorEnabled ? "destructive" : "default"}
-            size="sm"
-          >
-            {session?.user.twoFactorEnabled
-              ? t("disable.title")
-              : t("enable.title")}
-          </Button>
+          {session?.user.twoFactorEnabled ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span tabIndex={0}>
+                    <Button
+                      onClick={() => setIsDisabling(true)}
+                      disabled={
+                        isLoading || !(session?.user.pincodeEnabled ?? false)
+                      }
+                      variant="destructive"
+                      size="sm"
+                    >
+                      {t("disable.title")}
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                {!(session?.user.pincodeEnabled ?? false) && (
+                  <TooltipContent>
+                    <p>{t("disable.disable-two-factor-tooltip")}</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <Button
+              onClick={() => setIsEnabling(true)}
+              disabled={isLoading}
+              size="sm"
+            >
+              {t("enable.title")}
+            </Button>
+          )}
         </CardFooter>
       </Card>
       <PasswordDialog
