@@ -10,10 +10,13 @@ export async function TransactionsWidget() {
     processedAfter: sevenDaysAgo,
   });
 
+  // Ensure we're using a string value
+  const displayValue = total.toLocaleString();
+
   return (
     <Widget
       label={t("transactions.label")}
-      value={total.toLocaleString()}
+      value={displayValue}
       subtext={t("transactions.subtext", { count: recentCount, days: 7 })}
     />
   );

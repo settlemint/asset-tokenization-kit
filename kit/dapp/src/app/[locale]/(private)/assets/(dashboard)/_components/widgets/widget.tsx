@@ -5,10 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import type { ReactNode } from "react";
 
 interface WidgetProps {
   label: string;
-  value: string;
+  value: string | ReactNode;
   subtext: string;
 }
 
