@@ -2049,7 +2049,13 @@
           "name-header": "Name",
           "status-header": "Status",
           "symbol-header": "Symbol",
-          "type-header": "Type"
+          "type-header": "Type",
+          "actions-header": "Actions",
+          "trigger-label": {
+            "block": "Block user",
+            "freeze": "Freeze",
+            "mint": "Mint"
+          }
         },
         "title": "Holdings"
       },

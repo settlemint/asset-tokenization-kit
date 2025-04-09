@@ -26,6 +26,7 @@ export const AssetBalanceFragment = theGraphGraphqlKit(
       symbol
       decimals
       type
+      totalSupply
       creator { id }
       admins { ...PermissionFragment }
       supplyManagers { ...PermissionFragment }
