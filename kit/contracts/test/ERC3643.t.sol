@@ -23,6 +23,8 @@ import { Identity } from "../contracts/shared/onchainid/Identity.sol";
 import { ImplementationAuthority } from "../contracts/shared/onchainid/proxy/ImplementationAuthority.sol";
 import { IdFactory } from "../contracts/shared/onchainid/factory/IdFactory.sol";
 import { AgentRole } from "../contracts/shared/erc3643/roles/AgentRole.sol";
+import { ClaimIssuer } from "../contracts/shared/onchainid/ClaimIssuer.sol";
+import { IClaimIssuer } from "../contracts/shared/onchainid/interface/IClaimIssuer.sol";
 
 contract GatewayTest is Test {
     TREXImplementationAuthority public tokenImplementationAuthority;
@@ -32,6 +34,9 @@ contract GatewayTest is Test {
     address public tokenAgent1 = makeAddr("Token Agent 1");
     address public tokenAgent2 = makeAddr("Token Agent 2");
     address public client1 = makeAddr("Client 1");
+
+    uint256 private claimIssuerAdminPrivateKey = 0x12345;
+    address public claimIssuerAdmin = vm.addr(claimIssuerAdminPrivateKey);
 
     // Store deployed contract addresses globally
     address public tokenAddress;
@@ -43,6 +48,15 @@ contract GatewayTest is Test {
     address public agentManagerAddress;
     address public identityGateway;
     address public gateway;
+    address public claimIssuerAddress;
+
+    uint256 public constant CLAIM_TOPIC_KYC = 1;
+    uint256 public constant CLAIM_TOPIC_AML = 2;
+
+    // Key types and purposes (from ERC-725)
+    uint256 constant MANAGEMENT_PURPOSE = 1;
+    uint256 constant CLAIM_SIGNER_PURPOSE = 3;
+    uint256 constant ECDSA_TYPE = 1;
 
     function setUp() public {
         vm.startPrank(platformAdmin);
@@ -236,6 +250,133 @@ contract GatewayTest is Test {
         vm.stopPrank();
     }
 
+    function addKeyToIdentity(IIdentity identity, bytes32 key, uint256 purpose, uint256 keyType) internal {
+        // Check if the key already exists with the given purpose
+        bool hasKey = identity.keyHasPurpose(key, purpose);
+        if (!hasKey) {
+            // Add the key if it doesn't exist
+            identity.addKey(key, purpose, keyType);
+            console.log("Key added:");
+            console.logBytes32(key);
+        } else {
+            console.log("Key already exists:");
+            console.logBytes32(key);
+        }
+    }
+
+    function createClaimIssuerAndAddtoRegistry(address issuer_, address trustedIssuersRegistryAddress_) public {
+        vm.startPrank(claimIssuerAdmin);
+        ClaimIssuer claimIssuer = new ClaimIssuer(claimIssuerAdmin);
+        claimIssuerAddress = address(claimIssuer);
+        console.log("ClaimIssuer deployed at:", address(claimIssuerAddress));
+
+        // Add the claim issuer admin key directly to the identity
+        bytes32 signerKey = keccak256(abi.encode(claimIssuerAdmin));
+        addKeyToIdentity(IIdentity(address(claimIssuer)), signerKey, CLAIM_SIGNER_PURPOSE, ECDSA_TYPE);
+        vm.stopPrank();
+
+        vm.startPrank(issuer_);
+        uint256[] memory claimTopics = new uint256[](2);
+        claimTopics[0] = CLAIM_TOPIC_KYC;
+        claimTopics[1] = CLAIM_TOPIC_AML;
+        TrustedIssuersRegistry(trustedIssuersRegistryAddress_).addTrustedIssuer(IClaimIssuer(claimIssuerAddress), claimTopics);
+        vm.stopPrank();
+    }
+
+    function addClaimTopic(uint256 claimTopic_) public {
+        vm.startPrank(organization1);
+        ClaimTopicsRegistry(claimTopicsRegistryAddress).addClaimTopic(claimTopic_);
+        vm.stopPrank();
+    }
+function createAndVerifySignature(
+        uint256 claimIssuerPrivKey,
+        IIdentity clientIdentity,
+        uint256 claimTopic,
+        string memory claimData
+    )
+        internal
+        pure
+        returns (bytes32 dataHash, bytes memory signature)
+    {
+        bytes memory data = abi.encode(claimData);
+        dataHash = keccak256(abi.encode(clientIdentity, claimTopic, data));
+
+        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", dataHash));
+
+        // Sign with the claim issuer private key
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(claimIssuerPrivKey, prefixedHash);
+        signature = abi.encodePacked(r, s, v);
+
+        // Verify signature
+        address recoveredAddr = ecrecover(prefixedHash, v, r, s);
+        address expectedSigner = vm.addr(claimIssuerPrivKey);
+
+        if (recoveredAddr != expectedSigner) {
+            console.log("Signature verification failed:");
+            console.log("Expected signer:", expectedSigner);
+            console.log("Recovered signer:", recoveredAddr);
+            revert("Signature verification failed");
+        }
+
+        return (dataHash, signature);
+    }
+
+    function verifyClaimWithIssuer(
+        IClaimIssuer claimIssuer,
+        IIdentity clientIdentity,
+        uint256 claimTopic,
+        bytes memory signature,
+        bytes memory data
+    )
+        internal
+        view
+        returns (bool)
+    {
+        try claimIssuer.isClaimValid(clientIdentity, claimTopic, signature, data) returns (bool result) {
+            console.log("Claim validation result:", result);
+            return result;
+        } catch Error(string memory reason) {
+            console.log("Claim validation error:", reason);
+            revert(string(abi.encodePacked("Claim validation failed: ", reason)));
+        }
+    }
+
+    function addClaimToIdentity(
+        address client,
+        ClaimIssuer claimIssuer,
+        uint256 claimIssuerPrivKey,
+        uint256 claimTopic,
+        string memory claimData
+    )
+        public
+    {
+        IIdentity clientIdentity = IIdentity(Token(tokenAddress).identityRegistry().identity(client));
+        console.log("Client identity at:", address(clientIdentity));
+
+        bytes memory data = abi.encode(claimData);
+        (bytes32 dataHash, bytes memory signature) =
+            createAndVerifySignature(claimIssuerPrivKey, clientIdentity, claimTopic, claimData);
+
+        console.log("Data hash:");
+        console.logBytes32(dataHash);
+
+        // Verify claim with issuer
+        vm.startPrank(client);
+        bool isValid =
+            verifyClaimWithIssuer(IClaimIssuer(address(claimIssuer)), clientIdentity, claimTopic, signature, data);
+
+        require(isValid, "Claim not valid with issuer");
+
+        // Add claim to identity
+        try clientIdentity.addClaim(claimTopic, ECDSA_TYPE, address(claimIssuer), signature, data, "") {
+            console.log("Claim successfully added to identity");
+        } catch Error(string memory reason) {
+            console.log("Failed to add claim:", reason);
+            revert(string(abi.encodePacked("Failed to add claim: ", reason)));
+        }
+        vm.stopPrank();
+    }
+
     /*
     * @dev First user is detected logging in to the platform
     *      The OTP/Pincode is checked and is found to be missing
@@ -327,10 +468,21 @@ contract GatewayTest is Test {
             Gateway(identityGateway), client1, 56, tokenAgent2, tokenAgent2Id, localAgentManagerAddress
         ); // 56 is Belgium
 
+        createClaimIssuerAndAddtoRegistry(organization1, trustedIssuersRegistryAddress);
+        addClaimTopic(CLAIM_TOPIC_KYC);
+        addClaimTopic(CLAIM_TOPIC_AML);
+
+        addClaimToIdentity(client1, ClaimIssuer(claimIssuerAddress), claimIssuerAdminPrivateKey, CLAIM_TOPIC_KYC, "KYC_VERIFIED");
+        addClaimToIdentity(client1, ClaimIssuer(claimIssuerAddress), claimIssuerAdminPrivateKey, CLAIM_TOPIC_AML, "AML_VERIFIED");
+
+
         vm.startPrank(tokenAgent2);
         // Mint 1000 tokens to the owner
         AgentManager(localAgentManagerAddress).callMint(client1, 1000, tokenAgent2Id);
 
         vm.stopPrank();
+
+                assertEq(Token(tokenAddress).balanceOf(client1), 1000);
+
     }
 }
