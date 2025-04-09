@@ -1,12 +1,11 @@
 import { type BrowserContext, test } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
-import { cryptocurrencyData } from "../test-data/asset-data";
+import { fundData } from "../test-data/asset-data";
+import { assetMessage } from "../test-data/success-msg-data";
 import { adminUser } from "../test-data/user-data";
 import { ensureUserIsAdmin } from "../utils/db-utils";
-import { assetMessage } from "../test-data/success-msg-data";
-
-test.describe("Cryptocurrency Creation Validation", () => {
+test.describe("Fund Creation Validation", () => {
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
   let createAssetForm: CreateAssetForm;
@@ -27,12 +26,12 @@ test.describe("Cryptocurrency Creation Validation", () => {
 
   test.describe("First Screen - Basic Fields", () => {
     test.beforeAll(async () => {
-      await createAssetForm.selectAssetType(cryptocurrencyData.assetType);
+      await createAssetForm.selectAssetType(fundData.assetType);
     });
     test("validates name field is empty", async () => {
       await createAssetForm.fillBasicFields({
         name: "",
-        symbol: "TCC",
+        symbol: "TFU",
         decimals: "18",
       });
       await createAssetForm.clickNext();
@@ -40,18 +39,20 @@ test.describe("Cryptocurrency Creation Validation", () => {
     });
     test("validates symbol field is empty", async () => {
       await createAssetForm.fillBasicFields({
-        name: "Test Cryptocurrency",
+        name: "Test Fund",
         symbol: "",
         decimals: "18",
+        isin: "",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is with lower case", async () => {
       await createAssetForm.fillBasicFields({
-        name: "Test Cryptocurrency",
-        symbol: "tcc",
+        name: "Test Fund",
+        symbol: "tfu",
         decimals: "18",
+        isin: "",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage(
@@ -62,10 +63,28 @@ test.describe("Cryptocurrency Creation Validation", () => {
       await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
       await createAssetForm.verifyInputAttribute("Symbol", "maxlength", "10");
     });
+    test("validates ISIN format", async () => {
+      await createAssetForm.fillBasicFields({
+        isin: "invalid-isin",
+      });
+      await createAssetForm.clickNext();
+      await createAssetForm.expectErrorMessage(
+        "Please enter text in the correct isin format"
+      );
+    });
+    test("validates ISIN length constraints", async () => {
+      await createAssetForm.fillBasicFields({
+        isin: "US0000000000000",
+      });
+      await createAssetForm.clickNext();
+      await createAssetForm.expectErrorMessage(
+        "Please enter text in the correct isin format"
+      );
+    });
     test("validates empty decimals", async () => {
       await createAssetForm.fillBasicFields({
-        name: "Test Cryptocurrency",
-        symbol: "TCC",
+        name: "Test Fund",
+        symbol: "TFU",
         decimals: "",
       });
       await createAssetForm.clickNext();
@@ -73,69 +92,79 @@ test.describe("Cryptocurrency Creation Validation", () => {
     });
     test("validates decimals range", async () => {
       await createAssetForm.fillBasicFields({
+        name: "Test Fund",
+        symbol: "TFU",
         decimals: "19",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
-
-    test("validates default decimals field", async () => {
+    test("verifies default decimals field", async () => {
       await createAssetForm.verifyInputAttribute("Decimals", "value", "18");
     });
   });
 
-  test.describe("Second Screen - Cryptocurrency Details", () => {
+  test.describe("Second Screen - Configuration", () => {
     test.beforeAll(async () => {
       await createAssetForm.fillBasicFields({
-        name: cryptocurrencyData.name,
-        symbol: cryptocurrencyData.symbol,
-        decimals: cryptocurrencyData.decimals,
+        name: fundData.name,
+        symbol: fundData.symbol,
+        decimals: fundData.decimals,
+        isin: fundData.isin,
       });
       await createAssetForm.clickNext();
     });
-
-    test("validates initial supply field is empty", async () => {
-      await createAssetForm.fillCryptocurrencyDetails({
-        initialSupply: "",
+    test("validates required fields are empty", async () => {
+      await createAssetForm.clickNext();
+      await createAssetForm.expectErrorMessage("Please enter text");
+    });
+    test("validates fund class selection", async () => {
+      await createAssetForm.fillFundConfigurationFields({
+        fundCategory: "Activist",
+        managementFeeBps: "1",
         price: "1",
       });
       await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage("Please enter text");
     });
-    test("validates price field is empty", async () => {
-      await createAssetForm.fillCryptocurrencyDetails({
-        initialSupply: "1",
+    test("validates management fee is required", async () => {
+      await createAssetForm.clearField("Management fee");
+      await createAssetForm.fillFundConfigurationFields({
+        fundCategory: "Activist",
+        fundClass: "Absolute Return",
+        managementFeeBps: "",
+        price: "1",
+      });
+      await createAssetForm.clickNext();
+      await createAssetForm.expectErrorMessage("Please enter a valid value");
+    });
+    test("validates management fee maximum value", async () => {
+      await createAssetForm.fillFundConfigurationFields({
+        fundCategory: "Activist",
+        fundClass: "Absolute Return",
+        managementFeeBps: "9007199254740992",
+        price: "1",
+      });
+      await createAssetForm.clickNext();
+      await createAssetForm.expectErrorMessage("Please enter a valid value");
+    });
+    test("validates price is required", async () => {
+      await createAssetForm.clearField("Price");
+      await createAssetForm.fillFundConfigurationFields({
+        fundCategory: "Activist",
+        fundClass: "Absolute Return",
+        managementFeeBps: "1",
         price: "",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
-
-    test("validates numeric field values", async () => {
-      await createAssetForm.fillCryptocurrencyDetails({
-        initialSupply: "0",
-        price: "10",
-      });
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage(
-        "Please enter a number no less than 0.000001"
-      );
-    });
-
-    test("validates large number for initialSupply", async () => {
-      await createAssetForm.fillCryptocurrencyDetails({
-        initialSupply: "10000000000000000000",
-        price: "1",
-      });
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage(
-        "Please enter a number no greater than 9007199254740991"
-      );
-    });
-    test("validates large number for price", async () => {
-      await createAssetForm.fillCryptocurrencyDetails({
-        initialSupply: "1",
-        price: "10000000000000000000",
+    test("validates price maximum value", async () => {
+      await createAssetForm.fillFundConfigurationFields({
+        fundCategory: "Activist",
+        fundClass: "Absolute Return",
+        managementFeeBps: "1",
+        price: "9007199254740992",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage(
@@ -148,7 +177,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
   });
 });
 
-test.describe("Create cryptocurrency asset", () => {
+test.describe("Create fund asset", () => {
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
 
@@ -160,19 +189,18 @@ test.describe("Create cryptocurrency asset", () => {
     await adminPages.signInPage.signInAsAdmin(adminUser);
     await adminPages.adminPage.goto();
   });
-
   test.afterAll(async () => {
     await adminContext.close();
   });
-  test("Create Cryptocurrency asset", async () => {
-    await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
+  test("Create Fund asset", async () => {
+    await adminPages.adminPage.createFund(fundData);
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
     await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
-      name: cryptocurrencyData.name,
-      totalSupply: cryptocurrencyData.initialSupply,
+      sidebarAssetTypes: fundData.sidebarAssetTypes,
+      name: fundData.name,
+      totalSupply: fundData.initialSupply,
     });
   });
 });
