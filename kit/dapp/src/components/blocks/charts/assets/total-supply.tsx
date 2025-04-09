@@ -5,6 +5,7 @@ import {
   TimeSeriesChart,
   TimeSeriesRoot,
   TimeSeriesTitle,
+  type TimeRange,
 } from "@/components/blocks/charts/time-series";
 import { TIME_RANGE_CONFIG } from "@/components/blocks/charts/time-series/index";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
@@ -22,12 +23,14 @@ interface TotalSupplyProps {
   locale: Locale;
   interval?: "day" | "week" | "month" | "year";
   size?: "small" | "large";
+  maxRange?: TimeRange;
 }
 
 export function TotalSupply({
   data,
   locale,
   size = "small",
+  maxRange = "30d",
 }: TotalSupplyProps) {
   const t = useTranslations("components.charts.assets");
 
@@ -60,7 +63,11 @@ export function TotalSupply({
   } satisfies ChartConfig;
 
   return (
-    <TimeSeriesRoot locale={locale} className={cn(size === "large" && "mb-4")}>
+    <TimeSeriesRoot
+      locale={locale}
+      className={cn(size === "large" && "mb-4")}
+      maxRange={maxRange}
+    >
       <TimeSeriesTitle
         title={t("total-supply.title")}
         description={t("total-supply.description")}

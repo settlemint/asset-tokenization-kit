@@ -6,6 +6,7 @@ import {
   TimeSeriesChart,
   TimeSeriesRoot,
   TimeSeriesTitle,
+  type TimeRange,
 } from "@/components/blocks/charts/time-series";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
@@ -18,9 +19,14 @@ import { useTranslations, type Locale } from "next-intl";
 interface TotalSupplyChangedProps {
   data: AssetStats[];
   locale: Locale;
+  maxRange?: TimeRange;
 }
 
-export function TotalSupplyChanged({ data, locale }: TotalSupplyChangedProps) {
+export function TotalSupplyChanged({
+  data,
+  locale,
+  maxRange = "30d",
+}: TotalSupplyChangedProps) {
   const t = useTranslations("components.charts.assets");
 
   const chartConfig = {
@@ -46,7 +52,7 @@ export function TotalSupplyChanged({ data, locale }: TotalSupplyChangedProps) {
   }
 
   return (
-    <TimeSeriesRoot locale={locale}>
+    <TimeSeriesRoot locale={locale} maxRange={maxRange}>
       <TimeSeriesTitle
         title={t("total-supply-changed.title")}
         description={t("total-supply-changed.description")}

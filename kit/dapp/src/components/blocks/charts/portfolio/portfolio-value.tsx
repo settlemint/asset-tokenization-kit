@@ -29,6 +29,7 @@ interface PortfolioValueProps {
   portfolioStats: PortfolioStatsCollection;
   assetPriceMap: Map<string, Price>;
   locale: Locale;
+  maxRange?: TimeRange;
 }
 
 type AggregationType = "total" | "stackByType" | "compareTypes";
@@ -37,6 +38,7 @@ export function PortfolioValue({
   portfolioStats,
   assetPriceMap,
   locale,
+  maxRange = "30d",
 }: PortfolioValueProps) {
   const t = useTranslations("components.charts.portfolio");
   const [aggregationType, setAggregationType] =
@@ -183,7 +185,7 @@ export function PortfolioValue({
   };
 
   return (
-    <TimeSeriesRoot locale={locale}>
+    <TimeSeriesRoot locale={locale} maxRange={maxRange}>
       <TimeSeriesTitle
         title={t("portfolio-value-title")}
         description={t("portfolio-value-description")}
