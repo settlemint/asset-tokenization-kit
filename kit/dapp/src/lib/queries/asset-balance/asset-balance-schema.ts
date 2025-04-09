@@ -48,6 +48,9 @@ export const AssetBalanceSchema = t.Object(
         type: t.AssetType({
           description: "Type of asset",
         }),
+        totalSupply: t.BigDecimal({
+          description: "Total supply of the asset",
+        }),
         creator: t.Object(
           {
             id: t.EthereumAddress({
