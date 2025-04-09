@@ -15,6 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -71,7 +72,14 @@ export function TwoFactorCard() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3 flex-1">
-          <Alert className="mb-4 bg-info/80 text-info-foreground">
+          <Alert
+            className={cn(
+              "mb-4",
+              session?.user.twoFactorEnabled
+                ? "bg-success/60 text-success-foreground"
+                : "bg-primary/20 text-primary-foreground"
+            )}
+          >
             <AlertTitle>
               {session?.user.twoFactorEnabled
                 ? t("status.enabled")
