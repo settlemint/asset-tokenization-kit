@@ -1021,12 +1021,31 @@
         "pincode": {
           "title": "Pincode",
           "description": "Use a pincode to access your wallet.",
-          "enabled": "You have enabled pincode access to your wallet.",
-          "disabled": "No pincode is set.",
-          "setup-pincode": "Setup pincode",
-          "remove-pincode": "Remove pincode",
-          "pincode-set": "Pincode set successfully",
-          "pincode-set-error": "Failed to set pincode"
+          "error": "Failed to get pincode status",
+          "setup-pincode": {
+            "title": "Setup pincode",
+            "success-message": "Pincode set successfully",
+            "error-message": "Failed to set pincode"
+          },
+          "update-pincode": {
+            "title": "Update pincode",
+            "success-message": "Pincode updated successfully",
+            "error-message": "Failed to update pincode"
+          },
+          "remove-pincode": {
+            "title": "Remove pincode",
+            "description": "Are you sure you want to remove your pincode?",
+            "cancel": "Cancel",
+            "remove": "Remove",
+            "loading": "Removing...",
+            "remove-pincode-tooltip": "A pincode can only be removed if two-factor authentication is enabled.",
+            "success-message": "Pincode removed successfully",
+            "error-message": "Failed to remove pincode"
+          },
+          "status": {
+            "enabled": "You have set a pincode.",
+            "disabled": "No pincode is set."
+          }
         }
       }
     },

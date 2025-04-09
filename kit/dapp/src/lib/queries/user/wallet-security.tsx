@@ -1,22 +1,7 @@
 import { auth } from "@/lib/auth/auth";
 import { redirectToSignIn } from "@/lib/auth/redirect";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { headers } from "next/headers";
-
-/**
- * GraphQL query to get the user's pincode and two-factor authentication status
- */
-const GetUser = hasuraGraphql(`
-  query GetUser($id: String!) {
-    user(where:{id: {_eq: $id}}) {
-      id
-      name
-      pincode_enabled
-      two_factor_enabled
-    }
-  }
-`);
 
 /**
  * TypeBox schema for wallet verification data
@@ -48,27 +33,19 @@ export const hasWalletVerification = async () => {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
+      query: {
+        // Don't use the cookie cache, some setting like pincode are not updated in the cookie (only after logout/login)
+        disableCookieCache: true,
+      },
     });
 
     if (!session || !session.user) {
       return redirectToSignIn();
     }
 
-    if (session.user.twoFactorEnabled) {
-      // two factor is automatically updating the session data (using the better auth plugin), while pincode is not
-      return true;
-    }
-
-    // We need to get this info from hasura because the session data is only updated after a logout/login so we cannot rely on this for the pincode
-
-    const result = await hasuraClient.request(GetUser, {
-      id: session.user.id,
-    });
-    const user = result.user[0];
-    if (!user) {
-      return false;
-    }
-    return user.pincode_enabled ?? user.two_factor_enabled ?? false;
+    return (
+      session.user.pincodeEnabled ?? session.user.twoFactorEnabled ?? false
+    );
   } catch (err) {
     const error = err as Error;
     console.error(

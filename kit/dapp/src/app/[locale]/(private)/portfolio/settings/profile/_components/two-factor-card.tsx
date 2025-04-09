@@ -76,8 +76,8 @@ export function TwoFactorCard() {
             className={cn(
               "mb-4",
               session?.user.twoFactorEnabled
-                ? "bg-success/60 text-success-foreground"
-                : "bg-primary/20 text-primary-foreground"
+                ? "bg-success/20 text-success-foreground border-success"
+                : "bg-primary/20 text-primary-foreground border-primary"
             )}
           >
             <AlertTitle>
@@ -95,6 +95,7 @@ export function TwoFactorCard() {
                 : setIsEnabling(true)
             }
             disabled={isLoading}
+            variant={session?.user.twoFactorEnabled ? "destructive" : "default"}
             size="sm"
           >
             {session?.user.twoFactorEnabled
