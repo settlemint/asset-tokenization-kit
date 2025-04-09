@@ -83,6 +83,7 @@ interface TimeSeriesState {
   chartType: ChartType;
   setChartType: (type: ChartType) => void;
   locale: Locale;
+  maxRange: TimeRange;
 }
 
 const TimeSeriesContext = createContext<TimeSeriesState | null>(null);
@@ -100,13 +101,15 @@ interface TimeSeriesRootProps {
   locale: Locale;
   defaultTimeRange?: TimeRange;
   defaultChartType?: ChartType;
+  maxRange?: TimeRange;
   className?: string;
 }
 
 export function TimeSeriesRoot({
   children,
   locale,
-  defaultTimeRange = "30d",
+  defaultTimeRange = "7d",
+  maxRange = "30d",
   defaultChartType = "area",
   className,
 }: TimeSeriesRootProps) {
@@ -121,6 +124,7 @@ export function TimeSeriesRoot({
         chartType,
         setChartType,
         locale,
+        maxRange,
       }}
     >
       <Card className={cn(className)}>{children}</Card>
@@ -140,7 +144,15 @@ export function TimeSeriesTitle({
   lastUpdated,
 }: TimeSeriesTitleProps) {
   const t = useTranslations("components.chart");
-  const { chartType, setChartType, timeRange, setTimeRange } = useTimeSeries();
+  const { chartType, setChartType, timeRange, setTimeRange, maxRange } =
+    useTimeSeries();
+
+  const availableTimeRanges: TimeRange[] = ["24h", "7d", "30d", "90d"];
+  const maxRangeIndex = availableTimeRanges.indexOf(maxRange);
+  const filteredTimeRanges =
+    maxRangeIndex !== -1
+      ? availableTimeRanges.slice(0, maxRangeIndex + 1)
+      : availableTimeRanges;
 
   return (
     <CardHeader>
@@ -176,10 +188,11 @@ export function TimeSeriesTitle({
               <SelectValue placeholder={t("select-time-range")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="24h">{t("time-range.24h")}</SelectItem>
-              <SelectItem value="7d">{t("time-range.7d")}</SelectItem>
-              <SelectItem value="30d">{t("time-range.30d")}</SelectItem>
-              <SelectItem value="90d">{t("time-range.90d")}</SelectItem>
+              {filteredTimeRanges.map((range) => (
+                <SelectItem key={range} value={range}>
+                  {t(`time-range.${range}`)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 

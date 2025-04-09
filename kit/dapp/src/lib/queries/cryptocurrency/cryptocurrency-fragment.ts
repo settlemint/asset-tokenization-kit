@@ -20,6 +20,7 @@ export const CryptoCurrencyFragment = theGraphGraphqlKit(`
       id
     }
     concentration
+    deployedOn
   }
 `);
 
