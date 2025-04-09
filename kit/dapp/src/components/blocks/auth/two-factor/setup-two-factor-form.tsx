@@ -10,7 +10,7 @@ import { TwoFactorOTPInput } from "./two-factor-otp-input";
 interface SetupTwoFactorFormProps {
   firstOtp: string;
   onFirstOtpChange: (firstOtp: string) => void;
-  onOpenChange: (isOpen: boolean) => void;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
 export function SetupTwoFactorForm({
@@ -98,7 +98,7 @@ export function SetupTwoFactorForm({
         onOpenChange={(isOpen) => {
           setIsSetPasswordOpen(isOpen);
           if (!isOpen && !twoFactorData) {
-            onOpenChange(false);
+            onOpenChange?.(false);
           }
         }}
         onSubmit={enableTwoFactorAuthentication}
