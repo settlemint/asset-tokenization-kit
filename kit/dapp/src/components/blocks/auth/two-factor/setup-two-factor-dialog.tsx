@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -17,43 +16,30 @@ import { SetupTwoFactorForm } from "./setup-two-factor-form";
 interface SetupTwoFactorDialogProps {
   open: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  refreshOnSuccess?: boolean;
 }
 
 export function SetupTwoFactorDialog({
   onOpenChange,
   open,
-  refreshOnSuccess = false,
 }: SetupTwoFactorDialogProps) {
   const t = useTranslations(
     "portfolio.settings.profile.two-factor-authentication"
   );
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [firstOtp, setFirstOtp] = useState("");
 
   const onSetupFinished = async () => {
     try {
       setIsLoading(true);
-      const result = await authClient.twoFactor.verifyTotp({
+      const { error } = await authClient.twoFactor.verifyTotp({
         code: firstOtp,
       });
-      const { error } = result;
       if (error) {
-        toast.error(
-          t("enable.error-message", {
-            error: error.message ?? "Unknown error",
-          })
-        );
-      } else {
-        toast.success(t("enable.success-message"));
-        if (refreshOnSuccess) {
-          router.refresh();
-        } else {
-          setFirstOtp("");
-          onOpenChange(false);
-        }
+        throw new Error(error.message);
       }
+      toast.success(t("enable.success-message"));
+      setFirstOtp("");
+      onOpenChange(false);
     } catch (error) {
       toast.error(
         t("enable.error-message", {
@@ -74,6 +60,7 @@ export function SetupTwoFactorDialog({
         <SetupTwoFactorForm
           firstOtp={firstOtp}
           onFirstOtpChange={setFirstOtp}
+          onOpenChange={onOpenChange}
         />
         <DialogFooter>
           <Button

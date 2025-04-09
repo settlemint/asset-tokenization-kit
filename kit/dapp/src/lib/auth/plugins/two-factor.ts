@@ -1,12 +1,12 @@
 import { OTP_ALGORITHM, OTP_DIGITS, OTP_PERIOD } from "@/lib/auth/otp";
+import { disableTwoFactorFunction } from "@/lib/mutations/user/two-factor/disable-two-factor-function";
 import { enableTwoFactorFunction } from "@/lib/mutations/user/two-factor/enable-two-factor-function";
+import { verifyTwoFactorOTPFunction } from "@/lib/mutations/user/two-factor/verify-two-factor-otp-function";
 import type { GenericEndpointContext } from "better-auth";
 import { createAuthEndpoint } from "better-auth/api";
-import { setSessionCookie } from "better-auth/cookies";
 import { twoFactor } from "better-auth/plugins/two-factor";
-import { disableTwoFactorFunction } from "../../mutations/user/two-factor/disable-two-factor-function";
-import { verifyTwoFactorOTPFunction } from "../../mutations/user/two-factor/verify-two-factor-otp-function";
 import type { User } from "../types";
+import { revokeSession } from "./utils";
 
 const plugin = twoFactor({
   totpOptions: {
@@ -26,9 +26,14 @@ plugin.endpoints = {
     originalEnableTwoFactor.options,
     async (ctx) => {
       const user = ctx.context.session.user as User;
-      const { response, headers } = await originalEnableTwoFactor(
-        ctx as typeof ctx & { returnHeaders: true }
-      );
+      if (user.initialOnboardingFinished) {
+        const { headers } = await originalEnableTwoFactor(
+          ctx as typeof ctx & { returnHeaders: true }
+        );
+        for (const [name, value] of headers.entries()) {
+          ctx.setHeader(name, value);
+        }
+      }
       const { totpURI, verificationId } = await enableTwoFactorFunction({
         parsedInput: {
           algorithm: OTP_ALGORITHM,
@@ -40,10 +45,7 @@ plugin.endpoints = {
       await revokeSession(ctx as GenericEndpointContext, {
         twoFactorVerificationId: verificationId,
       });
-      for (const [name, value] of headers.entries()) {
-        ctx.setHeader(name, value);
-      }
-      return ctx.json({ backupCodes: response.backupCodes, totpURI });
+      return ctx.json({ backupCodes: [], totpURI });
     }
   ),
   disableTwoFactor: createAuthEndpoint(
@@ -78,6 +80,7 @@ plugin.endpoints = {
       }
       if (!user.twoFactorEnabled) {
         await revokeSession(ctx as GenericEndpointContext, {
+          initialOnboardingFinished: true,
           twoFactorEnabled: true,
         });
       }
@@ -85,33 +88,5 @@ plugin.endpoints = {
     }
   ),
 };
-
-async function revokeSession(
-  ctx: GenericEndpointContext,
-  updatedUserFields: Partial<User>
-) {
-  if (!ctx.context.session) {
-    return;
-  }
-  const user = ctx.context.session.user;
-  const updatedUser = await ctx.context.internalAdapter.updateUser(
-    user.id,
-    updatedUserFields,
-    ctx
-  );
-  const newSession = await ctx.context.internalAdapter.createSession(
-    user.id,
-    ctx.request,
-    false,
-    ctx.context.session.session
-  );
-  await ctx.context.internalAdapter.deleteSession(
-    ctx.context.session.session.token
-  );
-  await setSessionCookie(ctx as GenericEndpointContext, {
-    session: newSession,
-    user: updatedUser,
-  });
-}
 
 export default plugin;

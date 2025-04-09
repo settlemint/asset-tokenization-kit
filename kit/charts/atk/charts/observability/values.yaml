@@ -168,7 +168,7 @@ loki:
   deploymentMode: SingleBinary
   singleBinary:
     persistence:
-      size: 50Gi
+      size: 10Gi
     replicas: 1
     resources: {}
     # extraEnv:
