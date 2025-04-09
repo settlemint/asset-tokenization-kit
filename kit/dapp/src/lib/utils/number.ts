@@ -22,9 +22,6 @@ export interface FormatOptions {
   readonly showFullValue?: boolean;
 }
 
-/**
- * Return type for formatNumber when compact and showFullValue are true
- */
 export interface FormattedNumberWithFull {
   compactValue: string;
   fullValue: string;
@@ -65,7 +62,6 @@ function formatNumberWithFormatter(
   // Format number with appropriate options
   const numberValue = percentage ? value.div(100).toNumber() : value.toNumber();
 
-  // Generate full value format
   let fullFormattedNumber: string | undefined;
   if (compact && showFullValue) {
     fullFormattedNumber = formatter.number(numberValue, {
@@ -132,8 +128,6 @@ function formatNumberWithFormatter(
     } else {
       formattedValue = numberValue.toFixed(decimals);
     }
-
-    // Don't remove trailing zeros to preserve more detail
 
     let compactValue: string;
     if (currency) {
