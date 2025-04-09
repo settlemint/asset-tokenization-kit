@@ -1907,11 +1907,6 @@
       "password-description": "Enter your current password.",
       "password-instructions": "Please use 8 characters at minimum.",
       "password-placeholder": "Enter your password",
-      "pincode-form": {
-        "pincode-label": "Pincode",
-        "setting-up": "Setting up...",
-        "submit": "Setup Pincode"
-      },
       "provider-link-success": "Provider linked successfully.",
       "provider-unlink-success": "Provider unlinked successfully.",
       "providers": "Providers",
@@ -1953,11 +1948,25 @@
       "verify-your-email": "Verify Your Email",
       "verify-your-email-description": "Please verify your email address. Check your inbox for the verification email. If you haven't received the email, click the button below to resend.",
       "wallet-security": {
-        "setup-pincode-dialog": {
-          "title": "Setup Pincode",
+        "set-pincode-dialog": {
           "description": "Enter a 6-digit pincode to secure your wallet.",
-          "pincode-set": "Pincode set successfully",
-          "pincode-set-error": "Failed to set pincode"
+          "enable": {
+            "title": "Setup Pincode",
+            "pincode-set": "Pincode set successfully",
+            "pincode-set-error": "Failed to set pincode: {error}",
+            "setting-up": "Setting up...",
+            "submit": "Setup Pincode"
+          },
+          "update": {
+            "title": "Update Pincode",
+            "pincode-update": "Pincode updated successfully",
+            "pincode-update-error": "Failed to update pincode: {error}",
+            "setting-up": "Updating...",
+            "submit": "Update Pincode"
+          },
+          "pincode-label": "Pincode",
+          "password-description": "Enter your password to setup your pincode.",
+          "password-submit": "Confirm"
         },
         "form": {
           "button-label": "Start using my wallet",

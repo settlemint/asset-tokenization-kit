@@ -37,15 +37,10 @@ export function TwoFactorCard() {
         password,
       });
       if (error) {
-        toast.error(
-          t("disable.error-message", {
-            error: error.message ?? "Unknown error",
-          })
-        );
-      } else {
-        toast.success(t("disable.success-message"));
-        router.refresh();
+        throw new Error(error.message);
       }
+      toast.success(t("disable.success-message"));
+      router.refresh();
     } catch (error) {
       toast.error(
         t("disable.error-message", {

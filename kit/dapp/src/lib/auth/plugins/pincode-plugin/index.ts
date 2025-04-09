@@ -20,6 +20,12 @@ export const pincode = () => {
             pincode: z.string({
               description: "The pincode for wallet verification",
             }),
+            password: z
+              .string({
+                description:
+                  "User password (only required if the user has done the initial onboarding)",
+              })
+              .optional(),
           }),
           use: [sessionMiddleware],
           metadata: {
@@ -50,12 +56,29 @@ export const pincode = () => {
         },
         async (ctx) => {
           const user = ctx.context.session.user as User;
-          const { pincode } = ctx.body;
+          const { password, pincode } = ctx.body;
+          if (user.initialOnboardingFinished) {
+            if (!password) {
+              throw new APIError("BAD_REQUEST", {
+                message: "Password is required",
+              });
+            }
+            const isPasswordValid = await validatePassword(ctx, {
+              password,
+              userId: user.id,
+            });
+            if (!isPasswordValid) {
+              throw new APIError("BAD_REQUEST", {
+                message: "Invalid password",
+              });
+            }
+          }
           const result = await setPincodeFunction({
             parsedInput: { pincode },
             ctx: { user },
           });
           await revokeSession(ctx, {
+            initialOnboardingFinished: true,
             pincodeEnabled: true,
             pincodeVerificationId: result.verificationId,
           });

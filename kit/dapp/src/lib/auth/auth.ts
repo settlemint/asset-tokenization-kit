@@ -119,6 +119,12 @@ export const auth = betterAuth({
         unique: true,
         input: true,
       },
+      initialOnboardingFinished: {
+        type: "boolean",
+        required: false,
+        default: false,
+        input: false,
+      },
     },
   },
   databaseHooks: {

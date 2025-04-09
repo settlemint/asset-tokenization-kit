@@ -78,6 +78,7 @@ plugin.endpoints = {
       }
       if (!user.twoFactorEnabled) {
         await revokeSession(ctx as GenericEndpointContext, {
+          initialOnboardingFinished: true,
           twoFactorEnabled: true,
         });
       }

@@ -1,7 +1,7 @@
 "use client";
 
 import { DisablePincodeDialog } from "@/components/blocks/auth/pincode/disable-pincode-dialog";
-import { SetupPincodeDialog } from "@/components/blocks/auth/pincode/setup-pincode-dialog";
+import { SetPincodeDialog } from "@/components/blocks/auth/pincode/set-pincode-dialog";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +27,9 @@ import { useState } from "react";
 export function PincodeCard() {
   const t = useTranslations("portfolio.settings.profile.pincode");
   const { isPending, data: session } = authClient.useSession();
-  const [isPincodeDialogOpen, setIsPincodeDialogOpen] = useState(false);
+  const [isSetPincodeDialogOpen, setIsSetPincodeDialogOpen] = useState(false);
+  const [isUpdatePincodeDialogOpen, setIsUpdatePincodeDialogOpen] =
+    useState(false);
   const [isRemovePincodeDialogOpen, setIsRemovePincodeDialogOpen] =
     useState(false);
 
@@ -58,9 +60,14 @@ export function PincodeCard() {
               : t("status.disabled")}
           </AlertTitle>
         </Alert>
-        <SetupPincodeDialog
-          open={isPincodeDialogOpen}
-          onOpenChange={setIsPincodeDialogOpen}
+        <SetPincodeDialog
+          open={isSetPincodeDialogOpen}
+          onOpenChange={setIsSetPincodeDialogOpen}
+        />
+        <SetPincodeDialog
+          open={isUpdatePincodeDialogOpen}
+          onOpenChange={setIsUpdatePincodeDialogOpen}
+          isUpdate={true}
         />
         <DisablePincodeDialog
           open={isRemovePincodeDialogOpen}
@@ -70,7 +77,10 @@ export function PincodeCard() {
       <CardFooter className="flex items-center p-6 py-4 md:py-3 bg-transparent border-none justify-end space-x-2">
         {session?.user?.pincodeEnabled ? (
           <>
-            <Button onClick={() => setIsPincodeDialogOpen(true)} size="sm">
+            <Button
+              onClick={() => setIsUpdatePincodeDialogOpen(true)}
+              size="sm"
+            >
               {t("update-pincode.title")}
             </Button>
             <TooltipProvider>
@@ -96,7 +106,7 @@ export function PincodeCard() {
             </TooltipProvider>
           </>
         ) : (
-          <Button onClick={() => setIsPincodeDialogOpen(true)} size="sm">
+          <Button onClick={() => setIsSetPincodeDialogOpen(true)} size="sm">
             {t("setup-pincode.title")}
           </Button>
         )}
