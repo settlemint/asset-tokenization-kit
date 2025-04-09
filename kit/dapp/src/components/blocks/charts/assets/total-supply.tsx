@@ -64,7 +64,7 @@ export function TotalSupply({
       <TimeSeriesTitle
         title={t("total-supply.title")}
         description={t("total-supply.description")}
-        lastUpdated={formatDate(startOfHour(new Date()))}
+        lastUpdated={formatDate(startOfHour(new Date()), { locale })}
       />
       <TimeSeriesChart
         rawData={data}

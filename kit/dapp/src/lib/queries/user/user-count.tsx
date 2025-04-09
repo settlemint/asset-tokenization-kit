@@ -1,5 +1,6 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { format } from "date-fns";
 import { cache } from "react";
 import { RecentUsersCountFragment, UserFragment } from "./user-fragment";
 import { UserCountSchema, UserSchema } from "./user-schema";
@@ -59,9 +60,17 @@ function calculateCumulativeUsersByDay(users: { created_at: Date }[]) {
 
   const dailyCounts = new Map<string, number>();
 
-  // Group users by day
+  let minDate = new Date();
+  let maxDate = new Date(0);
+
+  // Group users by day and find min/max dates
   users.forEach((user) => {
-    const dateStr = user.created_at.toISOString().split("T")[0];
+    const date = new Date(user.created_at);
+    const dateStr = format(date, "yyyy-MM-dd");
+
+    if (date < minDate) minDate = date;
+    if (date > maxDate) maxDate = date;
+
     dailyCounts.set(dateStr, (dailyCounts.get(dateStr) || 0) + 1);
   });
 

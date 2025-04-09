@@ -40,6 +40,28 @@ const AssetSearch = theGraphGraphqlKit(
 );
 
 /**
+ * GraphQL query to get all assets with a limit
+ */
+const AllAssets = theGraphGraphqlKit(
+  `
+  query AllAssets($limit: Int!) {
+    assets(
+      first: $limit,
+      orderBy: name,
+      orderDirection: asc
+    ) {
+      holders {
+        id
+        value
+      }
+      ...AssetUsersFragment
+    }
+  }
+`,
+  [AssetUsersFragment]
+);
+
+/**
  * Props interface for asset search components
  */
 export interface AssetSearchProps {
@@ -56,18 +78,25 @@ export const getAssetSearch = cache(
   async ({ searchTerm }: AssetSearchProps) => {
     const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
 
+    let assets;
+
     if (!sanitizedSearchTerm) {
-      return [];
-    }
-    const search: VariablesOf<typeof AssetSearch> = {
-      search: sanitizedSearchTerm,
-    };
+      // If no search term, fetch all assets with a reasonable limit
+      const result = await theGraphClientKit.request(AllAssets, { limit: 10 });
+      assets = result.assets;
+    } else {
+      // Otherwise perform the search
+      const search: VariablesOf<typeof AssetSearch> = {
+        search: sanitizedSearchTerm,
+      };
 
-    if (isAddress(sanitizedSearchTerm)) {
-      search.searchAddress = sanitizedSearchTerm;
-    }
+      if (isAddress(sanitizedSearchTerm)) {
+        search.searchAddress = sanitizedSearchTerm;
+      }
 
-    const { assets } = await theGraphClientKit.request(AssetSearch, search);
+      const result = await theGraphClientKit.request(AssetSearch, search);
+      assets = result.assets;
+    }
 
     // Validate data using TypeBox schema
     const validatedAssets = assets.map((asset) => {

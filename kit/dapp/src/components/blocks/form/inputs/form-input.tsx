@@ -81,6 +81,17 @@ export function FormInput<T extends FieldValues>({
         ...(props.type === "number" && {
           valueAsNumber: true,
         }),
+        validate: (value) => {
+          if (!props.required) {
+            if (value === "" || value === null || value === undefined) {
+              return true;
+            }
+            if (typeof value === "string" && value.trim() === "") {
+              return true;
+            }
+          }
+          return true;
+        },
       }}
       render={({ field, fieldState }) => {
         return (
@@ -162,7 +173,9 @@ export function FormInput<T extends FieldValues>({
                       await form.trigger(field.name);
                     } else {
                       field.onChange(evt);
-                      if (form.formState.errors[field.name]) {
+                      if (!props.required && evt.target.value === "") {
+                        form.clearErrors(field.name);
+                      } else if (form.formState.errors[field.name]) {
                         await form.trigger(field.name);
                       }
                     }

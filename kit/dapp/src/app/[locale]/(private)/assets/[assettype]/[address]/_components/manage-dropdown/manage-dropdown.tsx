@@ -110,13 +110,15 @@ export function ManageDropdown({
     assetDetails.collateralProofValidity !== undefined &&
     isBefore(assetDetails.collateralProofValidity, new Date());
 
+  const hasNoCollateral = mintMax === 0;
+
   const contractActions = [
     {
       id: "mint",
       label: t("actions.mint"),
       hidden: false,
       disabled:
-        isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired,
+        isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired || hasNoCollateral,
       form: (
         <MintForm
           key="mint"

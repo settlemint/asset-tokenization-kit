@@ -20,22 +20,25 @@ import { Isin } from "./isin";
 import { Pincode } from "./pincode";
 import { Price } from "./price";
 import { RoleMap, Roles } from "./roles";
+import { SecretCode } from "./secret-code";
 import { TimeUnit } from "./time-units";
 import { Timestamp } from "./timestamp";
 import { TwoFactorCode } from "./two-factor-code";
 import { UserRoles } from "./user-roles";
+import { VerificationCode } from "./verification-code";
 import { VerificationType } from "./verification-type";
 
 // Extend TypeBox types with module augmentation
 declare module "@sinclair/typebox" {
   interface JavaScriptTypeBuilder {
-    EthereumAddress: typeof EthereumAddress;
     Amount: typeof Amount;
+    AssetSymbol: typeof AssetSymbol;
+    AssetType: typeof AssetType;
     BigDecimal: typeof BigDecimal;
     Decimals: typeof Decimals;
-    AssetType: typeof AssetType;
     EquityCategory: typeof EquityCategory;
     EquityClass: typeof EquityClass;
+    EthereumAddress: typeof EthereumAddress;
     FiatCurrency: typeof FiatCurrency;
     FundCategory: typeof FundCategory;
     FundClass: typeof FundClass;
@@ -43,29 +46,31 @@ declare module "@sinclair/typebox" {
     Hashes: typeof Hashes;
     Isin: typeof Isin;
     Pincode: typeof Pincode;
-    TwoFactorCode: typeof TwoFactorCode;
-    Roles: typeof Roles;
+    Price: typeof Price;
     RoleMap: typeof RoleMap;
-    AssetSymbol: typeof AssetSymbol;
+    Roles: typeof Roles;
+    SecretCode: typeof SecretCode;
+    StringifiedBigInt: typeof StringifiedBigInt;
     TimeUnit: typeof TimeUnit;
     Timestamp: typeof Timestamp;
-    StringifiedBigInt: typeof StringifiedBigInt;
-    Price: typeof Price;
+    TwoFactorCode: typeof TwoFactorCode;
     UserRoles: typeof UserRoles;
     VerificationType: typeof VerificationType;
+    VerificationCode: typeof VerificationCode;
   }
 }
 
 // Extend the Type system with custom validators
 const t = Object.assign({}, tElysia);
 
-t.EthereumAddress = EthereumAddress;
 t.Amount = Amount;
+t.AssetSymbol = AssetSymbol;
+t.AssetType = AssetType;
 t.BigDecimal = BigDecimal;
 t.Decimals = Decimals;
-t.AssetType = AssetType;
 t.EquityCategory = EquityCategory;
 t.EquityClass = EquityClass;
+t.EthereumAddress = EthereumAddress;
 t.FiatCurrency = FiatCurrency;
 t.FundCategory = FundCategory;
 t.FundClass = FundClass;
@@ -73,15 +78,16 @@ t.Hash = Hash;
 t.Hashes = Hashes;
 t.Isin = Isin;
 t.Pincode = Pincode;
-t.TwoFactorCode = TwoFactorCode;
-t.Roles = Roles;
+t.Price = Price;
 t.RoleMap = RoleMap;
-t.AssetSymbol = AssetSymbol;
+t.Roles = Roles;
+t.SecretCode = SecretCode;
+t.StringifiedBigInt = StringifiedBigInt;
 t.TimeUnit = TimeUnit;
 t.Timestamp = Timestamp;
-t.StringifiedBigInt = StringifiedBigInt;
-t.Price = Price;
+t.TwoFactorCode = TwoFactorCode;
 t.UserRoles = UserRoles;
+t.VerificationCode = VerificationCode;
 t.VerificationType = VerificationType;
 
 export function safeParse<T extends TSchema>(

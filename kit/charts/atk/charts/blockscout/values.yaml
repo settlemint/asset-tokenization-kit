@@ -60,8 +60,8 @@ blockscout-stack:
       BLOCKSCOUT_PROTOCOL: 'https'
     envFromSecret:
       DATABASE_URL: postgresql://blockscout:atk@postgresql-pgpool:5432/blockscout?sslmode=disable
-      ETHEREUM_JSONRPC_HTTP_URL: http://besu-loadbalancer:4000
-      ETHEREUM_JSONRPC_TRACE_URL: http://besu-loadbalancer:4000
+      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000
+      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000
       SECRET_KEY_BASE: atk
   frontend:
     image:

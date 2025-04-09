@@ -11,15 +11,16 @@ import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
 if (!FormatRegistry.Has("isin")) {
   FormatRegistry.Set("isin", (value) => {
     if (typeof value !== "string") return false;
+    if (value === "") return true;
     return /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(value);
   });
 }
 
 if (!TypeRegistry.Has("isin")) {
   TypeRegistry.Set<string>("isin", (_schema, value) => {
-    return (
-      typeof value === "string" && /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(value)
-    );
+    if (typeof value !== "string") return false;
+    if (value === "") return true;
+    return /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(value);
   });
 }
 

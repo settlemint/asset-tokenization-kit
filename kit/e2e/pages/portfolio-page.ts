@@ -45,6 +45,19 @@ export class PortfolioPage extends BasePage {
     }
   }
 
+  async addContact(options: {
+    address: string;
+    firstName: string;
+    lastName: string;
+  }) {
+    await this.page.getByRole("link", { name: "My contacts" }).click();
+    await this.page.getByRole("button", { name: "Add Contact" }).click();
+    await this.page.getByLabel("Wallet Address").fill(options.address);
+    await this.page.getByLabel("First Name").fill(options.firstName);
+    await this.page.getByLabel("Last Name").fill(options.lastName);
+    await this.page.getByRole("button", { name: "Add Contact" }).click();
+  }
+
   async transferAsset(options: {
     asset: string;
     walletAddress: string;
@@ -52,6 +65,7 @@ export class PortfolioPage extends BasePage {
     user: string;
     pincode: string;
   }): Promise<void> {
+    await this.page.getByRole("link", { name: "Dashboard" }).click();
     await this.page.getByRole("button", { name: "Transfer" }).click();
     const assetButton = this.page.locator('#asset, [id="asset"]');
     await assetButton.waitFor({ state: "visible", timeout: 15000 });
@@ -116,13 +130,9 @@ export class PortfolioPage extends BasePage {
           if (!actualAmount) {
             throw new Error("Could not find portfolio balance amount");
           }
-
-          // Improved formatting to handle currency symbols and commas
           const formattedActual = Number.parseFloat(
             actualAmount.replace(/[€$£,]/g, "").trim()
           ).toFixed(0);
-
-          // Convert initial balance to same format for comparison
           const formattedInitial = price
             ? adjustedInitialBalance
             : Number.parseFloat(initialBalance).toFixed(0);
@@ -164,5 +174,24 @@ export class PortfolioPage extends BasePage {
       .filter({ hasText: user })
       .first()
       .click();
+  }
+
+  async verifyContactExists(options: { name: string; walletAddress: string }) {
+    await this.page.getByRole("table").waitFor({ state: "visible" });
+
+    const displayName = options.name.split(" ").slice(0, 2).join(" ");
+    const nameCell = this.page
+      .getByRole("cell")
+      .filter({ hasText: displayName })
+      .first();
+    await expect(nameCell).toBeVisible();
+
+    const shortAddress =
+      options.walletAddress.slice(0, 6) + "…" + options.walletAddress.slice(-4);
+    const addressCell = this.page
+      .getByRole("cell")
+      .filter({ hasText: shortAddress })
+      .first();
+    await expect(addressCell).toBeVisible();
   }
 }

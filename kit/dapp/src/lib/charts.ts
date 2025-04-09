@@ -3,11 +3,10 @@ import {
   eachDayOfInterval,
   eachHourOfInterval,
   eachMonthOfInterval,
-  format,
+  formatDate,
   isSameDay,
   isSameHour,
   isSameMonth,
-  setDefaultOptions,
   startOfDay,
   startOfHour,
   subDays,
@@ -15,9 +14,8 @@ import {
   subWeeks,
   subYears,
 } from "date-fns";
-import { ar, de, ja } from "date-fns/locale";
 import type { Locale } from "next-intl";
-import { getDateFromTimestamp } from "./utils/date";
+import { getDateFromTimestamp, getDateLocale } from "./utils/date";
 
 export type TimeGranularity = "hour" | "day" | "month";
 export type IntervalType = "year" | "month" | "week" | "day";
@@ -209,24 +207,15 @@ export function formatChartDate(
   granularity: TimeGranularity,
   locale: Locale
 ): string {
-  if (locale !== "en") {
-    if (locale === "de") {
-      setDefaultOptions({ locale: de });
-    } else if (locale === "ja") {
-      setDefaultOptions({ locale: ja });
-    } else if (locale === "ar") {
-      setDefaultOptions({ locale: ar });
-    }
-  }
-
+  const dateLocale = getDateLocale(locale);
   if (granularity === "hour") {
-    return format(date, "HH:mm, MMM d");
+    return formatDate(date, "HH:mm, MMM d", { locale: dateLocale });
   }
   if (granularity === "day") {
-    return format(date, "MMM d");
+    return formatDate(date, "MMM d", { locale: dateLocale });
   }
   if (granularity === "month") {
-    return format(date, "MMM y");
+    return formatDate(date, "MMM y", { locale: dateLocale });
   }
   throw new Error("Invalid granularity");
 }
