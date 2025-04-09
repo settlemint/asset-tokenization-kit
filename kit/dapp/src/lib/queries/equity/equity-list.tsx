@@ -92,7 +92,7 @@ export const getEquityList = cache(async () => {
   const equities = onChainEquities.map((equity) => {
     const offChainEquity = assetsById.get(getAddress(equity.id));
 
-    const calculatedEquity = calculatedFields.get(equity.id);
+    const calculatedEquity = calculatedFields.get(equity.id)!;
 
     return {
       ...equity,

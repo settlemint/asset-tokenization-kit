@@ -92,7 +92,7 @@ export const getBondList = cache(async () => {
   const bonds = onChainBonds.map((bond) => {
     const offChainBond = assetsById.get(getAddress(bond.id));
 
-    const calculatedBond = calculatedFields.get(bond.id);
+    const calculatedBond = calculatedFields.get(bond.id)!;
 
     return {
       ...bond,

@@ -89,7 +89,7 @@ export const getDepositList = cache(async () => {
   const deposits = onChainDeposits.map((deposit) => {
     const offChainDeposit = assetsById.get(getAddress(deposit.id));
 
-    const calculatedDeposit = calculatedFields.get(deposit.id);
+    const calculatedDeposit = calculatedFields.get(deposit.id)!;
 
     return {
       ...deposit,

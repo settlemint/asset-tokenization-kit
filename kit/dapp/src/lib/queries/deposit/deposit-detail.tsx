@@ -82,7 +82,7 @@ export const getDepositDetail = cache(
       [onChainDeposit],
       [offChainDeposit]
     );
-    const calculatedDeposit = calculatedFields.get(onChainDeposit.id);
+    const calculatedDeposit = calculatedFields.get(onChainDeposit.id)!;
 
     return {
       ...onChainDeposit,

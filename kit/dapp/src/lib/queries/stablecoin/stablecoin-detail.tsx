@@ -88,7 +88,7 @@ export const getStableCoinDetail = cache(
       [onChainStableCoin],
       [offChainStableCoin]
     );
-    const calculatedStableCoin = calculatedFields.get(onChainStableCoin.id);
+    const calculatedStableCoin = calculatedFields.get(onChainStableCoin.id)!;
 
     return {
       ...onChainStableCoin,

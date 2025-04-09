@@ -92,7 +92,7 @@ export const getFundList = cache(async () => {
   const funds = onChainFunds.map((fund) => {
     const offChainFund = assetsById.get(getAddress(fund.id));
 
-    const calculatedFund = calculatedFields.get(fund.id);
+    const calculatedFund = calculatedFields.get(fund.id)!;
 
     return {
       ...fund,

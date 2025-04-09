@@ -93,7 +93,7 @@ export const getCryptoCurrencyDetail = cache(
     );
     const calculatedCryptoCurrency = calculatedFields.get(
       onChainCryptoCurrency.id
-    );
+    )!;
 
     return {
       ...onChainCryptoCurrency,

@@ -98,7 +98,7 @@ export const getStableCoinList = cache(async () => {
   const stableCoins = onChainStableCoins.map((stableCoin) => {
     const offChainStableCoin = assetsById.get(getAddress(stableCoin.id));
 
-    const calculatedStableCoin = calculatedFields.get(stableCoin.id);
+    const calculatedStableCoin = calculatedFields.get(stableCoin.id)!;
 
     return {
       ...stableCoin,

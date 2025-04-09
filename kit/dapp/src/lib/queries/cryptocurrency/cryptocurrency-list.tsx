@@ -104,7 +104,7 @@ export const getCryptoCurrencyList = cache(async () => {
       getAddress(cryptocurrency.id)
     );
 
-    const calculatedCryptoCurrency = calculatedFields.get(cryptocurrency.id);
+    const calculatedCryptoCurrency = calculatedFields.get(cryptocurrency.id)!;
 
     return {
       ...cryptocurrency,
