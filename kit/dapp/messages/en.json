@@ -976,18 +976,17 @@
       "profile": {
         "portfolio-management": "Portfolio Management",
         "title": "Profile",
+        "enter-password": {
+          "title": "Enter password",
+          "placeholder": "Password",
+          "cancel": "Cancel"
+        },
         "two-factor-authentication": {
           "title": "Two-Factor Authentication",
           "description": "Enhance your account security by enabling two-factor authentication. When activated, you'll need to enter a verification code from your authenticator app each time you access the application or your wallet.",
           "status": {
             "enabled": "Two-factor authentication is enabled",
             "disabled": "Two-factor authentication is disabled"
-          },
-          "enter-password": {
-            "title": "Enter password",
-            "description": "Enter your password to enable two-factor authentication.",
-            "placeholder": "Password",
-            "cancel": "Cancel"
           },
           "setup-mfa": {
             "title": "Setup two factor authentication",
@@ -1001,13 +1000,15 @@
             "title": "Enable",
             "description": "Enable two-factor authentication to add an additional layer of security to your account.",
             "success-message": "Two-factor authentication enabled successfully",
-            "error-message": "Failed to enable two-factor authentication: {error}"
+            "error-message": "Failed to enable two-factor authentication: {error}",
+            "password-description": "Enter your password to enable two-factor authentication."
           },
           "disable": {
             "title": "Disable",
             "description": "Disable two-factor authentication to remove the additional layer of security from your account.",
             "success-message": "Two-factor authentication disabled successfully",
-            "error-message": "Failed to disable two-factor authentication: {error}"
+            "error-message": "Failed to disable two-factor authentication: {error}",
+            "password-description": "Enter your password to disable two-factor authentication."
           }
         },
         "secret-codes": {

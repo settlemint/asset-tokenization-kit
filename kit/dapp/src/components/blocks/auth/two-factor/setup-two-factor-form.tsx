@@ -1,4 +1,4 @@
-import { TwoFactorPasswordDialog } from "@/components/blocks/auth/two-factor/two-factor-password-dialog";
+import { PasswordDialog } from "@/components/blocks/auth/password-dialog";
 import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -72,12 +72,13 @@ export function SetupTwoFactorForm({
           />
         </div>
       </div>
-      <TwoFactorPasswordDialog
+      <PasswordDialog
         open={isSetPasswordOpen && !twoFactorData}
         onOpenChange={setIsSetPasswordOpen}
         onSubmit={enableTwoFactorAuthentication}
         isLoading={isLoading}
         submitButtonText={t("enable.title")}
+        description={t("enable.password-description")}
       />
     </>
   );

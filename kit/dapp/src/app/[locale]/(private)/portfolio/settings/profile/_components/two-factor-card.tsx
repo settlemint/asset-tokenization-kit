@@ -1,7 +1,7 @@
 "use client";
 
+import { PasswordDialog } from "@/components/blocks/auth/password-dialog";
 import { SetupTwoFactorDialog } from "@/components/blocks/auth/two-factor/setup-two-factor-dialog";
-import { TwoFactorPasswordDialog } from "@/components/blocks/auth/two-factor/two-factor-password-dialog";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -104,13 +104,14 @@ export function TwoFactorCard() {
           </Button>
         </CardFooter>
       </Card>
-      <TwoFactorPasswordDialog
+      <PasswordDialog
         open={isDisabling}
         onOpenChange={setIsDisabling}
         onSubmit={disableTwoFactorAuthentication}
         isLoading={isLoading}
         submitButtonVariant="destructive"
         submitButtonText={t("disable.title")}
+        description={t("disable.password-description")}
       />
       <SetupTwoFactorDialog onOpenChange={setIsEnabling} open={isEnabling} />
     </>
