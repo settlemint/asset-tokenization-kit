@@ -63,9 +63,8 @@ contract Identity is Storage, IIdentity, Version, Context {
      * calls __Identity_init if contract is not library
      */
     constructor(address initialManagementKey, bool _isLibrary) {
-        if (initialManagementKey == address(0)) revert ZeroAddressNotAllowed();
-
         if (!_isLibrary) {
+            if (initialManagementKey == address(0)) revert ZeroAddressNotAllowed();
             __Identity_init(initialManagementKey);
         } else {
             _initialized = true;
