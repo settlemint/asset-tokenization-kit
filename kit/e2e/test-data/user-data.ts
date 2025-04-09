@@ -1,11 +1,9 @@
-import { randomInt } from 'crypto';
+import { randomInt } from "crypto";
 
 const date = new Date()
   .toISOString()
   .replace(/(\d{4}-\d{1,2}-\d{1,2}).*/u, "$1");
-const randomValue = (randomInt(10_000) + 10_000)
-  .toString()
-  .slice(1);
+const randomValue = (randomInt(10_000) + 10_000).toString().slice(1);
 const pincodeName = "Test Pincode";
 const pincode = "123456";
 const password = "TestPassword123!";
@@ -24,6 +22,8 @@ interface AdminUser {
   pincodeName: string;
   pincode?: string;
 }
+
+export type UserRole = "admin" | "user";
 
 export const signUpData: SignUpData = {
   name: `Test User ${date}-${randomValue}`,

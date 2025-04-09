@@ -331,6 +331,14 @@ thegraph:
               pathType: ImplementationSpecific
               port: 8050
               serviceName: graph-node-index
+  job:
+    fullnameOverride: graph
+    image:
+      repository: node
+      tag: "23.11.0-slim"
+      pullPolicy: IfNotPresent
+    workspace:
+      size: 1Gi
 
 hasura:
   enabled: true

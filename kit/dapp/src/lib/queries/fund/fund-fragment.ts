@@ -31,6 +31,7 @@ export const FundFragment = theGraphGraphqlKit(`
         value
       }
     }
+    deployedOn
   }
 `);
 

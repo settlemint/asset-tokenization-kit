@@ -1,3 +1,6 @@
+global:
+  labels: {}
+
 # https://github.com/graphops/launchpad-charts/blob/main/charts/graph-node/values.yaml
 graph-node:
   fullnameOverride: graph-node
@@ -94,3 +97,38 @@ graph-node:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
+
+job:
+  fullnameOverride: graph
+
+  # Pod Security Context
+  podSecurityContext: {}
+
+  # Container Security Context
+  securityContext: {}
+
+  # Image configuration
+  image:
+    repository: node
+    tag: "23.11.0-slim"
+    pullPolicy: IfNotPresent
+
+  # Pod annotations
+  podAnnotations: {}
+
+  # Image pull secrets
+  imagePullSecrets: []
+
+  # Resource configuration
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "250m"
+    limits:
+      memory: "3Gi"
+
+  workspace:
+    # Size of the workspace PVC
+    size: 1Gi
+    # Storage class to use for the workspace PVC
+    storageClass: local-path

@@ -976,18 +976,17 @@
       "profile": {
         "portfolio-management": "Portfolio Management",
         "title": "Profile",
+        "enter-password": {
+          "title": "Enter password",
+          "placeholder": "Password",
+          "cancel": "Cancel"
+        },
         "two-factor-authentication": {
           "title": "Two-Factor Authentication",
-          "description": "Add an additional layer of security to your account by enabling two-factor authentication.",
+          "description": "Enhance your account security by enabling two-factor authentication. When activated, you'll need to enter a verification code from your authenticator app each time you access the application or your wallet.",
           "status": {
             "enabled": "Two-factor authentication is enabled",
             "disabled": "Two-factor authentication is disabled"
-          },
-          "enter-password": {
-            "title": "Enter password",
-            "description": "Enter your password to enable two-factor authentication.",
-            "placeholder": "Password",
-            "cancel": "Cancel"
           },
           "setup-mfa": {
             "title": "Setup two factor authentication",
@@ -1001,13 +1000,16 @@
             "title": "Enable",
             "description": "Enable two-factor authentication to add an additional layer of security to your account.",
             "success-message": "Two-factor authentication enabled successfully",
-            "error-message": "Failed to enable two-factor authentication: {error}"
+            "error-message": "Failed to enable two-factor authentication: {error}",
+            "password-description": "Enter your password to enable two-factor authentication."
           },
           "disable": {
             "title": "Disable",
             "description": "Disable two-factor authentication to remove the additional layer of security from your account.",
             "success-message": "Two-factor authentication disabled successfully",
-            "error-message": "Failed to disable two-factor authentication: {error}"
+            "error-message": "Failed to disable two-factor authentication: {error}",
+            "password-description": "Enter your password to disable two-factor authentication.",
+            "disable-two-factor-tooltip": "Two-factor authentication can only be disabled if a pincode is set."
           }
         },
         "secret-codes": {
@@ -1017,6 +1019,35 @@
           "copied": "Secure codes copied to clipboard",
           "generate": "Generate secure codes",
           "error-message": "Failed to generate secure codes"
+        },
+        "pincode": {
+          "title": "Pincode",
+          "description": "Use a pincode to access your wallet.",
+          "error": "Failed to get pincode status",
+          "setup-pincode": {
+            "title": "Setup pincode",
+            "success-message": "Pincode set successfully",
+            "error-message": "Failed to set pincode"
+          },
+          "update-pincode": {
+            "title": "Update pincode",
+            "success-message": "Pincode updated successfully",
+            "error-message": "Failed to update pincode"
+          },
+          "disable-pincode": {
+            "title": "Disable pincode",
+            "description": "Enter your password to disable your pincode.",
+            "cancel": "Cancel",
+            "remove": "Disable",
+            "loading": "Disabling...",
+            "disable-pincode-tooltip": "A pincode can only be disabled if two-factor authentication is enabled.",
+            "success-message": "Pincode disabled successfully",
+            "error-message": "Failed to disable pincode: {error}"
+          },
+          "status": {
+            "enabled": "You have set a pincode.",
+            "disabled": "No pincode is set."
+          }
         }
       }
     },
@@ -1877,11 +1908,6 @@
       "password-description": "Enter your current password.",
       "password-instructions": "Please use 8 characters at minimum.",
       "password-placeholder": "Enter your password",
-      "pincode-form": {
-        "pincode-label": "Pincode",
-        "setting-up": "Setting up...",
-        "submit": "Setup Pincode"
-      },
       "provider-link-success": "Provider linked successfully.",
       "provider-unlink-success": "Provider unlinked successfully.",
       "providers": "Providers",
@@ -1923,11 +1949,26 @@
       "verify-your-email": "Verify Your Email",
       "verify-your-email-description": "Please verify your email address. Check your inbox for the verification email. If you haven't received the email, click the button below to resend.",
       "wallet-security": {
-        "setup-pincode-dialog": {
-          "title": "Setup Pincode",
+        "set-pincode-dialog": {
           "description": "Enter a 6-digit pincode to secure your wallet.",
-          "pincode-set": "Pincode set successfully",
-          "pincode-set-error": "Failed to set pincode"
+          "cancel": "Cancel",
+          "enable": {
+            "title": "Setup Pincode",
+            "pincode-set": "Pincode set successfully",
+            "pincode-set-error": "Failed to set pincode: {error}",
+            "setting-up": "Setting up...",
+            "submit": "Setup Pincode"
+          },
+          "update": {
+            "title": "Update Pincode",
+            "pincode-update": "Pincode updated successfully",
+            "pincode-update-error": "Failed to update pincode: {error}",
+            "setting-up": "Updating...",
+            "submit": "Update Pincode"
+          },
+          "pincode-label": "Pincode",
+          "password-description": "Enter your password to setup your pincode.",
+          "password-submit": "Confirm"
         },
         "form": {
           "button-label": "Start using my wallet",
@@ -2049,7 +2090,13 @@
           "name-header": "Name",
           "status-header": "Status",
           "symbol-header": "Symbol",
-          "type-header": "Type"
+          "type-header": "Type",
+          "actions-header": "Actions",
+          "trigger-label": {
+            "block": "Block user",
+            "freeze": "Freeze",
+            "mint": "Mint"
+          }
         },
         "title": "Holdings"
       },

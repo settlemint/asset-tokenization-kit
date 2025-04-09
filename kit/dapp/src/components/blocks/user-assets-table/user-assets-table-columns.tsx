@@ -1,20 +1,19 @@
 "use client";
 
+import { BlockForm } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/block-form/form';
+import { hasBlocklist, hasFreeze } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled';
+import { MintForm } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/mint-form/form';
+import { FreezeForm } from '@/app/[locale]/(private)/assets/[assettype]/[address]/holders/_components/actions/freeze-form/form';
 import { AssetStatusPill } from "@/components/blocks/asset-status-pill/asset-status-pill";
+import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { defineMeta, filterFn } from "@/lib/filters";
+import type { AssetBalance } from "@/lib/queries/asset-balance/asset-balance-schema";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { assetTypes } from "@/lib/utils/typebox/asset-types";
-import { createColumnHelper } from "@tanstack/react-table";
-import {
-  ActivityIcon,
-  AsteriskIcon,
-  ClockIcon,
-  InfoIcon,
-  ShapesIcon,
-  WalletIcon,
-} from "lucide-react";
+import { type ColumnMeta, createColumnHelper } from '@tanstack/react-table';
+import { ActivityIcon, AsteriskIcon, ClockIcon, InfoIcon, MoreHorizontal, ShapesIcon, WalletIcon } from 'lucide-react';
 import { useLocale, useTranslations } from "next-intl";
 import { ColumnAssetType } from "../asset-info/column-asset-type";
 import { ColumnHolderType } from "../asset-info/column-holder-type";
@@ -176,6 +175,75 @@ export function Columns() {
         icon: ClockIcon,
         type: "date",
       }),
+    }),
+
+    columnHelper.display({
+      id: "actions",
+      header: t("actions-header"),
+      cell: ({ row }) => {
+        return (
+          <DataTableRowActions
+            actions={[
+              {
+                id: "block-form",
+                label: t("trigger-label.block"),
+                component: ({ open, onOpenChange }) => (
+                  <BlockForm
+                    address={row.original.asset.id}
+                    assettype={row.original.asset.type}
+                    userAddress={row.original.account.id}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+                disabled: row.original.asset.paused,
+                hidden: !hasBlocklist(row.original.asset.type),
+              },
+              {
+                id: "freeze-form",
+                label: t("trigger-label.freeze"),
+                component: ({ open, onOpenChange }) => (
+                  <FreezeForm
+                    address={row.original.asset.id}
+                    userAddress={row.original.account.id}
+                    balance={row.original.value}
+                    symbol={row.original.asset.symbol}
+                    assettype={row.original.asset.type}
+                    decimals={row.original.asset.decimals}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+                disabled: row.original.asset.paused || row.original.value === 0,
+                hidden: !hasFreeze(row.original.asset.type),
+              },
+              {
+                id: "mint-form",
+                label: t("trigger-label.mint"),
+                component: ({ open, onOpenChange }) => (
+                  <MintForm
+                    address={row.original.asset.id}
+                    recipient={row.original.account.id}
+                    assettype={row.original.asset.type}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                    max={row.original.asset.totalSupply}
+                    decimals={row.original.asset.decimals}
+                    symbol={row.original.asset.symbol}
+                  />
+                ),
+                disabled: row.original.asset.paused || row.original.asset.totalSupply === 0,
+              },
+            ]}
+          />
+        );
+      },
+      meta: {
+        displayName: t("actions-header"),
+        icon: MoreHorizontal,
+        type: "text",
+        enableCsvExport: false,
+      } as ColumnMeta<AssetBalance, unknown>,
     }),
   ];
 }

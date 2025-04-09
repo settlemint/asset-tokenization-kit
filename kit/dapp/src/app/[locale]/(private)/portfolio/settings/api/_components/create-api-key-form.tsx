@@ -20,7 +20,7 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -83,7 +83,9 @@ export function CreateApiKeyForm({
             ? undefined
             : Number.parseInt(data.expiresIn),
       });
-
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
       if (response.data) {
         setCreatedApiKey(response.data.key);
         onSuccess?.();

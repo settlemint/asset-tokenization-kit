@@ -13,14 +13,20 @@ import {
   TimeSeriesChart,
   TimeSeriesRoot,
   TimeSeriesTitle,
+  type TimeRange,
 } from "../time-series";
 
 interface TotalTransfersProps {
   data: AssetStats[];
   locale: Locale;
+  maxRange?: TimeRange;
 }
 
-export function TotalTransfers({ data, locale }: TotalTransfersProps) {
+export function TotalTransfers({
+  data,
+  locale,
+  maxRange = "30d",
+}: TotalTransfersProps) {
   const t = useTranslations("components.charts.assets");
 
   const chartConfig = {
@@ -42,7 +48,7 @@ export function TotalTransfers({ data, locale }: TotalTransfersProps) {
   }
 
   return (
-    <TimeSeriesRoot locale={locale}>
+    <TimeSeriesRoot locale={locale} maxRange={maxRange}>
       <TimeSeriesTitle
         title={t("total-transfers.title")}
         description={t("total-transfers.description")}

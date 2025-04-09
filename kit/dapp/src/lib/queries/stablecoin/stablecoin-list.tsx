@@ -9,7 +9,7 @@ import {
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { getAddress } from "viem";
-import { stablecoinCalculateFields } from "./stablecoin-calculated";
+import { stablecoinsCalculateFields } from "./stablecoin-calculated";
 import {
   OffchainStableCoinFragment,
   StableCoinFragment,
@@ -90,22 +90,22 @@ export const getStableCoinList = cache(async () => {
     offChainStableCoins.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const stableCoins = await Promise.all(
-    onChainStableCoins.map(async (stableCoin) => {
-      const offChainStableCoin = assetsById.get(getAddress(stableCoin.id));
-
-      const calculatedFields = await stablecoinCalculateFields(
-        stableCoin,
-        offChainStableCoin
-      );
-
-      return {
-        ...stableCoin,
-        ...offChainStableCoin,
-        ...calculatedFields,
-      };
-    })
+  const calculatedFields = await stablecoinsCalculateFields(
+    onChainStableCoins,
+    offChainStableCoins
   );
+
+  const stableCoins = onChainStableCoins.map((stableCoin) => {
+    const offChainStableCoin = assetsById.get(getAddress(stableCoin.id));
+
+    const calculatedStableCoin = calculatedFields.get(stableCoin.id)!;
+
+    return {
+      ...stableCoin,
+      ...offChainStableCoin,
+      ...calculatedStableCoin,
+    };
+  });
 
   return stableCoins;
 });

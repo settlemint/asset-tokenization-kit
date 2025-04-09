@@ -1,0 +1,142 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-{{ .Values.job.fullnameOverride }}-deploy-subgraph
+  labels:
+    {{- include "thegraph.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      {{- with .Values.job.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "thegraph.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- with .Values.job.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.job.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: wait-for-graph-node
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Waiting for {{ index .Values "graph-node" "fullnameOverride" }}-query:8020 to be available..."
+              until nc -z -w 2 {{ index .Values "graph-node" "fullnameOverride" }}-query 8020; do
+                echo "Service not ready yet, waiting..."
+                sleep 5
+              done
+              echo "Service is available, proceeding..."
+        - name: clone-repo
+          image: alpine/git:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -ex
+              if [ -z "$(ls -A /workspace)" ]; then
+                git clone https://github.com/settlemint/asset-tokenization-kit.git /workspace
+              else
+                cd /workspace
+                git pull
+              fi
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.job.securityContext | nindent 12 }}
+          image: {{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}
+          imagePullPolicy: {{ .Values.job.image.pullPolicy }}
+          resources:
+            requests:
+              memory: {{ .Values.job.resources.requests.memory | quote }}
+              cpu: {{ .Values.job.resources.requests.cpu | quote }}
+            limits:
+              memory: {{ .Values.job.resources.limits.memory | quote }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -ex
+
+              echo "Updating apt..."
+              apt-get update
+              apt-get install -y jq yq curl git
+
+              echo "Checking for Foundry..."
+              if ! command -v forge &> /dev/null
+              then
+                echo "Foundry not found, installing..."
+                curl -L https://foundry.paradigm.xyz | bash
+                . /root/.bashrc
+                foundryup
+              else
+                echo "Foundry is already installed."
+              fi
+
+              echo "Installing Bun..."
+              npm install -g bun
+
+              # Verify Bun installation
+              bun --version
+
+              echo "Installing dependencies..."
+              cd /workspace
+              bun install
+
+              echo "Dependencies installed"
+              bunx turbo dependencies
+
+              # Replace localhost with graph-node-query for subgraph deployment
+              sed -i 's|http://localhost:8020|http://{{ index .Values "graph-node" "fullnameOverride" }}-query:8020|g' /workspace/kit/subgraph/graph-local-deploy.sh
+              sed -i 's/yq -i/yq -i -y/g' /workspace/kit/subgraph/graph-local-deploy.sh
+
+              echo "Build forge contracts..."
+              cd /workspace/kit/contracts
+              forge soldeer install && find dependencies -name .git -type d -exec rm -rf {} +
+              forge build --sizes
+
+              echo "Build hardhat contracts..."
+              npx hardhat compile
+
+              echo "Build genesis..."
+              bash -ex genesis-output.sh
+
+              echo "Build abi-output..."
+              bash -ex abi-output.sh
+
+              echo "Start hardhat node..."
+              nohup npx hardhat node &
+
+              echo "Deploy contracts..."
+              bun deploy:local
+
+              echo "Build subgraph..."
+              cd /workspace/kit/subgraph
+              npx graph codegen
+              graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt
+
+              /bin/bash /workspace/kit/subgraph/graph-local-deploy.sh
+
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: {{ include "thegraph.fullname" . }}-workspace
+  backoffLimit: 0

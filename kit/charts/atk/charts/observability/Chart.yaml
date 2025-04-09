@@ -14,7 +14,7 @@ dependencies:
     version: 0.17.0
     repository: https://victoriametrics.github.io/helm-charts/
   - name: alloy
-    version: 0.12.6
+    version: 1.0.0
     repository: https://grafana.github.io/helm-charts
   - name: metrics-server
     version: 3.12.2
@@ -23,7 +23,7 @@ dependencies:
     version: 5.31.1
     repository: https://prometheus-community.github.io/helm-charts
   - name: grafana
-    version: 8.11.3
+    version: 8.11.4
     repository: https://grafana.github.io/helm-charts
   - name: loki
     version: 6.29.0

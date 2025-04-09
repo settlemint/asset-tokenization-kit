@@ -1,6 +1,6 @@
 import { safeParse } from "@/lib/utils/typebox";
 import { addSeconds } from "date-fns";
-import { getAssetPriceInUserCurrency } from "../asset-price/asset-price";
+import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
 import type {
   CalculatedDeposit,
   OffChainDeposit,
@@ -10,27 +10,35 @@ import { CalculatedDepositSchema } from "./deposit-schema";
 /**
  * Calculates additional fields for tokenized deposit tokens
  *
- * @param onChainDeposit - On-chain tokenized deposit data
- * @param offChainDeposit - Off-chain tokenized deposit data (optional)
+ * @param onChainDeposits - On-chain tokenized deposit data
+ * @param offChainDeposits - Off-chain tokenized deposit data (optional)
  * @returns Calculated fields for the tokenized deposit token
  */
-export async function depositCalculateFields(
-  onChainDeposit: OnChainDeposit,
-  _offChainDeposit?: OffChainDeposit
-): Promise<CalculatedDeposit> {
-  // Calculate collateral proof validity date
-  const collateralProofValidity =
-    Number(onChainDeposit.lastCollateralUpdate) > 0
-      ? addSeconds(
-          new Date(Number(onChainDeposit.lastCollateralUpdate) * 1000),
-          Number(onChainDeposit.liveness)
-        )
-      : undefined;
+export async function depositsCalculateFields(
+  onChainDeposits: OnChainDeposit[],
+  _offChainDeposits?: (OffChainDeposit | undefined)[]
+): Promise<Map<string, CalculatedDeposit>> {
+  const prices = await getAssetsPricesInUserCurrency(
+    onChainDeposits.map((deposit) => deposit.id)
+  );
 
-  const price = await getAssetPriceInUserCurrency(onChainDeposit.id);
+  return onChainDeposits.reduce((acc, deposit) => {
+    // Calculate collateral proof validity date
+    const collateralProofValidity =
+      Number(deposit.lastCollateralUpdate) > 0
+        ? addSeconds(
+            new Date(Number(deposit.lastCollateralUpdate) * 1000),
+            Number(deposit.liveness)
+          )
+        : undefined;
 
-  return safeParse(CalculatedDepositSchema, {
-    collateralProofValidity,
-    price,
-  });
+    const price = prices.get(deposit.id);
+
+    const calculatedDeposit = safeParse(CalculatedDepositSchema, {
+      collateralProofValidity,
+      price,
+    });
+    acc.set(deposit.id, calculatedDeposit);
+    return acc;
+  }, new Map<string, CalculatedDeposit>());
 }

@@ -10,10 +10,13 @@ export async function UsersWidget() {
     since: sevenDaysAgo,
   });
 
+  // Ensure we're using a string value
+  const displayValue = totalUsersCount.toLocaleString();
+
   return (
     <Widget
       label={t("users.label")}
-      value={totalUsersCount.toLocaleString()}
+      value={displayValue}
       subtext={t("users.subtext", { count: recentUsersCount, days: 7 })}
     />
   );

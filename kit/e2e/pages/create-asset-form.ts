@@ -135,4 +135,42 @@ export class CreateAssetForm extends BasePage {
       this.page.locator('select[name="price.currency"]')
     ).toHaveValue(expected);
   }
+
+  async fillFundConfigurationFields(
+    options: {
+      fundCategory?: string;
+      fundClass?: string;
+      managementFeeBps?: string;
+      price?: string;
+    } = {}
+  ) {
+    const actions: Record<string, (value: string) => Promise<void>> = {
+      fundCategory: async (value) => {
+        await this.page.getByLabel("Fund category", { exact: false }).click();
+        await this.page.getByRole("option", { name: value }).click();
+      },
+      fundClass: async (value) => {
+        await this.page.getByLabel("Fund class", { exact: false }).click();
+        await this.page.getByRole("option", { name: value }).click();
+      },
+      managementFeeBps: async (value) => {
+        await this.page
+          .getByLabel("Management fee", { exact: false })
+          .fill(value);
+      },
+      price: async (value) => {
+        await this.page.getByLabel("Price", { exact: false }).fill(value);
+      },
+    };
+    for (const key in options) {
+      const value = options[key as keyof typeof options];
+      if (value && actions[key]) {
+        await actions[key](value);
+      }
+    }
+  }
+
+  async clearField(label: string) {
+    await this.page.getByLabel(label, { exact: false }).fill("");
+  }
 }
