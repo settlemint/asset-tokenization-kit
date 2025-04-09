@@ -118,3 +118,60 @@ export function renderCompactNumber({
     </div>
   );
 }
+
+/**
+ * Function to format large numbers in a compact way for chart Y-axes
+ * Returns just a string (not a React component) for use in chart labels
+ */
+export function formatCompactForYAxis(
+  value: number | string,
+  locale: Locale,
+  currency?: CurrencyCode
+): string {
+  // Convert string values to numbers
+  const numValue = typeof value === "string" ? parseFloat(value) : value;
+
+  // For null, undefined, NaN or 0, just return "0"
+  if (!numValue) return "0";
+
+  const absValue = Math.abs(numValue);
+  let formattedValue: string;
+  let suffix = "";
+
+  if (absValue >= 1e12) {
+    formattedValue = (numValue / 1e12).toFixed(1);
+    suffix = "T";
+  } else if (absValue >= 1e9) {
+    formattedValue = (numValue / 1e9).toFixed(1);
+    suffix = "B";
+  } else if (absValue >= 1e6) {
+    formattedValue = (numValue / 1e6).toFixed(1);
+    suffix = "M";
+  } else if (absValue >= 1e3) {
+    formattedValue = (numValue / 1e3).toFixed(1);
+    suffix = "K";
+  } else {
+    formattedValue = numValue.toFixed(1);
+  }
+
+  // Remove trailing .0 if present for cleaner display on axes
+  if (formattedValue.endsWith(".0")) {
+    formattedValue = formattedValue.slice(0, -2);
+  }
+
+  if (currency) {
+    // Get currency symbol
+    const currencySymbol = new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: currency,
+      currencyDisplay: "symbol",
+    })
+      .format(1)
+      .replace(/[0-9.,]/g, "")
+      .trim();
+
+    return `${currencySymbol}${formattedValue}${suffix}`;
+  }
+
+  return `${formattedValue}${suffix}`;
+}

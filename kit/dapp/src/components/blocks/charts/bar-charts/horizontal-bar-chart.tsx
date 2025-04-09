@@ -40,6 +40,7 @@ export interface BarChartContainerProps {
   stacked?: boolean;
   roundedBars?: boolean;
   chartTooltipCursor?: boolean;
+  yAxisTickFormatter?: (value: string) => string;
 }
 
 export interface BarChartProps extends BarChartContainerProps {
@@ -79,6 +80,7 @@ export function BarChartContainer({
   stacked = true,
   roundedBars = true,
   chartTooltipCursor = false,
+  yAxisTickFormatter,
 }: BarChartContainerProps) {
   const dataKeys = Object.keys(config);
   const {
@@ -116,7 +118,12 @@ export function BarChartContainer({
           tickFormatter={tickFormatter}
         />
         {showYAxis && (
-          <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} />
+          <YAxis
+            tickLine={false}
+            axisLine={true}
+            tickMargin={tickMargin}
+            tickFormatter={yAxisTickFormatter}
+          />
         )}
         <ChartTooltip
           cursor={chartTooltipCursor}

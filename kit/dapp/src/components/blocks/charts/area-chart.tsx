@@ -35,6 +35,7 @@ export interface AreaChartContainerProps {
   showYAxis?: boolean;
   stacked?: boolean;
   chartContainerClassName?: string;
+  yAxisTickFormatter?: (value: string) => string;
 }
 
 interface AreaChartProps extends AreaChartContainerProps {
@@ -93,6 +94,7 @@ export function AreaChartContainer({
   showYAxis,
   stacked,
   chartContainerClassName,
+  yAxisTickFormatter,
 }: AreaChartContainerProps) {
   const dataKeys = Object.keys(config);
   const {
@@ -124,6 +126,7 @@ export function AreaChartContainer({
           axisLine={true}
           tickMargin={tickMargin}
           hide={!showYAxis}
+          tickFormatter={yAxisTickFormatter}
         />
         <ChartTooltip
           cursor={false}

@@ -260,6 +260,7 @@ type TimeSeriesChartProps<T extends DataPoint> = {
   rawData: T[];
   config: ChartConfig;
   className?: string;
+  yAxisTickFormatter?: (value: string) => string;
 } & Omit<AreaChartContainerProps, "data" | "xAxis"> &
   Omit<BarChartContainerProps, "data" | "xAxis">;
 
@@ -268,6 +269,7 @@ export function TimeSeriesChart<T extends DataPoint>({
   rawData,
   className,
   xAxis = { key: "timestamp" },
+  yAxisTickFormatter,
   ...chartContainerProps
 }: TimeSeriesChartProps<T> & { xAxis?: AxisConfig<ChartData> }) {
   const { timeRange, chartType, locale } = useTimeSeries();
@@ -285,6 +287,7 @@ export function TimeSeriesChart<T extends DataPoint>({
         data={timeseries}
         xAxis={{ ...xAxis, key: "timestamp" }}
         showYAxis={true}
+        yAxisTickFormatter={yAxisTickFormatter}
         {...chartContainerProps}
       />
     </CardContent>
