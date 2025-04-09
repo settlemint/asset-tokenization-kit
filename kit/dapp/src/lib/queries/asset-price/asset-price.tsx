@@ -46,10 +46,20 @@ const AssetPrice = hasuraGraphql(
 export const getAvailableAssetsPriceInUserCurrency = cache(
   async (assetIds: string[]): Promise<Map<string, Price>> => {
     const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
-    const assetPricesData = await hasuraClient.request(AssetPrices, {
-      assetIds: assetIdsWithoutDuplicates,
-    });
-    const assetPrices = assetPricesData.asset_price.map((assetPrice) => {
+    const assetPricesData = await fetchAllHasuraPages(
+      async (pageLimit, offset) => {
+        const assetIds = assetIdsWithoutDuplicates.map((address) => {
+          return getAddress(address);
+        });
+        const pageResult = await hasuraClient.request(AssetPrices, {
+          assetIds,
+          limit: pageLimit,
+          offset,
+        });
+        return pageResult.asset_price ?? [];
+      }
+    );
+    const assetPrices = assetPricesData.map((assetPrice) => {
       const parsed = safeParse(AssetPriceSchema, assetPrice);
       return [assetPrice.asset_id, parsed] as [string, Price];
     });
