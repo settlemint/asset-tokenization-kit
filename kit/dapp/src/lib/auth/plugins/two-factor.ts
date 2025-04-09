@@ -26,7 +26,7 @@ plugin.endpoints = {
     originalEnableTwoFactor.options,
     async (ctx) => {
       const user = ctx.context.session.user as User;
-      if (!user.initialOnboardingFinished) {
+      if (user.initialOnboardingFinished) {
         const { headers } = await originalEnableTwoFactor(
           ctx as typeof ctx & { returnHeaders: true }
         );
