@@ -17,6 +17,7 @@ import { getServerEnvironment } from "../config/environment";
 import { metadata } from "../config/metadata";
 import { db } from "../db";
 import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
+import { pincode } from "./plugins/pincode-plugin";
 import twoFactorPlugin from "./plugins/two-factor";
 import { createUserWallet } from "./portal";
 
@@ -98,19 +99,19 @@ export const auth = betterAuth({
         type: "boolean",
         required: false,
         default: false,
-        input: true,
+        input: false,
       },
       pincodeVerificationId: {
         type: "string",
         required: false,
         unique: true,
-        input: true,
+        input: false,
       },
       twoFactorVerificationId: {
         type: "string",
         required: false,
         unique: true,
-        input: true,
+        input: false,
       },
       secretCodeVerificationId: {
         type: "string",
@@ -197,6 +198,7 @@ export const auth = betterAuth({
       rpName: metadata.title.default,
     }),
     twoFactorPlugin,
+    pincode(),
     magicLink({
       sendMagicLink,
     }),

@@ -3,9 +3,6 @@ import { getUser } from "@/lib/auth/utils";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { revalidateTag } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
-import { headers } from "next/headers";
-import { auth } from "../../auth/auth";
-import type { SetPincodeInput } from "./set-pincode-schema";
 
 /**
  * GraphQL mutation to set a pincode for wallet verification
@@ -35,7 +32,7 @@ export async function setPincodeFunction({
   parsedInput: { pincode },
   ctx,
 }: {
-  parsedInput: SetPincodeInput;
+  parsedInput: { pincode: string };
   ctx?: { user: User };
 }) {
   const currentUser = ctx?.user ?? (await getUser());
@@ -49,15 +46,10 @@ export async function setPincodeFunction({
   if (!createWalletVerification?.id) {
     throw new ApiError(500, "Failed to create wallet verification");
   }
-  const updatedUser: Partial<User> = {
-    pincodeEnabled: true,
-    pincodeVerificationId: createWalletVerification.id,
-  };
-  const headersList = await headers();
-  await auth.api.updateUser({
-    headers: headersList,
-    body: updatedUser,
-  });
+  const verificationId = createWalletVerification.id as string;
   revalidateTag("user");
-  return { success: true };
+  return {
+    success: true,
+    verificationId,
+  };
 }

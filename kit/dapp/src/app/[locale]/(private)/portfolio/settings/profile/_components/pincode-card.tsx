@@ -1,6 +1,6 @@
 "use client";
 
-import { RemovePincodeDialog } from "@/components/blocks/auth/pincode/remove-pincode-dialog";
+import { DisablePincodeDialog } from "@/components/blocks/auth/pincode/disable-pincode-dialog";
 import { SetupPincodeDialog } from "@/components/blocks/auth/pincode/setup-pincode-dialog";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -22,8 +22,7 @@ import {
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 
 export function PincodeCard() {
   const t = useTranslations("portfolio.settings.profile.pincode");
@@ -31,31 +30,8 @@ export function PincodeCard() {
   const [isPincodeDialogOpen, setIsPincodeDialogOpen] = useState(false);
   const [isRemovePincodeDialogOpen, setIsRemovePincodeDialogOpen] =
     useState(false);
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    setIsLoading(true);
-    authClient
-      .getSession({
-        query: {
-          // Don't use the cookie cache, some setting like pincode are not updated in the cookie (only after logout/login)
-          disableCookieCache: true,
-        },
-      })
-      .then((result) => {
-        setIsEnabled(result.data?.user.pincodeEnabled ?? false);
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error(t("error"));
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [t]);
-
-  if (isPending || isLoading) {
+  if (isPending) {
     return <Skeleton />;
   }
 
@@ -71,26 +47,28 @@ export function PincodeCard() {
         <Alert
           className={cn(
             "mb-4",
-            isEnabled
+            session?.user?.pincodeEnabled
               ? "bg-success/20 text-success-foreground border-success"
               : "bg-primary/20 text-primary-foreground border-primary"
           )}
         >
           <AlertTitle>
-            {isEnabled ? t("status.enabled") : t("status.disabled")}
+            {session?.user?.pincodeEnabled
+              ? t("status.enabled")
+              : t("status.disabled")}
           </AlertTitle>
         </Alert>
         <SetupPincodeDialog
           open={isPincodeDialogOpen}
           onOpenChange={setIsPincodeDialogOpen}
         />
-        <RemovePincodeDialog
+        <DisablePincodeDialog
           open={isRemovePincodeDialogOpen}
           onOpenChange={setIsRemovePincodeDialogOpen}
         />
       </CardContent>
       <CardFooter className="flex items-center p-6 py-4 md:py-3 bg-transparent border-none justify-end space-x-2">
-        {isEnabled ? (
+        {session?.user?.pincodeEnabled ? (
           <>
             <Button onClick={() => setIsPincodeDialogOpen(true)} size="sm">
               {t("update-pincode.title")}
@@ -105,13 +83,13 @@ export function PincodeCard() {
                       disabled={!session?.user?.twoFactorEnabled}
                       variant="destructive"
                     >
-                      {t("remove-pincode.title")}
+                      {t("disable-pincode.title")}
                     </Button>
                   </span>
                 </TooltipTrigger>
                 {!session?.user?.twoFactorEnabled && (
                   <TooltipContent>
-                    <p>{t("remove-pincode.remove-pincode-tooltip")}</p>
+                    <p>{t("disable-pincode.disable-pincode-tooltip")}</p>
                   </TooltipContent>
                 )}
               </Tooltip>

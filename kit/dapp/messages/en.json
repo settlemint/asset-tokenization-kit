@@ -1033,15 +1033,15 @@
             "success-message": "Pincode updated successfully",
             "error-message": "Failed to update pincode"
           },
-          "remove-pincode": {
-            "title": "Remove pincode",
-            "description": "Are you sure you want to remove your pincode?",
+          "disable-pincode": {
+            "title": "Disable pincode",
+            "description": "Enter your password to disable your pincode.",
             "cancel": "Cancel",
-            "remove": "Remove",
-            "loading": "Removing...",
-            "remove-pincode-tooltip": "A pincode can only be removed if two-factor authentication is enabled.",
-            "success-message": "Pincode removed successfully",
-            "error-message": "Failed to remove pincode"
+            "remove": "Disable",
+            "loading": "Disabling...",
+            "disable-pincode-tooltip": "A pincode can only be disabled if two-factor authentication is enabled.",
+            "success-message": "Pincode disabled successfully",
+            "error-message": "Failed to disable pincode: {error}"
           },
           "status": {
             "enabled": "You have set a pincode.",

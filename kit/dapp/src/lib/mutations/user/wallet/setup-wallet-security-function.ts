@@ -1,7 +1,7 @@
 import { ApiError } from "next/dist/server/api-utils";
 import { headers } from "next/headers";
 import { auth } from "../../../auth/auth";
-import { setPincodeFunction } from "../set-pincode-function";
+import { setPincodeFunction } from "../pincode/set-pincode-function";
 import {
   WalletSecurityMethodOptions,
   type SetupWalletSecurityInput,

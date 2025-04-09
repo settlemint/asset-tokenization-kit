@@ -2,11 +2,11 @@ import { OTP_ALGORITHM, OTP_DIGITS, OTP_PERIOD } from "@/lib/auth/otp";
 import { enableTwoFactorFunction } from "@/lib/mutations/user/two-factor/enable-two-factor-function";
 import type { GenericEndpointContext } from "better-auth";
 import { createAuthEndpoint } from "better-auth/api";
-import { setSessionCookie } from "better-auth/cookies";
 import { twoFactor } from "better-auth/plugins/two-factor";
 import { disableTwoFactorFunction } from "../../mutations/user/two-factor/disable-two-factor-function";
 import { verifyTwoFactorOTPFunction } from "../../mutations/user/two-factor/verify-two-factor-otp-function";
 import type { User } from "../types";
+import { revokeSession } from "./utils";
 
 const plugin = twoFactor({
   totpOptions: {
@@ -85,33 +85,5 @@ plugin.endpoints = {
     }
   ),
 };
-
-async function revokeSession(
-  ctx: GenericEndpointContext,
-  updatedUserFields: Partial<User>
-) {
-  if (!ctx.context.session) {
-    return;
-  }
-  const user = ctx.context.session.user;
-  const updatedUser = await ctx.context.internalAdapter.updateUser(
-    user.id,
-    updatedUserFields,
-    ctx
-  );
-  const newSession = await ctx.context.internalAdapter.createSession(
-    user.id,
-    ctx.request,
-    false,
-    ctx.context.session.session
-  );
-  await ctx.context.internalAdapter.deleteSession(
-    ctx.context.session.session.token
-  );
-  await setSessionCookie(ctx as GenericEndpointContext, {
-    session: newSession,
-    user: updatedUser,
-  });
-}
 
 export default plugin;

@@ -3,8 +3,6 @@ import { getUser } from "@/lib/auth/utils";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { revalidateTag } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
-import { headers } from "next/headers";
-import { auth } from "../../auth/auth";
 
 /**
  * GraphQL mutation to remove a pincode for wallet verification
@@ -38,14 +36,6 @@ export async function removePincodeFunction({ ctx }: { ctx?: { user: User } }) {
   await portalClient.request(RemovePinCode, {
     address: currentUser.wallet,
     verificationId: currentUser.pincodeVerificationId,
-  });
-  const updatedUser: Partial<User> = {
-    pincodeEnabled: false,
-  };
-  const headersList = await headers();
-  await auth.api.updateUser({
-    headers: headersList,
-    body: updatedUser,
   });
   revalidateTag("user");
   return { success: true };

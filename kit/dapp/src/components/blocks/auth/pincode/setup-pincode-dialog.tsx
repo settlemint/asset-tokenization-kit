@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/routing";
-import { setPincode } from "@/lib/mutations/user/set-pincode-action";
+import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -27,7 +27,7 @@ export function SetupPincodeDialog({ open, onOpenChange }: PincodeDialogProps) {
 
   const onSubmit = async (data: PincodeFormValues) => {
     try {
-      await setPincode({
+      await authClient.pincode.enable({
         pincode: data.pincode,
       });
       toast.success(t("pincode-set"));

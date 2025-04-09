@@ -14,6 +14,7 @@ import {
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
+import { pincodeClient } from "./plugins/pincode-plugin/client";
 
 /**
  * The authentication client instance with configured plugins
@@ -39,6 +40,7 @@ export const authClient = createAuthClient({
         window.location.href = `/${locale}/auth/2fa${queryParams}`; // Handle the 2FA verification redirect
       },
     }),
+    pincodeClient(),
     magicLinkClient(),
   ],
 });

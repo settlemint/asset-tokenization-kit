@@ -12,10 +12,6 @@ export async function getUser() {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
-      query: {
-        // Don't use the cookie cache, some setting like pincode are not updated in the cookie (only after logout/login)
-        disableCookieCache: true,
-      },
     });
 
     if (!session?.user) {
