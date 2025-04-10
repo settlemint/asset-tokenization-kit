@@ -41,6 +41,21 @@ const nextConfig: NextConfig = {
   },
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
+  // Streaming and Suspense
+  // see https://nextjs.org/docs/app/building-your-application/deploying#streaming-and-suspense
+  async headers() {
+    return [
+      {
+        source: "/:path*{/}?",
+        headers: [
+          {
+            key: "X-Accel-Buffering",
+            value: "no",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withSettleMint(withNextIntl(nextConfig));

@@ -8,6 +8,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse } from "@/lib/utils/typebox";
+import type { VariablesOf } from "gql.tada";
 import { getLocale, getTranslations } from "next-intl/server";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -151,7 +152,7 @@ export interface AssetEventsListProps {
  */
 export const getAssetEventsList = cache(
   async ({ asset, sender, limit }: AssetEventsListProps) => {
-    const where: Record<string, unknown> = {};
+    const where: VariablesOf<typeof AssetEventsList>["where"] = {};
 
     if (asset) {
       where.emitter = asset.toLowerCase();
