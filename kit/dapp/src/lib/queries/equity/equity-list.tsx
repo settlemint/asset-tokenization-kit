@@ -6,6 +6,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
@@ -56,50 +57,54 @@ const OffchainEquityList = hasuraGraphql(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each equity.
  */
-export const getEquityList = cache(async () => {
-  const [onChainEquities, offChainEquities] = await Promise.all([
-    fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKit.request(EquityList, {
-        first,
-        skip,
-      });
+export const getEquityList = withTracing(
+  "queries",
+  "getEquityList",
+  cache(async () => {
+    const [onChainEquities, offChainEquities] = await Promise.all([
+      fetchAllTheGraphPages(async (first, skip) => {
+        const result = await theGraphClientKit.request(EquityList, {
+          first,
+          skip,
+        });
 
-      return safeParse(t.Array(OnChainEquitySchema), result.equities || []);
-    }),
+        return safeParse(t.Array(OnChainEquitySchema), result.equities || []);
+      }),
 
-    fetchAllHasuraPages(async (pageLimit, offset) => {
-      const result = await hasuraClient.request(OffchainEquityList, {
-        limit: pageLimit,
-        offset,
-      });
+      fetchAllHasuraPages(async (pageLimit, offset) => {
+        const result = await hasuraClient.request(OffchainEquityList, {
+          limit: pageLimit,
+          offset,
+        });
 
-      return safeParse(
-        t.Array(OffChainEquitySchema),
-        result.asset_aggregate.nodes || []
-      );
-    }),
-  ]);
+        return safeParse(
+          t.Array(OffChainEquitySchema),
+          result.asset_aggregate.nodes || []
+        );
+      }),
+    ]);
 
-  const assetsById = new Map(
-    offChainEquities.map((asset) => [getAddress(asset.id), asset])
-  );
+    const assetsById = new Map(
+      offChainEquities.map((asset) => [getAddress(asset.id), asset])
+    );
 
-  const calculatedFields = await equitiesCalculateFields(
-    onChainEquities,
-    offChainEquities
-  );
+    const calculatedFields = await equitiesCalculateFields(
+      onChainEquities,
+      offChainEquities
+    );
 
-  const equities = onChainEquities.map((equity) => {
-    const offChainEquity = assetsById.get(getAddress(equity.id));
+    const equities = onChainEquities.map((equity) => {
+      const offChainEquity = assetsById.get(getAddress(equity.id));
 
-    const calculatedEquity = calculatedFields.get(equity.id)!;
+      const calculatedEquity = calculatedFields.get(equity.id)!;
 
-    return {
-      ...equity,
-      ...offChainEquity,
-      ...calculatedEquity,
-    };
-  });
+      return {
+        ...equity,
+        ...offChainEquity,
+        ...calculatedEquity,
+      };
+    });
 
-  return equities;
-});
+    return equities;
+  })
+);

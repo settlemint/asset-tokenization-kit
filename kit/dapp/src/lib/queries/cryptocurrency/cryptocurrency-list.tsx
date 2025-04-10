@@ -10,6 +10,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
@@ -61,57 +62,63 @@ const OffchainCryptocurrencyList = hasuraGraphql(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each cryptocurrency.
  */
-export const getCryptoCurrencyList = cache(async () => {
-  const [onChainCryptoCurrencies, offChainCryptoCurrencies] = await Promise.all(
-    [
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(CryptoCurrencyList, {
-          first,
-          skip,
-        });
+export const getCryptoCurrencyList = withTracing(
+  "queries",
+  "getCryptoCurrencyList",
+  cache(async () => {
+    const [onChainCryptoCurrencies, offChainCryptoCurrencies] =
+      await Promise.all([
+        fetchAllTheGraphPages(async (first, skip) => {
+          const result = await theGraphClientKit.request(CryptoCurrencyList, {
+            first,
+            skip,
+          });
 
-        return safeParse(
-          t.Array(OnChainCryptoCurrencySchema),
-          result.cryptoCurrencies || []
-        );
-      }),
+          return safeParse(
+            t.Array(OnChainCryptoCurrencySchema),
+            result.cryptoCurrencies || []
+          );
+        }),
 
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainCryptocurrencyList, {
-          limit: pageLimit,
-          offset,
-        });
+        fetchAllHasuraPages(async (pageLimit, offset) => {
+          const result = await hasuraClient.request(
+            OffchainCryptocurrencyList,
+            {
+              limit: pageLimit,
+              offset,
+            }
+          );
 
-        return safeParse(
-          t.Array(OffChainCryptoCurrencySchema),
-          result.asset_aggregate.nodes || []
-        );
-      }),
-    ]
-  );
+          return safeParse(
+            t.Array(OffChainCryptoCurrencySchema),
+            result.asset_aggregate.nodes || []
+          );
+        }),
+      ]);
 
-  const assetsById = new Map(
-    offChainCryptoCurrencies.map((asset) => [getAddress(asset.id), asset])
-  );
-
-  const calculatedFields = await cryptoCurrenciesCalculateFields(
-    onChainCryptoCurrencies,
-    offChainCryptoCurrencies
-  );
-
-  const cryptoCurrencies = onChainCryptoCurrencies.map((cryptocurrency) => {
-    const offChainCryptoCurrency = assetsById.get(
-      getAddress(cryptocurrency.id)
+    const assetsById = new Map(
+      offChainCryptoCurrencies.map((asset) => [getAddress(asset.id), asset])
     );
 
-    const calculatedCryptoCurrency = calculatedFields.get(cryptocurrency.id)!;
+    const calculatedFields = await cryptoCurrenciesCalculateFields(
+      onChainCryptoCurrencies,
+      offChainCryptoCurrencies
+    );
 
-    return {
-      ...cryptocurrency,
-      ...offChainCryptoCurrency,
-      ...calculatedCryptoCurrency,
-    };
-  });
+    const cryptoCurrencies = onChainCryptoCurrencies.map((cryptocurrency) => {
+      const offChainCryptoCurrency = assetsById.get(
+        getAddress(cryptocurrency.id)
+      );
 
-  return cryptoCurrencies;
-});
+      const calculatedCryptoCurrency = calculatedFields.get(cryptocurrency.id)!;
+
+      return {
+        ...cryptocurrency,
+        ...offChainCryptoCurrency,
+        ...calculatedCryptoCurrency,
+      };
+    });
+
+    return cryptoCurrencies;
+  })
+);

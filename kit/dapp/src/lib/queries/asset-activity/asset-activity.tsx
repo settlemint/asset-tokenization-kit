@@ -5,6 +5,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { AssetActivityFragment } from "./asset-activity-fragment";
@@ -38,8 +39,10 @@ export interface AssetActivityOptions {
  * @param options - Query options including optional limit
  * @returns Array of validated asset activity data
  */
-export const getAssetActivity = cache(
-  async ({ limit }: AssetActivityOptions = {}) => {
+export const getAssetActivity = withTracing(
+  "queries",
+  "getAssetActivity",
+  cache(async ({ limit }: AssetActivityOptions = {}) => {
     const rawData = await fetchAllTheGraphPages(async (first, skip) => {
       const response = await theGraphClientKit.request(AssetActivity, {
         first,
@@ -63,5 +66,5 @@ export const getAssetActivity = cache(
       console.error("Error validating asset activity data:", error);
       return [];
     }
-  }
+  })
 );

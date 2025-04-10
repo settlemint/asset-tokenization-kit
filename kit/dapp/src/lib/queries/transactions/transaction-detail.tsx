@@ -1,4 +1,5 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { TransactionFragment } from "./transaction-fragment";
@@ -35,8 +36,10 @@ const TransactionDetail = portalGraphql(
  * This function fetches detailed information about a specific transaction
  * identified by its hash from the Portal API.
  */
-export const getTransactionDetail = cache(
-  async (input: TransactionDetailInput) => {
+export const getTransactionDetail = withTracing(
+  "queries",
+  "getTransactionDetail",
+  cache(async (input: TransactionDetailInput) => {
     const { transactionHash } = input;
 
     if (!transactionHash) {
@@ -51,5 +54,5 @@ export const getTransactionDetail = cache(
     return response.getTransaction
       ? safeParse(TransactionSchema, response.getTransaction)
       : null;
-  }
+  })
 );

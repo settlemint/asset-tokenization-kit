@@ -1,4 +1,5 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -49,8 +50,10 @@ export interface TransactionsTimelineProps {
  * granularity (day, week, month, etc.) starting from the provided date.
  * The data is validated against the schema before being returned.
  */
-export const getTransactionsTimeline = cache(
-  async (props: TransactionsTimelineProps) => {
+export const getTransactionsTimeline = withTracing(
+  "queries",
+  "getTransactionsTimeline",
+  cache(async (props: TransactionsTimelineProps) => {
     const { from, granularity, timelineStartDate } = props;
     const transactionsTimeline = await portalClient.request(
       ProcessedTransactionsTimeline,
@@ -70,5 +73,5 @@ export const getTransactionsTimeline = cache(
       timestamp: item.start.toJSON(),
       transaction: item.count,
     }));
-  }
+  })
 );

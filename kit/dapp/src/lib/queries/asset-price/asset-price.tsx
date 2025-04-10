@@ -5,6 +5,7 @@ import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import type { AssetPrice } from "@/lib/queries/asset-price/asset-price-fragment";
 import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import type { Price } from "@/lib/utils/typebox/price";
 import { cache } from "react";
@@ -43,8 +44,10 @@ const AssetPrice = hasuraGraphql(
   [AssetPriceFragment]
 );
 
-export const getAssetsPricesInUserCurrency = cache(
-  async (assetIds: string[]): Promise<Map<string, Price>> => {
+export const getAssetsPricesInUserCurrency = withTracing(
+  "queries",
+  "getAssetsPricesInUserCurrency",
+  cache(async (assetIds: string[]): Promise<Map<string, Price>> => {
     const userDetails = await getCurrentUserDetail();
     const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
     const assetPricesData = await fetchAllHasuraPages(
@@ -89,11 +92,13 @@ export const getAssetsPricesInUserCurrency = cache(
     }
 
     return pricesForAssetIds;
-  }
+  })
 );
 
-const getExchangeRates = cache(
-  async (assetPrices: AssetPrice[], userCurrency: CurrencyCode) => {
+const getExchangeRates = withTracing(
+  "queries",
+  "getExchangeRates",
+  cache(async (assetPrices: AssetPrice[], userCurrency: CurrencyCode) => {
     const exchangeRates = new Map<string, number | null>();
     const currencyCodes = assetPrices.map(
       (assetPrice) => assetPrice.currency as CurrencyCode
@@ -106,5 +111,5 @@ const getExchangeRates = cache(
       })
     );
     return exchangeRates;
-  }
+  })
 );

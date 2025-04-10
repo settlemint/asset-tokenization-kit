@@ -7,6 +7,7 @@ import {
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { withAccessControl } from "@/lib/utils/access-control";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
@@ -141,10 +142,14 @@ const getUserDetailFromIdOrAddress = async ({
  * @returns Combined user data with additional calculated metrics
  * @throws Error if fetching fails or if neither id nor address is provided
  */
-export const getUserDetail = cache(
-  withAccessControl(
-    { requiredPermissions: { user: ["list"] } },
-    getUserDetailFromIdOrAddress
+export const getUserDetail = withTracing(
+  "queries",
+  "getUserDetail",
+  cache(
+    withAccessControl(
+      { requiredPermissions: { user: ["list"] } },
+      getUserDetailFromIdOrAddress
+    )
   )
 );
 
@@ -154,7 +159,11 @@ export const getUserDetail = cache(
  * @returns Combined user data with additional calculated metrics
  * @throws Error if fetching fails or if neither id nor address is provided
  */
-export const getCurrentUserDetail = cache(async () => {
-  const user = await getUser();
-  return getUserDetailFromIdOrAddress({ id: user.id });
-});
+export const getCurrentUserDetail = withTracing(
+  "queries",
+  "getCurrentUserDetail",
+  cache(async () => {
+    const user = await getUser();
+    return getUserDetailFromIdOrAddress({ id: user.id });
+  })
+);

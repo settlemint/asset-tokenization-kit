@@ -5,6 +5,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
@@ -55,37 +56,41 @@ export interface EquityDetailProps {
  * @returns Combined equity data with additional calculated metrics
  * @throws Error if fetching or parsing fails
  */
-export const getEquityDetail = cache(async ({ address }: EquityDetailProps) => {
-  const [onChainEquity, offChainEquity] = await Promise.all([
-    (async () => {
-      const response = await theGraphClientKit.request(EquityDetail, {
-        id: address,
-      });
-      if (!response.equity) {
-        throw new Error("Equity not found");
-      }
-      return safeParse(OnChainEquitySchema, response.equity);
-    })(),
-    (async () => {
-      const response = await hasuraClient.request(OffchainEquityDetail, {
-        id: getAddress(address),
-      });
-      if (response.asset.length === 0) {
-        return undefined;
-      }
-      return safeParse(OffChainEquitySchema, response.asset[0]);
-    })(),
-  ]);
+export const getEquityDetail = withTracing(
+  "queries",
+  "getEquityDetail",
+  cache(async ({ address }: EquityDetailProps) => {
+    const [onChainEquity, offChainEquity] = await Promise.all([
+      (async () => {
+        const response = await theGraphClientKit.request(EquityDetail, {
+          id: address,
+        });
+        if (!response.equity) {
+          throw new Error("Equity not found");
+        }
+        return safeParse(OnChainEquitySchema, response.equity);
+      })(),
+      (async () => {
+        const response = await hasuraClient.request(OffchainEquityDetail, {
+          id: getAddress(address),
+        });
+        if (response.asset.length === 0) {
+          return undefined;
+        }
+        return safeParse(OffChainEquitySchema, response.asset[0]);
+      })(),
+    ]);
 
-  const calculatedFields = await equitiesCalculateFields(
-    [onChainEquity],
-    [offChainEquity]
-  );
-  const calculatedEquity = calculatedFields.get(onChainEquity.id)!;
+    const calculatedFields = await equitiesCalculateFields(
+      [onChainEquity],
+      [offChainEquity]
+    );
+    const calculatedEquity = calculatedFields.get(onChainEquity.id)!;
 
-  return {
-    ...onChainEquity,
-    ...offChainEquity,
-    ...calculatedEquity,
-  };
-});
+    return {
+      ...onChainEquity,
+      ...offChainEquity,
+      ...calculatedEquity,
+    };
+  })
+);

@@ -7,6 +7,7 @@ import {
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { withAccessControl } from "@/lib/utils/access-control";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { getAddress } from "viem";
@@ -55,56 +56,60 @@ const UserActivity = theGraphGraphqlKit(
  * This function fetches user data from Hasura and activity data from TheGraph,
  * then returns a combined list of users with their details and calculated fields.
  */
-export const getUserList = cache(
-  withAccessControl(
-    {
-      requiredPermissions: {
-        user: ["list"],
+export const getUserList = withTracing(
+  "queries",
+  "getUserList",
+  cache(
+    withAccessControl(
+      {
+        requiredPermissions: {
+          user: ["list"],
+        },
       },
-    },
-    async () => {
-      const [users, accounts] = await Promise.all([
-        fetchAllHasuraPages(async (pageLimit, offset) => {
-          const result = await hasuraClient.request(UserList, {
-            limit: pageLimit,
-            offset,
-          });
-          return safeParse(t.Array(UserSchema), result.user || []);
-        }),
-        fetchAllTheGraphPages(async (first, skip) => {
-          const result = await theGraphClientKit.request(UserActivity, {
-            first,
-            skip,
-          });
-          return safeParse(t.Array(AccountSchema), result.accounts || []);
-        }),
-      ]);
+      async () => {
+        const [users, accounts] = await Promise.all([
+          fetchAllHasuraPages(async (pageLimit, offset) => {
+            const result = await hasuraClient.request(UserList, {
+              limit: pageLimit,
+              offset,
+            });
+            return safeParse(t.Array(UserSchema), result.user || []);
+          }),
+          fetchAllTheGraphPages(async (first, skip) => {
+            const result = await theGraphClientKit.request(UserActivity, {
+              first,
+              skip,
+            });
+            return safeParse(t.Array(AccountSchema), result.accounts || []);
+          }),
+        ]);
 
-      // Create a map of accounts by address for quick lookup
-      const accountsById = new Map(
-        accounts.map((account) => [getAddress(account.id), account])
-      );
+        // Create a map of accounts by address for quick lookup
+        const accountsById = new Map(
+          accounts.map((account) => [getAddress(account.id), account])
+        );
 
-      // Combine user data with account data and calculate fields
-      return users.map((user) => {
-        if (!user.wallet) {
-          // Return user with default calculated fields if no wallet
-          const calculatedFields = userCalculateFields(user);
+        // Combine user data with account data and calculate fields
+        return users.map((user) => {
+          if (!user.wallet) {
+            // Return user with default calculated fields if no wallet
+            const calculatedFields = userCalculateFields(user);
+            return {
+              ...user,
+              ...calculatedFields,
+            };
+          }
+
+          const account = accountsById.get(getAddress(user.wallet));
+          const calculatedFields = userCalculateFields(user, account);
+
           return {
+            ...account,
             ...user,
             ...calculatedFields,
           };
-        }
-
-        const account = accountsById.get(getAddress(user.wallet));
-        const calculatedFields = userCalculateFields(user, account);
-
-        return {
-          ...account,
-          ...user,
-          ...calculatedFields,
-        };
-      });
-    }
+        });
+      }
+    )
   )
 );

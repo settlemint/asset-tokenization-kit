@@ -6,6 +6,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { getAddress } from "viem";
@@ -53,50 +54,54 @@ const OffchainDepositList = hasuraGraphql(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each tokenized deposit.
  */
-export const getDepositList = cache(async () => {
-  const [onChainDeposits, offChainDeposits] = await Promise.all([
-    fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKit.request(DepositList, {
-        first,
-        skip,
-      });
+export const getDepositList = withTracing(
+  "queries",
+  "getDepositList",
+  cache(async () => {
+    const [onChainDeposits, offChainDeposits] = await Promise.all([
+      fetchAllTheGraphPages(async (first, skip) => {
+        const result = await theGraphClientKit.request(DepositList, {
+          first,
+          skip,
+        });
 
-      return safeParse(t.Array(OnChainDepositSchema), result.deposits || []);
-    }),
+        return safeParse(t.Array(OnChainDepositSchema), result.deposits || []);
+      }),
 
-    fetchAllHasuraPages(async (pageLimit, offset) => {
-      const result = await hasuraClient.request(OffchainDepositList, {
-        limit: pageLimit,
-        offset,
-      });
+      fetchAllHasuraPages(async (pageLimit, offset) => {
+        const result = await hasuraClient.request(OffchainDepositList, {
+          limit: pageLimit,
+          offset,
+        });
 
-      return safeParse(
-        t.Array(OffChainDepositSchema),
-        result.asset_aggregate.nodes || []
-      );
-    }),
-  ]);
+        return safeParse(
+          t.Array(OffChainDepositSchema),
+          result.asset_aggregate.nodes || []
+        );
+      }),
+    ]);
 
-  const assetsById = new Map(
-    offChainDeposits.map((asset) => [getAddress(asset.id), asset])
-  );
+    const assetsById = new Map(
+      offChainDeposits.map((asset) => [getAddress(asset.id), asset])
+    );
 
-  const calculatedFields = await depositsCalculateFields(
-    onChainDeposits,
-    offChainDeposits
-  );
+    const calculatedFields = await depositsCalculateFields(
+      onChainDeposits,
+      offChainDeposits
+    );
 
-  const deposits = onChainDeposits.map((deposit) => {
-    const offChainDeposit = assetsById.get(getAddress(deposit.id));
+    const deposits = onChainDeposits.map((deposit) => {
+      const offChainDeposit = assetsById.get(getAddress(deposit.id));
 
-    const calculatedDeposit = calculatedFields.get(deposit.id)!;
+      const calculatedDeposit = calculatedFields.get(deposit.id)!;
 
-    return {
-      ...deposit,
-      ...offChainDeposit,
-      ...calculatedDeposit,
-    };
-  });
+      return {
+        ...deposit,
+        ...offChainDeposit,
+        ...calculatedDeposit,
+      };
+    });
 
-  return deposits;
-});
+    return deposits;
+  })
+);

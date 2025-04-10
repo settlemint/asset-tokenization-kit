@@ -2,6 +2,7 @@
 import { getUser } from "@/lib/auth/utils";
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { parseUnits, type Address } from "viem";
@@ -38,41 +39,45 @@ const CreateCryptoCurrencyPredictAddress = portalGraphql(`
  * @param input - The data for creating a new cryptocurrency
  * @returns The predicted address of the new cryptocurrency
  */
-export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
-  try {
-    const { assetName, symbol, decimals, initialSupply } = input;
-    const user = await getUser();
+export const getPredictedAddress = withTracing(
+  "queries",
+  "getPredictedAddress",
+  cache(async (input: PredictAddressInput) => {
+    try {
+      const { assetName, symbol, decimals, initialSupply } = input;
+      const user = await getUser();
 
-    const initialSupplyExact = String(
-      parseUnits(String(initialSupply), decimals)
-    );
+      const initialSupplyExact = String(
+        parseUnits(String(initialSupply), decimals)
+      );
 
-    // Add timeout for the request
-    const timeoutPromise = new Promise<null>((_, reject) => {
-      setTimeout(() => reject(new Error("Request timed out")), 10000); // 10 second timeout
-    });
+      // Add timeout for the request
+      const timeoutPromise = new Promise<null>((_, reject) => {
+        setTimeout(() => reject(new Error("Request timed out")), 10000); // 10 second timeout
+      });
 
-    // Race the actual request against the timeout
-    const data = await Promise.race([
-      portalClient.request(CreateCryptoCurrencyPredictAddress, {
-        address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-        sender: user.wallet as Address,
-        decimals,
-        name: assetName,
-        symbol,
-        initialSupply: initialSupplyExact,
-      }),
-      timeoutPromise,
-    ]);
+      // Race the actual request against the timeout
+      const data = await Promise.race([
+        portalClient.request(CreateCryptoCurrencyPredictAddress, {
+          address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
+          sender: user.wallet as Address,
+          decimals,
+          name: assetName,
+          symbol,
+          initialSupply: initialSupplyExact,
+        }),
+        timeoutPromise,
+      ]);
 
-    if (!data) throw new Error("No data returned from prediction");
+      if (!data) throw new Error("No data returned from prediction");
 
-    const predictedAddress = safeParse(PredictedAddressSchema, data);
-    return predictedAddress.CryptoCurrencyFactory.predictAddress.predicted;
-  } catch (error) {
-    console.error("Error predicting cryptocurrency address:", error);
-    // Return a fallback address that will get replaced during actual deployment
-    // This allows the form to proceed
-    return "0x0000000000000000000000000000000000000000" as Address;
-  }
-});
+      const predictedAddress = safeParse(PredictedAddressSchema, data);
+      return predictedAddress.CryptoCurrencyFactory.predictAddress.predicted;
+    } catch (error) {
+      console.error("Error predicting cryptocurrency address:", error);
+      // Return a fallback address that will get replaced during actual deployment
+      // This allows the form to proceed
+      return "0x0000000000000000000000000000000000000000" as Address;
+    }
+  })
+);

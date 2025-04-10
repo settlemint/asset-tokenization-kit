@@ -1,4 +1,5 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { format } from "date-fns";
 import { cache } from "react";
@@ -90,34 +91,40 @@ function calculateCumulativeUsersByDay(users: { created_at: Date }[]) {
  * @param params - Optional param to specify a date from which to count recent users
  * @returns Object containing daily cumulative user data, recent user count, and total user count
  */
-export const getUserCount = cache(async ({ since }: UserCountProps = {}) => {
-  // Default to 30 days ago if no date is provided
-  const date = since ? since : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+export const getUserCount = withTracing(
+  "queries",
+  "getUserCount",
+  cache(async ({ since }: UserCountProps = {}) => {
+    // Default to 30 days ago if no date is provided
+    const date = since
+      ? since
+      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-  const result = await hasuraClient.request(UserCount, {
-    date: date.toISOString(),
-  });
+    const result = await hasuraClient.request(UserCount, {
+      date: date.toISOString(),
+    });
 
-  // Validate the response using TypeBox schemas
-  const recentUsersCount = safeParse(
-    UserCountSchema,
-    result.recentUsers.aggregate
-  );
+    // Validate the response using TypeBox schemas
+    const recentUsersCount = safeParse(
+      UserCountSchema,
+      result.recentUsers.aggregate
+    );
 
-  const totalUsersCount = safeParse(
-    UserCountSchema,
-    result.totalUsers.aggregate
-  );
+    const totalUsersCount = safeParse(
+      UserCountSchema,
+      result.totalUsers.aggregate
+    );
 
-  // Parse and validate each user in the results
-  const validatedUsers = safeParse(
-    t.Array(UserSchema),
-    Array.isArray(result.user) ? result.user : []
-  );
+    // Parse and validate each user in the results
+    const validatedUsers = safeParse(
+      t.Array(UserSchema),
+      Array.isArray(result.user) ? result.user : []
+    );
 
-  return {
-    users: calculateCumulativeUsersByDay(validatedUsers),
-    recentUsersCount: recentUsersCount.count,
-    totalUsersCount: totalUsersCount.count,
-  };
-});
+    return {
+      users: calculateCumulativeUsersByDay(validatedUsers),
+      recentUsersCount: recentUsersCount.count,
+      totalUsersCount: totalUsersCount.count,
+    };
+  })
+);

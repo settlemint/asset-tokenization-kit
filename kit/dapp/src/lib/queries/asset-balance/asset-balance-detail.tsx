@@ -4,6 +4,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
@@ -40,8 +41,10 @@ export interface AssetBalanceDetailProps {
  * @param params - Object containing the asset address and account
  * @returns Asset balance data or undefined if not found
  */
-export const getAssetBalanceDetail = cache(
-  async ({ address, account }: AssetBalanceDetailProps) => {
+export const getAssetBalanceDetail = withTracing(
+  "queries",
+  "getAssetBalanceDetail",
+  cache(async ({ address, account }: AssetBalanceDetailProps) => {
     if (!account) {
       return undefined;
     }
@@ -78,5 +81,5 @@ export const getAssetBalanceDetail = cache(
       );
       return undefined;
     }
-  }
+  })
 );

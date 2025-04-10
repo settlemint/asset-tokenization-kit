@@ -5,6 +5,7 @@ import {
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
 import { cache } from "react";
@@ -74,8 +75,10 @@ export interface AssetSearchProps {
  * @param params - Object containing the search term
  * @returns Array of validated assets matching the search term
  */
-export const getAssetSearch = cache(
-  async ({ searchTerm }: AssetSearchProps) => {
+export const getAssetSearch = withTracing(
+  "queries",
+  "getAssetSearch",
+  cache(async ({ searchTerm }: AssetSearchProps) => {
     const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
 
     let assets;
@@ -110,5 +113,5 @@ export const getAssetSearch = cache(
       return safeParse(AssetUsersSchema, assetWithDefaults);
     });
     return validatedAssets;
-  }
+  })
 );

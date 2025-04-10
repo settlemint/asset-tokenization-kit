@@ -4,12 +4,12 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
 import { AssetBalanceFragment } from "./asset-balance-fragment";
 import { AssetBalanceSchema } from "./asset-balance-schema";
-
 /**
  * GraphQL query to fetch asset balances
  */
@@ -45,8 +45,10 @@ export interface AssetBalanceListProps {
  * @param params - Object containing optional filters and limits
  * @returns Array of validated asset balances
  */
-export const getAssetBalanceList = cache(
-  async ({ address, wallet }: AssetBalanceListProps) => {
+export const getAssetBalanceList = withTracing(
+  "queries",
+  "getAssetBalanceList",
+  cache(async ({ address, wallet }: AssetBalanceListProps) => {
     const result = await theGraphClientKit.request(AssetBalanceList, {
       address: address,
       wallet: wallet,
@@ -66,5 +68,5 @@ export const getAssetBalanceList = cache(
     }
 
     return balances;
-  }
+  })
 );

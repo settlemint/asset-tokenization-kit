@@ -3,6 +3,7 @@
 import type { SettingKey } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withAccessControl } from "@/lib/utils/access-control";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { ApiError } from "next/dist/server/api-utils";
 import { cache } from "react";
@@ -23,19 +24,23 @@ const GetSetting = hasuraGraphql(`
  * @param key - The key of the setting to fetch
  * @returns The setting value
  */
-export const getSetting = cache(
-  withAccessControl(
-    {
-      requiredPermissions: {
-        setting: ["read"],
+export const getSetting = withTracing(
+  "queries",
+  "getSetting",
+  cache(
+    withAccessControl(
+      {
+        requiredPermissions: {
+          setting: ["read"],
+        },
       },
-    },
-    async ({ key }: { key: SettingKey }) => {
-      const result = await hasuraClient.request(GetSetting, { _eq: key });
-      if (result.settings.length === 0) {
-        throw new ApiError(404, `Setting '${key}' not found`);
+      async ({ key }: { key: SettingKey }) => {
+        const result = await hasuraClient.request(GetSetting, { _eq: key });
+        if (result.settings.length === 0) {
+          throw new ApiError(404, `Setting '${key}' not found`);
+        }
+        return safeParse(SettingSchema, result.settings[0]);
       }
-      return safeParse(SettingSchema, result.settings[0]);
-    }
+    )
   )
 );

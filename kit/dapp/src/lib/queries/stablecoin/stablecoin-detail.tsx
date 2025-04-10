@@ -5,6 +5,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
@@ -61,8 +62,10 @@ export interface StableCoinDetailProps {
  * @returns Combined stablecoin data with additional calculated metrics
  * @throws Error if fetching or parsing fails
  */
-export const getStableCoinDetail = cache(
-  async ({ address }: StableCoinDetailProps) => {
+export const getStableCoinDetail = withTracing(
+  "queries",
+  "getStableCoinDetail",
+  cache(async ({ address }: StableCoinDetailProps) => {
     const [onChainStableCoin, offChainStableCoin] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(StableCoinDetail, {
@@ -95,5 +98,5 @@ export const getStableCoinDetail = cache(
       ...offChainStableCoin,
       ...calculatedStableCoin,
     };
-  }
+  })
 );

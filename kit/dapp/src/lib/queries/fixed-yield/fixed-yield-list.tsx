@@ -4,6 +4,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import {
@@ -30,12 +31,16 @@ const FixedYieldListQuery = theGraphGraphqlKit(
  *
  * @returns Array of fixed yield schedules or an empty array if none exist
  */
-export const getFixedYieldList = cache(async () => {
-  const data = await theGraphClientKit.request(FixedYieldListQuery);
+export const getFixedYieldList = withTracing(
+  "queries",
+  "getFixedYieldList",
+  cache(async () => {
+    const data = await theGraphClientKit.request(FixedYieldListQuery);
 
-  if (!data.fixedYields?.length) {
-    return [];
-  }
+    if (!data.fixedYields?.length) {
+      return [];
+    }
 
-  return safeParse(t.Array(FixedYieldFragmentSchema), data.fixedYields || []);
-});
+    return safeParse(t.Array(FixedYieldFragmentSchema), data.fixedYields || []);
+  })
+);

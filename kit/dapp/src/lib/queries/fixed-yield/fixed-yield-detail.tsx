@@ -4,6 +4,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -36,8 +37,10 @@ interface GetFixedYieldDetailParams {
  * @param params - Object containing the fixed yield address
  * @returns Fixed yield schedule details or null if not found
  */
-export const getFixedYieldDetail = cache(
-  async ({ address }: GetFixedYieldDetailParams) => {
+export const getFixedYieldDetail = withTracing(
+  "queries",
+  "getFixedYieldDetail",
+  cache(async ({ address }: GetFixedYieldDetailParams) => {
     const data = await theGraphClientKit.request(FixedYieldDetailQuery, {
       id: address,
     });
@@ -47,5 +50,5 @@ export const getFixedYieldDetail = cache(
     }
 
     return safeParse(FixedYieldFragmentSchema, data.fixedYield);
-  }
+  })
 );
