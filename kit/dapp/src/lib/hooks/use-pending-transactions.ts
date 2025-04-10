@@ -18,7 +18,7 @@ export function usePendingTransactions() {
     {
       refreshInterval: 5000, // Poll every 5 seconds
       revalidateOnFocus: false,
-      dedupingInterval: 2000, // Prevent duplicate requests within 2 seconds
+      dedupingInterval: 5000, // Prevent duplicate requests within 5 seconds
     }
   );
 

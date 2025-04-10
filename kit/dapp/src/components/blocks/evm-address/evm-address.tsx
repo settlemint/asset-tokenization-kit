@@ -1,5 +1,4 @@
 "use client";
-"use no memo"; // fixes rerendering with react compiler
 
 import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -14,10 +13,9 @@ import type { User } from "@/lib/auth/types";
 import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
 import type { Contact } from "@/lib/queries/contact/contact-schema";
-import { getUserSearch } from "@/lib/queries/user/user-search";
 import {
   AddressNameCacheProvider,
-  useAddressNameCache
+  useAddressNameCache,
 } from "@/lib/utils/address-name-cache";
 import { shortHex } from "@/lib/utils/hex";
 import type { FC, PropsWithChildren } from "react";
@@ -79,16 +77,23 @@ function EvmAddressInner({
 
   // Fetch user data with SWR
   const { data: user, isLoading: isLoadingUser } = useSWR(
-    [`user-search`, address],
+    [`user-search-${address}`],
     async () => {
-      const userResult = await getUserSearch({
-        searchTerm: getAddress(address),
-      });
-      return userResult.length > 0 ? userResult[0] : null;
+      const result = await fetch(
+        `/api/user/search?term=${getAddress(address)}`,
+        {
+          cache: "force-cache",
+        }
+      );
+      if (result.ok) {
+        const users = (await result.json()) as User[];
+        return users.length > 0 ? users[0] : null;
+      }
+      return null;
     },
     {
       revalidateOnFocus: false,
-      dedupingInterval: 600000, // 10 minutes
+      dedupingInterval: 10000, // 10 seconds
     }
   );
 
