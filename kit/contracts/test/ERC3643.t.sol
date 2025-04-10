@@ -26,6 +26,8 @@ import { Test, console, Vm } from "forge-std/Test.sol";
 import { TREXGateway } from "../contracts/shared/erc3643/factory/TREXGateway.sol";
 import { TREXImplementationAuthority } from
     "../contracts/shared/erc3643/proxy/authority/TREXImplementationAuthority.sol";
+import { IAFactory } from
+    "../contracts/shared/erc3643/proxy/authority/IAFactory.sol";
 import { ClaimTopicsRegistry } from "../contracts/shared/erc3643/registry/implementation/ClaimTopicsRegistry.sol";
 import { TrustedIssuersRegistry } from "../contracts/shared/erc3643/registry/implementation/TrustedIssuersRegistry.sol";
 import { IdentityRegistryStorage } from
@@ -102,13 +104,21 @@ contract GatewayTest is Test {
             })
         );
 
+
         Identity identity = new Identity(address(0), true);
         ImplementationAuthority identityImplementationAuthority = new ImplementationAuthority(address(identity));
         IdFactory identityFactory = new IdFactory(address(identityImplementationAuthority));
+
         // Factory
         TREXFactory factory = new TREXFactory(address(tokenImplementationAuthority), address(identityFactory));
         identityFactory.addTokenFactory(address(factory));
         identityGateway = address(new Gateway(address(identityFactory), new address[](0)));
+
+        tokenImplementationAuthority.setTREXFactory(address(factory));
+
+        // IA Factory i used to use different proxy versions for the token
+        IAFactory iaFactory = new IAFactory(address(factory));
+        tokenImplementationAuthority.setIAFactory(address(iaFactory));
 
         // Gateway
         gateway = address(new TREXGateway(address(factory), true));
