@@ -14,8 +14,6 @@ if (!FormatRegistry.Has("big-int")) {
     try {
       // Handle decimal strings by parsing them as integers
       if (value.includes(".")) {
-        // Either truncate the decimal part or return false if decimals aren't allowed
-        // Here we're choosing to truncate the decimal part
         value = value.split(".")[0];
       }
       BigInt(value);
