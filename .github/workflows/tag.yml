@@ -63,6 +63,7 @@ jobs:
           path: |
             .turbo
             ~/.bun/install/cache
+            ${{ github.workspace }}/.next/cache
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2

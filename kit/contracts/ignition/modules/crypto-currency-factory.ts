@@ -10,7 +10,7 @@ const CryptoCurrencyFactoryModule = buildModule(
     ]);
 
     return { cryptoCurrencyFactory };
-  },
+  }
 );
 
 export default CryptoCurrencyFactoryModule;
