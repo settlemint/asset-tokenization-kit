@@ -123,7 +123,7 @@ export class PortfolioPage extends BasePage {
         async () => {
           const actualAmountText = await amountElement.textContent();
           if (!actualAmountText) {
-            return "TEXT_NOT_FOUND";
+            return "Could not find portfolio balance amount text";
           }
 
           try {
