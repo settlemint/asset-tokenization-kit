@@ -1,10 +1,8 @@
-import { auth } from "@/lib/auth/auth";
 import type { User } from "@/lib/auth/types";
 import { getUser } from "@/lib/auth/utils";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { revalidateTag } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
-import { headers } from "next/headers";
 
 /**
  * GraphQL mutation to get secret codes
@@ -64,19 +62,13 @@ export async function generateSecretCodesFunction({
   if (!createWalletVerification?.id) {
     throw new ApiError(500, "Failed to create wallet verification");
   }
-  const updatedUser: Partial<User> = {
-    secretCodeVerificationId: createWalletVerification.id,
-  };
-  const headersList = await headers();
-  await auth.api.updateUser({
-    headers: headersList,
-    body: updatedUser,
-  });
   revalidateTag("user");
   const parameters = createWalletVerification?.parameters as {
     secretCodes?: string;
   };
+  const verificationId = createWalletVerification.id as string;
   return {
     secretCodes: parameters?.secretCodes?.split(",") ?? [],
+    verificationId,
   };
 }

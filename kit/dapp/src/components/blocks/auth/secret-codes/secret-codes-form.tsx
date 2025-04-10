@@ -1,25 +1,31 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { generateSecretCodes } from "@/lib/mutations/user/security-codes/generate-secret-codes-action";
+import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CopySecretCodes } from "./copy-secret-codes";
 
-export function SecretCodesForm() {
-  const [secretCodes, setSecretCodes] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface SecretCodesFormProps {
+  existingSecretCodes?: string[];
+}
+
+export function SecretCodesForm({ existingSecretCodes }: SecretCodesFormProps) {
+  const [secretCodes, setSecretCodes] = useState<string[]>(
+    existingSecretCodes ?? []
+  );
+  const [isLoading, setIsLoading] = useState(
+    !Array.isArray(existingSecretCodes)
+  );
   const t = useTranslations("portfolio.settings.profile.secret-codes");
 
   const generate = async () => {
     try {
-      console.log("generating secret codes");
       setIsLoading(true);
-      const response = await generateSecretCodes();
-      if (response?.serverError || response?.validationErrors) {
-        toast.error(t("error-message"));
-      } else {
-        setSecretCodes(response?.data?.secretCodes ?? []);
+      const { error, data } = await authClient.secretCodes.generate();
+      if (error) {
+        throw new Error(error.message);
       }
+      setSecretCodes(data.secretCodes);
     } catch (error) {
       toast.error(
         t("error-message", {
@@ -32,6 +38,10 @@ export function SecretCodesForm() {
   };
 
   useEffect(() => {
+    if (Array.isArray(existingSecretCodes)) {
+      setSecretCodes(existingSecretCodes);
+      return;
+    }
     const timeout = setTimeout(() => {
       generate();
     }, 1000);

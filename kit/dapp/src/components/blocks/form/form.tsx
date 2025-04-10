@@ -53,6 +53,7 @@ interface FormProps<
       changedFieldName: Path<S extends Schema ? Infer<S> : any> | undefined;
     }
   ) => void;
+  disablePreviousButton?: boolean;
 }
 
 export function Form<
@@ -74,6 +75,7 @@ export function Form<
   hideButtons,
   onAnyFieldChange,
   secureForm = true,
+  disablePreviousButton = false,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations();
@@ -486,6 +488,7 @@ export function Form<
                 labels={buttonLabels}
                 onLastStep={secureForm ? handleNext : handleSubmitWithAction}
                 isSecurityDialogOpen={showFormSecurityConfirmation}
+                disablePreviousButton={disablePreviousButton}
               />
             </div>
           </form>
