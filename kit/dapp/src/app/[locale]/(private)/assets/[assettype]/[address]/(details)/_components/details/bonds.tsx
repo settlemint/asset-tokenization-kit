@@ -121,7 +121,10 @@ export async function BondsDetails({
               Since we're using bigInt which doesn't support decimal division,
               we multiply the numerator by 100 before dividing to preserve precision */}
         {bond.totalUnderlyingNeededExact > 0
-          ? (bond.underlyingBalance * 100n) / bond.totalUnderlyingNeededExact
+          ? Number(
+              (bond.underlyingBalanceExact * 100n) /
+                bond.totalUnderlyingNeededExact
+            )
           : 0}
         %
       </DetailGridItem>
