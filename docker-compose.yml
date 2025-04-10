@@ -60,7 +60,7 @@ services:
 
   # Collector
   otel-collector:
-    image: otel/opentelemetry-collector:0.67.0
+    image: otel/opentelemetry-collector:0.123.0
     restart: always
     command: ["--config=/etc/otel-collector-config.yaml", "${OTELCOL_ARGS}"]
     volumes:
