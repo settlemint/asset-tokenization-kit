@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/settlemint/btp-signer
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "7.6.8" # Default tag from the example
+  tag: "7.12.0" # Default tag from the example
 
 imagePullSecrets:
   - name: image-pull-secret-docker
