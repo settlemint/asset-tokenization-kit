@@ -146,6 +146,11 @@ export function FormOtpDialog<T extends FieldValues>({
                       onChange={field.onChange}
                       disabled={disabled}
                       autoFocus
+                      onKeyUp={(e) => {
+                        if (e.key === "Enter") {
+                          handleSubmit();
+                        }
+                      }}
                     />
                   </FormControl>
                   <TranslatableFormFieldMessage />
