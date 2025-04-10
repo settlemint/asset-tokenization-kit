@@ -3,11 +3,12 @@
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import type { AssetPrice } from "@/lib/queries/asset-price/asset-price-fragment";
+import { getSettingValue } from "@/lib/queries/setting/setting-detail";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import type { Price } from "@/lib/utils/typebox/price";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress } from "viem";
 import type { CurrencyCode } from "../../db/schema-settings";
 import { AssetPriceFragment } from "./asset-price-fragment";
@@ -46,8 +47,10 @@ const AssetPrice = hasuraGraphql(
 export const getAssetsPricesInUserCurrency = withTracing(
   "queries",
   "getAssetsPricesInUserCurrency",
-  cache(async (assetIds: string[]): Promise<Map<string, Price>> => {
-    // const userDetails = await getCurrentUserDetail();
+  async (assetIds: string[]): Promise<Map<string, Price>> => {
+    "use cache";
+    cacheTag("asset");
+    const { value: currency } = await getSettingValue({ key: "baseCurrency" });
     const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
     const assetPricesData = await fetchAllHasuraPages(
       async (pageLimit, offset) => {
@@ -62,7 +65,10 @@ export const getAssetsPricesInUserCurrency = withTracing(
         return pageResult.asset_price ?? [];
       }
     );
-    const exchangeRates = await getExchangeRates(assetPricesData, "USD");
+    const exchangeRates = await getExchangeRates(
+      assetPricesData,
+      currency as CurrencyCode
+    );
     const pricesForAssetIds = new Map();
 
     for (const assetId of assetIds) {
@@ -72,7 +78,7 @@ export const getAssetsPricesInUserCurrency = withTracing(
       if (!assetPrice) {
         pricesForAssetIds.set(assetId, {
           amount: 0,
-          currency: "USD",
+          currency: currency as CurrencyCode,
         });
       } else {
         const validatedPrice = safeParse(AssetPriceSchema, assetPrice);
@@ -82,19 +88,21 @@ export const getAssetsPricesInUserCurrency = withTracing(
         }
         pricesForAssetIds.set(assetId, {
           amount: validatedPrice.amount * exchangeRate,
-          currency: "USD",
+          currency: currency as CurrencyCode,
         });
       }
     }
 
     return pricesForAssetIds;
-  })
+  }
 );
 
 const getExchangeRates = withTracing(
   "queries",
   "getExchangeRates",
-  cache(async (assetPrices: AssetPrice[], userCurrency: CurrencyCode) => {
+  async (assetPrices: AssetPrice[], userCurrency: CurrencyCode) => {
+    "use cache";
+    cacheTag("asset");
     const exchangeRates = new Map<string, number | null>();
     const currencyCodes = assetPrices.map(
       (assetPrice) => assetPrice.currency as CurrencyCode
@@ -107,5 +115,5 @@ const getExchangeRates = withTracing(
       })
     );
     return exchangeRates;
-  })
+  }
 );
