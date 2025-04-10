@@ -42,9 +42,6 @@ export function WithdrawSchema({
       underlyingAssetAddress: t.EthereumAddress({
         description: "The address of the underlying asset",
       }),
-      underlyingAssetType: t.AssetType({
-        description: "The type of the underlying asset",
-      }),
       verificationCode: t.VerificationCode({
         description:
           "The verification code (PIN, 2FA, or secret code) for signing the transaction",

@@ -212,7 +212,6 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
     parsedInput: TopUpInput;
     ctx: { user: User };
   }) => {
-    console.log("target", target);
     const isYield = target === "yield";
 
     const bondDetails = await getAssetDetail({
@@ -225,8 +224,6 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
     if (isYield && !bondDetails.yieldSchedule) {
       throw new Error("Bond does not have a yield schedule");
     }
-
-    console.log('bondDetails', bondDetails)
 
     const formattedAmount = parseUnits(
       amount.toString(),

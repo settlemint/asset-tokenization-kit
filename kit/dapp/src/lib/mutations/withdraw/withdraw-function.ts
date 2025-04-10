@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -192,7 +193,6 @@ export const withdrawFunction = withAccessControl(
       amount,
       to,
       underlyingAssetAddress,
-      underlyingAssetType,
     },
     ctx: { user },
   }: {
@@ -200,8 +200,8 @@ export const withdrawFunction = withAccessControl(
     ctx: { user: User };
   }) => {
     const asset = await getAssetDetail({
-      address: underlyingAssetAddress,
-      assettype: "cryptocurrency", // Underlying asset is typically a cryptocurrency
+      address: targetAddress,
+      assettype: assettype,
     });
 
     // Token input format (for tokens)
@@ -238,24 +238,48 @@ export const withdrawFunction = withAccessControl(
 
     switch (assettype) {
       case "bond": {
-        // Get underlying asset details
-        const underlyingAsset = await getAssetDetail({
-          address: underlyingAssetAddress,
-          assettype: underlyingAssetType,
-        });
+        // Withdraw underlying asset from bond
 
-        if (!underlyingAsset) {
-          throw new Error(
-            `Missing underlying asset details for ${underlyingAssetType} with address: ${underlyingAssetAddress}`
-          );
+        const isYield = target === "yield";
+        const bondDetails = asset as Awaited<ReturnType<typeof getBondDetail>>;
+        if (isYield && !bondDetails.yieldSchedule) {
+          throw new Error("Bond does not have a yield schedule");
         }
 
         const bondFormattedAmount = parseUnits(
           amount.toString(),
-          underlyingAsset.decimals
+          isYield ? bondDetails.yieldSchedule!.underlyingAsset.decimals : bondDetails.underlyingAsset.decimals
         ).toString();
 
-        if (target === "bond") {
+        if (isYield) {
+          const response = await portalClient.request(
+            FixedYieldWithdrawUnderlyingAsset,
+            {
+              address: bondDetails.yieldSchedule!.id,
+              from: user.wallet,
+              input: {
+                to,
+                amount: bondFormattedAmount,
+              },
+              ...(await handleChallenge(
+                user,
+                user.wallet,
+                verificationCode,
+                verificationType
+              )),
+            }
+          );
+
+          if (!response.FixedYieldWithdrawUnderlyingAsset?.transactionHash) {
+            throw new Error(
+              "Failed to get yield schedule withdrawal transaction hash"
+            );
+          }
+
+          return safeParse(t.Hashes(), [
+            response.FixedYieldWithdrawUnderlyingAsset.transactionHash,
+          ]);
+        } else {
           const response = await portalClient.request(
             BondWithdrawUnderlyingAsset,
             {
@@ -280,34 +304,6 @@ export const withdrawFunction = withAccessControl(
 
           return safeParse(t.Hashes(), [
             response.BondWithdrawUnderlyingAsset.transactionHash,
-          ]);
-        } else {
-          const response = await portalClient.request(
-            FixedYieldWithdrawUnderlyingAsset,
-            {
-              address: targetAddress,
-              from: user.wallet,
-              input: {
-                to,
-                amount: bondFormattedAmount,
-              },
-              ...(await handleChallenge(
-                user,
-                user.wallet,
-                verificationCode,
-                verificationType
-              )),
-            }
-          );
-
-          if (!response.FixedYieldWithdrawUnderlyingAsset?.transactionHash) {
-            throw new Error(
-              "Failed to get yield schedule withdrawal transaction hash"
-            );
-          }
-
-          return safeParse(t.Hashes(), [
-            response.FixedYieldWithdrawUnderlyingAsset.transactionHash,
           ]);
         }
       }
