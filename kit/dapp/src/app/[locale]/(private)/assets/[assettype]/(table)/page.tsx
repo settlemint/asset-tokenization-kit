@@ -1,11 +1,13 @@
 import { AddButton } from "@/app/[locale]/(private)/assets/[assettype]/(table)/_components/add-button";
 import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
+import { Skeleton } from "@/components/ui/skeleton";
 import { metadata } from "@/lib/config/metadata";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { Related } from "./_components/related";
 import { AssetsTable } from "./_components/table";
 
@@ -33,7 +35,9 @@ export default async function AssetTypeTablePage({ params }: PageProps) {
       <TopInfo title={t(`topinfo-title.${assettype}`)}>
         <p>{t(`topinfo-description.${assettype}`)}</p>
       </TopInfo>
-      <AssetsTable assettype={assettype} />
+      <Suspense fallback={<Skeleton className="h-80 w-full bg-muted/50" />}>
+        <AssetsTable assettype={assettype} />
+      </Suspense>
       <Related assettype={assettype} />
     </>
   );
