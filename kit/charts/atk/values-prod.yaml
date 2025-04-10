@@ -61,7 +61,7 @@ besu-network:
       pvcSizeLimit: "5Gi"
     resources: {}
   besu-validator-2:
-    enabled: false
+    enabled: true
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
@@ -71,7 +71,7 @@ besu-network:
       pvcSizeLimit: "5Gi"
     resources: {}
   besu-validator-3:
-    enabled: false
+    enabled: true
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
@@ -81,7 +81,7 @@ besu-network:
       pvcSizeLimit: "5Gi"
     resources: {}
   besu-validator-4:
-    enabled: false
+    enabled: true
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
@@ -101,7 +101,7 @@ besu-network:
       pvcSizeLimit: "5Gi"
     resources: {}
   besu-rpc-2:
-    enabled: false
+    enabled: true
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
@@ -131,6 +131,7 @@ erpc:
       - id: settlemint
         upstreams:
           - endpoint: http://besu-node-rpc-1:8545
+          - endpoint: http://besu-node-rpc-2:8545
 
 
 blockscout:
@@ -180,22 +181,22 @@ thegraph:
           environment: production
     graphNodeGroups:
       query:
+        replicaCount: 2
         enabled: true
-        replicaCount: 1
         podMetadata:
           labels:
             role: query-node
             custom-label: custom-value
       index:
         enabled: true
-        replicaCount: 1
+        replicaCount: 2
         podMetadata:
           labels:
             role: index-node
             custom-label: custom-value
       block-ingestor:
         enabled: true
-        replicaCount: 1
+        replicaCount: 2
         podMetadata:
           labels:
             role: block-ingestor
@@ -235,6 +236,7 @@ thegraph:
 
 hasura:
   enabled: true
+  replicas: 2
   graphql-engine:
     global:
       imagePullSecrets:
@@ -246,6 +248,7 @@ hasura:
 
 portal:
   enabled: true
+  replicaCount: 2
   initContainers:
     - name: wait-for-postgres
       image: ghcr.io/settlemint/btp-waitforit:v7.7.3
@@ -262,14 +265,14 @@ support:
         - image-pull-secret-ghcr
         - image-pull-secret-harbor
       resources: {}
-      replicaCount: 1
+      replicaCount: 3
     pgpool:
       pullSecrets:
         - image-pull-secret-docker
         - image-pull-secret-ghcr
         - image-pull-secret-harbor
       resources: {}
-      replicaCount: 1
+      replicaCount: 2
 
   # https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
   redis:
@@ -281,16 +284,17 @@ support:
     master:
       resources: {}
     replica:
+      replicaCount: 2
       resources: {}
 
   # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   ingress-nginx:
-    replicaCount: 1
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
     controller:
+      replicaCount: 2
       resources: {}
 
 observability:
@@ -390,22 +394,3 @@ observability:
         - name: image-pull-secret-docker
         - name: image-pull-secret-ghcr
         - name: image-pull-secret-harbor
-
-# Transaction Signer Configuration
-txsigner:
-  enabled: false
-  # Configuration for the txsigner subchart
-  # Define environment variables directly here
-  env:
-    - name: RPC_ENDPOINT
-      value: "http://erpc:4000"
-  image:
-    tag: "7.6.8"
-  replicaCount: 1
-  # resources:
-  #   limits:
-  #     cpu: 450m
-  #     memory: 768Mi
-  #   requests:
-  #     cpu: 225m
-  #     memory: 384Mi

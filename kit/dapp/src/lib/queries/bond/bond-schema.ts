@@ -200,7 +200,8 @@ export const OnChainBondSchema = t.Object(
       description: "The face value of the bond",
     }),
     underlyingBalance: t.BigDecimal({
-      description: "The underlying asset balance in a human-readable decimal format",
+      description:
+        "The underlying asset balance in a human-readable decimal format",
     }),
     underlyingBalanceExact: t.StringifiedBigInt({
       description: "The exact underlying asset balance as a raw big integer",

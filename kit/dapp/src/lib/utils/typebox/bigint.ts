@@ -12,6 +12,10 @@ if (!FormatRegistry.Has("big-int")) {
   FormatRegistry.Set("big-int", (value) => {
     if (typeof value !== "string") return false;
     try {
+      // Handle decimal strings by parsing them as integers
+      if (value.includes(".")) {
+        value = value.split(".")[0];
+      }
       BigInt(value);
       return true;
     } catch {

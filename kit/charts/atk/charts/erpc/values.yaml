@@ -131,7 +131,7 @@ config:
     - id: settlemint
       upstreams:
         - endpoint: http://besu-node-rpc-1:8545
-        - endpoint: http://besu-node-rpc-2:8545
+        # - endpoint: http://besu-node-rpc-2:8545
   server:
     aliasing:
       rules:
