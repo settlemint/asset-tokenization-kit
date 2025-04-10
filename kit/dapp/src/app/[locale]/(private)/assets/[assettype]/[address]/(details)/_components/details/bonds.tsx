@@ -7,7 +7,6 @@ import { getBondStatus } from "@/lib/utils/bond-status";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Suspense } from "react";
 import type { Address } from "viem";
 
 interface BondsDetailsProps {
@@ -34,120 +33,116 @@ export async function BondsDetails({
       : null;
 
   return (
-    <Suspense>
-      <DetailGrid>
-        <DetailGridItem label={t("name")}>{bond.name}</DetailGridItem>
-        <DetailGridItem label={t("symbol")}>{bond.symbol}</DetailGridItem>
-        {bond.isin && (
-          <DetailGridItem label={t("isin")}>{bond.isin}</DetailGridItem>
-        )}
-        <DetailGridItem label={t("contract-address")}>
-          <EvmAddress
-            address={bond.id}
-            prettyNames={false}
-            hoverCard={false}
-            copyToClipboard={true}
-          />
-        </DetailGridItem>
-        <DetailGridItem label={t("creator")}>
-          <EvmAddress
-            address={bond.creator.id}
-            hoverCard={false}
-            copyToClipboard={true}
-          />
-        </DetailGridItem>
-        <DetailGridItem label={t("deployed-on")}>
-          {formatDate(new Date(Number(bond.deployedOn) * 1000), {
-            locale: locale,
-            formatOptions: { dateStyle: "long" },
-          })}
-        </DetailGridItem>
-        <DetailGridItem label={t("decimals")}>{bond.decimals}</DetailGridItem>
-        <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
-          {formatNumber(bond.cap, {
+    <DetailGrid>
+      <DetailGridItem label={t("name")}>{bond.name}</DetailGridItem>
+      <DetailGridItem label={t("symbol")}>{bond.symbol}</DetailGridItem>
+      {bond.isin && (
+        <DetailGridItem label={t("isin")}>{bond.isin}</DetailGridItem>
+      )}
+      <DetailGridItem label={t("contract-address")}>
+        <EvmAddress
+          address={bond.id}
+          prettyNames={false}
+          hoverCard={false}
+          copyToClipboard={true}
+        />
+      </DetailGridItem>
+      <DetailGridItem label={t("creator")}>
+        <EvmAddress
+          address={bond.creator.id}
+          hoverCard={false}
+          copyToClipboard={true}
+        />
+      </DetailGridItem>
+      <DetailGridItem label={t("deployed-on")}>
+        {formatDate(new Date(Number(bond.deployedOn) * 1000), {
+          locale: locale,
+          formatOptions: { dateStyle: "long" },
+        })}
+      </DetailGridItem>
+      <DetailGridItem label={t("decimals")}>{bond.decimals}</DetailGridItem>
+      <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
+        {formatNumber(bond.cap, {
+          token: bond.symbol,
+          locale: locale,
+        })}
+      </DetailGridItem>
+      <DetailGridItem label={t("total-issued")} info={t("total-issued-info")}>
+        {formatNumber(bond.totalSupply, {
+          token: bond.symbol,
+          locale: locale,
+        })}
+      </DetailGridItem>
+      {/* Show balance only when requested and available */}
+      {showBalance && balanceData && (
+        <DetailGridItem label={t("balance")}>
+          {formatNumber(balanceData.value, {
             token: bond.symbol,
             locale: locale,
           })}
         </DetailGridItem>
-        <DetailGridItem label={t("total-issued")} info={t("total-issued-info")}>
-          {formatNumber(bond.totalSupply, {
-            token: bond.symbol,
-            locale: locale,
-          })}
-        </DetailGridItem>
-        {/* Show balance only when requested and available */}
-        {showBalance && balanceData && (
-          <DetailGridItem label={t("balance")}>
-            {formatNumber(balanceData.value, {
-              token: bond.symbol,
+      )}
+      <DetailGridItem label={t("redeemed")} info={t("redeemed-info")}>
+        {bond.isMatured ? bond.redeemedAmount : t("not-available")}
+      </DetailGridItem>
+      <DetailGridItem label={t("maturity-status")}>
+        {t(getBondStatus(bond))}
+      </DetailGridItem>
+      <DetailGridItem label={t("maturity-date")}>
+        {bond.maturityDate
+          ? formatDate(new Date(Number(bond.maturityDate) * 1000), {
               locale: locale,
-            })}
-          </DetailGridItem>
-        )}
-        <DetailGridItem label={t("redeemed")} info={t("redeemed-info")}>
-          {bond.isMatured ? bond.redeemedAmount : t("not-available")}
-        </DetailGridItem>
-        <DetailGridItem label={t("maturity-status")}>
-          {t(getBondStatus(bond))}
-        </DetailGridItem>
-        <DetailGridItem label={t("maturity-date")}>
-          {bond.maturityDate
-            ? formatDate(new Date(Number(bond.maturityDate) * 1000), {
-                locale: locale,
-                formatOptions: { dateStyle: "long" },
-              })
-            : "-"}
-        </DetailGridItem>
-        <DetailGridItem label={t("yield-type")}>Fixed</DetailGridItem>
-        <DetailGridItem label={t("face-value")}>
-          {bond.faceValue}
-        </DetailGridItem>
-        <DetailGridItem label={t("underlying-asset")}>
-          <EvmAddress
-            address={bond.underlyingAsset.id}
-            prettyNames={true}
-            hoverCard={true}
-            copyToClipboard={true}
-          />
-        </DetailGridItem>
-        <DetailGridItem label={t("underlying-asset-balance")}>
-          {formatNumber(bond.underlyingBalance, {
-            token: bond.underlyingAsset.symbol,
-            decimals: bond.underlyingAsset.decimals,
-            locale: locale,
-          })}
-        </DetailGridItem>
-        <DetailGridItem label={t("redemption-readiness")}>
-          {/* Calculate percentage: (part/total) * 100
+              formatOptions: { dateStyle: "long" },
+            })
+          : "-"}
+      </DetailGridItem>
+      <DetailGridItem label={t("yield-type")}>Fixed</DetailGridItem>
+      <DetailGridItem label={t("face-value")}>{bond.faceValue}</DetailGridItem>
+      <DetailGridItem label={t("underlying-asset")}>
+        <EvmAddress
+          address={bond.underlyingAsset.id}
+          prettyNames={true}
+          hoverCard={true}
+          copyToClipboard={true}
+        />
+      </DetailGridItem>
+      <DetailGridItem label={t("underlying-asset-balance")}>
+        {formatNumber(bond.underlyingBalance, {
+          token: bond.underlyingAsset.symbol,
+          decimals: bond.underlyingAsset.decimals,
+          locale: locale,
+        })}
+      </DetailGridItem>
+      <DetailGridItem label={t("redemption-readiness")}>
+        {/* Calculate percentage: (part/total) * 100
               Since we're using bigInt which doesn't support decimal division,
               we multiply the numerator by 100 before dividing to preserve precision */}
-          {bond.totalUnderlyingNeededExact > 0
-            ? (bond.underlyingBalance * 100n) / bond.totalUnderlyingNeededExact
-            : 0}
-          %
-        </DetailGridItem>
-        <DetailGridItem label={t("ownership-concentration")}>
-          {formatNumber(bond.concentration, {
-            percentage: true,
-            decimals: 2,
-            locale: locale,
-          })}
-        </DetailGridItem>
-        <DetailGridItem label={t("price")}>
-          {formatNumber(bond.price.amount, {
-            currency: bond.price.currency,
-            decimals: 2,
-            locale: locale,
-          })}
-        </DetailGridItem>
-        <DetailGridItem label={t("total-value")}>
-          {formatNumber(bond.price.amount * bond.totalSupply, {
-            currency: bond.price.currency,
-            decimals: 2,
-            locale: locale,
-          })}
-        </DetailGridItem>
-      </DetailGrid>
-    </Suspense>
+        {bond.totalUnderlyingNeededExact > 0
+          ? (bond.underlyingBalance * 100n) / bond.totalUnderlyingNeededExact
+          : 0}
+        %
+      </DetailGridItem>
+      <DetailGridItem label={t("ownership-concentration")}>
+        {formatNumber(bond.concentration, {
+          percentage: true,
+          decimals: 2,
+          locale: locale,
+        })}
+      </DetailGridItem>
+      <DetailGridItem label={t("price")}>
+        {formatNumber(bond.price.amount, {
+          currency: bond.price.currency,
+          decimals: 2,
+          locale: locale,
+        })}
+      </DetailGridItem>
+      <DetailGridItem label={t("total-value")}>
+        {formatNumber(bond.price.amount * bond.totalSupply, {
+          currency: bond.price.currency,
+          decimals: 2,
+          locale: locale,
+        })}
+      </DetailGridItem>
+    </DetailGrid>
   );
 }

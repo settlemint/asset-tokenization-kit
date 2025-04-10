@@ -1,7 +1,9 @@
-import { SetYieldScheduleForm } from '@/app/[locale]/(private)/assets/[assettype]/[address]/yield/_components/set-yield-schedule-form/form';
+import { SetYieldScheduleForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/yield/_components/set-yield-schedule-form/form";
+import { DetailGridSkeleton } from "@/components/blocks/skeleton/detail-grid-skeleton";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { Locale } from "next-intl";
-import { getTranslations } from 'next-intl/server';
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import type { Address } from "viem";
 import { YieldDetails } from "./_components/details";
 import { YieldPeriodTable } from "./_components/period-table";
@@ -30,7 +32,9 @@ export default async function YieldPage({ params }: PageProps) {
   }
   return (
     <>
-      <YieldDetails address={address} />
+      <Suspense fallback={<DetailGridSkeleton />}>
+        <YieldDetails address={address} />
+      </Suspense>
       <div className="mt-8 mb-4">
         <YieldPeriodTable bond={bond} />
       </div>
