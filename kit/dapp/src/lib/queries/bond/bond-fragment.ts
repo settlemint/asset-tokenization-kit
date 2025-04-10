@@ -78,6 +78,7 @@ export const BondFragment = theGraphGraphqlKit(
     redeemedAmount
     faceValue
     underlyingBalance
+    underlyingBalanceExact
     totalUnderlyingNeeded
     totalUnderlyingNeededExact
     cap

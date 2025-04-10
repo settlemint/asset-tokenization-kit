@@ -50,6 +50,7 @@ import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
 import { userUnblockedEvent } from "./events/userunblocked";
+import { fetchAssetDecimals } from "./fetch/asset";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
@@ -643,9 +644,16 @@ export function handleBondRedeemed(event: BondRedeemed): void {
 
   // Update bond's redeemed amount
   bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
-  bond.underlyingBalance = bond.underlyingBalance.minus(
+  bond.underlyingBalanceExact = bond.underlyingBalanceExact.minus(
     event.params.underlyingAmount
   );
+
+  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(bond.underlyingAsset));
+  bond.underlyingBalance = toDecimals(
+    bond.underlyingBalanceExact,
+    underlyingDecimals
+  );
+
   bond.lastActivity = event.block.timestamp;
   updateDerivedFields(bond);
   bond.save();
@@ -964,7 +972,14 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
     ]
   );
 
-  bond.underlyingBalance = bond.underlyingBalance.plus(event.params.amount);
+  bond.underlyingBalanceExact = bond.underlyingBalanceExact.plus(event.params.amount);
+
+  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(bond.underlyingAsset));
+  bond.underlyingBalance = toDecimals(
+    bond.underlyingBalanceExact,
+    underlyingDecimals
+  );
+
   bond.lastActivity = event.block.timestamp;
   updateDerivedFields(bond);
   bond.save();
@@ -1011,7 +1026,14 @@ export function handleUnderlyingAssetWithdrawn(
     ]
   );
 
-  bond.underlyingBalance = bond.underlyingBalance.minus(event.params.amount);
+  bond.underlyingBalanceExact = bond.underlyingBalanceExact.minus(event.params.amount);
+
+  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(bond.underlyingAsset));
+  bond.underlyingBalance = toDecimals(
+    bond.underlyingBalanceExact,
+    underlyingDecimals
+  );
+
   bond.lastActivity = event.block.timestamp;
   updateDerivedFields(bond);
   bond.save();
@@ -1057,7 +1079,7 @@ function calculateTotalUnderlyingNeeded(bond: Bond): void {
 export function updateDerivedFields(bond: Bond): void {
   calculateTotalUnderlyingNeeded(bond);
   // Compare using exact values
-  bond.hasSufficientUnderlying = bond.underlyingBalance.ge(
+  bond.hasSufficientUnderlying = bond.underlyingBalanceExact.ge(
     bond.totalUnderlyingNeededExact
   );
   // Calculate concentration
