@@ -18,6 +18,7 @@ import { metadata } from "../config/metadata";
 import { db } from "../db";
 import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
 import { pincode } from "./plugins/pincode-plugin";
+import { secretCodes } from "./plugins/secret-codes-plugin";
 import twoFactorPlugin from "./plugins/two-factor";
 import { createUserWallet } from "./portal";
 
@@ -205,6 +206,7 @@ export const auth = betterAuth({
     }),
     twoFactorPlugin,
     pincode(),
+    secretCodes(),
     magicLink({
       sendMagicLink,
     }),

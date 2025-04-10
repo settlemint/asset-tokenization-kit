@@ -30,6 +30,7 @@ interface FormButtonProps {
   labels?: ButtonLabels;
   hideButtons?: boolean;
   isSecurityDialogOpen?: boolean;
+  disablePreviousButton?: boolean;
 }
 
 /**
@@ -49,6 +50,7 @@ export function FormButton({
   },
   hideButtons = false,
   isSecurityDialogOpen = false,
+  disablePreviousButton = false,
 }: FormButtonProps) {
   const {
     formState: { isSubmitting, errors },
@@ -93,8 +95,13 @@ export function FormButton({
       Object.keys(errors).filter((key) => key !== "verificationCode").length >
         0);
   return (
-    <div className="flex justify-between space-x-4 pt-4">
-      {currentStep > 0 && (
+    <div
+      className={cn(
+        "flex justify-between space-x-4 pt-4",
+        disablePreviousButton && "justify-end"
+      )}
+    >
+      {!disablePreviousButton && currentStep > 0 && (
         <Button
           type="button"
           variant="outline"

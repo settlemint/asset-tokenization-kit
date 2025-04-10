@@ -15,6 +15,7 @@ import {
 import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
 import { pincodeClient } from "./plugins/pincode-plugin/client";
+import { secretCodesClient } from "./plugins/secret-codes-plugin/client";
 
 /**
  * The authentication client instance with configured plugins
@@ -41,6 +42,7 @@ export const authClient = createAuthClient({
       },
     }),
     pincodeClient(),
+    secretCodesClient(),
     magicLinkClient(),
   ],
 });

@@ -12,6 +12,7 @@ import { Summary } from "./steps/summary";
 export function SetupWalletSecurityForm() {
   const t = useTranslations("private.auth.wallet-security.form");
   const router = useRouter();
+
   return (
     <Form
       action={setupWalletSecurity}
@@ -40,6 +41,10 @@ export function SetupWalletSecurityForm() {
           router.refresh();
         }
       }}
+      defaultValues={{
+        secretCodes: [],
+      }}
+      disablePreviousButton
     >
       <SelectMethod key="select-method" />
       <SetupVerification key="setup-verification" />

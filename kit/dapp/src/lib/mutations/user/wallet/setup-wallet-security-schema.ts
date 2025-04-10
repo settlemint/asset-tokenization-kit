@@ -20,6 +20,9 @@ export function SetupWalletSecuritySchema() {
       description:
         "The verification code to use for the wallet security (for OTP this is the first OTP)",
     }),
+    secretCodes: t.Array(t.String(), {
+      description: "The secret codes to use for the wallet security",
+    }),
   });
 }
 
