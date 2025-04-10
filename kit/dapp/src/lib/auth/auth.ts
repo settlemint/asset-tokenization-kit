@@ -118,7 +118,7 @@ export const auth = betterAuth({
         type: "string",
         required: false,
         unique: true,
-        input: true,
+        input: false,
       },
       initialOnboardingFinished: {
         type: "boolean",

@@ -9,6 +9,7 @@ import {
 import { formatDate } from "@/lib/utils/date";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
+import type { VariablesOf } from "gql.tada";
 import { getLocale, getTranslations } from "next-intl/server";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -154,7 +155,7 @@ export const getAssetEventsList = withTracing(
   "queries",
   "getAssetEventsList",
   cache(async ({ asset, sender, limit }: AssetEventsListProps) => {
-    const where: Record<string, unknown> = {};
+    const where: VariablesOf<typeof AssetEventsList>["where"] = {};
 
     if (asset) {
       where.emitter = asset.toLowerCase();
