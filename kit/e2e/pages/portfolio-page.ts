@@ -1,9 +1,5 @@
 import { expect } from "@playwright/test";
 import { BasePage } from "./base-page";
-const ASSET_DETAILS_URL_PATTERN =
-  /\/portfolio\/my-assets(?:\/[a-zA-Z0-9-]+)?\/0x[a-fA-F0-9]{40}/;
-const CURRENCY_CODE_REGEX = /[A-Z]+$/;
-const COMMA_REGEX = /,/g;
 
 export class PortfolioPage extends BasePage {
   async goto() {
@@ -15,7 +11,7 @@ export class PortfolioPage extends BasePage {
     price?: string;
   }) {
     await this.page.getByRole("link", { name: "Dashboard" }).click();
-    const amountElement = this.page.locator("span.font-bold.text-4xl");
+    const amountElement = this.page.locator("div.font-bold.text-4xl");
     await amountElement.waitFor({ state: "visible" });
 
     const actualAmount = await amountElement.textContent();
@@ -24,9 +20,8 @@ export class PortfolioPage extends BasePage {
       throw new Error("Could not find portfolio amount");
     }
 
-    const formattedActual = Number.parseFloat(
-      actualAmount.replace(/[€$£,]/g, "").trim()
-    ).toFixed(0);
+    const numericValue = this.parseAmountString(actualAmount);
+    const formattedActual = numericValue.toFixed(0);
 
     let formattedExpected = Number.parseFloat(
       options.expectedAmount
@@ -40,7 +35,7 @@ export class PortfolioPage extends BasePage {
 
     if (formattedActual !== formattedExpected) {
       throw new Error(
-        `Expected portfolio amount to be ${formattedExpected} but found ${actualAmount} (formatted: ${formattedActual})`
+        `Expected portfolio amount to be ${formattedExpected} but found ${actualAmount} (parsed as ${numericValue}, formatted: ${formattedActual})`
       );
     }
   }
@@ -108,7 +103,7 @@ export class PortfolioPage extends BasePage {
     expectedBalance: string,
     price?: string
   ) {
-    const amountElement = this.page.locator("span.mr-1.font-bold.text-4xl");
+    const amountElement = this.page.locator("div.font-bold.text-4xl");
     await amountElement.waitFor({ state: "visible" });
 
     let adjustedInitialBalance = initialBalance;
@@ -126,25 +121,31 @@ export class PortfolioPage extends BasePage {
     await expect
       .poll(
         async () => {
-          const actualAmount = await amountElement.textContent();
-          if (!actualAmount) {
-            throw new Error("Could not find portfolio balance amount");
-          }
-          const formattedActual = Number.parseFloat(
-            actualAmount.replace(/[€$£,]/g, "").trim()
-          ).toFixed(0);
-          const formattedInitial = price
-            ? adjustedInitialBalance
-            : Number.parseFloat(initialBalance).toFixed(0);
-
-          if (formattedActual === formattedInitial) {
-            return formattedInitial;
+          const actualAmountText = await amountElement.textContent();
+          if (!actualAmountText) {
+            return "Could not find portfolio balance amount text";
           }
 
-          return formattedActual;
+          try {
+            const numericValue = this.parseAmountString(actualAmountText);
+            const formattedActual = numericValue.toFixed(0);
+
+            if (
+              formattedActual ===
+              (price
+                ? adjustedInitialBalance
+                : Number.parseFloat(initialBalance).toFixed(0))
+            ) {
+              return formattedActual;
+            }
+
+            return formattedActual;
+          } catch (error) {
+            return "PARSE_ERROR";
+          }
         },
         {
-          message: `Waiting for balance to change from ${adjustedInitialBalance} to ${adjustedExpectedBalance}`,
+          message: `Waiting for balance to change from ${adjustedInitialBalance} to ${adjustedExpectedBalance}. Last parsed value might be incorrect if text was "TEXT_NOT_FOUND" or "PARSE_ERROR".`,
           timeout: 120000,
           intervals: [1000],
         }
@@ -193,5 +194,35 @@ export class PortfolioPage extends BasePage {
       .filter({ hasText: shortAddress })
       .first();
     await expect(addressCell).toBeVisible();
+  }
+
+  private parseAmountString(text: string): number {
+    if (!text) {
+      throw new Error("Cannot parse empty amount string");
+    }
+
+    let numericValue: number | null = null;
+
+    const matchInParens = text.match(/\(([^)]+)\)/);
+    if (matchInParens && matchInParens[1]) {
+      const valueInParens = matchInParens[1].replace(/[€$£,]/g, "").trim();
+      numericValue = Number.parseFloat(valueInParens);
+    } else {
+      let cleanedAmount = text.replace(/[€$£,]/g, "").trim();
+
+      const kiloMatch = cleanedAmount.match(/^([\d.]+)\s*K$/i);
+      if (kiloMatch && kiloMatch[1]) {
+        numericValue = Number.parseFloat(kiloMatch[1]) * 1000;
+      } else {
+        cleanedAmount = cleanedAmount.replace(/[^\d.]/g, "");
+        numericValue = Number.parseFloat(cleanedAmount);
+      }
+    }
+
+    if (numericValue === null || Number.isNaN(numericValue)) {
+      throw new Error(`Could not parse amount from text: "${text}"`);
+    }
+
+    return numericValue;
   }
 }
