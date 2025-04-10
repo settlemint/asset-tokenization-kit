@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/routing";
 import { AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
+import posthog from "posthog-js";
+import { useEffect } from "react";
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
@@ -13,6 +15,10 @@ interface ErrorPageProps {
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
   const router = useRouter();
   const t = useTranslations("error");
+
+  useEffect(() => {
+    posthog.captureException(error);
+  }, [error]);
 
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4 text-center">
