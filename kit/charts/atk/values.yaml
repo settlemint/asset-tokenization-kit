@@ -110,6 +110,10 @@ besu-network:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
+  rawGenesisConfig:
+    blockchain:
+      nodes:
+        count: 1
 
 erpc:
   enabled: true
@@ -225,6 +229,7 @@ thegraph:
               port: 8050
               serviceName: graph-node-index
   job:
+    enabled: true
     fullnameOverride: graph
     image:
       repository: node

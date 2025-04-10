@@ -1,3 +1,4 @@
+{{- if .Values.job.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -140,3 +141,4 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "thegraph.fullname" . }}-workspace
   backoffLimit: 0
+{{- end }}
