@@ -23,15 +23,11 @@ export function TopUpSchema({
       target: t.Union([t.Literal("bond"), t.Literal("yield")], {
         description: "Whether to top up the bond or yield schedule",
       }),
-      targetAddress: t.EthereumAddress({
+      bondAddress: t.EthereumAddress({
         description: "The address to top up (bond or yield schedule)",
       }),
       underlyingAssetAddress: t.EthereumAddress({
         description: "The address of the underlying asset contract",
-      }),
-      underlyingAssetType: t.AssetType({
-        description:
-          "The type of the underlying asset (bond or yield schedule)",
       }),
       amount: t.Amount({
         decimals,

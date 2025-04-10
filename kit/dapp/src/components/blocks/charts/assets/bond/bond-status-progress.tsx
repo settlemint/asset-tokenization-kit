@@ -57,7 +57,7 @@ export async function BondStatusProgress({ address }: BondStatusProgressProps) {
         title: t("bond-redemption-assets"),
         description: t("bond-redeemable"),
         value: Number(bond.underlyingBalance),
-        max: Number(bond.totalUnderlyingNeededExact),
+        max: Number(bond.totalUnderlyingNeeded),
         status: "redeemable" as const,
         statusLabel: t("bond-redeemable"),
         statusColor: getBondStatusColor("redeemable"),

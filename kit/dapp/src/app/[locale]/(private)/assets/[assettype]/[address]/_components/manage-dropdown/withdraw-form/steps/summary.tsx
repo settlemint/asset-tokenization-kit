@@ -14,10 +14,10 @@ interface SummaryProps {
 }
 
 export function Summary({ bondDetails }: SummaryProps) {
-  const { control } = useFormContext<WithdrawInput>();
+  const form = useFormContext<WithdrawInput>();
   const t = useTranslations("private.assets.details.forms.summary");
   const values = useWatch({
-    control: control,
+    control: form.control,
   });
   const locale = useLocale();
 

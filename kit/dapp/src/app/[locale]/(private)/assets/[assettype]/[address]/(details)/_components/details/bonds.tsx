@@ -99,7 +99,7 @@ export async function BondsDetails({
             })
           : "-"}
       </DetailGridItem>
-      <DetailGridItem label={t("yield-type")}>Fixed</DetailGridItem>
+      <DetailGridItem label={t("yield-type")}>{bond.yieldSchedule ? t("fixed") : t("not-available")}</DetailGridItem>
       <DetailGridItem label={t("face-value")}>{bond.faceValue}</DetailGridItem>
       <DetailGridItem label={t("underlying-asset")}>
         <EvmAddress

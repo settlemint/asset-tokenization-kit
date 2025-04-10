@@ -34,7 +34,7 @@ export function Summary({ bondDetails }: SummaryProps) {
     <FormStep title={t("title.top-up")} description={t("description.top-up")}>
       <FormSummaryDetailItem
         label={t("target-label")}
-        value={values.targetAddress ? <EvmAddress address={values.targetAddress} /> : "-"}
+        value={values.bondAddress ? <EvmAddress address={values.bondAddress} /> : "-"}
       />
       <FormSummaryDetailItem
         label={t("asset-label")}
