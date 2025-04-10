@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
-import { getAvailableAssetsPriceInUserCurrency } from "@/lib/queries/asset-price/asset-price";
+import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { getPortfolioStats } from "@/lib/queries/portfolio/portfolio-stats";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
@@ -68,7 +68,7 @@ export default async function PortfolioDashboard({
       }),
     ]);
 
-  const assetPrices = await getAvailableAssetsPriceInUserCurrency(
+  const assetPrices = await getAssetsPricesInUserCurrency(
     portfolioStats.map(({ asset }) => asset.id)
   );
 
