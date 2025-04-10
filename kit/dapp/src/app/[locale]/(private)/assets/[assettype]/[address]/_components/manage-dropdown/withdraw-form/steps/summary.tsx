@@ -23,6 +23,7 @@ export function Summary({ bondDetails }: SummaryProps) {
 
   console.log('values', values);
   console.log('errors', form.formState.errors);
+  console.log('form is valid', form.formState.isValid);
 
   // Get the appropriate decimals and symbol from bond details
   const decimals = bondDetails?.underlyingAsset?.decimals ?? 0;
