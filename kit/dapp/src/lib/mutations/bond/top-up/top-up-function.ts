@@ -1,11 +1,12 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
-import type { VariablesOf } from "@settlemint/sdk-portal";
+import type { VariablesOf } from "@settlemint/sdk-hasura";
 import { parseUnits } from "viem";
 import type { TopUpInput } from "./top-up-schema";
 
@@ -203,39 +204,36 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
       amount,
       verificationCode,
       verificationType,
-      targetAddress,
+      bondAddress,
       underlyingAssetAddress,
-      underlyingAssetType,
     },
     ctx: { user },
   }: {
     parsedInput: TopUpInput;
     ctx: { user: User };
   }) => {
-    const asset = await getAssetDetail({
-      address: targetAddress,
+    console.log("target", target);
+    const isYield = target === "yield";
+
+    const bondDetails = await getAssetDetail({
+      address: bondAddress,
       assettype: "bond",
-    });
-
-    if (!asset) {
-      throw new Error("Missing asset details");
+    }) as Awaited<ReturnType<typeof getBondDetail>>;
+    if (!bondDetails) {
+      throw new Error("Missing bond details");
+    }
+    if (isYield && !bondDetails.yieldSchedule) {
+      throw new Error("Bond does not have a yield schedule");
     }
 
-    const underlyingAsset = await getAssetDetail({
-      address: underlyingAssetAddress,
-      assettype: underlyingAssetType,
-    });
-
-    if (!underlyingAsset) {
-      throw new Error(
-        `Missing underlying asset details for ${underlyingAssetType} with address: ${underlyingAssetAddress}`
-      );
-    }
+    console.log('bondDetails', bondDetails)
 
     const formattedAmount = parseUnits(
       amount.toString(),
-      underlyingAsset.decimals
+      isYield ? bondDetails.yieldSchedule!.underlyingAsset.decimals : bondDetails.underlyingAsset.decimals
     ).toString();
+
+    const spender = isYield ? bondDetails.yieldSchedule!.id : bondDetails.id;
 
     // Common parameters for all approve mutations
     const approveParams: VariablesOf<
@@ -255,7 +253,7 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
         verificationType
       )),
       input: {
-        spender: targetAddress,
+        spender,
         value: formattedAmount,
       },
     };
@@ -263,7 +261,7 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
     // Approve spending of the underlying asset based on asset type
     let approvalTxHash;
 
-    switch (underlyingAssetType) {
+    switch (bondDetails.underlyingAsset.type) {
       case "bond": {
         const response = await portalClient.request(BondApprove, approveParams);
         approvalTxHash = response.BondApprove?.transactionHash;
@@ -318,33 +316,11 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
     await waitForTransactions([approvalTxHash]);
 
     // Top up either the bond or the yield schedule
-    if (target === "bond") {
-      const response = await portalClient.request(BondTopUpUnderlyingAsset, {
-        address: targetAddress,
-        from: user.wallet,
-        input: {
-          amount: formattedAmount,
-        },
-        ...(await handleChallenge(
-          user,
-          user.wallet,
-          verificationCode,
-          verificationType
-        )),
-      });
-
-      if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
-        throw new Error("Failed to get transaction hash");
-      }
-
-      return safeParse(t.Hashes(), [
-        response.BondTopUpUnderlyingAsset.transactionHash,
-      ]);
-    } else {
+    if (isYield) {
       const response = await portalClient.request(
         FixedYieldTopUpUnderlyingAsset,
         {
-          address: targetAddress,
+          address: spender,
           from: user.wallet,
           input: {
             amount: formattedAmount,
@@ -364,6 +340,28 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
 
       return safeParse(t.Hashes(), [
         response.FixedYieldTopUpUnderlyingAsset.transactionHash,
+      ]);
+    } else {
+      const response = await portalClient.request(BondTopUpUnderlyingAsset, {
+        address: spender,
+        from: user.wallet,
+        input: {
+          amount: formattedAmount,
+        },
+        ...(await handleChallenge(
+          user,
+          user.wallet,
+          verificationCode,
+          verificationType
+        )),
+      });
+
+      if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
+        throw new Error("Failed to get transaction hash");
+      }
+
+      return safeParse(t.Hashes(), [
+        response.BondTopUpUnderlyingAsset.transactionHash,
       ]);
     }
   }

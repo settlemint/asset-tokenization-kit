@@ -41,7 +41,7 @@ export function TopUpForm({
     const steps: FormStepElement<ReturnType<typeof TopUpSchema>>[] = [];
 
     if (showTarget) {
-      steps.push(<Target key="target" bondDetails={bondDetails} />);
+      steps.push(<Target key="target"/>);
     }
 
     steps.push(<Amount key="amount" />);
@@ -54,9 +54,8 @@ export function TopUpForm({
   const initialValues = {
     address,
     target: "bond" as const,
-    targetAddress: address,
+    bondAddress: address,
     underlyingAssetAddress: bondDetails.underlyingAsset.id,
-    underlyingAssetType: bondDetails.underlyingAsset.type,
   };
 
   return (
