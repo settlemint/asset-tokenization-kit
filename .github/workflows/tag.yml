@@ -93,6 +93,8 @@ jobs:
 
       - name: Turbo!
         run: bunx turbo codegen addresses build
+        env:
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
