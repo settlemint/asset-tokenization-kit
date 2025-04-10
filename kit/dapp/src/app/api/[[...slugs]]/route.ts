@@ -18,8 +18,11 @@ import { AssetPriceApi } from "@/lib/providers/asset-price/asset-price-api";
 import { ExchangeRatesApi } from "@/lib/providers/exchange-rates/exchange-rates-api";
 import { ExchangeRateUpdateApi } from "@/lib/providers/exchange-rates/exchange-rates-update-api";
 import { AccessControlError } from "@/lib/utils/access-control";
+import { opentelemetry } from "@elysiajs/opentelemetry";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto";
+import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-node";
 import { Elysia, error as elysiaError } from "elysia";
 import pkgjson from "../../../../package.json";
 
@@ -33,6 +36,12 @@ const app = new Elysia({
     ],
   },
 })
+  .use(
+    opentelemetry({
+      serviceName: process.env.NEXT_PUBLIC_APP_ID || "ATK",
+      spanProcessors: [new BatchSpanProcessor(new OTLPTraceExporter())],
+    })
+  )
   .use(serverTiming())
   .use(
     swagger({
