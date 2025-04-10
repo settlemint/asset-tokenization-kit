@@ -97,6 +97,21 @@ const SmartModule = buildModule("SmartModule", (m) => {
     }
   );
 
+  m.call(tokenImplementationAuthority, "setTREXFactory", [factory], {
+    id: "setTREXFactory",
+    from: deployer,
+  });
+
+  const tokenImplementationAuthorityFactory = m.contract("IAFactory", [factory], {
+    id: "tokenImplementationAuthorityFactory",
+    from: deployer,
+  });
+
+  m.call(tokenImplementationAuthority, "setIAFactory", [tokenImplementationAuthorityFactory], {
+    id: "setIAFactory",
+    from: deployer,
+  });
+
   m.call(identityFactory, "addTokenFactory", [factory], {
     id: "addTokenFactory",
     from: deployer,
