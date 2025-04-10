@@ -3,15 +3,15 @@ besu-validator-1:
   fullnameOverride: besu-node-validator-1
 
 besu-validator-2:
-  enabled: true
+  enabled: false
   fullnameOverride: besu-node-validator-2
 
 besu-validator-3:
-  enabled: true
+  enabled: false
   fullnameOverride: besu-node-validator-3
 
 besu-validator-4:
-  enabled: true
+  enabled: false
   fullnameOverride: besu-node-validator-4
 
 besu-rpc-1:
@@ -23,7 +23,7 @@ besu-rpc-1:
         password: "password"
 
 besu-rpc-2:
-  enabled: true
+  enabled: false
   fullnameOverride: besu-node-rpc-2
   node:
     besu:

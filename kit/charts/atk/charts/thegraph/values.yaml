@@ -40,7 +40,7 @@ graph-node:
   graphNodeGroups:
     query:
       enabled: true
-      replicaCount: 2
+      replicaCount: 1
       env:
         node_role: query-node # this key must be lowercase
 

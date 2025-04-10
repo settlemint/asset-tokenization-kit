@@ -15,18 +15,24 @@ dependencies:
   - name: besu-node
     alias: besu-validator-1
     version: "*"
+    condition: besu-validator-1.enabled
   - name: besu-node
     alias: besu-validator-2
     version: "*"
+    condition: besu-validator-2.enabled
   - name: besu-node
     alias: besu-validator-3
     version: "*"
+    condition: besu-validator-3.enabled
   - name: besu-node
     alias: besu-validator-4
     version: "*"
+    condition: besu-validator-4.enabled
   - name: besu-node
     alias: besu-rpc-1
     version: "*"
+    condition: besu-rpc-1.enabled
   - name: besu-node
     alias: besu-rpc-2
     version: "*"
+    condition: besu-rpc-2.enabled
