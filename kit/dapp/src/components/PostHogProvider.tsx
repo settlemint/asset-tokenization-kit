@@ -8,6 +8,9 @@ import { Suspense, useEffect } from "react";
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      return;
+    }
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
       api_host: "/ingest",
       ui_host: "https://eu.posthog.com",
@@ -15,6 +18,10 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       capture_pageleave: true, // Enable pageleave capture
     });
   }, []);
+
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+    return <>{children}</>;
+  }
 
   return (
     <PHProvider client={posthog}>
