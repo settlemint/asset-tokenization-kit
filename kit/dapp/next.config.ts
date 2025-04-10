@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
     inlineCss: true,
     reactCompiler: true,
     authInterrupts: true,
+    useCache: true,
   },
   output: "standalone",
   logging: {

@@ -7,7 +7,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { type Address, getAddress } from "viem";
 import { depositsCalculateFields } from "./deposit-calculated";
 import { DepositFragment, OffchainDepositFragment } from "./deposit-fragment";
@@ -59,7 +59,9 @@ export interface DepositDetailProps {
 export const getDepositDetail = withTracing(
   "queries",
   "getDepositDetail",
-  cache(async ({ address }: DepositDetailProps) => {
+  async ({ address }: DepositDetailProps) => {
+    "use cache";
+    cacheTag("asset");
     const [onChainDeposit, offChainDeposit] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(DepositDetail, {
@@ -92,5 +94,5 @@ export const getDepositDetail = withTracing(
       ...offChainDeposit,
       ...calculatedDeposit,
     };
-  })
+  }
 );

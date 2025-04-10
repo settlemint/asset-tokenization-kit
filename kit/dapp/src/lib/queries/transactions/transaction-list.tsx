@@ -85,7 +85,7 @@ export const getTransactionList = withTracing(
 export const getTransactionListByAddress = withTracing(
   "queries",
   "getTransactionListByAddress",
-  cache(async (from: string) => {
+  async (from: string) => {
     const transactions = await fetchAllPortalPages(
       async ({ page, pageSize }) => {
         const response = await portalClient.request(TransactionListByAddress, {
@@ -102,5 +102,5 @@ export const getTransactionListByAddress = withTracing(
     );
 
     return safeParse(t.Array(TransactionSchema), transactions?.records);
-  })
+  }
 );

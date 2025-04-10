@@ -9,6 +9,7 @@ import {
 import { withAccessControl } from "@/lib/utils/access-control";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { userCalculateFields } from "./user-calculated";
@@ -81,6 +82,8 @@ const getUserDetailFromIdOrAddress = async ({
   id,
   address,
 }: UserDetailProps) => {
+  "use cache";
+  cacheTag("user-activity");
   if (!id && !address) {
     throw new Error("Either id or address must be provided");
   }

@@ -3,7 +3,6 @@
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import type { AssetPrice } from "@/lib/queries/asset-price/asset-price-fragment";
-import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
@@ -48,7 +47,7 @@ export const getAssetsPricesInUserCurrency = withTracing(
   "queries",
   "getAssetsPricesInUserCurrency",
   cache(async (assetIds: string[]): Promise<Map<string, Price>> => {
-    const userDetails = await getCurrentUserDetail();
+    // const userDetails = await getCurrentUserDetail();
     const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
     const assetPricesData = await fetchAllHasuraPages(
       async (pageLimit, offset) => {
@@ -63,10 +62,7 @@ export const getAssetsPricesInUserCurrency = withTracing(
         return pageResult.asset_price ?? [];
       }
     );
-    const exchangeRates = await getExchangeRates(
-      assetPricesData,
-      userDetails.currency
-    );
+    const exchangeRates = await getExchangeRates(assetPricesData, "USD");
     const pricesForAssetIds = new Map();
 
     for (const assetId of assetIds) {
@@ -76,7 +72,7 @@ export const getAssetsPricesInUserCurrency = withTracing(
       if (!assetPrice) {
         pricesForAssetIds.set(assetId, {
           amount: 0,
-          currency: userDetails.currency,
+          currency: "USD",
         });
       } else {
         const validatedPrice = safeParse(AssetPriceSchema, assetPrice);
@@ -86,7 +82,7 @@ export const getAssetsPricesInUserCurrency = withTracing(
         }
         pricesForAssetIds.set(assetId, {
           amount: validatedPrice.amount * exchangeRate,
-          currency: userDetails.currency,
+          currency: "USD",
         });
       }
     }

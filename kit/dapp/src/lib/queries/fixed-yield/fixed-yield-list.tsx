@@ -6,7 +6,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import {
   FixedYieldFragment,
   FixedYieldFragmentSchema,
@@ -34,7 +34,9 @@ const FixedYieldListQuery = theGraphGraphqlKit(
 export const getFixedYieldList = withTracing(
   "queries",
   "getFixedYieldList",
-  cache(async () => {
+  async () => {
+    "use cache";
+    cacheTag("asset");
     const data = await theGraphClientKit.request(FixedYieldListQuery);
 
     if (!data.fixedYields?.length) {
@@ -42,5 +44,5 @@ export const getFixedYieldList = withTracing(
     }
 
     return safeParse(t.Array(FixedYieldFragmentSchema), data.fixedYields || []);
-  })
+  }
 );

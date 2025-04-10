@@ -6,7 +6,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { Address } from "viem";
 import {
   FixedYieldFragment,
@@ -40,7 +40,9 @@ interface GetFixedYieldDetailParams {
 export const getFixedYieldDetail = withTracing(
   "queries",
   "getFixedYieldDetail",
-  cache(async ({ address }: GetFixedYieldDetailParams) => {
+  async ({ address }: GetFixedYieldDetailParams) => {
+    "use cache";
+    cacheTag("asset");
     const data = await theGraphClientKit.request(FixedYieldDetailQuery, {
       id: address,
     });
@@ -50,5 +52,5 @@ export const getFixedYieldDetail = withTracing(
     }
 
     return safeParse(FixedYieldFragmentSchema, data.fixedYield);
-  })
+  }
 );

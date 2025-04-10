@@ -7,7 +7,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { BondFragment } from "../bond/bond-fragment";
 import { OnChainBondSchema } from "../bond/bond-schema";
 import { CryptoCurrencyFragment } from "../cryptocurrency/cryptocurrency-fragment";
@@ -100,7 +100,9 @@ export interface SidebarAssetsOptions {
 export const getSidebarAssets = withTracing(
   "queries",
   "getSidebarAssets",
-  cache(async (options?: SidebarAssetsOptions) => {
+  async (options?: SidebarAssetsOptions) => {
+    "use cache";
+    cacheTag("asset");
     const result = await theGraphClientKit.request(SidebarAssets);
     const { limit = 10 } = options || {};
 
@@ -206,5 +208,5 @@ export const getSidebarAssets = withTracing(
         count: getCount("deposit"),
       },
     };
-  })
+  }
 );

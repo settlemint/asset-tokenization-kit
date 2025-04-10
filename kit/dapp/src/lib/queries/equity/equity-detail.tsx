@@ -7,7 +7,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { type Address, getAddress } from "viem";
 import { equitiesCalculateFields } from "./equity-calculated";
 import { EquityFragment, OffchainEquityFragment } from "./equity-fragment";
@@ -59,7 +59,9 @@ export interface EquityDetailProps {
 export const getEquityDetail = withTracing(
   "queries",
   "getEquityDetail",
-  cache(async ({ address }: EquityDetailProps) => {
+  async ({ address }: EquityDetailProps) => {
+    "use cache";
+    cacheTag("asset");
     const [onChainEquity, offChainEquity] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(EquityDetail, {
@@ -92,5 +94,5 @@ export const getEquityDetail = withTracing(
       ...offChainEquity,
       ...calculatedEquity,
     };
-  })
+  }
 );
