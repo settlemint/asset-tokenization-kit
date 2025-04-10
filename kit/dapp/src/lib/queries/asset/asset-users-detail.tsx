@@ -6,6 +6,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
@@ -73,8 +74,10 @@ export interface PermissionWithRoles extends Permission {
  * @returns Combined asset data with additional permission details
  * @throws Error if fetching or parsing fails
  */
-export const getAssetUsersDetail = cache(
-  async ({ address }: AssetDetailProps) => {
+export const getAssetUsersDetail = withTracing(
+  "queries",
+  "getAssetUsersDetail",
+  cache(async ({ address }: AssetDetailProps) => {
     const normalizedAddress = getAddress(address);
 
     const [onchainData, offchainData] = await Promise.all([
@@ -170,5 +173,5 @@ export const getAssetUsersDetail = cache(
       },
       roles: Array.from(usersWithRoles.values()),
     };
-  }
+  })
 );

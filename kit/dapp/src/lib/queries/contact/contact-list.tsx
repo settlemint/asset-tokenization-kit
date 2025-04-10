@@ -1,5 +1,6 @@
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import type { VariablesOf } from "gql.tada";
@@ -35,8 +36,10 @@ const ContactListQuery = hasuraGraphql(
  * @param userId - The ID of the user whose contacts to fetch
  * @returns An array of contacts belonging to the user
  */
-export const getContactsList = cache(
-  async (userId: string, searchTerm?: string): Promise<Contact[]> => {
+export const getContactsList = withTracing(
+  "queries",
+  "getContactsList",
+  cache(async (userId: string, searchTerm?: string): Promise<Contact[]> => {
     return fetchAllHasuraPages(async (pageLimit, offset) => {
       const where: VariablesOf<typeof ContactListQuery>["where"] = {
         user_id: { _eq: userId },
@@ -58,5 +61,5 @@ export const getContactsList = cache(
       // Parse and validate the contacts with TypeBox
       return safeParse(t.Array(ContactSchema), result.contact || []);
     });
-  }
+  })
 );

@@ -6,6 +6,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { getAddress } from "viem";
@@ -59,53 +60,57 @@ const OffchainStableCoinList = hasuraGraphql(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each stablecoin.
  */
-export const getStableCoinList = cache(async () => {
-  const [onChainStableCoins, offChainStableCoins] = await Promise.all([
-    fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKit.request(StableCoinList, {
-        first,
-        skip,
-      });
+export const getStableCoinList = withTracing(
+  "queries",
+  "getStableCoinList",
+  cache(async () => {
+    const [onChainStableCoins, offChainStableCoins] = await Promise.all([
+      fetchAllTheGraphPages(async (first, skip) => {
+        const result = await theGraphClientKit.request(StableCoinList, {
+          first,
+          skip,
+        });
 
-      return safeParse(
-        t.Array(OnChainStableCoinSchema),
-        result.stableCoins || []
-      );
-    }),
+        return safeParse(
+          t.Array(OnChainStableCoinSchema),
+          result.stableCoins || []
+        );
+      }),
 
-    fetchAllHasuraPages(async (pageLimit, offset) => {
-      const result = await hasuraClient.request(OffchainStableCoinList, {
-        limit: pageLimit,
-        offset,
-      });
+      fetchAllHasuraPages(async (pageLimit, offset) => {
+        const result = await hasuraClient.request(OffchainStableCoinList, {
+          limit: pageLimit,
+          offset,
+        });
 
-      return safeParse(
-        t.Array(OffChainStableCoinSchema),
-        result.asset_aggregate.nodes || []
-      );
-    }),
-  ]);
+        return safeParse(
+          t.Array(OffChainStableCoinSchema),
+          result.asset_aggregate.nodes || []
+        );
+      }),
+    ]);
 
-  const assetsById = new Map(
-    offChainStableCoins.map((asset) => [getAddress(asset.id), asset])
-  );
+    const assetsById = new Map(
+      offChainStableCoins.map((asset) => [getAddress(asset.id), asset])
+    );
 
-  const calculatedFields = await stablecoinsCalculateFields(
-    onChainStableCoins,
-    offChainStableCoins
-  );
+    const calculatedFields = await stablecoinsCalculateFields(
+      onChainStableCoins,
+      offChainStableCoins
+    );
 
-  const stableCoins = onChainStableCoins.map((stableCoin) => {
-    const offChainStableCoin = assetsById.get(getAddress(stableCoin.id));
+    const stableCoins = onChainStableCoins.map((stableCoin) => {
+      const offChainStableCoin = assetsById.get(getAddress(stableCoin.id));
 
-    const calculatedStableCoin = calculatedFields.get(stableCoin.id)!;
+      const calculatedStableCoin = calculatedFields.get(stableCoin.id)!;
 
-    return {
-      ...stableCoin,
-      ...offChainStableCoin,
-      ...calculatedStableCoin,
-    };
-  });
+      return {
+        ...stableCoin,
+        ...offChainStableCoin,
+        ...calculatedStableCoin,
+      };
+    });
 
-  return stableCoins;
-});
+    return stableCoins;
+  })
+);

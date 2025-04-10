@@ -7,6 +7,7 @@ import {
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { formatDate } from "@/lib/utils/date";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { getLocale, getTranslations } from "next-intl/server";
 import { cache } from "react";
@@ -149,8 +150,10 @@ export interface AssetEventsListProps {
  * @param params - Object containing optional filters and limits
  * @returns Array of normalized asset events
  */
-export const getAssetEventsList = cache(
-  async ({ asset, sender, limit }: AssetEventsListProps) => {
+export const getAssetEventsList = withTracing(
+  "queries",
+  "getAssetEventsList",
+  cache(async ({ asset, sender, limit }: AssetEventsListProps) => {
     const where: Record<string, unknown> = {};
 
     if (asset) {
@@ -350,5 +353,5 @@ export const getAssetEventsList = cache(
         transactionHash: validatedEvent.id.split("-")[0],
       };
     });
-  }
+  })
 );

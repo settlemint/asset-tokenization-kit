@@ -291,7 +291,8 @@ metrics and traces from the application. Set the `OTEL_EXPORTER_OTLP_ENDPOINT`
 environment variable to your OpenTelemetry collector endpoint.
 
 ```bash
-export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
+OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 ```
 
 If working in a development environment, you can use the following command to

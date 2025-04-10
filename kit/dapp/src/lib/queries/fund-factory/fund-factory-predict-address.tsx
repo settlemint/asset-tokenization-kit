@@ -2,6 +2,7 @@
 import { getUser } from "@/lib/auth/utils";
 import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -40,29 +41,33 @@ const CreateFundPredictAddress = portalGraphql(`
  * @param input - The data for creating a new fund
  * @returns The predicted address of the new fund
  */
-export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
-  const {
-    assetName,
-    symbol,
-    decimals,
-    fundCategory,
-    fundClass,
-    managementFeeBps,
-  } = input;
-  const user = await getUser();
+export const getPredictedAddress = withTracing(
+  "queries",
+  "getPredictedAddress",
+  cache(async (input: PredictAddressInput) => {
+    const {
+      assetName,
+      symbol,
+      decimals,
+      fundCategory,
+      fundClass,
+      managementFeeBps,
+    } = input;
+    const user = await getUser();
 
-  const data = await portalClient.request(CreateFundPredictAddress, {
-    address: FUND_FACTORY_ADDRESS,
-    sender: user.wallet as Address,
-    decimals,
-    name: assetName,
-    symbol,
-    fundCategory,
-    fundClass,
-    managementFeeBps,
-  });
+    const data = await portalClient.request(CreateFundPredictAddress, {
+      address: FUND_FACTORY_ADDRESS,
+      sender: user.wallet as Address,
+      decimals,
+      name: assetName,
+      symbol,
+      fundCategory,
+      fundClass,
+      managementFeeBps,
+    });
 
-  const predictedAddress = safeParse(PredictedAddressSchema, data);
+    const predictedAddress = safeParse(PredictedAddressSchema, data);
 
-  return predictedAddress.FundFactory.predictAddress.predicted;
-});
+    return predictedAddress.FundFactory.predictAddress.predicted;
+  })
+);

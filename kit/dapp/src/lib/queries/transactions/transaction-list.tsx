@@ -1,5 +1,6 @@
 import { fetchAllPortalPages } from "@/lib/pagination";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { TransactionFragment } from "./transaction-fragment";
@@ -51,21 +52,27 @@ const TransactionListByAddress = portalGraphql(
  * @remarks
  * This function fetches all processed transactions from the Portal API with pagination.
  */
-export const getTransactionList = cache(async () => {
-  const transactions = await fetchAllPortalPages(async ({ page, pageSize }) => {
-    const response = await portalClient.request(TransactionList, {
-      pageSize,
-      page,
-    });
+export const getTransactionList = withTracing(
+  "queries",
+  "getTransactionList",
+  cache(async () => {
+    const transactions = await fetchAllPortalPages(
+      async ({ page, pageSize }) => {
+        const response = await portalClient.request(TransactionList, {
+          pageSize,
+          page,
+        });
 
-    return {
-      count: response.getProcessedTransactions?.count ?? 0,
-      records: response.getProcessedTransactions?.records ?? [],
-    };
-  });
+        return {
+          count: response.getProcessedTransactions?.count ?? 0,
+          records: response.getProcessedTransactions?.records ?? [],
+        };
+      }
+    );
 
-  return safeParse(t.Array(TransactionSchema), transactions?.records);
-});
+    return safeParse(t.Array(TransactionSchema), transactions?.records);
+  })
+);
 
 /**
  * Fetches a list of transactions for a specific address
@@ -75,19 +82,25 @@ export const getTransactionList = cache(async () => {
  * @remarks
  * This function fetches processed transactions for a specific address from the Portal API with pagination.
  */
-export const getTransactionListByAddress = cache(async (from: string) => {
-  const transactions = await fetchAllPortalPages(async ({ page, pageSize }) => {
-    const response = await portalClient.request(TransactionListByAddress, {
-      from,
-      pageSize,
-      page,
-    });
+export const getTransactionListByAddress = withTracing(
+  "queries",
+  "getTransactionListByAddress",
+  cache(async (from: string) => {
+    const transactions = await fetchAllPortalPages(
+      async ({ page, pageSize }) => {
+        const response = await portalClient.request(TransactionListByAddress, {
+          from,
+          pageSize,
+          page,
+        });
 
-    return {
-      count: response.getProcessedTransactions?.count ?? 0,
-      records: response.getProcessedTransactions?.records ?? [],
-    };
-  });
+        return {
+          count: response.getProcessedTransactions?.count ?? 0,
+          records: response.getProcessedTransactions?.records ?? [],
+        };
+      }
+    );
 
-  return safeParse(t.Array(TransactionSchema), transactions?.records);
-});
+    return safeParse(t.Array(TransactionSchema), transactions?.records);
+  })
+);

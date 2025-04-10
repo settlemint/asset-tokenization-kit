@@ -14,8 +14,8 @@ import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
+import { calculateMaxRange } from "@/lib/utils/timeRange";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { calculateMaxRange } from "@/utils/timeRange";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { Related } from "./related";

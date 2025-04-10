@@ -5,6 +5,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
@@ -55,8 +56,10 @@ export interface DepositDetailProps {
  * @returns Combined tokenized deposit data with additional calculated metrics
  * @throws Error if fetching or parsing fails
  */
-export const getDepositDetail = cache(
-  async ({ address }: DepositDetailProps) => {
+export const getDepositDetail = withTracing(
+  "queries",
+  "getDepositDetail",
+  cache(async ({ address }: DepositDetailProps) => {
     const [onChainDeposit, offChainDeposit] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(DepositDetail, {
@@ -89,5 +92,5 @@ export const getDepositDetail = cache(
       ...offChainDeposit,
       ...calculatedDeposit,
     };
-  }
+  })
 );

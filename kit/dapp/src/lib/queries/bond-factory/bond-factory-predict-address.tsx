@@ -3,6 +3,7 @@ import { getUser } from "@/lib/auth/utils";
 import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cache } from "react";
 import { parseUnits, type Address } from "viem";
@@ -42,37 +43,41 @@ const CreateBondPredictAddress = portalGraphql(`
  * @param input - The data for creating a new bond
  * @returns The predicted address of the new bond
  */
-export const getPredictedAddress = cache(async (input: PredictAddressInput) => {
-  const {
-    assetName,
-    symbol,
-    decimals,
-    cap,
-    faceValue,
-    maturityDate,
-    underlyingAsset,
-  } = input;
-  const user = await getUser();
+export const getPredictedAddress = withTracing(
+  "queries",
+  "getPredictedAddress",
+  cache(async (input: PredictAddressInput) => {
+    const {
+      assetName,
+      symbol,
+      decimals,
+      cap,
+      faceValue,
+      maturityDate,
+      underlyingAsset,
+    } = input;
+    const user = await getUser();
 
-  const capExact = String(parseUnits(String(cap), decimals));
-  const maturityDateTimestamp = formatDate(maturityDate, {
-    type: "unixSeconds",
-    locale: "en",
-  });
+    const capExact = String(parseUnits(String(cap), decimals));
+    const maturityDateTimestamp = formatDate(maturityDate, {
+      type: "unixSeconds",
+      locale: "en",
+    });
 
-  const data = await portalClient.request(CreateBondPredictAddress, {
-    address: BOND_FACTORY_ADDRESS,
-    sender: user.wallet as Address,
-    decimals,
-    name: assetName,
-    symbol,
-    cap: capExact,
-    faceValue: String(faceValue),
-    maturityDate: maturityDateTimestamp,
-    underlyingAsset: underlyingAsset.id,
-  });
+    const data = await portalClient.request(CreateBondPredictAddress, {
+      address: BOND_FACTORY_ADDRESS,
+      sender: user.wallet as Address,
+      decimals,
+      name: assetName,
+      symbol,
+      cap: capExact,
+      faceValue: String(faceValue),
+      maturityDate: maturityDateTimestamp,
+      underlyingAsset: underlyingAsset.id,
+    });
 
-  const predictedAddress = safeParse(PredictedAddressSchema, data);
+    const predictedAddress = safeParse(PredictedAddressSchema, data);
 
-  return predictedAddress.BondFactory.predictAddress.predicted;
-});
+    return predictedAddress.BondFactory.predictAddress.predicted;
+  })
+);

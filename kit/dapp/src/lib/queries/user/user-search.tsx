@@ -3,6 +3,7 @@
 import { getUser } from "@/lib/auth/utils";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cache } from "react";
 import type { User } from "../../auth/types";
@@ -86,17 +87,21 @@ export const getAllUsersSearch = withAccessControl(
  * @remarks
  * Returns an empty array if no address is provided or if an error occurs
  */
-export const getUserSearch = cache(
-  async ({
-    searchTerm,
-    ctx,
-  }: UserSearchProps & { ctx?: { user: User } }): Promise<
-    (User | Contact)[]
-  > => {
-    const user = ctx?.user ?? (await getUser());
-    if (user.role === "user") {
-      return getContactsList(user.id, searchTerm);
+export const getUserSearch = withTracing(
+  "queries",
+  "getUserSearch",
+  cache(
+    async ({
+      searchTerm,
+      ctx,
+    }: UserSearchProps & { ctx?: { user: User } }): Promise<
+      (User | Contact)[]
+    > => {
+      const user = ctx?.user ?? (await getUser());
+      if (user.role === "user") {
+        return getContactsList(user.id, searchTerm);
+      }
+      return getAllUsersSearch({ searchTerm, ctx: { user } });
     }
-    return getAllUsersSearch({ searchTerm, ctx: { user } });
-  }
+  )
 );

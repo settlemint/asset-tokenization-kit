@@ -5,6 +5,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
@@ -55,37 +56,41 @@ export interface FundDetailProps {
  * @returns Combined fund data with additional calculated metrics
  * @throws Error if fetching or parsing fails
  */
-export const getFundDetail = cache(async ({ address }: FundDetailProps) => {
-  const [onChainFund, offChainFund] = await Promise.all([
-    (async () => {
-      const response = await theGraphClientKit.request(FundDetail, {
-        id: address,
-      });
-      if (!response.fund) {
-        throw new Error("Fund not found");
-      }
-      return safeParse(OnChainFundSchema, response.fund);
-    })(),
-    (async () => {
-      const response = await hasuraClient.request(OffchainFundDetail, {
-        id: getAddress(address),
-      });
-      if (response.asset.length === 0) {
-        return undefined;
-      }
-      return safeParse(OffChainFundSchema, response.asset[0]);
-    })(),
-  ]);
+export const getFundDetail = withTracing(
+  "queries",
+  "getFundDetail",
+  cache(async ({ address }: FundDetailProps) => {
+    const [onChainFund, offChainFund] = await Promise.all([
+      (async () => {
+        const response = await theGraphClientKit.request(FundDetail, {
+          id: address,
+        });
+        if (!response.fund) {
+          throw new Error("Fund not found");
+        }
+        return safeParse(OnChainFundSchema, response.fund);
+      })(),
+      (async () => {
+        const response = await hasuraClient.request(OffchainFundDetail, {
+          id: getAddress(address),
+        });
+        if (response.asset.length === 0) {
+          return undefined;
+        }
+        return safeParse(OffChainFundSchema, response.asset[0]);
+      })(),
+    ]);
 
-  const calculatedFields = await fundsCalculateFields(
-    [onChainFund],
-    [offChainFund]
-  );
-  const calculatedFund = calculatedFields.get(onChainFund.id)!;
+    const calculatedFields = await fundsCalculateFields(
+      [onChainFund],
+      [offChainFund]
+    );
+    const calculatedFund = calculatedFields.get(onChainFund.id)!;
 
-  return {
-    ...onChainFund,
-    ...offChainFund,
-    ...calculatedFund,
-  };
-});
+    return {
+      ...onChainFund,
+      ...offChainFund,
+      ...calculatedFund,
+    };
+  })
+);

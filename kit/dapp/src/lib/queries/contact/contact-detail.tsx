@@ -1,4 +1,5 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
 import { ContactFragment } from "./contact-fragment";
@@ -28,8 +29,10 @@ interface GetContactDetailParams {
  * @param params - Object containing the contact ID and user ID
  * @returns Contact details or null if not found
  */
-export const getContactDetail = cache(
-  async ({ id }: GetContactDetailParams) => {
+export const getContactDetail = withTracing(
+  "queries",
+  "getContactDetail",
+  cache(async ({ id }: GetContactDetailParams) => {
     const result = await hasuraClient.request(ContactDetailQuery, {
       id,
     });
@@ -41,5 +44,5 @@ export const getContactDetail = cache(
     }
 
     return safeParse(ContactSchema, contact);
-  }
+  })
 );

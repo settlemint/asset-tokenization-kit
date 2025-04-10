@@ -5,6 +5,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { getUnixTime, startOfDay, subDays } from "date-fns";
 import { cache } from "react";
@@ -55,8 +56,10 @@ export interface AssetStatsProps {
  * fetches data from The Graph, validates it using the AssetStatsSchema,
  * and returns validated asset statistics.
  */
-export const getAssetStats = cache(
-  async ({ address, days = 1 }: AssetStatsProps) => {
+export const getAssetStats = withTracing(
+  "queries",
+  "getAssetStats",
+  cache(async ({ address, days = 1 }: AssetStatsProps) => {
     const normalizedAddress = getAddress(address);
     // Calculate timestamp for start date
     const startDate = subDays(new Date(), days - 1);
@@ -74,5 +77,5 @@ export const getAssetStats = cache(
     });
 
     return safeParse(t.Array(AssetStatsSchema), result);
-  }
+  })
 );

@@ -4,6 +4,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { withTracing } from "@/lib/utils/tracing";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cache } from "react";
@@ -96,8 +97,10 @@ export interface SidebarAssetsOptions {
  * @param options - Query options including optional limit
  * @returns Formatted sidebar asset data with counts
  */
-export const getSidebarAssets = cache(
-  async (options?: SidebarAssetsOptions) => {
+export const getSidebarAssets = withTracing(
+  "queries",
+  "getSidebarAssets",
+  cache(async (options?: SidebarAssetsOptions) => {
     const result = await theGraphClientKit.request(SidebarAssets);
     const { limit = 10 } = options || {};
 
@@ -203,5 +206,5 @@ export const getSidebarAssets = cache(
         count: getCount("deposit"),
       },
     };
-  }
+  })
 );
