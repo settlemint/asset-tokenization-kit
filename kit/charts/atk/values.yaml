@@ -494,3 +494,22 @@ observability:
         - name: image-pull-secret-docker
         - name: image-pull-secret-ghcr
         - name: image-pull-secret-harbor
+
+# Transaction Signer Configuration
+txsigner:
+  enabled: false
+  # Configuration for the txsigner subchart
+  # Define environment variables directly here
+  env:
+    - name: RPC_ENDPOINT
+      value: "http://erpc:4000"
+  image:
+    tag: "7.6.8"
+  replicaCount: 1
+  # resources:
+  #   limits:
+  #     cpu: 450m
+  #     memory: 768Mi
+  #   requests:
+  #     cpu: 225m
+  #     memory: 384Mi
