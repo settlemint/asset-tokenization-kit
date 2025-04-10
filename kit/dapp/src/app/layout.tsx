@@ -1,6 +1,7 @@
 import { AuthProvider } from "@/components/blocks/auth/auth-provider";
 import { ThemeProvider } from "@/components/blocks/theme/theme-provider";
 import { TransitionProvider } from "@/components/layout/transition-provider";
+import { PostHogProvider } from "@/components/PostHogProvider";
 import { routing } from "@/i18n/routing";
 import { getServerEnvironment } from "@/lib/config/environment";
 import { cn } from "@/lib/utils";
@@ -41,9 +42,7 @@ const robotoMono = Roboto_Mono({
 
 export default async function RootLayout({
   children,
-}: Readonly<{
-  children: ReactNode;
-}>) {
+}: Readonly<{ children: ReactNode }>) {
   try {
     const locale = await getLocale();
     const direction = getLangDir(locale);
@@ -66,24 +65,26 @@ export default async function RootLayout({
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head> */}
         <body className="min-h-screen antialiased">
-          <NextIntlClientProvider timeZone={timeZone}>
-            <ThemeProvider attribute="class" enableColorScheme enableSystem>
-              <TransitionProvider>
-                <AuthProvider
-                  emailEnabled={!!env.RESEND_API_KEY}
-                  googleEnabled={
-                    !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)
-                  }
-                  githubEnabled={
-                    !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET)
-                  }
-                >
-                  {children}
-                </AuthProvider>
-              </TransitionProvider>
-            </ThemeProvider>
-            <Toaster richColors />
-          </NextIntlClientProvider>
+          <PostHogProvider>
+            <NextIntlClientProvider timeZone={timeZone}>
+              <ThemeProvider attribute="class" enableColorScheme enableSystem>
+                <TransitionProvider>
+                  <AuthProvider
+                    emailEnabled={!!env.RESEND_API_KEY}
+                    googleEnabled={
+                      !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)
+                    }
+                    githubEnabled={
+                      !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET)
+                    }
+                  >
+                    {children}
+                  </AuthProvider>
+                </TransitionProvider>
+              </ThemeProvider>
+              <Toaster richColors />
+            </NextIntlClientProvider>
+          </PostHogProvider>
         </body>
       </html>
     );
