@@ -1702,6 +1702,7 @@
         "redemption-readiness": "Redemption readiness",
         "required-collateral-threshold": "Required collateral threshold",
         "required-collateral-threshold-info": "The amount of collateral that must be proven",
+        "fixed": "Fixed",
         "revoke-all-form": {
           "trigger-label": "Revoke all"
         },

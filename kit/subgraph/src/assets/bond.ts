@@ -1064,15 +1064,19 @@ export function handleUnderlyingAssetWithdrawn(
 }
 
 function calculateTotalUnderlyingNeeded(bond: Bond): void {
-  // Calculate exact value first
+  // Get underlying asset decimals
+  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(bond.underlyingAsset));
+
+  // Calculate exact value in underlying asset's decimals
   bond.totalUnderlyingNeededExact = bond.totalSupplyExact
     .times(bond.faceValue)
-    .div(BigInt.fromI32(10).pow(bond.decimals as u8));
+    .div(BigInt.fromI32(10).pow(bond.decimals as u8))
+    .times(BigInt.fromI32(10).pow(underlyingDecimals as u8));
 
   // Convert to decimal for display
   bond.totalUnderlyingNeeded = toDecimals(
     bond.totalUnderlyingNeededExact,
-    bond.decimals
+    underlyingDecimals
   );
 }
 
