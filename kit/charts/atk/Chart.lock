@@ -20,5 +20,8 @@ dependencies:
 - name: portal
   repository: ""
   version: '*'
-digest: sha256:192a456022084d224ece64f8bb7a2c14bf4f577d7fa5413618fe9292a1251483
-generated: "2025-04-09T15:26:01.166377+03:00"
+- name: txsigner
+  repository: ""
+  version: '*'
+digest: sha256:7ac439001394f3be8a9016996c449f1e02c3f630ef9bece62086883f0580f4c2
+generated: "2025-04-10T14:56:53.999217+03:00"

@@ -31,3 +31,6 @@ dependencies:
   - name: portal
     version: "*"
     condition: portal.enabled
+  - name: txsigner
+    version: "*"
+    condition: txsigner.enabled
