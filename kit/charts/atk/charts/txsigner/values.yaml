@@ -1,0 +1,122 @@
+# Default values for txsigner.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/settlemint/btp-signer
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "7.6.8" # Default tag from the example
+
+imagePullSecrets:
+  - name: image-pull-secret-docker
+  - name: image-pull-secret-ghcr
+  - name: image-pull-secret-harbor
+nameOverride: ""
+fullnameOverride: "txsigner"
+
+# Configuration for environment variables
+# Define environment variables directly here
+env: []
+  # - name: ENV_VAR_NAME
+  #   value: "some-value"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 2016
+  fsGroup: 2016
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 2016
+
+service:
+  type: ClusterIP
+  port: 3000 # Default txsigner port
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local # Needs to be configured
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  limits:
+    cpu: 450m
+    memory: 768Mi
+  requests:
+    cpu: 225m
+    memory: 384Mi
+
+livenessProbe:
+  tcpSocket:
+    port: txsigner
+  initialDelaySeconds: 1
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30
+  successThreshold: 1
+
+readinessProbe:
+  tcpSocket:
+    port: txsigner
+  initialDelaySeconds: 1
+  periodSeconds: 5
+  timeoutSeconds: 5
+  failureThreshold: 60
+  successThreshold: 1
+
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes:
+  - name: tx-signer-cache
+    emptyDir: {}
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts:
+  - name: tx-signer-cache
+    mountPath: /signer/.cache
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
