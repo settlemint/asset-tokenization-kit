@@ -71,7 +71,8 @@ type Bond implements Asset @entity(immutable: false) {
   faceValue: BigInt!
   underlyingAsset: Asset!
   redeemedAmount: BigInt!
-  underlyingBalance: BigInt!
+  underlyingBalance: BigDecimal!
+  underlyingBalanceExact: BigInt!
   yieldSchedule: FixedYield
   totalUnderlyingNeeded: BigDecimal!
   totalUnderlyingNeededExact: BigInt!

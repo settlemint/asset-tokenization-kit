@@ -54,7 +54,8 @@ export function fetchBond(address: Address, timestamp: BigInt = BigInt.zero()): 
 
     bond.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
     bond.redeemedAmount = BigInt.zero();
-    bond.underlyingBalance = BigInt.zero();
+    bond.underlyingBalanceExact = BigInt.zero();
+    bond.underlyingBalance = BigDecimal.zero();
     bond.yieldSchedule = yieldSchedule.reverted ? null : yieldSchedule.value;
     bond.totalUnderlyingNeededExact = BigInt.zero();
     bond.totalUnderlyingNeeded = BigDecimal.zero();

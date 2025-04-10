@@ -64,12 +64,14 @@ export async function BondsDetails({
       <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
         {formatNumber(bond.cap, {
           token: bond.symbol,
+          decimals: bond.decimals,
           locale: locale,
         })}
       </DetailGridItem>
       <DetailGridItem label={t("total-issued")} info={t("total-issued-info")}>
         {formatNumber(bond.totalSupply, {
           token: bond.symbol,
+          decimals: bond.decimals,
           locale: locale,
         })}
       </DetailGridItem>
@@ -78,6 +80,7 @@ export async function BondsDetails({
         <DetailGridItem label={t("balance")}>
           {formatNumber(balanceData.value, {
             token: bond.symbol,
+            decimals: bond.decimals,
             locale: locale,
           })}
         </DetailGridItem>
