@@ -39,7 +39,7 @@ postgresql-ha:
         \c portal;
         GRANT ALL ON SCHEMA public TO portal;
   pgpool:
-    replicaCount: 2
+    replicaCount: 1
     adminUsername: "pgpool"
     adminPassword: "atk"
     customUsers:
@@ -81,7 +81,7 @@ ingress-nginx:
     runAsUser: 2016
     admissionWebhooks:
       enabled: false
-    replicaCount: 2
+    replicaCount: 1
     autoscaling:
       enabled: false
       minReplicas: 2
