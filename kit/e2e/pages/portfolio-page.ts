@@ -20,30 +20,7 @@ export class PortfolioPage extends BasePage {
       throw new Error("Could not find portfolio amount");
     }
 
-    let numericValue: number | null = null;
-
-    const matchInParens = actualAmount.match(/\(([^)]+)\)/);
-    if (matchInParens && matchInParens[1]) {
-      const valueInParens = matchInParens[1].replace(/[€$£,]/g, "").trim(); // Remove currency symbols and commas
-      numericValue = Number.parseFloat(valueInParens);
-    } else {
-      let cleanedAmount = actualAmount.replace(/[€$£,]/g, "").trim();
-
-      const kiloMatch = cleanedAmount.match(/^([\d.]+)\s*K$/i);
-      if (kiloMatch && kiloMatch[1]) {
-        numericValue = Number.parseFloat(kiloMatch[1]) * 1000;
-      } else {
-        cleanedAmount = cleanedAmount.replace(/[^\d.]/g, ""); //
-        numericValue = Number.parseFloat(cleanedAmount);
-      }
-    }
-
-    if (numericValue === null || Number.isNaN(numericValue)) {
-      throw new Error(
-        `Could not parse portfolio amount from text: "${actualAmount}"`
-      );
-    }
-
+    const numericValue = this.parseAmountString(actualAmount);
     const formattedActual = numericValue.toFixed(0);
 
     let formattedExpected = Number.parseFloat(
@@ -149,42 +126,23 @@ export class PortfolioPage extends BasePage {
             return "TEXT_NOT_FOUND";
           }
 
-          let numericValue: number | null = null;
+          try {
+            const numericValue = this.parseAmountString(actualAmountText);
+            const formattedActual = numericValue.toFixed(0);
 
-          const matchInParens = actualAmountText.match(/\(([^)]+)\)/);
-          if (matchInParens && matchInParens[1]) {
-            const valueInParens = matchInParens[1]
-              .replace(/[€$£,]/g, "")
-              .trim();
-            numericValue = Number.parseFloat(valueInParens);
-          } else {
-            let cleanedAmount = actualAmountText.replace(/[€$£,]/g, "").trim();
-
-            const kiloMatch = cleanedAmount.match(/^([\d.]+)\s*K$/i);
-            if (kiloMatch && kiloMatch[1]) {
-              numericValue = Number.parseFloat(kiloMatch[1]) * 1000;
-            } else {
-              cleanedAmount = cleanedAmount.replace(/[^\d.]/g, "");
-              numericValue = Number.parseFloat(cleanedAmount);
+            if (
+              formattedActual ===
+              (price
+                ? adjustedInitialBalance
+                : Number.parseFloat(initialBalance).toFixed(0))
+            ) {
+              return formattedActual;
             }
-          }
 
-          if (numericValue === null || Number.isNaN(numericValue)) {
+            return formattedActual;
+          } catch (error) {
             return "PARSE_ERROR";
           }
-
-          const formattedActual = numericValue.toFixed(0);
-
-          if (
-            formattedActual ===
-            (price
-              ? adjustedInitialBalance
-              : Number.parseFloat(initialBalance).toFixed(0))
-          ) {
-            return formattedActual;
-          }
-
-          return formattedActual;
         },
         {
           message: `Waiting for balance to change from ${adjustedInitialBalance} to ${adjustedExpectedBalance}. Last parsed value might be incorrect if text was "TEXT_NOT_FOUND" or "PARSE_ERROR".`,
@@ -236,5 +194,35 @@ export class PortfolioPage extends BasePage {
       .filter({ hasText: shortAddress })
       .first();
     await expect(addressCell).toBeVisible();
+  }
+
+  private parseAmountString(text: string): number {
+    if (!text) {
+      throw new Error("Cannot parse empty amount string");
+    }
+
+    let numericValue: number | null = null;
+
+    const matchInParens = text.match(/\(([^)]+)\)/);
+    if (matchInParens && matchInParens[1]) {
+      const valueInParens = matchInParens[1].replace(/[€$£,]/g, "").trim();
+      numericValue = Number.parseFloat(valueInParens);
+    } else {
+      let cleanedAmount = text.replace(/[€$£,]/g, "").trim();
+
+      const kiloMatch = cleanedAmount.match(/^([\d.]+)\s*K$/i);
+      if (kiloMatch && kiloMatch[1]) {
+        numericValue = Number.parseFloat(kiloMatch[1]) * 1000;
+      } else {
+        cleanedAmount = cleanedAmount.replace(/[^\d.]/g, "");
+        numericValue = Number.parseFloat(cleanedAmount);
+      }
+    }
+
+    if (numericValue === null || Number.isNaN(numericValue)) {
+      throw new Error(`Could not parse amount from text: "${text}"`);
+    }
+
+    return numericValue;
   }
 }
