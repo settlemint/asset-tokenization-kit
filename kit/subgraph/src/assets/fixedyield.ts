@@ -21,12 +21,13 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
   if (!token) return;
 
   log.info(
-    "Fixed yield claimed event: amount={}, holder={}, sender={}, schedule={}",
+    "Fixed yield claimed event: amount={}, holder={}, sender={}, schedule={}, bond={}",
     [
       event.params.totalAmount.toString(),
       holder.id.toHexString(),
       sender.id.toHexString(),
       event.address.toHexString(),
+      token.id.toHexString(),
     ]
   );
 
@@ -34,7 +35,7 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
   yieldClaimedEvent(
     eventId(event),
     event.block.timestamp,
-    event.address,
+    token.id,
     sender.id,
     holder.id,
     event.params.totalAmount,
@@ -99,12 +100,13 @@ export function handleUnderlyingAssetTopUp(
   if (!token) return;
 
   log.info(
-    "Fixed yield underlying asset top up event: amount={}, from={}, sender={}, schedule={}",
+    "Fixed yield underlying asset top up event: amount={}, from={}, sender={}, schedule={}, bond={}",
     [
       event.params.amount.toString(),
       from.id.toHexString(),
       sender.id.toHexString(),
       event.address.toHexString(),
+      token.id.toHexString(),
     ]
   );
 
@@ -112,7 +114,7 @@ export function handleUnderlyingAssetTopUp(
   underlyingAssetTopUpEvent(
     eventId(event),
     event.block.timestamp,
-    event.address,
+    token.id,
     sender.id,
     from.id,
     event.params.amount,
@@ -140,12 +142,13 @@ export function handleUnderlyingAssetWithdrawn(
   if (!token) return;
 
   log.info(
-    "Fixed yield underlying asset withdrawn event: amount={}, to={}, sender={}, schedule={}",
+    "Fixed yield underlying asset withdrawn event: amount={}, to={}, sender={}, schedule={}, bond={}",
     [
       event.params.amount.toString(),
       to.id.toHexString(),
       sender.id.toHexString(),
       event.address.toHexString(),
+      token.id.toHexString(),
     ]
   );
 
@@ -153,7 +156,7 @@ export function handleUnderlyingAssetWithdrawn(
   underlyingAssetWithdrawnEvent(
     eventId(event),
     event.block.timestamp,
-    event.address,
+    token.id,
     sender.id,
     to.id,
     event.params.amount,
