@@ -28,6 +28,12 @@ import { UserRoles } from "./user-roles";
 import { VerificationCode } from "./verification-code";
 import { VerificationType } from "./verification-type";
 
+// Cache for compiled schemas
+const compiledSchemaCache = new Map<
+  TSchema,
+  ReturnType<typeof TypeCompiler.Compile>
+>();
+
 // Extend TypeBox types with module augmentation
 declare module "@sinclair/typebox" {
   interface JavaScriptTypeBuilder {
@@ -94,7 +100,12 @@ export function safeParse<T extends TSchema>(
   schema: T,
   value: unknown
 ): StaticDecode<T> {
-  const CompiledSchema = TypeCompiler.Compile(schema);
+  let CompiledSchema = compiledSchemaCache.get(schema);
+
+  if (!CompiledSchema) {
+    CompiledSchema = TypeCompiler.Compile(schema);
+    compiledSchemaCache.set(schema, CompiledSchema);
+  }
 
   const errors = [...CompiledSchema.Errors(value)];
   if (errors.length > 0) {
