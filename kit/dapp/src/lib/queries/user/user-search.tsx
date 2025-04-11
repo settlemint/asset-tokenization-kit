@@ -101,7 +101,6 @@ export const getAllUsersSearch = withAccessControl(
 export const getUserSearch = withTracing(
   "queries",
   "getUserSearch",
-
   async ({
     searchTerm,
     ctx,
