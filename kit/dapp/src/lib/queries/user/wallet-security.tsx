@@ -3,6 +3,7 @@ import { getUser } from "@/lib/auth/utils";
 import { withTracing } from "@/lib/utils/tracing";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { getLocale } from "next-intl/server";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 /**
  * TypeBox schema for wallet verification data
@@ -39,6 +40,9 @@ export const hasWalletVerification = withTracing(
       return user.pincodeEnabled || user.twoFactorEnabled || false;
     } catch (err) {
       const error = err as Error;
+      if (isRedirectError(error)) {
+        throw error;
+      }
       console.error(
         `Error getting wallet verification: ${error.message}`,
         error.stack
