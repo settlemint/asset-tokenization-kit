@@ -1,4 +1,3 @@
-import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { getFundList } from "@/lib/queries/fund/fund-list";
 import { withTracing } from "@/lib/utils/tracing";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
@@ -18,7 +17,7 @@ import { getStableCoinList } from "../stablecoin/stablecoin-list";
 export const getTotalAssetPrice = withTracing(
   "queries",
   "getTotalAssetPrice",
-  cache(async (currency: string | null | undefined) => {
+  cache(async () => {
     "use cache";
     cacheTag("asset");
     const assetsResult = await Promise.all([
@@ -37,7 +36,6 @@ export const getTotalAssetPrice = withTracing(
 
     return {
       totalPrice,
-      currency: currency as CurrencyCode,
     };
   })
 );
