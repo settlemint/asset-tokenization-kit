@@ -66,25 +66,35 @@ export const getEquityList = withTracing(
     cacheTag("asset");
     const [onChainEquities, offChainEquities] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(EquityList, {
-          first,
-          skip,
-          "X-GraphQL-Operation-Name": "EquityList",
-          "X-GraphQL-Operation-Type": "query",
-          cache: "force-cache",
-        });
+        const result = await theGraphClientKit.request(
+          EquityList,
+          {
+            first,
+            skip,
+          },
+          {
+            "X-GraphQL-Operation-Name": "EquityList",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
 
         return safeParse(t.Array(OnChainEquitySchema), result.equities || []);
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainEquityList, {
-          limit: pageLimit,
-          offset,
-          "X-GraphQL-Operation-Name": "OffchainEquityList",
-          "X-GraphQL-Operation-Type": "query",
-          cache: "force-cache",
-        });
+        const result = await hasuraClient.request(
+          OffchainEquityList,
+          {
+            limit: pageLimit,
+            offset,
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainEquityList",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
 
         return safeParse(
           t.Array(OffChainEquitySchema),

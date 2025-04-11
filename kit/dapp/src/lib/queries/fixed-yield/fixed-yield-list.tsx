@@ -37,7 +37,15 @@ export const getFixedYieldList = withTracing(
   async () => {
     "use cache";
     cacheTag("asset");
-    const data = await theGraphClientKit.request(FixedYieldListQuery);
+    const data = await theGraphClientKit.request(
+      FixedYieldListQuery,
+      {},
+      {
+        "X-GraphQL-Operation-Name": "FixedYieldList",
+        "X-GraphQL-Operation-Type": "query",
+        cache: "force-cache",
+      }
+    );
 
     if (!data.fixedYields?.length) {
       return [];
