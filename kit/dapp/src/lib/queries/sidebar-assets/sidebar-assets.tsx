@@ -26,23 +26,23 @@ import { OnChainStableCoinSchema } from "../stablecoin/stablecoin-schema";
  */
 const SidebarAssets = theGraphGraphqlKit(
   `
-  query SidebarAssets {
-    stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+  query SidebarAssets($limit: Int!) {
+    stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       ...StableCoinFragment
     }
-    bonds(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+    bonds(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       ...BondFragment
     }
-    equities(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+    equities(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       ...EquityFragment
     }
-    funds(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+    funds(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       ...FundFragment
     }
-    cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+    cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       ...CryptoCurrencyFragment
     }
-    deposits(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+    deposits(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       ...DepositFragment
     }
     assetCounts {
@@ -103,8 +103,10 @@ export const getSidebarAssets = withTracing(
   async (options?: SidebarAssetsOptions) => {
     "use cache";
     cacheTag("asset");
-    const result = await theGraphClientKit.request(SidebarAssets);
     const { limit = 10 } = options || {};
+    const result = await theGraphClientKit.request(SidebarAssets, {
+      limit,
+    });
 
     const validatedStableCoins = safeParse(
       t.Array(OnChainStableCoinSchema),
@@ -142,31 +144,6 @@ export const getSidebarAssets = withTracing(
       result.assetCounts || []
     );
 
-    // Limit the number of records if requested
-    const limitedStableCoins = limit
-      ? validatedStableCoins.slice(0, limit)
-      : validatedStableCoins;
-
-    const limitedBonds = limit
-      ? validatedBonds.slice(0, limit)
-      : validatedBonds;
-
-    const limitedEquities = limit
-      ? validatedEquities.slice(0, limit)
-      : validatedEquities;
-
-    const limitedFunds = limit
-      ? validatedFunds.slice(0, limit)
-      : validatedFunds;
-
-    const limitedCryptoCurrencies = limit
-      ? validatedCryptoCurrencies.slice(0, limit)
-      : validatedCryptoCurrencies;
-
-    const limitedDeposits = limit
-      ? validatedDeposits.slice(0, limit)
-      : validatedDeposits;
-
     /**
      * Helper function to get the count for a specific asset type
      */
@@ -184,27 +161,27 @@ export const getSidebarAssets = withTracing(
 
     return {
       stablecoin: {
-        records: limitedStableCoins,
+        records: validatedStableCoins,
         count: getCount("stablecoin"),
       },
       equity: {
-        records: limitedEquities,
+        records: validatedEquities,
         count: getCount("equity"),
       },
       bond: {
-        records: limitedBonds,
+        records: validatedBonds,
         count: getCount("bond"),
       },
       fund: {
-        records: limitedFunds,
+        records: validatedFunds,
         count: getCount("fund"),
       },
       cryptocurrency: {
-        records: limitedCryptoCurrencies,
+        records: validatedCryptoCurrencies,
         count: getCount("cryptocurrency"),
       },
       deposit: {
-        records: limitedDeposits,
+        records: validatedDeposits,
         count: getCount("deposit"),
       },
     };
