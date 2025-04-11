@@ -48,7 +48,7 @@ import SuperJSON from "superjson";
  * // - result: '{"status":"completed"}' // Serialized result
  */
 export function withTracing<T extends (...args: any[]) => Promise<any>>(
-  tracerName: string,
+  tracerName: "queries",
   spanName: string,
   fn: T,
   initialAttributes?: Attributes

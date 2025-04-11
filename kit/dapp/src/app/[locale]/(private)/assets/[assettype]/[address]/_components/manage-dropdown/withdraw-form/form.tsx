@@ -9,11 +9,12 @@ import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Recipient } from "./steps/recipient";
 import { Summary } from "./steps/summary";
 import { Target } from "./steps/target";
+
+type Address = `0x${string}`;
 
 interface WithdrawFormProps {
   address: Address;
@@ -43,11 +44,18 @@ export function WithdrawForm({
 
     // Only show the target selection if there's a yield schedule
     if (showTarget) {
-      steps.push(<Target key="target"/>);
+      steps.push(<Target key="target" bondDetails={bondDetails} />);
     }
 
     // Always show recipient and amount steps
-    steps.push(<Amount key="amount" />);
+    steps.push(
+      <Amount
+        key="amount"
+        maxAmount={Number(bondDetails.underlyingBalance)}
+        decimals={bondDetails.underlyingAsset.decimals}
+        symbol={bondDetails.underlyingAsset.symbol}
+      />
+    );
     steps.push(<Recipient key="recipient" />);
     steps.push(<Summary key="summary" bondDetails={bondDetails} />);
 
@@ -56,11 +64,12 @@ export function WithdrawForm({
 
   // Get initial values based on bond details
   const initialValues = {
-    address,
-    target: 'bond' as const,
+    address: address,
+    target: "bond" as const,
     targetAddress: address,
     underlyingAssetAddress: bondDetails.underlyingAsset.id,
-    assettype: 'bond' as const,
+    underlyingAssetType: bondDetails.underlyingAsset.type,
+    assettype: "bond" as const, // Ensure assettype is included
   };
 
   return (
@@ -80,6 +89,7 @@ export function WithdrawForm({
         action={withdraw}
         resolver={typeboxResolver(
           WithdrawSchema({
+            maxAmount: Number(bondDetails.underlyingBalance),
             decimals: bondDetails.underlyingAsset.decimals,
           })
         )}

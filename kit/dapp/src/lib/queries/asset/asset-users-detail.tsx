@@ -8,7 +8,6 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { unstable_cache } from "next/cache";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
@@ -84,46 +83,28 @@ export const getAssetUsersDetail = withTracing(
     const normalizedAddress = getAddress(address);
 
     const [onchainData, offchainData] = await Promise.all([
-      unstable_cache(
-        async () => {
-          return await theGraphClientKit.request(
-            AssetDetail,
-            {
-              id: address,
-            },
-            {
-              "X-GraphQL-Operation-Name": "AssetDetail",
-              "X-GraphQL-Operation-Type": "query",
-              cache: "force-cache",
-            }
-          );
-        },
-        ["asset", "asset-detail", address],
+      theGraphClientKit.request(
+        AssetDetail,
         {
-          revalidate: 60 * 60 * 24, // 24 hours
-          tags: ["asset"],
-        }
-      )(),
-      unstable_cache(
-        async () => {
-          return await hasuraClient.request(
-            OffchainAssetDetail,
-            {
-              id: normalizedAddress,
-            },
-            {
-              "X-GraphQL-Operation-Name": "OffchainAssetDetail",
-              "X-GraphQL-Operation-Type": "query",
-              cache: "force-cache",
-            }
-          );
+          id: address,
         },
-        ["asset", "offchain-asset-detail", normalizedAddress],
         {
-          revalidate: 60 * 60 * 24, // 24 hours
-          tags: ["asset"],
+          "X-GraphQL-Operation-Name": "AssetDetail",
+          "X-GraphQL-Operation-Type": "query",
+          cache: "force-cache",
         }
-      )(),
+      ),
+      hasuraClient.request(
+        OffchainAssetDetail,
+        {
+          id: normalizedAddress,
+        },
+        {
+          "X-GraphQL-Operation-Name": "OffchainAssetDetail",
+          "X-GraphQL-Operation-Type": "query",
+          cache: "force-cache",
+        }
+      ),
     ]);
 
     if (!onchainData.asset) {
