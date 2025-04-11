@@ -3,26 +3,35 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { WithdrawInput } from "@/lib/mutations/withdraw/withdraw-schema";
+import { getBondDetail } from '@/lib/queries/bond/bond-detail';
 import { formatNumber } from '@/lib/utils/number';
 import { useLocale, useTranslations } from 'next-intl';
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 interface AmountProps {
-  max: number;
-  decimals: number;
-  symbol: string;
+  bondDetails:  Awaited<ReturnType<typeof getBondDetail>>;
 }
 
-export function Amount({ max, decimals, symbol }: AmountProps) {
-  const { control } = useFormContext<WithdrawInput>();
+export function Amount({ bondDetails }: AmountProps) {
+  const { control, formState, getValues } = useFormContext<WithdrawInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();
+  const target = useWatch({
+    control,
+    name: "target",
+  });
 
+  console.log('errors', formState.errors);
+  console.log('isValid', formState.isValid);
+  console.log('values', getValues());
+
+  const isYield = target === "yield";
+  const max = isYield ? Number(bondDetails.yieldSchedule?.underlyingBalance ?? 0) : Number(bondDetails.underlyingBalance);
   const noUnderlyingBalance = max === 0;
   const description = noUnderlyingBalance
     ? t("max-limit.withdraw-no-balance")
     : max
-      ? t("max-limit.withdraw", { limit: formatNumber(max, { locale }) })
+      ? t("max-limit.withdraw", { limit: formatNumber(max, { locale, decimals: isYield ? bondDetails.yieldSchedule?.underlyingAsset.decimals : bondDetails.underlyingAsset.decimals }) })
       : undefined;
 
   return (
@@ -35,7 +44,7 @@ export function Amount({ max, decimals, symbol }: AmountProps) {
         max={max}
         step="any"
         description={description}
-        postfix={symbol}
+        postfix={bondDetails.symbol}
         disabled={noUnderlyingBalance}
       />
     </FormStep>

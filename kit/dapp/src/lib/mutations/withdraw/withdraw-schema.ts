@@ -35,7 +35,6 @@ export function WithdrawSchema({
         description: "The recipient address",
       }),
       amount: t.Amount({
-        max: maxAmount,
         decimals,
         description: "The amount of underlying asset to withdraw",
       }),

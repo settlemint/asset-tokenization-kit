@@ -36,35 +36,6 @@ export function WithdrawForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
-  const [target, setTarget] = useState<"bond" | "yield">("bond");
-
-  // Calculate max amount based on target state
-  const maxAmount = target === "yield"
-    ? Number(bondDetails.yieldSchedule?.underlyingBalance ?? 0)
-    : Number(bondDetails.underlyingBalance);
-
-  // Get initial values based on bond details
-  const initialValues = {
-    address,
-    target: 'bond' as const,
-    targetAddress: address,
-    underlyingAssetAddress: bondDetails.underlyingAsset.id,
-    assettype: 'bond' as const,
-  };
-
-  // Create a schema with the current max amount
-  const schema = WithdrawSchema({
-    decimals: bondDetails.underlyingAsset.decimals,
-    maxAmount
-  });
-
-  // Use the standard typeboxResolver instead of a custom one
-  const resolver = typeboxResolver(schema);
-
-  // Handle target change from form
-  const handleTargetChange = (newTarget: "bond" | "yield") => {
-    setTarget(newTarget);
-  };
 
   // Generate form steps based on yield schedule availability
   const renderFormSteps = () => {
@@ -72,27 +43,23 @@ export function WithdrawForm({
 
     // Only show the target selection if there's a yield schedule
     if (showTarget) {
-      steps.push(
-        <Target
-          key="target"
-          onTargetChange={handleTargetChange}
-        />
-      );
+      steps.push(<Target key="target" />);
     }
-
     // Always show recipient and amount steps
-    steps.push(
-      <Amount
-        key="amount"
-        max={maxAmount}
-        decimals={bondDetails.underlyingAsset.decimals}
-        symbol={bondDetails.underlyingAsset.symbol}
-      />
-    );
+    steps.push(<Amount key="amount" bondDetails={bondDetails} />);
     steps.push(<Recipient key="recipient" />);
     steps.push(<Summary key="summary" bondDetails={bondDetails} />);
 
     return steps;
+  };
+
+  // Get initial values based on bond details
+  const initialValues = {
+    address,
+    target: "bond" as const,
+    targetAddress: address,
+    underlyingAssetAddress: bondDetails.underlyingAsset.id,
+    assetType: "bond" as const,
   };
 
   return (
@@ -110,7 +77,11 @@ export function WithdrawForm({
     >
       <Form
         action={withdraw}
-        resolver={resolver}
+        resolver={typeboxResolver(
+          WithdrawSchema({
+            decimals: bondDetails.underlyingAsset.decimals,
+          })
+        )}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
