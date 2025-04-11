@@ -9,6 +9,7 @@ import {
 import { withAccessControl } from "@/lib/utils/access-control";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress } from "viem";
 import { userCalculateFields } from "./user-calculated";
@@ -67,19 +68,37 @@ export const getUserList = withTracing(
         },
       },
       async () => {
+        "use cache";
+        cacheTag("user-activity");
         const [users, accounts] = await Promise.all([
           fetchAllHasuraPages(async (pageLimit, offset) => {
-            const result = await hasuraClient.request(UserList, {
-              limit: pageLimit,
-              offset,
-            });
+            const result = await hasuraClient.request(
+              UserList,
+              {
+                limit: pageLimit,
+                offset,
+              },
+              {
+                "X-GraphQL-Operation-Name": "UserList",
+                "X-GraphQL-Operation-Type": "query",
+                cache: "force-cache",
+              }
+            );
             return safeParse(t.Array(UserSchema), result.user || []);
           }),
           fetchAllTheGraphPages(async (first, skip) => {
-            const result = await theGraphClientKit.request(UserActivity, {
-              first,
-              skip,
-            });
+            const result = await theGraphClientKit.request(
+              UserActivity,
+              {
+                first,
+                skip,
+              },
+              {
+                "X-GraphQL-Operation-Name": "UserActivity",
+                "X-GraphQL-Operation-Type": "query",
+                cache: "force-cache",
+              }
+            );
             return safeParse(t.Array(AccountSchema), result.accounts || []);
           }),
         ]);

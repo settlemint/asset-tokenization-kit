@@ -8,6 +8,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { bondsCalculateFields } from "./bond-calculated";
 import { BondFragment, OffchainBondFragment } from "./bond-fragment";
@@ -59,23 +60,39 @@ export interface BondDetailProps {
 export const getBondDetail = withTracing(
   "queries",
   "getBondDetail",
-  async ({ address }: BondDetailProps) => {
+  cache(async ({ address }: BondDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainBond, offChainBond] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(BondDetail, {
-          id: address,
-        });
+        const response = await theGraphClientKit.request(
+          BondDetail,
+          {
+            id: address,
+          },
+          {
+            "X-GraphQL-Operation-Name": "BondDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (!response.bond) {
           throw new Error("Bond not found");
         }
         return safeParse(OnChainBondSchema, response.bond);
       })(),
       (async () => {
-        const response = await hasuraClient.request(OffchainBondDetail, {
-          id: getAddress(address),
-        });
+        const response = await hasuraClient.request(
+          OffchainBondDetail,
+          {
+            id: getAddress(address),
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainBondDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (response.asset.length === 0) {
           return undefined;
         }
@@ -94,5 +111,5 @@ export const getBondDetail = withTracing(
       ...offChainBond,
       ...calculatedBond,
     };
-  }
+  })
 );

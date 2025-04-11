@@ -9,6 +9,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { getAddress } from "viem";
 import { stablecoinsCalculateFields } from "./stablecoin-calculated";
 import {
@@ -63,15 +64,23 @@ const OffchainStableCoinList = hasuraGraphql(
 export const getStableCoinList = withTracing(
   "queries",
   "getStableCoinList",
-  async () => {
+  cache(async () => {
     "use cache";
     cacheTag("asset");
     const [onChainStableCoins, offChainStableCoins] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(StableCoinList, {
-          first,
-          skip,
-        });
+        const result = await theGraphClientKit.request(
+          StableCoinList,
+          {
+            first,
+            skip,
+          },
+          {
+            "X-GraphQL-Operation-Name": "StableCoinList",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
 
         return safeParse(
           t.Array(OnChainStableCoinSchema),
@@ -80,10 +89,18 @@ export const getStableCoinList = withTracing(
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainStableCoinList, {
-          limit: pageLimit,
-          offset,
-        });
+        const result = await hasuraClient.request(
+          OffchainStableCoinList,
+          {
+            limit: pageLimit,
+            offset,
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainStableCoinList",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
 
         return safeParse(
           t.Array(OffChainStableCoinSchema),
@@ -114,5 +131,5 @@ export const getStableCoinList = withTracing(
     });
 
     return stableCoins;
-  }
+  })
 );

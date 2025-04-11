@@ -6,6 +6,7 @@ import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import type { User } from "../../auth/types";
 import { withAccessControl } from "../../utils/access-control";
 import { getContactsList } from "../contact/contact-list";
@@ -62,7 +63,7 @@ export const getAllUsersSearch = withAccessControl(
       user: ["list"],
     },
   },
-  async ({ searchTerm }: UserSearchProps) => {
+  cache(async ({ searchTerm }: UserSearchProps) => {
     "use cache";
     cacheTag("user-activity");
     const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
@@ -72,13 +73,21 @@ export const getAllUsersSearch = withAccessControl(
     }
 
     const searchValue = `%${searchTerm}%`;
-    const result = await hasuraClient.request(UserSearch, {
-      address: searchValue,
-    });
+    const result = await hasuraClient.request(
+      UserSearch,
+      {
+        address: searchValue,
+      },
+      {
+        "X-GraphQL-Operation-Name": "UserSearch",
+        "X-GraphQL-Operation-Type": "query",
+        cache: "force-cache",
+      }
+    );
 
     // Parse and validate users using TypeBox schema
     return safeParse(t.Array(UserSchema), result.user || []);
-  }
+  })
 );
 
 /**

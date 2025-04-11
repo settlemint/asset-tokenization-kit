@@ -8,6 +8,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { depositsCalculateFields } from "./deposit-calculated";
 import { DepositFragment, OffchainDepositFragment } from "./deposit-fragment";
@@ -59,23 +60,39 @@ export interface DepositDetailProps {
 export const getDepositDetail = withTracing(
   "queries",
   "getDepositDetail",
-  async ({ address }: DepositDetailProps) => {
+  cache(async ({ address }: DepositDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainDeposit, offChainDeposit] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(DepositDetail, {
-          id: address,
-        });
+        const response = await theGraphClientKit.request(
+          DepositDetail,
+          {
+            id: address,
+          },
+          {
+            "X-GraphQL-Operation-Name": "DepositDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (!response.deposit) {
           throw new Error("Deposit not found");
         }
         return safeParse(OnChainDepositSchema, response.deposit);
       })(),
       (async () => {
-        const response = await hasuraClient.request(OffchainDepositDetail, {
-          id: getAddress(address),
-        });
+        const response = await hasuraClient.request(
+          OffchainDepositDetail,
+          {
+            id: getAddress(address),
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainDepositDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (response.asset.length === 0) {
           return undefined;
         }
@@ -94,5 +111,5 @@ export const getDepositDetail = withTracing(
       ...offChainDeposit,
       ...calculatedDeposit,
     };
-  }
+  })
 );

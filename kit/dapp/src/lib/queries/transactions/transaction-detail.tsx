@@ -2,6 +2,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { TransactionFragment } from "./transaction-fragment";
 import { TransactionSchema } from "./transaction-schema";
 
@@ -39,7 +40,7 @@ const TransactionDetail = portalGraphql(
 export const getTransactionDetail = withTracing(
   "queries",
   "getTransactionDetail",
-  async (input: TransactionDetailInput) => {
+  cache(async (input: TransactionDetailInput) => {
     "use cache";
     cacheTag("transaction");
     const { transactionHash } = input;
@@ -48,13 +49,21 @@ export const getTransactionDetail = withTracing(
       throw new Error("Transaction hash is required");
     }
 
-    const response = await portalClient.request(TransactionDetail, {
-      transactionHash,
-    });
+    const response = await portalClient.request(
+      TransactionDetail,
+      {
+        transactionHash,
+      },
+      {
+        "X-GraphQL-Operation-Name": "TransactionDetail",
+        "X-GraphQL-Operation-Type": "query",
+        cache: "force-cache",
+      }
+    );
 
     // Return null if transaction not found, otherwise parsed transaction
     return response.getTransaction
       ? safeParse(TransactionSchema, response.getTransaction)
       : null;
-  }
+  })
 );

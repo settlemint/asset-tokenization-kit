@@ -14,6 +14,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { getAddress } from "viem";
 import { cryptoCurrenciesCalculateFields } from "./cryptocurrency-calculated";
 import {
@@ -65,16 +66,24 @@ const OffchainCryptocurrencyList = hasuraGraphql(
 export const getCryptoCurrencyList = withTracing(
   "queries",
   "getCryptoCurrencyList",
-  async () => {
+  cache(async () => {
     "use cache";
     cacheTag("asset");
     const [onChainCryptoCurrencies, offChainCryptoCurrencies] =
       await Promise.all([
         fetchAllTheGraphPages(async (first, skip) => {
-          const result = await theGraphClientKit.request(CryptoCurrencyList, {
-            first,
-            skip,
-          });
+          const result = await theGraphClientKit.request(
+            CryptoCurrencyList,
+            {
+              first,
+              skip,
+            },
+            {
+              "X-GraphQL-Operation-Name": "CryptoCurrencyList",
+              "X-GraphQL-Operation-Type": "query",
+              cache: "force-cache",
+            }
+          );
 
           return safeParse(
             t.Array(OnChainCryptoCurrencySchema),
@@ -88,6 +97,11 @@ export const getCryptoCurrencyList = withTracing(
             {
               limit: pageLimit,
               offset,
+            },
+            {
+              "X-GraphQL-Operation-Name": "OffchainCryptocurrencyList",
+              "X-GraphQL-Operation-Type": "query",
+              cache: "force-cache",
             }
           );
 
@@ -122,5 +136,5 @@ export const getCryptoCurrencyList = withTracing(
     });
 
     return cryptoCurrencies;
-  }
+  })
 );

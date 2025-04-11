@@ -6,6 +6,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import { PortfolioStatsCollectionSchema } from "./portfolio-schema";
 
@@ -37,16 +38,24 @@ interface GetPortfolioHistoryParams {
 export const getPortfolioStats = withTracing(
   "queries",
   "getPortfolioStats",
-  async ({ address, days = 30 }: GetPortfolioHistoryParams) => {
+  cache(async ({ address, days = 30 }: GetPortfolioHistoryParams) => {
     "use cache";
     cacheTag("asset");
     const startTime = Math.floor(Date.now() / 1000) - days * 24 * 60 * 60;
 
-    const data = await theGraphClientKit.request(PortfolioHistoryQuery, {
-      account: getAddress(address),
-      startTime: startTime.toString(),
-    });
+    const data = await theGraphClientKit.request(
+      PortfolioHistoryQuery,
+      {
+        account: getAddress(address),
+        startTime: startTime.toString(),
+      },
+      {
+        "X-GraphQL-Operation-Name": "PortfolioHistory",
+        "X-GraphQL-Operation-Type": "query",
+        cache: "force-cache",
+      }
+    );
 
     return safeParse(PortfolioStatsCollectionSchema, data.portfolioStatsDatas);
-  }
+  })
 );

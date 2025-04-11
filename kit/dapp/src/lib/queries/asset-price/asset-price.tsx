@@ -9,6 +9,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import type { Price } from "@/lib/utils/typebox/price";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { getAddress } from "viem";
 import type { CurrencyCode } from "../../db/schema-settings";
 import { AssetPriceFragment } from "./asset-price-fragment";
@@ -47,7 +48,7 @@ const AssetPrice = hasuraGraphql(
 export const getAssetsPricesInUserCurrency = withTracing(
   "queries",
   "getAssetsPricesInUserCurrency",
-  async (assetIds: string[]): Promise<Map<string, Price>> => {
+  cache(async (assetIds: string[]): Promise<Map<string, Price>> => {
     "use cache";
     cacheTag("asset");
     const { value: currency } = await getSettingValue({ key: "baseCurrency" });
@@ -57,11 +58,19 @@ export const getAssetsPricesInUserCurrency = withTracing(
         const assetIds = assetIdsWithoutDuplicates.map((address) => {
           return getAddress(address);
         });
-        const pageResult = await hasuraClient.request(AssetPrices, {
-          assetIds,
-          limit: pageLimit,
-          offset,
-        });
+        const pageResult = await hasuraClient.request(
+          AssetPrices,
+          {
+            assetIds,
+            limit: pageLimit,
+            offset,
+          },
+          {
+            "X-GraphQL-Operation-Name": "AssetPrices",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         return pageResult.asset_price ?? [];
       }
     );
@@ -94,13 +103,13 @@ export const getAssetsPricesInUserCurrency = withTracing(
     }
 
     return pricesForAssetIds;
-  }
+  })
 );
 
 const getExchangeRates = withTracing(
   "queries",
   "getExchangeRates",
-  async (assetPrices: AssetPrice[], userCurrency: CurrencyCode) => {
+  cache(async (assetPrices: AssetPrice[], userCurrency: CurrencyCode) => {
     "use cache";
     cacheTag("asset");
     const exchangeRates = new Map<string, number | null>();
@@ -115,5 +124,5 @@ const getExchangeRates = withTracing(
       })
     );
     return exchangeRates;
-  }
+  })
 );
