@@ -21,7 +21,7 @@ export const getTotalAssetPrice = withTracing(
   cache(async (currency: string | null | undefined) => {
     "use cache";
     cacheTag("asset");
-    const [...assetsResult] = await Promise.all([
+    const assetsResult = await Promise.all([
       await getBondList(),
       await getCryptoCurrencyList(),
       await getEquityList(),
