@@ -116,7 +116,7 @@
     "@tailwindcss/postcss": "4.1.3",
     "@types/node": "22.14.0",
     "@types/pg": "8.11.11",
-    "@types/react": "19.1.0",
+    "@types/react": "19.1.1",
     "@types/react-dom": "19.1.2",
     "@types/rtl-detect": "1.0.3",
     "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250405",
