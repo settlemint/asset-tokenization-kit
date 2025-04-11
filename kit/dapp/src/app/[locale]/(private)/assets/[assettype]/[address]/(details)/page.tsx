@@ -22,9 +22,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
       <Suspense fallback={<DetailGridSkeleton />}>
         <Details assettype={assettype} address={address} />
       </Suspense>
-      <Suspense fallback={<DetailGridSkeleton />}>
-        <Charts assettype={assettype} address={address} />
-      </Suspense>
+      <Charts assettype={assettype} address={address} />
     </>
   );
 }

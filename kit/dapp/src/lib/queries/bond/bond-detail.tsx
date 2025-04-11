@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
