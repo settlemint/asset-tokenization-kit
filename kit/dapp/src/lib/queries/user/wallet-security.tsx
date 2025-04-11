@@ -1,7 +1,7 @@
-import { auth } from "@/lib/auth/auth";
 import { redirectToSignIn } from "@/lib/auth/redirect";
+import { getUser } from "@/lib/auth/utils";
+import { withTracing } from "@/lib/utils/tracing";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
-import { headers } from "next/headers";
 
 /**
  * TypeBox schema for wallet verification data
@@ -29,25 +29,20 @@ export type WalletVerification = StaticDecode<typeof WalletVerificationSchema>;
  *
  * @returns True if the user has a wallet verification, false otherwise
  */
-export const hasWalletVerification = async () => {
-  try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session || !session.user) {
+export const hasWalletVerification = withTracing(
+  "queries",
+  "hasWalletVerification",
+  async () => {
+    try {
+      const user = await getUser();
+      return user.pincodeEnabled || user.twoFactorEnabled || false;
+    } catch (err) {
+      const error = err as Error;
+      console.error(
+        `Error getting wallet verification: ${error.message}`,
+        error.stack
+      );
       return redirectToSignIn();
     }
-
-    return (
-      session.user.pincodeEnabled || session.user.twoFactorEnabled || false
-    );
-  } catch (err) {
-    const error = err as Error;
-    console.error(
-      `Error getting wallet verification: ${error.message}`,
-      error.stack
-    );
-    return redirectToSignIn();
   }
-};
+);

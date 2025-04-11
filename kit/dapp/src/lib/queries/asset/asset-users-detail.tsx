@@ -8,7 +8,6 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { unstable_cache } from "next/cache";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress, type Address } from "viem";
 import {
@@ -83,30 +82,12 @@ export const getAssetUsersDetail = withTracing(
     const normalizedAddress = getAddress(address);
 
     const [onchainData, offchainData] = await Promise.all([
-      unstable_cache(
-        async () => {
-          return await theGraphClientKit.request(AssetDetail, {
-            id: address,
-          });
-        },
-        ["asset", "asset-detail", address],
-        {
-          revalidate: 60 * 60 * 24, // 24 hours
-          tags: ["asset"],
-        }
-      )(),
-      unstable_cache(
-        async () => {
-          return await hasuraClient.request(OffchainAssetDetail, {
-            id: normalizedAddress,
-          });
-        },
-        ["asset", "offchain-asset-detail", normalizedAddress],
-        {
-          revalidate: 60 * 60 * 24, // 24 hours
-          tags: ["asset"],
-        }
-      )(),
+      theGraphClientKit.request(AssetDetail, {
+        id: address,
+      }),
+      hasuraClient.request(OffchainAssetDetail, {
+        id: normalizedAddress,
+      }),
     ]);
 
     if (!onchainData.asset) {
