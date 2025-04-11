@@ -66,25 +66,35 @@ export const getFundList = withTracing(
     cacheTag("asset");
     const [onChainFunds, offChainFunds] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(FundList, {
-          first,
-          skip,
-          "X-GraphQL-Operation-Name": "FundList",
-          "X-GraphQL-Operation-Type": "query",
-          cache: "force-cache",
-        });
+        const result = await theGraphClientKit.request(
+          FundList,
+          {
+            first,
+            skip,
+          },
+          {
+            "X-GraphQL-Operation-Name": "FundList",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
 
         return safeParse(t.Array(OnChainFundSchema), result.funds || []);
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainFundList, {
-          limit: pageLimit,
-          offset,
-          "X-GraphQL-Operation-Name": "OffchainFundList",
-          "X-GraphQL-Operation-Type": "query",
-          cache: "force-cache",
-        });
+        const result = await hasuraClient.request(
+          OffchainFundList,
+          {
+            limit: pageLimit,
+            offset,
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainFundList",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
 
         return safeParse(
           t.Array(OffChainFundSchema),
