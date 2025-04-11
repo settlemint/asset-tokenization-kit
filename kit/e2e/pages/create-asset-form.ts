@@ -170,6 +170,41 @@ export class CreateAssetForm extends BasePage {
     }
   }
 
+  async fillStablecoinConfigurationFields(
+    options: {
+      collateralProofValidity?: string;
+      collateralProofValidityTimeUnit?: string;
+      priceAmount?: string;
+      priceCurrency?: string;
+    } = {}
+  ) {
+    const actions: Record<string, (value: string) => Promise<void>> = {
+      collateralProofValidity: async (value) => {
+        await this.page
+          .getByLabel("Collateral proof validity", { exact: false })
+          .fill(value);
+      },
+      collateralProofValidityTimeUnit: async (value) => {
+        await this.page.locator("#collateralLivenessTimeUnit").click();
+        await this.page.getByRole("option", { name: value }).click();
+      },
+      priceAmount: async (value) => {
+        await this.page.getByLabel("Price", { exact: false }).fill(value);
+      },
+      priceCurrency: async (value) => {
+        await this.page.locator("#price\\.currency").click();
+        await this.page.getByRole("option", { name: value }).click();
+      },
+    };
+
+    for (const key in options) {
+      const value = options[key as keyof typeof options];
+      if (value && actions[key]) {
+        await actions[key](value);
+      }
+    }
+  }
+
   async clearField(label: string) {
     await this.page.getByLabel(label, { exact: false }).fill("");
   }
