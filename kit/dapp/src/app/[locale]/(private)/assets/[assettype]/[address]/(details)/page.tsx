@@ -1,5 +1,7 @@
+import { DetailGridSkeleton } from "@/components/blocks/skeleton/detail-grid-skeleton";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
+import { Suspense } from "react";
 import type { Address } from "viem";
 import { Charts } from "./_components/charts";
 import { Details } from "./_components/details";
@@ -17,7 +19,9 @@ export default async function AssetDetailsPage({ params }: PageProps) {
 
   return (
     <>
-      <Details assettype={assettype} address={address} />
+      <Suspense fallback={<DetailGridSkeleton />}>
+        <Details assettype={assettype} address={address} />
+      </Suspense>
       <Charts assettype={assettype} address={address} />
     </>
   );
