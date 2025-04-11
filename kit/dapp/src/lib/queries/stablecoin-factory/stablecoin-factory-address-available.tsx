@@ -6,7 +6,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { Address } from "viem";
 import { StableCoinExistsSchema } from "./stablecoin-factory-schema";
 
@@ -27,7 +27,9 @@ const StableCoinExists = theGraphGraphqlKit(`
 export const isAddressAvailable = withTracing(
   "queries",
   "isAddressAvailable",
-  cache(async (address: Address) => {
+  async (address: Address) => {
+    "use cache";
+    cacheTag("asset");
     const data = await theGraphClientKit.request(StableCoinExists, {
       token: address,
     });
@@ -35,5 +37,5 @@ export const isAddressAvailable = withTracing(
     const stableCoinExists = safeParse(StableCoinExistsSchema, data);
 
     return !stableCoinExists.stableCoin;
-  })
+  }
 );

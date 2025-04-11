@@ -2,7 +2,6 @@ import { fetchAllPortalPages } from "@/lib/pagination";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { cache } from "react";
 import { TransactionFragment } from "./transaction-fragment";
 import { TransactionSchema } from "./transaction-schema";
 
@@ -55,7 +54,7 @@ const TransactionListByAddress = portalGraphql(
 export const getTransactionList = withTracing(
   "queries",
   "getTransactionList",
-  cache(async () => {
+  async () => {
     const transactions = await fetchAllPortalPages(
       async ({ page, pageSize }) => {
         const response = await portalClient.request(TransactionList, {
@@ -71,7 +70,7 @@ export const getTransactionList = withTracing(
     );
 
     return safeParse(t.Array(TransactionSchema), transactions?.records);
-  })
+  }
 );
 
 /**

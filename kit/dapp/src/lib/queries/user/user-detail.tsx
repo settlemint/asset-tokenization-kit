@@ -10,7 +10,6 @@ import { withAccessControl } from "@/lib/utils/access-control";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { userCalculateFields } from "./user-calculated";
 import { AccountFragment, UserFragment } from "./user-fragment";
@@ -148,11 +147,9 @@ const getUserDetailFromIdOrAddress = async ({
 export const getUserDetail = withTracing(
   "queries",
   "getUserDetail",
-  cache(
-    withAccessControl(
-      { requiredPermissions: { user: ["list"] } },
-      getUserDetailFromIdOrAddress
-    )
+  withAccessControl(
+    { requiredPermissions: { user: ["list"] } },
+    getUserDetailFromIdOrAddress
   )
 );
 

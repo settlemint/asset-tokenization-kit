@@ -6,7 +6,6 @@ import {
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { cache } from "react";
 import type { Address } from "viem";
 
 /**
@@ -49,7 +48,7 @@ export interface RecentTransactionsProps {
 export const getRecentTransactions = withTracing(
   "queries",
   "getRecentTransactions",
-  cache(async (props: RecentTransactionsProps = {}) => {
+  async (props: RecentTransactionsProps = {}) => {
     const { address, processedAfter } = props;
 
     const transactions = await fetchAllPortalPages(
@@ -74,5 +73,5 @@ export const getRecentTransactions = withTracing(
     );
 
     return transactions?.records;
-  })
+  }
 );

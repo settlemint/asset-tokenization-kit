@@ -2,7 +2,7 @@ import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { format } from "date-fns";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { RecentUsersCountFragment, UserFragment } from "./user-fragment";
 import { UserCountSchema, UserSchema } from "./user-schema";
 
@@ -94,7 +94,9 @@ function calculateCumulativeUsersByDay(users: { created_at: Date }[]) {
 export const getUserCount = withTracing(
   "queries",
   "getUserCount",
-  cache(async ({ since }: UserCountProps = {}) => {
+  async ({ since }: UserCountProps = {}) => {
+    "use cache";
+    cacheTag("user-activity");
     // Default to 30 days ago if no date is provided
     const date = since
       ? since
@@ -126,5 +128,5 @@ export const getUserCount = withTracing(
       recentUsersCount: recentUsersCount.count,
       totalUsersCount: totalUsersCount.count,
     };
-  })
+  }
 );

@@ -7,7 +7,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { AssetActivityFragment } from "./asset-activity-fragment";
 import { AssetActivitySchema } from "./asset-activity-schema";
 
@@ -42,7 +42,9 @@ export interface AssetActivityOptions {
 export const getAssetActivity = withTracing(
   "queries",
   "getAssetActivity",
-  cache(async ({ limit }: AssetActivityOptions = {}) => {
+  async ({ limit }: AssetActivityOptions = {}) => {
+    "use cache";
+    cacheTag("asset");
     const rawData = await fetchAllTheGraphPages(async (first, skip) => {
       const response = await theGraphClientKit.request(AssetActivity, {
         first,
@@ -66,5 +68,5 @@ export const getAssetActivity = withTracing(
       console.error("Error validating asset activity data:", error);
       return [];
     }
-  })
+  }
 );
