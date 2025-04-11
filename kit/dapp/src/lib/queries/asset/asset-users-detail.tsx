@@ -10,6 +10,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { unstable_cache } from "next/cache";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import {
   AssetUsersFragment,
@@ -77,7 +78,7 @@ export interface PermissionWithRoles extends Permission {
 export const getAssetUsersDetail = withTracing(
   "queries",
   "getAssetUsersDetail",
-  async ({ address }: AssetDetailProps) => {
+  cache(async ({ address }: AssetDetailProps) => {
     "use cache";
     cacheTag("asset");
     const normalizedAddress = getAddress(address);
@@ -85,9 +86,17 @@ export const getAssetUsersDetail = withTracing(
     const [onchainData, offchainData] = await Promise.all([
       unstable_cache(
         async () => {
-          return await theGraphClientKit.request(AssetDetail, {
-            id: address,
-          });
+          return await theGraphClientKit.request(
+            AssetDetail,
+            {
+              id: address,
+            },
+            {
+              "X-GraphQL-Operation-Name": "AssetDetail",
+              "X-GraphQL-Operation-Type": "query",
+              cache: "force-cache",
+            }
+          );
         },
         ["asset", "asset-detail", address],
         {
@@ -97,9 +106,17 @@ export const getAssetUsersDetail = withTracing(
       )(),
       unstable_cache(
         async () => {
-          return await hasuraClient.request(OffchainAssetDetail, {
-            id: normalizedAddress,
-          });
+          return await hasuraClient.request(
+            OffchainAssetDetail,
+            {
+              id: normalizedAddress,
+            },
+            {
+              "X-GraphQL-Operation-Name": "OffchainAssetDetail",
+              "X-GraphQL-Operation-Type": "query",
+              cache: "force-cache",
+            }
+          );
         },
         ["asset", "offchain-asset-detail", normalizedAddress],
         {
@@ -175,5 +192,5 @@ export const getAssetUsersDetail = withTracing(
       },
       roles: Array.from(usersWithRoles.values()),
     };
-  }
+  })
 );

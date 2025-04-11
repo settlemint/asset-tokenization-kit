@@ -8,6 +8,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { cryptoCurrenciesCalculateFields } from "./cryptocurrency-calculated";
 import {
@@ -65,14 +66,22 @@ export interface CryptoCurrencyDetailProps {
 export const getCryptoCurrencyDetail = withTracing(
   "queries",
   "getCryptoCurrencyDetail",
-  async ({ address }: CryptoCurrencyDetailProps) => {
+  cache(async ({ address }: CryptoCurrencyDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainCryptoCurrency, offChainCryptoCurrency] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(CryptoCurrencyDetail, {
-          id: address,
-        });
+        const response = await theGraphClientKit.request(
+          CryptoCurrencyDetail,
+          {
+            id: address,
+          },
+          {
+            "X-GraphQL-Operation-Name": "CryptoCurrencyDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (!response.cryptoCurrency) {
           throw new Error("Cryptocurrency not found");
         }
@@ -83,6 +92,11 @@ export const getCryptoCurrencyDetail = withTracing(
           OffchainCryptoCurrencyDetail,
           {
             id: getAddress(address),
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainCryptoCurrencyDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
           }
         );
         if (response.asset.length === 0) {
@@ -105,5 +119,5 @@ export const getCryptoCurrencyDetail = withTracing(
       ...offChainCryptoCurrency,
       ...calculatedCryptoCurrency,
     };
-  }
+  })
 );

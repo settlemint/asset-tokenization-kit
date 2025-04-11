@@ -7,6 +7,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { ApiError } from "next/dist/server/api-utils";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { SettingSchema } from "./setting-schema";
 
 const GetSetting = hasuraGraphql(`
@@ -27,15 +28,23 @@ const GetSetting = hasuraGraphql(`
 export const getSettingValue = withTracing(
   "queries",
   "getSetting",
-  async ({ key }: { key: SettingKey }) => {
+  cache(async ({ key }: { key: SettingKey }) => {
     "use cache";
     cacheTag("setting");
-    const result = await hasuraClient.request(GetSetting, { _eq: key });
+    const result = await hasuraClient.request(
+      GetSetting,
+      { _eq: key },
+      {
+        "X-GraphQL-Operation-Name": "GetSetting",
+        "X-GraphQL-Operation-Type": "query",
+        cache: "force-cache",
+      }
+    );
     if (result.settings.length === 0) {
       throw new ApiError(404, `Setting '${key}' not found`);
     }
     return safeParse(SettingSchema, result.settings[0]);
-  }
+  })
 );
 
 /**

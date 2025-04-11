@@ -8,6 +8,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { equitiesCalculateFields } from "./equity-calculated";
 import { EquityFragment, OffchainEquityFragment } from "./equity-fragment";
@@ -59,23 +60,39 @@ export interface EquityDetailProps {
 export const getEquityDetail = withTracing(
   "queries",
   "getEquityDetail",
-  async ({ address }: EquityDetailProps) => {
+  cache(async ({ address }: EquityDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainEquity, offChainEquity] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(EquityDetail, {
-          id: address,
-        });
+        const response = await theGraphClientKit.request(
+          EquityDetail,
+          {
+            id: address,
+          },
+          {
+            "X-GraphQL-Operation-Name": "EquityDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (!response.equity) {
           throw new Error("Equity not found");
         }
         return safeParse(OnChainEquitySchema, response.equity);
       })(),
       (async () => {
-        const response = await hasuraClient.request(OffchainEquityDetail, {
-          id: getAddress(address),
-        });
+        const response = await hasuraClient.request(
+          OffchainEquityDetail,
+          {
+            id: getAddress(address),
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainEquityDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (response.asset.length === 0) {
           return undefined;
         }
@@ -94,5 +111,5 @@ export const getEquityDetail = withTracing(
       ...offChainEquity,
       ...calculatedEquity,
     };
-  }
+  })
 );
