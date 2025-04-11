@@ -73,7 +73,11 @@ export const AssetPriceApi = new Elysia()
     "/:assetId",
     async ({ params: { assetId }, body }) => {
       try {
-        await updateAssetPrice(assetId, body.amount, body.currency);
+        await updateAssetPrice({
+          assetId,
+          amount: body.amount,
+          currency: body.currency,
+        });
         return {
           success: true,
           message: `Price for asset ${assetId} updated successfully`,

@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
-import { cache } from "react";
+import { revalidateTag } from "next/cache";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { db } from "../db";
 import {
   DEFAULT_SETTINGS,
@@ -7,21 +8,34 @@ import {
   settings,
 } from "../db/schema-settings";
 import { withAccessControl } from "../utils/access-control";
+import { withTracing } from "../utils/tracing";
 
 /**
  * Get a setting value by key, falling back to the default value if not set
  */
-export const getSetting = cache(
-  async <K extends SettingKey>(
-    key: K
-  ): Promise<(typeof DEFAULT_SETTINGS)[K]> => {
-    const setting = await db.query.settings.findFirst({
-      where: eq(settings.key, key),
-    });
-    return (
-      (setting?.value as (typeof DEFAULT_SETTINGS)[K]) ?? DEFAULT_SETTINGS[key]
-    );
-  }
+export const getSetting = withAccessControl(
+  {
+    requiredPermissions: {
+      setting: ["read"],
+    },
+  },
+  withTracing(
+    "queries",
+    "getSetting",
+    async <K extends SettingKey>(
+      key: K
+    ): Promise<(typeof DEFAULT_SETTINGS)[K]> => {
+      "use cache";
+      cacheTag("setting");
+      const setting = await db.query.settings.findFirst({
+        where: eq(settings.key, key),
+      });
+      return (
+        (setting?.value as (typeof DEFAULT_SETTINGS)[K]) ??
+        DEFAULT_SETTINGS[key]
+      );
+    }
+  )
 );
 
 /**
@@ -50,8 +64,6 @@ export const setSetting = withAccessControl(
         target: settings.key,
         set: { value },
       });
-
-    // Revalidate the cache by calling the function again
-    await getSetting(key);
+    revalidateTag("setting");
   }
 );

@@ -26,7 +26,7 @@ const GetSetting = hasuraGraphql(`
  */
 export const getSettingValue = withTracing(
   "queries",
-  "getSetting",
+  "getSettingValue",
   async ({ key }: { key: SettingKey }) => {
     "use cache";
     cacheTag("setting");
