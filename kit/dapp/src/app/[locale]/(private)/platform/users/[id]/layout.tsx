@@ -1,18 +1,18 @@
+import { UserTabs } from "@/app/[locale]/(private)/platform/users/[id]/_components/user-tabs";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
-import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import { EditUserDropdown } from "./_components/edit-user-dropdown";
-
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     id: string;
+    locale: Locale;
   }>;
 }
 
@@ -28,58 +28,36 @@ export async function generateMetadata({
   };
 }
 
-const getTabs = async (
-  user: Awaited<ReturnType<typeof getUserDetail>>
-): Promise<TabItemProps[]> => {
-  const t = await getTranslations("private.users.detail.tabs");
-  return [
-    {
-      name: t("details"),
-      href: `/platform/users/${user.id}`,
-    },
-    {
-      name: t("holdings"),
-      href: `/platform/users/${user.id}/holdings`,
-      badge: user?.assetCount,
-    },
-    {
-      name: t("latest-events"),
-      href: `/platform/users/${user.id}/latest-events`,
-    },
-    {
-      name: t("permissions"),
-      href: `/platform/users/${user.id}/token-permissions`,
-    },
-  ];
-};
-
 export default async function UserDetailLayout({
   children,
   params,
 }: LayoutProps) {
-  const { id } = await params;
-  const currentUser = await getUser();
-  const user = await getUserDetail({ id });
-  const t = await getTranslations("private.users.detail");
-  const tabs = await getTabs(user);
+  const { id, locale } = await params;
+  const [currentUser, userForHeader, t] = await Promise.all([
+    getUser(),
+    getUserDetail({ id }),
+    getTranslations("private.users.detail"),
+  ]);
 
   return (
     <div>
       <PageHeader
-        title={user?.name}
+        title={userForHeader?.name}
         subtitle={
-          <EvmAddress address={user.wallet} prettyNames={false}>
-            <EvmAddressBalances address={user.wallet} />
+          <EvmAddress address={userForHeader.wallet} prettyNames={false}>
+            <EvmAddressBalances address={userForHeader.wallet} />
           </EvmAddress>
         }
         section={t("platform-management")}
         button={
-          currentUser.role === "admin" && <EditUserDropdown user={user} />
+          currentUser.role === "admin" && (
+            <EditUserDropdown user={userForHeader} />
+          )
         }
       />
 
       <div className="relative mt-4 space-y-2">
-        <TabNavigation items={tabs} />
+        <UserTabs userId={id} locale={locale} />
       </div>
       {children}
     </div>

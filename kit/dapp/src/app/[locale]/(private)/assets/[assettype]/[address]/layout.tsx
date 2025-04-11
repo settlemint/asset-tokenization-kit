@@ -1,5 +1,4 @@
 import { DetailPageHeader } from "@/app/[locale]/(private)/_components/detail-page-header";
-import { AssetTabs } from "@/components/layout/asset-tabs";
 import { metadata } from "@/lib/config/metadata";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -8,6 +7,7 @@ import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import type { Address } from "viem";
+import { AssetTabs } from "./_components/asset-tabs";
 import { ManageDropdown } from "./_components/manage-dropdown/manage-dropdown";
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{

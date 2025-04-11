@@ -1,9 +1,3 @@
-import {
-  hasAllowlist,
-  hasBlocklist,
-  hasUnderlyingAsset,
-  hasYield,
-} from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled";
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -12,6 +6,12 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
 import { BadgeLoader, BadgeSpinner } from "./badge-loader"; // Assuming badge-loader.tsx is in the same directory or adjust path
+import {
+  hasAllowlist,
+  hasBlocklist,
+  hasUnderlyingAsset,
+  hasYield,
+} from "./features-enabled";
 
 interface AssetTabsProps {
   locale: Locale;
