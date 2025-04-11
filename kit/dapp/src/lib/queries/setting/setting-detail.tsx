@@ -1,11 +1,10 @@
 "use server";
 
-import type { SettingKey } from "@/lib/db/schema-settings";
+import { DEFAULT_SETTINGS, SettingKey } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { ApiError } from "next/dist/server/api-utils";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { SettingSchema } from "./setting-schema";
@@ -41,7 +40,7 @@ export const getSettingValue = withTracing(
       }
     );
     if (result.settings.length === 0) {
-      throw new ApiError(404, `Setting '${key}' not found`);
+      return DEFAULT_SETTINGS[key];
     }
     return safeParse(SettingSchema, result.settings[0]);
   })
