@@ -1,6 +1,6 @@
+import { auth } from "@/lib/auth/auth";
 import { ApiError } from "next/dist/server/api-utils";
 import { headers } from "next/headers";
-import { auth } from "../../../auth/auth";
 import {
   WalletSecurityMethodOptions,
   type SetupWalletSecurityInput,
