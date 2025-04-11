@@ -1,20 +1,18 @@
-import { Badge } from "@/components/ui/badge";
 import {
   NavigationMenuItem,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 
 export interface TabItemProps {
   href: string;
-  name: string;
-  badge?: number | string;
+  name: ReactNode; // Allow ReactNode for potential badge inclusion
   active?: boolean;
 }
 
-export const TabItem: FC<TabItemProps> = ({ href, name, badge, active }) => (
+export const TabItem: FC<TabItemProps> = ({ href, name, active }) => (
   <NavigationMenuItem>
     <Link
       href={href}
@@ -24,14 +22,7 @@ export const TabItem: FC<TabItemProps> = ({ href, name, badge, active }) => (
         active ? "font-bold text-primary! after:w-full" : "after:w-0"
       )}
     >
-      <span className="inline-flex items-center gap-2">
-        {name}
-        {badge !== undefined && (
-          <Badge variant="outline" className="border-card">
-            {badge}
-          </Badge>
-        )}
-      </span>
+      {name}
     </Link>
   </NavigationMenuItem>
 );

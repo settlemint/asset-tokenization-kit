@@ -68,6 +68,7 @@ export const BondFragment = theGraphGraphqlKit(
       symbol
       decimals
       type
+      totalSupply
     }
     maturityDate
     isMatured

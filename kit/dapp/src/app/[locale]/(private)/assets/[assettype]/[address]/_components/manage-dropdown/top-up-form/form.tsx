@@ -36,6 +36,8 @@ export function TopUpForm({
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
 
+  const maxAmount = Number(bondDetails.underlyingAsset.totalSupply);
+
   // Generate form steps based on yield schedule availability
   const renderFormSteps = () => {
     const steps: FormStepElement<ReturnType<typeof TopUpSchema>>[] = [];
@@ -44,7 +46,7 @@ export function TopUpForm({
       steps.push(<Target key="target"/>);
     }
 
-    steps.push(<Amount key="amount" />);
+    steps.push(<Amount max={maxAmount} decimals={bondDetails.underlyingAsset.decimals} symbol={bondDetails.underlyingAsset.symbol} key="amount" />);
     steps.push(<Summary key="summary" bondDetails={bondDetails} />);
 
     return steps;
@@ -74,7 +76,10 @@ export function TopUpForm({
       <Form
         action={topUpUnderlyingAsset}
         resolver={typeboxResolver(
-          TopUpSchema({ decimals: bondDetails.underlyingAsset.decimals })
+          TopUpSchema({
+            decimals: bondDetails.underlyingAsset.decimals,
+            maxAmount
+          })
         )}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
