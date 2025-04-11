@@ -46,16 +46,8 @@ export function WithdrawForm({
     if (showTarget) {
       steps.push(<Target key="target" bondDetails={bondDetails} />);
     }
-
     // Always show recipient and amount steps
-    steps.push(
-      <Amount
-        key="amount"
-        maxAmount={Number(bondDetails.underlyingBalance)}
-        decimals={bondDetails.underlyingAsset.decimals}
-        symbol={bondDetails.underlyingAsset.symbol}
-      />
-    );
+    steps.push(<Amount key="amount" bondDetails={bondDetails} />);
     steps.push(<Recipient key="recipient" />);
     steps.push(<Summary key="summary" bondDetails={bondDetails} />);
 
@@ -64,12 +56,12 @@ export function WithdrawForm({
 
   // Get initial values based on bond details
   const initialValues = {
-    address: address,
+    address,
     target: "bond" as const,
     targetAddress: address,
     underlyingAssetAddress: bondDetails.underlyingAsset.id,
     underlyingAssetType: bondDetails.underlyingAsset.type,
-    assettype: "bond" as const, // Ensure assettype is included
+    assettype: "bond" as const,
   };
 
   return (
@@ -89,7 +81,6 @@ export function WithdrawForm({
         action={withdraw}
         resolver={typeboxResolver(
           WithdrawSchema({
-            maxAmount: Number(bondDetails.underlyingBalance),
             decimals: bondDetails.underlyingAsset.decimals,
           })
         )}

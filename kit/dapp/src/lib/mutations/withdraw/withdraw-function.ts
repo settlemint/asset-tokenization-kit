@@ -201,7 +201,7 @@ export const withdrawFunction = withAccessControl(
   }) => {
     const asset = await getAssetDetail({
       address: targetAddress,
-      assettype: assettype,
+      assettype,
     });
 
     // Token input format (for tokens)

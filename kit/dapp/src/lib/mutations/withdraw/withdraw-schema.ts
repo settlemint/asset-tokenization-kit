@@ -14,10 +14,8 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
  * @property {string} target - The target type (bond or yield)
  */
 export function WithdrawSchema({
-  maxAmount,
   decimals,
 }: {
-  maxAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -35,7 +33,6 @@ export function WithdrawSchema({
         description: "The recipient address",
       }),
       amount: t.Amount({
-        max: maxAmount,
         decimals,
         description: "The amount of underlying asset to withdraw",
       }),
