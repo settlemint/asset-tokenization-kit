@@ -65,10 +65,8 @@ export function FormOtpDialog<T extends FieldValues>({
     defaultValue: "",
   });
 
-  // For checking code validity
   const [isVerificationCodeValid, setIsVerificationCodeValid] = useState(false);
 
-  // Update verification code validity when it changes
   useEffect(() => {
     const isValid =
       typeof verificationCode === "string" && verificationCode.length === 6;

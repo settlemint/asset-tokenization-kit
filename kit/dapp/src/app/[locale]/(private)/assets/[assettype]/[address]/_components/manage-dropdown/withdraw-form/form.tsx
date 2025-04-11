@@ -65,9 +65,9 @@ export function WithdrawForm({
 
   // Get initial values based on bond details
   const initialValues = {
-    address,
+    address: address as `0x${string}`,
     target: "bond" as const,
-    targetAddress: address,
+    targetAddress: address as `0x${string}`,
     underlyingAssetAddress: bondDetails.underlyingAsset.id,
     underlyingAssetType: bondDetails.underlyingAsset.type,
     assettype: "bond" as const, // Ensure assettype is included
