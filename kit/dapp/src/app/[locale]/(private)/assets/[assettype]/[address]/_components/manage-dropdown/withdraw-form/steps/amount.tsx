@@ -13,17 +13,13 @@ interface AmountProps {
 }
 
 export function Amount({ bondDetails }: AmountProps) {
-  const { control, formState, getValues } = useFormContext<WithdrawInput>();
+  const { control } = useFormContext<WithdrawInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();
   const target = useWatch({
     control,
     name: "target",
   });
-
-  console.log('errors', formState.errors);
-  console.log('isValid', formState.isValid);
-  console.log('values', getValues());
 
   const isYield = target === "yield";
   const max = isYield ? Number(bondDetails.yieldSchedule?.underlyingBalance ?? 0) : Number(bondDetails.underlyingBalance);

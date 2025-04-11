@@ -14,10 +14,8 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
  * @property {string} target - The target type (bond or yield)
  */
 export function WithdrawSchema({
-  maxAmount,
   decimals,
 }: {
-  maxAmount?: number;
   decimals?: number;
 } = {}) {
   return t.Object(
@@ -25,7 +23,7 @@ export function WithdrawSchema({
       address: t.EthereumAddress({
         description: "The contract address",
       }),
-      assettype: t.AssetType({
+      assetType: t.AssetType({
         description: "The type of asset",
       }),
       targetAddress: t.EthereumAddress({

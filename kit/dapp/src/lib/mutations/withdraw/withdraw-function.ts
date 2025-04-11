@@ -185,7 +185,7 @@ export const withdrawFunction = withAccessControl(
   },
   async ({
     parsedInput: {
-      assettype,
+      assetType,
       target,
       targetAddress,
       verificationCode,
@@ -201,7 +201,7 @@ export const withdrawFunction = withAccessControl(
   }) => {
     const asset = await getAssetDetail({
       address: targetAddress,
-      assettype: assettype,
+      assettype: assetType,
     });
 
     // Token input format (for tokens)
@@ -236,7 +236,7 @@ export const withdrawFunction = withAccessControl(
       )),
     };
 
-    switch (assettype) {
+    switch (assetType) {
       case "bond": {
         // Withdraw underlying asset from bond
 
