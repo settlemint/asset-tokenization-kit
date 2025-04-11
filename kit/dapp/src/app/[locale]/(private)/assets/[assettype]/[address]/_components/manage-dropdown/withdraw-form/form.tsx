@@ -8,7 +8,7 @@ import { WithdrawSchema } from "@/lib/mutations/withdraw/withdraw-schema";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Amount } from "./steps/amount";
 import { Recipient } from "./steps/recipient";
 import { Summary } from "./steps/summary";
@@ -38,26 +38,6 @@ export function WithdrawForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
-
-  // Log bond details for debugging
-  useEffect(() => {
-    console.log("Bond Details:", {
-      address,
-      "underlyingAsset.decimals": bondDetails.underlyingAsset.decimals,
-      "underlyingAsset.symbol": bondDetails.underlyingAsset.symbol,
-      "underlyingAsset.type": bondDetails.underlyingAsset.type,
-      underlyingBalance: bondDetails.underlyingBalance,
-      underlyingBalanceExact: bondDetails.underlyingBalanceExact,
-      totalUnderlyingNeeded: bondDetails.totalUnderlyingNeeded,
-      hasSufficientUnderlying: bondDetails.hasSufficientUnderlying,
-      yieldSchedule: bondDetails.yieldSchedule
-        ? {
-            id: bondDetails.yieldSchedule.id,
-            underlyingBalance: bondDetails.yieldSchedule.underlyingBalance,
-          }
-        : null,
-    });
-  }, [address, bondDetails]);
 
   // Generate form steps based on yield schedule availability
   const renderFormSteps = () => {
@@ -92,18 +72,6 @@ export function WithdrawForm({
     underlyingAssetType: bondDetails.underlyingAsset.type,
     assettype: "bond" as const, // Ensure assettype is included
   };
-
-  // Disabled due to typescript errors, not necessary for the fix
-  // const handleFieldChange = (form, { changedFieldName }) => {
-  //   if (changedFieldName === 'target') {
-  //     const target = form.getValues('target');
-  //     if (target === 'bond') {
-  //       form.setValue('underlyingAssetType', bondDetails.underlyingAsset.type);
-  //     } else if (target === 'yield' && bondDetails.yieldSchedule) {
-  //       form.setValue('underlyingAssetType', bondDetails.yieldSchedule.underlyingAsset.type);
-  //     }
-  //   }
-  // };
 
   return (
     <FormSheet

@@ -18,12 +18,13 @@ import { authClient } from "@/lib/auth/client";
 import type { VerificationType } from "@/lib/utils/typebox/verification-type";
 import { useTranslations } from "next-intl";
 import type { ComponentPropsWithoutRef } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   type FieldValues,
   type Path,
   type PathValue,
   useFormContext,
+  useWatch,
 } from "react-hook-form";
 import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import type { BaseFormInputProps } from "./types";
@@ -42,62 +43,6 @@ type FormOtpDialogProps<T extends FieldValues> = Omit<
     onSubmit: () => void;
   };
 
-// Debug component to show form state
-function FormDebugState() {
-  const form = useFormContext();
-  const { formState, getValues } = form;
-  const { isValid, errors, isDirty, isSubmitting } = formState;
-  const values = getValues();
-
-  // Format the values for display
-  const formattedValues = Object.entries(values)
-    .map(([key, value]) => {
-      // Don't show very long values completely
-      const displayValue =
-        typeof value === "string" && value.length > 50
-          ? `${value.substring(0, 50)}...`
-          : value;
-      return `${key}: ${JSON.stringify(displayValue)}`;
-    })
-    .join("\n");
-
-  // Format the errors for display
-  const formattedErrors = Object.entries(errors)
-    .map(([key, error]) => {
-      return `${key}: ${error?.message || "Unknown error"}`;
-    })
-    .join("\n");
-
-  return (
-    <div className="p-2 my-2 text-xs bg-gray-100 rounded border border-gray-300">
-      <div>
-        <strong>Form State Diagnostics:</strong>
-      </div>
-      <div className="mt-1">
-        <strong>isValid:</strong> {String(isValid)}
-      </div>
-      <div>
-        <strong>isDirty:</strong> {String(isDirty)}
-      </div>
-      <div>
-        <strong>isSubmitting:</strong> {String(isSubmitting)}
-      </div>
-      {errors && Object.keys(errors).length > 0 && (
-        <div className="mt-1">
-          <strong>Errors:</strong>
-          <pre className="mt-1 text-red-500 whitespace-pre-wrap">
-            {formattedErrors}
-          </pre>
-        </div>
-      )}
-      <div className="mt-1">
-        <strong>Values:</strong>
-        <pre className="mt-1 whitespace-pre-wrap">{formattedValues}</pre>
-      </div>
-    </div>
-  );
-}
-
 export function FormOtpDialog<T extends FieldValues>({
   className,
   open,
@@ -108,17 +53,33 @@ export function FormOtpDialog<T extends FieldValues>({
 }: FormOtpDialogProps<T>) {
   const {
     setValue,
-    formState: { isValid },
+    formState: { isValid, errors },
+    control,
     getValues,
   } = useFormContext();
 
-  // Check if verification code has a value
-  const verificationCode = getValues(props.name);
+  // Use useWatch to monitor the verification code changes
+  const verificationCode = useWatch({
+    control,
+    name: props.name as any,
+    defaultValue: "",
+  });
+
+  // For checking code validity
+  const [isVerificationCodeValid, setIsVerificationCodeValid] = useState(false);
+
+  // Update verification code validity when it changes
+  useEffect(() => {
+    const isValid =
+      typeof verificationCode === "string" && verificationCode.length === 6;
+    setIsVerificationCodeValid(isValid);
+  }, [verificationCode]);
 
   const handleSubmit = useCallback(() => {
     onSubmit();
     onOpenChange(false);
   }, [onSubmit, onOpenChange]);
+
   const t = useTranslations("components.form.otp-dialog");
   const { data } = authClient.useSession();
   const [isSwitchingVerificationType, setIsSwitchingVerificationType] =
@@ -151,18 +112,6 @@ export function FormOtpDialog<T extends FieldValues>({
 
   const { InputComponent, title, description } =
     verificationConfig[activeVerificationType];
-
-  // Check if the verification code is valid (6 digits)
-  const isVerificationCodeValid =
-    typeof verificationCode === "string" && verificationCode.length === 6;
-
-  // Console log the form state for debugging
-  console.log("Form state:", {
-    isValid,
-    verificationCode,
-    isVerificationCodeValid,
-    formValues: getValues(),
-  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -232,10 +181,6 @@ export function FormOtpDialog<T extends FieldValues>({
             );
           }}
         />
-
-        {/* Add the debug component here */}
-        <FormDebugState />
-
         <FormField
           {...props}
           defaultValue={activeVerificationType as PathValue<T, Path<T>>}
