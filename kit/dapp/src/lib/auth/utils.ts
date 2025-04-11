@@ -2,7 +2,6 @@ import { auth } from "@/lib/auth/auth";
 import { redirectToSignIn } from "@/lib/auth/redirect";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import type { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 import { headers } from "next/headers";
 import type { User } from "./types";
 
@@ -12,16 +11,17 @@ import type { User } from "./types";
  * @throws {AuthError} If user is not authenticated
  */
 export async function getUser() {
-  return getSession({ headers: await headers() });
+  const nextHeaders = await headers();
+  return getSession({ headers: Object.fromEntries(nextHeaders.entries()) });
 }
 
-async function getSession({ headers }: { headers: ReadonlyHeaders }) {
+async function getSession({ headers }: { headers: Record<string, string> }) {
   "use cache";
   cacheTag("session");
   cacheLife("session");
   try {
     const session = await auth.api.getSession({
-      headers,
+      headers: new Headers(headers),
     });
     if (!session?.user) {
       return redirectToSignIn();

@@ -26,7 +26,7 @@ import { SpanStatusCode, trace, type Attributes } from "@opentelemetry/api";
  * const result = await tracedFetchData("user-123");
  */
 export function withTracing<T extends (...args: any[]) => Promise<any>>(
-  tracerName: string,
+  tracerName: "queries",
   spanName: string,
   fn: T,
   attributes?: Attributes
