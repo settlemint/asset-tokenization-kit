@@ -6,7 +6,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { type Address, getAddress } from "viem";
 import { AssetBalanceFragment } from "./asset-balance-fragment";
 import { AssetBalanceSchema } from "./asset-balance-schema";
@@ -44,7 +44,10 @@ export interface AssetBalanceDetailProps {
 export const getAssetBalanceDetail = withTracing(
   "queries",
   "getAssetBalanceDetail",
-  cache(async ({ address, account }: AssetBalanceDetailProps) => {
+  async ({ address, account }: AssetBalanceDetailProps) => {
+    "use cache";
+    cacheTag("asset");
+
     if (!account) {
       return undefined;
     }
@@ -81,5 +84,5 @@ export const getAssetBalanceDetail = withTracing(
       );
       return undefined;
     }
-  })
+  }
 );

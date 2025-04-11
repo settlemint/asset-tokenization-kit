@@ -9,7 +9,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress } from "viem";
 import { equitiesCalculateFields } from "./equity-calculated";
 import { EquityFragment, OffchainEquityFragment } from "./equity-fragment";
@@ -60,7 +60,9 @@ const OffchainEquityList = hasuraGraphql(
 export const getEquityList = withTracing(
   "queries",
   "getEquityList",
-  cache(async () => {
+  async () => {
+    "use cache";
+    cacheTag("asset");
     const [onChainEquities, offChainEquities] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientKit.request(EquityList, {
@@ -106,5 +108,5 @@ export const getEquityList = withTracing(
     });
 
     return equities;
-  })
+  }
 );

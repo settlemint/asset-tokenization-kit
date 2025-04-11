@@ -5,7 +5,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress, type Address } from "viem";
 import { PortfolioStatsCollectionSchema } from "./portfolio-schema";
 
@@ -37,7 +37,9 @@ interface GetPortfolioHistoryParams {
 export const getPortfolioStats = withTracing(
   "queries",
   "getPortfolioStats",
-  cache(async ({ address, days = 30 }: GetPortfolioHistoryParams) => {
+  async ({ address, days = 30 }: GetPortfolioHistoryParams) => {
+    "use cache";
+    cacheTag("asset");
     const startTime = Math.floor(Date.now() / 1000) - days * 24 * 60 * 60;
 
     const data = await theGraphClientKit.request(PortfolioHistoryQuery, {
@@ -46,5 +48,5 @@ export const getPortfolioStats = withTracing(
     });
 
     return safeParse(PortfolioStatsCollectionSchema, data.portfolioStatsDatas);
-  })
+  }
 );

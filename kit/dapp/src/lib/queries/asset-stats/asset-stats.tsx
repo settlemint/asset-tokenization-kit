@@ -8,7 +8,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { getUnixTime, startOfDay, subDays } from "date-fns";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { type Address, getAddress } from "viem";
 import { AssetStatsFragment } from "./asset-stats-fragment";
 import { AssetStatsSchema } from "./asset-stats-schema";
@@ -59,7 +59,9 @@ export interface AssetStatsProps {
 export const getAssetStats = withTracing(
   "queries",
   "getAssetStats",
-  cache(async ({ address, days = 1 }: AssetStatsProps) => {
+  async ({ address, days = 1 }: AssetStatsProps) => {
+    "use cache";
+    cacheTag("asset");
     const normalizedAddress = getAddress(address);
     // Calculate timestamp for start date
     const startDate = subDays(new Date(), days - 1);
@@ -77,5 +79,5 @@ export const getAssetStats = withTracing(
     });
 
     return safeParse(t.Array(AssetStatsSchema), result);
-  })
+  }
 );

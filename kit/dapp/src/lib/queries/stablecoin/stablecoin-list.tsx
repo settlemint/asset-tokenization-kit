@@ -8,7 +8,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress } from "viem";
 import { stablecoinsCalculateFields } from "./stablecoin-calculated";
 import {
@@ -63,7 +63,9 @@ const OffchainStableCoinList = hasuraGraphql(
 export const getStableCoinList = withTracing(
   "queries",
   "getStableCoinList",
-  cache(async () => {
+  async () => {
+    "use cache";
+    cacheTag("asset");
     const [onChainStableCoins, offChainStableCoins] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientKit.request(StableCoinList, {
@@ -112,5 +114,5 @@ export const getStableCoinList = withTracing(
     });
 
     return stableCoins;
-  })
+  }
 );

@@ -5,7 +5,7 @@ import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { User } from "../../auth/types";
 import { withAccessControl } from "../../utils/access-control";
 import { getContactsList } from "../contact/contact-list";
@@ -62,7 +62,9 @@ export const getAllUsersSearch = withAccessControl(
       user: ["list"],
     },
   },
-  cache(async ({ searchTerm }: UserSearchProps) => {
+  async ({ searchTerm }: UserSearchProps) => {
+    "use cache";
+    cacheTag("user-activity");
     const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
 
     if (!sanitizedSearchTerm) {
@@ -76,7 +78,7 @@ export const getAllUsersSearch = withAccessControl(
 
     // Parse and validate users using TypeBox schema
     return safeParse(t.Array(UserSchema), result.user || []);
-  })
+  }
 );
 
 /**
@@ -90,18 +92,17 @@ export const getAllUsersSearch = withAccessControl(
 export const getUserSearch = withTracing(
   "queries",
   "getUserSearch",
-  cache(
-    async ({
-      searchTerm,
-      ctx,
-    }: UserSearchProps & { ctx?: { user: User } }): Promise<
-      (User | Contact)[]
-    > => {
-      const user = ctx?.user ?? (await getUser());
-      if (user.role === "user") {
-        return getContactsList(user.id, searchTerm);
-      }
-      return getAllUsersSearch({ searchTerm, ctx: { user } });
+
+  async ({
+    searchTerm,
+    ctx,
+  }: UserSearchProps & { ctx?: { user: User } }): Promise<
+    (User | Contact)[]
+  > => {
+    const user = ctx?.user ?? (await getUser());
+    if (user.role === "user") {
+      return getContactsList(user.id, searchTerm);
     }
-  )
+    return getAllUsersSearch({ searchTerm, ctx: { user } });
+  }
 );

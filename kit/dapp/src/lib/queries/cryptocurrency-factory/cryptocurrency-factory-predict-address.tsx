@@ -4,7 +4,7 @@ import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { parseUnits, type Address } from "viem";
 import {
   PredictedAddressSchema,
@@ -42,7 +42,9 @@ const CreateCryptoCurrencyPredictAddress = portalGraphql(`
 export const getPredictedAddress = withTracing(
   "queries",
   "getPredictedAddress",
-  cache(async (input: PredictAddressInput) => {
+  async (input: PredictAddressInput) => {
+    "use cache";
+    cacheTag("asset");
     try {
       const { assetName, symbol, decimals, initialSupply } = input;
       const user = await getUser();
@@ -79,5 +81,5 @@ export const getPredictedAddress = withTracing(
       // This allows the form to proceed
       return "0x0000000000000000000000000000000000000000" as Address;
     }
-  })
+  }
 );

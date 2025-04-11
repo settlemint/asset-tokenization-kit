@@ -13,7 +13,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress } from "viem";
 import { cryptoCurrenciesCalculateFields } from "./cryptocurrency-calculated";
 import {
@@ -65,7 +65,9 @@ const OffchainCryptocurrencyList = hasuraGraphql(
 export const getCryptoCurrencyList = withTracing(
   "queries",
   "getCryptoCurrencyList",
-  cache(async () => {
+  async () => {
+    "use cache";
+    cacheTag("asset");
     const [onChainCryptoCurrencies, offChainCryptoCurrencies] =
       await Promise.all([
         fetchAllTheGraphPages(async (first, skip) => {
@@ -120,5 +122,5 @@ export const getCryptoCurrencyList = withTracing(
     });
 
     return cryptoCurrencies;
-  })
+  }
 );

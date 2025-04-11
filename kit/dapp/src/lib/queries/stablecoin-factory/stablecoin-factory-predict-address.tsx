@@ -5,7 +5,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { Address } from "viem";
 import {
   PredictedAddressSchema,
@@ -43,7 +43,9 @@ const CreateStablecoinPredictAddress = portalGraphql(`
 export const getPredictedAddress = withTracing(
   "queries",
   "getBondDetail",
-  cache(async (input: PredictAddressInput) => {
+  async (input: PredictAddressInput) => {
+    "use cache";
+    cacheTag("asset");
     const {
       assetName,
       symbol,
@@ -68,5 +70,5 @@ export const getPredictedAddress = withTracing(
     const predictedAddress = safeParse(PredictedAddressSchema, data);
 
     return predictedAddress.StableCoinFactory.predictAddress.predicted;
-  })
+  }
 );

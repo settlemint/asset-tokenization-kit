@@ -4,7 +4,7 @@ import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { Address } from "viem";
 import {
   PredictedAddressSchema,
@@ -44,7 +44,9 @@ const CreateFundPredictAddress = portalGraphql(`
 export const getPredictedAddress = withTracing(
   "queries",
   "getPredictedAddress",
-  cache(async (input: PredictAddressInput) => {
+  async (input: PredictAddressInput) => {
+    "use cache";
+    cacheTag("asset");
     const {
       assetName,
       symbol,
@@ -69,5 +71,5 @@ export const getPredictedAddress = withTracing(
     const predictedAddress = safeParse(PredictedAddressSchema, data);
 
     return predictedAddress.FundFactory.predictAddress.predicted;
-  })
+  }
 );

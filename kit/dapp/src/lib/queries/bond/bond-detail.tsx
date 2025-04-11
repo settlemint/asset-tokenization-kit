@@ -7,7 +7,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { type Address, getAddress } from "viem";
 import { bondsCalculateFields } from "./bond-calculated";
 import { BondFragment, OffchainBondFragment } from "./bond-fragment";
@@ -59,7 +59,9 @@ export interface BondDetailProps {
 export const getBondDetail = withTracing(
   "queries",
   "getBondDetail",
-  cache(async ({ address }: BondDetailProps) => {
+  async ({ address }: BondDetailProps) => {
+    "use cache";
+    cacheTag("asset");
     const [onChainBond, offChainBond] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(BondDetail, {
@@ -92,5 +94,5 @@ export const getBondDetail = withTracing(
       ...offChainBond,
       ...calculatedBond,
     };
-  })
+  }
 );

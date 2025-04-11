@@ -9,7 +9,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { unstable_cache } from "next/cache";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress, type Address } from "viem";
 import {
   AssetUsersFragment,
@@ -77,7 +77,9 @@ export interface PermissionWithRoles extends Permission {
 export const getAssetUsersDetail = withTracing(
   "queries",
   "getAssetUsersDetail",
-  cache(async ({ address }: AssetDetailProps) => {
+  async ({ address }: AssetDetailProps) => {
+    "use cache";
+    cacheTag("asset");
     const normalizedAddress = getAddress(address);
 
     const [onchainData, offchainData] = await Promise.all([
@@ -173,5 +175,5 @@ export const getAssetUsersDetail = withTracing(
       },
       roles: Array.from(usersWithRoles.values()),
     };
-  })
+  }
 );

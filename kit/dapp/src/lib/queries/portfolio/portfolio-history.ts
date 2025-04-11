@@ -4,7 +4,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress, type Address } from "viem";
 
 /**
@@ -88,35 +88,35 @@ interface GetPortfolioHistoryParams {
 export const getPortfolioHistory = withTracing(
   "queries",
   "getPortfolioHistory",
-  cache(
-    async ({
-      address,
-      days = 30,
-      interval = "day",
-    }: GetPortfolioHistoryParams) => {
-      // Calculate start time based on days parameter
-      const startTime = Math.floor(Date.now() / 1000) - days * 24 * 60 * 60;
+  async ({
+    address,
+    days = 30,
+    interval = "day",
+  }: GetPortfolioHistoryParams) => {
+    "use cache";
+    cacheTag("asset");
+    // Calculate start time based on days parameter
+    const startTime = Math.floor(Date.now() / 1000) - days * 24 * 60 * 60;
 
-      const data = await theGraphClientKit.request(PortfolioHistoryQuery, {
-        account: getAddress(address),
-        interval,
-        startTime: startTime.toString(),
-      });
+    const data = await theGraphClientKit.request(PortfolioHistoryQuery, {
+      account: getAddress(address),
+      interval,
+      startTime: startTime.toString(),
+    });
 
-      return data.portfolioStats_collection.map((stat: any) => ({
-        timestamp: stat.timestamp,
-        account: {
-          id: stat.account.id,
-        },
-        asset: {
-          id: stat.asset.id,
-          name: stat.asset.name,
-          symbol: stat.asset.symbol,
-          decimals: stat.asset.decimals,
-        },
-        balance: stat.totalBalance,
-        balanceExact: stat.totalBalanceExact,
-      }));
-    }
-  )
+    return data.portfolioStats_collection.map((stat: any) => ({
+      timestamp: stat.timestamp,
+      account: {
+        id: stat.account.id,
+      },
+      asset: {
+        id: stat.asset.id,
+        name: stat.asset.name,
+        symbol: stat.asset.symbol,
+        decimals: stat.asset.decimals,
+      },
+      balance: stat.totalBalance,
+      balanceExact: stat.totalBalanceExact,
+    }));
+  }
 );

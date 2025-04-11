@@ -8,7 +8,7 @@ import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { isAddress } from "viem";
 import { AssetUsersFragment } from "./asset-users-fragment";
 import { AssetUsersSchema } from "./asset-users-schema";
@@ -78,7 +78,9 @@ export interface AssetSearchProps {
 export const getAssetSearch = withTracing(
   "queries",
   "getAssetSearch",
-  cache(async ({ searchTerm }: AssetSearchProps) => {
+  async ({ searchTerm }: AssetSearchProps) => {
+    "use cache";
+    cacheTag("asset");
     const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
 
     let assets;
@@ -113,5 +115,5 @@ export const getAssetSearch = withTracing(
       return safeParse(AssetUsersSchema, assetWithDefaults);
     });
     return validatedAssets;
-  })
+  }
 );

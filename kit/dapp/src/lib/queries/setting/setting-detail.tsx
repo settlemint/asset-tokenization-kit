@@ -6,7 +6,7 @@ import { withAccessControl } from "@/lib/utils/access-control";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { ApiError } from "next/dist/server/api-utils";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { SettingSchema } from "./setting-schema";
 
 const GetSetting = hasuraGraphql(`
@@ -24,23 +24,31 @@ const GetSetting = hasuraGraphql(`
  * @param key - The key of the setting to fetch
  * @returns The setting value
  */
-export const getSetting = withTracing(
+export const getSettingValue = withTracing(
   "queries",
   "getSetting",
-  cache(
-    withAccessControl(
-      {
-        requiredPermissions: {
-          setting: ["read"],
-        },
-      },
-      async ({ key }: { key: SettingKey }) => {
-        const result = await hasuraClient.request(GetSetting, { _eq: key });
-        if (result.settings.length === 0) {
-          throw new ApiError(404, `Setting '${key}' not found`);
-        }
-        return safeParse(SettingSchema, result.settings[0]);
-      }
-    )
-  )
+  async ({ key }: { key: SettingKey }) => {
+    "use cache";
+    cacheTag("setting");
+    const result = await hasuraClient.request(GetSetting, { _eq: key });
+    if (result.settings.length === 0) {
+      throw new ApiError(404, `Setting '${key}' not found`);
+    }
+    return safeParse(SettingSchema, result.settings[0]);
+  }
+);
+
+/**
+ * Fetches a setting by key
+ *
+ * @param key - The key of the setting to fetch
+ * @returns The setting value
+ */
+export const getSetting = withAccessControl(
+  {
+    requiredPermissions: {
+      setting: ["read"],
+    },
+  },
+  getSettingValue
 );

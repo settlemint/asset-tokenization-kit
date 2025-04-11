@@ -1,7 +1,7 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { Address } from "viem";
 
 const ProcessedTransactionsTimeline = portalGraphql(
@@ -53,7 +53,9 @@ export interface TransactionsTimelineProps {
 export const getTransactionsTimeline = withTracing(
   "queries",
   "getTransactionsTimeline",
-  cache(async (props: TransactionsTimelineProps) => {
+  async (props: TransactionsTimelineProps) => {
+    "use cache";
+    cacheTag("asset");
     const { from, granularity, timelineStartDate } = props;
     const transactionsTimeline = await portalClient.request(
       ProcessedTransactionsTimeline,
@@ -73,5 +75,5 @@ export const getTransactionsTimeline = withTracing(
       timestamp: item.start.toJSON(),
       transaction: item.count,
     }));
-  })
+  }
 );

@@ -7,7 +7,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { type Address, getAddress } from "viem";
 import { stablecoinsCalculateFields } from "./stablecoin-calculated";
 import {
@@ -65,7 +65,9 @@ export interface StableCoinDetailProps {
 export const getStableCoinDetail = withTracing(
   "queries",
   "getStableCoinDetail",
-  cache(async ({ address }: StableCoinDetailProps) => {
+  async ({ address }: StableCoinDetailProps) => {
+    "use cache";
+    cacheTag("asset");
     const [onChainStableCoin, offChainStableCoin] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(StableCoinDetail, {
@@ -98,5 +100,5 @@ export const getStableCoinDetail = withTracing(
       ...offChainStableCoin,
       ...calculatedStableCoin,
     };
-  })
+  }
 );

@@ -7,7 +7,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { type Address, getAddress } from "viem";
 import { fundsCalculateFields } from "./fund-calculated";
 import { FundFragment, OffchainFundFragment } from "./fund-fragment";
@@ -59,7 +59,9 @@ export interface FundDetailProps {
 export const getFundDetail = withTracing(
   "queries",
   "getFundDetail",
-  cache(async ({ address }: FundDetailProps) => {
+  async ({ address }: FundDetailProps) => {
+    "use cache";
+    cacheTag("asset");
     const [onChainFund, offChainFund] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(FundDetail, {
@@ -92,5 +94,5 @@ export const getFundDetail = withTracing(
       ...offChainFund,
       ...calculatedFund,
     };
-  })
+  }
 );

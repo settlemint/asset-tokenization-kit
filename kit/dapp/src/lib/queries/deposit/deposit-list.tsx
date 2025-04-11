@@ -8,7 +8,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress } from "viem";
 import { depositsCalculateFields } from "./deposit-calculated";
 import { DepositFragment, OffchainDepositFragment } from "./deposit-fragment";
@@ -57,7 +57,9 @@ const OffchainDepositList = hasuraGraphql(
 export const getDepositList = withTracing(
   "queries",
   "getDepositList",
-  cache(async () => {
+  async () => {
+    "use cache";
+    cacheTag("asset");
     const [onChainDeposits, offChainDeposits] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientKit.request(DepositList, {
@@ -103,5 +105,5 @@ export const getDepositList = withTracing(
     });
 
     return deposits;
-  })
+  }
 );

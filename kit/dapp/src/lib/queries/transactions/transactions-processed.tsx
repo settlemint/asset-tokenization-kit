@@ -1,6 +1,5 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
-import { cache } from "react";
 import type { Address } from "viem";
 
 /**
@@ -42,7 +41,7 @@ export interface ProcessedTransactionsProps {
 export const getProcessedAndRecentTransactionsCount = withTracing(
   "queries",
   "getProcessedAndRecentTransactionsCount",
-  cache(async (props: ProcessedTransactionsProps) => {
+  async (props: ProcessedTransactionsProps) => {
     const { from, processedAfter } = props;
 
     const response = await portalClient.request(
@@ -57,5 +56,5 @@ export const getProcessedAndRecentTransactionsCount = withTracing(
       total: response?.total?.count ?? 0,
       recentCount: response?.recent?.count ?? 0,
     };
-  })
+  }
 );

@@ -9,7 +9,7 @@ import {
 import { withAccessControl } from "@/lib/utils/access-control";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cache } from "react";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { type Address, getAddress } from "viem";
 import { userCalculateFields } from "./user-calculated";
 import { AccountFragment, UserFragment } from "./user-fragment";
@@ -81,6 +81,8 @@ const getUserDetailFromIdOrAddress = async ({
   id,
   address,
 }: UserDetailProps) => {
+  "use cache";
+  cacheTag("user-activity");
   if (!id && !address) {
     throw new Error("Either id or address must be provided");
   }
@@ -145,11 +147,9 @@ const getUserDetailFromIdOrAddress = async ({
 export const getUserDetail = withTracing(
   "queries",
   "getUserDetail",
-  cache(
-    withAccessControl(
-      { requiredPermissions: { user: ["list"] } },
-      getUserDetailFromIdOrAddress
-    )
+  withAccessControl(
+    { requiredPermissions: { user: ["list"] } },
+    getUserDetailFromIdOrAddress
   )
 );
 
@@ -162,8 +162,8 @@ export const getUserDetail = withTracing(
 export const getCurrentUserDetail = withTracing(
   "queries",
   "getCurrentUserDetail",
-  cache(async () => {
+  async () => {
     const user = await getUser();
     return getUserDetailFromIdOrAddress({ id: user.id });
-  })
+  }
 );
