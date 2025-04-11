@@ -59,7 +59,7 @@ export function WithdrawForm({
     target: "bond" as const,
     targetAddress: address,
     underlyingAssetAddress: bondDetails.underlyingAsset.id,
-    assetType: "bond" as const,
+    assettype: "bond" as const,
   };
 
   return (
