@@ -19,6 +19,13 @@ const nextConfig: NextConfig = {
     reactCompiler: true,
     authInterrupts: true,
     useCache: true,
+    cacheLife: {
+      session: {
+        stale: 120, // 2 minutes
+        revalidate: 60, // 1 minute
+        expire: 240, // 4 minutes
+      },
+    },
   },
   output: "standalone",
   logging: {

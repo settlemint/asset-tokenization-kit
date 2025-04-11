@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth/auth";
 import { redirectToSignIn } from "@/lib/auth/redirect";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 import { headers } from "next/headers";
@@ -17,6 +18,7 @@ export async function getUser() {
 async function getSession({ headers }: { headers: ReadonlyHeaders }) {
   "use cache";
   cacheTag("session");
+  cacheLife("session");
   try {
     const session = await auth.api.getSession({
       headers,
