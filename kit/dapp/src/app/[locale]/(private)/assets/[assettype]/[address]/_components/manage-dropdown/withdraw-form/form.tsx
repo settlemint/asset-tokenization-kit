@@ -14,8 +14,7 @@ import { Recipient } from "./steps/recipient";
 import { Summary } from "./steps/summary";
 import { Target } from "./steps/target";
 
-// Define Address type locally to avoid viem dependency issues
-type Address = string;
+type Address = `0x${string}`;
 
 interface WithdrawFormProps {
   address: Address;
@@ -65,9 +64,9 @@ export function WithdrawForm({
 
   // Get initial values based on bond details
   const initialValues = {
-    address: address as `0x${string}`,
+    address: address,
     target: "bond" as const,
-    targetAddress: address as `0x${string}`,
+    targetAddress: address,
     underlyingAssetAddress: bondDetails.underlyingAsset.id,
     underlyingAssetType: bondDetails.underlyingAsset.type,
     assettype: "bond" as const, // Ensure assettype is included
