@@ -18,12 +18,13 @@ import { authClient } from "@/lib/auth/client";
 import type { VerificationType } from "@/lib/utils/typebox/verification-type";
 import { useTranslations } from "next-intl";
 import type { ComponentPropsWithoutRef } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   type FieldValues,
   type Path,
   type PathValue,
   useFormContext,
+  useWatch,
 } from "react-hook-form";
 import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import type { BaseFormInputProps } from "./types";
@@ -52,12 +53,31 @@ export function FormOtpDialog<T extends FieldValues>({
 }: FormOtpDialogProps<T>) {
   const {
     setValue,
-    formState: { isValid },
-  } = useFormContext<{ verificationType: VerificationType }>();
+    formState: { isValid, errors },
+    control,
+    getValues,
+  } = useFormContext();
+
+  // Use useWatch to monitor the verification code changes
+  const verificationCode = useWatch({
+    control,
+    name: props.name as any,
+    defaultValue: "",
+  });
+
+  const [isVerificationCodeValid, setIsVerificationCodeValid] = useState(false);
+
+  useEffect(() => {
+    const isValid =
+      typeof verificationCode === "string" && verificationCode.length === 6;
+    setIsVerificationCodeValid(isValid);
+  }, [verificationCode]);
+
   const handleSubmit = useCallback(() => {
     onSubmit();
     onOpenChange(false);
   }, [onSubmit, onOpenChange]);
+
   const t = useTranslations("components.form.otp-dialog");
   const { data } = authClient.useSession();
   const [isSwitchingVerificationType, setIsSwitchingVerificationType] =
@@ -147,7 +167,7 @@ export function FormOtpDialog<T extends FieldValues>({
                       disabled={disabled}
                       autoFocus
                       onKeyUp={(e) => {
-                        if (e.key === "Enter") {
+                        if (e.key === "Enter" && isVerificationCodeValid) {
                           handleSubmit();
                         }
                       }}
@@ -195,7 +215,10 @@ export function FormOtpDialog<T extends FieldValues>({
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
                   {t("cancel")}
                 </Button>
-                <Button onClick={handleSubmit} disabled={!isValid}>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!isVerificationCodeValid}
+                >
                   {t("confirm")}
                 </Button>
               </DialogFooter>
