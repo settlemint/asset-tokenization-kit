@@ -2,6 +2,7 @@ import { redirectToSignIn } from "@/lib/auth/redirect";
 import { getUser } from "@/lib/auth/utils";
 import { withTracing } from "@/lib/utils/tracing";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
+import { getLocale } from "next-intl/server";
 
 /**
  * TypeBox schema for wallet verification data
@@ -42,7 +43,8 @@ export const hasWalletVerification = withTracing(
         `Error getting wallet verification: ${error.message}`,
         error.stack
       );
-      return redirectToSignIn();
+      const locale = await getLocale();
+      return redirectToSignIn(locale);
     }
   }
 );

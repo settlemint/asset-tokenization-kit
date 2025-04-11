@@ -10,7 +10,8 @@ import { formatDate } from "@/lib/utils/date";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import type { VariablesOf } from "gql.tada";
-import { getLocale, getTranslations } from "next-intl/server";
+import type { Locale } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -144,6 +145,8 @@ export interface AssetEventsListProps {
   sender?: Address;
   /** Optional limit to restrict total items fetched */
   limit?: number;
+  /** Optional locale to use for formatting */
+  locale?: Locale;
 }
 
 const fetchAssetEventsList = cache(
@@ -202,10 +205,9 @@ const fetchAssetEventsList = cache(
 export const getAssetEventsList = withTracing(
   "queries",
   "getAssetEventsList",
-  cache(async ({ asset, sender, limit }: AssetEventsListProps) => {
+  cache(async ({ asset, sender, limit, locale }: AssetEventsListProps) => {
     const events = await fetchAssetEventsList(asset, sender, limit);
 
-    const locale = await getLocale();
     const t = await getTranslations("asset-events");
 
     // Validate and transform events

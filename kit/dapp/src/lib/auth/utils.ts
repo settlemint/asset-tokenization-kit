@@ -1,5 +1,7 @@
 import { auth } from "@/lib/auth/auth";
 import { redirectToSignIn } from "@/lib/auth/redirect";
+import type { Locale } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { headers } from "next/headers";
@@ -12,10 +14,20 @@ import type { User } from "./types";
  */
 export async function getUser() {
   const nextHeaders = await headers();
-  return getSession({ headers: Object.fromEntries(nextHeaders.entries()) });
+  const locale = await getLocale();
+  return getSession({
+    headers: Object.fromEntries(nextHeaders.entries()),
+    locale,
+  });
 }
 
-async function getSession({ headers }: { headers: Record<string, string> }) {
+async function getSession({
+  headers,
+  locale,
+}: {
+  headers: Record<string, string>;
+  locale: Locale;
+}) {
   "use cache";
   cacheTag("session");
   cacheLife("session");
@@ -24,12 +36,12 @@ async function getSession({ headers }: { headers: Record<string, string> }) {
       headers: new Headers(headers),
     });
     if (!session?.user) {
-      return redirectToSignIn();
+      return redirectToSignIn(locale);
     }
     return session.user as User;
   } catch (err) {
     const error = err as Error;
     console.error(`Error getting user: ${error.message}`, error.stack);
-    return redirectToSignIn();
+    return redirectToSignIn(locale);
   }
 }
