@@ -12,8 +12,10 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  */
 export function TopUpSchema({
   decimals,
+  maxAmount,
 }: {
   decimals?: number;
+  maxAmount?: number;
 } = {}) {
   return t.Object(
     {
@@ -31,6 +33,7 @@ export function TopUpSchema({
       }),
       amount: t.Amount({
         decimals,
+        max: maxAmount,
         description: "The amount of underlying asset to top up",
       }),
       verificationCode: t.VerificationCode({
