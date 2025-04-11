@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
     cacheLife: {
       session: {
         stale: 120, // 2 minutes
-        revalidate: 1, // 1 second
+        revalidate: 60, // 1 minute
         expire: 240, // 4 minutes
       },
     },
