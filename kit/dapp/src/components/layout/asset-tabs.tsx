@@ -6,14 +6,12 @@ import {
 } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled";
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
-import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
-import { getAssetDetail } from "@/lib/queries/asset-detail";
-import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
-import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import type { Address } from "viem";
+import { BadgeLoader, BadgeSpinner } from "./badge-loader"; // Assuming badge-loader.tsx is in the same directory or adjust path
 
 interface AssetTabsProps {
   locale: Locale;
@@ -31,22 +29,25 @@ const tabs = async ({
     namespace: "private.assets.details",
   });
 
-  const [details, balances, events, assetUsers] = await Promise.all([
-    getAssetDetail({ address, assettype }),
-    getAssetBalanceList({ wallet: address }),
-    getAssetEventsList({ asset: address }),
-    getAssetUsersDetail({ address }),
-  ]);
-
   return [
     {
       name: t("tabs.details"),
       href: `/assets/${assettype}/${address}`,
     },
     {
-      name: t("tabs.holders"),
+      name: (
+        <>
+          {t("tabs.holders")}
+          <Suspense fallback={<BadgeSpinner />}>
+            <BadgeLoader
+              address={address}
+              assettype={assettype}
+              badgeType="holders"
+            />
+          </Suspense>
+        </>
+      ),
       href: `/assets/${assettype}/${address}/holders`,
-      badge: details.totalHolders,
     },
     ...(hasYield(assettype)
       ? [
@@ -57,11 +58,20 @@ const tabs = async ({
         ]
       : []),
     {
-      name: t("tabs.events"),
+      name: (
+        <>
+          {t("tabs.events")}
+          <Suspense fallback={<BadgeSpinner />}>
+            <BadgeLoader
+              address={address}
+              assettype={assettype}
+              badgeType="events"
+            />
+          </Suspense>
+        </>
+      ),
       href: `/assets/${assettype}/${address}/events`,
-      badge: events.length,
     },
-
     {
       name: t("tabs.permissions"),
       href: `/assets/${assettype}/${address}/permissions`,
@@ -69,27 +79,57 @@ const tabs = async ({
     ...(hasAllowlist(assettype)
       ? [
           {
-            name: t("tabs.allowlist"),
+            name: (
+              <>
+                {t("tabs.allowlist")}
+                <Suspense fallback={<BadgeSpinner />}>
+                  <BadgeLoader
+                    address={address}
+                    assettype={assettype}
+                    badgeType="allowlist"
+                  />
+                </Suspense>
+              </>
+            ),
             href: `/assets/${assettype}/${address}/allowlist`,
-            badge: assetUsers.allowlist.length,
           },
         ]
       : []),
     ...(hasBlocklist(assettype)
       ? [
           {
-            name: t("tabs.blocklist"),
+            name: (
+              <>
+                {t("tabs.blocklist")}
+                <Suspense fallback={<BadgeSpinner />}>
+                  <BadgeLoader
+                    address={address}
+                    assettype={assettype}
+                    badgeType="blocklist"
+                  />
+                </Suspense>
+              </>
+            ),
             href: `/assets/${assettype}/${address}/blocklist`,
-            badge: assetUsers.blocklist.length,
           },
         ]
       : []),
     ...(hasUnderlyingAsset(assettype)
       ? [
           {
-            name: t("tabs.underlying-assets"),
+            name: (
+              <>
+                {t("tabs.underlying-assets")}
+                <Suspense fallback={<BadgeSpinner />}>
+                  <BadgeLoader
+                    address={address}
+                    assettype={assettype}
+                    badgeType="underlying-assets"
+                  />
+                </Suspense>
+              </>
+            ),
             href: `/assets/${assettype}/${address}/underlying-assets`,
-            badge: balances.length,
           },
         ]
       : []),
