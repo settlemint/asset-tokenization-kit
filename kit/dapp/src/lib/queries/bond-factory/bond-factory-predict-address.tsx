@@ -5,7 +5,6 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { parseUnits, type Address } from "viem";
 import {
   PredictedAddressSchema,
@@ -47,8 +46,6 @@ export const getPredictedAddress = withTracing(
   "queries",
   "getPredictedAddress",
   async (input: PredictAddressInput) => {
-    "use cache";
-    cacheTag("asset");
     const {
       assetName,
       symbol,
