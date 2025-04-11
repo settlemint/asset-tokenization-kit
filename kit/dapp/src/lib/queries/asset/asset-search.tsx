@@ -9,6 +9,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { isAddress } from "viem";
 import { AssetUsersFragment } from "./asset-users-fragment";
 import { AssetUsersSchema } from "./asset-users-schema";
@@ -78,7 +79,7 @@ export interface AssetSearchProps {
 export const getAssetSearch = withTracing(
   "queries",
   "getAssetSearch",
-  async ({ searchTerm }: AssetSearchProps) => {
+  cache(async ({ searchTerm }: AssetSearchProps) => {
     "use cache";
     cacheTag("asset");
     const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
@@ -87,7 +88,15 @@ export const getAssetSearch = withTracing(
 
     if (!sanitizedSearchTerm) {
       // If no search term, fetch all assets with a reasonable limit
-      const result = await theGraphClientKit.request(AllAssets, { limit: 10 });
+      const result = await theGraphClientKit.request(
+        AllAssets,
+        { limit: 10 },
+        {
+          "X-GraphQL-Operation-Name": "AllAssets",
+          "X-GraphQL-Operation-Type": "query",
+          cache: "force-cache",
+        }
+      );
       assets = result.assets;
     } else {
       // Otherwise perform the search
@@ -99,7 +108,11 @@ export const getAssetSearch = withTracing(
         search.searchAddress = sanitizedSearchTerm;
       }
 
-      const result = await theGraphClientKit.request(AssetSearch, search);
+      const result = await theGraphClientKit.request(AssetSearch, search, {
+        "X-GraphQL-Operation-Name": "AssetSearch",
+        "X-GraphQL-Operation-Type": "query",
+        cache: "force-cache",
+      });
       assets = result.assets;
     }
 
@@ -115,5 +128,5 @@ export const getAssetSearch = withTracing(
       return safeParse(AssetUsersSchema, assetWithDefaults);
     });
     return validatedAssets;
-  }
+  })
 );

@@ -12,6 +12,7 @@ import { safeParse } from "@/lib/utils/typebox";
 import type { VariablesOf } from "gql.tada";
 import { getLocale, getTranslations } from "next-intl/server";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import type { Address } from "viem";
 import {
   ApprovalEventFragment,
@@ -145,42 +146,52 @@ export interface AssetEventsListProps {
   limit?: number;
 }
 
-const fetchAssetEventsList = async (
-  asset: Address | undefined,
-  sender: Address | undefined,
-  limit: number | undefined
-) => {
-  "use cache";
-  cacheTag("asset");
-  const where: VariablesOf<typeof AssetEventsList>["where"] = {};
+const fetchAssetEventsList = cache(
+  async (
+    asset: Address | undefined,
+    sender: Address | undefined,
+    limit: number | undefined
+  ) => {
+    "use cache";
+    cacheTag("asset");
+    const where: VariablesOf<typeof AssetEventsList>["where"] = {};
 
-  if (asset) {
-    where.emitter = asset.toLowerCase();
-  }
-
-  if (sender) {
-    where.sender = sender.toLowerCase();
-  }
-
-  const events = await fetchAllTheGraphPages(async (first, skip) => {
-    const result = await theGraphClientKit.request(AssetEventsList, {
-      first,
-      skip,
-      where,
-    });
-
-    const events = result.assetEvents || [];
-
-    // If we have a limit, check if we should stop
-    if (limit && skip + events.length >= limit) {
-      return events.slice(0, limit - skip);
+    if (asset) {
+      where.emitter = asset.toLowerCase();
     }
 
-    return events;
-  }, limit);
+    if (sender) {
+      where.sender = sender.toLowerCase();
+    }
 
-  return events;
-};
+    const events = await fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientKit.request(
+        AssetEventsList,
+        {
+          first,
+          skip,
+          where,
+        },
+        {
+          "X-GraphQL-Operation-Name": "AssetEventsList",
+          "X-GraphQL-Operation-Type": "query",
+          cache: "force-cache",
+        }
+      );
+
+      const events = result.assetEvents || [];
+
+      // If we have a limit, check if we should stop
+      if (limit && skip + events.length >= limit) {
+        return events.slice(0, limit - skip);
+      }
+
+      return events;
+    }, limit);
+
+    return events;
+  }
+);
 
 /**
  * Fetches and processes asset event data
@@ -191,7 +202,7 @@ const fetchAssetEventsList = async (
 export const getAssetEventsList = withTracing(
   "queries",
   "getAssetEventsList",
-  async ({ asset, sender, limit }: AssetEventsListProps) => {
+  cache(async ({ asset, sender, limit }: AssetEventsListProps) => {
     const events = await fetchAssetEventsList(asset, sender, limit);
 
     const locale = await getLocale();
@@ -366,5 +377,5 @@ export const getAssetEventsList = withTracing(
         transactionHash: validatedEvent.id.split("-")[0],
       };
     });
-  }
+  })
 );

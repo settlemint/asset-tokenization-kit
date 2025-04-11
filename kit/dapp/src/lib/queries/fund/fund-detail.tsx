@@ -8,6 +8,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { fundsCalculateFields } from "./fund-calculated";
 import { FundFragment, OffchainFundFragment } from "./fund-fragment";
@@ -59,23 +60,39 @@ export interface FundDetailProps {
 export const getFundDetail = withTracing(
   "queries",
   "getFundDetail",
-  async ({ address }: FundDetailProps) => {
+  cache(async ({ address }: FundDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainFund, offChainFund] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(FundDetail, {
-          id: address,
-        });
+        const response = await theGraphClientKit.request(
+          FundDetail,
+          {
+            id: address,
+          },
+          {
+            "X-GraphQL-Operation-Name": "FundDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (!response.fund) {
           throw new Error("Fund not found");
         }
         return safeParse(OnChainFundSchema, response.fund);
       })(),
       (async () => {
-        const response = await hasuraClient.request(OffchainFundDetail, {
-          id: getAddress(address),
-        });
+        const response = await hasuraClient.request(
+          OffchainFundDetail,
+          {
+            id: getAddress(address),
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainFundDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (response.asset.length === 0) {
           return undefined;
         }
@@ -94,5 +111,5 @@ export const getFundDetail = withTracing(
       ...offChainFund,
       ...calculatedFund,
     };
-  }
+  })
 );

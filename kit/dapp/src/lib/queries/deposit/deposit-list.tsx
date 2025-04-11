@@ -9,6 +9,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { getAddress } from "viem";
 import { depositsCalculateFields } from "./deposit-calculated";
 import { DepositFragment, OffchainDepositFragment } from "./deposit-fragment";
@@ -57,24 +58,40 @@ const OffchainDepositList = hasuraGraphql(
 export const getDepositList = withTracing(
   "queries",
   "getDepositList",
-  async () => {
+  cache(async () => {
     "use cache";
     cacheTag("asset");
     const [onChainDeposits, offChainDeposits] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(DepositList, {
-          first,
-          skip,
-        });
+        const result = await theGraphClientKit.request(
+          DepositList,
+          {
+            first,
+            skip,
+          },
+          {
+            "X-GraphQL-Operation-Name": "DepositList",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
 
         return safeParse(t.Array(OnChainDepositSchema), result.deposits || []);
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainDepositList, {
-          limit: pageLimit,
-          offset,
-        });
+        const result = await hasuraClient.request(
+          OffchainDepositList,
+          {
+            limit: pageLimit,
+            offset,
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainDepositList",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
 
         return safeParse(
           t.Array(OffChainDepositSchema),
@@ -105,5 +122,5 @@ export const getDepositList = withTracing(
     });
 
     return deposits;
-  }
+  })
 );

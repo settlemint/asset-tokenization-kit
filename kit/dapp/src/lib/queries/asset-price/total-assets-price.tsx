@@ -1,6 +1,8 @@
 import { getFundList } from "@/lib/queries/fund/fund-list";
 import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { withTracing } from "@/lib/utils/tracing";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { getBondList } from "../bond/bond-list";
 import { getCryptoCurrencyList } from "../cryptocurrency/cryptocurrency-list";
 import { getDepositList } from "../deposit/deposit-list";
@@ -16,7 +18,9 @@ import { getStableCoinList } from "../stablecoin/stablecoin-list";
 export const getTotalAssetPrice = withTracing(
   "queries",
   "getTotalAssetPrice",
-  async () => {
+  cache(async () => {
+    "use cache";
+    cacheTag("asset");
     const [userDetails, ...assetsResult] = await Promise.all([
       await getCurrentUserDetail(),
       await getBondList(),
@@ -36,5 +40,5 @@ export const getTotalAssetPrice = withTracing(
       totalPrice,
       currency: userDetails.currency,
     };
-  }
+  })
 );

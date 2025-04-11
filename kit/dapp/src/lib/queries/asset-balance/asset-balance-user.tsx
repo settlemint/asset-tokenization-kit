@@ -11,6 +11,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import BigNumber from "bignumber.js";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import { AssetBalanceSchema, type AssetBalance } from "./asset-balance-schema";
 
@@ -34,16 +35,24 @@ type AssetType = AssetBalance["asset"]["type"];
 export const getUserAssetsBalance = withTracing(
   "queries",
   "getUserAssetsBalance",
-  async (wallet: Address) => {
+  cache(async (wallet: Address) => {
     "use cache";
     cacheTag("asset");
     const userAssetsBalance = await fetchAllTheGraphPages(
       async (first, skip) => {
-        const pageResult = await theGraphClientKit.request(UserAssetsBalance, {
-          accountId: getAddress(wallet),
-          first,
-          skip,
-        });
+        const pageResult = await theGraphClientKit.request(
+          UserAssetsBalance,
+          {
+            accountId: getAddress(wallet),
+            first,
+            skip,
+          },
+          {
+            "X-GraphQL-Operation-Name": "UserAssetsBalance",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         return pageResult.account?.balances ?? [];
       }
     );
@@ -109,7 +118,7 @@ export const getUserAssetsBalance = withTracing(
       distribution,
       total: total.toString(),
     };
-  }
+  })
 );
 
 function getRoles(wallet: Address, balance: AssetBalance): Role[] {

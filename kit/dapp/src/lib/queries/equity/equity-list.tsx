@@ -10,6 +10,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { getAddress } from "viem";
 import { equitiesCalculateFields } from "./equity-calculated";
 import { EquityFragment, OffchainEquityFragment } from "./equity-fragment";
@@ -60,7 +61,7 @@ const OffchainEquityList = hasuraGraphql(
 export const getEquityList = withTracing(
   "queries",
   "getEquityList",
-  async () => {
+  cache(async () => {
     "use cache";
     cacheTag("asset");
     const [onChainEquities, offChainEquities] = await Promise.all([
@@ -68,6 +69,9 @@ export const getEquityList = withTracing(
         const result = await theGraphClientKit.request(EquityList, {
           first,
           skip,
+          "X-GraphQL-Operation-Name": "EquityList",
+          "X-GraphQL-Operation-Type": "query",
+          cache: "force-cache",
         });
 
         return safeParse(t.Array(OnChainEquitySchema), result.equities || []);
@@ -77,6 +81,9 @@ export const getEquityList = withTracing(
         const result = await hasuraClient.request(OffchainEquityList, {
           limit: pageLimit,
           offset,
+          "X-GraphQL-Operation-Name": "OffchainEquityList",
+          "X-GraphQL-Operation-Type": "query",
+          cache: "force-cache",
         });
 
         return safeParse(
@@ -108,5 +115,5 @@ export const getEquityList = withTracing(
     });
 
     return equities;
-  }
+  })
 );

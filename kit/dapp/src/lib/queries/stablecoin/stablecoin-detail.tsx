@@ -8,6 +8,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { stablecoinsCalculateFields } from "./stablecoin-calculated";
 import {
@@ -65,23 +66,39 @@ export interface StableCoinDetailProps {
 export const getStableCoinDetail = withTracing(
   "queries",
   "getStableCoinDetail",
-  async ({ address }: StableCoinDetailProps) => {
+  cache(async ({ address }: StableCoinDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainStableCoin, offChainStableCoin] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(StableCoinDetail, {
-          id: address,
-        });
+        const response = await theGraphClientKit.request(
+          StableCoinDetail,
+          {
+            id: address,
+          },
+          {
+            "X-GraphQL-Operation-Name": "StableCoinDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (!response.stableCoin) {
           throw new Error("StableCoin not found");
         }
         return safeParse(OnChainStableCoinSchema, response.stableCoin);
       })(),
       (async () => {
-        const response = await hasuraClient.request(OffchainStableCoinDetail, {
-          id: getAddress(address),
-        });
+        const response = await hasuraClient.request(
+          OffchainStableCoinDetail,
+          {
+            id: getAddress(address),
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainStableCoinDetail",
+            "X-GraphQL-Operation-Type": "query",
+            cache: "force-cache",
+          }
+        );
         if (response.asset.length === 0) {
           return undefined;
         }
@@ -100,5 +117,5 @@ export const getStableCoinDetail = withTracing(
       ...offChainStableCoin,
       ...calculatedStableCoin,
     };
-  }
+  })
 );

@@ -7,6 +7,7 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { AssetBalanceFragment } from "./asset-balance-fragment";
 import { AssetBalanceSchema } from "./asset-balance-schema";
@@ -44,7 +45,7 @@ export interface AssetBalanceDetailProps {
 export const getAssetBalanceDetail = withTracing(
   "queries",
   "getAssetBalanceDetail",
-  async ({ address, account }: AssetBalanceDetailProps) => {
+  cache(async ({ address, account }: AssetBalanceDetailProps) => {
     "use cache";
     cacheTag("asset");
 
@@ -56,10 +57,18 @@ export const getAssetBalanceDetail = withTracing(
       const normalizedAddress = getAddress(address);
       const normalizedAccount = getAddress(account);
 
-      const result = await theGraphClientKit.request(AssetBalanceDetail, {
-        address: normalizedAddress,
-        account: normalizedAccount,
-      });
+      const result = await theGraphClientKit.request(
+        AssetBalanceDetail,
+        {
+          address: normalizedAddress,
+          account: normalizedAccount,
+        },
+        {
+          "X-GraphQL-Operation-Name": "AssetBalanceDetail",
+          "X-GraphQL-Operation-Type": "query",
+          cache: "force-cache",
+        }
+      );
 
       if (result.assetBalances.length === 0) {
         return undefined;
@@ -84,5 +93,5 @@ export const getAssetBalanceDetail = withTracing(
       );
       return undefined;
     }
-  }
+  })
 );

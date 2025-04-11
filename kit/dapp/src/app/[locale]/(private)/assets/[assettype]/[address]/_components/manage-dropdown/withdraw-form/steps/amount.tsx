@@ -9,7 +9,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from "react-hook-form";
 
 interface AmountProps {
-  bondDetails:  Awaited<ReturnType<typeof getBondDetail>>;
+  bondDetails: Awaited<ReturnType<typeof getBondDetail>>;
 }
 
 export function Amount({ bondDetails }: AmountProps) {
@@ -24,10 +24,11 @@ export function Amount({ bondDetails }: AmountProps) {
   const isYield = target === "yield";
   const max = isYield ? Number(bondDetails.yieldSchedule?.underlyingBalance ?? 0) : Number(bondDetails.underlyingBalance);
   const noUnderlyingBalance = max === 0;
+  const decimals = isYield ? bondDetails.yieldSchedule?.underlyingAsset.decimals : bondDetails.underlyingAsset.decimals;
   const description = noUnderlyingBalance
     ? t("max-limit.withdraw-no-balance")
     : max
-      ? t("max-limit.withdraw", { limit: formatNumber(max, { locale, decimals: isYield ? bondDetails.yieldSchedule?.underlyingAsset.decimals : bondDetails.underlyingAsset.decimals }) })
+      ? t("max-limit.withdraw", { limit: formatNumber(max, { locale, decimals }) })
       : undefined;
 
   return (
@@ -38,8 +39,9 @@ export function Amount({ bondDetails }: AmountProps) {
         type="number"
         min={0}
         max={max}
-        step="any"
         description={description}
+        required
+        step={decimals ? 10 ** -decimals : "any"}
         postfix={bondDetails.symbol}
         disabled={noUnderlyingBalance}
       />
