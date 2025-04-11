@@ -14,7 +14,7 @@ dependencies:
     version: 0.17.0
     repository: https://victoriametrics.github.io/helm-charts/
   - name: alloy
-    version: 1.0.0
+    version: 1.0.1
     repository: https://grafana.github.io/helm-charts
   - name: metrics-server
     version: 3.12.2
