@@ -12,7 +12,6 @@ import { safeParse } from "@/lib/utils/typebox";
 import type { VariablesOf } from "gql.tada";
 import { getLocale, getTranslations } from "next-intl/server";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { cache } from "react";
 import type { Address } from "viem";
 import {
   ApprovalEventFragment,
@@ -192,7 +191,7 @@ const fetchAssetEventsList = async (
 export const getAssetEventsList = withTracing(
   "queries",
   "getAssetEventsList",
-  cache(async ({ asset, sender, limit }: AssetEventsListProps) => {
+  async ({ asset, sender, limit }: AssetEventsListProps) => {
     const events = await fetchAssetEventsList(asset, sender, limit);
 
     const locale = await getLocale();
@@ -367,5 +366,5 @@ export const getAssetEventsList = withTracing(
         transactionHash: validatedEvent.id.split("-")[0],
       };
     });
-  })
+  }
 );

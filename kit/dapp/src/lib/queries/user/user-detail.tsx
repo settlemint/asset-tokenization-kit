@@ -165,8 +165,8 @@ export const getUserDetail = withTracing(
 export const getCurrentUserDetail = withTracing(
   "queries",
   "getCurrentUserDetail",
-  cache(async () => {
+  async () => {
     const user = await getUser();
     return getUserDetailFromIdOrAddress({ id: user.id });
-  })
+  }
 );
