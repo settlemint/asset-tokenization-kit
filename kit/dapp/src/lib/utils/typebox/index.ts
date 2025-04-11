@@ -1,7 +1,7 @@
 import { t as tElysia } from "elysia/type-system";
 
 import type { StaticDecode, TSchema } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import { TypeCompiler } from "@sinclair/typebox/compiler";
 import { redactSensitiveFields } from "../redaction";
 import { EthereumAddress } from "./address";
 import { Amount } from "./amount";
@@ -94,7 +94,9 @@ export function safeParse<T extends TSchema>(
   schema: T,
   value: unknown
 ): StaticDecode<T> {
-  const errors = [...Value.Errors(schema, value)];
+  const CompiledSchema = TypeCompiler.Compile(schema);
+
+  const errors = [...CompiledSchema.Errors(value)];
   if (errors.length > 0) {
     console.error(`\n${"=".repeat(80)}`);
     console.error("🚨 Typebox Validation Error");
@@ -112,7 +114,7 @@ export function safeParse<T extends TSchema>(
     console.error("=".repeat(80));
     throw new Error(`Validation errors, see the console for more details`);
   }
-  return Value.Parse(schema, value);
+  return CompiledSchema.Decode(value) as StaticDecode<T>;
 }
 
 export { t };
