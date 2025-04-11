@@ -39,6 +39,9 @@ export const hasWalletVerification = withTracing(
       return user.pincodeEnabled || user.twoFactorEnabled || false;
     } catch (err) {
       const error = err as Error;
+      if (error.message === "NEXT_REDIRECT") {
+        return;
+      }
       console.error(
         `Error getting wallet verification: ${error.message}`,
         error.stack
