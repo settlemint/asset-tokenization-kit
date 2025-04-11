@@ -1,6 +1,5 @@
 import { DetailPageHeader } from "@/app/[locale]/(private)/_components/detail-page-header";
 import { AssetTabs } from "@/components/layout/asset-tabs";
-import { Skeleton } from "@/components/ui/skeleton";
 import { metadata } from "@/lib/config/metadata";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -8,7 +7,6 @@ import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
-import { Suspense } from "react";
 import type { Address } from "viem";
 import { ManageDropdown } from "./_components/manage-dropdown/manage-dropdown";
 interface LayoutProps extends PropsWithChildren {
@@ -47,9 +45,7 @@ export default async function AssetDetailLayout({
         )}
       />
       <div className="relative mt-4 space-y-2">
-        <Suspense fallback={<Skeleton className="h-10 w-full" />}>
-          <AssetTabs locale={locale} address={address} assettype={assettype} />
-        </Suspense>
+        <AssetTabs locale={locale} address={address} assettype={assettype} />
       </div>
       {children}
     </>
