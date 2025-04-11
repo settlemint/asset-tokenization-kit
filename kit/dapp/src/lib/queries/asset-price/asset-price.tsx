@@ -3,7 +3,7 @@
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import type { AssetPrice } from "@/lib/queries/asset-price/asset-price-fragment";
-import { getSetting } from "@/lib/queries/setting/setting-detail";
+import { getSettingValue } from "@/lib/queries/setting/setting-detail";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
@@ -51,7 +51,7 @@ export const getAssetsPricesInUserCurrency = withTracing(
   cache(async (assetIds: string[]): Promise<Map<string, Price>> => {
     "use cache";
     cacheTag("asset");
-    const { value: currency } = await getSetting({ key: "baseCurrency" });
+    const { value: currency } = await getSettingValue({ key: "baseCurrency" });
     const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
     const assetPricesData = await fetchAllHasuraPages(
       async (pageLimit, offset) => {

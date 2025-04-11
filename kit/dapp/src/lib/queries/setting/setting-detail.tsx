@@ -1,6 +1,6 @@
 "use server";
 
-import { DEFAULT_SETTINGS, SettingKey } from "@/lib/db/schema-settings";
+import { DEFAULT_SETTINGS, type SettingKey } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { withTracing } from "@/lib/utils/tracing";
@@ -40,7 +40,7 @@ export const getSettingValue = withTracing(
       }
     );
     if (result.settings.length === 0) {
-      return DEFAULT_SETTINGS[key];
+      return { value: DEFAULT_SETTINGS[key], key };
     }
     return safeParse(SettingSchema, result.settings[0]);
   })
