@@ -1,17 +1,22 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { hasWalletVerification } from "@/lib/queries/user/wallet-security";
+import { useEffect, useState, type ReactNode } from "react";
 import { WalletSecuritySetupDialog } from "./wallet-security-setup-dialog";
 
 interface WalletSecurityClientProps {
   children: ReactNode;
-  hasVerification: boolean;
 }
 
-export function WalletSecurityClient({
-  children,
-  hasVerification,
-}: WalletSecurityClientProps) {
+export function WalletSecurityClient({ children }: WalletSecurityClientProps) {
+  const [hasVerification, setHasVerification] = useState(true);
+
+  useEffect(() => {
+    hasWalletVerification().then((hasVerification) => {
+      setHasVerification(hasVerification);
+    });
+  }, []);
+
   return (
     <>
       {hasVerification ? (

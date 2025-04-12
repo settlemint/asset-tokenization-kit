@@ -2,7 +2,7 @@ import { WalletSecurity } from "@/components/blocks/auth/wallet-security";
 import NavInset from "@/components/layout/nav-inset";
 import NavProvider from "@/components/layout/nav-provider";
 import { metadata } from "@/lib/config/metadata";
-import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
+import { RedirectToSignIn } from "@daveyplate/better-auth-ui";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -34,14 +34,12 @@ export default function AdminLayout({ children }: LayoutProps) {
   return (
     <>
       <RedirectToSignIn />
-      <SignedIn>
-        <WalletSecurity>
-          <NavProvider>
-            <PrivateSidebar />
-            <NavInset>{children}</NavInset>
-          </NavProvider>
-        </WalletSecurity>
-      </SignedIn>
+      <WalletSecurity>
+        <NavProvider>
+          <PrivateSidebar />
+          <NavInset>{children}</NavInset>
+        </NavProvider>
+      </WalletSecurity>
     </>
   );
 }

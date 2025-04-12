@@ -8,7 +8,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
+import { Suspense } from "react";
 import { AssetManagement } from "./items/asset-management";
+import { AssetManagementSkeleton } from "./items/asset-management-skeleton";
 import { PlatformManagement } from "./items/platform-management";
 import { PortfolioManagement } from "./items/portfolio-management";
 import { SettingsManagement } from "./items/settings-management";
@@ -26,7 +28,9 @@ export async function PrivateSidebar() {
         </RoleGuard>
         <PortfolioManagement />
         <RoleGuard requiredRoles={["admin", "issuer"]}>
-          <AssetManagement />
+          <Suspense fallback={<AssetManagementSkeleton />}>
+            <AssetManagement />
+          </Suspense>
         </RoleGuard>
         <RoleGuard requiredRoles={["admin"]}>
           <PlatformManagement />

@@ -11,7 +11,7 @@ export async function UsersHistory() {
   const today = endOfDay(new Date());
   const sevenDaysAgo = startOfDay(subDays(today, 7));
 
-  const { users, totalUsersCount } = await getUserCount({
+  const { users } = await getUserCount({
     since: sevenDaysAgo,
   });
 
