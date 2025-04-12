@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import type { PropsWithChildren } from "react";
@@ -47,7 +48,11 @@ export function ChartSkeleton({
         className={cn(containerVariants({ variant }), "flex-1 gap-2")}
       >
         <div className="flex h-full flex-col items-center justify-center">
-          {variant === "loading" ? <></> : children}
+          {variant === "loading" ? (
+            <Skeleton className="h-[250px] w-full bg-muted/50" />
+          ) : (
+            children
+          )}
         </div>
       </CardContent>
     </Card>

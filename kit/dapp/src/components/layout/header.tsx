@@ -3,6 +3,7 @@ import { UserDropdown } from "@/components/layout/user-dropdown";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
+import { SignedIn } from "@daveyplate/better-auth-ui";
 import { Search } from "../blocks/search/search";
 
 export default async function Header() {
@@ -16,7 +17,9 @@ export default async function Header() {
       </div>
       <div className="ml-auto rtl:ml-0 rtl:mr-auto flex items-center gap-2 px-4">
         <PendingTransactionsDropdown />
-        <UserDropdown user={userDetails} />
+        <SignedIn>
+          <UserDropdown user={userDetails} />
+        </SignedIn>
       </div>
     </header>
   );
