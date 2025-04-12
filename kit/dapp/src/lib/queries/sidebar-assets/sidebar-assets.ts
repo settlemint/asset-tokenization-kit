@@ -9,17 +9,11 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { BondFragment } from "../bond/bond-fragment";
-import { OnChainBondSchema } from "../bond/bond-schema";
 import { CryptoCurrencyFragment } from "../cryptocurrency/cryptocurrency-fragment";
-import { OnChainCryptoCurrencySchema } from "../cryptocurrency/cryptocurrency-schema";
 import { DepositFragment } from "../deposit/deposit-fragment";
-import { OnChainDepositSchema } from "../deposit/deposit-schema";
 import { EquityFragment } from "../equity/equity-fragment";
-import { OnChainEquitySchema } from "../equity/equity-schema";
 import { FundFragment } from "../fund/fund-fragment";
-import { OnChainFundSchema } from "../fund/fund-schema";
 import { StableCoinFragment } from "../stablecoin/stablecoin-fragment";
-import { OnChainStableCoinSchema } from "../stablecoin/stablecoin-schema";
 
 /**
  * GraphQL query to fetch sidebar asset data
@@ -28,22 +22,34 @@ const SidebarAssets = theGraphGraphqlKit(
   `
   query SidebarAssets {
     stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
-      ...StableCoinFragment
+      id
+      name
+      symbol
     }
     bonds(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
-      ...BondFragment
+      id
+      name
+      symbol
     }
     equities(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
-      ...EquityFragment
+      id
+      name
+      symbol
     }
     funds(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
-      ...FundFragment
+      id
+      name
+      symbol
     }
     cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
-      ...CryptoCurrencyFragment
+      id
+      name
+      symbol
     }
     deposits(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
-      ...DepositFragment
+      id
+      name
+      symbol
     }
     assetCounts {
       assetType
@@ -78,6 +84,23 @@ const AssetCountSchema = t.Object(
   }
 );
 
+const SidebarAssetSchema = t.Object(
+  {
+    id: t.EthereumAddress({
+      description: "The contract address of the stablecoin token",
+    }),
+    name: t.String({
+      description: "The full name of the stablecoin token",
+    }),
+    symbol: t.AssetSymbol({
+      description: "The trading symbol or ticker of the stablecoin token",
+    }),
+  },
+  {
+    description: "Sidebar asset data",
+  }
+);
+
 /**
  * Type for asset count entries
  */
@@ -107,32 +130,32 @@ export const getSidebarAssets = withTracing(
     const { limit = 10 } = options || {};
 
     const validatedStableCoins = safeParse(
-      t.Array(OnChainStableCoinSchema),
+      t.Array(SidebarAssetSchema),
       result.stableCoins || []
     );
 
     const validatedBonds = safeParse(
-      t.Array(OnChainBondSchema),
+      t.Array(SidebarAssetSchema),
       result.bonds || []
     );
 
     const validatedEquities = safeParse(
-      t.Array(OnChainEquitySchema),
+      t.Array(SidebarAssetSchema),
       result.equities || []
     );
 
     const validatedFunds = safeParse(
-      t.Array(OnChainFundSchema),
+      t.Array(SidebarAssetSchema),
       result.funds || []
     );
 
     const validatedCryptoCurrencies = safeParse(
-      t.Array(OnChainCryptoCurrencySchema),
+      t.Array(SidebarAssetSchema),
       result.cryptoCurrencies || []
     );
 
     const validatedDeposits = safeParse(
-      t.Array(OnChainDepositSchema),
+      t.Array(SidebarAssetSchema),
       result.deposits || []
     );
 
