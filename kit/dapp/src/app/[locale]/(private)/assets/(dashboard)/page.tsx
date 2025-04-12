@@ -19,7 +19,6 @@ import { PriceWidget } from "./_components/widgets/price";
 import { TransactionsWidget } from "./_components/widgets/transactions";
 import { UsersWidget } from "./_components/widgets/users";
 import { WidgetSkeleton } from "./_components/widgets/widget-skeleton";
-export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
