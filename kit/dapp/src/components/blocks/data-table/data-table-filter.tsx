@@ -164,7 +164,7 @@ export function TableFilterActions<TData>({ table }: { table: Table<TData> }) {
 
   return (
     <Button
-      className={cn("h-7 !px-2", !hasFilters && "hidden")}
+      className={cn("h-8 !px-2", !hasFilters && "hidden")}
       variant="destructive"
       onClick={clearFilters}
     >
@@ -245,7 +245,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className={cn("h-7", hasFilters && "w-fit !px-2")}
+          className={cn("h-8", hasFilters && "w-fit !px-2")}
         >
           <Filter className="size-4" />
           {!hasFilters && <span>Filter</span>}
@@ -394,7 +394,7 @@ function renderFilter<TData, T extends ColumnDataType>(
   return (
     <div
       key={`filter-${filter.id}`}
-      className="flex h-7 items-center rounded-2xl border border-border bg-background shadow-xs text-xs"
+      className="flex h-8 items-center rounded-2xl border border-border bg-background shadow-xs text-xs"
     >
       <PropertyFilterSubject meta={meta} />
       <Separator orientation="vertical" />
