@@ -14,7 +14,7 @@ export function Greeting() {
       {name ? (
         <span className="ml-1 font-semibold">{name}</span>
       ) : (
-        <Skeleton className="mx-1 inline-block h-6 w-24" />
+        <Skeleton className="mx-1 inline-block h-4 w-24 bg-muted/50" />
       )}
       . {t("you-have")}
     </div>
