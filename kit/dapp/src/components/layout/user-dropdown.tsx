@@ -15,7 +15,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
-import type { User } from "@/lib/queries/user/user-schema";
 import { cn } from "@/lib/utils";
 import { shortHex } from "@/lib/utils/hex";
 import { ChevronDown } from "lucide-react";
@@ -59,8 +58,8 @@ function TextOrSkeleton({
   );
 }
 
-export function UserDropdown({ user }: { user: User }) {
-  const { error, isPending, refetch } = authClient.useSession();
+export function UserDropdown() {
+  const { data, error, isPending, refetch } = authClient.useSession();
 
   const router = useRouter();
   const t = useTranslations("layout.user-dropdown");
@@ -80,10 +79,10 @@ export function UserDropdown({ user }: { user: User }) {
   }, [router]);
 
   useEffect(() => {
-    if (isPending && !user?.id) {
+    if (isPending && !data?.user?.id) {
       refetch();
     }
-  }, [isPending, refetch, user?.id]);
+  }, [isPending, refetch, data?.user?.id]);
 
   if (error) {
     return (
@@ -101,10 +100,10 @@ export function UserDropdown({ user }: { user: User }) {
       <DropdownMenuTrigger asChild>
         <div className="flex h-12 cursor-pointer items-center gap-2 rounded-md px-2 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
           <Suspense fallback={<Skeleton className="size-8 rounded-lg" />}>
-            {user ? (
+            {data?.user ? (
               <AddressAvatar
-                address={user.wallet as Address}
-                email={user.email}
+                address={data.user.wallet as Address}
+                email={data.user.email}
                 className="size-8 rounded-lg"
                 indicator={false}
               />
@@ -114,26 +113,29 @@ export function UserDropdown({ user }: { user: User }) {
           </Suspense>
           <div className="grid flex-1 text-left rtl:text-right text-sm leading-tight">
             <TextOrSkeleton
-              condition={Boolean(user?.name || user?.email)}
+              condition={Boolean(data?.user?.name || data?.user?.email)}
               className="truncate font-semibold"
               skeletonClassName="size-44"
             >
-              {user?.name ?? user?.email}
+              {data?.user?.name ?? data?.user?.email}
             </TextOrSkeleton>
 
             <TextOrSkeleton
-              condition={Boolean(user?.wallet)}
+              condition={Boolean(data?.user?.wallet)}
               className="truncate text-xs"
               skeletonClassName="size-30"
             >
-              {user?.wallet &&
-                shortHex(user.wallet, { prefixLength: 12, suffixLength: 8 })}
+              {data?.user?.wallet &&
+                shortHex(data?.user?.wallet, {
+                  prefixLength: 12,
+                  suffixLength: 8,
+                })}
             </TextOrSkeleton>
           </div>
           <ChevronDown className="ml-2 size-4" />
         </div>
       </DropdownMenuTrigger>
-      {user && (
+      {data?.user && (
         <DropdownMenuContent
           className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown"
           side="bottom"

@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import { AssetEventFragment } from "@/lib/queries/asset-events/asset-events-fragments";

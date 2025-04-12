@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
 import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
