@@ -8,6 +8,7 @@ import { AssetPriceApi } from "../providers/asset-price/asset-price-api";
 import { ExchangeRatesApi } from "../providers/exchange-rates/exchange-rates-api";
 import { ExchangeRateUpdateApi } from "../providers/exchange-rates/exchange-rates-update-api";
 import { AccessControlError } from "../utils/access-control";
+import { AssetApi } from "./asset";
 import { AssetActivityApi } from "./asset-activity";
 import { AssetBalanceApi } from "./asset-balance";
 import { AssetEventsApi } from "./asset-events";
@@ -89,6 +90,7 @@ export const api = new Elysia({
   .group("/deposit", (app) => app.use(DepositApi))
   .group("/transaction", (app) => app.use(TransactionApi))
   .group("/user", (app) => app.use(UserApi))
+  .group("/asset", (app) => app.use(AssetApi))
   .group("/asset-stats", (app) => app.use(AssetStatsApi))
   .group("/asset-events", (app) => app.use(AssetEventsApi))
   .group("/asset-balance", (app) => app.use(AssetBalanceApi))

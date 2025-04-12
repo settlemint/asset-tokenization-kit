@@ -12,7 +12,6 @@ import { Link } from "@/i18n/routing";
 import { apiClient } from "@/lib/api/client";
 import type { User } from "@/lib/auth/types";
 import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
-import { getAssetSearch } from "@/lib/queries/asset/asset-search";
 import type { Contact } from "@/lib/queries/contact/contact-schema";
 import {
   AddressNameCacheProvider,
@@ -97,10 +96,12 @@ function EvmAddressInner({
   const { data: asset, isLoading: isLoadingAsset } = useSWR(
     [`asset-search`, address],
     async () => {
-      const assetResult = await getAssetSearch({
-        searchTerm: getAddress(address),
+      const { data } = await apiClient.api.asset.search.get({
+        query: {
+          searchTerm: getAddress(address),
+        },
       });
-      return assetResult.length > 0 ? assetResult[0] : null;
+      return data?.[0] ?? null;
     },
     {
       revalidateOnFocus: false,
