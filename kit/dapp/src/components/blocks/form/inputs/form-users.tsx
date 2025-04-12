@@ -21,10 +21,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { apiClient } from "@/lib/api/client";
 import { authClient } from "@/lib/auth/client";
 import type { User } from "@/lib/auth/types";
 import type { Contact } from "@/lib/queries/contact/contact-schema";
-import { getUserSearch } from "@/lib/queries/user/user-search";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
 import { Check, ChevronsUpDown, History } from "lucide-react";
@@ -39,7 +39,6 @@ import {
   type WithPlaceholderProps,
   getAriaAttributes,
 } from "./types";
-
 // Define a type for recently selected users
 type RecentUser = {
   wallet: string;
@@ -178,7 +177,12 @@ function FormUsersList({
       // getUserSearch already filters based on user role
       // If user role is "user", it returns contacts
       // If user role is "admin" or "issuer", it returns all users
-      const results = await getUserSearch({ searchTerm: debounced });
+      const { data } = await apiClient.api.user.search.get({
+        query: {
+          term: debounced,
+        },
+      });
+      const results = data || [];
       return role
         ? results.filter((user) => isUser(user) && user.role === role)
         : results;
