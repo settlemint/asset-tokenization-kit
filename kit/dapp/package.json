@@ -57,7 +57,7 @@
     "@radix-ui/react-tooltip": "1.2.0",
     "@react-email/components": "0.0.36",
     "@scalar/api-reference-react": "0.6.14",
-    "@scalar/types": "0.1.6",
+    "@scalar/types": "0.1.7",
     "@settlemint/sdk-blockscout": "2.1.1",
     "@settlemint/sdk-hasura": "2.1.1",
     "@settlemint/sdk-ipfs": "2.1.1",
