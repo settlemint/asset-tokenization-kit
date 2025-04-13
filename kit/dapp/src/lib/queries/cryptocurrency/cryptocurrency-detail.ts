@@ -79,7 +79,6 @@ export const getCryptoCurrencyDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "CryptoCurrencyDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (!response.cryptoCurrency) {
@@ -96,7 +95,6 @@ export const getCryptoCurrencyDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "OffchainCryptoCurrencyDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (response.asset.length === 0) {

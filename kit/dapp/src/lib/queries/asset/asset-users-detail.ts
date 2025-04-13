@@ -91,7 +91,6 @@ export const getAssetUsersDetail = withTracing(
         {
           "X-GraphQL-Operation-Name": "AssetDetail",
           "X-GraphQL-Operation-Type": "query",
-          cache: "force-cache",
         }
       ),
       hasuraClient.request(
@@ -102,7 +101,6 @@ export const getAssetUsersDetail = withTracing(
         {
           "X-GraphQL-Operation-Name": "OffchainAssetDetail",
           "X-GraphQL-Operation-Type": "query",
-          cache: "force-cache",
         }
       ),
     ]);

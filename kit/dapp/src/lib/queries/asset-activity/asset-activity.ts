@@ -56,7 +56,6 @@ export const getAssetActivity = withTracing(
         {
           "X-GraphQL-Operation-Name": "AssetActivity",
           "X-GraphQL-Operation-Type": "query",
-          cache: "force-cache",
         }
       );
 

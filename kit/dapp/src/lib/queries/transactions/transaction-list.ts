@@ -72,7 +72,6 @@ export const getTransactionList = withTracing(
           {
             "X-GraphQL-Operation-Name": "TransactionList",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
 
@@ -113,7 +112,6 @@ export const getTransactionListByAddress = withTracing(
           {
             "X-GraphQL-Operation-Name": "TransactionListByAddress",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
 

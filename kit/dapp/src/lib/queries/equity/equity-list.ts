@@ -75,7 +75,6 @@ export const getEquityList = withTracing(
           {
             "X-GraphQL-Operation-Name": "EquityList",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
 
@@ -92,7 +91,6 @@ export const getEquityList = withTracing(
           {
             "X-GraphQL-Operation-Name": "OffchainEquityList",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
 

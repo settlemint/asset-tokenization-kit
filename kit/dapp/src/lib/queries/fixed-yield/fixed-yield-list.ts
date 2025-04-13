@@ -43,7 +43,6 @@ export const getFixedYieldList = withTracing(
       {
         "X-GraphQL-Operation-Name": "FixedYieldList",
         "X-GraphQL-Operation-Type": "query",
-        cache: "force-cache",
       }
     );
 

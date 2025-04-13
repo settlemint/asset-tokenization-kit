@@ -81,7 +81,6 @@ export const getCryptoCurrencyList = withTracing(
             {
               "X-GraphQL-Operation-Name": "CryptoCurrencyList",
               "X-GraphQL-Operation-Type": "query",
-              cache: "force-cache",
             }
           );
 
@@ -101,7 +100,6 @@ export const getCryptoCurrencyList = withTracing(
             {
               "X-GraphQL-Operation-Name": "OffchainCryptocurrencyList",
               "X-GraphQL-Operation-Type": "query",
-              cache: "force-cache",
             }
           );
 

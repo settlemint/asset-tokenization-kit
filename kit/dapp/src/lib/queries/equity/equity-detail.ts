@@ -73,7 +73,6 @@ export const getEquityDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "EquityDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (!response.equity) {
@@ -90,7 +89,6 @@ export const getEquityDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "OffchainEquityDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (response.asset.length === 0) {

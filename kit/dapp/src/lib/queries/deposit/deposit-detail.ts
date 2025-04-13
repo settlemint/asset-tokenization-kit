@@ -73,7 +73,6 @@ export const getDepositDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "DepositDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (!response.deposit) {
@@ -90,7 +89,6 @@ export const getDepositDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "OffchainDepositDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (response.asset.length === 0) {

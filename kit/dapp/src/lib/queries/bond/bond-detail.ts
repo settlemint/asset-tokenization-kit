@@ -73,7 +73,6 @@ export const getBondDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "BondDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (!response.bond) {
@@ -90,7 +89,6 @@ export const getBondDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "OffchainBondDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (response.asset.length === 0) {

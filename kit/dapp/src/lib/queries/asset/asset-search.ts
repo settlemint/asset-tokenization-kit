@@ -94,7 +94,6 @@ export const getAssetSearch = withTracing(
         {
           "X-GraphQL-Operation-Name": "AllAssets",
           "X-GraphQL-Operation-Type": "query",
-          cache: "force-cache",
         }
       );
       assets = result.assets;
@@ -111,7 +110,6 @@ export const getAssetSearch = withTracing(
       const result = await theGraphClientKit.request(AssetSearch, search, {
         "X-GraphQL-Operation-Name": "AssetSearch",
         "X-GraphQL-Operation-Type": "query",
-        cache: "force-cache",
       });
       assets = result.assets;
     }

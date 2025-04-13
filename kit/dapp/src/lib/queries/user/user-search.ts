@@ -81,7 +81,6 @@ export const getAllUsersSearch = withAccessControl(
       {
         "X-GraphQL-Operation-Name": "UserSearch",
         "X-GraphQL-Operation-Type": "query",
-        cache: "force-cache",
       }
     );
 

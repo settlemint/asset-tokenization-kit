@@ -73,7 +73,6 @@ export const getFundDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "FundDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (!response.fund) {
@@ -90,7 +89,6 @@ export const getFundDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "OffchainFundDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (response.asset.length === 0) {

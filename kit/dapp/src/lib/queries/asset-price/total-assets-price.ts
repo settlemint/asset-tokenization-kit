@@ -84,7 +84,6 @@ export const getTotalAssetPrice = withTracing(
           {
             "X-GraphQL-Operation-Name": "TotalAssetSuplies",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         return safeParse(t.Array(TotalAssetSupliesSchema), response.assets);
@@ -96,7 +95,6 @@ export const getTotalAssetPrice = withTracing(
           {
             "X-GraphQL-Operation-Name": "TotalAssetPrices",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         return safeParse(t.Array(AssetPriceSchema), response.asset_price);

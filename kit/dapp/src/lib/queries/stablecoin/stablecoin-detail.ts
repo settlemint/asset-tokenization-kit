@@ -79,7 +79,6 @@ export const getStableCoinDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "StableCoinDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (!response.stableCoin) {
@@ -96,7 +95,6 @@ export const getStableCoinDetail = withTracing(
           {
             "X-GraphQL-Operation-Name": "OffchainStableCoinDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (response.asset.length === 0) {

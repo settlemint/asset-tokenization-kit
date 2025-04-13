@@ -97,7 +97,6 @@ const getUserDetailFromIdOrAddress = withTracing(
           {
             "X-GraphQL-Operation-Name": "UserDetail",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (!result.user_by_pk) {
@@ -113,7 +112,6 @@ const getUserDetailFromIdOrAddress = withTracing(
           {
             "X-GraphQL-Operation-Name": "UserDetailByWallet",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         if (!result.user || result.user.length === 0) {
@@ -137,7 +135,6 @@ const getUserDetailFromIdOrAddress = withTracing(
               {
                 "X-GraphQL-Operation-Name": "UserActivity",
                 "X-GraphQL-Operation-Type": "query",
-                cache: "force-cache",
               }
             );
             if (!result.account) {

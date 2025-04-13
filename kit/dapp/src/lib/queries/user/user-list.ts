@@ -81,7 +81,6 @@ export const getUserList = withTracing(
               {
                 "X-GraphQL-Operation-Name": "UserList",
                 "X-GraphQL-Operation-Type": "query",
-                cache: "force-cache",
               }
             );
             return safeParse(t.Array(UserSchema), result.user || []);
@@ -96,7 +95,6 @@ export const getUserList = withTracing(
               {
                 "X-GraphQL-Operation-Name": "UserActivity",
                 "X-GraphQL-Operation-Type": "query",
-                cache: "force-cache",
               }
             );
             return safeParse(t.Array(AccountSchema), result.accounts || []);

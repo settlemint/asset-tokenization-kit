@@ -68,7 +68,6 @@ export const getAssetsPricesInUserCurrency = withTracing(
           {
             "X-GraphQL-Operation-Name": "AssetPrices",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         return pageResult.asset_price ?? [];

@@ -54,7 +54,6 @@ export const getPortfolioStats = withTracing(
       {
         "X-GraphQL-Operation-Name": "PortfolioHistory",
         "X-GraphQL-Operation-Type": "query",
-        cache: "force-cache",
       }
     );
 

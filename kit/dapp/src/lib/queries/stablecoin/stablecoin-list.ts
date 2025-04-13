@@ -78,7 +78,6 @@ export const getStableCoinList = withTracing(
           {
             "X-GraphQL-Operation-Name": "StableCoinList",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
 
@@ -98,7 +97,6 @@ export const getStableCoinList = withTracing(
           {
             "X-GraphQL-Operation-Name": "OffchainStableCoinList",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
 

@@ -59,7 +59,6 @@ export const getTransactionDetail = withTracing(
       {
         "X-GraphQL-Operation-Name": "TransactionDetail",
         "X-GraphQL-Operation-Type": "query",
-        cache: "force-cache",
       }
     );
 

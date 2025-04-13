@@ -72,7 +72,6 @@ export const getDepositList = withTracing(
           {
             "X-GraphQL-Operation-Name": "DepositList",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
 
@@ -89,7 +88,6 @@ export const getDepositList = withTracing(
           {
             "X-GraphQL-Operation-Name": "OffchainDepositList",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
 

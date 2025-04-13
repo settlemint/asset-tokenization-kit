@@ -61,7 +61,6 @@ export const getAssetBalanceList = withTracing(
       {
         "X-GraphQL-Operation-Name": "AssetBalanceList",
         "X-GraphQL-Operation-Type": "query",
-        cache: "force-cache",
       }
     );
 

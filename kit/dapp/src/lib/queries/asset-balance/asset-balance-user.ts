@@ -50,7 +50,6 @@ export const getUserAssetsBalance = withTracing(
           {
             "X-GraphQL-Operation-Name": "UserAssetsBalance",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
         return pageResult.account?.balances ?? [];

@@ -178,7 +178,6 @@ const fetchAssetEventsList = cache(
         {
           "X-GraphQL-Operation-Name": "AssetEventsList",
           "X-GraphQL-Operation-Type": "query",
-          cache: "force-cache",
         }
       );
 

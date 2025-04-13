@@ -36,7 +36,6 @@ export const getSettingValue = withTracing(
       {
         "X-GraphQL-Operation-Name": "GetSetting",
         "X-GraphQL-Operation-Type": "query",
-        cache: "force-cache",
       }
     );
     if (result.settings.length === 0) {

@@ -75,7 +75,6 @@ export const getFundList = withTracing(
           {
             "X-GraphQL-Operation-Name": "FundList",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
 
@@ -92,7 +91,6 @@ export const getFundList = withTracing(
           {
             "X-GraphQL-Operation-Name": "OffchainFundList",
             "X-GraphQL-Operation-Type": "query",
-            cache: "force-cache",
           }
         );
 
