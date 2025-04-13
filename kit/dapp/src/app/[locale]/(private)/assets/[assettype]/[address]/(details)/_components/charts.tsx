@@ -121,16 +121,14 @@ export async function Charts({ assettype, address }: ChartsProps) {
           />
         </Suspense>
       </ChartGrid>
-      <Suspense fallback={<ChartCardSkeleton />}>
-        <Related
-          assettype={assettype}
-          address={address}
-          assetDetails={assetDetails}
-          userBalance={userBalance}
-          assetUsersDetails={assetUsersDetails}
-          currentUserWallet={user.wallet as Address | undefined}
-        />
-      </Suspense>
+      <Related
+        assettype={assettype}
+        address={address}
+        assetDetails={assetDetails}
+        userBalance={userBalance}
+        assetUsersDetails={assetUsersDetails}
+        currentUserWallet={user.wallet as Address | undefined}
+      />
     </>
   );
 }
