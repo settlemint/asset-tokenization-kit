@@ -1,4 +1,5 @@
 import { Details } from "@/app/[locale]/(private)/assets/[assettype]/[address]/(details)/_components/details";
+import { AssetEventsSkeleton } from "@/components/blocks/asset-events-table/asset-events-skeleton";
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
 import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
@@ -12,6 +13,7 @@ import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import type { Address } from "viem";
 
 interface PageProps {
@@ -54,7 +56,9 @@ export default async function AssetDetailsPage({ params }: PageProps) {
       </ChartGrid>
 
       <div className="mt-8">
-        <AssetEventsTable asset={address} sender={user.wallet} />
+        <Suspense fallback={<AssetEventsSkeleton />}>
+          <AssetEventsTable asset={address} sender={user.wallet} />
+        </Suspense>
       </div>
     </>
   );

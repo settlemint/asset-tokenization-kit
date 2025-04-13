@@ -13,7 +13,6 @@ import { TransactionsHistorySkeleton } from "./_components/charts/transactions-h
 import { UsersHistory } from "./_components/charts/users-history";
 import { UsersHistorySkeleton } from "./_components/charts/users-history-skeleton";
 import { LatestEvents } from "./_components/table/latest-events";
-import { LatestEventsSkeleton } from "./_components/table/latest-events-skeleton";
 import { AssetsWidget } from "./_components/widgets/assets";
 import { PriceWidget } from "./_components/widgets/price";
 import { TransactionsWidget } from "./_components/widgets/transactions";
@@ -86,9 +85,7 @@ export default async function AdminDashboard({
       <p className="mt-8 mb-4 font-semibold text-2xl">
         {t("latest-events-heading")}
       </p>
-      <Suspense fallback={<LatestEventsSkeleton />}>
-        <LatestEvents />
-      </Suspense>
+      <LatestEvents />
     </>
   );
 }

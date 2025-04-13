@@ -7,12 +7,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
 
-export function LatestEventsSkeleton() {
-  const t = useTranslations("admin.dashboard.table");
-
+export function AssetEventsSkeleton() {
   return (
     <>
       <div className="rounded-md border">
@@ -57,12 +53,6 @@ export function LatestEventsSkeleton() {
           </TableBody>
         </Table>
       </div>
-      <Link
-        href="/assets/activity/events"
-        className="mt-4 text-muted-foreground text-sm hover:text-primary"
-      >
-        {t("latest-events.view-all")}
-      </Link>
     </>
   );
 }
