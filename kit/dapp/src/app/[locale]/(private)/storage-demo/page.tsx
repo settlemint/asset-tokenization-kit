@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { StorageDemo } from "./_components/storage-demo";
 
-export function generateMetadata({ params }: { params: { locale: string } }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const resolvedParams = await params;
+
   return {
     title: "Storage Demo",
     description: "A demonstration of the Minio storage integration",
