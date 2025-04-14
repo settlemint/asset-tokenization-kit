@@ -1,13 +1,6 @@
 import { StorageDemo } from "./_components/storage-demo";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
-}) {
-  // In Next.js metadata functions, we need to await the params object
-  const resolvedParams = await params;
-
+export function generateMetadata({ params }: { params: { locale: string } }) {
   return {
     title: "Storage Demo",
     description: "A demonstration of the Minio storage integration",
