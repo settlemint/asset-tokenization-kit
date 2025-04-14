@@ -190,21 +190,21 @@ thegraph:
         podMetadata:
           labels:
             role: query-node
-            custom-label: custom-value
       index:
         enabled: true
         replicaCount: 2
         podMetadata:
           labels:
             role: index-node
-            custom-label: custom-value
       block-ingestor:
         enabled: true
         replicaCount: 2
         podMetadata:
           labels:
             role: block-ingestor
-            custom-label: custom-value
+      combined:
+        enabled: false
+    blockIngestorGroupName: block-ingestor
     ingress:
       hosts:
         - host: graph.k8s.orb.local
