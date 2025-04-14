@@ -17,10 +17,12 @@ export type WalletSecurityMethod =
 
 interface WalletSecuritySetupDialogProps {
   open: boolean;
+  onSetupComplete: () => void;
 }
 
 export function WalletSecuritySetupDialog({
   open,
+  onSetupComplete,
 }: WalletSecuritySetupDialogProps) {
   const t = useTranslations("private.auth.wallet-security.form.setup");
   const [isSettingUp, setIsSettingUp] = useState(false);
@@ -30,7 +32,7 @@ export function WalletSecuritySetupDialog({
       <DialogContent>
         {isSettingUp ? (
           <div className="flex flex-col gap-4">
-            <SetupWalletSecurityForm />
+            <SetupWalletSecurityForm onSetupComplete={onSetupComplete} />
           </div>
         ) : (
           <>
