@@ -12,9 +12,14 @@ export function WalletSecurityClient({ children }: WalletSecurityClientProps) {
   const [hasVerification, setHasVerification] = useState(true);
 
   useEffect(() => {
-    hasWalletVerification().then((hasVerification) => {
-      setHasVerification(hasVerification);
-    });
+    hasWalletVerification()
+      .then((hasVerification) => {
+        setHasVerification(hasVerification);
+      })
+      .catch((error) => {
+        console.error(error);
+        setHasVerification(false);
+      });
   }, []);
 
   return (
@@ -23,7 +28,12 @@ export function WalletSecurityClient({ children }: WalletSecurityClientProps) {
         children
       ) : (
         <div className="min-h-screen w-full bg-[url('/backgrounds/background-lm.svg')] bg-center bg-cover dark:bg-[url('/backgrounds/background-dm.svg')]">
-          <WalletSecuritySetupDialog open={!hasVerification} />
+          <WalletSecuritySetupDialog
+            open={!hasVerification}
+            onSetupComplete={() => {
+              setHasVerification(true);
+            }}
+          />
         </div>
       )}
     </>

@@ -304,13 +304,17 @@ export function Form<
               errorMessage = "Validation error";
             }
 
-            form.setValue(
-              "verificationCode" as Path<S extends Schema ? Infer<S> : string>,
-              "" as PathValue<
-                S extends Schema ? Infer<S> : string,
-                Path<S extends Schema ? Infer<S> : string>
-              >
-            );
+            if (secureForm) {
+              form.setValue(
+                "verificationCode" as Path<
+                  S extends Schema ? Infer<S> : string
+                >,
+                "" as PathValue<
+                  S extends Schema ? Infer<S> : string,
+                  Path<S extends Schema ? Infer<S> : string>
+                >
+              );
+            }
 
             toast.error(`Failed to submit: ${errorMessage}`);
           },

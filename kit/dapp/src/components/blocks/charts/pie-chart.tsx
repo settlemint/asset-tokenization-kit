@@ -1,5 +1,6 @@
 "use client";
 
+import { ChartPieIcon } from "@/components/ui/animated-icons/chart-pie";
 import {
   Card,
   CardContent,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/chart";
 import type { ReactNode } from "react";
 import { Cell, Pie, PieChart } from "recharts";
+import { ChartSkeleton } from "./chart-skeleton";
 
 interface PieChartProps {
   title: string;
@@ -39,6 +41,16 @@ export function PieChartComponent({
   nameKey,
   footer,
 }: PieChartProps) {
+  if (data.filter((d) => d.percentage !== 0).length === 0) {
+    return (
+      <ChartSkeleton title={title} description={description} variant="noData">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <ChartPieIcon className="h-8 w-8 text-muted-foreground" />
+        </div>
+      </ChartSkeleton>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
