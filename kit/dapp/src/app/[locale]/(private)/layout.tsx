@@ -13,6 +13,8 @@ interface LayoutProps extends PropsWithChildren {
   params: Promise<{ locale: Locale }>;
 }
 
+export const revalidate = 900; // 15 minutes
+
 export async function generateMetadata({
   params,
 }: LayoutProps): Promise<Metadata> {

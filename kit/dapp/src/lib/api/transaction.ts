@@ -130,14 +130,15 @@ export const TransactionApi = new Elysia({
     "/count",
     async ({ query }) => {
       const { address } = query;
-      const transactions = address
-        ? await getTransactionListByAddress(getAddress(address))
-        : await getTransactionList();
-
-      const recent = await getRecentTransactions({
-        address: address ? getAddress(address) : undefined,
-        processedAfter: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
-      });
+      const [transactions, recent] = await Promise.all([
+        address
+          ? getTransactionListByAddress(getAddress(address))
+          : getTransactionList(),
+        getRecentTransactions({
+          address: address ? getAddress(address) : undefined,
+          processedAfter: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
+        }),
+      ]);
 
       return {
         total: transactions.length,
