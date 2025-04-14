@@ -134,17 +134,21 @@ export async function handleChallenge(
       );
     }
 
-    const firstChallenge =
+    const walletVerificationChallenge =
       verificationChallenges.createWalletVerificationChallenges.find(
-        (challenge) => challenge.verificationType === "PINCODE"
+        (challenge) =>
+          challenge.verificationType === "PINCODE" &&
+          challenge.id === user.pincodeVerificationId
       );
-    const challenge = firstChallenge?.challenge;
 
-    if (!challenge?.secret || !challenge?.salt) {
+    if (
+      !walletVerificationChallenge?.challenge?.secret ||
+      !walletVerificationChallenge?.challenge?.salt
+    ) {
       throw new ChallengeError("Invalid challenge format", "INVALID_CHALLENGE");
     }
 
-    const { secret, salt } = challenge;
+    const { secret, salt } = walletVerificationChallenge.challenge;
     const challengeResponse = await generateChallengeResponse(
       Number(code),
       salt,
