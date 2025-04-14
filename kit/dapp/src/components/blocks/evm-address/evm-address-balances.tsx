@@ -10,6 +10,14 @@ interface EvmAddressBalancesProps {
   address: Address;
 }
 
+// Define balance type
+interface AssetBalance {
+  asset: {
+    symbol: string;
+  };
+  value: string;
+}
+
 export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
   const { data: balances, isLoading } = useSWR(
     [`asset-balances-${address}`],
@@ -50,7 +58,7 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
 
   return (
     <div className="flex flex-col gap-1">
-      {balances.map((balance, index: number) => (
+      {balances.map((balance: AssetBalance, index: number) => (
         <div key={index} className="flex items-center justify-between">
           <span className="font-medium text-sm">{balance.asset.symbol}</span>
           <span className="text-muted-foreground text-sm">{balance.value}</span>
