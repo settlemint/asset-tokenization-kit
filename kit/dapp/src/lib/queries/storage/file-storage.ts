@@ -11,8 +11,6 @@ import {
 } from "@/lib/storage/minio-client";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { cache } from "react";
 
 /**
  * Schema for file metadata
@@ -42,18 +40,22 @@ const DEFAULT_BUCKET = "uploads";
  * Gets a list of files with optional prefix filter
  *
  * @param prefix - Optional prefix to filter files (like a folder path)
+ * @param skipCache - Whether to skip cache and always fetch fresh data (no longer used)
  * @returns Array of file metadata objects
  */
 export const getFilesList = withTracing(
   "queries",
   "getFilesList",
-  cache(async (prefix: string = ""): Promise<FileMetadata[]> => {
-    "use cache";
-    cacheTag("file-storage");
+  async (
+    prefix: string = "",
+    skipCache: boolean = false
+  ): Promise<FileMetadata[]> => {
+    console.log(`Listing files with prefix: "${prefix}"`);
 
     try {
       const listOperation = createListObjectsOperation(DEFAULT_BUCKET, prefix);
       const objects = await executeMinioOperation(listOperation);
+      console.log(`Found ${objects.length} files in Minio`);
 
       const fileObjects = await Promise.all(
         objects.map(async (obj) => {
@@ -81,7 +83,7 @@ export const getFilesList = withTracing(
       console.error("Failed to list files:", error);
       return [];
     }
-  })
+  }
 );
 
 /**
@@ -93,9 +95,8 @@ export const getFilesList = withTracing(
 export const getFileById = withTracing(
   "queries",
   "getFileById",
-  cache(async (fileId: string): Promise<FileMetadata | null> => {
-    "use cache";
-    cacheTag("file-storage");
+  async (fileId: string): Promise<FileMetadata | null> => {
+    console.log(`Getting file details for: ${fileId}`);
 
     try {
       // Get the file metadata
@@ -126,7 +127,7 @@ export const getFileById = withTracing(
       console.error(`Failed to get file ${fileId}:`, error);
       return null;
     }
-  })
+  }
 );
 
 /**

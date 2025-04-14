@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const prefix = searchParams.get("prefix");
   const fileId = searchParams.get("fileId");
+  const skipCache = searchParams.get("skipCache") === "true";
 
   try {
     if (fileId) {
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(file);
     } else {
       // List files with optional prefix
-      const files = await getFilesList(prefix || "");
+      const files = await getFilesList(prefix || "", skipCache);
       return NextResponse.json({ files });
     }
   } catch (error) {

@@ -60,13 +60,20 @@ export function StorageDemo() {
     setLoading(true);
     setError(null);
     try {
+      console.log(`Fetching files with prefix: "${prefix}"`);
+
+      // Add skipCache=true to always get fresh data
       const response = await fetch(
-        `/api/storage${prefix ? `?prefix=${prefix}` : ""}`
+        `/api/storage${prefix ? `?prefix=${prefix}` : ""}${prefix ? "&skipCache=true" : "?skipCache=true"}`
       );
+
       if (!response.ok) {
         throw new Error("Failed to fetch files");
       }
+
       const data = await response.json();
+      console.log(`Received ${data.files?.length || 0} files from API`);
+
       setFiles(data.files || []);
     } catch (error) {
       console.error("Error fetching files:", error);
@@ -98,19 +105,14 @@ export function StorageDemo() {
         throw new Error("Failed to upload file");
       }
 
+      // Get response data
+      const uploadResult = await response.json();
+      console.log("Upload result:", uploadResult); // Debug logging
+
       showMessage("File uploaded successfully");
 
-      // Add the newly uploaded file to the state directly while we fetch the full list
-      const uploadResult = await response.json();
-      if (uploadResult.file) {
-        // Add the new file to the list
-        setFiles((currentFiles) => [...currentFiles, uploadResult.file]);
-      }
-
-      // Refresh the entire list to get any other changes
-      setTimeout(() => {
-        fetchFiles();
-      }, 500); // Short delay to ensure Minio has processed everything
+      // Always do a fresh fetch instead of trying to merge state
+      fetchFiles();
     } catch (error) {
       console.error("Error uploading file:", error);
       showMessage("Failed to upload file", true);
