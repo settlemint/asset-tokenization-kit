@@ -1,12 +1,13 @@
 import "server-only";
 
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { theGraphClientKit, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress } from "viem";
+import { getAssetsPricesInUserCurrency } from "./asset-price";
 
 const TotalAssetSuplies = theGraphGraphql(
   `
@@ -14,18 +15,6 @@ const TotalAssetSuplies = theGraphGraphql(
     assets(where: {totalSupplyExact_gt: "0"}) {
       id
       totalSupply
-    }
-  }
-`
-);
-
-const TotalAssetPrices = hasuraGraphql(
-  `
-  query TotalAssetPrices {
-    asset_price {
-      asset_id
-      amount
-      currency
     }
   }
 `
@@ -72,11 +61,10 @@ export const AssetPriceSchema = t.Object(
 export const getTotalAssetPrice = withTracing(
   "queries",
   "getTotalAssetPrice",
-  cache(async () => {
+  cache(async (userCurrency: CurrencyCode) => {
     "use cache";
     cacheTag("asset");
-
-    const [totalAssetSuplies, totalAssetPrices] = await Promise.all([
+    const totalAssetSupliesData = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(
           TotalAssetSuplies,
@@ -88,27 +76,17 @@ export const getTotalAssetPrice = withTracing(
         );
         return safeParse(t.Array(TotalAssetSupliesSchema), response.assets);
       })(),
-      (async () => {
-        const response = await hasuraClient.request(
-          TotalAssetPrices,
-          {},
-          {
-            "X-GraphQL-Operation-Name": "TotalAssetPrices",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
-        return safeParse(t.Array(AssetPriceSchema), response.asset_price);
-      })(),
     ]);
-
-    const totalAssetPricesById = new Map(
-      totalAssetPrices.map((asset) => [getAddress(asset.asset_id), asset])
+    const totalAssetSuplies = totalAssetSupliesData.flat();
+    const pricesInUserCurrency = await getAssetsPricesInUserCurrency(
+      totalAssetSuplies.map((asset) => getAddress(asset.id)),
+      userCurrency
     );
 
     const totalPrice = totalAssetSuplies.reduce((acc, asset) => {
       return (
         acc +
-        (totalAssetPricesById.get(getAddress(asset.id))?.amount ?? 0) *
+        (pricesInUserCurrency.get(getAddress(asset.id))?.amount ?? 0) *
           asset.totalSupply
       );
     }, 0);

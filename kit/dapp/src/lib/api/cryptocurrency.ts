@@ -37,8 +37,8 @@ export const CryptoCurrencyApi = new Elysia({
   .use(superJson)
   .get(
     "",
-    async () => {
-      return getCryptoCurrencyList();
+    async ({ user }) => {
+      return getCryptoCurrencyList(user.currency);
     },
     {
       auth: true,
@@ -56,9 +56,10 @@ export const CryptoCurrencyApi = new Elysia({
   )
   .get(
     "/:address",
-    ({ params: { address } }) => {
+    ({ params: { address }, user }) => {
       return getCryptoCurrencyDetail({
         address: getAddress(address),
+        userCurrency: user.currency,
       });
     },
     {

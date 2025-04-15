@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
@@ -13,7 +14,6 @@ import { type Address, getAddress } from "viem";
 import { depositsCalculateFields } from "./deposit-calculated";
 import { DepositFragment, OffchainDepositFragment } from "./deposit-fragment";
 import { OffChainDepositSchema, OnChainDepositSchema } from "./deposit-schema";
-
 /**
  * GraphQL query to fetch on-chain tokenized deposit details from The Graph
  */
@@ -48,6 +48,8 @@ const OffchainDepositDetail = hasuraGraphql(
 export interface DepositDetailProps {
   /** Ethereum address of the tokenized deposit contract */
   address: Address;
+  /** Currency code for the user */
+  userCurrency: CurrencyCode;
 }
 
 /**
@@ -60,7 +62,7 @@ export interface DepositDetailProps {
 export const getDepositDetail = withTracing(
   "queries",
   "getDepositDetail",
-  cache(async ({ address }: DepositDetailProps) => {
+  cache(async ({ address, userCurrency }: DepositDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainDeposit, offChainDeposit] = await Promise.all([
@@ -100,7 +102,7 @@ export const getDepositDetail = withTracing(
 
     const calculatedFields = await depositsCalculateFields(
       [onChainDeposit],
-      [offChainDeposit]
+      userCurrency
     );
     const calculatedDeposit = calculatedFields.get(onChainDeposit.id)!;
 

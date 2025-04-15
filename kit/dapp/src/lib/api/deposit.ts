@@ -51,8 +51,8 @@ export const DepositApi = new Elysia({
   .use(superJson)
   .get(
     "",
-    async () => {
-      return getDepositList();
+    async ({ user }) => {
+      return getDepositList(user.currency);
     },
     {
       auth: true,
@@ -70,9 +70,10 @@ export const DepositApi = new Elysia({
   )
   .get(
     "/:address",
-    ({ params: { address } }) => {
+    ({ params: { address }, user }) => {
       return getDepositDetail({
         address: getAddress(address),
+        userCurrency: user.currency,
       });
     },
     {

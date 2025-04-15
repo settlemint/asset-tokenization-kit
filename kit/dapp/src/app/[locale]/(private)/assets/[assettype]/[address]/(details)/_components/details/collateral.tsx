@@ -1,6 +1,7 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
+import { getUser } from "@/lib/auth/utils";
 import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { formatDate, formatDuration } from "@/lib/utils/date";
@@ -15,11 +16,12 @@ interface CollateralProps {
 }
 
 export async function Collateral({ address, assettype }: CollateralProps) {
+  const user = await getUser();
   const [asset, t, locale] = await Promise.all([
     assettype === "stablecoin"
-      ? await getStableCoinDetail({ address })
+      ? await getStableCoinDetail({ address, userCurrency: user.currency })
       : assettype === "deposit"
-        ? await getDepositDetail({ address })
+        ? await getDepositDetail({ address, userCurrency: user.currency })
         : undefined,
     getTranslations("private.assets.fields"),
     getLocale(),

@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
@@ -14,7 +15,6 @@ import { getAddress } from "viem";
 import { depositsCalculateFields } from "./deposit-calculated";
 import { DepositFragment, OffchainDepositFragment } from "./deposit-fragment";
 import { OffChainDepositSchema, OnChainDepositSchema } from "./deposit-schema";
-
 /**
  * GraphQL query to fetch on-chain tokenized deposit list from The Graph
  *
@@ -58,7 +58,7 @@ const OffchainDepositList = hasuraGraphql(
 export const getDepositList = withTracing(
   "queries",
   "getDepositList",
-  cache(async () => {
+  cache(async (userCurrency: CurrencyCode) => {
     "use cache";
     cacheTag("asset");
     const [onChainDeposits, offChainDeposits] = await Promise.all([
@@ -104,7 +104,7 @@ export const getDepositList = withTracing(
 
     const calculatedFields = await depositsCalculateFields(
       onChainDeposits,
-      offChainDeposits
+      userCurrency
     );
 
     const deposits = onChainDeposits.map((deposit) => {

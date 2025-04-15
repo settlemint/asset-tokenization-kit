@@ -88,45 +88,53 @@ export const updateExchangeRates = withAccessControl(
       asset: ["manage"],
     },
   },
-  async (today: string) => {
-    // Calculate all cross rates
-    const ratesMap = await calculateCrossRates();
-
-    // Update database
-    for (const baseCurrency of fiatCurrencies) {
-      for (const quoteCurrency of fiatCurrencies) {
-        if (baseCurrency === quoteCurrency) continue;
-
-        const rate = ratesMap.get(`${baseCurrency}${quoteCurrency}`);
-        if (!rate) {
-          continue;
-        }
-
-        const pairId = `${baseCurrency}-${quoteCurrency}`;
-
-        // Insert or update rate
-        await db
-          .insert(exchangeRate)
-          .values({
-            id: pairId,
-            baseCurrency,
-            quoteCurrency,
-            rate: rate.toString(),
-            day: today,
-          })
-          .onConflictDoUpdate({
-            target: exchangeRate.id,
-            set: {
-              rate: rate.toString(),
-              day: today,
-            },
-          });
-      }
-    }
-
-    revalidateTag("exchange-rates");
+  async ({ today }: { today: string }) => {
+    return updateExchangeRatesNoAuth(today);
   }
 );
+
+/**
+ * Updates exchange rates without access control checks
+ * This is for internal use only by getExchangeRate
+ */
+async function updateExchangeRatesNoAuth(today: string): Promise<void> {
+  // Calculate all cross rates
+  const ratesMap = await calculateCrossRates();
+
+  // Update database
+  for (const baseCurrency of fiatCurrencies) {
+    for (const quoteCurrency of fiatCurrencies) {
+      if (baseCurrency === quoteCurrency) continue;
+
+      const rate = ratesMap.get(`${baseCurrency}${quoteCurrency}`);
+      if (!rate) {
+        continue;
+      }
+
+      const pairId = `${baseCurrency}-${quoteCurrency}`;
+
+      // Insert or update rate
+      await db
+        .insert(exchangeRate)
+        .values({
+          id: pairId,
+          baseCurrency,
+          quoteCurrency,
+          rate: rate.toString(),
+          day: today,
+        })
+        .onConflictDoUpdate({
+          target: exchangeRate.id,
+          set: {
+            rate: rate.toString(),
+            day: today,
+          },
+        });
+    }
+  }
+
+  revalidateTag("exchange-rates");
+}
 
 /**
  * Gets the current exchange rate for a currency pair
@@ -156,8 +164,8 @@ export const getExchangeRate = withTracing(
     });
 
     if (!rate) {
-      // If no rate exists, update all exchange rates
-      await updateExchangeRates(today);
+      // If no rate exists, update all exchange rates using the non-auth version
+      await updateExchangeRatesNoAuth(today);
 
       // Try to get the rate again after update
       const updatedRate = await db.query.exchangeRate.findFirst({
@@ -198,7 +206,7 @@ export const getExchangeRatesForBase = withTracing(
 
     if (rates.length === 0) {
       // If no rates exist, update all exchange rates
-      await updateExchangeRates(today);
+      await updateExchangeRatesNoAuth(today);
 
       // Try to get the rates again after update
       return await db.query.exchangeRate.findMany({
