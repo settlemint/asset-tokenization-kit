@@ -28,7 +28,7 @@ export function SelectedAdminsList({
 }: SelectedAdminsListProps) {
   const { data: session } = authClient.useSession();
   const t = useTranslations("private.assets.create.form.steps.asset-admins");
-  const wallet = session?.user.wallet;
+  const { wallet } = session?.user ?? {};
   return (
     <div className="space-y-3">
       {/* Always show current user as admin, they will by default be added as a token admin */}
