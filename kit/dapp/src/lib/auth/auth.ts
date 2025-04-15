@@ -12,6 +12,7 @@ import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 import { getServerEnvironment } from "../config/environment";
 import { metadata } from "../config/metadata";
 import { db } from "../db";
@@ -93,7 +94,19 @@ export const auth = betterAuth({
         type: "string",
         required: false,
         default: "EUR",
-        input: false,
+        input: true,
+        validator: {
+          input: z.enum([
+            "USD",
+            "EUR",
+            "JPY",
+            "AED",
+            "SGD",
+            "SAR",
+            "GBP",
+            "CHF",
+          ]),
+        },
       },
       pincodeEnabled: {
         type: "boolean",
