@@ -13,17 +13,6 @@ graph-node:
       - name: wait-for-postgresql
         image: ghcr.io/settlemint/btp-waitforit:v7.7.3
         command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
-      # Random delay init container for Graph Node pods
-      - name: random-delay
-        image: busybox:latest # Using busybox as it has sh and sleep
-        imagePullPolicy: IfNotPresent
-        command: ["/bin/sh", "-c"]
-        args:
-          - |
-            SLEEP_DURATION=$((RANDOM % 61)) # Generates random number 0-60
-            echo "Graph Node pod initiating random delay of ${SLEEP_DURATION} seconds..."
-            sleep ${SLEEP_DURATION}
-            echo "Graph Node random delay complete."
     affinityPresets:
       # -- Create anti-affinity rule to deter scheduling replicas on the same host
       antiAffinityByHostname: false
