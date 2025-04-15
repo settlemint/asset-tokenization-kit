@@ -53,7 +53,7 @@ export default async function PortfolioDashboard({
       />
       <div className="space-y-4">
         <Greeting />
-        <MyAssetsHeader locale={locale} walletAddress={user.wallet} />
+        <MyAssetsHeader locale={locale} user={user} />
       </div>
 
       <PageHeader title={t("dashboard.my-assets")} className="mt-8" />
