@@ -1,7 +1,7 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { getFixedYieldDetail } from "@/lib/queries/fixed-yield/fixed-yield-detail";
 import { getFixedYieldList } from "@/lib/queries/fixed-yield/fixed-yield-list";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia, NotFoundError } from "elysia";
 import { getAddress } from "viem";
@@ -17,7 +17,6 @@ export const FixedYieldApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
     async () => {

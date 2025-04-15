@@ -6,7 +6,7 @@ import {
 import { getUserList } from "@/lib/queries/user/user-list";
 import { UserDetailSchema, UserSchema } from "@/lib/queries/user/user-schema";
 import { getUserSearch } from "@/lib/queries/user/user-search";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -22,7 +22,6 @@ export const UserApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
     async ({ user }) => {
