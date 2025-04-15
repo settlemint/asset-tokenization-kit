@@ -108,6 +108,7 @@ export function BaseCurrencySettingsForm({
           >
             <FormField
               name="baseCurrency"
+              control={form.control}
               render={({ field }) => (
                 <FormItem className="flex items-center gap-4">
                   <FormLabel>{t("base-currency-label")}</FormLabel>
@@ -118,11 +119,7 @@ export function BaseCurrencySettingsForm({
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue>
-                          {t(
-                            currencyKeys[
-                              field.value as keyof typeof currencyKeys
-                            ]
-                          )}
+                          {t(currencyKeys[field.value])}
                         </SelectValue>
                       </SelectTrigger>
                     </FormControl>
