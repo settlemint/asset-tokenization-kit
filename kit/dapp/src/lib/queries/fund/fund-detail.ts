@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
@@ -13,7 +14,6 @@ import { type Address, getAddress } from "viem";
 import { fundsCalculateFields } from "./fund-calculated";
 import { FundFragment, OffchainFundFragment } from "./fund-fragment";
 import { OffChainFundSchema, OnChainFundSchema } from "./fund-schema";
-
 /**
  * GraphQL query to fetch on-chain fund details from The Graph
  */
@@ -48,6 +48,8 @@ const OffchainFundDetail = hasuraGraphql(
 export interface FundDetailProps {
   /** Ethereum address of the fund contract */
   address: Address;
+  /** Currency code for the user */
+  userCurrency: CurrencyCode;
 }
 
 /**
@@ -60,7 +62,7 @@ export interface FundDetailProps {
 export const getFundDetail = withTracing(
   "queries",
   "getFundDetail",
-  cache(async ({ address }: FundDetailProps) => {
+  cache(async ({ address, userCurrency }: FundDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainFund, offChainFund] = await Promise.all([
@@ -100,7 +102,7 @@ export const getFundDetail = withTracing(
 
     const calculatedFields = await fundsCalculateFields(
       [onChainFund],
-      [offChainFund]
+      userCurrency
     );
     const calculatedFund = calculatedFields.get(onChainFund.id)!;
 

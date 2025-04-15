@@ -1,5 +1,6 @@
 import { SetYieldScheduleForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/yield/_components/set-yield-schedule-form/form";
 import { DetailGridSkeleton } from "@/components/blocks/skeleton/detail-grid-skeleton";
+import { getUser } from "@/lib/auth/utils";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -15,7 +16,8 @@ export default async function YieldPage({ params }: PageProps) {
   const { address } = await params;
 
   // Hardcoded to bond because the other asset types don't have yield
-  const bond = await getBondDetail({ address });
+  const user = await getUser();
+  const bond = await getBondDetail({ address, userCurrency: user.currency });
 
   const t = await getTranslations("admin.bonds.yield");
 

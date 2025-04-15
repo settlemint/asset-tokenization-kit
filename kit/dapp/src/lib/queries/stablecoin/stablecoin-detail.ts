@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
@@ -54,6 +55,8 @@ const OffchainStableCoinDetail = hasuraGraphql(
 export interface StableCoinDetailProps {
   /** Ethereum address of the stablecoin contract */
   address: Address;
+  /** Currency code for the user */
+  userCurrency: CurrencyCode;
 }
 
 /**
@@ -66,7 +69,7 @@ export interface StableCoinDetailProps {
 export const getStableCoinDetail = withTracing(
   "queries",
   "getStableCoinDetail",
-  cache(async ({ address }: StableCoinDetailProps) => {
+  cache(async ({ address, userCurrency }: StableCoinDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainStableCoin, offChainStableCoin] = await Promise.all([
@@ -106,7 +109,7 @@ export const getStableCoinDetail = withTracing(
 
     const calculatedFields = await stablecoinsCalculateFields(
       [onChainStableCoin],
-      [offChainStableCoin]
+      userCurrency
     );
     const calculatedStableCoin = calculatedFields.get(onChainStableCoin.id)!;
 

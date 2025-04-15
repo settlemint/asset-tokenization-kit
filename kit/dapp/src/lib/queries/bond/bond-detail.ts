@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
@@ -48,6 +49,8 @@ const OffchainBondDetail = hasuraGraphql(
 export interface BondDetailProps {
   /** Ethereum address of the bond contract */
   address: Address;
+  /** Currency code for the user */
+  userCurrency: CurrencyCode;
 }
 
 /**
@@ -60,7 +63,7 @@ export interface BondDetailProps {
 export const getBondDetail = withTracing(
   "queries",
   "getBondDetail",
-  cache(async ({ address }: BondDetailProps) => {
+  cache(async ({ address, userCurrency }: BondDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainBond, offChainBond] = await Promise.all([
@@ -100,7 +103,7 @@ export const getBondDetail = withTracing(
 
     const calculatedFields = await bondsCalculateFields(
       [onChainBond],
-      [offChainBond]
+      userCurrency
     );
     const calculatedBond = calculatedFields.get(onChainBond.id)!;
 
