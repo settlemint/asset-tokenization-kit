@@ -1,8 +1,11 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { theGraphClientKit, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox/index";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cache } from "react";
 import { getAddress } from "viem";
 import { getAssetsPricesInUserCurrency } from "./asset-price";
 
@@ -58,7 +61,9 @@ export const AssetPriceSchema = t.Object(
 export const getTotalAssetPrice = withTracing(
   "queries",
   "getTotalAssetPrice",
-  async () => {
+  cache(async (userCurrency: CurrencyCode) => {
+    "use cache";
+    cacheTag("asset");
     const totalAssetSupliesData = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(
@@ -74,7 +79,8 @@ export const getTotalAssetPrice = withTracing(
     ]);
     const totalAssetSuplies = totalAssetSupliesData.flat();
     const pricesInUserCurrency = await getAssetsPricesInUserCurrency(
-      totalAssetSuplies.map((asset) => getAddress(asset.id))
+      totalAssetSuplies.map((asset) => getAddress(asset.id)),
+      userCurrency
     );
 
     const totalPrice = totalAssetSuplies.reduce((acc, asset) => {
@@ -88,5 +94,5 @@ export const getTotalAssetPrice = withTracing(
     return {
       totalPrice,
     };
-  }
+  })
 );
