@@ -22,16 +22,18 @@ export const getSetting = withAccessControl(
   withTracing(
     "queries",
     "getSetting",
-    async <K extends SettingKey>(
-      key: K
-    ): Promise<(typeof DEFAULT_SETTINGS)[K]> => {
+    async ({
+      key,
+    }: {
+      key: SettingKey;
+    }): Promise<(typeof DEFAULT_SETTINGS)[SettingKey]> => {
       "use cache";
       cacheTag("setting");
       const setting = await db.query.settings.findFirst({
         where: eq(settings.key, key),
       });
       return (
-        (setting?.value as (typeof DEFAULT_SETTINGS)[K]) ??
+        (setting?.value as (typeof DEFAULT_SETTINGS)[SettingKey]) ??
         DEFAULT_SETTINGS[key]
       );
     }

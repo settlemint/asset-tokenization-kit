@@ -109,17 +109,21 @@ export function BaseCurrencySettingsForm({
             <FormField
               name="baseCurrency"
               render={({ field }) => (
-                <FormItem className="grid grid-cols-[200px_1fr] items-center gap-4">
-                  <FormLabel className="text-right">
-                    {t("base-currency-label")}
-                  </FormLabel>
+                <FormItem className="flex items-center gap-4">
+                  <FormLabel>{t("base-currency-label")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t("select-base-currency")} />
+                        <SelectValue>
+                          {t(
+                            currencyKeys[
+                              field.value as keyof typeof currencyKeys
+                            ]
+                          )}
+                        </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

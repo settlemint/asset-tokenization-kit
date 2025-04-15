@@ -6,7 +6,7 @@ import { BaseCurrencySettingsForm } from "./_components/base-currency-settings-f
 
 export default async function SettingsPage() {
   const t = await getTranslations("admin.platform.settings");
-  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
+  const baseCurrency = await getSetting({ key: SETTING_KEYS.BASE_CURRENCY });
 
   return (
     <>
