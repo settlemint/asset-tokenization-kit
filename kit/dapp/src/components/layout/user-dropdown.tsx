@@ -27,6 +27,7 @@ import {
   useRef,
 } from "react";
 import type { Address } from "viem";
+import { CurrencyMenuItem } from "../blocks/currency/currency-menu-item";
 import {
   BookTextIcon,
   type BookTextIconHandle,
@@ -145,7 +146,7 @@ export function UserDropdown() {
           <DropdownMenuGroup>
             <ThemeMenuItem />
             <LanguageMenuItem />
-            {/* <CurrencyMenuItem user={user} /> */}
+            <CurrencyMenuItem />
             <DropdownMenuItem
               onMouseEnter={() => bookIconRef.current?.startAnimation()}
               onMouseLeave={() => bookIconRef.current?.stopAnimation()}

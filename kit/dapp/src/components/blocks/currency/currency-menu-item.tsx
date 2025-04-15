@@ -7,9 +7,9 @@ import {
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
+import { authClient } from "@/lib/auth/client";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { updateCurrency } from "@/lib/mutations/user/update-currency-action";
-import type { User } from "@/lib/queries/user/user-schema";
 import { Check, DollarSign } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
@@ -29,15 +29,13 @@ const CURRENCY_NAMES: Record<CurrencyCode, string> = {
 // Available currencies
 const AVAILABLE_CURRENCIES = Object.keys(CURRENCY_NAMES) as CurrencyCode[];
 
-interface CurrencyMenuItemProps {
-  user: User;
-}
-
-export function CurrencyMenuItem({ user }: CurrencyMenuItemProps) {
+export function CurrencyMenuItem() {
   const router = useRouter();
+  const { data } = authClient.useSession();
+  const user = data?.user;
   const handleCurrencyChange = useCallback(
     async (currency: CurrencyCode) => {
-      if (currency === user.currency) return;
+      if (currency === user?.currency) return;
 
       try {
         // Call the server action to update currency
@@ -51,8 +49,12 @@ export function CurrencyMenuItem({ user }: CurrencyMenuItemProps) {
         console.error("Error updating default currency:", error);
       }
     },
-    [user.currency, router]
+    [user?.currency, router]
   );
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <DropdownMenuSub>
