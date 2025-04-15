@@ -1,5 +1,4 @@
 import { getUser } from "@/lib/auth/utils";
-import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { getTotalAssetPrice } from "@/lib/queries/asset-price/total-assets-price";
 import { getLocale, getTranslations } from "next-intl/server";
 import { renderCompactNumber } from "../utils/format-compact";
@@ -15,7 +14,7 @@ export async function PriceWidget() {
   const displayValue = renderCompactNumber({
     value: totalPrice,
     locale,
-    currency: user.currency as CurrencyCode,
+    currency: user.currency,
   });
 
   return (
