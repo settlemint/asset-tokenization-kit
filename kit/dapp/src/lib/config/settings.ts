@@ -13,25 +13,27 @@ import { withTracing } from "../utils/tracing";
 /**
  * Get a setting value by key, falling back to the default value if not set
  */
-export const getSetting = withAccessControl(
-  {
-    requiredPermissions: {
-      setting: ["read"],
+export const getSetting = withTracing(
+  "queries",
+  "getSetting",
+  withAccessControl(
+    {
+      requiredPermissions: {
+        setting: ["read"],
+      },
     },
-  },
-  withTracing(
-    "queries",
-    "getSetting",
-    async <K extends SettingKey>(
-      key: K
-    ): Promise<(typeof DEFAULT_SETTINGS)[K]> => {
+    async ({
+      key,
+    }: {
+      key: SettingKey;
+    }): Promise<(typeof DEFAULT_SETTINGS)[SettingKey]> => {
       "use cache";
       cacheTag("setting");
       const setting = await db.query.settings.findFirst({
         where: eq(settings.key, key),
       });
       return (
-        (setting?.value as (typeof DEFAULT_SETTINGS)[K]) ??
+        (setting?.value as (typeof DEFAULT_SETTINGS)[SettingKey]) ??
         DEFAULT_SETTINGS[key]
       );
     }
