@@ -20,7 +20,7 @@ interface TableProps {
 }
 
 export async function AssetsTable({ assettype }: TableProps) {
-  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
+  const baseCurrency = await getSetting({ key: SETTING_KEYS.BASE_CURRENCY });
 
   switch (assettype) {
     case "bond":

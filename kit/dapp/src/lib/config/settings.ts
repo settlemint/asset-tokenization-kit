@@ -13,15 +13,15 @@ import { withTracing } from "../utils/tracing";
 /**
  * Get a setting value by key, falling back to the default value if not set
  */
-export const getSetting = withAccessControl(
-  {
-    requiredPermissions: {
-      setting: ["read"],
+export const getSetting = withTracing(
+  "queries",
+  "getSetting",
+  withAccessControl(
+    {
+      requiredPermissions: {
+        setting: ["read"],
+      },
     },
-  },
-  withTracing(
-    "queries",
-    "getSetting",
     async ({
       key,
     }: {
