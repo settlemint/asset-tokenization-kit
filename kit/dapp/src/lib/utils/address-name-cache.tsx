@@ -63,7 +63,9 @@ export function AddressNameCacheProvider({
   // Set a name for an address
   const setNameForAddress = useCallback(
     (address: string | Address, name: string) => {
-      if (!address || !name) return;
+      if (!address || !name) {
+        return;
+      }
 
       try {
         const normalizedAddress = getAddress(address as Address);
@@ -85,7 +87,9 @@ export function AddressNameCacheProvider({
   // Check if the address or its name matches a search term
   const addressOrNameMatches = useCallback(
     (address: string | Address, searchTerm: string): boolean => {
-      if (!address || !searchTerm) return false;
+      if (!address || !searchTerm) {
+        return false;
+      }
 
       try {
         const normalizedAddress = getAddress(address as Address);
@@ -176,8 +180,9 @@ export function addressNameFilter(
   filterValue: FilterValue
 ): boolean {
   // Skip empty filters
-  if (!filterValue || !filterValue.values || filterValue.values.length === 0)
+  if (!filterValue || !filterValue.values || filterValue.values.length === 0) {
     return true;
+  }
 
   try {
     const address = row.getValue(columnId);
