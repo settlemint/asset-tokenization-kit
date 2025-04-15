@@ -26,7 +26,6 @@ import {
   useEffect,
   useRef,
 } from "react";
-import type { Address } from "viem";
 import {
   BookTextIcon,
   type BookTextIconHandle,
@@ -102,7 +101,7 @@ export function UserDropdown() {
           <Suspense fallback={<Skeleton className="size-8 rounded-lg" />}>
             {data?.user ? (
               <AddressAvatar
-                address={data.user.wallet as Address}
+                address={data.user.wallet}
                 email={data.user.email}
                 className="size-8 rounded-lg"
                 indicator={false}

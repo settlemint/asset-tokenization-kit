@@ -44,7 +44,7 @@ export function WithdrawForm({
 
     // Only show the target selection if there's a yield schedule
     if (showTarget) {
-      steps.push(<Target key="target" bondDetails={bondDetails} />);
+      steps.push(<Target key="target" />);
     }
     // Always show recipient and amount steps
     steps.push(<Amount key="amount" bondDetails={bondDetails} />);

@@ -34,12 +34,23 @@ spec:
             - -c
             - |
               set -e
-              echo "Waiting for {{ index .Values "graph-node" "fullnameOverride" }}-query:8020 to be available..."
-              until nc -z -w 2 {{ index .Values "graph-node" "fullnameOverride" }}-query 8020; do
-                echo "Service not ready yet, waiting..."
+              # Determine service suffix using Helm within shell variable assignment
+              SERVICE_SUFFIX="{{- if index .Values "graph-node" "graphNodeGroups" "combined" "enabled" | default false -}}-combined{{- else -}}-query{{- end -}}"
+              # Construct full service name
+              SERVICE_NAME="{{ index .Values "graph-node" "fullnameOverride" | default (printf "%s-%s" .Release.Name "graph-node") }}${SERVICE_SUFFIX}"
+              PORT="8020"
+              SECONDS_WAITED=0
+
+              echo "Waiting for graph-node service ${SERVICE_NAME}:${PORT} to be available..."
+
+              until nc -z -w 2 "${SERVICE_NAME}" "${PORT}"; do
+                # Optional: Add timeout check here if WAIT_TIMEOUT is used
+                echo "Service ${SERVICE_NAME}:${PORT} not ready yet, waiting 5s..."
                 sleep 5
+                # Optional: Increment SECONDS_WAITED here if timeout is used
               done
-              echo "Service is available, proceeding..."
+
+              echo "Service ${SERVICE_NAME}:${PORT} is available, proceeding..."
         - name: clone-repo
           image: alpine/git:latest
           command:
@@ -102,8 +113,14 @@ spec:
               echo "Dependencies installed"
               bunx turbo dependencies
 
-              # Replace localhost with graph-node-query for subgraph deployment
-              sed -i 's|http://localhost:8020|http://{{ index .Values "graph-node" "fullnameOverride" }}-query:8020|g' /workspace/kit/subgraph/graph-local-deploy.sh
+              # Determine service suffix using Helm within shell variable assignment
+              SERVICE_SUFFIX="{{- if index .Values "graph-node" "graphNodeGroups" "combined" "enabled" | default false -}}-combined{{- else -}}-query{{- end -}}"
+              # Construct full service name
+              SERVICE_NAME="{{ index .Values "graph-node" "fullnameOverride" | default (printf "%s-%s" .Release.Name "graph-node") }}${SERVICE_SUFFIX}"
+
+              # Replace localhost with dynamically determined graph-node service
+              echo "Configuring subgraph deployment to use service: http://${SERVICE_NAME}:8020"
+              sed -i "s|http://localhost:8020|http://${SERVICE_NAME}:8020|g" /workspace/kit/subgraph/graph-local-deploy.sh
               sed -i 's/yq -i/yq -i -y/g' /workspace/kit/subgraph/graph-local-deploy.sh
 
               echo "Build forge contracts..."

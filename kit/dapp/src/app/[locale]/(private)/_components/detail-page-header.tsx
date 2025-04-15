@@ -33,7 +33,7 @@ export async function DetailPageHeader({
     getTranslations("private.assets.details"),
     getAssetBalanceDetail({
       address,
-      account: user.wallet as Address,
+      account: user.wallet,
     }),
     getAssetUsersDetail({ address }),
   ]);
@@ -61,7 +61,7 @@ export async function DetailPageHeader({
         assetDetails,
         userBalance,
         assetUsersDetails,
-        userAddress: user.wallet as Address,
+        userAddress: user.wallet,
       })}
     />
   );

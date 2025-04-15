@@ -120,6 +120,18 @@ job:
   # Image pull secrets
   imagePullSecrets: []
 
+  # Custom Init Containers (add definitions here if needed, e.g., for dependencies)
+  # extraInitContainers: []
+
+  # Random Delay Init Container Configuration
+  # randomDelayInitContainer:
+  #   enabled: false # Set to true to enable the random delay
+  #   maxSeconds: 31 # Max random sleep duration (exclusive, e.g., 31 means 0-30 seconds)
+  #   image:
+  #     repository: busybox
+  #     tag: latest
+  #     pullPolicy: IfNotPresent
+
   # Resource configuration
   resources:
     requests:

@@ -7,9 +7,9 @@ import {
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
+import { authClient } from "@/lib/auth/client";
+import type { User } from "@/lib/auth/types";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
-import { updateCurrency } from "@/lib/mutations/user/update-currency-action";
-import type { User } from "@/lib/queries/user/user-schema";
 import { Check, DollarSign } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
@@ -40,8 +40,7 @@ export function CurrencyMenuItem({ user }: CurrencyMenuItemProps) {
       if (currency === user.currency) return;
 
       try {
-        // Call the server action to update currency
-        await updateCurrency({ currency });
+        await authClient.updateUser({ currency });
         router.refresh();
         toast.success(
           `Default currency changed to ${CURRENCY_NAMES[currency]}`

@@ -2,7 +2,6 @@
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import type { Address } from "viem";
 import { AdminRolesBadges, type AdminRole } from "./admin-roles-badges";
 import type { AssetAdmin } from "./selected-admins-list";
 
@@ -20,13 +19,17 @@ export function SelectedAdminListItem({
   return (
     <div className="flex items-center justify-between rounded-md border p-3 shadow-sm">
       <div className="flex items-center gap-2">
-        <EvmAddress address={admin.wallet as Address} />
+        <EvmAddress address={admin.wallet} />
       </div>
 
       <div className="flex items-center gap-2">
         <AdminRolesBadges
           roles={admin.roles}
-          onChangeRoles={onChangeRoles ? (newRoles: AdminRole[]) => onChangeRoles(admin.wallet, newRoles) : undefined}
+          onChangeRoles={
+            onChangeRoles
+              ? (newRoles: AdminRole[]) => onChangeRoles(admin.wallet, newRoles)
+              : undefined
+          }
         />
 
         {onRemove ? (
