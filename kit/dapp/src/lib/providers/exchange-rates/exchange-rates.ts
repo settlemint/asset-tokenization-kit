@@ -89,42 +89,7 @@ export const updateExchangeRates = withAccessControl(
     },
   },
   async ({ today }: { today: string }) => {
-    // Calculate all cross rates
-    const ratesMap = await calculateCrossRates();
-
-    // Update database
-    for (const baseCurrency of fiatCurrencies) {
-      for (const quoteCurrency of fiatCurrencies) {
-        if (baseCurrency === quoteCurrency) continue;
-
-        const rate = ratesMap.get(`${baseCurrency}${quoteCurrency}`);
-        if (!rate) {
-          continue;
-        }
-
-        const pairId = `${baseCurrency}-${quoteCurrency}`;
-
-        // Insert or update rate
-        await db
-          .insert(exchangeRate)
-          .values({
-            id: pairId,
-            baseCurrency,
-            quoteCurrency,
-            rate: rate.toString(),
-            day: today,
-          })
-          .onConflictDoUpdate({
-            target: exchangeRate.id,
-            set: {
-              rate: rate.toString(),
-              day: today,
-            },
-          });
-      }
-    }
-
-    revalidateTag("exchange-rates");
+    return updateExchangeRatesNoAuth(today);
   }
 );
 
