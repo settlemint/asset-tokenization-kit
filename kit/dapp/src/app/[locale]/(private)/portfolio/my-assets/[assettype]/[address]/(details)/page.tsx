@@ -42,7 +42,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
         assettype={assettype}
         address={address}
         showBalance={true}
-        userAddress={user.wallet as Address}
+        userAddress={user.wallet}
       />
       <ChartGrid title={t("asset-statistics-title")}>
         {assettype === "stablecoin" && (

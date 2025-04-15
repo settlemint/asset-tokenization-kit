@@ -4,7 +4,6 @@ import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import type { Address } from "viem";
 import {
   PredictedAddressSchema,
   type PredictAddressInput,
@@ -56,7 +55,7 @@ export const getPredictedAddress = withTracing(
 
     const data = await portalClient.request(CreateFundPredictAddress, {
       address: FUND_FACTORY_ADDRESS,
-      sender: user.wallet as Address,
+      sender: user.wallet,
       decimals,
       name: assetName,
       symbol,

@@ -114,7 +114,6 @@ export function DesignerButton({ userDetails }: { userDetails: User }) {
       <CreateStablecoinForm
         open={tokenType === "stablecoin"}
         onOpenChange={onFormOpenChange}
-        userDetails={userDetails}
       />
       <CreateDepositForm
         open={tokenType === "tokenized-deposit"}

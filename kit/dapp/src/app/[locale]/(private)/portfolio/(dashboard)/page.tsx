@@ -6,7 +6,6 @@ import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import type { Address } from "viem";
 import { LatestEvents } from "../../assets/(dashboard)/_components/table/latest-events";
 import { Greeting } from "./_components/greeting/greeting";
 import { MyAssetsHeader } from "./_components/header/my-assets-header";
@@ -68,7 +67,7 @@ export default async function PortfolioDashboard({
         <TransactionsChart walletAddress={user.wallet} />
       </div>
       <PageHeader title={t("dashboard.latest-events")} className="mt-8 mb-4" />
-      <LatestEvents sender={user.wallet as Address} />
+      <LatestEvents sender={user.wallet} />
     </>
   );
 }

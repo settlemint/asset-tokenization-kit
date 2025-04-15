@@ -5,7 +5,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { parseUnits, type Address } from "viem";
+import { parseUnits } from "viem";
 import {
   PredictedAddressSchema,
   type PredictAddressInput,
@@ -65,7 +65,7 @@ export const getPredictedAddress = withTracing(
 
     const data = await portalClient.request(CreateBondPredictAddress, {
       address: BOND_FACTORY_ADDRESS,
-      sender: user.wallet as Address,
+      sender: user.wallet,
       decimals,
       name: assetName,
       symbol,

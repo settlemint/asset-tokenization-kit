@@ -70,8 +70,8 @@ export function CreateCryptoCurrencyForm({
       >
         <Basics />
         <Configuration />
-        <AssetAdmins userDetails={userDetails} />
-        <Summary userDetails={userDetails} />
+        <AssetAdmins />
+        <Summary />
       </Form>
     </FormSheet>
   );

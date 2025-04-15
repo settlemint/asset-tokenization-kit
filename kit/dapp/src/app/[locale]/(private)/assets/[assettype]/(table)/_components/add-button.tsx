@@ -18,7 +18,7 @@ export async function AddButton({ assettype }: RelatedProps) {
     case "cryptocurrency":
       return <CreateCryptoCurrencyForm asButton userDetails={userDetails} />;
     case "stablecoin":
-      return <CreateStablecoinForm asButton userDetails={userDetails} />;
+      return <CreateStablecoinForm asButton />;
     case "deposit":
       return <CreateDepositForm asButton userDetails={userDetails} />;
     case "equity":

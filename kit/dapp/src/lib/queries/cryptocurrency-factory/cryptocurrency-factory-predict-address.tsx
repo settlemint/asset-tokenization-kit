@@ -59,7 +59,7 @@ export const getPredictedAddress = withTracing(
       const data = await Promise.race([
         portalClient.request(CreateCryptoCurrencyPredictAddress, {
           address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-          sender: user.wallet as Address,
+          sender: user.wallet,
           decimals,
           name: assetName,
           symbol,

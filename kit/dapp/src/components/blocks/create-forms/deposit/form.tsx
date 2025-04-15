@@ -63,7 +63,7 @@ export function CreateDepositForm({
       >
         <Basics />
         <Configuration />
-        <AssetAdmins userDetails={userDetails} />
+        <AssetAdmins />
         <Summary userDetails={userDetails} />
       </Form>
     </FormSheet>

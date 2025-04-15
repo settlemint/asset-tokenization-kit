@@ -63,7 +63,7 @@ export function CreateFundForm({
       >
         <Basics />
         <Configuration />
-        <AssetAdmins userDetails={userDetails} />
+        <AssetAdmins />
         <Summary userDetails={userDetails} />
       </Form>
     </FormSheet>

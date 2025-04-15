@@ -50,7 +50,7 @@ export async function Charts({ assettype, address }: ChartsProps) {
     try {
       userBalance = await getAssetBalanceDetail({
         address,
-        account: user.wallet as Address,
+        account: user.wallet,
       });
     } catch (error) {
       console.error("Error fetching balance:", error);
@@ -127,7 +127,7 @@ export async function Charts({ assettype, address }: ChartsProps) {
         assetDetails={assetDetails}
         userBalance={userBalance}
         assetUsersDetails={assetUsersDetails}
-        currentUserWallet={user.wallet as Address | undefined}
+        currentUserWallet={user.wallet}
       />
     </>
   );

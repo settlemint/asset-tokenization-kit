@@ -19,7 +19,7 @@ interface TokenAdminsCardProps {
 export function AssetAdminsCard({ assetAdmins }: TokenAdminsCardProps) {
   const t = useTranslations("private.assets.create");
   const { data: session } = authClient.useSession();
-  const wallet = session?.user.wallet as Address;
+  const wallet = session?.user.wallet;
 
   if (!assetAdmins) {
     return null;

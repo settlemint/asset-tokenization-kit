@@ -6,7 +6,6 @@ import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import type { Address } from "viem";
 
 interface TransactionsPageProps {
   params: Promise<{ locale: Locale }>;
@@ -43,7 +42,7 @@ export default async function TransactionsPage({
 
   return (
     <>
-      <TransactionsTable from={user.wallet as Address} />
+      <TransactionsTable from={user.wallet} />
       {explorerUrl && (
         <div className="mt-2 flex flex-col gap-4 text-right text-muted-foreground text-sm">
           <Link prefetch href={explorerUrl}>
