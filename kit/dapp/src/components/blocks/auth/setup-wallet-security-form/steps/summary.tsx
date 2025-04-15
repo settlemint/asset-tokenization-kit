@@ -5,9 +5,7 @@ import { useTranslations } from "next-intl";
 export function Summary() {
   const t = useTranslations("private.auth.wallet-security.form.summary");
 
-  return (
-    <FormStep title={t("title")} description={t("description")}></FormStep>
-  );
+  return <FormStep title={t("title")} description={t("description")} />;
 }
 
 Summary.validatedFields = [] as (keyof SetupWalletSecurityInput)[];
