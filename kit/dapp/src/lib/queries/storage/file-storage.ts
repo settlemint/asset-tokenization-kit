@@ -9,6 +9,7 @@ import {
   createStatObjectOperation,
   createUploadOperation,
   executeMinioOperation,
+  minioClient,
 } from "@/lib/storage/minio-client";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
@@ -268,14 +269,26 @@ export const uploadPdfFile = withTracing(
       const fileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
       const objectName = path ? `${path}/${fileName}` : fileName;
 
+      // Add file metadata
+      const metadata = {
+        "content-type": file.type,
+        "original-name": file.name,
+        "upload-time": new Date().toISOString(),
+      };
+
       // Upload the file with simplified approach
       console.log(`Uploading PDF file ${fileName} using simplified approach`);
-      const uploadOperation = createSimpleUploadOperation(
+
+      // Get the upload function from createSimpleUploadOperation with minioClient
+      const simpleUploadFn = createSimpleUploadOperation(minioClient);
+
+      // Use the function directly with our parameters
+      const result = await simpleUploadFn(
+        file,
         DEFAULT_BUCKET,
         objectName,
-        file
+        metadata
       );
-      const result = await executeMinioOperation(uploadOperation);
 
       // Generate a presigned URL for immediate access
       const presignedUrlOperation = createPresignedUrlOperation(
