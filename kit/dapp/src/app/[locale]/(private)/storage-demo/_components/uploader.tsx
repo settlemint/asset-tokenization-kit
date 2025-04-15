@@ -108,19 +108,18 @@ export function FileUploader({
           </div>
 
           {selectedFiles.map((file, index) => (
-            <Card key={index} className="p-4 flex items-center justify-between">
-              <div className="flex flex-col">
-                <p className="font-medium">{file.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {formatFileSize(file.size)} - {file.type || "Unknown type"}
-                </p>
-              </div>
-              <div className="flex gap-2">
+            <Card key={index} className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">{file.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {formatFileSize(file.size)} - {file.type || "Unknown type"}
+                  </p>
+                </div>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={() => removeFile(index)}
-                  className="text-red-500 hover:text-red-700"
                 >
                   Remove
                 </Button>

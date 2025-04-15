@@ -247,7 +247,7 @@ export function StorageDemo() {
                       <TableHead>Type</TableHead>
                       <TableHead>Size</TableHead>
                       <TableHead>Uploaded</TableHead>
-                      <TableHead></TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -280,12 +280,11 @@ export function StorageDemo() {
                           <TableCell>{file.contentType}</TableCell>
                           <TableCell>{formatFileSize(file.size)}</TableCell>
                           <TableCell>{formatDate(file.uploadedAt)}</TableCell>
-                          <TableCell>
+                          <TableCell className="text-right">
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
                               onClick={() => handleDelete(file.id)}
-                              className="text-red-500 hover:text-red-700"
                             >
                               Delete
                             </Button>
