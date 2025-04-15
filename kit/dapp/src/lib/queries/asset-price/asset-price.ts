@@ -1,9 +1,9 @@
 import "server-only";
 
+import { getUser } from "@/lib/auth/utils";
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import type { AssetPrice } from "@/lib/queries/asset-price/asset-price-fragment";
-import { getSettingValue } from "@/lib/queries/setting/setting-detail";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
@@ -48,10 +48,9 @@ const AssetPrice = hasuraGraphql(
 export const getAssetsPricesInUserCurrency = withTracing(
   "queries",
   "getAssetsPricesInUserCurrency",
-  cache(async (assetIds: string[]): Promise<Map<string, Price>> => {
-    "use cache";
-    cacheTag("asset");
-    const { value: currency } = await getSettingValue({ key: "baseCurrency" });
+  async (assetIds: string[]): Promise<Map<string, Price>> => {
+    const user = await getUser();
+    const currency = user.currency as CurrencyCode;
     const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
     const assetPricesData = await fetchAllHasuraPages(
       async (pageLimit, offset) => {
@@ -73,10 +72,7 @@ export const getAssetsPricesInUserCurrency = withTracing(
         return pageResult.asset_price ?? [];
       }
     );
-    const exchangeRates = await getExchangeRates(
-      assetPricesData,
-      currency as CurrencyCode
-    );
+    const exchangeRates = await getExchangeRates(assetPricesData, currency);
     const pricesForAssetIds = new Map();
 
     for (const assetId of assetIds) {
@@ -86,7 +82,7 @@ export const getAssetsPricesInUserCurrency = withTracing(
       if (!assetPrice) {
         pricesForAssetIds.set(assetId, {
           amount: 0,
-          currency: currency as CurrencyCode,
+          currency,
         });
       } else {
         const validatedPrice = safeParse(AssetPriceSchema, assetPrice);
@@ -96,13 +92,13 @@ export const getAssetsPricesInUserCurrency = withTracing(
         }
         pricesForAssetIds.set(assetId, {
           amount: validatedPrice.amount * exchangeRate,
-          currency: currency as CurrencyCode,
+          currency,
         });
       }
     }
 
     return pricesForAssetIds;
-  })
+  }
 );
 
 const getExchangeRates = withTracing(

@@ -3,8 +3,6 @@ import "server-only";
 import { theGraphClientKit, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox/index";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { cache } from "react";
 import { getAddress } from "viem";
 import { getAssetsPricesInUserCurrency } from "./asset-price";
 
@@ -60,10 +58,7 @@ export const AssetPriceSchema = t.Object(
 export const getTotalAssetPrice = withTracing(
   "queries",
   "getTotalAssetPrice",
-  cache(async () => {
-    "use cache";
-    cacheTag("asset");
-
+  async () => {
     const totalAssetSupliesData = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(
@@ -93,5 +88,5 @@ export const getTotalAssetPrice = withTracing(
     return {
       totalPrice,
     };
-  })
+  }
 );
