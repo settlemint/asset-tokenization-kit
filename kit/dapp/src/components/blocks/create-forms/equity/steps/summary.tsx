@@ -4,7 +4,6 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/equity-factory/equity-factory-predict-address";
-import type { User } from "@/lib/queries/user/user-schema";
 import { formatNumber } from "@/lib/utils/number";
 import type { equityCategories } from "@/lib/utils/typebox/equity-categories";
 import type { equityClasses } from "@/lib/utils/typebox/equity-classes";
@@ -14,7 +13,7 @@ import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
 import { AssetAdminsCard } from "../../common/asset-admins/asset-admins-card";
 import { EquityCategoriesSummary } from "./_components/equity-categories-summary";
 import { EquityClassesSummary } from "./_components/equity-classes-summary";
-export function Summary({ userDetails }: { userDetails: User }) {
+export function Summary() {
   const { control } = useFormContext<CreateEquityInput>();
   const values = useWatch({
     control: control,
@@ -88,7 +87,7 @@ export function Summary({ userDetails }: { userDetails: User }) {
         />
       </FormSummaryDetailCard>
 
-      <AssetAdminsCard userDetails={userDetails} assetAdmins={values.assetAdmins} />
+      <AssetAdminsCard assetAdmins={values.assetAdmins} />
     </FormStep>
   );
 }

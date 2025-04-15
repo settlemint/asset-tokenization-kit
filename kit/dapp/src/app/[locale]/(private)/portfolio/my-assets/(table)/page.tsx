@@ -5,7 +5,6 @@ import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import type { Address } from "viem";
 import { TransferForm } from "../../_components/transfer-form/form";
 
 interface MyAssetsPageProps {
@@ -42,9 +41,9 @@ export default async function MyAssetsPage({ params }: MyAssetsPageProps) {
     <>
       <PageHeader title={t("title")} section={t("portfolio-management")} />
       <div className="flex items-center justify-end mb-4 -mt-12 z-10">
-        <TransferForm userAddress={user.wallet as Address} asButton />
+        <TransferForm userAddress={user.wallet} asButton />
       </div>
-      <MyAssetsTable wallet={user.wallet as Address} title={t("title")} />
+      <MyAssetsTable wallet={user.wallet} title={t("title")} />
     </>
   );
 }

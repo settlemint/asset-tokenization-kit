@@ -3,12 +3,10 @@ import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
-import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { getTranslations } from "next-intl/server";
 
 export async function StablecoinsRelated() {
   const t = await getTranslations("private.assets.table.related");
-  const userDetails = await getCurrentUserDetail();
 
   return (
     <RelatedGrid title={t("title")}>
@@ -16,7 +14,7 @@ export async function StablecoinsRelated() {
         title={t("stablecoin.issue-new.title")}
         description={t("stablecoin.issue-new.description")}
       >
-        <CreateStablecoinForm asButton userDetails={userDetails} />
+        <CreateStablecoinForm asButton />
       </RelatedGridItem>
       <RelatedGridItem
         title={t("stablecoin.mechanics.title")}
