@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth/client";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
-import { authClient } from "../../../../../lib/auth/client";
 import type { AdminRole } from "./admin-roles-badges";
 import { SelectedAdminListItem } from "./selected-admin-list-item";
 
