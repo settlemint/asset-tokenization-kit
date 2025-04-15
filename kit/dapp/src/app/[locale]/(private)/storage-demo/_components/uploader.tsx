@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useRef, useState } from "react";
 
 interface FileUploaderProps {
-  onUpload: (file: File) => void;
+  onUpload: (files: File[]) => void;
   disabled?: boolean;
 }
 
@@ -14,7 +14,7 @@ export function FileUploader({
   disabled = false,
 }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -36,24 +36,32 @@ export function FileUploader({
 
     const files = e.dataTransfer.files;
     if (files.length) {
-      setSelectedFile(files[0]);
+      setSelectedFiles(Array.from(files));
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
+      setSelectedFiles(Array.from(e.target.files));
     }
   };
 
   const handleUploadClick = () => {
-    if (selectedFile) {
-      onUpload(selectedFile);
-      setSelectedFile(null);
+    if (selectedFiles.length > 0) {
+      onUpload(selectedFiles);
+      setSelectedFiles([]);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     }
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const getTotalSize = () => {
+    return selectedFiles.reduce((total, file) => total + file.size, 0);
   };
 
   return (
@@ -70,11 +78,12 @@ export function FileUploader({
       >
         <div className="flex flex-col items-center gap-2">
           <p className="text-sm text-muted-foreground">
-            Drag and drop a file here, or click to select
+            Drag and drop files here, or click to select
           </p>
           <input
             ref={fileInputRef}
             type="file"
+            multiple
             onChange={handleFileSelect}
             className="hidden"
             id="file-upload"
@@ -86,24 +95,48 @@ export function FileUploader({
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled}
           >
-            Select File
+            Select Files
           </Button>
         </div>
       </div>
 
-      {selectedFile && (
-        <Card className="p-4 flex items-center justify-between">
-          <div className="flex flex-col">
-            <p className="font-medium">{selectedFile.name}</p>
-            <p className="text-sm text-muted-foreground">
-              {formatFileSize(selectedFile.size)} -{" "}
-              {selectedFile.type || "Unknown type"}
-            </p>
+      {selectedFiles.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <div className="text-sm font-medium">
+            {selectedFiles.length} file{selectedFiles.length !== 1 ? "s" : ""}{" "}
+            selected ({formatFileSize(getTotalSize())})
           </div>
-          <Button onClick={handleUploadClick} disabled={disabled}>
-            Upload
-          </Button>
-        </Card>
+
+          {selectedFiles.map((file, index) => (
+            <Card key={index} className="p-4 flex items-center justify-between">
+              <div className="flex flex-col">
+                <p className="font-medium">{file.name}</p>
+                <p className="text-sm text-muted-foreground">
+                  {formatFileSize(file.size)} - {file.type || "Unknown type"}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeFile(index)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Remove
+                </Button>
+              </div>
+            </Card>
+          ))}
+
+          <div className="flex justify-end mt-2">
+            <Button
+              onClick={handleUploadClick}
+              disabled={disabled || selectedFiles.length === 0}
+            >
+              Upload All
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );

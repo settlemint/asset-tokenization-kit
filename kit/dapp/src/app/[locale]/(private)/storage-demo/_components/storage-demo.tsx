@@ -87,35 +87,62 @@ export function StorageDemo() {
     fetchFiles();
   }, [fetchFiles]);
 
-  const handleUpload = async (file: File) => {
+  const handleUpload = async (files: File[]) => {
     setUploading(true);
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("path", prefix);
+      // Track upload results
+      const uploadResults = [];
+      let failedCount = 0;
 
-      const response = await fetch("/api/storage", {
-        method: "POST",
-        body: formData,
-      });
+      // Process each file sequentially
+      for (const file of files) {
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("path", prefix);
 
-      if (!response.ok) {
-        throw new Error("Failed to upload file");
+          const response = await fetch("/api/storage", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!response.ok) {
+            failedCount++;
+            console.error(`Failed to upload file: ${file.name}`);
+            continue;
+          }
+
+          // Get response data
+          const uploadResult = await response.json();
+          uploadResults.push(uploadResult);
+          console.log("Upload result:", uploadResult); // Debug logging
+        } catch (error) {
+          failedCount++;
+          console.error(`Error uploading file ${file.name}:`, error);
+        }
       }
 
-      // Get response data
-      const uploadResult = await response.json();
-      console.log("Upload result:", uploadResult); // Debug logging
-
-      showMessage("File uploaded successfully");
+      // Display appropriate message based on results
+      if (failedCount === 0) {
+        showMessage(
+          `Successfully uploaded ${files.length} file${files.length !== 1 ? "s" : ""}`
+        );
+      } else if (failedCount < files.length) {
+        showMessage(
+          `Uploaded ${files.length - failedCount} file${files.length - failedCount !== 1 ? "s" : ""}, but ${failedCount} failed`,
+          true
+        );
+      } else {
+        showMessage("Failed to upload all files", true);
+      }
 
       // Always do a fresh fetch instead of trying to merge state
       fetchFiles();
     } catch (error) {
-      console.error("Error uploading file:", error);
-      showMessage("Failed to upload file", true);
+      console.error("Error in batch upload:", error);
+      showMessage("Failed to process file uploads", true);
     } finally {
       setUploading(false);
     }
