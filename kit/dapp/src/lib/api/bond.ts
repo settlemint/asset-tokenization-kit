@@ -50,8 +50,8 @@ export const BondApi = new Elysia({
   .use(superJson)
   .get(
     "",
-    async () => {
-      return getBondList();
+    async ({ user }) => {
+      return getBondList(user.currency);
     },
     {
       auth: true,
@@ -69,9 +69,10 @@ export const BondApi = new Elysia({
   )
   .get(
     "/:address",
-    ({ params: { address } }) => {
+    ({ params: { address }, user }) => {
       return getBondDetail({
         address: getAddress(address),
+        userCurrency: user.currency,
       });
     },
     {

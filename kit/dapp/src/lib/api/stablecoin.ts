@@ -51,8 +51,8 @@ export const StableCoinApi = new Elysia({
   .use(superJson)
   .get(
     "",
-    async () => {
-      return getStableCoinList();
+    async ({ user }) => {
+      return getStableCoinList(user.currency);
     },
     {
       auth: true,
@@ -70,9 +70,10 @@ export const StableCoinApi = new Elysia({
   )
   .get(
     "/:address",
-    ({ params: { address } }) => {
+    ({ params: { address }, user }) => {
       return getStableCoinDetail({
         address: getAddress(address),
+        userCurrency: user.currency,
       });
     },
     {

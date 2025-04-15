@@ -42,8 +42,8 @@ export const EquityApi = new Elysia({
   .use(superJson)
   .get(
     "",
-    async () => {
-      return getEquityList();
+    async ({ user }) => {
+      return getEquityList(user.currency);
     },
     {
       auth: true,
@@ -61,9 +61,10 @@ export const EquityApi = new Elysia({
   )
   .get(
     "/:address",
-    ({ params: { address } }) => {
+    ({ params: { address }, user }) => {
       return getEquityDetail({
         address: getAddress(address),
+        userCurrency: user.currency,
       });
     },
     {
