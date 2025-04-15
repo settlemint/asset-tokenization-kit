@@ -2,6 +2,7 @@ import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
+import { getUser } from "@/lib/auth/utils";
 import { createTimeSeries } from "@/lib/charts";
 import { getBondYieldDistribution } from "@/lib/queries/bond/bond-yield-distribution";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -11,8 +12,13 @@ interface BondYieldDistributionProps {
   address: Address;
 }
 
-export async function BondYieldDistribution({ address }: BondYieldDistributionProps) {
-  const t = await getTranslations("components.charts.assets");
+export async function BondYieldDistribution({
+  address,
+}: BondYieldDistributionProps) {
+  const [t, user] = await Promise.all([
+    getTranslations("components.charts.assets"),
+    getUser(),
+  ]);
 
   const chartConfig = {
     totalYield: {
@@ -26,7 +32,10 @@ export async function BondYieldDistribution({ address }: BondYieldDistributionPr
   } satisfies ChartConfig;
 
   try {
-    const data = await getBondYieldDistribution({ address });
+    const data = await getBondYieldDistribution({
+      address,
+      userCurrency: user.currency,
+    });
 
     if (!data || data.length === 0) {
       return (

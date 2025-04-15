@@ -22,7 +22,7 @@ export const ExchangeRateUpdateApi = new Elysia()
     "/",
     async () => {
       try {
-        await updateExchangeRates(getTodayDateString());
+        await updateExchangeRates({ today: getTodayDateString() });
         return {
           success: true,
           message: "Exchange rates updated successfully",

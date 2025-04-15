@@ -1,9 +1,9 @@
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { safeParse } from "@/lib/utils/typebox";
 import { addSeconds } from "date-fns";
 import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
 import type {
   CalculatedStableCoin,
-  OffChainStableCoin,
   OnChainStableCoin,
 } from "./stablecoin-schema";
 import { CalculatedStableCoinSchema } from "./stablecoin-schema";
@@ -16,10 +16,11 @@ import { CalculatedStableCoinSchema } from "./stablecoin-schema";
  */
 export async function stablecoinsCalculateFields(
   onChainStableCoins: OnChainStableCoin[],
-  _offChainStableCoins?: (OffChainStableCoin | undefined)[]
+  userCurrency: CurrencyCode
 ): Promise<Map<string, CalculatedStableCoin>> {
   const prices = await getAssetsPricesInUserCurrency(
-    onChainStableCoins.map((stablecoin) => stablecoin.id)
+    onChainStableCoins.map((stablecoin) => stablecoin.id),
+    userCurrency
   );
 
   return onChainStableCoins.reduce((acc, stablecoin) => {
