@@ -1,11 +1,8 @@
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { safeParse } from "@/lib/utils/typebox";
 import { addSeconds } from "date-fns";
 import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
-import type {
-  CalculatedDeposit,
-  OffChainDeposit,
-  OnChainDeposit,
-} from "./deposit-schema";
+import type { CalculatedDeposit, OnChainDeposit } from "./deposit-schema";
 import { CalculatedDepositSchema } from "./deposit-schema";
 /**
  * Calculates additional fields for tokenized deposit tokens
@@ -16,10 +13,11 @@ import { CalculatedDepositSchema } from "./deposit-schema";
  */
 export async function depositsCalculateFields(
   onChainDeposits: OnChainDeposit[],
-  _offChainDeposits?: (OffChainDeposit | undefined)[]
+  userCurrency: CurrencyCode
 ): Promise<Map<string, CalculatedDeposit>> {
   const prices = await getAssetsPricesInUserCurrency(
-    onChainDeposits.map((deposit) => deposit.id)
+    onChainDeposits.map((deposit) => deposit.id),
+    userCurrency
   );
 
   return onChainDeposits.reduce((acc, deposit) => {

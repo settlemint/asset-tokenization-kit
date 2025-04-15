@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
@@ -13,7 +14,6 @@ import { type Address, getAddress } from "viem";
 import { equitiesCalculateFields } from "./equity-calculated";
 import { EquityFragment, OffchainEquityFragment } from "./equity-fragment";
 import { OffChainEquitySchema, OnChainEquitySchema } from "./equity-schema";
-
 /**
  * GraphQL query to fetch on-chain equity details from The Graph
  */
@@ -48,6 +48,8 @@ const OffchainEquityDetail = hasuraGraphql(
 export interface EquityDetailProps {
   /** Ethereum address of the equity contract */
   address: Address;
+  /** Currency code for the user */
+  userCurrency: CurrencyCode;
 }
 
 /**
@@ -60,7 +62,7 @@ export interface EquityDetailProps {
 export const getEquityDetail = withTracing(
   "queries",
   "getEquityDetail",
-  cache(async ({ address }: EquityDetailProps) => {
+  cache(async ({ address, userCurrency }: EquityDetailProps) => {
     "use cache";
     cacheTag("asset");
     const [onChainEquity, offChainEquity] = await Promise.all([
@@ -100,7 +102,7 @@ export const getEquityDetail = withTracing(
 
     const calculatedFields = await equitiesCalculateFields(
       [onChainEquity],
-      [offChainEquity]
+      userCurrency
     );
     const calculatedEquity = calculatedFields.get(onChainEquity.id)!;
 

@@ -1,10 +1,7 @@
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { safeParse } from "@/lib/utils/typebox";
-import type {
-  CalculatedEquity,
-  OffChainEquity,
-  OnChainEquity,
-} from "./equity-schema";
+import type { CalculatedEquity, OnChainEquity } from "./equity-schema";
 import { CalculatedEquitySchema } from "./equity-schema";
 /**
  * Calculates additional fields for equity tokens
@@ -15,10 +12,11 @@ import { CalculatedEquitySchema } from "./equity-schema";
  */
 export async function equitiesCalculateFields(
   onChainEquities: OnChainEquity[],
-  _offChainEquities?: (OffChainEquity | undefined)[]
+  userCurrency: CurrencyCode
 ): Promise<Map<string, CalculatedEquity>> {
   const prices = await getAssetsPricesInUserCurrency(
-    onChainEquities.map((equity) => equity.id)
+    onChainEquities.map((equity) => equity.id),
+    userCurrency
   );
 
   return onChainEquities.reduce((acc, equity) => {

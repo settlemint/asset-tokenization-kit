@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import {
   OffChainCryptoCurrencySchema,
@@ -66,7 +67,7 @@ const OffchainCryptocurrencyList = hasuraGraphql(
 export const getCryptoCurrencyList = withTracing(
   "queries",
   "getCryptoCurrencyList",
-  cache(async () => {
+  cache(async (userCurrency: CurrencyCode) => {
     "use cache";
     cacheTag("asset");
     const [onChainCryptoCurrencies, offChainCryptoCurrencies] =
@@ -116,7 +117,7 @@ export const getCryptoCurrencyList = withTracing(
 
     const calculatedFields = await cryptoCurrenciesCalculateFields(
       onChainCryptoCurrencies,
-      offChainCryptoCurrencies
+      userCurrency
     );
 
     const cryptoCurrencies = onChainCryptoCurrencies.map((cryptocurrency) => {

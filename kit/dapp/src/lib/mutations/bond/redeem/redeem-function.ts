@@ -47,7 +47,10 @@ export const redeemFunction = withAccessControl(
     parsedInput: RedeemBondInput;
     ctx: { user: User };
   }) => {
-    const { decimals } = await getBondDetail({ address });
+    const { decimals } = await getBondDetail({
+      address,
+      userCurrency: user.currency,
+    });
 
     const response = await portalClient.request(BondRedeem, {
       address,

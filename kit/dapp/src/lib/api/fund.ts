@@ -43,8 +43,8 @@ export const FundApi = new Elysia({
   .use(superJson)
   .get(
     "",
-    async () => {
-      return getFundList();
+    async ({ user }) => {
+      return getFundList(user.currency);
     },
     {
       auth: true,
@@ -62,9 +62,10 @@ export const FundApi = new Elysia({
   )
   .get(
     "/:address",
-    ({ params: { address } }) => {
+    ({ params: { address }, user }) => {
       return getFundDetail({
         address: getAddress(address),
+        userCurrency: user.currency,
       });
     },
     {

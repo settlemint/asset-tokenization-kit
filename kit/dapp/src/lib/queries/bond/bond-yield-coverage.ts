@@ -1,3 +1,4 @@
+import { getUser } from "@/lib/auth/utils";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { Address } from "viem";
 import type { YieldCoverage } from "./bond-schema";
@@ -20,8 +21,13 @@ interface GetBondYieldCoverageParams {
 export async function getBondYieldCoverage({
   address,
 }: GetBondYieldCoverageParams): Promise<YieldCoverage> {
+  const user = await getUser();
+
   // Get bond details
-  const bondData = await getBondDetail({ address });
+  const bondData = await getBondDetail({
+    address,
+    userCurrency: user.currency,
+  });
 
   // Check if bond has a yield schedule
   const hasYieldSchedule = !!bondData.yieldSchedule;

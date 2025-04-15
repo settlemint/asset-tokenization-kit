@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
@@ -15,7 +16,6 @@ import { getAddress } from "viem";
 import { equitiesCalculateFields } from "./equity-calculated";
 import { EquityFragment, OffchainEquityFragment } from "./equity-fragment";
 import { OffChainEquitySchema, OnChainEquitySchema } from "./equity-schema";
-
 /**
  * GraphQL query to fetch on-chain equity list from The Graph
  *
@@ -61,7 +61,7 @@ const OffchainEquityList = hasuraGraphql(
 export const getEquityList = withTracing(
   "queries",
   "getEquityList",
-  cache(async () => {
+  cache(async (userCurrency: CurrencyCode) => {
     "use cache";
     cacheTag("asset");
     const [onChainEquities, offChainEquities] = await Promise.all([
@@ -107,7 +107,7 @@ export const getEquityList = withTracing(
 
     const calculatedFields = await equitiesCalculateFields(
       onChainEquities,
-      offChainEquities
+      userCurrency
     );
 
     const equities = onChainEquities.map((equity) => {
