@@ -68,6 +68,10 @@ export const OnChainBondSchema = t.Object(
         type: t.AssetType({
           description: "The type of the underlying asset",
         }),
+        totalSupply: t.BigDecimal({
+          description:
+            "The total supply of the token in a human-readable decimal format",
+        }),
       },
       {
         description: "Information about the underlying asset",

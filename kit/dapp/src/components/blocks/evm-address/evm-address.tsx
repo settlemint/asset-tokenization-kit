@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/routing";
+import { apiClient } from "@/lib/api/client";
 import type { User } from "@/lib/auth/types";
 import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
-import { getAssetSearch } from "@/lib/queries/asset/asset-search";
 import type { Contact } from "@/lib/queries/contact/contact-schema";
 import {
   AddressNameCacheProvider,
@@ -79,17 +79,12 @@ function EvmAddressInner({
   const { data: user, isLoading: isLoadingUser } = useSWR(
     [`user-search-${address}`],
     async () => {
-      const result = await fetch(
-        `/api/user/search?term=${getAddress(address)}`,
-        {
-          cache: "force-cache",
-        }
-      );
-      if (result.ok) {
-        const users = (await result.json()) as User[];
-        return users.length > 0 ? users[0] : null;
-      }
-      return null;
+      const { data } = await apiClient.api.user.search.get({
+        query: {
+          term: getAddress(address),
+        },
+      });
+      return data?.[0] ?? null;
     },
     {
       revalidateOnFocus: false,
@@ -101,10 +96,12 @@ function EvmAddressInner({
   const { data: asset, isLoading: isLoadingAsset } = useSWR(
     [`asset-search`, address],
     async () => {
-      const assetResult = await getAssetSearch({
-        searchTerm: getAddress(address),
+      const { data } = await apiClient.api.asset.search.get({
+        query: {
+          searchTerm: getAddress(address),
+        },
       });
-      return assetResult.length > 0 ? assetResult[0] : null;
+      return data?.[0] ?? null;
     },
     {
       revalidateOnFocus: false,

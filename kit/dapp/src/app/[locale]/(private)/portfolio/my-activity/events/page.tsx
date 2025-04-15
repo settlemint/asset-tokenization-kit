@@ -1,9 +1,11 @@
+import { AssetEventsSkeleton } from "@/components/blocks/asset-events-table/asset-events-skeleton";
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import type { Address } from "viem";
 
 export async function generateMetadata({
@@ -29,5 +31,9 @@ export async function generateMetadata({
 export default async function ActivityPage() {
   const user = await getUser();
 
-  return <AssetEventsTable sender={user.wallet as Address} />;
+  return (
+    <Suspense fallback={<AssetEventsSkeleton />}>
+      <AssetEventsTable sender={user.wallet as Address} />
+    </Suspense>
+  );
 }

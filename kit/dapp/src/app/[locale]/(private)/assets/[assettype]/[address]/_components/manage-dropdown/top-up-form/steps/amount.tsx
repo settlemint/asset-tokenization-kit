@@ -3,12 +3,27 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { TopUpInput } from "@/lib/mutations/bond/top-up/top-up-schema";
-import { useTranslations } from "next-intl";
+import { formatNumber } from '@/lib/utils/number';
+import { useLocale, useTranslations } from 'next-intl';
 import { useFormContext } from "react-hook-form";
 
-export function Amount() {
+interface AmountProps {
+  max?: number;
+  decimals?: number;
+  symbol: string;
+}
+
+export function Amount({ max, decimals, symbol }: AmountProps) {
   const { control } = useFormContext<TopUpInput>();
   const t = useTranslations("private.assets.details.forms.amount");
+  const locale = useLocale();
+
+  const noSupply = max === 0;
+  const description = noSupply
+    ? t("max-limit.top-up-no-supply")
+    : max
+      ? t("max-limit.top-up", { limit: formatNumber(max, { locale }) })
+      : undefined;
 
   return (
     <FormStep title={t("title")} description={t("description.top-up")}>
@@ -17,7 +32,11 @@ export function Amount() {
         name="amount"
         type="number"
         min={0}
+        max={max}
         step="any"
+        description={description}
+        postfix={symbol}
+        disabled={noSupply}
       />
     </FormStep>
   );

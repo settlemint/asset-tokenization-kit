@@ -12,6 +12,8 @@ export function DetailGridSkeleton() {
         <CardContent className="grid grid-cols-2 gap-x-4 gap-y-8 ">
           <Skeleton className="h-8 w-full bg-muted/50" />
           <Skeleton className="h-8 w-full bg-muted/50" />
+          <Skeleton className="h-8 w-full bg-muted/50" />
+          <Skeleton className="h-8 w-full bg-muted/50" />
         </CardContent>
       </Card>
     </div>

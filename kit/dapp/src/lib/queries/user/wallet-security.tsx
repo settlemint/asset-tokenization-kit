@@ -1,28 +1,10 @@
+"use server";
+
 import { redirectToSignIn } from "@/lib/auth/redirect";
 import { getUser } from "@/lib/auth/utils";
 import { withTracing } from "@/lib/utils/tracing";
-import { t, type StaticDecode } from "@/lib/utils/typebox";
-
-/**
- * TypeBox schema for wallet verification data
- */
-export const WalletVerificationSchema = t.Object(
-  {
-    id: t.String({
-      description: "The unique identifier of the verification",
-    }),
-    name: t.String({
-      description: "The name of the verification method",
-    }),
-    verificationType: t.String({
-      description: "The type of verification performed",
-    }),
-  },
-  {
-    description: "Information about a wallet verification method",
-  }
-);
-export type WalletVerification = StaticDecode<typeof WalletVerificationSchema>;
+import { getLocale } from "next-intl/server";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 /**
  * Checks if the logged in user has a wallet verification
@@ -38,11 +20,15 @@ export const hasWalletVerification = withTracing(
       return user.pincodeEnabled || user.twoFactorEnabled || false;
     } catch (err) {
       const error = err as Error;
+      if (isRedirectError(error)) {
+        throw error;
+      }
       console.error(
         `Error getting wallet verification: ${error.message}`,
         error.stack
       );
-      return redirectToSignIn();
+      const locale = await getLocale();
+      return redirectToSignIn(locale);
     }
   }
 );

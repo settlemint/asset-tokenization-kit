@@ -1324,7 +1324,11 @@
               "burn-no-balance": "No balance available for burning.",
               "freeze": "Balance available to freeze: {limit}",
               "mint": "Collateral available to mint: {limit}",
-              "mint-no-collateral": "No collateral available. Add collateral before minting."
+              "mint-no-collateral": "No collateral available. Add collateral before minting.",
+              "top-up": "Supply available to top up: {limit}",
+              "top-up-no-supply": "No supply available to top up.",
+              "withdraw": "Underlying balance available to withdraw: {limit}",
+              "withdraw-no-balance": "No underlying balance available for withdrawal."
             },
             "title": "Enter amount",
             "wallet-balance": "Wallet balance"

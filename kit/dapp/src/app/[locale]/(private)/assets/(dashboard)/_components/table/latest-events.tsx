@@ -1,6 +1,8 @@
+import { AssetEventsSkeleton } from "@/components/blocks/asset-events-table/asset-events-skeleton";
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { Suspense } from "react";
 import type { Address } from "viem";
 
 interface LatestEventsProps {
@@ -12,11 +14,13 @@ export function LatestEvents({ sender }: LatestEventsProps) {
 
   return (
     <>
-      <AssetEventsTable
-        disableToolbarAndPagination={true}
-        limit={5}
-        sender={sender}
-      />
+      <Suspense fallback={<AssetEventsSkeleton />}>
+        <AssetEventsTable
+          disableToolbarAndPagination={true}
+          limit={5}
+          sender={sender}
+        />
+      </Suspense>
       <Link
         prefetch
         href="/assets/activity/events"

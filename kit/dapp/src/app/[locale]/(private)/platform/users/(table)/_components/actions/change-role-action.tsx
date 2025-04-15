@@ -33,7 +33,9 @@ export function ChangeRoleAction({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations("private.users");
-  const [selectedRole, setSelectedRole] = useState<string>(user.role || "user");
+  const [selectedRole, setSelectedRole] = useState<"user" | "issuer" | "admin">(
+    user.role || "user"
+  );
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { data: session } = authClient.useSession();
@@ -95,7 +97,9 @@ export function ChangeRoleAction({
 
           <Select
             value={selectedRole}
-            onValueChange={setSelectedRole}
+            onValueChange={(value) =>
+              setSelectedRole(value as "user" | "issuer" | "admin")
+            }
             disabled={isLoading}
           >
             <SelectTrigger>

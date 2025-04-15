@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchPendingTransactions } from "@/lib/actions/transactions";
+import { apiClient } from "@/lib/api/client";
 import { authClient } from "@/lib/auth/client";
 import useSWR from "swr";
 import type { Address } from "viem";
@@ -13,7 +13,15 @@ export function usePendingTransactions() {
     wallet ? ["pending-transactions", wallet] : null,
     async () => {
       if (!wallet) return [];
-      return fetchPendingTransactions(wallet);
+      const { data } = await apiClient.api.transaction.recent.get({
+        query: {
+          address: wallet,
+        },
+      });
+      if (data) {
+        return data?.filter((tx) => !tx.receipt) ?? [];
+      }
+      return [];
     },
     {
       refreshInterval: 5000, // Poll every 5 seconds

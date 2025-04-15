@@ -1,8 +1,9 @@
 import { auth } from "@/lib/auth/auth";
 import { redirectToSignIn } from "@/lib/auth/redirect";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { withTracing } from "@/lib/utils/tracing";
+import { getLocale } from "next-intl/server";
 import { headers } from "next/headers";
+import { cache } from "react";
 import type { User } from "./types";
 
 /**
@@ -10,26 +11,23 @@ import type { User } from "./types";
  * @returns The authenticated user
  * @throws {AuthError} If user is not authenticated
  */
-export async function getUser() {
-  const nextHeaders = await headers();
-  return getSession({ headers: Object.fromEntries(nextHeaders.entries()) });
-}
-
-async function getSession({ headers }: { headers: Record<string, string> }) {
-  "use cache";
-  cacheTag("session");
-  cacheLife("session");
-  try {
-    const session = await auth.api.getSession({
-      headers: new Headers(headers),
-    });
-    if (!session?.user) {
-      return redirectToSignIn();
+export const getUser = withTracing(
+  "queries",
+  "getUser",
+  cache(async () => {
+    const locale = await getLocale();
+    try {
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
+      if (!session?.user) {
+        return redirectToSignIn(locale);
+      }
+      return session.user as User;
+    } catch (err) {
+      const error = err as Error;
+      console.error(`Error getting user: ${error.message}`, error.stack);
+      return redirectToSignIn(locale);
     }
-    return session.user as User;
-  } catch (err) {
-    const error = err as Error;
-    console.error(`Error getting user: ${error.message}`, error.stack);
-    return redirectToSignIn();
-  }
-}
+  })
+);

@@ -20,7 +20,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { getAssetSearch } from "@/lib/queries/asset/asset-search";
+import { apiClient } from "@/lib/api/client";
 import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
@@ -169,11 +169,15 @@ function FormAssetsList({
   const { data: assets = [], isLoading } = useSWR(
     [`asset-search`, debounced], // Always fetch, debounced will be empty string initially
     async () => {
-      const results = await getAssetSearch({ searchTerm: debounced });
+      const { data } = await apiClient.api.asset.search.get({
+        query: {
+          searchTerm: debounced,
+        },
+      });
 
       // Filter by user wallet if provided
       if (userWallet) {
-        return results.filter((asset) =>
+        return data?.filter((asset) =>
           asset.holders.some(
             (holder) =>
               holder.account.id.toLowerCase() === userWallet.toLowerCase() &&
@@ -181,7 +185,7 @@ function FormAssetsList({
           )
         );
       } else {
-        return results;
+        return data;
       }
     },
     {
@@ -231,7 +235,7 @@ function FormAssetsList({
 
     return recentAssets
       .map((recent) => {
-        const asset = assets.find((a) => a.id === recent.id);
+        const asset = assets?.find((a) => a.id === recent.id);
         return asset ? { ...asset, selectedAt: recent.selectedAt } : null;
       })
       .filter(Boolean) as (AssetUsers & { selectedAt: number })[];
@@ -299,7 +303,7 @@ function FormAssetsList({
 
       {/* Show search results */}
       <CommandGroup>
-        {assets.map((asset) => (
+        {assets?.map((asset) => (
           <AssetItem
             key={asset.id}
             asset={asset}

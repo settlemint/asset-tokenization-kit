@@ -1,7 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import type { AssetBalance } from "@/lib/queries/asset-balance/asset-balance-schema";
+import { apiClient } from "@/lib/api/client";
 import useSWR from "swr";
 import type { Address } from "viem";
 import { getAddress } from "viem";
@@ -14,19 +14,12 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
   const { data: balances, isLoading } = useSWR(
     [`asset-balances-${address}`],
     async () => {
-      const result = await fetch(
-        `/api/asset-balance/portfolio/${getAddress(address)}`,
-        {
-          cache: "force-cache",
-        }
-      );
-      if (result.ok) {
-        const { balances } = (await result.json()) as {
-          balances: AssetBalance[];
-        };
-        return balances.length > 0 ? balances : null;
-      }
-      return null;
+      const { data } = await apiClient.api["asset-balance"]
+        .portfolio({
+          wallet: getAddress(address),
+        })
+        .get();
+      return data?.balances ?? null;
     },
     {
       revalidateOnFocus: false,

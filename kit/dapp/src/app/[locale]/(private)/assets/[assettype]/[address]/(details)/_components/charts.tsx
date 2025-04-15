@@ -9,6 +9,7 @@ import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supp
 import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
 import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
 import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-distribution";
+import { ChartCardSkeleton } from "@/components/blocks/charts/chart-card-skeleton";
 import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
@@ -17,6 +18,7 @@ import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { calculateMaxRange } from "@/lib/utils/timeRange";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import type { Address } from "viem";
 import { Related } from "./related";
 
@@ -67,37 +69,57 @@ export async function Charts({ assettype, address }: ChartsProps) {
     <>
       <ChartGrid title={t("asset-statistics-title")}>
         {["stablecoin", "tokenizeddeposit"].includes(assettype) && (
-          <CollateralRatio address={address} assettype={assettype} />
+          <Suspense fallback={<ChartCardSkeleton />}>
+            <CollateralRatio address={address} assettype={assettype} />
+          </Suspense>
         )}
         {assettype === "bond" && (
           <>
-            <BondStatusProgress address={address} />
-            <BondUnitsOverTime address={address} />
-            <BondYieldCoverage address={address} />
-            <BondYieldDistribution address={address} />
+            <Suspense fallback={<ChartCardSkeleton />}>
+              <BondStatusProgress address={address} />
+            </Suspense>
+            <Suspense fallback={<ChartCardSkeleton />}>
+              <BondUnitsOverTime address={address} />
+            </Suspense>
+            <Suspense fallback={<ChartCardSkeleton />}>
+              <BondYieldCoverage address={address} />
+            </Suspense>
+            <Suspense fallback={<ChartCardSkeleton />}>
+              <BondYieldDistribution address={address} />
+            </Suspense>
           </>
         )}
-        <TotalSupply
-          data={assetStats}
-          locale={locale}
-          maxRange={calculatedMaxRange}
-        />
-        <TotalSupplyChanged
-          data={assetStats}
-          locale={locale}
-          maxRange={calculatedMaxRange}
-        />
-        <WalletDistribution address={address} />
-        <TotalTransfers
-          data={assetStats}
-          locale={locale}
-          maxRange={calculatedMaxRange}
-        />
-        <TotalVolume
-          data={assetStats}
-          locale={locale}
-          maxRange={calculatedMaxRange}
-        />
+        <Suspense fallback={<ChartCardSkeleton />}>
+          <TotalSupply
+            data={assetStats}
+            locale={locale}
+            maxRange={calculatedMaxRange}
+          />
+        </Suspense>
+        <Suspense fallback={<ChartCardSkeleton />}>
+          <TotalSupplyChanged
+            data={assetStats}
+            locale={locale}
+            maxRange={calculatedMaxRange}
+          />
+        </Suspense>
+        <Suspense fallback={<ChartCardSkeleton />}>
+          <WalletDistribution address={address} />
+        </Suspense>
+        <Suspense fallback={<ChartCardSkeleton />}>
+          <TotalTransfers
+            data={assetStats}
+            locale={locale}
+            maxRange={calculatedMaxRange}
+          />
+        </Suspense>
+        <Suspense fallback={<ChartCardSkeleton />}>
+          <TotalVolume
+            data={assetStats}
+            locale={locale}
+            maxRange={calculatedMaxRange}
+          />
+        </Suspense>
       </ChartGrid>
       <Related
         assettype={assettype}

@@ -4,6 +4,7 @@ import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import { Suspense } from "react";
 import type { Address } from "viem";
 import { BondsRelated } from "./related/bonds";
 import { CryptocurrenciesRelated } from "./related/cryptocurrencies";
@@ -32,67 +33,79 @@ export function Related({
   switch (assettype) {
     case "bond":
       return (
-        <BondsRelated
-          address={address}
-          assetDetails={assetDetails}
-          userBalance={userBalance}
-          assetUsersDetails={assetUsersDetails}
-          currentUserWallet={currentUserWallet}
-        />
+        <Suspense>
+          <BondsRelated
+            address={address}
+            assetDetails={assetDetails}
+            userBalance={userBalance}
+            assetUsersDetails={assetUsersDetails}
+            currentUserWallet={currentUserWallet}
+          />
+        </Suspense>
       );
     case "cryptocurrency":
       return (
-        <CryptocurrenciesRelated
-          address={address}
-          assetDetails={assetDetails}
-          userBalance={userBalance}
-          assetUsersDetails={assetUsersDetails}
-          currentUserWallet={currentUserWallet}
-        />
+        <Suspense>
+          <CryptocurrenciesRelated
+            address={address}
+            assetDetails={assetDetails}
+            userBalance={userBalance}
+            assetUsersDetails={assetUsersDetails}
+            currentUserWallet={currentUserWallet}
+          />
+        </Suspense>
       );
     case "stablecoin":
       return (
-        <StablecoinsRelated
-          address={address}
-          assetDetails={
-            assetDetails as Awaited<ReturnType<typeof getStableCoinDetail>>
-          }
-          userBalance={userBalance}
-          assetUsersDetails={assetUsersDetails}
-          currentUserWallet={currentUserWallet}
-        />
+        <Suspense>
+          <StablecoinsRelated
+            address={address}
+            assetDetails={
+              assetDetails as Awaited<ReturnType<typeof getStableCoinDetail>>
+            }
+            userBalance={userBalance}
+            assetUsersDetails={assetUsersDetails}
+            currentUserWallet={currentUserWallet}
+          />
+        </Suspense>
       );
     case "deposit":
       return (
-        <DepositsRelated
-          address={address}
-          assetDetails={
-            assetDetails as Awaited<ReturnType<typeof getDepositDetail>>
-          }
-          userBalance={userBalance}
-          assetUsersDetails={assetUsersDetails}
-          currentUserWallet={currentUserWallet}
-        />
+        <Suspense>
+          <DepositsRelated
+            address={address}
+            assetDetails={
+              assetDetails as Awaited<ReturnType<typeof getDepositDetail>>
+            }
+            userBalance={userBalance}
+            assetUsersDetails={assetUsersDetails}
+            currentUserWallet={currentUserWallet}
+          />
+        </Suspense>
       );
     case "equity":
       return (
-        <EquitiesRelated
-          address={address}
-          assetDetails={assetDetails}
-          userBalance={userBalance}
-          assetUsersDetails={assetUsersDetails}
-          currentUserWallet={currentUserWallet}
-        />
+        <Suspense>
+          <EquitiesRelated
+            address={address}
+            assetDetails={assetDetails}
+            userBalance={userBalance}
+            assetUsersDetails={assetUsersDetails}
+            currentUserWallet={currentUserWallet}
+          />
+        </Suspense>
       );
     case "fund":
       return (
-        <FundsRelated
-          address={address}
-          assetDetails={assetDetails}
-          userBalance={userBalance}
-          assetUsersDetails={assetUsersDetails}
-          currentUserWallet={currentUserWallet}
-        />
+        <Suspense>
+          <FundsRelated
+            address={address}
+            assetDetails={assetDetails}
+            userBalance={userBalance}
+            assetUsersDetails={assetUsersDetails}
+            currentUserWallet={currentUserWallet}
+          />
+        </Suspense>
       );
     default:
       throw new Error("Invalid asset type");

@@ -1,8 +1,10 @@
+import { AssetEventsSkeleton } from "@/components/blocks/asset-events-table/asset-events-skeleton";
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 
 export async function generateMetadata({
   params,
@@ -31,8 +33,10 @@ export default async function ActivityPage({
 }) {
   const { sender } = await searchParams;
   return (
-    <AssetEventsTable
-      initialColumnFilters={sender ? [{ id: "sender", value: [sender] }] : []}
-    />
+    <Suspense fallback={<AssetEventsSkeleton />}>
+      <AssetEventsTable
+        initialColumnFilters={sender ? [{ id: "sender", value: [sender] }] : []}
+      />
+    </Suspense>
   );
 }

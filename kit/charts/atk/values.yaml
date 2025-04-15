@@ -173,6 +173,8 @@ blockscout:
 thegraph:
   enabled: true
   graph-node:
+    image:
+      tag: v0.37.0
     graphNodeDefaults:
       imagePullSecrets:
         - name: image-pull-secret-docker
@@ -181,29 +183,37 @@ thegraph:
       podMetadata:
         labels:
           app.kubernetes.io/part-of: thegraph
-          environment: production
+          environment: development
     graphNodeGroups:
       query:
-        enabled: true
+        enabled: false
         replicaCount: 1
         podMetadata:
           labels:
             role: query-node
             custom-label: custom-value
       index:
-        enabled: true
+        enabled: false
         replicaCount: 1
         podMetadata:
           labels:
             role: index-node
             custom-label: custom-value
       block-ingestor:
-        enabled: true
+        enabled: false
         replicaCount: 1
         podMetadata:
           labels:
             role: block-ingestor
             custom-label: custom-value
+      combined:
+        enabled: true
+        replicaCount: 1
+        includeInIndexPools:
+          - default
+        env:
+          node_role: combined-mode
+    blockIngestorGroupName: combined
     ingress:
       hosts:
         - host: graph.k8s.orb.local
@@ -211,23 +221,23 @@ thegraph:
             - path: /(.*)
               pathType: ImplementationSpecific
               port: 8000
-              serviceName: graph-node-query
+              serviceName: graph-node-combined
             - path: /ws/?(.*)
               pathType: ImplementationSpecific
               port: 8001
-              serviceName: graph-node-query
+              serviceName: graph-node-combined
             - path: /admin/?(.*)
               pathType: ImplementationSpecific
               port: 8020
-              serviceName: graph-node-query
+              serviceName: graph-node-combined
             - path: /indexer/?(.*)
               pathType: ImplementationSpecific
               port: 8030
-              serviceName: graph-node-index
+              serviceName: graph-node-combined
             - path: /graphman/?(.*)
               pathType: ImplementationSpecific
               port: 8050
-              serviceName: graph-node-index
+              serviceName: graph-node-combined
   job:
     enabled: true
     fullnameOverride: graph

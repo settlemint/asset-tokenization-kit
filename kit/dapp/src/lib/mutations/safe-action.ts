@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth/auth";
+import { getLocale } from "next-intl/server";
 import {
   type ValidationErrors,
   createSafeActionClient,
@@ -81,7 +82,8 @@ export const action = createSafeActionClient({
     });
 
     if (!session?.user) {
-      return redirectToSignIn();
+      const locale = await getLocale();
+      return redirectToSignIn(locale);
     }
 
     return next({
