@@ -1,6 +1,6 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { AssetUsersSchema } from "@/lib/queries/asset/asset-users-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { Elysia } from "elysia";
 import { getAssetSearch } from "../queries/asset/asset-search";
 import { t } from "../utils/typebox";
@@ -15,7 +15,6 @@ export const AssetApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "/search",
     async ({ query }) => {

@@ -5,7 +5,7 @@ import { PredictAddressInputSchema } from "@/lib/queries/fund-factory/fund-facto
 import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { getFundList } from "@/lib/queries/fund/fund-list";
 import { FundSchema } from "@/lib/queries/fund/fund-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -40,7 +40,6 @@ export const FundApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
     async ({ user }) => {
