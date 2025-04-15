@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import type { Address } from "viem";
 import { getAddress } from "viem";
 
@@ -16,7 +22,10 @@ interface AddressNameCache {
   // Set a name for an address in the cache
   setNameForAddress: (address: string | Address, name: string) => void;
   // Check if the address or its name matches a search term
-  addressOrNameMatches: (address: string | Address, searchTerm: string) => boolean;
+  addressOrNameMatches: (
+    address: string | Address,
+    searchTerm: string
+  ) => boolean;
 }
 
 // Create a global cache that can be accessed outside of React components
@@ -28,69 +37,93 @@ const AddressNameCacheContext = createContext<AddressNameCache | null>(null);
 /**
  * Provider component for the address name cache
  */
-export function AddressNameCacheProvider({ children }: { children: React.ReactNode }) {
+export function AddressNameCacheProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   // Store the name mapping
-  const [addressNameMap, setAddressNameMap] = useState<Record<string, string>>({});
+  const [addressNameMap, setAddressNameMap] = useState<Record<string, string>>(
+    {}
+  );
 
   // Get a name for an address
-  const getNameForAddress = useCallback((address: string | Address): string | undefined => {
-    try {
-      const normalizedAddress = getAddress(address as Address);
-      return addressNameMap[normalizedAddress];
-    } catch (error) {
-      return undefined;
-    }
-  }, [addressNameMap]);
+  const getNameForAddress = useCallback(
+    (address: string | Address): string | undefined => {
+      try {
+        const normalizedAddress = getAddress(address as Address);
+        return addressNameMap[normalizedAddress];
+      } catch {
+        return undefined;
+      }
+    },
+    [addressNameMap]
+  );
 
   // Set a name for an address
-  const setNameForAddress = useCallback((address: string | Address, name: string) => {
-    if (!address || !name) return;
+  const setNameForAddress = useCallback(
+    (address: string | Address, name: string) => {
+      if (!address || !name) {
+        return;
+      }
 
-    try {
-      const normalizedAddress = getAddress(address as Address);
-      // Update both the React state and the global cache
-      setAddressNameMap(prev => ({
-        ...prev,
-        [normalizedAddress]: name
-      }));
+      try {
+        const normalizedAddress = getAddress(address as Address);
+        // Update both the React state and the global cache
+        setAddressNameMap((prev) => ({
+          ...prev,
+          [normalizedAddress]: name,
+        }));
 
-      // Also update the global cache for filter functions
-      globalAddressNameCache[normalizedAddress] = name;
-    } catch (error) {
-      console.warn('Invalid address in setNameForAddress:', address);
-    }
-  }, []);
+        // Also update the global cache for filter functions
+        globalAddressNameCache[normalizedAddress] = name;
+      } catch {
+        console.warn("Invalid address in setNameForAddress:", address);
+      }
+    },
+    []
+  );
 
   // Check if the address or its name matches a search term
-  const addressOrNameMatches = useCallback((address: string | Address, searchTerm: string): boolean => {
-    if (!address || !searchTerm) return false;
-
-    try {
-      const normalizedAddress = getAddress(address as Address);
-
-      // Check if the address contains the search term
-      if (normalizedAddress.toLowerCase().includes(searchTerm.toLowerCase())) {
-        return true;
+  const addressOrNameMatches = useCallback(
+    (address: string | Address, searchTerm: string): boolean => {
+      if (!address || !searchTerm) {
+        return false;
       }
 
-      // Check if the name contains the search term
-      const name = addressNameMap[normalizedAddress];
-      if (name && name.toLowerCase().includes(searchTerm.toLowerCase())) {
-        return true;
-      }
+      try {
+        const normalizedAddress = getAddress(address as Address);
 
-      return false;
-    } catch (error) {
-      return false;
-    }
-  }, [addressNameMap]);
+        // Check if the address contains the search term
+        if (
+          normalizedAddress.toLowerCase().includes(searchTerm.toLowerCase())
+        ) {
+          return true;
+        }
+
+        // Check if the name contains the search term
+        const name = addressNameMap[normalizedAddress];
+        if (name && name.toLowerCase().includes(searchTerm.toLowerCase())) {
+          return true;
+        }
+
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    [addressNameMap]
+  );
 
   // Create memoized value to avoid unnecessary re-renders
-  const value = useMemo(() => ({
-    getNameForAddress,
-    setNameForAddress,
-    addressOrNameMatches
-  }), [getNameForAddress, setNameForAddress, addressOrNameMatches]);
+  const value = useMemo(
+    () => ({
+      getNameForAddress,
+      setNameForAddress,
+      addressOrNameMatches,
+    }),
+    [getNameForAddress, setNameForAddress, addressOrNameMatches]
+  );
 
   return (
     <AddressNameCacheContext.Provider value={value}>
@@ -105,7 +138,9 @@ export function AddressNameCacheProvider({ children }: { children: React.ReactNo
 export function useAddressNameCache(): AddressNameCache {
   const context = useContext(AddressNameCacheContext);
   if (!context) {
-    throw new Error("useAddressNameCache must be used within an AddressNameCacheProvider");
+    throw new Error(
+      "useAddressNameCache must be used within an AddressNameCacheProvider"
+    );
   }
   return context;
 }
@@ -130,7 +165,7 @@ function matchesSearch(address: Address, searchTerm: string): boolean {
     }
 
     return false;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -145,7 +180,9 @@ export function addressNameFilter(
   filterValue: FilterValue
 ): boolean {
   // Skip empty filters
-  if (!filterValue || !filterValue.values || filterValue.values.length === 0) return true;
+  if (!filterValue || !filterValue.values || filterValue.values.length === 0) {
+    return true;
+  }
 
   try {
     const address = row.getValue(columnId);
@@ -157,13 +194,13 @@ export function addressNameFilter(
     switch (operator) {
       case "contains":
         // Check if any of the filter values match the address or name
-        return filterValue.values.some(value =>
+        return filterValue.values.some((value) =>
           matchesSearch(address as Address, value)
         );
 
       case "equals":
         // Check for exact match
-        return filterValue.values.some(value => {
+        return filterValue.values.some((value) => {
           try {
             const normalizedAddress = getAddress(address as Address);
             const normalizedValue = getAddress(value as Address);
@@ -176,7 +213,7 @@ export function addressNameFilter(
         });
 
       case "startsWith":
-        return filterValue.values.some(value => {
+        return filterValue.values.some((value) => {
           const normalizedAddress = getAddress(address as Address);
           const searchTermLower = value.toLowerCase();
 
@@ -190,11 +227,11 @@ export function addressNameFilter(
 
       default:
         // For unknown operators, fallback to contains
-        return filterValue.values.some(value =>
+        return filterValue.values.some((value) =>
           matchesSearch(address as Address, value)
         );
     }
-  } catch (error) {
+  } catch {
     return false;
   }
 }

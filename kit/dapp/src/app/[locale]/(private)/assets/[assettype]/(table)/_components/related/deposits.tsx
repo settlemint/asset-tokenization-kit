@@ -3,12 +3,10 @@ import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
-import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import { getTranslations } from "next-intl/server";
 
 export async function DepositsRelated() {
   const t = await getTranslations("private.assets.table.related");
-  const userDetails = await getCurrentUserDetail();
 
   return (
     <RelatedGrid title={t("title")}>
@@ -16,7 +14,7 @@ export async function DepositsRelated() {
         title={t("deposit.issue-new.title")}
         description={t("deposit.issue-new.description")}
       >
-        <CreateDepositForm asButton userDetails={userDetails} />
+        <CreateDepositForm asButton />
       </RelatedGridItem>
       <RelatedGridItem
         title={t("deposit.mechanics.title")}

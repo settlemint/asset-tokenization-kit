@@ -8,45 +8,39 @@ import { withTracing } from "@/lib/utils/tracing";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { BondFragment } from "../bond/bond-fragment";
-import { CryptoCurrencyFragment } from "../cryptocurrency/cryptocurrency-fragment";
-import { DepositFragment } from "../deposit/deposit-fragment";
-import { EquityFragment } from "../equity/equity-fragment";
-import { FundFragment } from "../fund/fund-fragment";
-import { StableCoinFragment } from "../stablecoin/stablecoin-fragment";
 
 /**
  * GraphQL query to fetch sidebar asset data
  */
 const SidebarAssets = theGraphGraphqlKit(
   `
-  query SidebarAssets {
-    stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+  query SidebarAssets($limit: Int!) {
+    stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       id
       name
       symbol
     }
-    bonds(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+    bonds(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       id
       name
       symbol
     }
-    equities(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+    equities(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       id
       name
       symbol
     }
-    funds(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+    funds(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       id
       name
       symbol
     }
-    cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+    cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       id
       name
       symbol
     }
-    deposits(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+    deposits(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
       id
       name
       symbol
@@ -56,15 +50,7 @@ const SidebarAssets = theGraphGraphqlKit(
       count
     }
   }
-`,
-  [
-    StableCoinFragment,
-    BondFragment,
-    EquityFragment,
-    FundFragment,
-    CryptoCurrencyFragment,
-    DepositFragment,
-  ]
+`
 );
 
 /**
@@ -126,8 +112,10 @@ export const getSidebarAssets = withTracing(
   async (options?: SidebarAssetsOptions) => {
     "use cache";
     cacheTag("asset");
-    const result = await theGraphClientKit.request(SidebarAssets);
     const { limit = 10 } = options || {};
+    const result = await theGraphClientKit.request(SidebarAssets, {
+      limit,
+    });
 
     const validatedStableCoins = safeParse(
       t.Array(SidebarAssetSchema),
@@ -165,31 +153,6 @@ export const getSidebarAssets = withTracing(
       result.assetCounts || []
     );
 
-    // Limit the number of records if requested
-    const limitedStableCoins = limit
-      ? validatedStableCoins.slice(0, limit)
-      : validatedStableCoins;
-
-    const limitedBonds = limit
-      ? validatedBonds.slice(0, limit)
-      : validatedBonds;
-
-    const limitedEquities = limit
-      ? validatedEquities.slice(0, limit)
-      : validatedEquities;
-
-    const limitedFunds = limit
-      ? validatedFunds.slice(0, limit)
-      : validatedFunds;
-
-    const limitedCryptoCurrencies = limit
-      ? validatedCryptoCurrencies.slice(0, limit)
-      : validatedCryptoCurrencies;
-
-    const limitedDeposits = limit
-      ? validatedDeposits.slice(0, limit)
-      : validatedDeposits;
-
     /**
      * Helper function to get the count for a specific asset type
      */
@@ -207,27 +170,27 @@ export const getSidebarAssets = withTracing(
 
     return {
       stablecoin: {
-        records: limitedStableCoins,
+        records: validatedStableCoins,
         count: getCount("stablecoin"),
       },
       equity: {
-        records: limitedEquities,
+        records: validatedEquities,
         count: getCount("equity"),
       },
       bond: {
-        records: limitedBonds,
+        records: validatedBonds,
         count: getCount("bond"),
       },
       fund: {
-        records: limitedFunds,
+        records: validatedFunds,
         count: getCount("fund"),
       },
       cryptocurrency: {
-        records: limitedCryptoCurrencies,
+        records: validatedCryptoCurrencies,
         count: getCount("cryptocurrency"),
       },
       deposit: {
-        records: limitedDeposits,
+        records: validatedDeposits,
         count: getCount("deposit"),
       },
     };

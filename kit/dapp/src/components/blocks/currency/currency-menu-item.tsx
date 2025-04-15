@@ -9,7 +9,6 @@ import {
 import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
-import { updateCurrency } from "@/lib/mutations/user/update-currency-action";
 import { Check, DollarSign } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
@@ -38,8 +37,7 @@ export function CurrencyMenuItem() {
       if (currency === user?.currency) return;
 
       try {
-        // Call the server action to update currency
-        await updateCurrency({ currency });
+        await authClient.updateUser({ currency });
         router.refresh();
         toast.success(
           `Default currency changed to ${CURRENCY_NAMES[currency]}`

@@ -51,12 +51,7 @@ export function FormOtpDialog<T extends FieldValues>({
   disabled,
   ...props
 }: FormOtpDialogProps<T>) {
-  const {
-    setValue,
-    formState: { isValid, errors },
-    control,
-    getValues,
-  } = useFormContext();
+  const { setValue, control } = useFormContext();
 
   // Use useWatch to monitor the verification code changes
   const verificationCode = useWatch({

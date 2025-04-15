@@ -17,7 +17,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import type { User } from "@/lib/queries/user/user-schema";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { CreateBondForm } from "./bond/form";
@@ -27,7 +26,7 @@ import { CreateEquityForm } from "./equity/form";
 import { CreateFundForm } from "./fund/form";
 import { CreateStablecoinForm } from "./stablecoin/form";
 
-export function DesignerButton({ userDetails }: { userDetails: User }) {
+export function DesignerButton() {
   const t = useTranslations("admin.sidebar");
   const { isMobile } = useSidebar();
   const [tokenType, setTokenType] = useState<
@@ -94,32 +93,26 @@ export function DesignerButton({ userDetails }: { userDetails: User }) {
       <CreateBondForm
         open={tokenType === "bond"}
         onOpenChange={onFormOpenChange}
-        userDetails={userDetails}
       />
       <CreateCryptoCurrencyForm
         open={tokenType === "cryptocurrency"}
         onOpenChange={onFormOpenChange}
-        userDetails={userDetails}
       />
       <CreateEquityForm
         open={tokenType === "equity"}
         onOpenChange={onFormOpenChange}
-        userDetails={userDetails}
       />
       <CreateFundForm
         open={tokenType === "fund"}
         onOpenChange={onFormOpenChange}
-        userDetails={userDetails}
       />
       <CreateStablecoinForm
         open={tokenType === "stablecoin"}
         onOpenChange={onFormOpenChange}
-        userDetails={userDetails}
       />
       <CreateDepositForm
         open={tokenType === "tokenized-deposit"}
         onOpenChange={onFormOpenChange}
-        userDetails={userDetails}
       />
     </SidebarGroup>
   );

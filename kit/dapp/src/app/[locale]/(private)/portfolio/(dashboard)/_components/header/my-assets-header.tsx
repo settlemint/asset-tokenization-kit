@@ -1,27 +1,22 @@
 import { PortfolioValue } from "@/components/blocks/charts/portfolio/portfolio-value";
+import type { User } from "@/lib/auth/types";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { getPortfolioStats } from "@/lib/queries/portfolio/portfolio-stats";
-import { getCurrentUserDetail } from "@/lib/queries/user/user-detail";
 import type { Locale } from "next-intl";
-import type { Address } from "viem";
 import { TransferForm } from "../../../_components/transfer-form/form";
 import { MyAssetsCount } from "./my-assets-count";
 
 interface MyAssetsHeaderProps {
   locale: Locale;
-  walletAddress: Address;
+  user: User;
 }
 
-export async function MyAssetsHeader({
-  locale,
-  walletAddress,
-}: MyAssetsHeaderProps) {
-  const [myAssetsBalance, userDetails, portfolioStats] = await Promise.all([
-    getUserAssetsBalance(walletAddress),
-    getCurrentUserDetail(),
+export async function MyAssetsHeader({ locale, user }: MyAssetsHeaderProps) {
+  const [myAssetsBalance, portfolioStats] = await Promise.all([
+    getUserAssetsBalance(user.wallet),
     getPortfolioStats({
-      address: walletAddress,
+      address: user.wallet,
       days: 30,
     }),
   ]);
@@ -44,10 +39,10 @@ export async function MyAssetsHeader({
           totalCount={myAssetsBalance.total}
           totalValue={{
             amount: totalUserAssetsValue,
-            currency: userDetails.currency,
+            currency: user.currency,
           }}
         />
-        <TransferForm userAddress={userDetails.wallet} asButton />
+        <TransferForm userAddress={user.wallet} asButton />
       </div>
       <PortfolioValue
         portfolioStats={portfolioStats}

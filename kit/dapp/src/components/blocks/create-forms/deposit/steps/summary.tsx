@@ -4,14 +4,13 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/deposit-factory/deposit-factory-predict-address";
-import type { User } from "@/lib/queries/user/user-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
 import { AssetAdminsCard } from "../../common/asset-admins/asset-admins-card";
 
-export function Summary({ userDetails }: { userDetails: User }) {
+export function Summary() {
   const { control } = useFormContext<CreateDepositInput>();
   const values = useWatch({
     control: control,
@@ -75,7 +74,7 @@ export function Summary({ userDetails }: { userDetails: User }) {
         />
       </FormSummaryDetailCard>
 
-      <AssetAdminsCard userDetails={userDetails} assetAdmins={values.assetAdmins} />
+      <AssetAdminsCard assetAdmins={values.assetAdmins} />
     </FormStep>
   );
 }

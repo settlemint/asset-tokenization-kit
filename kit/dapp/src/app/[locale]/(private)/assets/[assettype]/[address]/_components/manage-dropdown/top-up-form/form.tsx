@@ -43,10 +43,16 @@ export function TopUpForm({
     const steps: FormStepElement<ReturnType<typeof TopUpSchema>>[] = [];
 
     if (showTarget) {
-      steps.push(<Target key="target"/>);
+      steps.push(<Target key="target" />);
     }
 
-    steps.push(<Amount max={maxAmount} decimals={bondDetails.underlyingAsset.decimals} symbol={bondDetails.underlyingAsset.symbol} key="amount" />);
+    steps.push(
+      <Amount
+        max={maxAmount}
+        symbol={bondDetails.underlyingAsset.symbol}
+        key="amount"
+      />
+    );
     steps.push(<Summary key="summary" bondDetails={bondDetails} />);
 
     return steps;
@@ -78,7 +84,7 @@ export function TopUpForm({
         resolver={typeboxResolver(
           TopUpSchema({
             decimals: bondDetails.underlyingAsset.decimals,
-            maxAmount
+            maxAmount,
           })
         )}
         onOpenChange={
