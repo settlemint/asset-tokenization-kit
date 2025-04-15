@@ -83,7 +83,7 @@ interface TimeSeriesState {
   chartType: ChartType;
   setChartType: (type: ChartType) => void;
   locale: Locale;
-  maxRange: TimeRange;
+  timeRangeOptions: TimeRange[];
 }
 
 const TimeSeriesContext = createContext<TimeSeriesState | null>(null);
@@ -99,7 +99,6 @@ function useTimeSeries() {
 interface TimeSeriesRootProps {
   children: ReactNode;
   locale: Locale;
-  defaultTimeRange?: TimeRange;
   defaultChartType?: ChartType;
   maxRange?: TimeRange;
   className?: string;
@@ -108,12 +107,18 @@ interface TimeSeriesRootProps {
 export function TimeSeriesRoot({
   children,
   locale,
-  defaultTimeRange = "7d",
   maxRange = "30d",
   defaultChartType = "area",
   className,
 }: TimeSeriesRootProps) {
-  const [timeRange, setTimeRange] = useState<TimeRange>(defaultTimeRange);
+  const availableTimeRanges: TimeRange[] = ["24h", "7d", "30d", "90d"];
+  const maxRangeIndex = availableTimeRanges.indexOf(maxRange);
+  const filteredTimeRanges =
+    maxRangeIndex !== -1
+      ? availableTimeRanges.slice(0, maxRangeIndex + 1)
+      : availableTimeRanges;
+
+  const [timeRange, setTimeRange] = useState<TimeRange>(filteredTimeRanges[0]);
   const [chartType, setChartType] = useState<ChartType>(defaultChartType);
 
   return (
@@ -124,7 +129,7 @@ export function TimeSeriesRoot({
         chartType,
         setChartType,
         locale,
-        maxRange,
+        timeRangeOptions: filteredTimeRanges,
       }}
     >
       <Card className={cn(className)}>{children}</Card>
@@ -144,15 +149,8 @@ export function TimeSeriesTitle({
   lastUpdated,
 }: TimeSeriesTitleProps) {
   const t = useTranslations("components.chart");
-  const { chartType, setChartType, timeRange, setTimeRange, maxRange } =
+  const { chartType, setChartType, timeRange, setTimeRange, timeRangeOptions } =
     useTimeSeries();
-
-  const availableTimeRanges: TimeRange[] = ["24h", "7d", "30d", "90d"];
-  const maxRangeIndex = availableTimeRanges.indexOf(maxRange);
-  const filteredTimeRanges =
-    maxRangeIndex !== -1
-      ? availableTimeRanges.slice(0, maxRangeIndex + 1)
-      : availableTimeRanges;
 
   return (
     <CardHeader>
@@ -185,10 +183,10 @@ export function TimeSeriesTitle({
             onValueChange={(value) => setTimeRange(value as TimeRange)}
           >
             <SelectTrigger className="w-[5rem]">
-              <SelectValue placeholder={t("select-time-range")} />
+              <SelectValue>{t(`time-range.${timeRange}`)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {filteredTimeRanges.map((range) => (
+              {timeRangeOptions.map((range) => (
                 <SelectItem key={range} value={range}>
                   {t(`time-range.${range}`)}
                 </SelectItem>

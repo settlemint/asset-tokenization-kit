@@ -21,7 +21,6 @@ import { useTranslations, type Locale } from "next-intl";
 interface TotalSupplyProps {
   data: AssetStats[];
   locale: Locale;
-  interval?: "day" | "week" | "month" | "year";
   size?: "small" | "large";
   maxRange?: TimeRange;
 }
