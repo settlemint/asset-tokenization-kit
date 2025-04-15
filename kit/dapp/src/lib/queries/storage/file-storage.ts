@@ -5,6 +5,7 @@ import {
   createListObjectsOperation,
   createPresignedPutOperation,
   createPresignedUrlOperation,
+  createSimpleUploadOperation,
   createStatObjectOperation,
   createUploadOperation,
   executeMinioOperation,
@@ -34,7 +35,7 @@ export type FileMetadata = StaticDecode<typeof FileMetadataSchema>;
  * Default bucket to use for file storage
  * Changed from 'asset-files' to a more common bucket name that might already exist
  */
-const DEFAULT_BUCKET = "uploads";
+export const DEFAULT_BUCKET = "uploads";
 
 /**
  * Gets a list of files with optional prefix filter
@@ -247,6 +248,56 @@ export const createPresignedUploadUrl = withTracing(
       return await executeMinioOperation(presignedPutOperation);
     } catch (error) {
       console.error("Failed to create presigned upload URL:", error);
+      return null;
+    }
+  }
+);
+
+/**
+ * Uploads a PDF file to storage using a simplified approach
+ *
+ * @param file - The PDF file to upload
+ * @param path - Optional path/folder to store the file in
+ * @returns The uploaded file metadata
+ */
+export const uploadPdfFile = withTracing(
+  "queries",
+  "uploadPdfFile",
+  async (file: File, path: string = ""): Promise<FileMetadata | null> => {
+    try {
+      const fileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const objectName = path ? `${path}/${fileName}` : fileName;
+
+      // Upload the file with simplified approach
+      console.log(`Uploading PDF file ${fileName} using simplified approach`);
+      const uploadOperation = createSimpleUploadOperation(
+        DEFAULT_BUCKET,
+        objectName,
+        file
+      );
+      const result = await executeMinioOperation(uploadOperation);
+
+      // Generate a presigned URL for immediate access
+      const presignedUrlOperation = createPresignedUrlOperation(
+        DEFAULT_BUCKET,
+        objectName,
+        3600
+      );
+      const url = await executeMinioOperation(presignedUrlOperation);
+
+      const fileMetadata = {
+        id: objectName,
+        name: fileName,
+        contentType: file.type,
+        size: file.size,
+        uploadedAt: new Date().toISOString(),
+        etag: result.etag,
+        url,
+      };
+
+      return safeParse(FileMetadataSchema, fileMetadata);
+    } catch (error) {
+      console.error("Failed to upload PDF file:", error);
       return null;
     }
   }

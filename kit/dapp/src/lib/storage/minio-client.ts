@@ -8,6 +8,21 @@ const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
 });
 
+// Types for Minio operations
+export type UploadedObjectInfo = {
+  etag: string;
+  versionId?: string | null;
+};
+
+export type ItemMetadata = Record<string, string>;
+
+export type SimpleUploadOperation = (
+  file: File,
+  bucketName: string,
+  objectName: string,
+  metadata?: ItemMetadata
+) => Promise<UploadedObjectInfo>;
+
 /**
  * Extended client type with additional methods
  */
@@ -64,29 +79,108 @@ export function createUploadOperation(
           fileData = file; // Already a Buffer
         }
 
-        // Use fPutObject for files
-        // For simplicity, save the buffer to a temporary file and use fPutObject
+        // Use fPutObject for files (Original working approach for storage-demo)
+        // Save the buffer to a temporary file and use fPutObject
         const tempFilePath = `/tmp/${objectName.replace(/\//g, "_")}`;
+        console.log(`Writing buffer to temporary file: ${tempFilePath}`);
         fs.writeFileSync(tempFilePath, fileData);
 
+        console.log(
+          `Attempting fPutObject from temp file: ${bucketName}/${objectName}`
+        );
         const result = await minioClient.fPutObject(
           bucketName,
           objectName,
           tempFilePath,
-          metadata
+          metadata // Pass metadata again, as fPutObject might handle it differently
         );
+        console.log(
+          `fPutObject successful for ${objectName}, ETag: ${result.etag}`
+        );
+
         // Clean up the temporary file
-        fs.unlinkSync(tempFilePath);
+        try {
+          fs.unlinkSync(tempFilePath);
+          console.log(`Cleaned up temporary file: ${tempFilePath}`);
+        } catch (unlinkError) {
+          logger.warn(
+            `Failed to clean up temporary file ${tempFilePath}:`,
+            unlinkError
+          );
+        }
 
         return { etag: result.etag || "unknown-etag" };
       } catch (error) {
         logger.error(
-          `Failed to upload object ${objectName} to bucket ${bucketName}:`,
+          `Failed to upload object ${objectName} to bucket ${bucketName} using fPutObject:`,
           error
         );
+        // Attempt to clean up temp file even on error
+        const tempFilePath = `/tmp/${objectName.replace(/\//g, "_")}`;
+        if (fs.existsSync(tempFilePath)) {
+          try {
+            fs.unlinkSync(tempFilePath);
+            logger.info(
+              `Cleaned up temporary file after error: ${tempFilePath}`
+            );
+          } catch (unlinkError) {
+            logger.warn(
+              `Failed to clean up temporary file ${tempFilePath} after error:`,
+              unlinkError
+            );
+          }
+        }
         throw error;
       }
     },
+  };
+}
+
+/**
+ * Creates an operation to upload a file directly to MinIO (browser/client-side)
+ */
+export function createSimpleUploadOperation(
+  minioClient: ExtendedMinioClient
+): SimpleUploadOperation {
+  return async (
+    file: File,
+    bucketName: string,
+    objectName: string,
+    metadata?: ItemMetadata
+  ) => {
+    try {
+      logger.debug(
+        `Starting upload for file ${file.name} (${file.size} bytes, type: ${file.type}) to ${bucketName}/${objectName}`
+      );
+
+      // Convert File to buffer
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      logger.debug(
+        `File converted to buffer (${buffer.length} bytes), attempting putObject operation`
+      );
+
+      // Upload directly using minioClient's putObject
+      const result = await minioClient.putObject(
+        bucketName,
+        objectName,
+        buffer,
+        buffer.length,
+        metadata
+      );
+
+      logger.debug(
+        `Upload successful for ${file.name} to ${bucketName}/${objectName}, etag: ${result.etag}`
+      );
+      return result;
+    } catch (error) {
+      logger.error(
+        `Error uploading file ${file.name} (${file.size} bytes, type: ${file.type}) to ${bucketName}/${objectName}`,
+        error
+      );
+      throw error;
+    }
   };
 }
 
@@ -313,15 +407,38 @@ export function createStatObjectOperation(
  */
 export async function ensureBucketExists(bucketName: string): Promise<boolean> {
   try {
+    console.log(`Checking if bucket '${bucketName}' exists...`);
     const exists = await minioClient.bucketExists(bucketName);
     if (!exists) {
-      await minioClient.makeBucket(bucketName);
-      console.log(`Created bucket: ${bucketName}`);
+      console.log(
+        `Bucket '${bucketName}' does not exist. Attempting to create...`
+      );
+      try {
+        await minioClient.makeBucket(bucketName);
+        console.log(`Successfully created bucket: '${bucketName}'`);
+      } catch (creationError) {
+        console.error(
+          `Failed to create bucket '${bucketName}':`,
+          creationError
+        );
+        // Re-throw the creation error to ensure the operation fails
+        throw creationError;
+      }
+    } else {
+      console.log(`Bucket '${bucketName}' already exists.`);
     }
     return true;
   } catch (error) {
-    console.error(`Failed to ensure bucket ${bucketName} exists:`, error);
-    throw error;
+    // Log the error but don't re-throw if it's just checking/creation
+    // The actual operation (like putObject) will handle the failure if the bucket is truly inaccessible
+    console.error(
+      `Error during ensureBucketExists for '${bucketName}':`,
+      error
+    );
+    // We will let the subsequent operation fail if the bucket is not usable
+    // Re-throwing here might mask the actual upload error cause
+    // For now, let's return false to indicate potential issue
+    return false;
   }
 }
 
@@ -331,14 +448,32 @@ export async function ensureBucketExists(bucketName: string): Promise<boolean> {
 export async function executeMinioOperation<T>(
   operation: MinioOperation<T>
 ): Promise<T> {
+  console.log(`Executing Minio operation: ${operation.operation}`);
   try {
     // First ensure the bucket exists if this is a bucket operation
     if (operation.bucketName) {
-      await ensureBucketExists(operation.bucketName);
+      console.log(
+        `Ensuring bucket '${operation.bucketName}' exists before operation.`
+      );
+      const bucketOk = await ensureBucketExists(operation.bucketName);
+      if (!bucketOk) {
+        // If ensureBucketExists indicated an issue (returned false or threw), don't proceed
+        throw new Error(
+          `Failed to ensure bucket '${operation.bucketName}' is ready for operation.`
+        );
+      }
+      console.log(
+        `Bucket '${operation.bucketName}' confirmed or created. Proceeding with operation.`
+      );
     }
-    return await operation.execute();
+    console.log(`Calling operation.execute() for ${operation.operation}...`);
+    const result = await operation.execute();
+    console.log(
+      `Minio operation '${operation.operation}' completed successfully.`
+    );
+    return result;
   } catch (error) {
     logger.error(`Minio operation '${operation.operation}' failed:`, error);
-    throw error;
+    throw error; // Re-throw the error to be caught by the calling function
   }
 }

@@ -7,6 +7,8 @@ import {
 } from "@/lib/queries/storage/file-storage";
 import { NextRequest, NextResponse } from "next/server";
 
+export const maxDuration = 60;
+
 /**
  * GET handler for listing or fetching files
  *
@@ -43,12 +45,10 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST handler for uploading files
- *
- * Example usage with curl:
- * curl -X POST -F "file=@./my-image.jpg" -F "path=images/" http://localhost:3000/api/storage
+ * POST handler for uploading files - Reverted to use uploadFile
  */
 export async function POST(request: NextRequest) {
+  console.log("--- POST /api/storage using uploadFile --- ");
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -58,14 +58,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    console.log(`Calling uploadFile for: ${file.name}, Path: '${path}'`);
+    // Use the uploadFile function which internally uses fPutObject now
     const result = await uploadFile(file, path);
+
     if (!result) {
+      console.error("uploadFile function returned null or undefined");
       return NextResponse.json(
-        { error: "Failed to upload file" },
+        { error: "Failed to upload file using uploadFile function" },
         { status: 500 }
       );
     }
 
+    console.log("uploadFile successful, result:", result);
     // Return the file metadata for immediate UI update
     return NextResponse.json({
       success: true,
@@ -73,9 +78,17 @@ export async function POST(request: NextRequest) {
       message: "File uploaded successfully",
     });
   } catch (error) {
-    console.error("Storage API error:", error);
+    // Log the specific error from uploadFile or its dependencies
+    console.error("--- Error in /api/storage POST via uploadFile ---", error);
     return NextResponse.json(
-      { error: "Failed to upload file" },
+      {
+        error: "Failed to upload file",
+        // Optionally include error details in development
+        details:
+          process.env.NODE_ENV === "development"
+            ? (error as Error).message
+            : undefined,
+      },
       { status: 500 }
     );
   }
