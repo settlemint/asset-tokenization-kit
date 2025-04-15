@@ -16,13 +16,14 @@ import {
   PauseCircle,
   PlayCircle,
   Unlock,
-  User2Icon
+  User2Icon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 
 // Create a column helper for the event type
-const columnHelper = createColumnHelper<Awaited<ReturnType<typeof getAssetEventsList>>[number]>();
+const columnHelper =
+  createColumnHelper<Awaited<ReturnType<typeof getAssetEventsList>>[number]>();
 
 export const icons = {
   active: PlayCircle,
@@ -49,7 +50,7 @@ export function Columns() {
     // Asset address column with name filtering
     columnHelper.accessor("asset", {
       header: t("asset"),
-      cell: ({ getValue, row }) => {
+      cell: ({ getValue }) => {
         const asset = getValue();
 
         return (
