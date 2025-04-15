@@ -1,7 +1,8 @@
 "use client";
 
-import { hasWalletVerification } from "@/lib/queries/user/wallet-security";
-import { useEffect, useState, type ReactNode } from "react";
+import { authClient } from "@/lib/auth/client";
+import { SignedIn } from "@daveyplate/better-auth-ui";
+import type { ReactNode } from "react";
 import { WalletSecuritySetupDialog } from "./wallet-security-setup-dialog";
 
 interface WalletSecurityClientProps {
@@ -9,33 +10,21 @@ interface WalletSecurityClientProps {
 }
 
 export function WalletSecurityClient({ children }: WalletSecurityClientProps) {
-  const [hasVerification, setHasVerification] = useState(true);
+  const { data: sessionData } = authClient.useSession();
 
-  useEffect(() => {
-    hasWalletVerification()
-      .then((hasVerification) => {
-        setHasVerification(hasVerification);
-      })
-      .catch((error) => {
-        console.error(error);
-        setHasVerification(false);
-      });
-  }, []);
+  const hasVerification = sessionData
+    ? sessionData?.user?.pincodeEnabled || sessionData?.user?.twoFactorEnabled
+    : true;
 
   return (
-    <>
+    <SignedIn>
       {hasVerification ? (
-        children
+        <>{children}</>
       ) : (
         <div className="min-h-screen w-full bg-[url('/backgrounds/background-lm.svg')] bg-center bg-cover dark:bg-[url('/backgrounds/background-dm.svg')]">
-          <WalletSecuritySetupDialog
-            open={!hasVerification}
-            onSetupComplete={() => {
-              setHasVerification(true);
-            }}
-          />
+          <WalletSecuritySetupDialog open={!hasVerification} />
         </div>
       )}
-    </>
+    </SignedIn>
   );
 }

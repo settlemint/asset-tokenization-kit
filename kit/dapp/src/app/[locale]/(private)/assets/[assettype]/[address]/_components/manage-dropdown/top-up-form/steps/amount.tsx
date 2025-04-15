@@ -3,17 +3,16 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { TopUpInput } from "@/lib/mutations/bond/top-up/top-up-schema";
-import { formatNumber } from '@/lib/utils/number';
-import { useLocale, useTranslations } from 'next-intl';
+import { formatNumber } from "@/lib/utils/number";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
   max?: number;
-  decimals?: number;
   symbol: string;
 }
 
-export function Amount({ max, decimals, symbol }: AmountProps) {
+export function Amount({ max, symbol }: AmountProps) {
   const { control } = useFormContext<TopUpInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();

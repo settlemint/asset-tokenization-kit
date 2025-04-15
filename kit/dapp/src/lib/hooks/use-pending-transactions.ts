@@ -3,11 +3,10 @@
 import { apiClient } from "@/lib/api/client";
 import { authClient } from "@/lib/auth/client";
 import useSWR from "swr";
-import type { Address } from "viem";
 
 export function usePendingTransactions() {
   const { data: session } = authClient.useSession();
-  const wallet = session?.user?.wallet as Address | undefined;
+  const wallet = session?.user?.wallet;
 
   const { data, isLoading } = useSWR(
     wallet ? ["pending-transactions", wallet] : null,

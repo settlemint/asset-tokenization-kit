@@ -2,9 +2,9 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { authClient } from "@/lib/auth/client";
 import { createDeposit } from "@/lib/mutations/deposit/create/create-action";
 import { CreateDepositSchema } from "@/lib/mutations/deposit/create/create-schema";
-import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -12,23 +12,23 @@ import { AssetAdmins } from "../common/asset-admins/asset-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
+
 interface CreateDepositFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
-  userDetails: User;
 }
 
 export function CreateDepositForm({
   open,
   onOpenChange,
   asButton = false,
-  userDetails,
 }: CreateDepositFormProps) {
   const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
+  const { data: session } = authClient.useSession();
 
   return (
     <FormSheet
@@ -56,15 +56,15 @@ export function CreateDepositForm({
           collateralLivenessTimeUnit: "months",
           price: {
             amount: 1,
-            currency: userDetails.currency,
+            currency: session?.user.currency,
           },
           assetAdmins: [],
         }}
       >
         <Basics />
         <Configuration />
-        <AssetAdmins userDetails={userDetails} />
-        <Summary userDetails={userDetails} />
+        <AssetAdmins />
+        <Summary />
       </Form>
     </FormSheet>
   );

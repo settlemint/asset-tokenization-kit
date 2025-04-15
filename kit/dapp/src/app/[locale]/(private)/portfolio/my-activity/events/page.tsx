@@ -6,7 +6,6 @@ import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import type { Address } from "viem";
 
 export async function generateMetadata({
   params,
@@ -33,7 +32,7 @@ export default async function ActivityPage() {
 
   return (
     <Suspense fallback={<AssetEventsSkeleton />}>
-      <AssetEventsTable sender={user.wallet as Address} />
+      <AssetEventsTable sender={user.wallet} />
     </Suspense>
   );
 }

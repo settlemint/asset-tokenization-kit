@@ -1,6 +1,5 @@
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
 import { BondStatusProgress } from "@/components/blocks/charts/assets/bond/bond-status-progress";
-import { BondUnitsOverTime } from "@/components/blocks/charts/assets/bond/bond-units-over-time";
 import { BondYieldCoverage } from "@/components/blocks/charts/assets/bond/bond-yield-coverage";
 import { BondYieldDistribution } from "@/components/blocks/charts/assets/bond/bond-yield-distribution";
 import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
@@ -50,7 +49,7 @@ export async function Charts({ assettype, address }: ChartsProps) {
     try {
       userBalance = await getAssetBalanceDetail({
         address,
-        account: user.wallet as Address,
+        account: user.wallet,
       });
     } catch (error) {
       console.error("Error fetching balance:", error);
@@ -77,9 +76,6 @@ export async function Charts({ assettype, address }: ChartsProps) {
           <>
             <Suspense fallback={<ChartCardSkeleton />}>
               <BondStatusProgress address={address} />
-            </Suspense>
-            <Suspense fallback={<ChartCardSkeleton />}>
-              <BondUnitsOverTime address={address} />
             </Suspense>
             <Suspense fallback={<ChartCardSkeleton />}>
               <BondYieldCoverage address={address} />
@@ -127,7 +123,7 @@ export async function Charts({ assettype, address }: ChartsProps) {
         assetDetails={assetDetails}
         userBalance={userBalance}
         assetUsersDetails={assetUsersDetails}
-        currentUserWallet={user.wallet as Address | undefined}
+        currentUserWallet={user.wallet}
       />
     </>
   );

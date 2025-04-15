@@ -12,15 +12,17 @@ import {
   passkeyClient,
   twoFactorClient,
 } from "better-auth/client/plugins";
-import { createAuthClient } from "better-auth/react";
+import { BetterFetchError, createAuthClient } from "better-auth/react";
+import type { Session } from "better-auth/types";
 import type { auth } from "./auth";
 import { pincodeClient } from "./plugins/pincode-plugin/client";
 import { secretCodesClient } from "./plugins/secret-codes-plugin/client";
+import type { User } from "./types";
 
 /**
  * The authentication client instance with configured plugins
  */
-export const authClient = createAuthClient({
+const client = createAuthClient({
   plugins: [
     inferAdditionalFields<typeof auth>(),
     adminClient({
@@ -46,3 +48,15 @@ export const authClient = createAuthClient({
     magicLinkClient(),
   ],
 });
+
+export const authClient = client as Omit<typeof client, "useSession"> & {
+  useSession: () => {
+    data: {
+      user: User;
+      session: Session;
+    };
+    isPending: boolean;
+    error: BetterFetchError;
+    refetch: () => void;
+  };
+};

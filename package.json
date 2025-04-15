@@ -50,7 +50,7 @@
     "helm:check-context": "[ \"$(kubectl config current-context)\" = \"orbstack\" ] || (echo \"Error: Not in orbstack context. Current context: $(kubectl config current-context)\" && exit 1)",
     "helm:full": "bun run helm:check-context && bun run secrets && bun run abis && bunx turbo genesis && cp kit/contracts/genesis-output.json kit/charts/atk/charts/besu-network/charts/besu-genesis/files/genesis-output.json && helm upgrade --install atk kit/charts/atk -f kit/charts/atk/values-example.yaml -n atk --create-namespace",
     "helm:dependency": "helm dependency update kit/charts/atk",
-    "helm:install": "bun run helm:check-context && bun run helm:dependency && helm upgrade --install atk kit/charts/atk -f kit/charts/atk/values-example.yaml -n atk --create-namespace",
+    "helm:install": "bun run helm:check-context && bun run helm:dependency && helm upgrade --install atk kit/charts/atk -f kit/charts/atk/values-example.yaml -n atk --create-namespace --timeout 15m",
     "helm:delete": "bun run helm:check-context && helm uninstall atk -n atk --wait && kubectl delete pvc --all -n atk && kubectl delete namespace atk",
     "helm:reset": "bun run helm:delete && bun run helm:install"
   },

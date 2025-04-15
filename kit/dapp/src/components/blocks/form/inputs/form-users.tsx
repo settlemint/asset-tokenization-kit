@@ -32,16 +32,16 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { FieldValues } from "react-hook-form";
 import useSWR from "swr";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 import { EvmAddress } from "../../evm-address/evm-address";
 import {
+  getAriaAttributes,
   type BaseFormInputProps,
   type WithPlaceholderProps,
-  getAriaAttributes,
 } from "./types";
 // Define a type for recently selected users
 type RecentUser = {
-  wallet: string;
+  wallet: Address;
   selectedAt: number;
 };
 
@@ -196,7 +196,7 @@ function FormUsersList({
   );
 
   // Function to add a selected user to recent users
-  const addToRecentUsers = (wallet: string) => {
+  const addToRecentUsers = (wallet: Address) => {
     setRecentUsers((currentRecentUsers) => {
       // Remove the user if already in the list
       const filteredUsers = currentRecentUsers.filter(
@@ -217,7 +217,7 @@ function FormUsersList({
   // Handle selection of a user
   const handleSelect = (wallet: string) => {
     onValueChange(wallet);
-    addToRecentUsers(wallet);
+    addToRecentUsers(getAddress(wallet));
     setOpen(false);
   };
 
@@ -252,7 +252,7 @@ function FormUsersList({
               onSelect={handleSelect}
             >
               <History className="mr-2 h-4 w-4" />
-              <EvmAddress address={user.wallet as Address} hoverCard={false} />
+              <EvmAddress address={user.wallet} hoverCard={false} />
               <Check
                 className={cn(
                   "ml-auto",
