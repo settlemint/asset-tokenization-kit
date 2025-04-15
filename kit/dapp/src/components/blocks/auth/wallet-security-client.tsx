@@ -22,12 +22,7 @@ export function WalletSecurityClient({ children }: WalletSecurityClientProps) {
         <>{children}</>
       ) : (
         <div className="min-h-screen w-full bg-[url('/backgrounds/background-lm.svg')] bg-center bg-cover dark:bg-[url('/backgrounds/background-dm.svg')]">
-          <WalletSecuritySetupDialog
-            open={!hasVerification}
-            onSetupComplete={() => {
-              console.log("completed");
-            }}
-          />
+          <WalletSecuritySetupDialog open={!hasVerification} />
         </div>
       )}
     </SignedIn>
