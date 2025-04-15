@@ -2005,7 +2005,7 @@
             "description": "These one-time-use codes can verify transactions or recover your wallet. Store them securely, like in a password manager or written down. If lost, recovery will be difficult."
           },
           "summary": {
-            "title": "Your Wallet is secured!",
+            "title": "Your wallet is secured!",
             "description": "You've successfully secured your wallet. Your transactions are now protected, and your recovery codes ensure you're always in control. You're all set to start using your wallet securely."
           }
         }
