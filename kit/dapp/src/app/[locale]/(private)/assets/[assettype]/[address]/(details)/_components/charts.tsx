@@ -1,6 +1,5 @@
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
 import { BondStatusProgress } from "@/components/blocks/charts/assets/bond/bond-status-progress";
-import { BondUnitsOverTime } from "@/components/blocks/charts/assets/bond/bond-units-over-time";
 import { BondYieldCoverage } from "@/components/blocks/charts/assets/bond/bond-yield-coverage";
 import { BondYieldDistribution } from "@/components/blocks/charts/assets/bond/bond-yield-distribution";
 import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
@@ -77,9 +76,6 @@ export async function Charts({ assettype, address }: ChartsProps) {
           <>
             <Suspense fallback={<ChartCardSkeleton />}>
               <BondStatusProgress address={address} />
-            </Suspense>
-            <Suspense fallback={<ChartCardSkeleton />}>
-              <BondUnitsOverTime address={address} />
             </Suspense>
             <Suspense fallback={<ChartCardSkeleton />}>
               <BondYieldCoverage address={address} />
