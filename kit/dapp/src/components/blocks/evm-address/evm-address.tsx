@@ -23,6 +23,7 @@ import { useEffect } from "react";
 import useSWR from "swr";
 import type { Address } from "viem";
 import { getAddress } from "viem";
+import { AssetTypeIcon } from "../asset-type-icon/asset-type-icon";
 import { CopyToClipboard } from "../copy/copy";
 
 interface EvmAddressProps extends PropsWithChildren {
@@ -39,6 +40,7 @@ interface EvmAddressProps extends PropsWithChildren {
   verbose?: boolean;
   hoverCard?: boolean;
   copyToClipboard?: boolean;
+  iconVariant?: "default" | "assetTypeIcon";
 }
 
 /**
@@ -71,6 +73,7 @@ function EvmAddressInner({
   verbose = false,
   hoverCard = true,
   copyToClipboard = false,
+  iconVariant = "default",
 }: EvmAddressProps) {
   // Get the address name cache
   const { setNameForAddress } = useAddressNameCache();
@@ -142,11 +145,15 @@ function EvmAddressInner({
 
     return (
       <div className="flex items-center space-x-2">
-        <AddressAvatar
-          address={getAddress(address)}
-          size={iconSize}
-          email={displayEmail}
-        />
+        {iconVariant === "assetTypeIcon" && asset?.type ? (
+          <AssetTypeIcon type={asset.type} size="md" />
+        ) : (
+          <AddressAvatar
+            address={getAddress(address)}
+            size={iconSize}
+            email={displayEmail}
+          />
+        )}
         {!displayName && (
           <span className="font-mono">
             {shortHex(getAddress(address), { prefixLength, suffixLength })}
@@ -194,12 +201,16 @@ function EvmAddressInner({
         ) : (
           <div className="flex items-start">
             <h4 className="grid grid-cols-[auto_1fr] items-start gap-x-2 font-semibold text-sm">
-              <AddressAvatar
-                address={getAddress(address)}
-                size="big"
-                email={displayEmail}
-                className="row-span-2"
-              />
+              {iconVariant === "assetTypeIcon" && asset?.type ? (
+                <AssetTypeIcon type={asset.type} size="md" />
+              ) : (
+                <AddressAvatar
+                  address={getAddress(address)}
+                  size="big"
+                  email={displayEmail}
+                  className="row-span-2"
+                />
+              )}
               <div className="flex flex-col">
                 <span className="font-mono">{getAddress(address)}</span>
                 {displayName && (
