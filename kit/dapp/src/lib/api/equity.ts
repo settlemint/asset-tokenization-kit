@@ -5,7 +5,7 @@ import { PredictAddressInputSchema } from "@/lib/queries/equity-factory/equity-f
 import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
 import { getEquityList } from "@/lib/queries/equity/equity-list";
 import { EquitySchema } from "@/lib/queries/equity/equity-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -39,7 +39,6 @@ export const EquityApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
     async ({ user }) => {

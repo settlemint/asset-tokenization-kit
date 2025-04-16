@@ -8,6 +8,7 @@ import { AssetPriceApi } from "../providers/asset-price/asset-price-api";
 import { ExchangeRatesApi } from "../providers/exchange-rates/exchange-rates-api";
 import { ExchangeRateUpdateApi } from "../providers/exchange-rates/exchange-rates-update-api";
 import { AccessControlError } from "../utils/access-control";
+import { cacheControl } from "../utils/elysia";
 import { AssetApi } from "./asset";
 import { AssetActivityApi } from "./asset-activity";
 import { AssetBalanceApi } from "./asset-balance";
@@ -26,6 +27,9 @@ import { TransactionApi } from "./transaction";
 import { UserApi } from "./user";
 
 export const api = new Elysia({
+  aot: true,
+  precompile: true,
+  experimental: { encodeSchema: true },
   prefix: "/api",
   detail: {
     security: [
@@ -41,6 +45,7 @@ export const api = new Elysia({
     })
   )
   .use(serverTiming())
+  .use(cacheControl)
   .use(
     swagger({
       documentation: {
@@ -99,6 +104,7 @@ export const api = new Elysia({
   .group("/providers/exchange-rates", (app) =>
     app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
   )
-  .group("/providers/asset-price", (app) => app.use(AssetPriceApi));
+  .group("/providers/asset-price", (app) => app.use(AssetPriceApi))
+  .compile();
 
 export type Api = typeof api;

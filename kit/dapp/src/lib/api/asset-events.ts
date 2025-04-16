@@ -1,7 +1,7 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
 import { NormalizedEventsListItemSchema } from "@/lib/queries/asset-events/asset-events-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -16,7 +16,6 @@ export const AssetEventsApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
     async ({ query }) => {

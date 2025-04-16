@@ -4,7 +4,7 @@ import { getPredictedAddress } from "@/lib/queries/deposit-factory/deposit-facto
 import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import { getDepositList } from "@/lib/queries/deposit/deposit-list";
 import { DepositSchema } from "@/lib/queries/deposit/deposit-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -48,7 +48,6 @@ export const DepositApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
     async ({ user }) => {
