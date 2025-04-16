@@ -6,8 +6,11 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { RegisterSchemaInput } from "./register-schema-schema";
-
-const assetPriceSchema = `address Asset,uint256 Price,string Currency`;
+import {
+  assetPriceSchema,
+  assetPriceSchemaResolver,
+  assetPriceSchemaRevocable,
+} from "./schemas/asset-price";
 
 const RegisterSchema = portalGraphql(`
   mutation RegisterSchema(
@@ -46,16 +49,14 @@ export const registerSchemasFunction = withAccessControl(
     parsedInput: RegisterSchemaInput;
     ctx: { user: User };
   }) => {
-    // TODO: check if it is already registered, needs a new deployment
-
     const registerAssetPriceSchema = await portalClient.request(
       RegisterSchema,
       {
         address: EAS_REGISTRY_ADDRESS,
         from: user.wallet,
         schema: assetPriceSchema,
-        revocable: false,
-        resolver: "0x0000000000000000000000000000000000000000",
+        revocable: assetPriceSchemaRevocable,
+        resolver: assetPriceSchemaResolver,
         ...(await handleChallenge(
           user,
           user.wallet,
