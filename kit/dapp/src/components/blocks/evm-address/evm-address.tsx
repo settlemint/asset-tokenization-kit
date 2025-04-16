@@ -72,7 +72,7 @@ function EvmAddressInner({
   verbose = false,
   hoverCard = true,
   copyToClipboard = false,
-  assetType: showType = false,
+  assetType = false,
 }: EvmAddressProps) {
   // Get the address name cache
   const { setNameForAddress } = useAddressNameCache();
@@ -166,7 +166,7 @@ function EvmAddressInner({
                 {shortHex(getAddress(address), { prefixLength, suffixLength })}
               </Badge>
             )}
-            {showType && asset?.type && (
+            {assetType && asset?.type && (
               <span className="text-muted-foreground text-xs">
                 ({asset.type})
               </span>
@@ -219,7 +219,7 @@ function EvmAddressInner({
                         ({symbol})
                       </span>
                     )}
-                    {showType && asset?.type && (
+                    {assetType && asset?.type && (
                       <span className="text-muted-foreground text-xs">
                         ({asset.type})
                       </span>
