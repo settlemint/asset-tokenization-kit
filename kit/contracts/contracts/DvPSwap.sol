@@ -30,12 +30,16 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context, Ow
     /// @notice Status of a swap
     /// @dev Defines the possible states for a swap
     enum SwapStatus {
-        PENDING_CREATION,   // Initial state when swap is being created
-        OPEN,               // Swap is created and tokens are locked, waiting for counterparty
-        CLAIMED,            // Tokens have been claimed by the counterparty
-        REFUNDED,           // Tokens have been refunded to the original sender
-        EXPIRED,            // Swap has expired without being claimed
-        CANCELLED           // Swap was cancelled before counterparty action
+        PENDING_CREATION,       // Initial state when swap is being created
+        OPEN,                   // Swap is created and tokens are locked, waiting for counterparty
+        CLAIMED,                // Tokens have been claimed by the counterparty
+        REFUNDED,               // Tokens have been refunded to the original sender
+        EXPIRED,                // Swap has expired without being claimed
+        CANCELLED,              // Swap was cancelled before counterparty action
+        FAILED,                 // Transaction failed due to execution error
+        INVALID,                // Swap parameters or state is invalid
+        AWAITING_APPROVAL,      // Waiting for approval from counterparty
+        AWAITING_CLAIM_SECRET   // Secret ready to be revealed for claim
     }
 
     /// @notice Swap data structure
@@ -69,6 +73,7 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context, Ow
     error ZeroAddress();
     error TimelockedFunds();
     error MaxDurationExceeded();
+    error FailedExecution(string reason);
 
     /// @notice Maps swap ID to swap details
     /// @dev Stores all swaps by their unique ID
@@ -115,6 +120,18 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context, Ow
     /// @param swapId Unique identifier for the swap
     /// @param sender Address that received the refund
     event SwapRefunded(bytes32 indexed swapId, address indexed sender);
+
+    /// @notice Event emitted when tokens are locked in the contract
+    /// @param swapId Unique identifier for the swap
+    /// @param tokenAddress Address of the token that was locked
+    /// @param amount Amount of tokens locked
+    /// @param timestamp Time when the tokens were locked
+    event TokensLocked(
+        bytes32 indexed swapId,
+        address tokenAddress,
+        uint256 amount,
+        uint256 timestamp
+    );
 
     /// @notice Deploys a new DvPSwap contract
     /// @dev Sets up the contract with admin and pauser roles and initializes meta-transaction support
@@ -228,6 +245,9 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context, Ow
         // Transfer tokens from sender to this contract
         IERC20(tokenToSend).safeTransferFrom(_msgSender(), address(this), amountToSend);
         
+        // Emit token locking event
+        emit TokensLocked(swapId, tokenToSend, amountToSend, block.timestamp);
+        
         // Update status to OPEN after successful token transfer
         _swaps[swapId].status = SwapStatus.OPEN;
         
@@ -267,8 +287,10 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context, Ow
         // Check if swap is expired due to max duration
         if (block.timestamp > swap.maxDuration) revert SwapExpired();
         
-        // Verify swap is open
-        if (swap.status != SwapStatus.OPEN) revert InvalidSwapStatus();
+        // Verify swap is open or awaiting claim
+        if (swap.status != SwapStatus.OPEN && 
+            swap.status != SwapStatus.AWAITING_CLAIM_SECRET && 
+            swap.status != SwapStatus.AWAITING_APPROVAL) revert InvalidSwapStatus();
         
         // Verify timelock hasn't expired
         if (block.timestamp >= swap.timelock) revert SwapExpired();
@@ -309,8 +331,10 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context, Ow
         
         Swap storage swap = _swaps[swapId];
         
-        // Verify swap is open
-        if (swap.status != SwapStatus.OPEN) revert InvalidSwapStatus();
+        // Verify swap is in an active state
+        if (swap.status != SwapStatus.OPEN && 
+            swap.status != SwapStatus.AWAITING_APPROVAL && 
+            swap.status != SwapStatus.AWAITING_CLAIM_SECRET) revert InvalidSwapStatus();
         
         // Verify timelock has expired or max duration exceeded
         bool timelockExpired = block.timestamp >= swap.timelock;
@@ -378,7 +402,9 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context, Ow
         Swap storage swap = _swaps[swapId];
         
         // Verify swap is in a state that can be expired
-        if (swap.status != SwapStatus.OPEN) revert InvalidSwapStatus();
+        if (swap.status != SwapStatus.OPEN && 
+            swap.status != SwapStatus.AWAITING_APPROVAL && 
+            swap.status != SwapStatus.AWAITING_CLAIM_SECRET) revert InvalidSwapStatus();
         
         // Check if max duration is exceeded
         if (block.timestamp <= swap.maxDuration) revert MaxDurationExceeded();
@@ -434,5 +460,156 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context, Ow
         if (!swapExists[swapId]) return false;
         Swap storage swap = _swaps[swapId];
         return block.timestamp > swap.maxDuration;
+    }
+
+    /// @notice Requests approval from the counterparty for the swap
+    /// @dev Sets the swap status to AWAITING_APPROVAL
+    /// @param swapId Unique identifier of the swap
+    /// @return bool True if the status was updated successfully
+    function requestApproval(bytes32 swapId) 
+        external 
+        nonReentrant 
+        whenNotPaused 
+        returns (bool) 
+    {
+        // Verify swap exists
+        if (!swapExists[swapId]) revert SwapNotFound();
+        
+        Swap storage swap = _swaps[swapId];
+        
+        // Verify swap is in OPEN state
+        if (swap.status != SwapStatus.OPEN) revert InvalidSwapStatus();
+        
+        // Verify caller is the sender
+        if (_msgSender() != swap.sender) revert NotAuthorized();
+        
+        // Update swap status
+        swap.status = SwapStatus.AWAITING_APPROVAL;
+        
+        emit SwapStatusChanged(swapId, SwapStatus.AWAITING_APPROVAL);
+        
+        return true;
+    }
+
+    /// @notice Indicates the secret is ready for claiming
+    /// @dev Sets the swap status to AWAITING_CLAIM_SECRET
+    /// @param swapId Unique identifier of the swap
+    /// @return bool True if the status was updated successfully
+    function notifySecretReady(bytes32 swapId) 
+        external 
+        nonReentrant 
+        whenNotPaused 
+        returns (bool) 
+    {
+        // Verify swap exists
+        if (!swapExists[swapId]) revert SwapNotFound();
+        
+        Swap storage swap = _swaps[swapId];
+        
+        // Verify swap is in OPEN or AWAITING_APPROVAL state
+        if (swap.status != SwapStatus.OPEN && 
+            swap.status != SwapStatus.AWAITING_APPROVAL) revert InvalidSwapStatus();
+        
+        // Verify caller is the sender
+        if (_msgSender() != swap.sender) revert NotAuthorized();
+        
+        // Update swap status
+        swap.status = SwapStatus.AWAITING_CLAIM_SECRET;
+        
+        emit SwapStatusChanged(swapId, SwapStatus.AWAITING_CLAIM_SECRET);
+        
+        return true;
+    }
+
+    /// @notice Marks a swap as failed
+    /// @dev Sets the swap status to FAILED and returns any locked tokens
+    /// @param swapId Unique identifier of the swap
+    /// @param reason Reason for the failure
+    /// @return bool True if the status was updated successfully
+    function markSwapFailed(bytes32 swapId, string calldata reason) 
+        external 
+        nonReentrant 
+        whenNotPaused 
+        returns (bool) 
+    {
+        // Verify swap exists
+        if (!swapExists[swapId]) revert SwapNotFound();
+        
+        Swap storage swap = _swaps[swapId];
+        
+        // Verify caller is either sender, receiver, or admin
+        bool isAuthorizedActor = (_msgSender() == swap.sender || 
+                                 _msgSender() == swap.receiver || 
+                                 hasRole(DEFAULT_ADMIN_ROLE, _msgSender()));
+        
+        if (!isAuthorizedActor) revert NotAuthorized();
+        
+        // Verify swap is in an active state
+        if (swap.status == SwapStatus.CLAIMED || 
+            swap.status == SwapStatus.REFUNDED || 
+            swap.status == SwapStatus.EXPIRED ||
+            swap.status == SwapStatus.CANCELLED || 
+            swap.status == SwapStatus.FAILED ||
+            swap.status == SwapStatus.INVALID) revert InvalidSwapStatus();
+        
+        // Return tokens to sender if they are locked
+        if (swap.status == SwapStatus.OPEN || 
+            swap.status == SwapStatus.AWAITING_APPROVAL || 
+            swap.status == SwapStatus.AWAITING_CLAIM_SECRET) {
+            IERC20(swap.tokenToSend).safeTransfer(swap.sender, swap.amountToSend);
+        }
+        
+        // Update swap status
+        swap.status = SwapStatus.FAILED;
+        
+        emit SwapStatusChanged(swapId, SwapStatus.FAILED);
+        
+        return true;
+    }
+
+    /// @notice Marks a swap as invalid
+    /// @dev Sets the swap status to INVALID and returns any locked tokens
+    /// @param swapId Unique identifier of the swap
+    /// @param reason Reason for being invalid
+    /// @return bool True if the status was updated successfully
+    function markSwapInvalid(bytes32 swapId, string calldata reason) 
+        external 
+        nonReentrant 
+        whenNotPaused 
+        returns (bool) 
+    {
+        // Verify swap exists
+        if (!swapExists[swapId]) revert SwapNotFound();
+        
+        Swap storage swap = _swaps[swapId];
+        
+        // Verify caller is either sender, receiver, or admin
+        bool isAuthorizedActor = (_msgSender() == swap.sender || 
+                                 _msgSender() == swap.receiver || 
+                                 hasRole(DEFAULT_ADMIN_ROLE, _msgSender()));
+        
+        if (!isAuthorizedActor) revert NotAuthorized();
+        
+        // Verify swap is in an active state
+        if (swap.status == SwapStatus.CLAIMED || 
+            swap.status == SwapStatus.REFUNDED || 
+            swap.status == SwapStatus.EXPIRED ||
+            swap.status == SwapStatus.CANCELLED || 
+            swap.status == SwapStatus.FAILED ||
+            swap.status == SwapStatus.INVALID) revert InvalidSwapStatus();
+        
+        // Return tokens to sender if they are locked
+        if (swap.status == SwapStatus.OPEN || 
+            swap.status == SwapStatus.AWAITING_APPROVAL || 
+            swap.status == SwapStatus.AWAITING_CLAIM_SECRET) {
+            IERC20(swap.tokenToSend).safeTransfer(swap.sender, swap.amountToSend);
+        }
+        
+        // Update swap status
+        swap.status = SwapStatus.INVALID;
+        
+        emit SwapStatusChanged(swapId, SwapStatus.INVALID);
+        
+        return true;
     }
 } 

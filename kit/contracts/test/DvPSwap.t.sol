@@ -31,6 +31,19 @@ contract DvPSwapTest is Test {
     bytes32 public constant SECRET = bytes32("secret");
     bytes32 public constant HASHLOCK = 0x2d72f5f997513c11c7657a03e4001a564fc66d087e3bad7a04f4dedc718a6d99; // keccak256(abi.encodePacked(SECRET))
     
+    // Create unique hashlocks for each test to avoid conflicts
+    bytes32 public constant SECRET_2 = bytes32("secret2");
+    bytes32 public constant HASHLOCK_2 = 0x5929877be8dc847d47ac9f7ef8d634fbcd7eec5be85b3f70119e3a14247aede0; // keccak256(abi.encodePacked(SECRET_2))
+    
+    bytes32 public constant SECRET_3 = bytes32("secret3");
+    bytes32 public constant HASHLOCK_3 = 0x2ac649e7b98dc847d47ac9f7ef8d634fbcd7eec5be85b3f70119e3a14247aede; // keccak256(abi.encodePacked(SECRET_3))
+    
+    bytes32 public constant SECRET_4 = bytes32("secret4");
+    bytes32 public constant HASHLOCK_4 = 0x3bc649e7b98dc847d47ac9f7ef8d634fbcd7eec5be85b3f70119e3a14247aede; // keccak256(abi.encodePacked(SECRET_4))
+    
+    bytes32 public constant SECRET_5 = bytes32("secret5");
+    bytes32 public constant HASHLOCK_5 = 0x4dc649e7b98dc847d47ac9f7ef8d634fbcd7eec5be85b3f70119e3a14247aede; // keccak256(abi.encodePacked(SECRET_5))
+    
     event SwapCreated(
         bytes32 indexed swapId,
         address indexed sender,
@@ -46,6 +59,12 @@ contract DvPSwapTest is Test {
     event SwapStatusChanged(bytes32 indexed swapId, DvPSwap.SwapStatus status);
     event SwapClaimed(bytes32 indexed swapId, address indexed receiver, bytes32 secret);
     event SwapRefunded(bytes32 indexed swapId, address indexed sender);
+    event TokensLocked(
+        bytes32 indexed swapId,
+        address tokenAddress,
+        uint256 amount,
+        uint256 timestamp
+    );
     
     function setUp() public {
         admin = makeAddr("admin");
@@ -133,6 +152,14 @@ contract DvPSwapTest is Test {
         tokenA.approve(address(dvpSwap), AMOUNT_A);
         
         vm.expectEmit(true, true, true, true);
+        emit TokensLocked(
+            expectedSwapId,
+            address(tokenA),
+            AMOUNT_A,
+            block.timestamp
+        );
+        
+        vm.expectEmit(true, true, true, true);
         emit SwapCreated(
             expectedSwapId,
             user1,
@@ -184,6 +211,10 @@ contract DvPSwapTest is Test {
         // Create swap
         uint256 timelock = block.timestamp + 1 days;
         
+        // Generate the hashlock from the secret
+        bytes32 secret = bytes32("testClaimSecret");
+        bytes32 hashlock = keccak256(abi.encodePacked(secret));
+        
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
         bytes32 swapId = dvpSwap.createSwap(
@@ -193,7 +224,7 @@ contract DvPSwapTest is Test {
             AMOUNT_A,
             AMOUNT_B,
             timelock,
-            HASHLOCK
+            hashlock
         );
         vm.stopPrank();
         
@@ -202,12 +233,12 @@ contract DvPSwapTest is Test {
         tokenB.approve(address(dvpSwap), AMOUNT_B);
         
         vm.expectEmit(true, true, true, true);
-        emit SwapClaimed(swapId, user2, SECRET);
+        emit SwapClaimed(swapId, user2, secret);
         
         vm.expectEmit(true, true, false, true);
         emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.CLAIMED);
         
-        bool claimed = dvpSwap.claimSwap(swapId, SECRET);
+        bool claimed = dvpSwap.claimSwap(swapId, secret);
         vm.stopPrank();
         
         assertTrue(claimed);
@@ -234,7 +265,7 @@ contract DvPSwapTest is Test {
             AMOUNT_A,
             AMOUNT_B,
             timelock,
-            HASHLOCK
+            HASHLOCK_3
         );
         vm.stopPrank();
         
@@ -276,7 +307,7 @@ contract DvPSwapTest is Test {
             AMOUNT_A,
             AMOUNT_B,
             timelock,
-            HASHLOCK
+            HASHLOCK_4
         );
         vm.stopPrank();
         
@@ -300,6 +331,324 @@ contract DvPSwapTest is Test {
         // Check swap status
         DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
         assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.EXPIRED));
+    }
+    
+    // Tests for new functionality
+    
+    function test_RequestApproval() public {
+        // Create swap with unique hashlock
+        uint256 timelock = block.timestamp + 1 days;
+        bytes32 uniqueSecret = keccak256(abi.encodePacked("uniqueRequestApproval"));
+        bytes32 uniqueHashlock = keccak256(abi.encodePacked(uniqueSecret));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock
+        );
+        
+        // Request approval
+        vm.expectEmit(true, true, false, true);
+        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.AWAITING_APPROVAL);
+        
+        bool requested = dvpSwap.requestApproval(swapId);
+        vm.stopPrank();
+        
+        assertTrue(requested);
+        
+        // Check swap status
+        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.AWAITING_APPROVAL));
+        
+        // Create another swap to test the InvalidSwapStatus case
+        bytes32 uniqueSecret2 = keccak256(abi.encodePacked("uniqueRequestApproval2"));
+        bytes32 uniqueHashlock2 = keccak256(abi.encodePacked(uniqueSecret2));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId2 = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock2
+        );
+        
+        // Request approval
+        dvpSwap.requestApproval(swapId2);
+        
+        // Try to request approval again, should fail with InvalidSwapStatus
+        vm.expectRevert(abi.encodeWithSignature("InvalidSwapStatus()"));
+        dvpSwap.requestApproval(swapId2);
+        vm.stopPrank();
+        
+        // Create a new swap for testing authorization
+        bytes32 uniqueSecret3 = keccak256(abi.encodePacked("uniqueRequestApprovalAuth"));
+        bytes32 uniqueHashlock3 = keccak256(abi.encodePacked(uniqueSecret3));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId3 = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock3
+        );
+        vm.stopPrank();
+        
+        // Verify only sender can request approval (receiver should get NotAuthorized)
+        vm.startPrank(user2);
+        vm.expectRevert(abi.encodeWithSignature("NotAuthorized()"));
+        dvpSwap.requestApproval(swapId3);
+        vm.stopPrank();
+    }
+    
+    function test_NotifySecretReady() public {
+        // Create swap with unique hashlock
+        uint256 timelock = block.timestamp + 1 days;
+        bytes32 uniqueSecret = keccak256(abi.encodePacked("uniqueNotifySecretReady"));
+        bytes32 uniqueHashlock = keccak256(abi.encodePacked(uniqueSecret));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock
+        );
+        
+        // Notify secret is ready directly from OPEN state
+        vm.expectEmit(true, true, false, true);
+        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.AWAITING_CLAIM_SECRET);
+        
+        bool notified = dvpSwap.notifySecretReady(swapId);
+        vm.stopPrank();
+        
+        assertTrue(notified);
+        
+        // Check swap status
+        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.AWAITING_CLAIM_SECRET));
+        
+        // Create another swap to test notifySecretReady from AWAITING_APPROVAL state
+        bytes32 uniqueSecret2 = keccak256(abi.encodePacked("uniqueNotifySecretReadyFromApproval"));
+        bytes32 uniqueHashlock2 = keccak256(abi.encodePacked(uniqueSecret2));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId2 = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock2
+        );
+        
+        // Request approval first
+        dvpSwap.requestApproval(swapId2);
+        
+        // Then notify secret is ready
+        vm.expectEmit(true, true, false, true);
+        emit SwapStatusChanged(swapId2, DvPSwap.SwapStatus.AWAITING_CLAIM_SECRET);
+        bool notified2 = dvpSwap.notifySecretReady(swapId2);
+        vm.stopPrank();
+        
+        assertTrue(notified2);
+        
+        // Create another swap to test the InvalidSwapStatus case
+        bytes32 uniqueSecret3 = keccak256(abi.encodePacked("uniqueNotifySecretReady3"));
+        bytes32 uniqueHashlock3 = keccak256(abi.encodePacked(uniqueSecret3));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId3 = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock3
+        );
+        
+        // Notify secret is ready
+        dvpSwap.notifySecretReady(swapId3);
+        
+        // Try to notify secret ready again, should fail with InvalidSwapStatus
+        vm.expectRevert(abi.encodeWithSignature("InvalidSwapStatus()"));
+        dvpSwap.notifySecretReady(swapId3);
+        vm.stopPrank();
+        
+        // Create a new swap to test authorization
+        bytes32 uniqueSecret4 = keccak256(abi.encodePacked("uniqueNotifySecretReadyAuth"));
+        bytes32 uniqueHashlock4 = keccak256(abi.encodePacked(uniqueSecret4));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId4 = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock4
+        );
+        vm.stopPrank();
+        
+        // Verify only sender can notify secret ready (receiver should get NotAuthorized)
+        vm.startPrank(user2);
+        vm.expectRevert(abi.encodeWithSignature("NotAuthorized()"));
+        dvpSwap.notifySecretReady(swapId4);
+        vm.stopPrank();
+    }
+    
+    function test_MarkSwapFailed() public {
+        // Create swap with unique hashlock
+        uint256 timelock = block.timestamp + 1 days;
+        bytes32 uniqueSecret = keccak256(abi.encodePacked("uniqueMarkSwapFailed"));
+        bytes32 uniqueHashlock = keccak256(abi.encodePacked(uniqueSecret));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock
+        );
+        
+        // Mark as failed
+        vm.expectEmit(true, true, false, true);
+        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.FAILED);
+        
+        bool failed = dvpSwap.markSwapFailed(swapId, "Transaction failed");
+        vm.stopPrank();
+        
+        assertTrue(failed);
+        
+        // Check swap status
+        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.FAILED));
+        
+        // Check tokens returned to sender
+        assertEq(tokenA.balanceOf(user1), AMOUNT_A * 10);
+    }
+    
+    function test_MarkSwapInvalid() public {
+        // Create swap with unique hashlock
+        uint256 timelock = block.timestamp + 1 days;
+        bytes32 uniqueSecret = keccak256(abi.encodePacked("uniqueMarkSwapInvalid"));
+        bytes32 uniqueHashlock = keccak256(abi.encodePacked(uniqueSecret));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock
+        );
+        vm.stopPrank();
+        
+        // Receiver can also mark as invalid
+        vm.startPrank(user2);
+        vm.expectEmit(true, true, false, true);
+        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.INVALID);
+        
+        bool invalid = dvpSwap.markSwapInvalid(swapId, "Invalid parameters");
+        vm.stopPrank();
+        
+        assertTrue(invalid);
+        
+        // Check swap status
+        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.INVALID));
+        
+        // Check tokens returned to sender
+        assertEq(tokenA.balanceOf(user1), AMOUNT_A * 10);
+    }
+    
+    function test_ClaimAfterStatusTransitions() public {
+        // Create swap for AWAITING_APPROVAL test with unique hashlock
+        uint256 timelock = block.timestamp + 1 days;
+        bytes32 uniqueSecret = keccak256(abi.encodePacked("uniqueClaimFromApproval"));
+        bytes32 uniqueHashlock = keccak256(abi.encodePacked(uniqueSecret));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock
+        );
+        
+        // Change status to AWAITING_APPROVAL
+        dvpSwap.requestApproval(swapId);
+        vm.stopPrank();
+        
+        // Claim from AWAITING_APPROVAL state
+        vm.startPrank(user2);
+        tokenB.approve(address(dvpSwap), AMOUNT_B);
+        bool claimed = dvpSwap.claimSwap(swapId, uniqueSecret);
+        vm.stopPrank();
+        
+        assertTrue(claimed);
+        
+        // Create another swap for AWAITING_CLAIM_SECRET test with different hashlock
+        bytes32 uniqueSecret2 = keccak256(abi.encodePacked("uniqueClaimFromSecret"));
+        bytes32 uniqueHashlock2 = keccak256(abi.encodePacked(uniqueSecret2));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId2 = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock2
+        );
+        
+        // Change status to AWAITING_CLAIM_SECRET
+        dvpSwap.notifySecretReady(swapId2);
+        vm.stopPrank();
+        
+        // Claim from AWAITING_CLAIM_SECRET state
+        vm.startPrank(user2);
+        tokenB.approve(address(dvpSwap), AMOUNT_B);
+        bool claimed2 = dvpSwap.claimSwap(swapId2, uniqueSecret2);
+        vm.stopPrank();
+        
+        assertTrue(claimed2);
     }
     
     // Validation tests
@@ -396,6 +745,61 @@ contract DvPSwapTest is Test {
         vm.stopPrank();
     }
     
+    function test_InvalidStatusTransitions() public {
+        // Create swap with unique hashlock
+        uint256 timelock = block.timestamp + 1 days;
+        bytes32 uniqueSecret = keccak256(abi.encodePacked("uniqueInvalidTransition1"));
+        bytes32 uniqueHashlock = keccak256(abi.encodePacked(uniqueSecret));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock
+        );
+        
+        // Mark as failed
+        dvpSwap.markSwapFailed(swapId, "Failed");
+        vm.stopPrank();
+        
+        // Try to request approval on a failed swap
+        vm.startPrank(user1);
+        vm.expectRevert(abi.encodeWithSignature("InvalidSwapStatus()"));
+        dvpSwap.requestApproval(swapId);
+        vm.stopPrank();
+        
+        // Create another swap with different hashlock
+        bytes32 uniqueSecret2 = keccak256(abi.encodePacked("uniqueInvalidTransition2"));
+        bytes32 uniqueHashlock2 = keccak256(abi.encodePacked(uniqueSecret2));
+        
+        vm.startPrank(user1);
+        tokenA.approve(address(dvpSwap), AMOUNT_A);
+        bytes32 swapId2 = dvpSwap.createSwap(
+            user2,
+            address(tokenA),
+            address(tokenB),
+            AMOUNT_A,
+            AMOUNT_B,
+            timelock,
+            uniqueHashlock2
+        );
+        
+        // Mark as invalid
+        dvpSwap.markSwapInvalid(swapId2, "Invalid");
+        vm.stopPrank();
+        
+        // Try to notify secret ready on an invalid swap
+        vm.startPrank(user1);
+        vm.expectRevert(abi.encodeWithSignature("InvalidSwapStatus()"));
+        dvpSwap.notifySecretReady(swapId2);
+        vm.stopPrank();
+    }
+    
     // Fuzzing tests
     
     function testFuzz_CreateSwapWithVaryingAmounts(uint256 amountToSend, uint256 amountToReceive) public {
@@ -415,7 +819,7 @@ contract DvPSwapTest is Test {
             amountToSend,
             amountToReceive,
             timelock,
-            HASHLOCK
+            keccak256(abi.encodePacked(amountToSend, amountToReceive)) // Unique hashlock for fuzzing test
         );
         vm.stopPrank();
         
@@ -431,6 +835,8 @@ contract DvPSwapTest is Test {
         vm.assume(timelockDuration >= 1 minutes && timelockDuration <= 30 days);
         
         uint256 timelock = block.timestamp + timelockDuration;
+        bytes32 uniqueSecret = keccak256(abi.encodePacked("fuzz", timelockDuration));
+        bytes32 uniqueHashlock = keccak256(abi.encodePacked(uniqueSecret));
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
@@ -442,14 +848,14 @@ contract DvPSwapTest is Test {
             AMOUNT_A,
             AMOUNT_B,
             timelock,
-            HASHLOCK
+            uniqueHashlock
         );
         vm.stopPrank();
         
         // Claim swap
         vm.startPrank(user2);
         tokenB.approve(address(dvpSwap), AMOUNT_B);
-        bool claimed = dvpSwap.claimSwap(swapId, SECRET);
+        bool claimed = dvpSwap.claimSwap(swapId, uniqueSecret);
         vm.stopPrank();
         
         assertTrue(claimed);
