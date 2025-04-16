@@ -1,7 +1,7 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env zsh -e
 
 # Get the absolute path of the script's directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 ALL_ALLOCATIONS_FILE="${SCRIPT_DIR}/genesis-output.json"
 
 # Check if anvil is running, if not start it
