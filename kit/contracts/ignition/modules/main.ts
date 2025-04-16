@@ -2,12 +2,12 @@ import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import BondsModule from "./bonds";
 import CryptoCurrenciesModule from "./crypto-currencies";
 import DepositsModule from "./deposits";
+import EASModule from "./eas";
 import EquitiesModule from "./equities";
 import FixedYieldFactoryModule from "./fixed-yield-factory";
 import ForwarderModule from "./forwarder";
 import FundsModule from "./funds";
 import StableCoinsModule from "./stable-coins";
-
 const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
   m.useModule(ForwarderModule);
   const { ustb } = m.useModule(BondsModule);
@@ -17,8 +17,20 @@ const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
   const { gmf } = m.useModule(FundsModule);
   const { EURD } = m.useModule(DepositsModule);
   const { fixedYieldFactory } = m.useModule(FixedYieldFactoryModule);
+  const { easSchemaRegistry, eas, easIndexer } = m.useModule(EASModule);
 
-  return { ustb, btc, usdc, aapl, gmf, EURD, fixedYieldFactory };
+  return {
+    ustb,
+    btc,
+    usdc,
+    aapl,
+    gmf,
+    EURD,
+    fixedYieldFactory,
+    easSchemaRegistry,
+    eas,
+    easIndexer,
+  };
 });
 
 export default AssetTokenizationModule;
