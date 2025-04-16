@@ -38,6 +38,9 @@ interface ManageDropdownProps {
   assettype: AssetType;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
+  userUnderlyingAssetBalance: Awaited<
+    ReturnType<typeof getAssetBalanceDetail>
+  > | null;
   assetUsersDetails: Awaited<ReturnType<typeof getAssetUsersDetail>>;
   userAddress: Address;
 }
@@ -47,6 +50,7 @@ export function ManageDropdown({
   assettype,
   assetDetails,
   userBalance,
+  userUnderlyingAssetBalance,
   assetUsersDetails,
   userAddress,
 }: ManageDropdownProps) {
@@ -118,7 +122,11 @@ export function ManageDropdown({
       label: t("actions.mint"),
       hidden: false,
       disabled:
-        isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired || hasNoCollateral,
+        isBlocked ||
+        isPaused ||
+        !userIsSupplyManager ||
+        collateralIsExpired ||
+        hasNoCollateral,
       form: (
         <MintForm
           key="mint"
@@ -162,6 +170,7 @@ export function ManageDropdown({
             bondDetails={
               assetDetails as Awaited<ReturnType<typeof getBondDetail>>
             }
+            userUnderlyingAssetBalance={userUnderlyingAssetBalance!}
           />
         ) : null,
     },
