@@ -379,13 +379,6 @@ export class AdminPage extends BasePage {
     sidebarAssetTypes?: string;
     totalSupply?: string;
   }) {
-    console.log(`Starting filterAssetByName with name: "${options.name}"`);
-
-    if (!options.name || options.name.trim() === "") {
-      console.error("ERROR: Empty asset name provided to filterAssetByName");
-      throw new Error("Asset name cannot be empty in filterAssetByName");
-    }
-
     await this.page.getByRole("button", { name: "Filter" }).click();
     await this.page.getByRole("option", { name: "Name" }).click();
     await this.page.getByRole("button", { name: "Contains" }).click();
