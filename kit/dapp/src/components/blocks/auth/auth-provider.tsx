@@ -46,7 +46,7 @@ export const AuthProvider = ({
       replace={router.replace}
       onSessionChange={() => router.refresh()}
       Link={Link}
-      settingsUrl="/portfolio/settings/profile"
+      settingsURL="/portfolio/settings/profile"
       redirectTo="/portfolio"
       confirmPassword={true}
       optimistic={true}
