@@ -73,7 +73,7 @@ export async function StablecoinsRelated({
           disabled={
             isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired
           }
-          allowList={assetUsersDetails?.allowlist ?? []}
+          allowlist={assetUsersDetails?.allowlist ?? []}
         />
       </RelatedGridItem>
       <RelatedGridItem

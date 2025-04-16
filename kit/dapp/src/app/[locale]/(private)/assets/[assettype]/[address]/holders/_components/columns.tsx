@@ -204,7 +204,7 @@ export function columns({
                     max={maxMint}
                     decimals={decimals}
                     symbol={row.original.asset.symbol}
-                    allowList={allowList}
+                    allowlist={allowList}
                   />
                 ),
                 disabled: row.original.asset.paused || maxMint === 0,

@@ -142,7 +142,7 @@ export function ManageDropdown({
           max={mintMax}
           decimals={assetDetails.decimals}
           symbol={assetDetails.symbol}
-          allowList={assetUsersDetails.allowlist ?? []}
+          allowlist={assetUsersDetails.allowlist ?? []}
         />
       ),
     },

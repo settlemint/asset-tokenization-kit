@@ -242,7 +242,7 @@ export function Columns() {
                     max={row.original.asset.totalSupply}
                     decimals={row.original.asset.decimals}
                     symbol={row.original.asset.symbol}
-                    allowList={row.original.asset.allowlist ?? []}
+                    allowlist={row.original.asset.allowlist ?? []}
                   />
                 ),
                 disabled:
