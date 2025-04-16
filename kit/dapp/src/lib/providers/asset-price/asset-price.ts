@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { asset, assetPrice } from "@/lib/db/schema-asset-tokenization";
+import { asset, assetPrice } from "@/lib/db/schema-assets";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { withTracing } from "@/lib/utils/tracing";
 import { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
