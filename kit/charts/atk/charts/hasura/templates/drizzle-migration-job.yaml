@@ -68,6 +68,10 @@ spec:
         args:
         - |
           set -ex
+          echo "Updating package list and installing build tools..."
+          apt-get update && apt-get install -y --no-install-recommends build-essential python3 make g++
+          echo "Build tools installed."
+          
           echo "Installing Dapp dependencies..."
           bun install --frozen-lockfile
           echo "Running Drizzle migrations..."
@@ -75,22 +79,15 @@ spec:
           bunx drizzle-kit push --force
           echo "Drizzle migrations finished."
         env:
-        # Define PGHOST using the stable service name
-        - name: PGHOST
-          value: "postgresql-pgpool"
-        - name: PGPORT
-          value: "5432"
-        # Assume default username and database name based on likely Bitnami defaults
-        - name: PGUSER
-          value: "postgres"
-        - name: PGDATABASE
-          value: "postgres"
-        # Source password from the observed secret and key
+        # Retrieve the password from the secret first
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
               name: postgresql-postgresql # Use the observed secret name
               key: password # Use the observed key name
+        # Construct DATABASE_URL using known/assumed values and the password
+        - name: DATABASE_URL
+          value: "postgresql://postgres:$(PGPASSWORD)@postgresql-pgpool:5432/postgres"
         volumeMounts:
           - name: workspace
             mountPath: /workspace
