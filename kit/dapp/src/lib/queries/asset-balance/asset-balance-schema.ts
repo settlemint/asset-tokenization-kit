@@ -89,7 +89,7 @@ export const AssetBalanceSchema = t.Object(
         ),
         allowlist: t.Optional(
           t.Array(AllowedUserSchema, {
-            description: "Accounts that are allowed to mint the asset",
+            description: "Accounts that are allowed to hold the asset",
           })
         ),
       },
