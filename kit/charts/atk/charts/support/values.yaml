@@ -230,3 +230,43 @@ ingress-nginx:
         annotations:
           prometheus.io/scrape: 'true'
           prometheus.io/port: '10254'
+
+# https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
+reloader:
+  enabled: true
+  fullnameOverride: 'reloader'
+  global:
+    imagePullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  image:
+    name: stakater/reloader
+    repository: ghcr.io/stakater/reloader
+  reloader:
+    autoReloadAll: true
+    watchGlobally: false
+    readOnlyRootFileSystem: true
+    reloadOnCreate: false
+    syncAfterRestart: true
+    securityContext:
+      # -- Specifies the security capabilities for the container. Here, all capabilities are dropped.
+      capabilities:
+        drop:
+          - ALL
+      # -- If true, the root filesystem of the container is read-only.
+      readOnlyRootFilesystem: false
+      # -- Ensures the container runs as a non-root user.
+      runAsNonRoot: true
+      # -- The user ID to run the container as. Change this for OpenShift or specific requirements.
+      runAsUser: 2016
+      allowPrivilegeEscalation: false
+    containerSecurityContext:
+      capabilities:
+        drop:
+          - ALL
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+    deployment:
+      labels:
+        kots.io/app-slug: settlemint-platform

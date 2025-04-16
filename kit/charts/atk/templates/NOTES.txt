@@ -8,4 +8,7 @@ The following endpoints are now available:
    Blockchain Exlorer: https://{{ (index .Values "blockscout" "blockscout-stack" "frontend" "ingress" "hostname" ) | default "explorer.k8s.orb.local" }}
             The Graph: https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
                Hasura: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}
-              Grafana: https://{{ (index .Values "observability" "grafana" "ingress" "hosts" 0 ) | default "hasura.k8s.orb.local" }}
+              Grafana: https://{{ (index .Values "observability" "grafana" "ingress" "hosts" 0 ) | default "grafana.k8s.orb.local" }}
+{{- if .Values.dapp.enabled }}
+                 DApp: https://{{ (index .Values.dapp.ingress.hosts 0).host | default "dapp.k8s.orb.local" }}
+{{- end }}
