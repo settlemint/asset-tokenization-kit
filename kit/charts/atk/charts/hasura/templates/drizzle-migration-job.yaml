@@ -1,0 +1,101 @@
+# This Job runs Drizzle migrations before Hasura starts.
+# It mimics the structure of the subgraph deployment job where applicable.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Naming convention similar to subgraph job, but indicating drizzle
+  name: {{ printf "%s-drizzle-migrate" .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    # Use parent chart's labels helper
+    {{- include "atk.labels" . | nindent 4 }}
+    app.kubernetes.io/component: drizzle-migrate
+  annotations:
+    # Run before install/upgrade, delete before creating new one
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5" # Ensure it runs before Hasura deployment
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    metadata:
+      name: {{ printf "%s-drizzle-migrate" .Release.Name }}
+      labels:
+        # Use parent chart's selector labels helper
+        {{- include "atk.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: drizzle-migrate
+    spec:
+      restartPolicy: Never
+      # Use global pull secrets if defined in parent chart values
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox # Use busybox image like the subgraph job
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - -c
+          - |
+            SERVICE_HOST="postgresql-pgpool"
+            SERVICE_PORT="5432"
+            echo "Waiting for ${SERVICE_HOST}:${SERVICE_PORT}..."
+            until nc -z -w 2 ${SERVICE_HOST} ${SERVICE_PORT}; do
+              echo "Service ${SERVICE_HOST}:${SERVICE_PORT} not ready yet, waiting 2s..."
+              sleep 2
+            done
+            echo "Service ${SERVICE_HOST}:${SERVICE_PORT} is available."
+      - name: clone-repo # Clone repo like subgraph job
+        image: alpine/git:latest
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - -c
+          - |
+            set -ex
+            # Consider making repo URL configurable via values?
+            git clone https://github.com/settlemint/asset-tokenization-kit.git /workspace
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+      containers:
+      - name: drizzle-migrate
+        image: "oven/bun:1" # Standard Bun image
+        imagePullPolicy: IfNotPresent
+        workingDir: /workspace/kit/dapp # Dapp dir within cloned repo
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          set -ex
+          echo "Installing Dapp dependencies..."
+          bun install --frozen-lockfile
+          echo "Running Drizzle migrations..."
+          # PG* env vars sourced from secret below
+          bunx drizzle-kit push --force
+          echo "Drizzle migrations finished."
+        env:
+        # Define PGHOST using the stable service name
+        - name: PGHOST
+          value: "postgresql-pgpool"
+        - name: PGPORT
+          value: "5432"
+        # Assume default username and database name based on likely Bitnami defaults
+        - name: PGUSER
+          value: "postgres"
+        - name: PGDATABASE
+          value: "postgres"
+        # Source password from the observed secret and key
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-postgresql # Use the observed secret name
+              key: password # Use the observed key name
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+      volumes:
+        - name: workspace
+          emptyDir: {}
+      terminationGracePeriodSeconds: 30
+  backoffLimit: 1 # Try only once per hook execution 
