@@ -25,7 +25,7 @@ export async function bondsCalculateFields(
     const calculatedBond = safeParse(CalculatedBondSchema, {
       price: {
         ...price,
-        amount: price?.amount ? BigInt(price.amount) * bond.faceValue : 0,
+        amount: price?.amount ? price.amount * Number(bond.faceValue) : 0,
       },
     });
     acc.set(bond.id, calculatedBond);
