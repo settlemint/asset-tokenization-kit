@@ -20,6 +20,7 @@ export class FactoryType {
 
 export class EventName {
   static AssetCreated: string = "Asset Created";
+  static SchemaRegistered: string = "Schema Registered";
   static Transfer: string = "Transfer";
   static Mint: string = "Mint";
   static Burn: string = "Burn";

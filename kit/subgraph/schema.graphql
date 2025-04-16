@@ -922,3 +922,26 @@ type AllowedUser @entity(immutable: false) {
   user: Account!
   allowedAt: BigInt!
 }
+
+# --------------------------------------------------
+# EAS Schema Registry
+# --------------------------------------------------
+
+type SchemaRegistered @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  sender: Account!
+
+  uid: Bytes!
+  resolver: Account!
+  revocable: Boolean!
+  schema: String!
+}
+
+type Schema @entity(immutable: true) {
+  id: Bytes!
+  resolver: Account!
+  revocable: Boolean!
+  schema: String!
+}
