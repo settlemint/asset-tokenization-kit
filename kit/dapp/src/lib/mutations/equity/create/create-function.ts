@@ -17,23 +17,16 @@ import type { CreateEquityInput } from "./create-schema";
  * Creates a new equity contract through the equity factory
  */
 const EquityFactoryCreate = portalGraphql(`
-  mutation EquityFactoryCreate(
-    $challengeResponse: String!
-    $verificationId: String
-    $address: String!
-    $from: String!
-    $input: EquityFactoryCreateInput!
+mutation MyMutation($resolver: String = "", $revocable: Boolean = false, $schema: String = "", $address: String = "", $challengeResponse: String = "", $from: String = "") {
+  EASSchemaRegistryRegister(
+    address: $address
+    from: $from
+    input: {resolver: $resolver, revocable: $revocable, schema: $schema}
+    challengeResponse: $challengeResponse
   ) {
-    EquityFactoryCreate(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-      input: $input
-    ) {
-      transactionHash
-    }
+    transactionHash
   }
+}
 `);
 
 /**

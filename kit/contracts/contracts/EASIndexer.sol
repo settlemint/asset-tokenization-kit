@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { IEAS, Attestation } from "@eas/contracts/IEAS.sol";
 import { EMPTY_UID } from "@eas/contracts/Common.sol";

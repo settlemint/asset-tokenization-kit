@@ -1,0 +1,26 @@
+specVersion: 1.3.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: EASSchemaRegistry
+    network: mainnet
+    source:
+      address: "0x5e771e1417100000000000000000000000000080"
+      abi: EASSchemaRegistry
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Registered
+      abis:
+        - name: EASSchemaRegistry
+          file: ./abis/EASSchemaRegistry.json
+      eventHandlers:
+        - event: Registered(indexed bytes32,indexed address,(bytes32,address,bool,string))
+          handler: handleRegistered
+      file: ./src/eas-schema-registry.ts
