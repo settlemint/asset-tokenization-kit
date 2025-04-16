@@ -1,4 +1,7 @@
-import { PermissionSchema } from "@/lib/queries/asset/asset-users-schema";
+import {
+  AllowedUserSchema,
+  PermissionSchema,
+} from "@/lib/queries/asset/asset-users-schema";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 /**
@@ -82,6 +85,11 @@ export const AssetBalanceSchema = t.Object(
           t.Boolean({
             description: "Whether the asset contract is paused",
             default: false,
+          })
+        ),
+        allowlist: t.Optional(
+          t.Array(AllowedUserSchema, {
+            description: "Accounts that are allowed to mint the asset",
           })
         ),
       },
