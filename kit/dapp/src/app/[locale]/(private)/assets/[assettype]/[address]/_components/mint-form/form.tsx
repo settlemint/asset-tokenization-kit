@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { mint } from "@/lib/mutations/mint/mint-action";
 import { MintSchema } from "@/lib/mutations/mint/mint-schema";
+import type { AllowedUser } from "@/lib/queries/asset/asset-users-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
@@ -30,6 +31,7 @@ interface MintFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   disabled?: boolean;
+  allowList: AllowedUser[];
 }
 
 export function MintForm({
@@ -39,10 +41,11 @@ export function MintForm({
   max,
   decimals,
   symbol,
-  asButton = false,
   open,
   onOpenChange,
+  allowList,
   disabled = false,
+  asButton = false,
 }: MintFormProps) {
   const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
@@ -67,7 +70,11 @@ export function MintForm({
           symbol={symbol}
           assettype={assettype}
         />,
-        <Recipients key="recipients" />,
+        <Recipients
+          key="recipients"
+          assettype={assettype}
+          allowList={allowList}
+        />,
         <Summary key="summary" address={address} />,
       ];
 

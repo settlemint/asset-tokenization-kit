@@ -7,6 +7,7 @@ import { DataTableRowActions } from "@/components/blocks/data-table/data-table-r
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
+import type { AllowedUser } from "@/lib/queries/asset/asset-users-schema";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { Price } from "@/lib/utils/typebox/price";
@@ -34,10 +35,12 @@ export function columns({
   maxMint,
   decimals,
   price,
+  allowList,
 }: {
   maxMint?: number;
   decimals: number;
   price: Price;
+  allowList: AllowedUser[];
 }) {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -201,6 +204,7 @@ export function columns({
                     max={maxMint}
                     decimals={decimals}
                     symbol={row.original.asset.symbol}
+                    allowList={allowList}
                   />
                 ),
                 disabled: row.original.asset.paused || maxMint === 0,
