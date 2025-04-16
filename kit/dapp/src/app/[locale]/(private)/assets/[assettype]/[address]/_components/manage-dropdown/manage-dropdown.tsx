@@ -91,6 +91,10 @@ export function ManageDropdown({
     >;
     mintMax = deposit.freeCollateral;
   }
+  if (assettype === "bond") {
+    const bond = assetDetails as Awaited<ReturnType<typeof getBondDetail>>;
+    mintMax = Number(bond.cap);
+  }
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
@@ -114,7 +118,7 @@ export function ManageDropdown({
     assetDetails.collateralProofValidity !== undefined &&
     isBefore(assetDetails.collateralProofValidity, new Date());
 
-  const hasNoCollateral = mintMax === 0;
+  const mintLimitReached = mintMax === 0;
 
   const contractActions = [
     {
@@ -126,7 +130,7 @@ export function ManageDropdown({
         isPaused ||
         !userIsSupplyManager ||
         collateralIsExpired ||
-        hasNoCollateral,
+        mintLimitReached,
       form: (
         <MintForm
           key="mint"
