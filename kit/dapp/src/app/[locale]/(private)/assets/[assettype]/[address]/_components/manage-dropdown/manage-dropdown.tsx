@@ -93,7 +93,8 @@ export function ManageDropdown({
   }
   if (assettype === "bond") {
     const bond = assetDetails as Awaited<ReturnType<typeof getBondDetail>>;
-    mintMax = Number(bond.cap);
+    mintMax =
+      bond.totalSupply < bond.cap ? Number(bond.cap) - bond.totalSupply : 0;
   }
 
   const isBlocked = userBalance?.blocked ?? false;
