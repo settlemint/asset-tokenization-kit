@@ -50,11 +50,23 @@ export function MintForm({
   const [internalOpenState, setInternalOpenState] = useState(false);
   const steps = recipient
     ? [
-        <Amount key="amount" max={max} decimals={decimals} symbol={symbol} />,
+        <Amount
+          key="amount"
+          max={max}
+          decimals={decimals}
+          symbol={symbol}
+          assettype={assettype}
+        />,
         <Summary key="summary" address={address} />,
       ]
     : [
-        <Amount key="amount" max={max} decimals={decimals} symbol={symbol} />,
+        <Amount
+          key="amount"
+          max={max}
+          decimals={decimals}
+          symbol={symbol}
+          assettype={assettype}
+        />,
         <Recipients key="recipients" />,
         <Summary key="summary" address={address} />,
       ];
