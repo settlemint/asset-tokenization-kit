@@ -1,7 +1,9 @@
 "use client";
 
+import { hasAllowlist } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled";
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import type { FormStepComponent } from "@/components/blocks/form/types";
 import {
   Tooltip,
   TooltipContent,
@@ -15,9 +17,9 @@ import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 import { Amount } from "./steps/amount";
-import { Recipients } from "./steps/recipients";
+import { Recipients as RecipientsStep } from "./steps/recipients";
 import { Summary } from "./steps/summary";
 
 interface MintFormProps {
@@ -31,7 +33,7 @@ interface MintFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   disabled?: boolean;
-  allowList: AllowedUser[];
+  allowlist: AllowedUser[];
 }
 
 export function MintForm({
@@ -43,7 +45,7 @@ export function MintForm({
   symbol,
   open,
   onOpenChange,
-  allowList,
+  allowlist,
   disabled = false,
   asButton = false,
 }: MintFormProps) {
@@ -51,6 +53,27 @@ export function MintForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
+
+  const Recipients = RecipientsStep as FormStepComponent<
+    ReturnType<typeof MintSchema>
+  >;
+  Recipients.customValidation = [
+    async (form) => {
+      const to = form.getValues("to");
+      if (
+        to &&
+        hasAllowlist(assettype) &&
+        !allowlist.some((item) => getAddress(item.user.id) === getAddress(to))
+      ) {
+        form.setError("to", {
+          message: t("errors.not-in-allowlist-error"),
+        });
+        return false;
+      }
+      return true;
+    },
+  ];
+
   const steps = recipient
     ? [
         <Amount
@@ -70,11 +93,7 @@ export function MintForm({
           symbol={symbol}
           assettype={assettype}
         />,
-        <Recipients
-          key="recipients"
-          assettype={assettype}
-          allowList={allowList}
-        />,
+        <Recipients key="recipients" />,
         <Summary key="summary" address={address} />,
       ];
 
@@ -105,6 +124,9 @@ export function MintForm({
           address,
           assettype,
           to: recipient,
+        }}
+        onAnyFieldChange={(form) => {
+          form.clearErrors(["to"]);
         }}
       >
         {steps.map((step) => step)}
