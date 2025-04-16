@@ -13,11 +13,11 @@ export class SignUpPage extends BasePage {
     pincodeName: string;
     pincode: string;
   }) {
-    await this.page.getByRole("link", { name: "Issuer Portal" }).click();
+    await this.page.getByRole("link", { name: "Issuer portal" }).click();
     await this.page.getByRole("link", { name: "Sign Up" }).click();
     await this.page.getByLabel("Name").fill(options.name);
     await this.page.getByLabel("Email").fill(options.email);
-    await this.page.getByLabel("Password").fill(options.password);
+    await this.page.locator("#password").fill(options.password);
     await this.page.locator("#confirmPassword").fill(options.password);
     await this.page.getByRole("button", { name: "Create an account" }).click();
     await this.page.waitForURL("**/portfolio");
