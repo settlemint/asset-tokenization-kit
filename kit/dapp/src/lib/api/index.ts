@@ -4,6 +4,7 @@ import { swagger } from "@elysiajs/swagger";
 import { Elysia, error as elysiaError } from "elysia";
 import pkgjson from "../../../package.json";
 import { metadata } from "../config/metadata";
+import { siteConfig } from "../config/site";
 import { AssetPriceApi } from "../providers/asset-price/asset-price-api";
 import { ExchangeRatesApi } from "../providers/exchange-rates/exchange-rates-api";
 import { ExchangeRateUpdateApi } from "../providers/exchange-rates/exchange-rates-update-api";
@@ -52,6 +53,20 @@ export const api = new Elysia({
         info: {
           title: metadata.title.default,
           version: pkgjson.version,
+          description: metadata.description,
+          license: {
+            name: "FSL-1.1-MIT",
+            url: "https://github.com/settlemint/asset-tokenization-kit/blob/main/LICENSE",
+          },
+          contact: {
+            name: siteConfig.publisher,
+            url: siteConfig.url,
+            email: siteConfig.email,
+          },
+        },
+        externalDocs: {
+          description: "SettleMint Asset Tokenization Kit",
+          url: "https://console.settlemint.com/documentation/application-kits/asset-tokenization/introduction",
         },
         security: [
           {

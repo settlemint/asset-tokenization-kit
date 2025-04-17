@@ -135,7 +135,10 @@ export function FormAssets<T extends FieldValues>({
                 >
                   <div className="flex-1 truncate overflow-hidden text-left pr-2">
                     {field.value ? (
-                      <EvmAddress address={field.value.id} />
+                      <EvmAddress
+                        address={field.value.id}
+                        showAssetType={true}
+                      />
                     ) : (
                       placeholder || defaultPlaceholder
                     )}
@@ -295,7 +298,11 @@ function FormAssetsList({
           onSelect={(currentValue) => onSelect(currentValue as Address)}
         >
           {showIcon && <History className="mr-2 h-4 w-4" />}
-          <EvmAddress address={asset.id} hoverCard={false} />
+          <EvmAddress
+            address={asset.id}
+            hoverCard={false}
+            showAssetType={true}
+          />
           <Check
             className={cn("ml-auto", isSelected ? "opacity-100" : "opacity-0")}
           />

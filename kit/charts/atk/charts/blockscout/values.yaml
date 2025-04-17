@@ -18,8 +18,8 @@ blockscout-stack:
   blockscout:
     replicaCount: 1
     image:
-      repository: blockscout/blockscout
-      tag: "7.0.2"
+      repository: ghcr.io/blockscout/blockscout
+      tag: "8.0.0"
     ingress:
       enabled: true
       className: "settlemint-nginx"

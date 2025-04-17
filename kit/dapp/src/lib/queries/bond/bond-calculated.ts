@@ -16,14 +16,17 @@ export async function bondsCalculateFields(
   userCurrency: CurrencyCode
 ) {
   const prices = await getAssetsPricesInUserCurrency(
-    onChainBonds.map((bond) => bond.id),
+    onChainBonds.map((bond) => bond.underlyingAsset.id),
     userCurrency
   );
 
   return onChainBonds.reduce((acc, bond) => {
-    const price = prices.get(bond.id);
+    const price = prices.get(bond.underlyingAsset.id);
     const calculatedBond = safeParse(CalculatedBondSchema, {
-      price,
+      price: {
+        ...price,
+        amount: price?.amount ? price.amount * Number(bond.faceValue) : 0,
+      },
     });
     acc.set(bond.id, calculatedBond);
     return acc;

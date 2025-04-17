@@ -33,4 +33,9 @@ dependencies:
     condition: portal.enabled
   - name: txsigner
     version: "*"
+    repository: file://./charts/txsigner
     condition: txsigner.enabled
+  - name: dapp
+    version: "*"
+    repository: file://./charts/dapp
+    condition: dapp.enabled
