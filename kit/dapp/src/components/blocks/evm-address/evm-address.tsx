@@ -30,7 +30,7 @@ interface EvmAddressProps extends PropsWithChildren {
   address: Address;
   name?: string;
   symbol?: string;
-  assetType?: boolean;
+  showAssetType?: boolean;
   /** The URL of the blockchain explorer (optional). */
   explorerUrl?: string;
   prefixLength?: number;
@@ -72,7 +72,7 @@ function EvmAddressInner({
   verbose = false,
   hoverCard = true,
   copyToClipboard = false,
-  assetType = false,
+  showAssetType = false,
 }: EvmAddressProps) {
   // Get the address name cache
   const { setNameForAddress } = useAddressNameCache();
@@ -166,7 +166,7 @@ function EvmAddressInner({
                 {shortHex(getAddress(address), { prefixLength, suffixLength })}
               </Badge>
             )}
-            {assetType && asset?.type && (
+            {showAssetType && asset?.type && (
               <span className="text-muted-foreground text-xs">
                 ({asset.type})
               </span>
@@ -219,7 +219,7 @@ function EvmAddressInner({
                         ({symbol})
                       </span>
                     )}
-                    {assetType && asset?.type && (
+                    {showAssetType && asset?.type && (
                       <span className="text-muted-foreground text-xs">
                         ({asset.type})
                       </span>
