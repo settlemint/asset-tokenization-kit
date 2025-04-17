@@ -1,4 +1,10 @@
-import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  log,
+} from "@graphprotocol/graph-ts";
 import { FixedYield, YieldPeriod } from "../../../generated/schema";
 import { FixedYield as FixedYieldContract } from "../../../generated/templates/FixedYield/FixedYield";
 import { toDecimals } from "../../utils/decimals";
@@ -21,7 +27,7 @@ export function fetchFixedYield(address: Address): FixedYield {
   let underlyingAsset = endpoint.try_underlyingAsset();
   let decimals = underlyingAsset.value
     ? fetchAssetDecimals(underlyingAsset.value)
-    : null;
+    : 18;
 
   // Try to get other fields
   let startDate = endpoint.try_startDate();
@@ -51,26 +57,36 @@ export function fetchFixedYield(address: Address): FixedYield {
     : BigDecimal.zero();
   fixedYield.underlyingBalanceExact = BigInt.zero();
   fixedYield.underlyingBalance = BigDecimal.zero();
-
-  if (periods.value) {
+  log.info("Starting to process {} yield periods for FixedYield: {}", [
+    periods.reverted ? "0" : periods.value.length.toString(),
+    address.toHexString(),
+  ]);
+  if (!periods.reverted && periods.value) {
     for (let i = 0; i < periods.value.length; i++) {
+      const periodTimestamp = periods.value[i];
+      const periodId = BigInt.fromI32(i);
       const id = Bytes.fromUTF8(
-        address.toHexString() + "-" + periods.value[i].toString()
+        address.toHexString() + "-" + periodId.toString() // Use period index for unique ID within this schedule
       );
-      const period = YieldPeriod.load(id);
-      if (period) {
-        period.schedule = fixedYield.id;
-        period.periodId = BigInt.fromI32(i);
-        period.totalClaimedExact = BigInt.zero();
-        period.totalClaimed = BigDecimal.zero();
-        period.startDate =
-          i === 0 ? fixedYield.startDate : periods.value[i - 1];
-        period.endDate = periods.value[i];
 
-        // Save the period
-        period.save();
-      }
+      // Create a new YieldPeriod entity for each period timestamp
+      let period = new YieldPeriod(id);
+
+      period.schedule = fixedYield.id;
+      period.periodId = periodId;
+      period.totalClaimedExact = BigInt.zero();
+      period.totalClaimed = BigDecimal.zero();
+      // Calculate start date based on previous period's end date or schedule start date
+      period.startDate = i === 0 ? fixedYield.startDate : periods.value[i - 1];
+      period.endDate = periodTimestamp;
+
+      // Save the newly created period
+      period.save();
     }
+  } else {
+    log.warning("No periods found or call reverted for FixedYield: {}", [
+      address.toHexString(),
+    ]);
   }
 
   // Save the entity
