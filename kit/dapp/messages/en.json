@@ -18,7 +18,7 @@
         "end-date": "End date",
         "interval": "Payment interval",
         "no-yield": {
-          "description": "This bond does not have a yield schedule configured yet. Set up a yield schedule to enable automated interest payments to bondholders.",
+          "description": "This bond does not have a yield schedule configured yet. Set up a yield schedule to enable automated interest payments to bond holders.",
           "title": "No yield schedule found"
         },
         "period-table": {
@@ -34,12 +34,12 @@
         "rate": "Interest rate",
         "set-schedule": {
           "button-label": "Set yield schedule",
-          "description": "Set the yield schedule for this bond. This will automatically distribute interest payments to bondholders at the specified intervals.",
+          "form-description": "Yield schedules enable automated interest payments to bond holders at the specified intervals.",
           "end-time": {
             "label": "End Time"
           },
           "interval": {
-            "description": "The interval at which interest payments are made to bondholders.",
+            "description": "The interval at which interest payments are made to bond holders.",
             "label": "Interval",
             "options": {
               "annually": "Annually",
@@ -52,7 +52,7 @@
             }
           },
           "rate": {
-            "description": "The interest rate to be paid to bondholders, expressed as a percentage.",
+            "description": "The interest rate to be paid to bond holders, expressed as a percentage.",
             "label": "Rate"
           },
           "start-time": {
@@ -64,8 +64,10 @@
             "interval": "Interval",
             "rate": "Rate",
             "start-time": "Start time",
-            "title": "Yield schedule summary"
+            "title": "Schedule details",
+            "description": "Verify the details of the yield schedule before submitting."
           },
+          "yield-schedule": "Yield schedule",
           "title": "Set yield schedule",
           "trigger-label": "Set yield schedule"
         },
