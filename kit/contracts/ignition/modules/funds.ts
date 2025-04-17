@@ -1,5 +1,6 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import { keccak256, toUtf8Bytes } from "ethers";
+import EASModule from "./eas";
 import FundFactoryModule from "./fund-factory";
 
 const FundsModule = buildModule("FundsModule", (m) => {
@@ -7,6 +8,7 @@ const FundsModule = buildModule("FundsModule", (m) => {
   const deployer = m.getAccount(0);
 
   const { fundFactory } = m.useModule(FundFactoryModule);
+  const { easSchemaRegistry } = m.useModule(EASModule);
 
   const managementFeeBps = 200; // 2% annual management fee
   const createHedgeFund = m.call(
@@ -34,6 +36,16 @@ const FundsModule = buildModule("FundsModule", (m) => {
       id: "readHedgeFundAddress",
     }
   );
+
+  m.call(
+    easSchemaRegistry,
+    "register",
+    ["uint256 Price,string Currency,string Isin", readHedgeFundAddress, true],
+    {
+      id: "registerHedgeFundSchema",
+    }
+  );
+
   const gmf = m.contractAt("Fund", readHedgeFundAddress, { id: "gmf" });
 
   // Set up roles for the fund

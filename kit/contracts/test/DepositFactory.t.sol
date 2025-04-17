@@ -6,10 +6,16 @@ import { VmSafe } from "forge-std/Vm.sol";
 import { DepositFactory } from "../contracts/DepositFactory.sol";
 import { Deposit } from "../contracts/Deposit.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract DepositFactoryTest is Test {
     DepositFactory public factory;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     uint8 public constant DECIMALS = 8;
     uint48 public constant COLLATERAL_LIVENESS = 7 days;
@@ -18,8 +24,13 @@ contract DepositFactoryTest is Test {
         owner = makeAddr("owner");
         // Deploy forwarder first
         forwarder = new Forwarder();
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         // Then deploy factory with forwarder address
-        factory = new DepositFactory(address(forwarder));
+        factory = new DepositFactory(address(forwarder), address(eas));
     }
 
     function test_CreateToken() public {
@@ -27,7 +38,7 @@ contract DepositFactoryTest is Test {
         string memory symbol = "TDEP";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS));
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
@@ -53,7 +64,7 @@ contract DepositFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, decimalValues[i], COLLATERAL_LIVENESS);
+            address payable tokenAddress = payable(factory.create(name, symbol, decimalValues[i], COLLATERAL_LIVENESS));
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             Deposit token = Deposit(tokenAddress);
@@ -65,13 +76,13 @@ contract DepositFactoryTest is Test {
         string memory name = "Test Deposit Token";
         string memory symbol = "TDT";
 
-        address token1 = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
+        address payable token1 = payable(factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS));
 
         // Create a new factory instance
-        DepositFactory newFactory = new DepositFactory(address(forwarder));
+        DepositFactory newFactory = new DepositFactory(address(forwarder), address(eas));
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
+        address payable token2 = payable(newFactory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS));
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -81,7 +92,7 @@ contract DepositFactoryTest is Test {
         string memory name = "Test Deposit";
         string memory symbol = "TDEP";
 
-        address tokenAddress = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS));
         Deposit token = Deposit(tokenAddress);
 
         // Test initial state
@@ -95,7 +106,7 @@ contract DepositFactoryTest is Test {
         string memory symbol = "TDEP";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS));
         Deposit token = Deposit(tokenAddress);
 
         // Test minting with supply management role

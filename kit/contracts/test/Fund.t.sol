@@ -5,12 +5,18 @@ import { Test } from "forge-std/Test.sol";
 import { Fund } from "../contracts/Fund.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 error ERC20Blocked(address account);
 
 contract FundTest is Test {
     Fund public fund;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     address public investor1;
     address public investor2;
@@ -39,9 +45,15 @@ contract FundTest is Test {
         // Deploy forwarder first
         forwarder = new Forwarder();
 
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         vm.startPrank(owner);
-        fund =
-            new Fund(NAME, SYMBOL, DECIMALS, owner, MANAGEMENT_FEE_BPS, FUND_CLASS, FUND_CATEGORY, address(forwarder));
+        fund = new Fund(
+            NAME, SYMBOL, DECIMALS, owner, MANAGEMENT_FEE_BPS, FUND_CLASS, FUND_CATEGORY, address(forwarder), eas
+        );
 
         // Initial supply for testing
         fund.mint(address(fund), INITIAL_SUPPLY);

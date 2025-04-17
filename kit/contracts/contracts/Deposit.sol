@@ -13,6 +13,8 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SchemaResolver } from "@eas/contracts/resolver/SchemaResolver.sol";
+import { IEAS, Attestation } from "@eas/contracts/IEAS.sol";
 
 /// @title StableCoin - A collateralized stablecoin with advanced control features
 /// @notice This contract implements a stablecoin with collateral backing, blocklist, pause, and custodian capabilities.
@@ -30,7 +32,8 @@ contract Deposit is
     ERC20Allowlist,
     ERC20Collateral,
     ERC20Custodian,
-    ERC2771Context
+    ERC2771Context,
+    SchemaResolver
 {
     using SafeERC20 for IERC20;
 
@@ -109,12 +112,14 @@ contract Deposit is
         uint8 decimals_,
         address initialOwner,
         uint48 collateralLivenessSeconds,
-        address forwarder
+        address forwarder,
+        IEAS eas
     )
         ERC20(name, symbol)
         ERC20Permit(name)
         ERC20Collateral(collateralLivenessSeconds)
         ERC2771Context(forwarder)
+        SchemaResolver(eas)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         if (collateralLivenessSeconds == 0) revert InvalidLiveness();
@@ -299,5 +304,31 @@ contract Deposit is
         /// @dev using _transfer to bypass allowance checks
         _transfer(from, to, amount);
         emit Clawback(from, to, amount);
+    }
+
+    function onAttest(
+        Attestation calldata, /*attestation*/
+        uint256 /*value*/
+    )
+        internal
+        view
+        override
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (bool)
+    {
+        return true;
+    }
+
+    function onRevoke(
+        Attestation calldata, /*attestation*/
+        uint256 /*value*/
+    )
+        internal
+        view
+        override
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (bool)
+    {
+        return true;
     }
 }

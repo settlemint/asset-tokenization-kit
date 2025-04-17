@@ -1,5 +1,6 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import { keccak256, toUtf8Bytes } from "ethers";
+import EASModule from "./eas";
 import StableCoinFactoryModule from "./stable-coin-factory";
 
 const StableCoinsModule = buildModule("StableCoinsModule", (m) => {
@@ -7,6 +8,7 @@ const StableCoinsModule = buildModule("StableCoinsModule", (m) => {
   const deployer = m.getAccount(0);
 
   const { stableCoinFactory } = m.useModule(StableCoinFactoryModule);
+  const { easSchemaRegistry } = m.useModule(EASModule);
 
   const collateralLivenessSeconds = 7 * 24 * 60 * 60; // 1 week in seconds
   const createUSDC = m.call(
@@ -24,6 +26,16 @@ const StableCoinsModule = buildModule("StableCoinsModule", (m) => {
     "token",
     { id: "readUSDCAddress" }
   );
+
+  m.call(
+    easSchemaRegistry,
+    "register",
+    ["uint256 Price,string Currency,string Isin", readUSDCAddress, true],
+    {
+      id: "registerUSDCSchema",
+    }
+  );
+
   const usdc = m.contractAt("StableCoin", readUSDCAddress, { id: "usdc" });
 
   // Set up roles for the stablecoin

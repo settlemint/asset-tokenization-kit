@@ -1,12 +1,13 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import { keccak256, toUtf8Bytes } from "ethers";
 import DepositFactoryModule from "./deposit-factory";
-
+import EASModule from "./eas";
 const DepositsModule = buildModule("DepositsModule", (m) => {
   // Get the deployer address which will be the owner
   const deployer = m.getAccount(0);
 
   const { depositFactory } = m.useModule(DepositFactoryModule);
+  const { easSchemaRegistry } = m.useModule(EASModule);
 
   // Set collateral liveness to 30 days (in seconds)
   const collateralLivenessSeconds = 30 * 24 * 60 * 60;
@@ -26,6 +27,19 @@ const DepositsModule = buildModule("DepositsModule", (m) => {
     "token",
     { id: "readTokenizedEURAddress" }
   );
+  m.call(
+    easSchemaRegistry,
+    "register",
+    [
+      "uint256 Price,string Currency,string Isin",
+      readTokenizedEURAddress,
+      true,
+    ],
+    {
+      id: "registerTokenizedEURSchema",
+    }
+  );
+
   const EURD = m.contractAt("Deposit", readTokenizedEURAddress, {
     id: "EURD",
   });

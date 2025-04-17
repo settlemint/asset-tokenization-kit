@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { Bond } from "./Bond.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { EAS } from "./EAS.sol";
 
 /// @title BondFactory - A factory contract for creating Bond tokens
 /// @notice This contract allows the creation of new Bond tokens with deterministic addresses using CREATE2.
@@ -13,6 +14,8 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 /// of deployed tokens.
 /// @custom:security-contact support@settlemint.com
 contract BondFactory is ReentrancyGuard, ERC2771Context {
+    EAS private immutable _eas;
+
     /// @notice Custom errors for the BondFactory contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error AddressAlreadyDeployed();
@@ -28,7 +31,9 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
     /// @notice Deploys a new BondFactory contract
     /// @dev Sets up the factory with meta-transaction support
     /// @param forwarder The address of the trusted forwarder for meta-transactions
-    constructor(address forwarder) ERC2771Context(forwarder) { }
+    constructor(address forwarder, address eas) ERC2771Context(forwarder) {
+        _eas = EAS(eas);
+    }
 
     /// @notice Creates a new bond token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses, includes reentrancy protection,
@@ -60,7 +65,16 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
         if (isAddressDeployed(predicted)) revert AddressAlreadyDeployed();
 
         Bond newBond = new Bond{ salt: salt }(
-            name, symbol, decimals, _msgSender(), cap, maturityDate, faceValue, underlyingAsset, trustedForwarder()
+            name,
+            symbol,
+            decimals,
+            _msgSender(),
+            cap,
+            maturityDate,
+            faceValue,
+            underlyingAsset,
+            trustedForwarder(),
+            _eas
         );
 
         bond = address(newBond);
@@ -100,7 +114,16 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
             abi.encodePacked(
                 type(Bond).creationCode,
                 abi.encode(
-                    name, symbol, decimals, sender, cap, maturityDate, faceValue, underlyingAsset, trustedForwarder()
+                    name,
+                    symbol,
+                    decimals,
+                    sender,
+                    cap,
+                    maturityDate,
+                    faceValue,
+                    underlyingAsset,
+                    trustedForwarder(),
+                    _eas
                 )
             )
         );

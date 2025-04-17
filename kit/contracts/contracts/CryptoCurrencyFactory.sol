@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { CryptoCurrency } from "./CryptoCurrency.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { EAS } from "./EAS.sol";
 
 /// @title CryptoCurrencyFactory - A factory contract for creating CryptoCurrency tokens
 /// @notice This contract allows the creation of new CryptoCurrency tokens with deterministic addresses using CREATE2.
@@ -13,6 +14,8 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 /// of deployed tokens.
 /// @custom:security-contact support@settlemint.com
 contract CryptoCurrencyFactory is ReentrancyGuard, ERC2771Context {
+    EAS private immutable _eas;
+
     /// @notice Custom errors for the CryptoCurrencyFactory contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error AddressAlreadyDeployed();
@@ -28,7 +31,9 @@ contract CryptoCurrencyFactory is ReentrancyGuard, ERC2771Context {
     /// @notice Deploys a new CryptoCurrencyFactory contract
     /// @dev Sets up the factory with meta-transaction support
     /// @param forwarder The address of the trusted forwarder for meta-transactions
-    constructor(address forwarder) ERC2771Context(forwarder) { }
+    constructor(address forwarder, address eas) ERC2771Context(forwarder) {
+        _eas = EAS(eas);
+    }
 
     /// @notice Creates a new cryptocurrency token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses, includes reentrancy protection,
@@ -38,6 +43,7 @@ contract CryptoCurrencyFactory is ReentrancyGuard, ERC2771Context {
     /// @param decimals The number of decimals for the token (must be <= 18)
     /// @param initialSupply The initial supply of tokens to mint to the creator
     /// @return token The address of the newly created token
+
     function create(
         string memory name,
         string memory symbol,
@@ -54,8 +60,9 @@ contract CryptoCurrencyFactory is ReentrancyGuard, ERC2771Context {
 
         bytes32 salt = _calculateSalt(name, symbol, decimals);
 
-        CryptoCurrency newToken =
-            new CryptoCurrency{ salt: salt }(name, symbol, decimals, initialSupply, _msgSender(), trustedForwarder());
+        CryptoCurrency newToken = new CryptoCurrency{ salt: salt }(
+            name, symbol, decimals, initialSupply, _msgSender(), trustedForwarder(), _eas
+        );
 
         token = address(newToken);
         isFactoryToken[token] = true;
@@ -96,7 +103,7 @@ contract CryptoCurrencyFactory is ReentrancyGuard, ERC2771Context {
                             keccak256(
                                 abi.encodePacked(
                                     type(CryptoCurrency).creationCode,
-                                    abi.encode(name, symbol, decimals, initialSupply, sender, trustedForwarder())
+                                    abi.encode(name, symbol, decimals, initialSupply, sender, trustedForwarder(), _eas)
                                 )
                             )
                         )

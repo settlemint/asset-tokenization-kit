@@ -1,6 +1,7 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import { keccak256, toUtf8Bytes } from "ethers";
 import BondFactoryModule from "./bond-factory";
+import EASModule from "./eas";
 import FixedYieldFactoryModule from "./fixed-yield-factory";
 import StableCoinFactoryModule from "./stable-coin-factory";
 
@@ -11,6 +12,7 @@ const BondsModule = buildModule("BondsModule", (m) => {
   const { bondFactory } = m.useModule(BondFactoryModule);
   const { stableCoinFactory } = m.useModule(StableCoinFactoryModule);
   const { fixedYieldFactory } = m.useModule(FixedYieldFactoryModule);
+  const { easSchemaRegistry } = m.useModule(EASModule);
 
   // Create StableCoin using the factory
   const collateralLivenessSeconds = 7 * 24 * 60 * 60; // 1 week in seconds
@@ -33,6 +35,16 @@ const BondsModule = buildModule("BondsModule", (m) => {
       id: "readStableCoinAddress",
     }
   );
+
+  m.call(
+    easSchemaRegistry,
+    "register",
+    ["uint256 Price,string Currency,string Isin", readStableCoinAddress, true],
+    {
+      id: "registerStableCoinSchema",
+    }
+  );
+
   const stableCoin = m.contractAt("StableCoin", readStableCoinAddress, {
     id: "stableCoin",
   });
@@ -68,6 +80,15 @@ const BondsModule = buildModule("BondsModule", (m) => {
       id: "readBondUSTBAddress",
     }
   );
+  m.call(
+    easSchemaRegistry,
+    "register",
+    ["uint256 Price,string Currency,string Isin", readBondUSTBAddress, true],
+    {
+      id: "registerBondUSTBSchema",
+    }
+  );
+
   const ustb = m.contractAt("Bond", readBondUSTBAddress, { id: "bondUSTB" });
 
   // Create fixed yield schedule for the bond
@@ -94,6 +115,7 @@ const BondsModule = buildModule("BondsModule", (m) => {
       id: "readYieldScheduleAddress",
     }
   );
+
   const yieldSchedule = m.contractAt("FixedYield", readYieldScheduleAddress, {
     id: "yieldSchedule",
   });

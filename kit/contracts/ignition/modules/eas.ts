@@ -7,12 +7,6 @@ const EASModule = buildModule("EASModule", (m) => {
   const eas = m.contract("EAS", [easSchemaRegistry, forwarder]);
   const easIndexer = m.contract("EASIndexer", [eas, forwarder]);
 
-  m.call(easSchemaRegistry, "register", [
-    "address Asset,uint256 Price,string Currency",
-    "0x0000000000000000000000000000000000000000",
-    false,
-  ]);
-
   return { easSchemaRegistry, eas, easIndexer };
 });
 

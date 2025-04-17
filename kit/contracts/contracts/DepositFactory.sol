@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { Deposit } from "./Deposit.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { EAS } from "./EAS.sol";
 
 /// @title TokenizedDepositFactory - A factory contract for creating TokenizedDeposit tokens
 /// @notice This contract allows the creation of new TokenizedDeposit tokens with deterministic addresses using CREATE2.
@@ -14,6 +15,8 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 /// of deployed tokens.
 /// @custom:security-contact support@settlemint.com
 contract DepositFactory is ReentrancyGuard, ERC2771Context {
+    EAS private immutable _eas;
+
     /// @notice Custom errors for the TokenizedDepositFactory contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error AddressAlreadyDeployed();
@@ -29,7 +32,9 @@ contract DepositFactory is ReentrancyGuard, ERC2771Context {
     /// @notice Deploys a new TokenizedDepositFactory contract
     /// @dev Sets up the factory with meta-transaction support
     /// @param forwarder The address of the trusted forwarder for meta-transactions
-    constructor(address forwarder) ERC2771Context(forwarder) { }
+    constructor(address forwarder, address eas) ERC2771Context(forwarder) {
+        _eas = EAS(eas);
+    }
 
     /// @notice Creates a new tokenized deposit token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses, includes reentrancy protection,
@@ -56,7 +61,7 @@ contract DepositFactory is ReentrancyGuard, ERC2771Context {
         bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         Deposit newToken = new Deposit{ salt: salt }(
-            name, symbol, decimals, _msgSender(), collateralLivenessSeconds, trustedForwarder()
+            name, symbol, decimals, _msgSender(), collateralLivenessSeconds, trustedForwarder(), _eas
         );
 
         token = address(newToken);
@@ -99,7 +104,13 @@ contract DepositFactory is ReentrancyGuard, ERC2771Context {
                                 abi.encodePacked(
                                     type(Deposit).creationCode,
                                     abi.encode(
-                                        name, symbol, decimals, sender, collateralLivenessSeconds, trustedForwarder()
+                                        name,
+                                        symbol,
+                                        decimals,
+                                        sender,
+                                        collateralLivenessSeconds,
+                                        trustedForwarder(),
+                                        _eas
                                     )
                                 )
                             )

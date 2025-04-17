@@ -1,12 +1,13 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import { keccak256, toUtf8Bytes } from "ethers";
+import EASModule from "./eas";
 import EquityFactoryModule from "./equity-factory";
-
 const EquitiesModule = buildModule("EquitiesModule", (m) => {
   // Get the deployer address which will be the owner
   const deployer = m.getAccount(0);
 
   const { equityFactory } = m.useModule(EquityFactoryModule);
+  const { easSchemaRegistry } = m.useModule(EASModule);
 
   const equityClass = "Common Stock";
   const equityCategory = "Technology";
@@ -25,6 +26,16 @@ const EquitiesModule = buildModule("EquitiesModule", (m) => {
     "token",
     { id: "readAPPLAddress" }
   );
+
+  m.call(
+    easSchemaRegistry,
+    "register",
+    ["uint256 Price,string Currency,string Isin", readAPPLAddress, true],
+    {
+      id: "registerAPPLSchema",
+    }
+  );
+
   const aapl = m.contractAt("Equity", readAPPLAddress, { id: "aapl" });
 
   // Set up roles for the equity

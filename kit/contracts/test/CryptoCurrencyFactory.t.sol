@@ -6,10 +6,16 @@ import { VmSafe } from "forge-std/Vm.sol";
 import { CryptoCurrencyFactory } from "../contracts/CryptoCurrencyFactory.sol";
 import { CryptoCurrency } from "../contracts/CryptoCurrency.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract CryptoCurrencyFactoryTest is Test {
     CryptoCurrencyFactory public factory;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     uint256 public constant INITIAL_SUPPLY = 1_000_000 ether;
     uint8 public constant DECIMALS = 8;
@@ -18,8 +24,13 @@ contract CryptoCurrencyFactoryTest is Test {
         owner = makeAddr("owner");
         // Deploy forwarder first
         forwarder = new Forwarder();
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         // Then deploy factory with forwarder address
-        factory = new CryptoCurrencyFactory(address(forwarder));
+        factory = new CryptoCurrencyFactory(address(forwarder), address(eas));
     }
 
     function test_CreateToken() public {
@@ -27,7 +38,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY));
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
@@ -55,7 +66,7 @@ contract CryptoCurrencyFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, decimalValues[i], INITIAL_SUPPLY);
+            address payable tokenAddress = payable(factory.create(name, symbol, decimalValues[i], INITIAL_SUPPLY));
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             CryptoCurrency token = CryptoCurrency(tokenAddress);
@@ -69,13 +80,13 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory name = "Test Token";
         string memory symbol = "TEST";
 
-        address token1 = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
+        address payable token1 = payable(factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY));
 
         // Create a new factory instance
-        CryptoCurrencyFactory newFactory = new CryptoCurrencyFactory(address(forwarder));
+        CryptoCurrencyFactory newFactory = new CryptoCurrencyFactory(address(forwarder), address(eas));
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
+        address payable token2 = payable(newFactory.create(name, symbol, DECIMALS, INITIAL_SUPPLY));
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -86,7 +97,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY));
         vm.stopPrank();
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
@@ -101,7 +112,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY));
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
         // Test minting with supply management role
@@ -128,7 +139,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
         uint256 zeroSupply = 0;
 
-        address tokenAddress = factory.create(name, symbol, DECIMALS, zeroSupply);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, zeroSupply));
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
         assertEq(token.decimals(), DECIMALS, "Decimals should match");
@@ -141,7 +152,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
 
         vm.recordLogs();
-        address tokenAddress = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY));
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(

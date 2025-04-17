@@ -6,10 +6,16 @@ import { VmSafe } from "forge-std/Vm.sol";
 import { EquityFactory } from "../contracts/EquityFactory.sol";
 import { Equity } from "../contracts/Equity.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract EquityFactoryTest is Test {
     EquityFactory public factory;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     uint8 public constant DECIMALS = 8;
 
@@ -17,8 +23,13 @@ contract EquityFactoryTest is Test {
         owner = makeAddr("owner");
         // Deploy forwarder first
         forwarder = new Forwarder();
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         // Then deploy factory with forwarder address
-        factory = new EquityFactory(address(forwarder));
+        factory = new EquityFactory(address(forwarder), address(eas));
     }
 
     function test_CreateToken() public {
@@ -28,7 +39,7 @@ contract EquityFactoryTest is Test {
         string memory category = "Series A";
 
         vm.prank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, class, category));
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
@@ -63,7 +74,8 @@ contract EquityFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, decimalValues[i], classes[i], categories[i]);
+            address payable tokenAddress =
+                payable(factory.create(name, symbol, decimalValues[i], classes[i], categories[i]));
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             Equity token = Equity(tokenAddress);
@@ -79,13 +91,13 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
-        address token1 = factory.create(name, symbol, DECIMALS, class, category);
+        address payable token1 = payable(factory.create(name, symbol, DECIMALS, class, category));
 
         // Create a new factory instance
-        EquityFactory newFactory = new EquityFactory(address(forwarder));
+        EquityFactory newFactory = new EquityFactory(address(forwarder), address(eas));
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, DECIMALS, class, category);
+        address payable token2 = payable(newFactory.create(name, symbol, DECIMALS, class, category));
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -97,7 +109,7 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
-        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, class, category));
         Equity token = Equity(tokenAddress);
 
         // Test initial state
@@ -114,7 +126,7 @@ contract EquityFactoryTest is Test {
         string memory category = "Series A";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, class, category));
         Equity token = Equity(tokenAddress);
 
         // Test minting with supply management role

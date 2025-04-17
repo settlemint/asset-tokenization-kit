@@ -6,10 +6,16 @@ import { VmSafe } from "forge-std/Vm.sol";
 import { FundFactory } from "../contracts/FundFactory.sol";
 import { Fund } from "../contracts/Fund.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract FundFactoryTest is Test {
     FundFactory public factory;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     address public user1;
     address public user2;
@@ -32,8 +38,13 @@ contract FundFactoryTest is Test {
 
         // Deploy forwarder first
         forwarder = new Forwarder();
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         // Then deploy factory with forwarder address
-        factory = new FundFactory(address(forwarder));
+        factory = new FundFactory(address(forwarder), address(eas));
     }
 
     function test_CreateFund() public {
@@ -45,7 +56,8 @@ contract FundFactoryTest is Test {
         vm.expectEmit(true, true, false, false);
         emit FundCreated(predictedAddress, owner);
 
-        address fundAddress = factory.create(NAME, SYMBOL, DECIMALS, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
+        address payable fundAddress =
+            payable(factory.create(NAME, SYMBOL, DECIMALS, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS));
 
         assertEq(fundAddress, predictedAddress);
         assertTrue(factory.isFactoryFund(fundAddress));
@@ -100,10 +112,11 @@ contract FundFactoryTest is Test {
         string memory fundClass = "Hedge Fund";
         string memory fundCategory = "Long/Short Equity";
 
-        address token1 = factory.create(name, symbol, DECIMALS, fundClass, fundCategory, MANAGEMENT_FEE_BPS);
+        address payable token1 =
+            payable(factory.create(name, symbol, DECIMALS, fundClass, fundCategory, MANAGEMENT_FEE_BPS));
 
         // Create a new factory instance
-        FundFactory newFactory = new FundFactory(address(forwarder));
+        FundFactory newFactory = new FundFactory(address(forwarder), address(eas));
 
         // Create a token with the same parameters
         address token2 = newFactory.create(name, symbol, DECIMALS, fundClass, fundCategory, MANAGEMENT_FEE_BPS);

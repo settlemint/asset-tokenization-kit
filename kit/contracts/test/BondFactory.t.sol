@@ -11,11 +11,17 @@ import { ERC2771Forwarder } from "@openzeppelin/contracts/metatx/ERC2771Forwarde
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract BondFactoryTest is Test {
     BondFactory public factory;
     Forwarder public forwarder;
     ERC20Mock public underlyingAsset;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     uint256 public futureDate;
     uint8 public constant DECIMALS = 8;
@@ -32,8 +38,13 @@ contract BondFactoryTest is Test {
         owner = vm.addr(ownerPrivateKey);
         // Deploy forwarder first
         forwarder = new Forwarder();
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         // Then deploy factory with forwarder address
-        factory = new BondFactory(address(forwarder));
+        factory = new BondFactory(address(forwarder), address(eas));
 
         // Set maturity date to 1 year from now
         futureDate = block.timestamp + 365 days;
@@ -47,8 +58,8 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         vm.prank(owner);
-        address bondAddress =
-            factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+        address payable bondAddress =
+            payable(factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset)));
 
         assertNotEq(bondAddress, address(0), "Bond address should not be zero");
 
@@ -80,8 +91,9 @@ contract BondFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address bondAddress =
-                factory.create(name, symbol, decimalValues[i], CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+            address payable bondAddress = payable(
+                factory.create(name, symbol, decimalValues[i], CAP, futureDate, FACE_VALUE, address(underlyingAsset))
+            );
             assertNotEq(bondAddress, address(0), "Bond address should not be zero");
 
             Bond bond = Bond(bondAddress);
@@ -126,10 +138,11 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bond1 = factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+        address payable bond1 =
+            payable(factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset)));
 
         // Create a new factory instance
-        BondFactory newFactory = new BondFactory(address(forwarder));
+        BondFactory newFactory = new BondFactory(address(forwarder), address(eas));
 
         // Create a bond with the same parameters
         address bond2 = newFactory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
@@ -142,8 +155,8 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress =
-            factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+        address payable bondAddress =
+            payable(factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset)));
         Bond bond = Bond(bondAddress);
 
         // Test initial state
@@ -211,8 +224,8 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress =
-            factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+        address payable bondAddress =
+            payable(factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset)));
         Bond bond = Bond(bondAddress);
 
         // Try to mature before maturity date

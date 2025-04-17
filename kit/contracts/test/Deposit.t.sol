@@ -5,10 +5,16 @@ import { Test } from "forge-std/Test.sol";
 import { Deposit } from "../contracts/Deposit.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract DepositTest is Test {
     Deposit public deposit;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     address public user1;
     address public user2;
@@ -30,8 +36,13 @@ contract DepositTest is Test {
         // Deploy forwarder first
         forwarder = new Forwarder();
 
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         vm.startPrank(owner);
-        deposit = new Deposit("Deposit", "DPT", DECIMALS, owner, COLLATERAL_LIVENESS, address(forwarder));
+        deposit = new Deposit("Deposit", "DPT", DECIMALS, owner, COLLATERAL_LIVENESS, address(forwarder), eas);
         vm.stopPrank();
     }
 
@@ -57,7 +68,7 @@ contract DepositTest is Test {
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.startPrank(owner);
             Deposit newDeposit =
-                new Deposit("Deposit", "DPT", decimalValues[i], owner, COLLATERAL_LIVENESS, address(forwarder));
+                new Deposit("Deposit", "DPT", decimalValues[i], owner, COLLATERAL_LIVENESS, address(forwarder), eas);
             vm.stopPrank();
             assertEq(newDeposit.decimals(), decimalValues[i]);
         }
@@ -66,7 +77,7 @@ contract DepositTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(Deposit.InvalidDecimals.selector, 19));
-        new Deposit("Deposit", "DPT", 19, owner, COLLATERAL_LIVENESS, address(forwarder));
+        new Deposit("Deposit", "DPT", 19, owner, COLLATERAL_LIVENESS, address(forwarder), eas);
         vm.stopPrank();
     }
 
@@ -292,7 +303,7 @@ contract DepositTest is Test {
     // Token withdrawal tests
     function test_WithdrawToken() public {
         // Deploy a mock ERC20 token
-        Deposit mockToken = new Deposit("Mock", "MCK", 18, owner, COLLATERAL_LIVENESS, address(forwarder));
+        Deposit mockToken = new Deposit("Mock", "MCK", 18, owner, COLLATERAL_LIVENESS, address(forwarder), eas);
 
         vm.startPrank(owner);
         // Allow the contract and user1 for the mock token
@@ -318,7 +329,7 @@ contract DepositTest is Test {
 
     function test_WithdrawTokenRevertOnInsufficientBalance() public {
         // Deploy a mock ERC20 token
-        Deposit mockToken = new Deposit("Mock", "MCK", 18, owner, COLLATERAL_LIVENESS, address(forwarder));
+        Deposit mockToken = new Deposit("Mock", "MCK", 18, owner, COLLATERAL_LIVENESS, address(forwarder), eas);
 
         vm.startPrank(owner);
         // Allow the contract and user1 for the mock token

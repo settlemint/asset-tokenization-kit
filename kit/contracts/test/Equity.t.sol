@@ -4,10 +4,16 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { Equity } from "../contracts/Equity.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract EquityTest is Test {
     Equity public equity;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     address public user1;
     address public user2;
@@ -31,8 +37,13 @@ contract EquityTest is Test {
         // Deploy forwarder first
         forwarder = new Forwarder();
 
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         vm.startPrank(owner);
-        equity = new Equity("Test Equity Token", "TEST", DECIMALS, owner, "Common", "Series A", address(forwarder));
+        equity = new Equity("Test Equity Token", "TEST", DECIMALS, owner, "Common", "Series A", address(forwarder), eas);
         vm.stopPrank();
 
         // Fund test accounts
@@ -64,7 +75,7 @@ contract EquityTest is Test {
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.startPrank(owner);
             Equity newEquity = new Equity(
-                "Test Equity Token", "TEST", decimalValues[i], owner, "Common", "Series A", address(forwarder)
+                "Test Equity Token", "TEST", decimalValues[i], owner, "Common", "Series A", address(forwarder), eas
             );
             vm.stopPrank();
             assertEq(newEquity.decimals(), decimalValues[i]);
@@ -74,7 +85,7 @@ contract EquityTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(Equity.InvalidDecimals.selector, 19));
-        new Equity("Test Equity Token", "TEST", 19, owner, "Common", "Series A", address(forwarder));
+        new Equity("Test Equity Token", "TEST", 19, owner, "Common", "Series A", address(forwarder), eas);
         vm.stopPrank();
     }
 

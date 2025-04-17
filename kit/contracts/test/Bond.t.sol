@@ -6,16 +6,21 @@ import { Bond } from "../contracts/Bond.sol";
 import { ERC20Mock } from "./mocks/ERC20Mock.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
 import { ERC20Yield } from "../contracts/extensions/ERC20Yield.sol";
-
 import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import { FixedYieldFactory } from "../contracts/FixedYieldFactory.sol";
 import { FixedYield } from "../contracts/FixedYield.sol";
 import { ERC20YieldMock } from "./mocks/ERC20YieldMock.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract BondTest is Test {
     Bond public bond;
     ERC20Mock public underlyingAsset;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     address public user1;
     address public user2;
@@ -68,6 +73,11 @@ contract BondTest is Test {
         // Deploy forwarder first
         forwarder = new Forwarder();
 
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         vm.startPrank(owner);
         bond = new Bond(
             "Test Bond",
@@ -78,7 +88,8 @@ contract BondTest is Test {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            address(forwarder)
+            address(forwarder),
+            eas
         );
         bond.mint(owner, initialSupply);
         vm.stopPrank();
@@ -118,7 +129,8 @@ contract BondTest is Test {
                 maturityDate,
                 faceValue,
                 address(underlyingAsset),
-                address(forwarder)
+                address(forwarder),
+                eas
             );
             assertEq(newBond.decimals(), decimalValues[i]);
         }
@@ -128,7 +140,16 @@ contract BondTest is Test {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(Bond.InvalidDecimals.selector, 19));
         new Bond(
-            "Test Bond", "TBOND", 19, owner, CAP, maturityDate, faceValue, address(underlyingAsset), address(forwarder)
+            "Test Bond",
+            "TBOND",
+            19,
+            owner,
+            CAP,
+            maturityDate,
+            faceValue,
+            address(underlyingAsset),
+            address(forwarder),
+            eas
         );
         vm.stopPrank();
     }
@@ -592,7 +613,8 @@ contract BondTest is Test {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            address(forwarder)
+            address(forwarder),
+            eas
         );
         vm.startPrank(owner);
         bond.mint(owner, initialSupply);
@@ -648,7 +670,8 @@ contract BondTest is Test {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            address(forwarder)
+            address(forwarder),
+            eas
         );
         vm.startPrank(owner);
         bond.mint(owner, initialSupply);
@@ -725,7 +748,8 @@ contract BondTest is Test {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            address(forwarder)
+            address(forwarder),
+            eas
         );
         vm.startPrank(owner);
         bond.mint(owner, initialSupply);

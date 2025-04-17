@@ -4,10 +4,16 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { StableCoin } from "../contracts/StableCoin.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract StableCoinTest is Test {
     StableCoin public stableCoin;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     address public user1;
     address public user2;
@@ -28,8 +34,13 @@ contract StableCoinTest is Test {
         // Deploy forwarder first
         forwarder = new Forwarder();
 
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         vm.startPrank(owner);
-        stableCoin = new StableCoin("StableCoin", "STBL", DECIMALS, owner, COLLATERAL_LIVENESS, address(forwarder));
+        stableCoin = new StableCoin("StableCoin", "STBL", DECIMALS, owner, COLLATERAL_LIVENESS, address(forwarder), eas);
         vm.stopPrank();
     }
 
@@ -54,8 +65,9 @@ contract StableCoinTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.startPrank(owner);
-            StableCoin newToken =
-                new StableCoin("StableCoin", "STBL", decimalValues[i], owner, COLLATERAL_LIVENESS, address(forwarder));
+            StableCoin newToken = new StableCoin(
+                "StableCoin", "STBL", decimalValues[i], owner, COLLATERAL_LIVENESS, address(forwarder), eas
+            );
             vm.stopPrank();
             assertEq(newToken.decimals(), decimalValues[i]);
         }
@@ -64,7 +76,7 @@ contract StableCoinTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidDecimals.selector, 19));
-        new StableCoin("StableCoin", "STBL", 19, owner, COLLATERAL_LIVENESS, address(forwarder));
+        new StableCoin("StableCoin", "STBL", 19, owner, COLLATERAL_LIVENESS, address(forwarder), eas);
         vm.stopPrank();
     }
 

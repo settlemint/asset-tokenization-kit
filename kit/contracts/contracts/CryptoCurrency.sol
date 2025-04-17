@@ -8,6 +8,8 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SchemaResolver } from "@eas/contracts/resolver/SchemaResolver.sol";
+import { IEAS, Attestation } from "@eas/contracts/IEAS.sol";
 
 /// @title CryptoCurrency - A customizable ERC20 token implementation
 /// @notice This contract provides a standard ERC20 token with minting capabilities controlled by roles.
@@ -15,7 +17,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 /// @dev Inherits from OpenZeppelin's ERC20, AccessControl, ERC20Permit, and ERC2771Context contracts
 /// to provide standard token functionality with additional features.
 /// @custom:security-contact support@settlemint.com
-contract CryptoCurrency is ERC20, AccessControl, ERC20Permit, ERC2771Context {
+contract CryptoCurrency is ERC20, AccessControl, ERC20Permit, ERC2771Context, SchemaResolver {
     using SafeERC20 for IERC20;
 
     /// @notice Role identifier for addresses that can manage token supply
@@ -53,11 +55,13 @@ contract CryptoCurrency is ERC20, AccessControl, ERC20Permit, ERC2771Context {
         uint8 decimals_,
         uint256 initialSupply,
         address initialOwner,
-        address forwarder
+        address forwarder,
+        IEAS eas
     )
         ERC20(name, symbol)
         ERC20Permit(name)
         ERC2771Context(forwarder)
+        SchemaResolver(eas)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         _decimals = decimals_;
@@ -120,5 +124,31 @@ contract CryptoCurrency is ERC20, AccessControl, ERC20Permit, ERC2771Context {
 
         IERC20(token).safeTransfer(to, amount);
         emit TokenWithdrawn(token, to, amount);
+    }
+
+    function onAttest(
+        Attestation calldata, /*attestation*/
+        uint256 /*value*/
+    )
+        internal
+        view
+        override
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (bool)
+    {
+        return true;
+    }
+
+    function onRevoke(
+        Attestation calldata, /*attestation*/
+        uint256 /*value*/
+    )
+        internal
+        view
+        override
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (bool)
+    {
+        return true;
     }
 }

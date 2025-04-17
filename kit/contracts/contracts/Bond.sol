@@ -15,6 +15,8 @@ import { ERC20HistoricalBalances } from "./extensions/ERC20HistoricalBalances.so
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { SchemaResolver } from "@eas/contracts/resolver/SchemaResolver.sol";
+import { IEAS, Attestation } from "@eas/contracts/IEAS.sol";
 
 /// @title Bond - A standard bond token implementation with face value in underlying asset
 /// @notice This contract implements an ERC20 token representing a standard bond with fixed-income characteristics and
@@ -34,7 +36,8 @@ contract Bond is
     ERC20Blocklist,
     ERC20Custodian,
     ERC20Yield,
-    ERC2771Context
+    ERC2771Context,
+    SchemaResolver
 {
     using SafeERC20 for IERC20;
 
@@ -153,12 +156,14 @@ contract Bond is
         uint256 _maturityDate,
         uint256 _faceValue,
         address _underlyingAsset,
-        address forwarder
+        address forwarder,
+        IEAS eas
     )
         ERC20(name, symbol)
         ERC20Permit(name)
         ERC20Capped(_cap)
         ERC2771Context(forwarder)
+        SchemaResolver(eas)
     {
         if (_maturityDate <= block.timestamp) revert BondInvalidMaturityDate();
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
@@ -523,5 +528,31 @@ contract Bond is
         /// @dev using _transfer to bypass allowance checks
         _transfer(from, to, amount);
         emit Clawback(from, to, amount);
+    }
+
+    function onAttest(
+        Attestation calldata, /*attestation*/
+        uint256 /*value*/
+    )
+        internal
+        view
+        override
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (bool)
+    {
+        return true;
+    }
+
+    function onRevoke(
+        Attestation calldata, /*attestation*/
+        uint256 /*value*/
+    )
+        internal
+        view
+        override
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (bool)
+    {
+        return true;
     }
 }

@@ -6,10 +6,16 @@ import { VmSafe } from "forge-std/Vm.sol";
 import { StableCoinFactory } from "../contracts/StableCoinFactory.sol";
 import { StableCoin } from "../contracts/StableCoin.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract StableCoinFactoryTest is Test {
     StableCoinFactory public factory;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     uint48 public constant LIVENESS = 7 days;
     uint8 public constant DECIMALS = 8;
@@ -19,8 +25,13 @@ contract StableCoinFactoryTest is Test {
         owner = makeAddr("owner");
         // Deploy forwarder first
         forwarder = new Forwarder();
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         // Then deploy factory with forwarder address
-        factory = new StableCoinFactory(address(forwarder));
+        factory = new StableCoinFactory(address(forwarder), address(eas));
     }
 
     function test_CreateToken() public {
@@ -28,7 +39,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, LIVENESS));
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
@@ -54,7 +65,7 @@ contract StableCoinFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, decimalValues[i], LIVENESS);
+            address payable tokenAddress = payable(factory.create(name, symbol, decimalValues[i], LIVENESS));
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             StableCoin token = StableCoin(tokenAddress);
@@ -69,13 +80,13 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable Coin";
         string memory symbol = "TSC";
 
-        address token1 = factory.create(name, symbol, DECIMALS, LIVENESS);
+        address payable token1 = payable(factory.create(name, symbol, DECIMALS, LIVENESS));
 
         // Create a new factory instance
-        StableCoinFactory newFactory = new StableCoinFactory(address(forwarder));
+        StableCoinFactory newFactory = new StableCoinFactory(address(forwarder), address(eas));
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, DECIMALS, LIVENESS);
+        address payable token2 = payable(newFactory.create(name, symbol, DECIMALS, LIVENESS));
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -85,7 +96,7 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, LIVENESS));
         StableCoin token = StableCoin(tokenAddress);
 
         // Test initial state
@@ -104,7 +115,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
+        address payable tokenAddress = payable(factory.create(name, symbol, DECIMALS, LIVENESS));
         StableCoin token = StableCoin(tokenAddress);
 
         // Test minting with supply management role

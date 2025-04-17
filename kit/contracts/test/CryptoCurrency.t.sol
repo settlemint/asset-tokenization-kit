@@ -5,10 +5,16 @@ import { Test } from "forge-std/Test.sol";
 import { CryptoCurrency } from "../contracts/CryptoCurrency.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { EASSchemaRegistry } from "../contracts/EASSchemaRegistry.sol";
+import { EAS } from "../contracts/EAS.sol";
+import { EASIndexer } from "../contracts/EASIndexer.sol";
 
 contract CryptoCurrencyTest is Test {
     CryptoCurrency public token;
     Forwarder public forwarder;
+    EASSchemaRegistry public schemaRegistry;
+    EAS public eas;
+    EASIndexer public easIndexer;
     address public owner;
     address public user;
     uint256 public constant INITIAL_SUPPLY = 1_000_000e18;
@@ -24,8 +30,13 @@ contract CryptoCurrencyTest is Test {
         // Deploy forwarder first
         forwarder = new Forwarder();
 
+        // Deploy EAS
+        schemaRegistry = new EASSchemaRegistry(address(forwarder));
+        eas = new EAS(schemaRegistry, address(forwarder));
+        easIndexer = new EASIndexer(eas, address(forwarder));
+
         vm.startPrank(owner);
-        token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, owner, address(forwarder));
+        token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, owner, address(forwarder), eas);
         vm.stopPrank();
     }
 
@@ -48,8 +59,9 @@ contract CryptoCurrencyTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.startPrank(owner);
-            CryptoCurrency newToken =
-                new CryptoCurrency("Test Token", "TEST", decimalValues[i], INITIAL_SUPPLY, owner, address(forwarder));
+            CryptoCurrency newToken = new CryptoCurrency(
+                "Test Token", "TEST", decimalValues[i], INITIAL_SUPPLY, owner, address(forwarder), eas
+            );
             vm.stopPrank();
             assertEq(newToken.decimals(), decimalValues[i]);
         }
@@ -58,7 +70,7 @@ contract CryptoCurrencyTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(CryptoCurrency.InvalidDecimals.selector, 19));
-        new CryptoCurrency("Test Token", "TEST", 19, INITIAL_SUPPLY, owner, address(forwarder));
+        new CryptoCurrency("Test Token", "TEST", 19, INITIAL_SUPPLY, owner, address(forwarder), eas);
         vm.stopPrank();
     }
 
@@ -136,7 +148,7 @@ contract CryptoCurrencyTest is Test {
         uint256 privateKey = 0xA11CE;
         address signer = vm.addr(privateKey);
 
-        token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, signer, address(forwarder));
+        token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, signer, address(forwarder), eas);
 
         uint256 value = 1000e18;
         uint256 deadline = block.timestamp + 1 hours;

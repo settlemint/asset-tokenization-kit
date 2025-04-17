@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { Fund } from "./Fund.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { EAS } from "./EAS.sol";
 
 /// @title FundFactory - A factory contract for creating Fund tokens
 /// @notice This contract allows the creation of new Fund tokens with deterministic addresses using CREATE2.
@@ -14,6 +15,8 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 /// of deployed tokens.
 /// @custom:security-contact support@settlemint.com
 contract FundFactory is ReentrancyGuard, ERC2771Context {
+    EAS private immutable _eas;
+
     /// @notice Custom errors for the FundFactory contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error AddressAlreadyDeployed();
@@ -29,7 +32,9 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
     /// @notice Deploys a new FundFactory contract
     /// @dev Sets up the factory with meta-transaction support
     /// @param forwarder The address of the trusted forwarder for meta-transactions
-    constructor(address forwarder) ERC2771Context(forwarder) { }
+    constructor(address forwarder, address eas) ERC2771Context(forwarder) {
+        _eas = EAS(eas);
+    }
 
     /// @notice Creates a new fund token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses, includes reentrancy protection,
@@ -61,7 +66,7 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
         bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         Fund newToken = new Fund{ salt: salt }(
-            name, symbol, decimals, _msgSender(), managementFeeBps, fundClass, fundCategory, trustedForwarder()
+            name, symbol, decimals, _msgSender(), managementFeeBps, fundClass, fundCategory, trustedForwarder(), _eas
         );
 
         token = address(newToken);
@@ -115,7 +120,8 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
                                         managementFeeBps,
                                         fundClass,
                                         fundCategory,
-                                        trustedForwarder()
+                                        trustedForwarder(),
+                                        _eas
                                     )
                                 )
                             )

@@ -1,12 +1,13 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import { keccak256, toUtf8Bytes } from "ethers";
 import CryptoCurrencyFactoryModule from "./crypto-currency-factory";
-
+import EASModule from "./eas";
 const CryptoCurrenciesModule = buildModule("CryptoCurrenciesModule", (m) => {
   // Get the deployer address which will be the owner
   const deployer = m.getAccount(0);
 
   const { cryptoCurrencyFactory } = m.useModule(CryptoCurrencyFactoryModule);
+  const { easSchemaRegistry } = m.useModule(EASModule);
 
   const totalSupply = "21000000000000000000000000"; // 21M BTC with 18 decimals
   const createBTC = m.call(
@@ -16,14 +17,24 @@ const CryptoCurrenciesModule = buildModule("CryptoCurrenciesModule", (m) => {
     {
       id: "createBTC",
       from: deployer,
-    },
+    }
   );
   const readBTCAddress = m.readEventArgument(
     createBTC,
     "CryptoCurrencyCreated",
     "token",
-    { id: "readBTCAddress" },
+    { id: "readBTCAddress" }
   );
+
+  m.call(
+    easSchemaRegistry,
+    "register",
+    ["uint256 Price,string Currency", readBTCAddress, true],
+    {
+      id: "registerBTCSchema",
+    }
+  );
+
   const btc = m.contractAt("CryptoCurrency", readBTCAddress, { id: "btc" });
 
   // Set up roles for the cryptocurrency
