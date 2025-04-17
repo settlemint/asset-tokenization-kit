@@ -71,7 +71,7 @@ export function CreateBondForm({
             const assetId = input?.predictedAddress;
             return assetId
               ? {
-                  label: "View bond",
+                  label: t("toast-action.bonds"),
                   onClick: () => router.push(`/assets/bond/${assetId}`),
                 }
               : undefined;

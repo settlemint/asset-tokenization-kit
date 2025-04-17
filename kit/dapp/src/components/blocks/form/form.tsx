@@ -298,10 +298,12 @@ export function Form<
                   ? toastMessages.action(input)
                   : undefined;
                 toast.success(successMessage, {
-                  id: toastId,
                   action: action,
-                  duration: action ? Infinity : undefined,
-                  dismissible: action ? true : false,
+                  id: toastId,
+                  actionButtonStyle: {
+                    backgroundColor: "var(--success-fg-deep)",
+                    color: "var(--primary-foreground)",
+                  },
                 });
               } catch (error: unknown) {
                 toast.error(`Failed to submit: ${(error as Error).message}`, {

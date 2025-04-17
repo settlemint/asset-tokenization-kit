@@ -73,7 +73,7 @@ export function CreateCryptoCurrencyForm({
             const assetId = input?.predictedAddress;
             return assetId
               ? {
-                  label: "View cryptocurrency",
+                  label: t("toast-action.cryptocurrencies"),
                   onClick: () =>
                     router.push(`/assets/cryptocurrency/${assetId}`),
                 }
