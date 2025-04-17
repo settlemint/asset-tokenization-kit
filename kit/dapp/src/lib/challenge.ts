@@ -37,8 +37,8 @@ class ChallengeError extends Error {
 }
 
 const CreateWalletVerificationChallengesMutation = portalGraphql(`
-  mutation CreateWalletVerificationChallenges($userWalletAddress: String!) {
-    createWalletVerificationChallenges(userWalletAddress: $userWalletAddress) {
+  mutation CreateWalletVerificationChallenges($userWalletAddress: String!, $verificationId: String!) {
+    createWalletVerificationChallenges(userWalletAddress: $userWalletAddress, verificationId: $verificationId) {
       challenge
       id
       name
@@ -124,6 +124,7 @@ export async function handleChallenge(
         CreateWalletVerificationChallengesMutation,
         {
           userWalletAddress,
+          verificationId: user.pincodeVerificationId,
         }
       );
 
@@ -136,9 +137,7 @@ export async function handleChallenge(
 
     const walletVerificationChallenge =
       verificationChallenges.createWalletVerificationChallenges.find(
-        (challenge) =>
-          challenge.verificationType === "PINCODE" &&
-          challenge.id === user.pincodeVerificationId
+        (challenge) => challenge.id === user.pincodeVerificationId
       );
 
     if (
