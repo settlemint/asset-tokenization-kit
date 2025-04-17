@@ -17,6 +17,15 @@ import { usePendingTransactions } from "@/lib/hooks/use-pending-transactions";
 import { formatDate } from "@/lib/utils/date";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
+import type { Address } from "viem";
+
+// Define transaction type
+interface PendingTransaction {
+  transactionHash: string;
+  createdAt: string | Date;
+  from: Address;
+  address: Address;
+}
 
 export function PendingTransactionsDropdown() {
   const t = useTranslations("components.pending-transactions");
@@ -66,7 +75,7 @@ export function PendingTransactionsDropdown() {
         ) : (
           <ScrollArea className="h-[400px]">
             <div className="space-y-2 p-2">
-              {pendingTransactions.map((tx) => (
+              {pendingTransactions.map((tx: PendingTransaction) => (
                 <div
                   key={tx.transactionHash}
                   className="flex flex-col gap-2 rounded-lg border bg-card p-3 text-sm"

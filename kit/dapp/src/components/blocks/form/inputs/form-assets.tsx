@@ -48,6 +48,37 @@ const MAX_RECENT_ASSETS = 5;
 const LOCAL_STORAGE_KEY = "recently-selected-assets";
 const INITIAL_RECENT_ASSETS: RecentAsset[] = [];
 
+// Define asset holder type
+interface AssetHolder {
+  id: string;
+  value: string;
+  account: {
+    id: `0x${string}`;
+  };
+}
+
+// Asset search result type needs to be compatible with AssetUsers
+interface AssetSearchResult extends AssetUsers {
+  id: `0x${string}`;
+  type:
+    | "bond"
+    | "cryptocurrency"
+    | "equity"
+    | "fund"
+    | "stablecoin"
+    | "deposit";
+  holders: AssetHolder[];
+  name: string;
+  symbol: string;
+  allowlist: any[];
+  blocklist: any[];
+  decimals: number;
+  admins: any[];
+  userManagers: any[];
+  supplyManagers: any[];
+  auditors?: { id: `0x${string}`; lastActivity: Date }[] | null;
+}
+
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
     /** The default selected value */
@@ -177,9 +208,9 @@ function FormAssetsList({
 
       // Filter by user wallet if provided
       if (userWallet) {
-        return data?.filter((asset) =>
+        return data?.filter((asset: AssetSearchResult) =>
           asset.holders.some(
-            (holder) =>
+            (holder: AssetHolder) =>
               holder.account.id.toLowerCase() === userWallet.toLowerCase() &&
               BigInt(holder.value) > 0n
           )
@@ -235,10 +266,12 @@ function FormAssetsList({
 
     return recentAssets
       .map((recent) => {
-        const asset = assets?.find((a) => a.id === recent.id);
+        const asset = assets?.find(
+          (a: AssetSearchResult) => a.id === recent.id
+        );
         return asset ? { ...asset, selectedAt: recent.selectedAt } : null;
       })
-      .filter(Boolean) as (AssetUsers & { selectedAt: number })[];
+      .filter(Boolean) as (AssetSearchResult & { selectedAt: number })[];
   }, [recentAssets, assets]);
 
   // Memoized asset item component to prevent re-renders
@@ -249,7 +282,7 @@ function FormAssetsList({
       onSelect,
       showIcon = false,
     }: {
-      asset: AssetUsers;
+      asset: AssetSearchResult;
       value?: AssetUsers;
       onSelect: (currentValue: Address) => void;
       showIcon?: boolean;
@@ -303,7 +336,7 @@ function FormAssetsList({
 
       {/* Show search results */}
       <CommandGroup>
-        {assets?.map((asset) => (
+        {assets?.map((asset: AssetSearchResult) => (
           <AssetItem
             key={asset.id}
             asset={asset}

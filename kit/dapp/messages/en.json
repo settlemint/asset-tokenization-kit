@@ -545,6 +545,29 @@
         "recent-users": "Recently selected",
         "search-contact-placeholder": "Search for a contact...",
         "search-placeholder": "Search for a user..."
+      },
+      "document-upload": {
+        "add-document": "Add Document",
+        "no-documents": "No documents have been uploaded yet",
+        "delete-document": "Delete Document",
+        "uploading": "Uploading",
+        "upload-document-title": "Upload Document",
+        "upload-document-description": "Upload white papers, audit reports, and other compliance documents",
+        "document-title": "Document Title",
+        "document-title-placeholder": "e.g. MiCA Compliance White Paper",
+        "document-type": "Document Type",
+        "select-document-type": "Select document type",
+        "document-description": "Description",
+        "document-description-placeholder": "Brief description of the document",
+        "document-file": "Upload File",
+        "choose-file": "Choose File",
+        "no-file-chosen": "No file chosen",
+        "accepted-format": "Accepted formats: {formats} (Max: {maxSize}MB)",
+        "invalid-file-format": "Invalid file format. Only {formats} files are accepted.",
+        "file-too-large": "File is too large. Maximum size is {maxSize}MB.",
+        "cancel": "Cancel",
+        "uploading-document": "Uploading...",
+        "upload-document": "Upload"
       }
     },
     "logo": {
