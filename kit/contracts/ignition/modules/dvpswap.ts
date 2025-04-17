@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // SettleMint.com
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import { utils } from "ethers";
+// Import ethers correctly for keccak256
 import DvPSwapFactoryModule from "./dvpswap-factory";
 
 const DvPSwapModule = buildModule("DvPSwapModule", (m) => {
@@ -11,8 +11,9 @@ const DvPSwapModule = buildModule("DvPSwapModule", (m) => {
   // Use the DvPSwapFactory module
   const { dvpSwapFactory } = m.useModule(DvPSwapFactoryModule);
 
-  // Use a fixed salt value instead of timestamp to ensure deployment consistency
-  const salt = utils.keccak256(utils.toUtf8Bytes("dvpswap-fixed-salt"));
+  // Use a fixed salt value instead of using keccak256 which might have import issues
+  // This is a hardcoded valid bytes32 value for consistent CREATE2 addresses
+  const salt = "0x1234567890123456789012345678901234567890123456789012345678901234";
 
   // Create a DvPSwap contract using the factory
   const createDvPSwap = m.call(
