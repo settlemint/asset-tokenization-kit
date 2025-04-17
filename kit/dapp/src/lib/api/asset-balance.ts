@@ -6,7 +6,7 @@ import {
   AssetBalanceSchema,
 } from "@/lib/queries/asset-balance/asset-balance-schema";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -21,7 +21,6 @@ export const AssetBalanceApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
     async ({ query }) => {

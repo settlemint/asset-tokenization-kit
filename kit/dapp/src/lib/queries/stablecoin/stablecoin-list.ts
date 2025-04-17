@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
@@ -20,7 +21,6 @@ import {
   OffChainStableCoinSchema,
   OnChainStableCoinSchema,
 } from "./stablecoin-schema";
-
 /**
  * GraphQL query to fetch on-chain stablecoin list from The Graph
  *
@@ -64,7 +64,7 @@ const OffchainStableCoinList = hasuraGraphql(
 export const getStableCoinList = withTracing(
   "queries",
   "getStableCoinList",
-  cache(async () => {
+  cache(async (userCurrency: CurrencyCode) => {
     "use cache";
     cacheTag("asset");
     const [onChainStableCoins, offChainStableCoins] = await Promise.all([
@@ -113,7 +113,7 @@ export const getStableCoinList = withTracing(
 
     const calculatedFields = await stablecoinsCalculateFields(
       onChainStableCoins,
-      offChainStableCoins
+      userCurrency
     );
 
     const stableCoins = onChainStableCoins.map((stableCoin) => {

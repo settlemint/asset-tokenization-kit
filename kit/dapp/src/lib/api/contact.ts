@@ -2,7 +2,7 @@ import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { getContactDetail } from "@/lib/queries/contact/contact-detail";
 import { getContactsList } from "@/lib/queries/contact/contact-list";
 import { ContactSchema } from "@/lib/queries/contact/contact-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia, NotFoundError } from "elysia";
 
@@ -16,7 +16,6 @@ export const ContactApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
     async ({ session }) => {

@@ -1,6 +1,7 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getUser } from "@/lib/auth/utils";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
@@ -13,8 +14,9 @@ interface DetailsProps {
 }
 
 export async function YieldDetails({ address }: DetailsProps) {
+  const user = await getUser();
   // Hardcoded to bond because the other asset types don't have yield
-  const bond = await getBondDetail({ address });
+  const bond = await getBondDetail({ address, userCurrency: user.currency });
   const yieldSchedule = bond.yieldSchedule!;
 
   const t = await getTranslations("admin.bonds.yield");

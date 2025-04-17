@@ -3,7 +3,7 @@ import {
   SettingKeySchema,
   SettingSchema,
 } from "@/lib/queries/setting/setting-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import Elysia from "elysia";
 import { getSetting } from "../queries/setting/setting-detail";
@@ -18,7 +18,6 @@ export const SettingApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "/:key",
     async ({ params: { key }, user }) => {

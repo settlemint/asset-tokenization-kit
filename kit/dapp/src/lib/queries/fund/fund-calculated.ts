@@ -1,8 +1,8 @@
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { safeParse } from "@/lib/utils/typebox";
-import type { CalculatedFund, OffChainFund, OnChainFund } from "./fund-schema";
+import type { CalculatedFund, OnChainFund } from "./fund-schema";
 import { CalculatedFundSchema } from "./fund-schema";
-
 /**
  * Calculates additional fields for fund tokens
  *
@@ -12,10 +12,11 @@ import { CalculatedFundSchema } from "./fund-schema";
  */
 export async function fundsCalculateFields(
   onChainFunds: OnChainFund[],
-  _offChainFunds?: (OffChainFund | undefined)[]
+  userCurrency: CurrencyCode
 ): Promise<Map<string, CalculatedFund>> {
   const prices = await getAssetsPricesInUserCurrency(
-    onChainFunds.map((fund) => fund.id)
+    onChainFunds.map((fund) => fund.id),
+    userCurrency
   );
 
   return onChainFunds.reduce((acc, fund) => {

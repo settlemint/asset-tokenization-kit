@@ -1,7 +1,7 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { getAssetActivity } from "@/lib/queries/asset-activity/asset-activity";
 import { AssetActivitySchema } from "@/lib/queries/asset-activity/asset-activity-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 
@@ -15,7 +15,6 @@ export const AssetActivityApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
     async ({ query }) => {

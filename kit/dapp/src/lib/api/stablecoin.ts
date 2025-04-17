@@ -5,7 +5,7 @@ import { PredictAddressInputSchema } from "@/lib/queries/stablecoin-factory/stab
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { getStableCoinList } from "@/lib/queries/stablecoin/stablecoin-list";
 import { StableCoinSchema } from "@/lib/queries/stablecoin/stablecoin-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -48,11 +48,10 @@ export const StableCoinApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
-    async () => {
-      return getStableCoinList();
+    async ({ user }) => {
+      return getStableCoinList(user.currency);
     },
     {
       auth: true,
@@ -70,9 +69,10 @@ export const StableCoinApi = new Elysia({
   )
   .get(
     "/:address",
-    ({ params: { address } }) => {
+    ({ params: { address }, user }) => {
       return getStableCoinDetail({
         address: getAddress(address),
+        userCurrency: user.currency,
       });
     },
     {

@@ -38,6 +38,9 @@ interface ManageDropdownProps {
   assettype: AssetType;
   assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
   userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
+  userUnderlyingAssetBalance: Awaited<
+    ReturnType<typeof getAssetBalanceDetail>
+  > | null;
   assetUsersDetails: Awaited<ReturnType<typeof getAssetUsersDetail>>;
   userAddress: Address;
 }
@@ -47,6 +50,7 @@ export function ManageDropdown({
   assettype,
   assetDetails,
   userBalance,
+  userUnderlyingAssetBalance,
   assetUsersDetails,
   userAddress,
 }: ManageDropdownProps) {
@@ -87,6 +91,11 @@ export function ManageDropdown({
     >;
     mintMax = deposit.freeCollateral;
   }
+  if (assettype === "bond") {
+    const bond = assetDetails as Awaited<ReturnType<typeof getBondDetail>>;
+    mintMax =
+      bond.totalSupply < bond.cap ? Number(bond.cap) - bond.totalSupply : 0;
+  }
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
@@ -110,7 +119,7 @@ export function ManageDropdown({
     assetDetails.collateralProofValidity !== undefined &&
     isBefore(assetDetails.collateralProofValidity, new Date());
 
-  const hasNoCollateral = mintMax === 0;
+  const mintLimitReached = mintMax === 0;
 
   const contractActions = [
     {
@@ -118,7 +127,11 @@ export function ManageDropdown({
       label: t("actions.mint"),
       hidden: false,
       disabled:
-        isBlocked || isPaused || !userIsSupplyManager || collateralIsExpired || hasNoCollateral,
+        isBlocked ||
+        isPaused ||
+        !userIsSupplyManager ||
+        collateralIsExpired ||
+        mintLimitReached,
       form: (
         <MintForm
           key="mint"
@@ -162,6 +175,7 @@ export function ManageDropdown({
             bondDetails={
               assetDetails as Awaited<ReturnType<typeof getBondDetail>>
             }
+            userUnderlyingAssetBalance={userUnderlyingAssetBalance!}
           />
         ) : null,
     },

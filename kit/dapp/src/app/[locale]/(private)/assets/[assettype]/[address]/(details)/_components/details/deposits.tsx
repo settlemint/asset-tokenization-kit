@@ -1,6 +1,7 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import { formatNumber } from "@/lib/utils/number";
@@ -18,8 +19,9 @@ export async function DepositsDetails({
   showBalance = false,
   userAddress,
 }: DepositsDetailsProps) {
+  const user = await getUser();
   const [deposit, t, locale] = await Promise.all([
-    getDepositDetail({ address }),
+    getDepositDetail({ address, userCurrency: user.currency }),
     getTranslations("private.assets.fields"),
     getLocale(),
   ]);

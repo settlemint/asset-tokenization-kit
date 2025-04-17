@@ -5,7 +5,7 @@ import { PredictAddressInputSchema } from "@/lib/queries/bond-factory/bond-facto
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getBondList } from "@/lib/queries/bond/bond-list";
 import { BondSchema } from "@/lib/queries/bond/bond-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -47,11 +47,10 @@ export const BondApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
-    async () => {
-      return getBondList();
+    async ({ user }) => {
+      return getBondList(user.currency);
     },
     {
       auth: true,
@@ -69,9 +68,10 @@ export const BondApi = new Elysia({
   )
   .get(
     "/:address",
-    ({ params: { address } }) => {
+    ({ params: { address }, user }) => {
       return getBondDetail({
         address: getAddress(address),
+        userCurrency: user.currency,
       });
     },
     {

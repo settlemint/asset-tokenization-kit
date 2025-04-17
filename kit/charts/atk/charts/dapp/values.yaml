@@ -1,0 +1,177 @@
+# Default values for dapp.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/settlemint/asset-tokenization-kit
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.0.2-main7a852a0b3"
+
+imagePullSecrets:
+  - name: image-pull-secret-docker
+  - name: image-pull-secret-ghcr
+  - name: image-pull-secret-harbor
+
+nameOverride: "dapp"
+fullnameOverride: "dapp"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false # Set to true if your deployment needs specific permissions
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Additional annotations for the deployment metadata
+annotations: {}
+# Additional labels for the deployment pod metadata
+podLabels: {}
+podAnnotations:
+  # Example annotations (adjust as needed)
+  loki.io/scrape: "true"
+  prometheus.io/scrape: "false"
+  # backup.velero.io/backup-volumes: ""
+
+podSecurityContext:
+  fsGroup: 2016
+  runAsNonRoot: true
+  runAsUser: 2016
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 3000
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: "settlemint-nginx"
+  # Add other annotations as needed
+  annotations: {}
+  hosts:
+    - host: dapp.local # Placeholder - Should be configured in parent chart values
+      paths:
+        - path: /((?:sm_|bpaas-)[^/]+)?/?(.*) # Match original path structure
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# Resource requests and limits
+resources: {}
+# Liveness and Readiness probes configuration
+probes:
+  liveness:
+    initialDelaySeconds: 10
+    periodSeconds: 15
+    timeoutSeconds: 3
+    failureThreshold: 10
+    successThreshold: 1
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 10
+    successThreshold: 1
+
+# Additional volumes for the deployment
+volumes: []
+#  - name: foo
+#    secret:
+#      secretName: mysecret
+#      optional: false
+
+# Additional volume mounts for the main container
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Environment variables sourced from a secret
+# These will be created in the secret.yaml template
+secretEnv:
+  BETTER_AUTH_URL: "https://dapp.local"
+  NEXT_PUBLIC_APP_ID: "dapp"
+  NEXTAUTH_URL: "https://dapp.local"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://o11y-alloy.btp-platform.svc.cluster.local:4318/v1/traces" # Adjust if needed
+  OTEL_EXPORTER_OTLP_PROTOCOL: "http"
+  SETTLEMINT_ACCESS_TOKEN: "dummy-token" # Placeholder - Should be configured
+  SETTLEMINT_APP_URL: "https://dapp.local"
+  SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "https://explorer.local/" # Placeholder
+  SETTLEMINT_HASURA_ADMIN_SECRET: "dummy-secret" # Placeholder
+  SETTLEMINT_HASURA_DATABASE_URL: "postgresql://user:pass@host:port/db" # Placeholder
+  SETTLEMINT_HASURA_ENDPOINT: "https://hasura.local/v1/graphql" # Placeholder
+  SETTLEMINT_HD_PRIVATE_KEY: "dummy-key" # Placeholder
+  SETTLEMINT_INSTANCE: "https://console.local" # Placeholder
+  SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "https://portal.local/graphql" # Placeholder
+  SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["https://graph.local/subgraphs/name/kit"]' # Placeholder
+
+# Environment variables defined directly in the deployment
+env: []
+# - name: MY_VAR
+#   value: my_value
+
+# Autoscaling configuration (optional)
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Init container configuration
+initContainer:
+  # Generic TCP check settings
+  tcpCheck:
+    enabled: true
+    image:
+      repository: ghcr.io/settlemint/btp-waitforit
+      tag: v7.7.3
+      pullPolicy: IfNotPresent
+    timeout: 5 # Timeout in seconds for each dependency check
+    dependencies:
+      # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
+      - name: postgres
+        endpoint: "postgresql-pgpool.atk.svc.cluster.local:5432"
+      - name: hasura
+        endpoint: "hasura.atk.svc.cluster.local:8080"
+      - name: portal
+        endpoint: "portal.atk.svc.cluster.local:3001"
+      - name: graph-node-tcp # Renamed to distinguish from graphQLCheck
+        endpoint: "graph-node-combined.atk.svc.cluster.local:8020" # Status API port (TCP check)
+      - name: blockscout # Add Blockscout if needed, determine correct service/port
+        endpoint: "blockscout-frontend-svc.atk.svc.cluster.local:80"
+
+  # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
+  graphQLCheck:
+    enabled: true
+    name: wait-for-graph-subgraph-kit # Name for the init container
+    image:
+      repository: curlimages/curl
+      tag: latest # Or pin to a specific version like 8.7.1
+      pullPolicy: IfNotPresent
+    # Target GraphQL endpoint URL (where POST requests are sent)
+    url: "http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"
+    query: '{ __typename }' # Basic query to check for GraphQL errors
+    retryDelaySeconds: 20
+    timeoutSeconds: 10 # Max time per curl attempt
+    connectTimeoutSeconds: 5 # Max time to connect
+    retries: 24 # Total attempts (e.g., 24 * 5s = 120s total wait time)
+

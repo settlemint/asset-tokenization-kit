@@ -1,7 +1,7 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
 import { AssetStatsSchema } from "@/lib/queries/asset-stats/asset-stats-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -16,7 +16,6 @@ export const AssetStatsApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "/:address",
     async ({ params: { address }, query }) => {

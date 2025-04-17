@@ -7,7 +7,7 @@ import {
 import { TransactionSchema } from "@/lib/queries/transactions/transaction-schema";
 import { getRecentTransactions } from "@/lib/queries/transactions/transactions-recent";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -22,7 +22,6 @@ export const TransactionApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
     async () => {

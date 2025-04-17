@@ -1,5 +1,5 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAssetPrice, updateAssetPrice } from "./asset-price";
@@ -41,7 +41,6 @@ const AssetPriceUpdateResponseSchema = t.Object({
 
 export const AssetPriceApi = new Elysia()
   .use(betterAuth)
-  .use(superJson)
   .get(
     "/:assetId",
     async ({ params: { assetId } }) => {

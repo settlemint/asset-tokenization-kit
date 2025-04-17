@@ -5,10 +5,12 @@ import { renderCompactNumber } from "../utils/format-compact";
 import { Widget } from "./widget";
 
 export async function PriceWidget() {
-  const t = await getTranslations("admin.dashboard.widgets");
-  const user = await getUser();
-  const { totalPrice } = await getTotalAssetPrice();
-  const locale = await getLocale();
+  const [t, user, locale] = await Promise.all([
+    getTranslations("admin.dashboard.widgets"),
+    getUser(),
+    getLocale(),
+  ]);
+  const { totalPrice } = await getTotalAssetPrice(user.currency);
 
   // Use the dashboard-specific formatter to get a compact display with full value
   const displayValue = renderCompactNumber({
