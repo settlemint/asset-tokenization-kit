@@ -54,7 +54,6 @@
     "helm:delete": "bun run helm:check-context && helm uninstall atk -n atk --wait && kubectl delete pvc --all -n atk && kubectl delete namespace atk",
     "helm:reset": "bun run helm:delete && bun run helm:install"
   },
-  "dependencies": {},
   "devDependencies": {
     "@settlemint/sdk-cli": "2.1.2",
     "prettier": "3.5.3",
