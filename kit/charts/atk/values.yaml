@@ -304,6 +304,12 @@ portal:
     - name: wait-for-postgres
       image: ghcr.io/settlemint/btp-waitforit:v7.7.3
       command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
+  podLabels:
+    app.kubernetes.io/component: portal
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3000"
+    prometheus.io/path: "/portal-metrics"
 
 support:
   enabled: true
@@ -543,4 +549,7 @@ dapp:
       timeoutSeconds: 10 # Max time per curl attempt
       connectTimeoutSeconds: 5 # Max time to connect
       retries: 24
+  podLabels:
+    app.kubernetes.io/component: dapp
+    kots.io/app-slug: settlemint-atk
 
