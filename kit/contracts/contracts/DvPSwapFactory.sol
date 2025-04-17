@@ -51,6 +51,10 @@ contract DvPSwapFactory is ReentrancyGuard, ERC2771Context {
         DvPSwap newSwapContract = new DvPSwap{ salt: finalSalt }(
             trustedForwarder()
         );
+        
+        // Grant roles to the message sender
+        newSwapContract.grantRole(newSwapContract.DEFAULT_ADMIN_ROLE(), _msgSender());
+        newSwapContract.grantRole(newSwapContract.PAUSER_ROLE(), _msgSender());
 
         swapContract = address(newSwapContract);
         isFactorySwap[swapContract] = true;
