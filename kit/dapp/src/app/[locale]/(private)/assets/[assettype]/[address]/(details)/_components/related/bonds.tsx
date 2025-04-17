@@ -47,6 +47,7 @@ export async function BondsRelated({
           symbol={assetDetails.symbol}
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
+          allowlist={assetUsersDetails?.allowlist ?? []}
         />
       </RelatedGridItem>
       <RelatedGridItem

@@ -330,6 +330,21 @@ export const depositData = {
   initialSupply: "0",
 };
 
+export const topUpData = {
+  amount: "1000",
+  pincode: pincode,
+};
+
+export const bondMintTokenData = {
+  amount: "1000",
+  pincode: pincode,
+};
+
+export const bondTransferData = {
+  transferAmount: "100",
+  pincode: pincode,
+};
+
 export const stableCoinUpdateCollateralData = {
   amount: "10000",
   pincode: pincode,
