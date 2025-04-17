@@ -31,11 +31,7 @@ serviceAccount:
 annotations: {}
 # Additional labels for the deployment pod metadata
 podLabels: {}
-podAnnotations:
-  # Example annotations (adjust as needed)
-  loki.io/scrape: "true"
-  prometheus.io/scrape: "false"
-  # backup.velero.io/backup-volumes: ""
+podAnnotations: {}
 
 podSecurityContext:
   fsGroup: 2016
