@@ -117,12 +117,14 @@ besu-network:
 
 erpc:
   enabled: true
+  image:
+    tag: "0.0.43"
   resources:
     requests:
       cpu: 100m
-      memory: 256Mi
-    limits:
       memory: 512Mi
+    limits:
+      memory: 1024Mi
   imagePullSecrets:
     - name: image-pull-secret-docker
     - name: image-pull-secret-ghcr
@@ -141,6 +143,30 @@ erpc:
       - id: settlemint
         upstreams:
           - endpoint: http://besu-node-rpc-1:8545
+            id: besu-node-rpc-1
+          - endpoint: http://besu-node-validator-1:8545
+            id: besu-node-validator-1
+    database:
+      evmJsonRpcCache:
+        # Define one or more storage connectors with unique IDs useful in policies
+        connectors:
+          - id: redis-cache
+            driver: redis # Refer to "redis" driver docs below
+            redis:
+              addr: redis-master.atk.svc.cluster.local:6379
+              password: "atk"
+              db: 0
+              connPoolSize: 128
+        policies:
+          - network: "*"
+            method: "*"
+            finality: finalized
+            connector: redis-cache
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "4001"
+  podLabels:
+    app.kubernetes.io/component: erpc
 
 
 blockscout:
@@ -151,6 +177,9 @@ blockscout:
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
     blockscout:
+      image:
+        repository: ghcr.io/blockscout/blockscout
+        tag: "8.0.0"
       # Add an extra init container to wait for PostgreSQL
       init:
         enabled: true
@@ -173,6 +202,9 @@ blockscout:
         API_URL: https://explorer.k8s.orb.local
         WEBAPP_URL: https://explorer.k8s.orb.local
     frontend:
+      image:
+        repository: ghcr.io/blockscout/frontend
+        tag: "v1.38.2"
       ingress:
         hostname: explorer.k8s.orb.local
 
