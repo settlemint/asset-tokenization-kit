@@ -242,6 +242,51 @@ type Deposit implements Asset @entity(immutable: false) {
 }
 
 # --------------------------------------------------
+# DvPSwap Contract
+# --------------------------------------------------
+
+type DvPSwap @entity(immutable: false) {
+  id: Bytes!
+  creator: Account!
+  createdAt: BigInt!
+  active: Boolean!
+  swapCount: Int!
+  totalValueLocked: BigDecimal!
+  totalValueLockedExact: BigInt!
+}
+
+# --------------------------------------------------
+# DvPSwap Factory
+# --------------------------------------------------
+
+type DvPSwapFactory @entity(immutable: false) {
+  id: Bytes!
+  asAccount: Account!
+  swapContractsCount: Int!
+}
+
+type Swap @entity(immutable: false) {
+  id: Bytes!
+  contract: DvPSwap!
+  factory: Factory
+  creator: Account!
+  sender: Account!
+  receiver: Account!
+  tokenToSend: Bytes!
+  tokenToReceive: Bytes!
+  amountToSend: BigDecimal!
+  amountToSendExact: BigInt!
+  amountToReceive: BigDecimal!
+  amountToReceiveExact: BigInt!
+  timelock: BigInt!
+  hashlock: Bytes!
+  status: String!
+  createdAt: BigInt!
+  maxDuration: BigInt!
+  updatedAt: BigInt!
+}
+
+# --------------------------------------------------
 # Accounts
 # --------------------------------------------------
 
@@ -746,6 +791,82 @@ type FixedYieldCreatedEvent @entity(immutable: true) {
   fixedYield: FixedYield!
 }
 
+# --------------------------------------------------
+# DvPSwap-Specific Events
+# --------------------------------------------------
+
+type DvPSwapContractCreatedEvent @entity(immutable: true) {
+  id: String!
+  eventName: String!
+  timestamp: BigInt!
+  factory: Bytes!
+  sender: Bytes!
+  swapContract: Bytes!
+  creator: Bytes!
+}
+
+type SwapCreatedEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  contract: DvPSwap!
+  sender: Account!
+  swap: Swap!
+  receiver: Account!
+  tokenToSend: Bytes!
+  tokenToReceive: Bytes!
+  amountToSend: BigDecimal!
+  amountToSendExact: BigInt!
+  amountToReceive: BigDecimal!
+  amountToReceiveExact: BigInt!
+  timelock: BigInt!
+  hashlock: Bytes!
+}
+
+type SwapStatusChangedEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  contract: DvPSwap!
+  sender: Account!
+  swap: Swap!
+  status: String!
+}
+
+type SwapClaimedEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  contract: DvPSwap!
+  sender: Account!
+  swap: Swap!
+  receiver: Account!
+  secret: Bytes!
+}
+
+type SwapRefundedEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  contract: DvPSwap!
+  sender: Account!
+  swap: Swap!
+  refundedTo: Account!
+}
+
+type TokensLockedEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  contract: DvPSwap!
+  sender: Account!
+  swap: Swap!
+  tokenAddress: Bytes!
+  amount: BigDecimal!
+  amountExact: BigInt!
+  lockTimestamp: BigInt!
+}
+
 """
 Entity for yield claimed events in FixedYield.
 Emitted when yield is claimed.
@@ -836,6 +957,47 @@ type AssetStats
   ## Collateral
   totalCollateral: BigDecimal! @aggregate(fn: "last", arg: "collateral")
   totalCollateralExact: BigInt! @aggregate(fn: "last", arg: "collateralExact")
+}
+
+# --------------------------------------------------
+# DvPSwap Statistics
+# --------------------------------------------------
+
+type DvPSwapStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  ## Filters
+  dvpSwap: DvPSwap!
+  ## Activity
+  swapsCreated: Int!
+  swapsClaimed: Int!
+  swapsRefunded: Int!
+  swapsExpired: Int!
+  swapsFailed: Int!
+  ## Value
+  valueLocked: BigDecimal!
+  valueLockedExact: BigInt!
+  valueUnlocked: BigDecimal!
+  valueUnlockedExact: BigInt!
+}
+
+type DvPSwapStats @aggregation(intervals: ["hour", "day"], source: "DvPSwapStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+  ## Filters
+  dvpSwap: DvPSwap!
+  ## Activity
+  count: Int8! @aggregate(fn: "count", cumulative: true)
+  totalSwapsCreated: Int! @aggregate(fn: "sum", arg: "swapsCreated")
+  totalSwapsClaimed: Int! @aggregate(fn: "sum", arg: "swapsClaimed")
+  totalSwapsRefunded: Int! @aggregate(fn: "sum", arg: "swapsRefunded")
+  totalSwapsExpired: Int! @aggregate(fn: "sum", arg: "swapsExpired")
+  totalSwapsFailed: Int! @aggregate(fn: "sum", arg: "swapsFailed")
+  ## Value
+  totalValueLocked: BigDecimal! @aggregate(fn: "last", arg: "valueLocked")
+  totalValueLockedExact: BigInt! @aggregate(fn: "last", arg: "valueLockedExact")
+  totalValueUnlocked: BigDecimal! @aggregate(fn: "sum", arg: "valueUnlocked")
+  totalValueUnlockedExact: BigInt! @aggregate(fn: "sum", arg: "valueUnlockedExact")
 }
 
 # --------------------------------------------------

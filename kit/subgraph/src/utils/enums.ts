@@ -6,6 +6,7 @@ export class AssetType {
   static cryptocurrency: string = "cryptocurrency";
   static fund: string = "fund";
   static deposit: string = "deposit";
+  static dvpswap: string = "dvpswap";
 }
 
 export class FactoryType {
@@ -16,6 +17,7 @@ export class FactoryType {
   static fund: string = "fund";
   static fixedyield: string = "fixedyield";
   static deposit: string = "deposit";
+  static dvpswap: string = "dvpswap";
 }
 
 export class EventName {
@@ -51,4 +53,23 @@ export class EventName {
   static UnderlyingAssetWithdrawn: string = "Underlying Asset Withdrawn";
   // Stablecoin specific events
   static CollateralUpdated: string = "Collateral Updated";
+  // DvPSwap specific events
+  static DvPSwapContractCreated: string = "DvPSwap Contract Created";
+  static SwapCreated: string = "Swap Created";
+  static SwapStatusChanged: string = "Swap Status Changed";
+  static SwapClaimed: string = "Swap Claimed";
+  static SwapRefunded: string = "Swap Refunded";
+  static TokensLocked: string = "Tokens Locked";
+}
+
+// Add DvPSwap status type enum
+export class SwapStatusType {
+  static PendingCreation: string = "PENDING_CREATION";
+  static Open: string = "OPEN";
+  static Claimed: string = "CLAIMED";
+  static Refunded: string = "REFUNDED";
+  static Expired: string = "EXPIRED";
+  static AwaitingApproval: string = "AWAITING_APPROVAL";
+  static AwaitingClaimSecret: string = "AWAITING_CLAIM_SECRET";
+  static Unknown: string = "UNKNOWN";
 }
