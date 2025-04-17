@@ -270,10 +270,24 @@ export const cryptocurrencyData = {
   name: generateCryptoName(),
   symbol: generateSymbol(generateCryptoName()),
   decimals: "6",
-  initialSupply: "1",
-  price: "100",
+  initialSupply: "100",
+  price: "10",
   pincode: pincode,
   sidebarAssetTypes: "Cryptocurrencies",
+};
+
+export const cryptocurrencyMintTokenData = {
+  amount: "100",
+  pincode: pincode,
+};
+
+export const cryptocurrencyDataAmountAfterMint = {
+  amount: "200",
+};
+
+export const cryptocurrencyTransferData = {
+  transferAmount: "100",
+  pincode: pincode,
 };
 
 export const equityData = {
