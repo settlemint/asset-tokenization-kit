@@ -31,6 +31,7 @@ export default async function AssetDetailLayout({
         manageDropdown={({
           assetDetails,
           userBalance,
+          userUnderlyingAssetBalance,
           assetUsersDetails,
           userAddress,
         }) => (
@@ -39,6 +40,7 @@ export default async function AssetDetailLayout({
             assettype={assettype}
             assetDetails={assetDetails}
             userBalance={userBalance}
+            userUnderlyingAssetBalance={userUnderlyingAssetBalance}
             assetUsersDetails={assetUsersDetails}
             userAddress={userAddress}
           />

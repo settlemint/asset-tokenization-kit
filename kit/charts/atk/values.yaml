@@ -117,6 +117,14 @@ besu-network:
 
 erpc:
   enabled: true
+  image:
+    tag: "0.0.43"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 1024Mi
   imagePullSecrets:
     - name: image-pull-secret-docker
     - name: image-pull-secret-ghcr
@@ -135,6 +143,30 @@ erpc:
       - id: settlemint
         upstreams:
           - endpoint: http://besu-node-rpc-1:8545
+            id: besu-node-rpc-1
+          - endpoint: http://besu-node-validator-1:8545
+            id: besu-node-validator-1
+    database:
+      evmJsonRpcCache:
+        # Define one or more storage connectors with unique IDs useful in policies
+        connectors:
+          - id: redis-cache
+            driver: redis # Refer to "redis" driver docs below
+            redis:
+              addr: redis-master.atk.svc.cluster.local:6379
+              password: "atk"
+              db: 0
+              connPoolSize: 128
+        policies:
+          - network: "*"
+            method: "*"
+            finality: finalized
+            connector: redis-cache
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "4001"
+  podLabels:
+    app.kubernetes.io/component: erpc
 
 
 blockscout:
@@ -145,6 +177,9 @@ blockscout:
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
     blockscout:
+      image:
+        repository: ghcr.io/blockscout/blockscout
+        tag: "8.0.0"
       # Add an extra init container to wait for PostgreSQL
       init:
         enabled: true
@@ -167,6 +202,9 @@ blockscout:
         API_URL: https://explorer.k8s.orb.local
         WEBAPP_URL: https://explorer.k8s.orb.local
     frontend:
+      image:
+        repository: ghcr.io/blockscout/frontend
+        tag: "v1.38.2"
       ingress:
         hostname: explorer.k8s.orb.local
 
@@ -251,6 +289,7 @@ thegraph:
 hasura:
   enabled: true
   graphql-engine:
+    replicas: 1
     global:
       imagePullSecrets:
         - name: image-pull-secret-docker
@@ -265,6 +304,12 @@ portal:
     - name: wait-for-postgres
       image: ghcr.io/settlemint/btp-waitforit:v7.7.3
       command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
+  podLabels:
+    app.kubernetes.io/component: portal
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3000"
+    prometheus.io/path: "/portal-metrics"
 
 support:
   enabled: true
@@ -307,6 +352,9 @@ support:
       - name: image-pull-secret-harbor
     controller:
       resources: {}
+  # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
+  reloader:
+    enabled: true
 
 observability:
   enabled: true
@@ -424,3 +472,84 @@ txsigner:
   #   requests:
   #     cpu: 225m
   #     memory: 384Mi
+
+# DApp Frontend Configuration
+dapp:
+  enabled: true
+  replicaCount: 1
+  # Override image settings if needed
+  image:
+    repository: ghcr.io/settlemint/asset-tokenization-kit
+    pullPolicy: IfNotPresent
+    tag: "1.0.2-main7a852a0b3"
+  ingress:
+    enabled: true
+    # IMPORTANT: Set the correct hostname for your environment
+    hosts:
+      - host: dapp.k8s.orb.local # Example hostname
+        paths:
+          - path: / # Adjust path if needed
+            pathType: ImplementationSpecific
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  secretEnv:
+    BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
+    NEXT_PUBLIC_APP_ID: "dapp"
+    NEXTAUTH_URL: "https://dapp.k8s.orb.local"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy.atk.svc.cluster.local:4318/v1/traces" # Adjust if needed
+    OTEL_EXPORTER_OTLP_PROTOCOL: "http"
+    SETTLEMINT_ACCESS_TOKEN: "dummy-key" # Placeholder - Should be configured
+    SETTLEMINT_APP_URL: "https://dapp.k8s.orb.local"
+    SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc.atk.svc.cluster.local/" # Placeholder
+    SETTLEMINT_HASURA_ADMIN_SECRET: "atk" # Placeholder
+    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura" # Placeholder
+    SETTLEMINT_HASURA_ENDPOINT: "https://hasura.atk.svc.cluster.local/v1/graphql" # Placeholder
+    SETTLEMINT_HD_PRIVATE_KEY: "dummy-key" # Placeholder
+    # SETTLEMINT_INSTANCE: "https://console.k8s.orb.local" # Placeholder
+    SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "https://portal.atk.svc.cluster.local/graphql" # Placeholder
+    SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"]'
+  initContainer:
+    # Generic TCP check settings
+    tcpCheck:
+      enabled: true
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+        tag: v7.7.3
+        pullPolicy: IfNotPresent
+      timeout: 0 # Timeout in seconds for each dependency check
+      dependencies:
+        # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
+        - name: postgres
+          endpoint: "postgresql-pgpool.atk.svc.cluster.local:5432"
+        - name: hasura
+          endpoint: "hasura.atk.svc.cluster.local:8080"
+        - name: portal
+          endpoint: "portal.atk.svc.cluster.local:3001"
+        - name: graph-node-tcp # Renamed to distinguish from graphQLCheck
+          endpoint: "graph-node-combined.atk.svc.cluster.local:8020" # Status API port (TCP check)
+        - name: blockscout # Add Blockscout if needed, determine correct service/port
+          endpoint: "blockscout-frontend-svc.atk.svc.cluster.local:80"
+
+    # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
+    graphQLCheck:
+      enabled: true
+      name: wait-for-graph-subgraph-kit # Name for the init container
+      image:
+        repository: curlimages/curl
+        tag: latest # Or pin to a specific version like 8.7.1
+        pullPolicy: IfNotPresent
+      # Target GraphQL endpoint URL (where POST requests are sent)
+      url: "http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"
+      query: '{ __typename }' # Basic query to check for GraphQL errors
+      retryDelaySeconds: 20
+      timeoutSeconds: 10 # Max time per curl attempt
+      connectTimeoutSeconds: 5 # Max time to connect
+      retries: 24
+  podLabels:
+    app.kubernetes.io/component: dapp
+    kots.io/app-slug: settlemint-atk
+

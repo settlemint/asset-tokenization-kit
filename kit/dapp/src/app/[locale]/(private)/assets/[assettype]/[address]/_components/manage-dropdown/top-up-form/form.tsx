@@ -5,6 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { FormStepElement } from "@/components/blocks/form/types";
 import { topUpUnderlyingAsset } from "@/lib/mutations/bond/top-up/top-up-action";
 import { TopUpSchema } from "@/lib/mutations/bond/top-up/top-up-schema";
+import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
@@ -21,6 +22,7 @@ interface TopUpFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   bondDetails: Awaited<ReturnType<typeof getBondDetail>>;
+  userUnderlyingAssetBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
 }
 
 export function TopUpForm({
@@ -30,13 +32,15 @@ export function TopUpForm({
   open,
   onOpenChange,
   bondDetails,
+  userUnderlyingAssetBalance,
 }: TopUpFormProps) {
   const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
-
-  const maxAmount = Number(bondDetails.underlyingAsset.totalSupply);
+  const maxAmount = userUnderlyingAssetBalance?.available
+    ? Number(userUnderlyingAssetBalance.available)
+    : 0;
 
   // Generate form steps based on yield schedule availability
   const renderFormSteps = () => {

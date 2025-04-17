@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Link } from "@/i18n/routing";
 import { usePendingTransactions } from "@/lib/hooks/use-pending-transactions";
 import { formatDate } from "@/lib/utils/date";
 import { useLocale, useTranslations } from "next-intl";
@@ -60,9 +61,18 @@ export function PendingTransactionsDropdown() {
         className="w-[350px] rounded-lg shadow-dropdown"
       >
         {pendingTransactions.length === 0 ? (
-          <div className="p-4 text-center text-sm text-muted-foreground">
-            {t("no-pending")}
-          </div>
+          <>
+            <div className="pt-4 text-center text-sm text-muted-foreground">
+              {t("no-pending")}
+            </div>
+            <Link
+              prefetch
+              href="/portfolio/my-activity"
+              className="pb-4 text-center mt-2 block text-muted-foreground text-sm hover:text-primary"
+            >
+              {t("view-activity")}
+            </Link>
+          </>
         ) : (
           <ScrollArea className="h-[400px]">
             <div className="space-y-2 p-2">

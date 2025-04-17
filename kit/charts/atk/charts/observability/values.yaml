@@ -293,10 +293,6 @@ alloy:
           role = "node"
         }
 
-        discovery.kubernetes "kubernetes_service_endpoints" {
-          role = "endpoints"
-        }
-
         discovery.relabel "kubernetes_nodes_cadvisor" {
           targets = discovery.kubernetes.kubernetes_nodes.targets
 
@@ -364,70 +360,6 @@ alloy:
           }
         }
 
-        discovery.relabel "kubernetes_service_endpoints" {
-          targets = discovery.kubernetes.kubernetes_service_endpoints.targets
-
-          rule {
-            source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_scrape"]
-            regex         = "true"
-            action        = "keep"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_scheme"]
-            regex         = "(https?)"
-            target_label  = "__scheme__"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_path"]
-            regex         = "(.+)"
-            target_label  = "__metrics_path__"
-          }
-
-          rule {
-            source_labels = ["__address__", "__meta_kubernetes_service_annotation_prometheus_io_port"]
-            regex         = "(.+?)(?::\\d+)?;(\\d+)"
-            target_label  = "__address__"
-            replacement   = "$1:$2"
-          }
-
-          rule {
-            regex       = "__meta_kubernetes_service_annotation_prometheus_io_param_(.+)"
-            replacement = "__param_$1"
-            action      = "labelmap"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_namespace"]
-            target_label  = "namespace"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_service_name"]
-            target_label  = "service"
-          }
-
-          rule {
-            regex       = "__meta_kubernetes_pod_label_uid"
-            action      = "labeldrop"
-          }
-
-          rule {
-            regex       = "__meta_kubernetes_pod_label_id"
-            action      = "labeldrop"
-          }
-
-          rule {
-            regex       = "__meta_kubernetes_pod_label_name"
-            action      = "labeldrop"
-          }
-
-          rule {
-            replacement  = "{{ .Values.clustername | default "settlemint" }}"
-            target_label = "cluster_name"
-          }
-        }
 
         prometheus.scrape "kubernetes_nodes_cadvisor" {
           targets         = discovery.relabel.kubernetes_nodes_cadvisor.output
@@ -501,18 +433,6 @@ alloy:
           targets = discovery.kubernetes.kubernetes_pods.targets
 
           rule {
-            source_labels = ["__meta_kubernetes_pod_label_name"]
-            regex         = "node-agent"
-            action        = "drop"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape", "__meta_kubernetes_pod_annotation_loki_io_scrape"]
-            regex         = "true;.*|.*;true"
-            action        = "keep"
-          }
-
-          rule {
             source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scheme"]
             regex         = "(https?)"
             target_label  = "__scheme__"
@@ -540,11 +460,6 @@ alloy:
           rule {
             source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_component"]
             target_label  = "component"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_label_settlemint_com_service_type"]
-            target_label  = "service_type"
           }
 
           rule {

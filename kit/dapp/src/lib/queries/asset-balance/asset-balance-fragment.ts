@@ -1,4 +1,7 @@
-import { PermissionFragment } from "@/lib/queries/asset/asset-users-fragment";
+import {
+  AllowedUserFragment,
+  PermissionFragment,
+} from "@/lib/queries/asset/asset-users-fragment";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import type { AssetBalance } from "./asset-balance-schema";
 
@@ -31,6 +34,7 @@ export const AssetBalanceFragment = theGraphGraphqlKit(
       admins { ...PermissionFragment }
       supplyManagers { ...PermissionFragment }
       userManagers { ...PermissionFragment }
+      allowlist { ...AllowedUserFragment }
       ... on StableCoin {
         paused
         auditors { ...PermissionFragment }
@@ -51,7 +55,7 @@ export const AssetBalanceFragment = theGraphGraphqlKit(
     }
   }
 `,
-  [PermissionFragment]
+  [PermissionFragment, AllowedUserFragment]
 );
 
 // Re-export the type

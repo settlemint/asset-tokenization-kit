@@ -37,8 +37,8 @@ class ChallengeError extends Error {
 }
 
 const CreateWalletVerificationChallengesMutation = portalGraphql(`
-  mutation CreateWalletVerificationChallenges($userWalletAddress: String!) {
-    createWalletVerificationChallenges(userWalletAddress: $userWalletAddress) {
+  mutation CreateWalletVerificationChallenges($userWalletAddress: String!, $verificationId: String!) {
+    createWalletVerificationChallenges(userWalletAddress: $userWalletAddress, verificationId: $verificationId) {
       challenge
       id
       name
@@ -124,6 +124,7 @@ export async function handleChallenge(
         CreateWalletVerificationChallengesMutation,
         {
           userWalletAddress,
+          verificationId: user.pincodeVerificationId,
         }
       );
 
@@ -134,17 +135,19 @@ export async function handleChallenge(
       );
     }
 
-    const firstChallenge =
+    const walletVerificationChallenge =
       verificationChallenges.createWalletVerificationChallenges.find(
-        (challenge) => challenge.verificationType === "PINCODE"
+        (challenge) => challenge.id === user.pincodeVerificationId
       );
-    const challenge = firstChallenge?.challenge;
 
-    if (!challenge?.secret || !challenge?.salt) {
+    if (
+      !walletVerificationChallenge?.challenge?.secret ||
+      !walletVerificationChallenge?.challenge?.salt
+    ) {
       throw new ChallengeError("Invalid challenge format", "INVALID_CHALLENGE");
     }
 
-    const { secret, salt } = challenge;
+    const { secret, salt } = walletVerificationChallenge.challenge;
     const challengeResponse = await generateChallengeResponse(
       Number(code),
       salt,

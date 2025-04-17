@@ -2,6 +2,7 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import { createEquity } from "@/lib/mutations/equity/create/create-action";
 import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
@@ -12,7 +13,6 @@ import { AssetAdmins } from "../common/asset-admins/asset-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
-
 interface CreateEquityFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -29,7 +29,7 @@ export function CreateEquityForm({
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
   const { data: session } = authClient.useSession();
-
+  const router = useRouter();
   return (
     <FormSheet
       open={open ?? localOpen}
@@ -57,6 +57,17 @@ export function CreateEquityForm({
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
+        }}
+        toastMessages={{
+          action: (input) => {
+            const assetId = input?.predictedAddress;
+            return assetId
+              ? {
+                  label: t("toast-action.equities"),
+                  onClick: () => router.push(`/assets/equity/${assetId}`),
+                }
+              : undefined;
+          },
         }}
       >
         <Basics />

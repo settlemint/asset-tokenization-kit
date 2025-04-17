@@ -2,6 +2,10 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "tasks": {
+    "helm:deps": {
+      "inputs": ["kit/charts/atk/Chart.yaml", "kit/charts/atk/Chart.lock"],
+      "outputs": ["kit/charts/atk/charts/*.tgz"]
+    },
     "codegen": {
       "dependsOn": ["codegen:settlemint", "codegen:gql-tada", "codegen:graph"],
       "outputs": ["*.d.ts", "src/lib/settlemint/**", "generated/**"]

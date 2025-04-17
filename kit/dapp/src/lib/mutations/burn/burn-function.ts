@@ -5,7 +5,6 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
-import { withAccessControl } from "../../utils/access-control";
 import type { BurnInput } from "./burn-schema";
 
 /**
@@ -100,80 +99,71 @@ const DepositBurn = portalGraphql(`
  * @param user - The user initiating the burn operation
  * @returns The transaction hash
  */
-export const burnFunction = withAccessControl(
-  {
-    requiredPermissions: {
-      asset: ["manage"],
-    },
+export const burnFunction = async ({
+  parsedInput: {
+    address,
+    verificationCode,
+    verificationType,
+    amount,
+    assettype,
   },
-  async ({
-    parsedInput: {
-      address,
-      verificationCode,
-      verificationType,
-      amount,
-      assettype,
+  ctx: { user },
+}: {
+  parsedInput: BurnInput;
+  ctx: { user: User };
+}) => {
+  // Get token details based on asset type
+  const { decimals } = await getAssetDetail({
+    address,
+    assettype,
+  });
+
+  // Common parameters for all mutations
+  const params: VariablesOf<
+    | typeof BondBurn
+    | typeof EquityBurn
+    | typeof FundBurn
+    | typeof StableCoinBurn
+    | typeof DepositBurn
+  > = {
+    address,
+    from: user.wallet,
+    input: {
+      value: parseUnits(amount.toString(), decimals).toString(),
     },
-    ctx: { user },
-  }: {
-    parsedInput: BurnInput;
-    ctx: { user: User };
-  }) => {
-    // Get token details based on asset type
-    const { decimals } = await getAssetDetail({
-      address,
-      assettype,
-    });
+    ...(await handleChallenge(
+      user,
+      user.wallet,
+      verificationCode,
+      verificationType
+    )),
+  };
 
-    // Common parameters for all mutations
-    const params: VariablesOf<
-      | typeof BondBurn
-      | typeof EquityBurn
-      | typeof FundBurn
-      | typeof StableCoinBurn
-      | typeof DepositBurn
-    > = {
-      address,
-      from: user.wallet,
-      input: {
-        value: parseUnits(amount.toString(), decimals).toString(),
-      },
-      ...(await handleChallenge(
-        user,
-        user.wallet,
-        verificationCode,
-        verificationType
-      )),
-    };
-
-    switch (assettype) {
-      case "bond": {
-        const response = await portalClient.request(BondBurn, params);
-        return safeParse(t.Hashes(), [response.BondBurn?.transactionHash]);
-      }
-      case "cryptocurrency": {
-        throw new Error("Cryptocurrency does not support burn operations");
-      }
-      case "equity": {
-        const response = await portalClient.request(EquityBurn, params);
-        return safeParse(t.Hashes(), [response.EquityBurn?.transactionHash]);
-      }
-      case "fund": {
-        const response = await portalClient.request(FundBurn, params);
-        return safeParse(t.Hashes(), [response.FundBurn?.transactionHash]);
-      }
-      case "stablecoin": {
-        const response = await portalClient.request(StableCoinBurn, params);
-        return safeParse(t.Hashes(), [
-          response.StableCoinBurn?.transactionHash,
-        ]);
-      }
-      case "deposit": {
-        const response = await portalClient.request(DepositBurn, params);
-        return safeParse(t.Hashes(), [response.DepositBurn?.transactionHash]);
-      }
-      default:
-        throw new Error("Invalid asset type");
+  switch (assettype) {
+    case "bond": {
+      const response = await portalClient.request(BondBurn, params);
+      return safeParse(t.Hashes(), [response.BondBurn?.transactionHash]);
     }
+    case "cryptocurrency": {
+      throw new Error("Cryptocurrency does not support burn operations");
+    }
+    case "equity": {
+      const response = await portalClient.request(EquityBurn, params);
+      return safeParse(t.Hashes(), [response.EquityBurn?.transactionHash]);
+    }
+    case "fund": {
+      const response = await portalClient.request(FundBurn, params);
+      return safeParse(t.Hashes(), [response.FundBurn?.transactionHash]);
+    }
+    case "stablecoin": {
+      const response = await portalClient.request(StableCoinBurn, params);
+      return safeParse(t.Hashes(), [response.StableCoinBurn?.transactionHash]);
+    }
+    case "deposit": {
+      const response = await portalClient.request(DepositBurn, params);
+      return safeParse(t.Hashes(), [response.DepositBurn?.transactionHash]);
+    }
+    default:
+      throw new Error("Invalid asset type");
   }
-);
+};

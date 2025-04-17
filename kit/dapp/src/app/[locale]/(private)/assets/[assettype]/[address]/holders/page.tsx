@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
@@ -13,9 +14,10 @@ interface PageProps {
 
 export default async function BondHoldersPage({ params }: PageProps) {
   const { address, assettype } = await params;
-  const [balances, assetDetails] = await Promise.all([
+  const [balances, assetDetails, assetUsersDetails] = await Promise.all([
     getAssetBalanceList({ address }),
     getAssetDetail({ address, assettype }),
+    getAssetUsersDetail({ address }),
   ]);
 
   let maxMint: number | undefined = undefined;
@@ -33,6 +35,7 @@ export default async function BondHoldersPage({ params }: PageProps) {
         maxMint,
         decimals: assetDetails.decimals,
         price: assetDetails.price,
+        allowList: assetUsersDetails.allowlist,
       }}
       columns={columns}
       data={balances}

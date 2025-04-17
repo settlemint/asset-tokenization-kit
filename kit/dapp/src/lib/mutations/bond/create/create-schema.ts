@@ -89,9 +89,6 @@ export function CreateBondSchema({
           message: "Address already in use",
         },
       }),
-      price: t.Price({
-        description: "Price of the bond",
-      }),
       assetAdmins: AssetAdminsSchemaFragment(),
     },
     {

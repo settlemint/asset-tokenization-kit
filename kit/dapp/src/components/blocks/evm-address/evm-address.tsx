@@ -30,6 +30,7 @@ interface EvmAddressProps extends PropsWithChildren {
   address: Address;
   name?: string;
   symbol?: string;
+  showAssetType?: boolean;
   /** The URL of the blockchain explorer (optional). */
   explorerUrl?: string;
   prefixLength?: number;
@@ -71,6 +72,7 @@ function EvmAddressInner({
   verbose = false,
   hoverCard = true,
   copyToClipboard = false,
+  showAssetType = false,
 }: EvmAddressProps) {
   // Get the address name cache
   const { setNameForAddress } = useAddressNameCache();
@@ -147,6 +149,7 @@ function EvmAddressInner({
           size={iconSize}
           email={displayEmail}
         />
+
         {!displayName && (
           <span className="font-mono">
             {shortHex(getAddress(address), { prefixLength, suffixLength })}
@@ -162,6 +165,11 @@ function EvmAddressInner({
               <Badge className="font-mono">
                 {shortHex(getAddress(address), { prefixLength, suffixLength })}
               </Badge>
+            )}
+            {showAssetType && asset?.type && (
+              <span className="text-muted-foreground text-xs">
+                ({asset.type})
+              </span>
             )}
           </span>
         )}
@@ -200,6 +208,7 @@ function EvmAddressInner({
                 email={displayEmail}
                 className="row-span-2"
               />
+
               <div className="flex flex-col">
                 <span className="font-mono">{getAddress(address)}</span>
                 {displayName && (
@@ -208,6 +217,11 @@ function EvmAddressInner({
                     {symbol && (
                       <span className="text-muted-foreground text-xs">
                         ({symbol})
+                      </span>
+                    )}
+                    {showAssetType && asset?.type && (
+                      <span className="text-muted-foreground text-xs">
+                        ({asset.type})
                       </span>
                     )}
                   </span>

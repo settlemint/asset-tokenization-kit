@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dapp.fullname" . }}
+  labels:
+    {{- include "dapp.labels" . | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+    {{- with .Values.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "dapp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "dapp.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "dapp.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+
+      {{- /* Define initContainers block only if needed */}}
+      {{- if or .Values.initContainer.tcpCheck.enabled .Values.initContainer.graphQLCheck.enabled }}
+      initContainers:
+
+        {{- /* Add Generic TCP Checks if enabled */}}
+        {{- if .Values.initContainer.tcpCheck.enabled }}
+          {{- range .Values.initContainer.tcpCheck.dependencies }}
+        - name: wait-for-{{ .name }}
+          image: "{{ $.Values.initContainer.tcpCheck.image.repository }}:{{ $.Values.initContainer.tcpCheck.image.tag }}"
+          imagePullPolicy: {{ $.Values.initContainer.tcpCheck.image.pullPolicy }}
+          command: ['/usr/bin/wait-for-it', '{{ tpl .endpoint $ }}', '-t', '{{ $.Values.initContainer.tcpCheck.timeout }}']
+          resources: # Optional: Define minimal resources for init containers
+            limits:
+              cpu: 100m
+              memory: 64Mi
+            requests:
+              cpu: 50m
+              memory: 32Mi
+          {{- end }}
+        {{- end }}
+
+        {{- /* Add GraphQL Check if enabled */}}
+        {{- if .Values.initContainer.graphQLCheck.enabled }}
+        - name: {{ .Values.initContainer.graphQLCheck.name | default "wait-for-graphql" }}
+          image: "{{ .Values.initContainer.graphQLCheck.image.repository }}:{{ .Values.initContainer.graphQLCheck.image.tag }}"
+          imagePullPolicy: {{ .Values.initContainer.graphQLCheck.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              attempts=0
+              max_attempts={{ .Values.initContainer.graphQLCheck.retries | default 24 }}
+              url="{{ .Values.initContainer.graphQLCheck.url }}"
+              query='{"query":"{{ .Values.initContainer.graphQLCheck.query | default "{ __typename }" }}"}'
+              delay={{ .Values.initContainer.graphQLCheck.retryDelaySeconds | default 5 }}
+              connect_timeout={{ .Values.initContainer.graphQLCheck.connectTimeoutSeconds | default 5 }}
+              max_time={{ .Values.initContainer.graphQLCheck.timeoutSeconds | default 10 }}
+
+              echo "Waiting for GraphQL endpoint at $url to be ready..."
+              until [ "$attempts" -ge "$max_attempts" ]
+              do
+                curl --fail --silent --show-error --connect-timeout "$connect_timeout" --max-time "$max_time" \
+                  -X POST -H "Content-Type: application/json" --data "$query" \
+                  "$url" \
+                  | grep -q -v '"errors"' && \
+                  echo "GraphQL endpoint $url is ready." && exit 0
+
+                attempts=$((attempts+1))
+                echo "GraphQL endpoint not ready (attempt $attempts/$max_attempts). Retrying in ${delay}s..."
+                sleep "$delay"
+              done
+              echo "Error: GraphQL endpoint $url did not become ready after $max_attempts attempts."
+              exit 1
+          resources: # Optional: Define minimal resources for this init container
+            limits:
+              memory: 64Mi
+            requests:
+              cpu: 10m
+              memory: 12Mi
+        {{- end }}
+
+      {{- end }} {{- /* End of 'if or' for initContainers */}}
+
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.secretEnv }}
+          envFrom:
+            - secretRef:
+                name: {{ include "dapp.fullname" . }}-env
+          {{- end }}
+          {{- if .Values.env }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+            successThreshold: {{ .Values.probes.liveness.successThreshold }}
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
+            successThreshold: {{ .Values.probes.readiness.successThreshold }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

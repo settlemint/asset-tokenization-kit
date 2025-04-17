@@ -2,6 +2,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { MintInput } from "@/lib/mutations/mint/mint-schema";
 import { formatNumber } from "@/lib/utils/number";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
@@ -9,18 +10,27 @@ interface AmountProps {
   max?: number;
   decimals?: number;
   symbol: string;
+  assettype: AssetType;
 }
 
-export function Amount({ max, decimals, symbol }: AmountProps) {
+export function Amount({ max, decimals, symbol, assettype }: AmountProps) {
   const { control } = useFormContext<MintInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();
 
-  const noCollateralAvailable = max === 0;
-  const description = noCollateralAvailable
-    ? t("max-limit.mint-no-collateral")
+  const mintLimitReached = max === 0;
+  const description = mintLimitReached
+    ? assettype === "stablecoin" || assettype === "deposit"
+      ? t("max-limit.mint-no-collateral")
+      : t("max-limit.mint-no-amount")
     : max
-      ? t("max-limit.mint", { limit: formatNumber(max, { locale }) })
+      ? assettype === "stablecoin" || assettype === "deposit"
+        ? t("max-limit.collateral-available", {
+            limit: formatNumber(max, { locale }),
+          })
+        : t("max-limit.amount-available", {
+            limit: formatNumber(max, { locale }),
+          })
       : undefined;
 
   return (
@@ -35,7 +45,7 @@ export function Amount({ max, decimals, symbol }: AmountProps) {
         description={description}
         required
         postfix={symbol}
-        disabled={noCollateralAvailable}
+        disabled={mintLimitReached}
       />
     </FormStep>
   );

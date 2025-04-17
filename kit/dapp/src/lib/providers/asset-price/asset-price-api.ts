@@ -2,7 +2,7 @@ import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
-import { getAssetPrice, updateAssetPrice } from "./asset-price";
+import { getAssetPriceInBaseCurrency, updateAssetPrice } from "./asset-price";
 
 const AssetPriceResponseSchema = t.Object({
   id: t.String({
@@ -44,7 +44,7 @@ export const AssetPriceApi = new Elysia()
   .get(
     "/:assetId",
     async ({ params: { assetId } }) => {
-      const price = await getAssetPrice(assetId);
+      const price = await getAssetPriceInBaseCurrency(assetId);
       return {
         id: assetId,
         price,

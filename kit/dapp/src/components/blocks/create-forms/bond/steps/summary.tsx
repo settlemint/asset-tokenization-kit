@@ -2,11 +2,9 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { useSettings } from "@/hooks/use-settings";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
 import { formatDate } from "@/lib/utils/date";
-import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
@@ -18,7 +16,6 @@ export function Summary() {
     control: control,
   });
   const t = useTranslations("private.assets.create");
-  const baseCurrency = useSettings("baseCurrency");
   const locale = useLocale();
 
   return (
@@ -76,13 +73,6 @@ export function Summary() {
               "-"
             )
           }
-        />
-        <FormSummaryDetailItem
-          label={t("parameters.common.price-label")}
-          value={formatNumber(values.price?.amount || 0, {
-            currency: values.price?.currency || baseCurrency,
-            locale: locale,
-          })}
         />
       </FormSummaryDetailCard>
 
