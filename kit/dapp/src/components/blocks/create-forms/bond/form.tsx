@@ -2,6 +2,7 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { useRouter } from "@/i18n/routing";
 import { createBond } from "@/lib/mutations/bond/create/create-action";
 import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
@@ -24,6 +25,7 @@ export function CreateBondForm({
   onOpenChange,
   asButton = false,
 }: CreateBondFormProps) {
+  const router = useRouter();
   const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
@@ -57,6 +59,17 @@ export function CreateBondForm({
           verificationType: "pincode",
           predictedAddress: "0x0000000000000000000000000000000000000000",
           assetAdmins: [],
+        }}
+        toastMessages={{
+          action: (input) => {
+            const assetId = input?.predictedAddress;
+            return assetId
+              ? {
+                  label: t("toast-action.bonds"),
+                  onClick: () => router.push(`/assets/bond/${assetId}`),
+                }
+              : undefined;
+          },
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);

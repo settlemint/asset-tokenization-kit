@@ -1156,6 +1156,14 @@
             "stablecoins": "Issue a new stablecoin",
             "deposits": "Issue a new deposit"
           },
+          "toast-action": {
+            "bonds": "View bond",
+            "cryptocurrencies": "View cryptocurrency",
+            "equities": "View equity",
+            "funds": "View fund",
+            "stablecoins": "View stablecoin",
+            "deposits": "View deposit"
+          },
           "steps": {
             "asset-admins": {
               "title": "Asset permissions",
