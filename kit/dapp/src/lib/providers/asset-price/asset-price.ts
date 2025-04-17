@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { asset, assetPrice } from "@/lib/db/schema-assets";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
-import { getSetting } from "@/lib/queries/setting/setting-detail";
+import { getSettingValue } from "@/lib/queries/setting/setting-detail";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { withTracing } from "@/lib/utils/tracing";
 import { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
@@ -107,7 +107,9 @@ export const getAssetPriceInBaseCurrency = withTracing(
         return null;
       }
 
-      const { value: baseCurrency } = await getSetting({ key: "baseCurrency" });
+      const { value: baseCurrency } = await getSettingValue({
+        key: "baseCurrency",
+      });
       const exchangeRate = await getExchangeRate(
         price.currency,
         baseCurrency as CurrencyCode
