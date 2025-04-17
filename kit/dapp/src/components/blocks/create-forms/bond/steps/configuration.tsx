@@ -1,20 +1,14 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
-import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
-import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Configuration() {
   const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
-  const currencyOptions = fiatCurrencies.map((currency) => ({
-    value: currency,
-    label: currency,
-  }));
 
   return (
     <FormStep
@@ -52,21 +46,6 @@ export function Configuration() {
           description={t("parameters.bonds.underlying-asset-description")}
           required
         />
-        <FormInput
-          control={control}
-          type="number"
-          name="price.amount"
-          required
-          label={t("parameters.common.price-label")}
-          postfix={
-            <FormSelect
-              name="price.currency"
-              control={control}
-              options={currencyOptions}
-              className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
-            />
-          }
-        />
       </div>
     </FormStep>
   );
@@ -91,7 +70,7 @@ const validateMaturityDate = async (form: UseFormReturn<CreateBondInput>) => {
     // error formatting mechanism that automatically handles translations
     form.setError("maturityDate", {
       type: "manual",
-      message: "private.assets.create.parameters.bonds.maturity-date-error"
+      message: "private.assets.create.parameters.bonds.maturity-date-error",
     });
 
     return false;
@@ -104,7 +83,6 @@ Configuration.validatedFields = [
   "cap",
   "faceValue",
   "underlyingAsset",
-  "price",
 ] satisfies (keyof CreateBondInput)[];
 
 // Using customValidation as TypeBox refinement doesn't work well with @hookform/typebox resolver

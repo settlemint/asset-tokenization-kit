@@ -1736,6 +1736,7 @@
         "total-supply-info": "The total supply of the asset",
         "underlying-asset": "Underlying asset",
         "underlying-asset-balance": "Underlying asset balance",
+        "bonds-price": "Price of the underlying asset multiplied by the face value",
         "wallet-header": "Wallet",
         "yield-type": "Yield type"
       },

@@ -22,7 +22,7 @@ const testData = {
   bondName: "",
 };
 
-test.describe("Update collateral, mint and transfer assets", () => {
+test.describe("Create, top up, mint and transfer bonds", () => {
   test.describe.configure({ mode: "serial" });
   let userContext: BrowserContext | undefined;
   let transferUserContext: BrowserContext | undefined;
@@ -90,7 +90,7 @@ test.describe("Update collateral, mint and transfer assets", () => {
     });
   });
 
-  test("User creates bond", async () => {
+  test("Admin user creates bond", async () => {
     const bondDataWithStablecoin = {
       ...bondData,
       underlyingAsset: testData.stablecoinName,
@@ -108,7 +108,7 @@ test.describe("Update collateral, mint and transfer assets", () => {
     });
   });
 
-  test("User update collateral and mint stablecoin", async () => {
+  test("Admin user update collateral and mint stablecoin", async () => {
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
       name: testData.stablecoinName,
@@ -140,7 +140,7 @@ test.describe("Update collateral, mint and transfer assets", () => {
     );
   });
 
-  test("User top up and mint bond", async () => {
+  test("Admin user top up and mint bond", async () => {
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: bondData.sidebarAssetTypes,
       name: testData.bondName,
@@ -167,7 +167,7 @@ test.describe("Update collateral, mint and transfer assets", () => {
     await adminPages.adminPage.verifyTotalSupply(topUpData.amount);
   });
 
-  test("Transfer bonds to user and verify balance", async () => {
+  test("Admin user transfer bonds to user and verify balance", async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.bondName,
       walletAddress: testData.transferUserWalletAddress,

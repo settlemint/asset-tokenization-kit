@@ -9,7 +9,6 @@ import { formatDate } from "@/lib/utils/date";
 import { grantRolesToAdmins } from "@/lib/utils/role-granting";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
-import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateBondInput } from "./create-schema";
 
 /**
@@ -78,7 +77,6 @@ export const createBondFunction = withAccessControl(
       maturityDate,
       underlyingAsset,
       predictedAddress,
-      price,
       assetAdmins,
     },
     ctx: { user },
@@ -95,12 +93,6 @@ export const createBondFunction = withAccessControl(
     await hasuraClient.request(CreateOffchainBond, {
       id: predictedAddress,
       isin: isin,
-    });
-
-    await hasuraClient.request(AddAssetPrice, {
-      assetId: predictedAddress,
-      amount: String(price.amount),
-      currency: price.currency,
     });
 
     const createBondResult = await portalClient.request(BondFactoryCreate, {

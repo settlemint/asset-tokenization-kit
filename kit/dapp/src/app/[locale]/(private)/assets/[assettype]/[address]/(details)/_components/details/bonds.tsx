@@ -139,7 +139,7 @@ export async function BondsDetails({
           locale: locale,
         })}
       </DetailGridItem>
-      <DetailGridItem label={t("price")}>
+      <DetailGridItem label={t("price")} info={t("bonds-price")}>
         {formatNumber(bond.price.amount, {
           currency: bond.price.currency,
           decimals: 2,

@@ -3,7 +3,6 @@
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { useRouter } from "@/i18n/routing";
-import { authClient } from "@/lib/auth/client";
 import { createBond } from "@/lib/mutations/bond/create/create-action";
 import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
@@ -31,7 +30,6 @@ export function CreateBondForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
   return (
     <FormSheet
       open={open ?? localOpen}
@@ -57,10 +55,6 @@ export function CreateBondForm({
           label: t("trigger-label.bonds"),
         }}
         defaultValues={{
-          price: {
-            amount: 1,
-            currency: session?.user.currency,
-          },
           maturityDate: getTomorrowMidnight(),
           verificationType: "pincode",
           predictedAddress: "0x0000000000000000000000000000000000000000",
