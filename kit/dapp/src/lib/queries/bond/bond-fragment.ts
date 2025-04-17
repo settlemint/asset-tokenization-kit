@@ -7,7 +7,6 @@ export const YieldPeriodFragment = theGraphGraphqlKit(`
     periodId
     startDate
     endDate
-    rate
     totalClaimed
     totalClaimedExact
   }

@@ -24,10 +24,7 @@ export async function YieldDetails({ address }: DetailsProps) {
 
   const yieldPerPeriod = yieldSchedule.periods[0]?.totalClaimed ?? "0";
   const ratePercentage = Number(yieldSchedule.rate) / 100;
-  const periodCount = Math.floor(
-    (Number(yieldSchedule.endDate) - Number(yieldSchedule.startDate)) /
-      Number(yieldSchedule.interval)
-  );
+  const periodCount = yieldSchedule.periods.length;
 
   const intervalPeriod = secondsToInterval(yieldSchedule.interval.toString());
   // Use the translation from the interval options section

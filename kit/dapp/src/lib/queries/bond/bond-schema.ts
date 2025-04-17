@@ -170,9 +170,6 @@ export const OnChainBondSchema = t.Object(
                     description:
                       "The end date of the yield period as a timestamp",
                   }),
-                  rate: t.StringifiedBigInt({
-                    description: "The yield rate for this period",
-                  }),
                   totalClaimed: t.BigDecimal({
                     description:
                       "The total claimed yield for this period in a human-readable decimal format",
