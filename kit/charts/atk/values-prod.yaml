@@ -135,8 +135,33 @@ erpc:
       - id: settlemint
         upstreams:
           - endpoint: http://besu-node-rpc-1:8545
+            id: besu-node-rpc-1
+          - endpoint: http://besu-node-validator-1:8545
+            id: besu-node-validator-1
           - endpoint: http://besu-node-rpc-2:8545
-
+            id: besu-node-rpc-2
+          - endpoint: http://besu-node-validator-2:8545
+            id: besu-node-validator-2
+          - endpoint: http://besu-node-validator-3:8545
+            id: besu-node-validator-3
+          - endpoint: http://besu-node-validator-4:8545
+            id: besu-node-validator-4
+    database:
+      evmJsonRpcCache:
+        # Define one or more storage connectors with unique IDs useful in policies
+        connectors:
+          - id: redis-cache
+            driver: redis # Refer to "redis" driver docs below
+            redis:
+              addr: redis-master.atk.svc.cluster.local:6379
+              password: "atk"
+              db: 0
+              connPoolSize: 128
+        policies:
+          - network: "*"
+            method: "*"
+            finality: finalized
+            connector: redis-cache
 
 blockscout:
   enabled: true
