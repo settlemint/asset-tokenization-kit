@@ -494,7 +494,7 @@ export function Form<
                 />
               )}
             </div>
-            <div className="mt-auto pt-6">
+            <div className="mt-auto pt-6 mb-6">
               <FormButton
                 hideButtons={
                   typeof hideButtons === "function"
