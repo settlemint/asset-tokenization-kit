@@ -1395,7 +1395,8 @@
               "withdraw": "Withdraw"
             },
             "errors": {
-              "supply-manager-required": "Supply manager role required"
+              "supply-manager-required": "Supply manager role required",
+              "not-in-allowlist-error": "User is not on the allowlist for this asset. A user manager must add the user to the allowlist to proceed."
             }
           },
           "roles": {

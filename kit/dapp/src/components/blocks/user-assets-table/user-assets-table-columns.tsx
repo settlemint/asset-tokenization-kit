@@ -1,19 +1,31 @@
 "use client";
 
-import { BlockForm } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/block-form/form';
-import { hasBlocklist, hasFreeze } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled';
-import { MintForm } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/mint-form/form';
-import { FreezeForm } from '@/app/[locale]/(private)/assets/[assettype]/[address]/holders/_components/actions/freeze-form/form';
+import { BlockForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/block-form/form";
+import {
+  hasAllowlist,
+  hasBlocklist,
+  hasFreeze,
+} from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled";
+import { MintForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/mint-form/form";
+import { FreezeForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/holders/_components/actions/freeze-form/form";
 import { AssetStatusPill } from "@/components/blocks/asset-status-pill/asset-status-pill";
-import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
+import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { AssetBalance } from "@/lib/queries/asset-balance/asset-balance-schema";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { assetTypes } from "@/lib/utils/typebox/asset-types";
-import { type ColumnMeta, createColumnHelper } from '@tanstack/react-table';
-import { ActivityIcon, AsteriskIcon, ClockIcon, InfoIcon, MoreHorizontal, ShapesIcon, WalletIcon } from 'lucide-react';
+import { type ColumnMeta, createColumnHelper } from "@tanstack/react-table";
+import {
+  ActivityIcon,
+  AsteriskIcon,
+  ClockIcon,
+  InfoIcon,
+  MoreHorizontal,
+  ShapesIcon,
+  WalletIcon,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { ColumnAssetType } from "../asset-info/column-asset-type";
 import { ColumnHolderType } from "../asset-info/column-holder-type";
@@ -230,9 +242,17 @@ export function Columns() {
                     max={row.original.asset.totalSupply}
                     decimals={row.original.asset.decimals}
                     symbol={row.original.asset.symbol}
+                    allowlist={row.original.asset.allowlist ?? []}
                   />
                 ),
-                disabled: row.original.asset.paused || row.original.asset.totalSupply === 0,
+                disabled:
+                  row.original.asset.paused ||
+                  row.original.asset.totalSupply === 0 ||
+                  (hasAllowlist(row.original.asset.type) &&
+                    !row.original.asset.allowlist?.some(
+                      (allowlist) =>
+                        allowlist.user.id === row.original.account.id
+                    )),
               },
             ]}
           />
