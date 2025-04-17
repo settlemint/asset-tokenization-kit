@@ -609,7 +609,8 @@
       "contract": "Contract",
       "hash": "Hash",
       "function": "Function",
-      "created": "Created"
+      "created": "Created",
+      "view-activity": "View your activity"
     }
   },
   "creator-owner": "Creator / Owner",
