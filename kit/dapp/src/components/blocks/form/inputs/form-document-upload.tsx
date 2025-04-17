@@ -1,5 +1,6 @@
 "use client";
 
+import { uploadDocumentAction } from "@/app/actions/upload-document";
 import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import {
   Accordion,
@@ -102,6 +103,9 @@ export function FormDocumentUpload<T extends FieldValues>({
   const [documents, setDocuments] = useState<Document[]>([]);
   const [activeUpload, setActiveUpload] = useState<Document | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [progressInterval, setProgressInterval] =
+    useState<NodeJS.Timeout | null>(null);
 
   const parentForm = useFormContext<T>();
   const t = useTranslations("components.form.document-upload");
@@ -122,7 +126,7 @@ export function FormDocumentUpload<T extends FieldValues>({
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
 
-      // Validate file format (allow PDF and JPEG)
+      // Validate file format
       if (acceptedFormats.length > 0 && !acceptedFormats.includes(file.type)) {
         setFileError(t("invalid-file-format"));
         return;
@@ -136,6 +140,7 @@ export function FormDocumentUpload<T extends FieldValues>({
       }
 
       setSelectedFile(file);
+      uploadForm.setValue("file", file);
     }
   };
 
@@ -158,8 +163,29 @@ export function FormDocumentUpload<T extends FieldValues>({
     setIsDialogOpen(false);
   };
 
-  const uploadDocument = async (data: DocumentUploadFormValues) => {
+  const startProgressSimulation = (documentId: string) => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 5;
+      if (progress >= 95) {
+        clearInterval(interval);
+        return;
+      }
+
+      setUploadProgress(progress);
+      setDocuments((prev) =>
+        prev.map((doc) => (doc.id === documentId ? { ...doc, progress } : doc))
+      );
+    }, 200);
+
+    setProgressInterval(interval);
+    return interval;
+  };
+
+  const uploadDocument = async () => {
     if (!selectedFile || fileError) return;
+
+    const data = uploadForm.getValues();
 
     // Create document object with initial uploading state
     const newDocument: Document = {
@@ -179,89 +205,47 @@ export function FormDocumentUpload<T extends FieldValues>({
     setDocuments((prev) => [...prev, newDocument]);
     closeUploadDialog();
 
+    // Start progress simulation
+    const interval = startProgressSimulation(newDocument.id);
+
     try {
-      // Simulate upload progress (since the real progress isn't tracked by the API)
-      const simulateProgress = () => {
-        let progress = 0;
-        const interval = setInterval(() => {
-          progress += 5;
-          if (progress >= 95) {
-            // Only go up to 95% for simulation
-            clearInterval(interval);
-            return;
-          }
-
-          setDocuments((prev) =>
-            prev.map((doc) =>
-              doc.id === newDocument.id ? { ...doc, progress } : doc
-            )
-          );
-        }, 200);
-
-        return () => clearInterval(interval);
-      };
-
-      const clearProgressSimulation = simulateProgress();
-
-      console.log(
-        "EXACT MATCH: Using the storage-demo approach with empty path"
-      );
-
-      // CRITICAL: Using EXACTLY the same approach as storage-demo
+      // Prepare FormData for server action
       const formData = new FormData();
       formData.append("file", selectedFile);
-      // Use empty path just like storage-demo does by default
-      formData.append("path", "");
+      formData.append("title", data.title);
+      formData.append("description", data.description || "");
+      formData.append("type", data.type);
 
-      console.log("Uploading with formData:", {
-        fileName: selectedFile.name,
-        fileSize: selectedFile.size,
-        fileType: selectedFile.type,
-        path: "", // Empty path to match storage-demo default
-      });
-
-      // Use exactly the same fetch approach
-      const response = await fetch("/api/storage", {
-        method: "POST",
-        body: formData,
-      });
-
-      // Log the response status and headers
-      console.log("Upload response status:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Upload error details:", errorText);
-        throw new Error(`Upload failed with status ${response.status}`);
-      }
-
-      // Get the result
-      const result = await response.json();
-      console.log("Upload success! Result:", result);
+      // Call server action directly and cast the response
+      // The server action returns an object with id, name, url, title, description, and type
+      const response = await uploadDocumentAction(formData);
 
       // Clear the progress simulation
-      clearProgressSimulation();
+      if (interval) clearInterval(interval);
+      setProgressInterval(null);
 
-      // Update document with success
+      // Type assertion to access response data
+      // We know from our server action definition what properties should exist
+      const responseData = response as unknown as {
+        id: string;
+        name: string;
+        url: string;
+        title: string;
+        description?: string;
+        type: string;
+      };
+
+      // Update document with success state
       const updatedDocument: Document = {
         ...newDocument,
         status: "complete",
         progress: 100,
-        downloadUrl: result.file?.url || "",
+        downloadUrl: responseData.url,
       };
 
       setDocuments((prev) =>
         prev.map((doc) => (doc.id === newDocument.id ? updatedDocument : doc))
       );
-
-      console.log("Document uploaded successfully:", {
-        id: result.file?.id,
-        fileName: result.file?.name,
-        title: data.title,
-        type: data.type,
-        description: data.description,
-        url: result.file?.url,
-      });
 
       // Notify parent component
       if (onDocumentUploaded) {
@@ -288,6 +272,7 @@ export function FormDocumentUpload<T extends FieldValues>({
       );
     } finally {
       setActiveUpload(null);
+      setUploadProgress(0);
     }
   };
 
@@ -609,14 +594,12 @@ export function FormDocumentUpload<T extends FieldValues>({
                   </Button>
                   <Button
                     type="button"
-                    onClick={uploadForm.handleSubmit(uploadDocument)}
+                    onClick={uploadDocument}
                     disabled={
-                      !selectedFile ||
-                      !!fileError ||
-                      uploadForm.formState.isSubmitting
+                      !selectedFile || !!fileError || activeUpload !== null
                     }
                   >
-                    {uploadForm.formState.isSubmitting
+                    {activeUpload !== null
                       ? t("uploading-document", {
                           defaultValue: "Uploading...",
                         })
