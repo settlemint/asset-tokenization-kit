@@ -304,7 +304,6 @@ type YieldPeriod @entity(immutable: false) {
   periodId: BigInt!
   startDate: BigInt!
   endDate: BigInt!
-  rate: BigInt!
   totalClaimed: BigDecimal!
   totalClaimedExact: BigInt!
 }
