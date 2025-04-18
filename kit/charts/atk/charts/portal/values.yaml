@@ -11,7 +11,7 @@ image:
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "8.4.0"
+  tag: "8.4.1"
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
@@ -134,7 +134,7 @@ initContainers:
 network:
   networkId: "53771311147"
   networkName: "ATK"
-  nodeRpcUrl: http://besu-loadbalancer:4000
+  nodeRpcUrl: http://erpc:4000
 
 postgresql: postgresql://portal:atk@postgresql-pgpool:5432/portal?sslmode=disable
 

@@ -630,7 +630,8 @@
       "contract": "Contract",
       "hash": "Hash",
       "function": "Function",
-      "created": "Created"
+      "created": "Created",
+      "view-activity": "View your activity"
     }
   },
   "creator-owner": "Creator / Owner",
@@ -1179,6 +1180,14 @@
             "stablecoins": "Issue a new stablecoin",
             "deposits": "Issue a new deposit"
           },
+          "toast-action": {
+            "bonds": "View bond",
+            "cryptocurrencies": "View cryptocurrency",
+            "equities": "View equity",
+            "funds": "View fund",
+            "stablecoins": "View stablecoin",
+            "deposits": "View deposit"
+          },
           "steps": {
             "asset-admins": {
               "title": "Asset permissions",
@@ -1346,8 +1355,10 @@
               "burn": "Balance available to burn: {limit}",
               "burn-no-balance": "No balance available for burning.",
               "freeze": "Balance available to freeze: {limit}",
-              "mint": "Collateral available to mint: {limit}",
+              "collateral-available": "Collateral available to mint: {limit}",
+              "amount-available": "Amount available to mint: {limit}",
               "mint-no-collateral": "No collateral available. Add collateral before minting.",
+              "mint-no-amount": "The maximum supply has been reached, cannot mint more assets.",
               "top-up": "Supply available to top up: {limit}",
               "top-up-no-supply": "No supply available to top up.",
               "withdraw": "Underlying balance available to withdraw: {limit}",
@@ -1416,7 +1427,8 @@
               "withdraw": "Withdraw"
             },
             "errors": {
-              "supply-manager-required": "Supply manager role required"
+              "supply-manager-required": "Supply manager role required",
+              "not-in-allowlist-error": "User is not on the allowlist for this asset. A user manager must add the user to the allowlist to proceed."
             }
           },
           "roles": {
@@ -1748,6 +1760,7 @@
         "total-supply-info": "The total supply of the asset",
         "underlying-asset": "Underlying asset",
         "underlying-asset-balance": "Underlying asset balance",
+        "bonds-price": "Price of the underlying asset multiplied by the face value",
         "wallet-header": "Wallet",
         "yield-type": "Yield type"
       },

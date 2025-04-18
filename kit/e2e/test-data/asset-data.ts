@@ -270,10 +270,24 @@ export const cryptocurrencyData = {
   name: generateCryptoName(),
   symbol: generateSymbol(generateCryptoName()),
   decimals: "6",
-  initialSupply: "1",
-  price: "100",
+  initialSupply: "100",
+  price: "10",
   pincode: pincode,
   sidebarAssetTypes: "Cryptocurrencies",
+};
+
+export const cryptocurrencyMintTokenData = {
+  amount: "100",
+  pincode: pincode,
+};
+
+export const cryptocurrencyDataAmountAfterMint = {
+  amount: "200",
+};
+
+export const cryptocurrencyTransferData = {
+  transferAmount: "100",
+  pincode: pincode,
 };
 
 export const equityData = {
@@ -288,6 +302,16 @@ export const equityData = {
   pincode: pincode,
   sidebarAssetTypes: "Equities",
   initialSupply: "0",
+};
+
+export const equityMintTokenData = {
+  amount: "1500",
+  pincode: pincode,
+};
+
+export const equityTransferData = {
+  transferAmount: "500",
+  pincode: pincode,
 };
 
 export const fundData = {
@@ -328,6 +352,21 @@ export const depositData = {
   pincode: pincode,
   sidebarAssetTypes: "Deposits",
   initialSupply: "0",
+};
+
+export const topUpData = {
+  amount: "1000",
+  pincode: pincode,
+};
+
+export const bondMintTokenData = {
+  amount: "1000",
+  pincode: pincode,
+};
+
+export const bondTransferData = {
+  transferAmount: "100",
+  pincode: pincode,
 };
 
 export const stableCoinUpdateCollateralData = {
