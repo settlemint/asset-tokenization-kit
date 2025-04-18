@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { AssetTypeSelection } from "./steps/asset-type-selection";
@@ -109,7 +108,7 @@ export function AssetDesignerDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-[90vw] max-h-[90vh] h-full w-full p-0 overflow-hidden">
+      <DialogContent className="max-h-screen h-screen w-screen p-0 overflow-hidden rounded-none border-none right-0 !max-w-screen">
         <div className="flex h-full flex-col">
           {/* Header */}
           <DialogHeader className="py-4 px-6 border-b flex-row justify-between items-center">
@@ -117,15 +116,6 @@ export function AssetDesignerDialog({
               <DialogTitle className="text-xl">{getAssetTitle()}</DialogTitle>
               <DialogDescription>{getAssetDescription()}</DialogDescription>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => onOpenChange(false)}
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </Button>
           </DialogHeader>
 
           {/* Main content area with sidebar */}
