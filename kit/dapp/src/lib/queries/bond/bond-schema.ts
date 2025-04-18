@@ -58,26 +58,6 @@ export const YieldScheduleSchema = t.Object({
   unclaimedYieldExact: t.StringifiedBigInt({
     description: "The exact unclaimed yield as a raw big integer",
   }),
-  underlyingAsset: t.Object(
-    {
-      id: t.EthereumAddress({
-        description: "The address of the underlying asset for yield payments",
-      }),
-      symbol: t.String({
-        description: "The symbol of the underlying asset",
-      }),
-      decimals: t.Decimals({
-        description:
-          "The number of decimal places used by the underlying asset",
-      }),
-      type: t.AssetType({
-        description: "The type of the underlying asset",
-      }),
-    },
-    {
-      description: "Information about the underlying asset for yield payments",
-    }
-  ),
   underlyingBalance: t.BigDecimal({
     description:
       "The underlying asset balance in a human-readable decimal format",

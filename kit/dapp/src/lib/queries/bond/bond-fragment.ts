@@ -24,12 +24,6 @@ export const YieldScheduleFragment = theGraphGraphqlKit(
     totalClaimedExact
     unclaimedYield
     unclaimedYieldExact
-    underlyingAsset {
-      id
-      symbol
-      decimals
-      type
-    }
     underlyingBalance
     underlyingBalanceExact
     periods {
