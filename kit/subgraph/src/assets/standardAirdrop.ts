@@ -1,4 +1,4 @@
-import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 import {
   AirdropClaim,
   AirdropClaimIndex,
@@ -12,10 +12,9 @@ import {
   TokensWithdrawn,
 } from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
 
-// Assuming helper functions exist in utils
-import { loadOrCreateAccount } from "../utils/account";
-import { ZERO_BD, ZERO_BI } from "../utils/constants";
-import { toBigDecimal } from "../utils/decimals";
+// Use fetchAccount and direct constants
+import { fetchAccount } from "../../fetch/account";
+import { toDecimals } from "../../utils/decimals";
 
 // Handler for individual Claimed events
 export function handleClaimed(event: Claimed): void {
@@ -52,8 +51,8 @@ export function handleClaimed(event: Claimed): void {
     amount.toString(),
   ]);
 
-  let claimantAccount = loadOrCreateAccount(claimantAddress);
-  let amountBD = toBigDecimal(amount, token.decimals);
+  let claimantAccount = fetchAccount(claimantAddress);
+  let amountBD = toDecimals(amount, token.decimals);
 
   // Create AirdropClaim entity
   let claimId = event.transaction.hash.concatI32(event.logIndex.toI32());
@@ -77,8 +76,8 @@ export function handleClaimed(event: Claimed): void {
     recipient.airdrop = airdrop.id;
     recipient.recipient = claimantAccount.id;
     recipient.firstClaimedTimestamp = event.block.timestamp;
-    recipient.totalClaimedByRecipient = ZERO_BD;
-    recipient.totalClaimedByRecipientExact = ZERO_BI;
+    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
+    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
     // Increment unique recipient count on airdrop
     airdrop.totalRecipients = airdrop.totalRecipients + 1;
   }
@@ -136,8 +135,8 @@ export function handleBatchClaimed(event: BatchClaimed): void {
     ]
   );
 
-  let claimantAccount = loadOrCreateAccount(claimantAddress);
-  let totalAmountBD = toBigDecimal(totalAmount, token.decimals);
+  let claimantAccount = fetchAccount(claimantAddress);
+  let totalAmountBD = toDecimals(totalAmount, token.decimals);
 
   // Create AirdropClaim entity
   let claimId = event.transaction.hash.concatI32(event.logIndex.toI32());
@@ -161,8 +160,8 @@ export function handleBatchClaimed(event: BatchClaimed): void {
     recipient.airdrop = airdrop.id;
     recipient.recipient = claimantAccount.id;
     recipient.firstClaimedTimestamp = event.block.timestamp;
-    recipient.totalClaimedByRecipient = ZERO_BD;
-    recipient.totalClaimedByRecipientExact = ZERO_BI;
+    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
+    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
     // Increment unique recipient count on airdrop
     airdrop.totalRecipients = airdrop.totalRecipients + 1;
   }
@@ -174,7 +173,6 @@ export function handleBatchClaimed(event: BatchClaimed): void {
   recipient.save();
 
   // Create/Update AirdropClaimIndex entities (Inaccurately - without individual amounts)
-  let claimIndices: Bytes[] = [];
   for (let i = 0; i < indices.length; i++) {
     let index = indices[i];
     let claimIndexId = airdrop.id.toHex() + "-" + index.toString();
@@ -184,8 +182,8 @@ export function handleBatchClaimed(event: BatchClaimed): void {
       claimIndex.index = index;
       claimIndex.airdrop = airdrop.id;
       claimIndex.recipient = recipient.id; // Associated recipient
-      claimIndex.amount = ZERO_BD; // Unknown
-      claimIndex.amountExact = ZERO_BI; // Unknown
+      claimIndex.amount = BigDecimal.fromString("0");
+      claimIndex.amountExact = BigInt.fromI32(0);
       claimIndex.claim = claim.id;
       claimIndex.timestamp = event.block.timestamp;
       claimIndex.save();
@@ -196,11 +194,9 @@ export function handleBatchClaimed(event: BatchClaimed): void {
       claimIndex.timestamp = event.block.timestamp;
       claimIndex.save();
     }
-    claimIndices.push(claimIndex.id);
   }
   // Link indices to the claim event (even though amounts are unknown)
-  // claim.indices = claimIndices; // This expects Bytes[] but schema expects derived relation
-  claim.save(); // Resave claim if needed
+  claim.save();
 
   // Update Airdrop totals
   airdrop.totalClaims = airdrop.totalClaims + 1; // Count as one batch claim event

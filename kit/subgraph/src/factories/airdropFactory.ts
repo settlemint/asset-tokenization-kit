@@ -1,4 +1,10 @@
-import { Address, Bytes, log } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  log,
+} from "@graphprotocol/graph-ts";
 
 import {
   AirdropFactory,
@@ -24,19 +30,20 @@ import { StandardAirdrop as StandardAirdropContract } from "../../generated/temp
 import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../generated/templates/VestingAirdropTemplate/LinearVestingStrategy";
 import { VestingAirdrop as VestingAirdropContract } from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
 
-// Assuming helper functions exist in utils
-import { loadOrCreateAccount } from "../utils/account";
-import { ONE_BI, ZERO_BD, ZERO_BI } from "../utils/constants";
+// Use fetchAccount instead of loadOrCreateAccount
+import { fetchAccount } from "../fetch/account"; // Corrected import path and function
+// Constants are replaced with direct values
+// Removed unused decimal import
 
 export function handleStandardAirdropDeployed(
   event: StandardAirdropDeployed
 ): void {
   let factoryAddress = event.address;
   let factoryContract = AirdropFactoryContract.bind(factoryAddress);
-  let factoryEntity = loadOrCreateAirdropFactory(factoryAddress); // Helper ensures factory entity exists
+  let factoryEntity = loadOrCreateAirdropFactory(factoryAddress); // Keep helper for factory itself
 
   factoryEntity.totalAirdropsDeployed =
-    factoryEntity.totalAirdropsDeployed.plus(ONE_BI);
+    factoryEntity.totalAirdropsDeployed.plus(BigInt.fromI32(1)); // Use BigInt.fromI32(1)
   factoryEntity.save();
 
   let airdropAddress = event.params.airdropContract;
@@ -55,7 +62,7 @@ export function handleStandardAirdropDeployed(
 
   // Create entities
   let airdrop = new StandardAirdrop(airdropAddress);
-  let owner = loadOrCreateAccount(ownerAddress);
+  let owner = fetchAccount(ownerAddress); // Use fetchAccount
   let token = Asset.load(tokenAddress); // Assuming token is already indexed
 
   if (!token) {
@@ -71,8 +78,8 @@ export function handleStandardAirdropDeployed(
   airdrop.owner = owner.id;
   airdrop.deployedOn = event.block.timestamp;
   airdrop.deploymentTx = event.transaction.hash;
-  airdrop.totalClaimed = ZERO_BD;
-  airdrop.totalClaimedExact = ZERO_BI;
+  airdrop.totalClaimed = BigDecimal.fromString("0"); // Use BigDecimal.fromString("0")
+  airdrop.totalClaimedExact = BigInt.fromI32(0); // Use BigInt.fromI32(0)
   airdrop.totalRecipients = 0;
   airdrop.totalClaims = 0;
   airdrop.isWithdrawn = false;
@@ -82,15 +89,13 @@ export function handleStandardAirdropDeployed(
   // Fetch TrustedForwarder from Factory state
   let trustedForwarderResult = factoryContract.try_trustedForwarder();
   if (!trustedForwarderResult.reverted) {
-    airdrop.trustedForwarder = loadOrCreateAccount(
-      trustedForwarderResult.value
-    ).id;
+    airdrop.trustedForwarder = fetchAccount(trustedForwarderResult.value).id; // Use fetchAccount
   } else {
     log.error(
       "Failed to fetch trustedForwarder for Factory {} while creating StandardAirdrop {}",
       [factoryAddress.toHex(), airdropAddress.toHex()]
     );
-    airdrop.trustedForwarder = loadOrCreateAccount(Address.zero()).id; // Default/Placeholder
+    airdrop.trustedForwarder = fetchAccount(Address.zero()).id; // Use fetchAccount, still might need placeholder handling if zero account fetch fails
   }
 
   // Fetch details from the newly deployed StandardAirdrop contract
@@ -113,7 +118,7 @@ export function handleStandardAirdropDeployed(
     log.error("Failed to fetch startTime for StandardAirdrop {}", [
       airdropAddress.toHex(),
     ]);
-    airdrop.startTime = ZERO_BI; // Default value
+    airdrop.startTime = BigInt.fromI32(0); // Use BigInt.fromI32(0)
   }
   if (!endTimeResult.reverted) {
     airdrop.endTime = endTimeResult.value;
@@ -121,7 +126,7 @@ export function handleStandardAirdropDeployed(
     log.error("Failed to fetch endTime for StandardAirdrop {}", [
       airdropAddress.toHex(),
     ]);
-    airdrop.endTime = ZERO_BI; // Default value
+    airdrop.endTime = BigInt.fromI32(0); // Use BigInt.fromI32(0)
   }
   // ---------------------------- //
 
@@ -143,7 +148,7 @@ export function handleVestingAirdropDeployed(
   let factoryEntity = loadOrCreateAirdropFactory(factoryAddress);
 
   factoryEntity.totalAirdropsDeployed =
-    factoryEntity.totalAirdropsDeployed.plus(ONE_BI);
+    factoryEntity.totalAirdropsDeployed.plus(BigInt.fromI32(1)); // Use BigInt.fromI32(1)
   factoryEntity.save();
 
   let airdropAddress = event.params.airdropContract;
@@ -164,7 +169,7 @@ export function handleVestingAirdropDeployed(
 
   // Create entities
   let airdrop = new VestingAirdrop(airdropAddress);
-  let owner = loadOrCreateAccount(ownerAddress);
+  let owner = fetchAccount(ownerAddress); // Use fetchAccount
   let token = Asset.load(tokenAddress);
   let strategy = new LinearVestingStrategy(strategyAddress); // Assuming Linear for now
 
@@ -180,15 +185,15 @@ export function handleVestingAirdropDeployed(
 
   // Fetch TrustedForwarder from Factory state
   let trustedForwarderResult = factoryContract.try_trustedForwarder();
-  let trustedForwarderAccount = Address.zero();
+  let trustedForwarderAccountAddress = Address.zero(); // Store address temporarily
   if (!trustedForwarderResult.reverted) {
-    trustedForwarderAccount = trustedForwarderResult.value;
+    trustedForwarderAccountAddress = trustedForwarderResult.value;
   } else {
     log.error(
       "Failed to fetch trustedForwarder for Factory {} while creating VestingAirdrop {}",
       [factoryAddress.toHex(), airdropAddress.toHex()]
     );
-    // Keep trustedForwarderAccount as Address.zero()
+    // Keep trustedForwarderAccountAddress as Address.zero()
   }
 
   // Fetch details from the newly deployed LinearVestingStrategy contract
@@ -201,7 +206,7 @@ export function handleVestingAirdropDeployed(
   strategy.airdrop = airdrop.id;
 
   if (!strategyOwnerResult.reverted) {
-    strategy.owner = loadOrCreateAccount(strategyOwnerResult.value).id;
+    strategy.owner = fetchAccount(strategyOwnerResult.value).id; // Use fetchAccount
   } else {
     log.error(
       "Failed to fetch owner for Strategy {}. Using airdrop owner as fallback.",
@@ -215,7 +220,7 @@ export function handleVestingAirdropDeployed(
     log.error("Failed to fetch vestingDuration for Strategy {}", [
       strategyAddress.toHex(),
     ]);
-    strategy.vestingDuration = ZERO_BI;
+    strategy.vestingDuration = BigInt.fromI32(0); // Use BigInt.fromI32(0)
   }
   if (!cliffDurationResult.reverted) {
     strategy.cliffDuration = cliffDurationResult.value;
@@ -223,7 +228,7 @@ export function handleVestingAirdropDeployed(
     log.error("Failed to fetch cliffDuration for Strategy {}", [
       strategyAddress.toHex(),
     ]);
-    strategy.cliffDuration = ZERO_BI;
+    strategy.cliffDuration = BigInt.fromI32(0); // Use BigInt.fromI32(0)
   }
   strategy.save();
 
@@ -237,13 +242,13 @@ export function handleVestingAirdropDeployed(
   airdrop.owner = owner.id;
   airdrop.deployedOn = event.block.timestamp;
   airdrop.deploymentTx = event.transaction.hash;
-  airdrop.totalClaimed = ZERO_BD;
-  airdrop.totalClaimedExact = ZERO_BI;
+  airdrop.totalClaimed = BigDecimal.fromString("0"); // Use BigDecimal.fromString("0")
+  airdrop.totalClaimedExact = BigInt.fromI32(0); // Use BigInt.fromI32(0)
   airdrop.totalRecipients = 0;
   airdrop.totalClaims = 0;
   airdrop.isWithdrawn = false;
   airdrop.strategy = strategy.id;
-  airdrop.trustedForwarder = loadOrCreateAccount(trustedForwarderAccount).id; // Use fetched or zero address
+  airdrop.trustedForwarder = fetchAccount(trustedForwarderAccountAddress).id; // Use fetchAccount with the fetched/zero address
 
   if (!merkleRootResult.reverted) {
     airdrop.merkleRoot = merkleRootResult.value;
@@ -259,7 +264,7 @@ export function handleVestingAirdropDeployed(
     log.error("Failed to fetch claimPeriodEnd for VestingAirdrop {}", [
       airdropAddress.toHex(),
     ]);
-    airdrop.claimPeriodEnd = ZERO_BI;
+    airdrop.claimPeriodEnd = BigInt.fromI32(0); // Use BigInt.fromI32(0)
   }
   // ---------------------------- //
 
@@ -275,11 +280,12 @@ export function handleVestingAirdropDeployed(
 }
 
 // Helper function to ensure AirdropFactory entity exists
+// This one is local to this file as it's specific to the factory itself
 function loadOrCreateAirdropFactory(factoryAddress: Address): AirdropFactory {
   let factory = AirdropFactory.load(factoryAddress);
   if (!factory) {
     factory = new AirdropFactory(factoryAddress);
-    factory.totalAirdropsDeployed = ZERO_BI;
+    factory.totalAirdropsDeployed = BigInt.fromI32(0); // Use BigInt.fromI32(0)
     factory.save();
   }
   return factory;

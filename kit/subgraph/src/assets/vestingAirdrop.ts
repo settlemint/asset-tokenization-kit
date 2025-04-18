@@ -1,24 +1,23 @@
-import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 import {
   AirdropClaim,
   AirdropClaimIndex,
   AirdropRecipient,
   Asset,
+  LinearVestingStrategy,
+  UserVestingData,
   VestingAirdrop,
 } from "../../generated/schema";
+import { VestingInitialized } from "../../generated/templates/VestingAirdropTemplate/LinearVestingStrategy";
 import {
   BatchClaimed,
   Claimed,
   TokensWithdrawn,
 } from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
-// Potentially import Strategy events/bindings if handled here
 
-// Assuming helper functions exist in utils
-import { loadOrCreateAccount } from "../utils/account";
-import { ZERO_BD, ZERO_BI } from "../utils/constants";
-import { toBigDecimal } from "../utils/decimals";
+import { fetchAccount } from "../../fetch/account";
+import { toDecimals } from "../../utils/decimals";
 
-// Handler for individual Claimed events
 export function handleClaimed(event: Claimed): void {
   let airdropAddress = event.address;
   let airdrop = VestingAirdrop.load(airdropAddress);
@@ -40,33 +39,29 @@ export function handleClaimed(event: Claimed): void {
     return;
   }
 
-  let claimantAddress = event.params.claimant; // indexed address
+  let claimantAddress = event.params.claimant;
   let amount = event.params.amount;
-  // NOTE: Same issue as StandardAirdrop - Claimed event lacks index.
 
   log.info(
     "Claimed event processed (Vesting): Airdrop {}, Claimant {}, Amount {}",
     [airdropAddress.toHex(), claimantAddress.toHex(), amount.toString()]
   );
 
-  let claimantAccount = loadOrCreateAccount(claimantAddress);
-  let amountBD = toBigDecimal(amount, token.decimals);
+  let claimantAccount = fetchAccount(claimantAddress);
+  let amountBD = toDecimals(amount, token.decimals);
 
-  // Create AirdropClaim entity
   let claimId = event.transaction.hash.concatI32(event.logIndex.toI32());
   let claim = new AirdropClaim(claimId);
   claim.airdrop = airdrop.id;
   claim.claimant = claimantAccount.id;
   claim.totalAmount = amountBD;
   claim.totalAmountExact = amount;
-  // claim.indices = []; // Cannot populate from this event
   claim.timestamp = event.block.timestamp;
   claim.txHash = event.transaction.hash;
   claim.blockNumber = event.block.number;
   claim.logIndex = event.logIndex;
   claim.save();
 
-  // Update or Create AirdropRecipient
   let recipientId = airdrop.id.concat(claimantAccount.id);
   let recipient = AirdropRecipient.load(recipientId);
   if (!recipient) {
@@ -74,8 +69,8 @@ export function handleClaimed(event: Claimed): void {
     recipient.airdrop = airdrop.id;
     recipient.recipient = claimantAccount.id;
     recipient.firstClaimedTimestamp = event.block.timestamp;
-    recipient.totalClaimedByRecipient = ZERO_BD;
-    recipient.totalClaimedByRecipientExact = ZERO_BI;
+    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
+    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
     airdrop.totalRecipients = airdrop.totalRecipients + 1;
   }
   recipient.lastClaimedTimestamp = event.block.timestamp;
@@ -85,17 +80,12 @@ export function handleClaimed(event: Claimed): void {
     recipient.totalClaimedByRecipientExact.plus(amount);
   recipient.save();
 
-  // Update Airdrop totals
   airdrop.totalClaims = airdrop.totalClaims + 1;
   airdrop.totalClaimed = airdrop.totalClaimed.plus(amountBD);
   airdrop.totalClaimedExact = airdrop.totalClaimedExact.plus(amount);
   airdrop.save();
-
-  // Potentially update UserVestingData if strategy interaction happens here
-  // Requires more context on how VestingAirdrop interacts with strategy events/state
 }
 
-// Handler for BatchClaimed events
 export function handleBatchClaimed(event: BatchClaimed): void {
   let airdropAddress = event.address;
   let airdrop = VestingAirdrop.load(airdropAddress);
@@ -117,10 +107,9 @@ export function handleBatchClaimed(event: BatchClaimed): void {
     return;
   }
 
-  let claimantAddress = event.params.claimant; // indexed address
+  let claimantAddress = event.params.claimant;
   let totalAmount = event.params.totalAmount;
   let indices = event.params.indices;
-  // NOTE: Same issue as StandardAirdrop - BatchClaimed event lacks individual amounts.
 
   log.info(
     "BatchClaimed event processed (Vesting): Airdrop {}, Claimant {}, TotalAmount {}, IndicesCount {}",
@@ -132,24 +121,21 @@ export function handleBatchClaimed(event: BatchClaimed): void {
     ]
   );
 
-  let claimantAccount = loadOrCreateAccount(claimantAddress);
-  let totalAmountBD = toBigDecimal(totalAmount, token.decimals);
+  let claimantAccount = fetchAccount(claimantAddress);
+  let totalAmountBD = toDecimals(totalAmount, token.decimals);
 
-  // Create AirdropClaim entity
   let claimId = event.transaction.hash.concatI32(event.logIndex.toI32());
   let claim = new AirdropClaim(claimId);
   claim.airdrop = airdrop.id;
   claim.claimant = claimantAccount.id;
   claim.totalAmount = totalAmountBD;
   claim.totalAmountExact = totalAmount;
-  // claim.indices = []; // Cannot populate accurately
   claim.timestamp = event.block.timestamp;
   claim.txHash = event.transaction.hash;
   claim.blockNumber = event.block.number;
   claim.logIndex = event.logIndex;
   claim.save();
 
-  // Update or Create AirdropRecipient
   let recipientId = airdrop.id.concat(claimantAccount.id);
   let recipient = AirdropRecipient.load(recipientId);
   if (!recipient) {
@@ -157,8 +143,8 @@ export function handleBatchClaimed(event: BatchClaimed): void {
     recipient.airdrop = airdrop.id;
     recipient.recipient = claimantAccount.id;
     recipient.firstClaimedTimestamp = event.block.timestamp;
-    recipient.totalClaimedByRecipient = ZERO_BD;
-    recipient.totalClaimedByRecipientExact = ZERO_BI;
+    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
+    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
     airdrop.totalRecipients = airdrop.totalRecipients + 1;
   }
   recipient.lastClaimedTimestamp = event.block.timestamp;
@@ -168,8 +154,6 @@ export function handleBatchClaimed(event: BatchClaimed): void {
     recipient.totalClaimedByRecipientExact.plus(totalAmount);
   recipient.save();
 
-  // Create/Update AirdropClaimIndex entities (Inaccurately)
-  let claimIndices: Bytes[] = [];
   for (let i = 0; i < indices.length; i++) {
     let index = indices[i];
     let claimIndexId = airdrop.id.toHex() + "-" + index.toString();
@@ -179,31 +163,24 @@ export function handleBatchClaimed(event: BatchClaimed): void {
       claimIndex.index = index;
       claimIndex.airdrop = airdrop.id;
       claimIndex.recipient = recipient.id;
-      claimIndex.amount = ZERO_BD; // Unknown
-      claimIndex.amountExact = ZERO_BI; // Unknown
+      claimIndex.amount = BigDecimal.fromString("0");
+      claimIndex.amountExact = BigInt.fromI32(0);
       claimIndex.claim = claim.id;
       claimIndex.timestamp = event.block.timestamp;
       claimIndex.save();
     } else {
-      claimIndex.claim = claim.id; // Link to this claim event
+      claimIndex.claim = claim.id;
       claimIndex.timestamp = event.block.timestamp;
       claimIndex.save();
     }
-    claimIndices.push(claimIndex.id);
   }
-  // claim.indices = claimIndices; // Derived relation
-  claim.save();
 
-  // Update Airdrop totals
   airdrop.totalClaims = airdrop.totalClaims + 1;
   airdrop.totalClaimed = airdrop.totalClaimed.plus(totalAmountBD);
   airdrop.totalClaimedExact = airdrop.totalClaimedExact.plus(totalAmount);
   airdrop.save();
-
-  // Potentially update UserVestingData here based on strategy interaction
 }
 
-// Handler for TokensWithdrawn events
 export function handleTokensWithdrawn(event: TokensWithdrawn): void {
   let airdropAddress = event.address;
   let airdrop = VestingAirdrop.load(airdropAddress);
@@ -229,55 +206,50 @@ export function handleTokensWithdrawn(event: TokensWithdrawn): void {
   airdrop.save();
 }
 
-// Example Handler for VestingInitialized (if needed and proxied/emitted by VestingAirdrop)
-// This might be necessary to create/update UserVestingData accurately.
-/*
 export function handleVestingInitialized(event: VestingInitialized): void {
-    // This event comes from the Strategy, but might be handled in the context
-    // of the Airdrop if the template listens for it or if the Airdrop proxies it.
-    // Need to know which contract address `event.address` refers to.
-    // Assuming event.address is the Airdrop address and strategy is linked.
+  let airdropAddress = event.address;
+  let airdrop = VestingAirdrop.load(airdropAddress);
+  if (!airdrop) {
+    return;
+  }
 
-    let airdropAddress = event.address;
-    let airdrop = VestingAirdrop.load(airdropAddress);
-    if (!airdrop) { return; }
+  let strategyAddress = Address.fromBytes(airdrop.strategy);
+  let strategy = LinearVestingStrategy.load(strategyAddress);
+  if (!strategy) {
+    return;
+  }
 
-    let strategyAddress = Address.fromBytes(airdrop.strategy);
-    let strategy = LinearVestingStrategy.load(strategyAddress);
-    if (!strategy) { return; }
+  let accountAddress = event.params.account;
+  let totalAmount = event.params.totalAmount;
+  let vestingStart = event.params.vestingStart;
 
-    let accountAddress = event.params.account;
-    let totalAmount = event.params.totalAmount;
-    let vestingStart = event.params.vestingStart;
+  let userAccount = fetchAccount(accountAddress);
+  let userVestingDataId = strategy.id.concat(userAccount.id);
 
-    let userAccount = loadOrCreateAccount(accountAddress);
-    let userVestingDataId = strategy.id.concat(userAccount.id);
+  let userVestingData = UserVestingData.load(userVestingDataId);
+  if (!userVestingData) {
+    userVestingData = new UserVestingData(userVestingDataId);
+    userVestingData.strategy = strategy.id;
+    userVestingData.user = userAccount.id;
+    userVestingData.claimedAmountTrackedByStrategy = BigDecimal.fromString("0");
+    userVestingData.claimedAmountTrackedByStrategyExact = BigInt.fromI32(0);
+    userVestingData.initialized = false;
+  }
 
-    let userVestingData = UserVestingData.load(userVestingDataId);
-    if (!userVestingData) {
-        userVestingData = new UserVestingData(userVestingDataId);
-        userVestingData.strategy = strategy.id;
-        userVestingData.user = userAccount.id;
-        userVestingData.claimedAmountTrackedByStrategy = ZERO_BD;
-        userVestingData.claimedAmountTrackedByStrategyExact = ZERO_BI;
-        userVestingData.initialized = false; // Will be set below
-    }
+  let token = Asset.load(airdrop.token);
+  let decimals = token ? token.decimals : 18;
+  let totalAmountBD = toDecimals(totalAmount, decimals);
 
-    let token = Asset.load(airdrop.token);
-    let decimals = token ? token.decimals : 18; // Default decimals
-    let totalAmountBD = toBigDecimal(totalAmount, decimals);
+  userVestingData.totalAmountAggregated = totalAmountBD;
+  userVestingData.totalAmountAggregatedExact = totalAmount;
+  userVestingData.vestingStart = vestingStart;
+  userVestingData.initialized = true;
+  userVestingData.lastUpdated = event.block.timestamp;
 
-    userVestingData.totalAmountAggregated = totalAmountBD;
-    userVestingData.totalAmountAggregatedExact = totalAmount;
-    userVestingData.vestingStart = vestingStart;
-    userVestingData.initialized = true;
-    userVestingData.lastUpdated = event.block.timestamp;
+  userVestingData.save();
 
-    userVestingData.save();
-
-    log.info("Processed VestingInitialized for user {} on strategy {}", [
-        accountAddress.toHex(),
-        strategyAddress.toHex(),
-    ]);
+  log.info("Processed VestingInitialized for user {} on strategy {}", [
+    accountAddress.toHex(),
+    strategyAddress.toHex(),
+  ]);
 }
-*/
