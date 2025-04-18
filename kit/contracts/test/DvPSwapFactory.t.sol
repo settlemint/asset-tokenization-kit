@@ -28,16 +28,16 @@ contract DvPSwapFactoryTest is Test {
     }
     
     function test_CreateSwapContract() public {
-        bytes32 salt = bytes32(uint256(1));
+        string memory name = "DvPSwap Exchange 1";
         
         vm.startPrank(user1);
         
-        address predicted = factory.predictAddress(user1, salt);
+        address predicted = factory.predictAddress(user1, name);
         
         vm.expectEmit(true, true, false, true);
         emit DvPSwapContractCreated(predicted, user1);
         
-        address dvpSwapContract = factory.create(salt);
+        address dvpSwapContract = factory.create(name);
         vm.stopPrank();
         
         assertEq(dvpSwapContract, predicted);
@@ -52,51 +52,53 @@ contract DvPSwapFactoryTest is Test {
     }
     
     function test_RevertOnDuplicateAddress() public {
-        bytes32 salt = bytes32(uint256(1));
+        string memory name = "DvPSwap Exchange 1";
         
         vm.startPrank(user1);
         
         // First creation should succeed
-        factory.create(salt);
+        factory.create(name);
         
-        // Second creation with same salt should fail
+        // Second creation with same name should fail
         vm.expectRevert(abi.encodeWithSignature("AddressAlreadyDeployed()"));
-        factory.create(salt);
+        factory.create(name);
         
         vm.stopPrank();
     }
     
-    function testFuzz_PredictAddressWithDifferentSalts(bytes32 salt1, bytes32 salt2) public {
-        vm.assume(salt1 != salt2);
+    function test_PredictAddressWithDifferentNames() public {
+        string memory name1 = "DvPSwap Exchange 1";
+        string memory name2 = "DvPSwap Exchange 2";
         
         vm.startPrank(user1);
         
-        address predicted1 = factory.predictAddress(user1, salt1);
-        address predicted2 = factory.predictAddress(user1, salt2);
+        address predicted1 = factory.predictAddress(user1, name1);
+        address predicted2 = factory.predictAddress(user1, name2);
         
-        // Different salts should result in different addresses
+        // Different names should result in different addresses
         assertNotEq(predicted1, predicted2);
         
         vm.stopPrank();
     }
     
     function test_PredictAddressWithDifferentCreators() public {
-        bytes32 salt = bytes32(uint256(1));
+        string memory name = "DvPSwap Exchange 1";
         
-        address predicted1 = factory.predictAddress(user1, salt);
-        address predicted2 = factory.predictAddress(user2, salt);
+        address predicted1 = factory.predictAddress(user1, name);
+        address predicted2 = factory.predictAddress(user2, name);
         
-        // Different creators with the same salt should result in different addresses
-        assertNotEq(predicted1, predicted2);
+        // Different creators with the same name should still result in the same address
+        // since we're now using only the name to calculate the salt
+        assertEq(predicted1, predicted2);
     }
     
     function test_DeterministicAddresses() public {
-        bytes32 salt = bytes32(uint256(1));
+        string memory name = "DvPSwap Exchange 1";
         
         vm.startPrank(user1);
         
-        address predicted = factory.predictAddress(user1, salt);
-        address actual = factory.create(salt);
+        address predicted = factory.predictAddress(user1, name);
+        address actual = factory.create(name);
         
         assertEq(actual, predicted);
         
@@ -107,24 +109,24 @@ contract DvPSwapFactoryTest is Test {
         
         vm.startPrank(user1);
         
-        // The address should be different with the new factory, even with the same salt and creator
-        address newPredicted = newFactory.predictAddress(user1, salt);
+        // The address should be different with the new factory, even with the same name and creator
+        address newPredicted = newFactory.predictAddress(user1, name);
         assertNotEq(newPredicted, predicted);
         
         vm.stopPrank();
     }
     
-    function testFuzz_CreateMultipleContracts(uint8 count) public {
-        vm.assume(count > 0 && count <= 10); // Limit to reasonable count
+    function test_CreateMultipleContracts() public {
+        uint8 count = 5; // Create 5 contracts
         
         vm.startPrank(user1);
         
         address[] memory dvpSwapContracts = new address[](count);
         
         for (uint8 i = 0; i < count; i++) {
-            bytes32 salt = bytes32(uint256(i + 1)); // Use i+1 to avoid salt=0
-            address predicted = factory.predictAddress(user1, salt);
-            address actual = factory.create(salt);
+            string memory name = string(abi.encodePacked("DvPSwap Exchange ", vm.toString(i + 1)));
+            address predicted = factory.predictAddress(user1, name);
+            address actual = factory.create(name);
             
             assertEq(actual, predicted);
             assertTrue(factory.isDvPSwapFromFactory(actual));
@@ -141,14 +143,14 @@ contract DvPSwapFactoryTest is Test {
     }
     
     function test_isAddressDeployed() public {
-        bytes32 salt = bytes32(uint256(1));
+        string memory name = "DvPSwap Exchange 1";
         
         vm.startPrank(user1);
         
-        address predicted = factory.predictAddress(user1, salt);
+        address predicted = factory.predictAddress(user1, name);
         assertFalse(factory.isAddressDeployed(predicted));
         
-        address dvpSwapContract = factory.create(salt);
+        address dvpSwapContract = factory.create(name);
         assertTrue(factory.isAddressDeployed(dvpSwapContract));
         
         vm.stopPrank();

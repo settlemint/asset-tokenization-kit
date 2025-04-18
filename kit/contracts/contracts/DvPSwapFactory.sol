@@ -33,22 +33,22 @@ contract DvPSwapFactory is ReentrancyGuard, ERC2771Context {
     /// @notice Creates a new DvPSwap contract
     /// @dev Uses CREATE2 for deterministic addresses, includes reentrancy protection,
     /// and validates that the predicted address hasn't been used before.
-    /// @param salt A unique value used to determine the contract address
+    /// @param name A unique name used to determine the contract address
     /// @return dvpSwapContract The address of the newly created swap contract
-    function create(bytes32 salt)
+    function create(string memory name)
         external
         nonReentrant
         returns (address dvpSwapContract)
     {
+        // Calculate salt from the name parameter
+        bytes32 salt = _calculateSalt(name);
+        
         // Check if address is already deployed
-        address predicted = predictAddress(_msgSender(), salt);
+        address predicted = predictAddress(_msgSender(), name);
         if (isAddressDeployed(predicted)) revert AddressAlreadyDeployed();
 
-        // Calculate the final salt by combining the sender with the provided salt
-        bytes32 finalSalt = keccak256(abi.encodePacked(_msgSender(), salt));
-
         // Deploy the DvPSwap contract
-        DvPSwap newDvPSwapContract = new DvPSwap{ salt: finalSalt }(
+        DvPSwap newDvPSwapContract = new DvPSwap{ salt: salt }(
             trustedForwarder()
         );
         
@@ -66,18 +66,17 @@ contract DvPSwapFactory is ReentrancyGuard, ERC2771Context {
     /// @dev Calculates the deterministic address using CREATE2 with the same parameters and salt
     /// computation as the create function. This allows users to know the contract's address before deployment.
     /// @param sender The address that would create the swap contract
-    /// @param salt A unique value used to determine the contract address
+    /// @param name The name parameter used to calculate the salt
     /// @return predicted The address where the swap contract would be deployed
     function predictAddress(
         address sender,
-        bytes32 salt
+        string memory name
     )
         public
         view
         returns (address predicted)
     {
-        // Calculate the final salt by combining the sender with the provided salt
-        bytes32 finalSalt = keccak256(abi.encodePacked(sender, salt));
+        bytes32 salt = _calculateSalt(name);
 
         predicted = address(
             uint160(
@@ -86,7 +85,7 @@ contract DvPSwapFactory is ReentrancyGuard, ERC2771Context {
                         abi.encodePacked(
                             bytes1(0xff),
                             address(this),
-                            finalSalt,
+                            salt,
                             keccak256(
                                 abi.encodePacked(
                                     type(DvPSwap).creationCode,
@@ -98,6 +97,15 @@ contract DvPSwapFactory is ReentrancyGuard, ERC2771Context {
                 )
             )
         );
+    }
+
+    /// @notice Calculates the salt for CREATE2 deployment
+    /// @dev Combines the name parameter into a unique salt value. Used by both create and
+    /// predictAddress functions to ensure consistent address calculation.
+    /// @param name The name parameter used to determine the salt
+    /// @return The calculated salt for CREATE2 deployment
+    function _calculateSalt(string memory name) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(name));
     }
 
     /// @notice Checks if an address was deployed by this factory

@@ -11,15 +11,12 @@ const DvPSwapModule = buildModule("DvPSwapModule", (m) => {
   // Use the DvPSwapFactory module
   const { dvpSwapFactory } = m.useModule(DvPSwapFactoryModule);
 
-  // Use a fixed salt value instead of using keccak256 which might have import issues
-  // This is a hardcoded valid bytes32 value for consistent CREATE2 addresses
-  const salt = "0x1234567890123456789012345678901234567890123456789012345678901234";
-
-  // Create a DvPSwap contract using the factory
+  // Create a DvPSwap contract using the factory with a name parameter
+  // This follows the pattern used by other factories in the codebase
   const createDvPSwap = m.call(
     dvpSwapFactory,
     "create",
-    [salt],
+    ["DvPSwap Exchange"], // Pass a name parameter instead of a salt
     {
       id: "createDvPSwap",
       from: deployer,
