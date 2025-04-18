@@ -78,7 +78,7 @@ export function YieldPeriodTable({ yieldSchedule }: PeriodTableProps) {
       },
       {
         accessorKey: "totalClaimed",
-        header: t("total-claimed"),
+        header: t("claimed"),
         cell: ({ row }) => formatNumber(row.original.totalClaimed, { locale }),
       },
       {
