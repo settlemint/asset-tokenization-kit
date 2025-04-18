@@ -3,6 +3,7 @@ graphql-engine:
   nameOverride: hasura
   replicas: 1
   labels:
+    app.kubernetes.io/instance: atk
     kots.io/app-slug: settlemint-atk
     app.kubernetes.io/part-of: settlemint-atk
     app.kubernetes.io/managed-by: helm
