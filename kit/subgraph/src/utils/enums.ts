@@ -55,21 +55,23 @@ export class EventName {
   static CollateralUpdated: string = "Collateral Updated";
   // DvPSwap specific events
   static DvPSwapContractCreated: string = "DvPSwap Contract Created";
-  static SwapCreated: string = "Swap Created";
-  static SwapStatusChanged: string = "Swap Status Changed";
-  static SwapClaimed: string = "Swap Claimed";
-  static SwapRefunded: string = "Swap Refunded";
+  static DvPSwapCreated: string = "DvPSwap Created";
+  static DvPSwapStatusChanged: string = "DvPSwap Status Changed";
+  static DvPSwapClaimed: string = "DvPSwap Claimed";
+  static DvPSwapRefunded: string = "DvPSwap Refunded";
   static TokensLocked: string = "Tokens Locked";
 }
 
-// Add DvPSwap status type enum
-export class SwapStatusType {
-  static PendingCreation: string = "PENDING_CREATION";
-  static Open: string = "OPEN";
-  static Claimed: string = "CLAIMED";
-  static Refunded: string = "REFUNDED";
-  static Expired: string = "EXPIRED";
-  static AwaitingApproval: string = "AWAITING_APPROVAL";
-  static AwaitingClaimSecret: string = "AWAITING_CLAIM_SECRET";
-  static Unknown: string = "UNKNOWN";
+// Update DvPSwap status type enum to match the contract
+export class DvPSwapStatusType {
+  static PENDING_CREATION: string = "PENDING_CREATION";
+  static OPEN: string = "OPEN";
+  static CLAIMED: string = "CLAIMED";
+  static REFUNDED: string = "REFUNDED";
+  static EXPIRED: string = "EXPIRED";
+  static CANCELLED: string = "CANCELLED";
+  static FAILED: string = "FAILED";
+  static INVALID: string = "INVALID";
+  static AWAITING_APPROVAL: string = "AWAITING_APPROVAL";
+  static AWAITING_CLAIM_SECRET: string = "AWAITING_CLAIM_SECRET";
 }

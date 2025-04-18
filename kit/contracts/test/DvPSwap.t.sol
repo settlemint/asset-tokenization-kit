@@ -6,6 +6,7 @@ import { DvPSwap } from "../contracts/DvPSwap.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+// import { ForwarderModule } from "./forwarder";
 
 // Mock ERC20 token for testing
 contract MockERC20 is ERC20 {
@@ -44,8 +45,8 @@ contract DvPSwapTest is Test {
     bytes32 public constant SECRET_5 = bytes32("secret5");
     bytes32 public constant HASHLOCK_5 = 0x4dc649e7b98dc847d47ac9f7ef8d634fbcd7eec5be85b3f70119e3a14247aede; // keccak256(abi.encodePacked(SECRET_5))
     
-    event SwapCreated(
-        bytes32 indexed swapId,
+    event DvPSwapCreated(
+        bytes32 indexed dvpSwapId,
         address indexed sender,
         address indexed receiver,
         address tokenToSend,
@@ -56,11 +57,11 @@ contract DvPSwapTest is Test {
         bytes32 hashlock
     );
     
-    event SwapStatusChanged(bytes32 indexed swapId, DvPSwap.SwapStatus status);
-    event SwapClaimed(bytes32 indexed swapId, address indexed receiver, bytes32 secret);
-    event SwapRefunded(bytes32 indexed swapId, address indexed sender);
+    event DvPSwapStatusChanged(bytes32 indexed dvpSwapId, DvPSwap.DvPSwapStatus status);
+    event DvPSwapClaimed(bytes32 indexed dvpSwapId, address indexed receiver, bytes32 secret);
+    event DvPSwapRefunded(bytes32 indexed dvpSwapId, address indexed sender);
     event TokensLocked(
-        bytes32 indexed swapId,
+        bytes32 indexed dvpSwapId,
         address tokenAddress,
         uint256 amount,
         uint256 timestamp
@@ -114,7 +115,7 @@ contract DvPSwapTest is Test {
         tokenA.approve(address(dvpSwap), AMOUNT_A);
         
         vm.expectRevert();
-        dvpSwap.createSwap(
+        dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -160,7 +161,7 @@ contract DvPSwapTest is Test {
         );
         
         vm.expectEmit(true, true, true, true);
-        emit SwapCreated(
+        emit DvPSwapCreated(
             expectedSwapId,
             user1,
             user2,
@@ -173,9 +174,9 @@ contract DvPSwapTest is Test {
         );
         
         vm.expectEmit(true, true, false, true);
-        emit SwapStatusChanged(expectedSwapId, DvPSwap.SwapStatus.OPEN);
+        emit DvPSwapStatusChanged(expectedSwapId, DvPSwap.DvPSwapStatus.OPEN);
         
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -187,14 +188,14 @@ contract DvPSwapTest is Test {
         vm.stopPrank();
         
         assertEq(swapId, expectedSwapId);
-        assertTrue(dvpSwap.swapExists(swapId));
+        assertTrue(dvpSwap.dvpSwapExists(swapId));
         
         // Check token transfer
         assertEq(tokenA.balanceOf(address(dvpSwap)), AMOUNT_A);
         assertEq(tokenA.balanceOf(user1), AMOUNT_A * 10 - AMOUNT_A);
         
         // Check swap details
-        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
+        DvPSwap.DvPSwap memory swap = dvpSwap.getDvPSwap(swapId);
         assertEq(swap.creator, user1);
         assertEq(swap.sender, user1);
         assertEq(swap.receiver, user2);
@@ -204,7 +205,7 @@ contract DvPSwapTest is Test {
         assertEq(swap.amountToReceive, AMOUNT_B);
         assertEq(swap.timelock, timelock);
         assertEq(swap.hashlock, HASHLOCK);
-        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.OPEN));
+        assertEq(uint(swap.status), uint(DvPSwap.DvPSwapStatus.OPEN));
     }
     
     function test_ClaimSwap() public {
@@ -217,7 +218,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -233,12 +234,12 @@ contract DvPSwapTest is Test {
         tokenB.approve(address(dvpSwap), AMOUNT_B);
         
         vm.expectEmit(true, true, true, true);
-        emit SwapClaimed(swapId, user2, secret);
+        emit DvPSwapClaimed(swapId, user2, secret);
         
         vm.expectEmit(true, true, false, true);
-        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.CLAIMED);
+        emit DvPSwapStatusChanged(swapId, DvPSwap.DvPSwapStatus.CLAIMED);
         
-        bool claimed = dvpSwap.claimSwap(swapId, secret);
+        bool claimed = dvpSwap.claimDvPSwap(swapId, secret);
         vm.stopPrank();
         
         assertTrue(claimed);
@@ -248,8 +249,8 @@ contract DvPSwapTest is Test {
         assertEq(tokenB.balanceOf(user1), AMOUNT_B);
         
         // Check swap status
-        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
-        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.CLAIMED));
+        DvPSwap.DvPSwap memory swap = dvpSwap.getDvPSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.DvPSwapStatus.CLAIMED));
     }
     
     function test_RefundSwap() public {
@@ -258,7 +259,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -276,12 +277,12 @@ contract DvPSwapTest is Test {
         vm.startPrank(user1);
         
         vm.expectEmit(true, true, false, true);
-        emit SwapRefunded(swapId, user1);
+        emit DvPSwapRefunded(swapId, user1);
         
         vm.expectEmit(true, true, false, true);
-        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.REFUNDED);
+        emit DvPSwapStatusChanged(swapId, DvPSwap.DvPSwapStatus.REFUNDED);
         
-        bool refunded = dvpSwap.refundSwap(swapId);
+        bool refunded = dvpSwap.refundDvPSwap(swapId);
         vm.stopPrank();
         
         assertTrue(refunded);
@@ -290,8 +291,8 @@ contract DvPSwapTest is Test {
         assertEq(tokenA.balanceOf(user1), AMOUNT_A * 10);
         
         // Check swap status
-        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
-        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.REFUNDED));
+        DvPSwap.DvPSwap memory swap = dvpSwap.getDvPSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.DvPSwapStatus.REFUNDED));
     }
     
     function test_ExpireSwap() public {
@@ -300,7 +301,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -318,9 +319,9 @@ contract DvPSwapTest is Test {
         vm.startPrank(user2); // Anyone can expire a swap
         
         vm.expectEmit(true, true, false, true);
-        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.EXPIRED);
+        emit DvPSwapStatusChanged(swapId, DvPSwap.DvPSwapStatus.EXPIRED);
         
-        bool expired = dvpSwap.expireSwap(swapId);
+        bool expired = dvpSwap.expireDvPSwap(swapId);
         vm.stopPrank();
         
         assertTrue(expired);
@@ -329,8 +330,8 @@ contract DvPSwapTest is Test {
         assertEq(tokenA.balanceOf(user1), AMOUNT_A * 10);
         
         // Check swap status
-        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
-        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.EXPIRED));
+        DvPSwap.DvPSwap memory swap = dvpSwap.getDvPSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.DvPSwapStatus.EXPIRED));
     }
     
     // Tests for new functionality
@@ -343,7 +344,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -355,24 +356,24 @@ contract DvPSwapTest is Test {
         
         // Request approval
         vm.expectEmit(true, true, false, true);
-        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.AWAITING_APPROVAL);
+        emit DvPSwapStatusChanged(swapId, DvPSwap.DvPSwapStatus.AWAITING_APPROVAL);
         
-        bool requested = dvpSwap.requestApproval(swapId);
+        bool requested = dvpSwap.requestDvPSwapApproval(swapId);
         vm.stopPrank();
         
         assertTrue(requested);
         
         // Check swap status
-        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
-        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.AWAITING_APPROVAL));
+        DvPSwap.DvPSwap memory swap = dvpSwap.getDvPSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.DvPSwapStatus.AWAITING_APPROVAL));
         
-        // Create another swap to test the InvalidSwapStatus case
+        // Create another swap to test the InvalidDvPSwapStatus case
         bytes32 uniqueSecret2 = keccak256(abi.encodePacked("uniqueRequestApproval2"));
         bytes32 uniqueHashlock2 = keccak256(abi.encodePacked(uniqueSecret2));
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId2 = dvpSwap.createSwap(
+        bytes32 swapId2 = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -383,11 +384,11 @@ contract DvPSwapTest is Test {
         );
         
         // Request approval
-        dvpSwap.requestApproval(swapId2);
+        dvpSwap.requestDvPSwapApproval(swapId2);
         
-        // Try to request approval again, should fail with InvalidSwapStatus
-        vm.expectRevert(abi.encodeWithSignature("InvalidSwapStatus()"));
-        dvpSwap.requestApproval(swapId2);
+        // Try to request approval again, should fail with InvalidDvPSwapStatus
+        vm.expectRevert(abi.encodeWithSignature("InvalidDvPSwapStatus()"));
+        dvpSwap.requestDvPSwapApproval(swapId2);
         vm.stopPrank();
         
         // Create a new swap for testing authorization
@@ -396,7 +397,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId3 = dvpSwap.createSwap(
+        bytes32 swapId3 = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -410,7 +411,7 @@ contract DvPSwapTest is Test {
         // Verify only sender can request approval (receiver should get NotAuthorized)
         vm.startPrank(user2);
         vm.expectRevert(abi.encodeWithSignature("NotAuthorized()"));
-        dvpSwap.requestApproval(swapId3);
+        dvpSwap.requestDvPSwapApproval(swapId3);
         vm.stopPrank();
     }
     
@@ -422,7 +423,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -434,24 +435,24 @@ contract DvPSwapTest is Test {
         
         // Notify secret is ready directly from OPEN state
         vm.expectEmit(true, true, false, true);
-        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.AWAITING_CLAIM_SECRET);
+        emit DvPSwapStatusChanged(swapId, DvPSwap.DvPSwapStatus.AWAITING_CLAIM_SECRET);
         
-        bool notified = dvpSwap.notifySecretReady(swapId);
+        bool notified = dvpSwap.notifyDvPSwapSecretReady(swapId);
         vm.stopPrank();
         
         assertTrue(notified);
         
         // Check swap status
-        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
-        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.AWAITING_CLAIM_SECRET));
+        DvPSwap.DvPSwap memory swap = dvpSwap.getDvPSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.DvPSwapStatus.AWAITING_CLAIM_SECRET));
         
-        // Create another swap to test notifySecretReady from AWAITING_APPROVAL state
+        // Create another swap to test notifyDvPSwapSecretReady from AWAITING_APPROVAL state
         bytes32 uniqueSecret2 = keccak256(abi.encodePacked("uniqueNotifySecretReadyFromApproval"));
         bytes32 uniqueHashlock2 = keccak256(abi.encodePacked(uniqueSecret2));
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId2 = dvpSwap.createSwap(
+        bytes32 swapId2 = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -462,23 +463,23 @@ contract DvPSwapTest is Test {
         );
         
         // Request approval first
-        dvpSwap.requestApproval(swapId2);
+        dvpSwap.requestDvPSwapApproval(swapId2);
         
         // Then notify secret is ready
         vm.expectEmit(true, true, false, true);
-        emit SwapStatusChanged(swapId2, DvPSwap.SwapStatus.AWAITING_CLAIM_SECRET);
-        bool notified2 = dvpSwap.notifySecretReady(swapId2);
+        emit DvPSwapStatusChanged(swapId2, DvPSwap.DvPSwapStatus.AWAITING_CLAIM_SECRET);
+        bool notified2 = dvpSwap.notifyDvPSwapSecretReady(swapId2);
         vm.stopPrank();
         
         assertTrue(notified2);
         
-        // Create another swap to test the InvalidSwapStatus case
+        // Create another swap to test the InvalidDvPSwapStatus case
         bytes32 uniqueSecret3 = keccak256(abi.encodePacked("uniqueNotifySecretReady3"));
         bytes32 uniqueHashlock3 = keccak256(abi.encodePacked(uniqueSecret3));
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId3 = dvpSwap.createSwap(
+        bytes32 swapId3 = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -489,11 +490,11 @@ contract DvPSwapTest is Test {
         );
         
         // Notify secret is ready
-        dvpSwap.notifySecretReady(swapId3);
+        dvpSwap.notifyDvPSwapSecretReady(swapId3);
         
-        // Try to notify secret ready again, should fail with InvalidSwapStatus
-        vm.expectRevert(abi.encodeWithSignature("InvalidSwapStatus()"));
-        dvpSwap.notifySecretReady(swapId3);
+        // Try to notify secret ready again, should fail with InvalidDvPSwapStatus
+        vm.expectRevert(abi.encodeWithSignature("InvalidDvPSwapStatus()"));
+        dvpSwap.notifyDvPSwapSecretReady(swapId3);
         vm.stopPrank();
         
         // Create a new swap to test authorization
@@ -502,7 +503,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId4 = dvpSwap.createSwap(
+        bytes32 swapId4 = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -516,7 +517,7 @@ contract DvPSwapTest is Test {
         // Verify only sender can notify secret ready (receiver should get NotAuthorized)
         vm.startPrank(user2);
         vm.expectRevert(abi.encodeWithSignature("NotAuthorized()"));
-        dvpSwap.notifySecretReady(swapId4);
+        dvpSwap.notifyDvPSwapSecretReady(swapId4);
         vm.stopPrank();
     }
     
@@ -528,7 +529,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -540,16 +541,16 @@ contract DvPSwapTest is Test {
         
         // Mark as failed
         vm.expectEmit(true, true, false, true);
-        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.FAILED);
+        emit DvPSwapStatusChanged(swapId, DvPSwap.DvPSwapStatus.FAILED);
         
-        bool failed = dvpSwap.markSwapFailed(swapId, "Transaction failed");
+        bool failed = dvpSwap.markDvPSwapFailed(swapId, "Transaction failed");
         vm.stopPrank();
         
         assertTrue(failed);
         
         // Check swap status
-        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
-        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.FAILED));
+        DvPSwap.DvPSwap memory swap = dvpSwap.getDvPSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.DvPSwapStatus.FAILED));
         
         // Check tokens returned to sender
         assertEq(tokenA.balanceOf(user1), AMOUNT_A * 10);
@@ -563,7 +564,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -577,16 +578,16 @@ contract DvPSwapTest is Test {
         // Receiver can also mark as invalid
         vm.startPrank(user2);
         vm.expectEmit(true, true, false, true);
-        emit SwapStatusChanged(swapId, DvPSwap.SwapStatus.INVALID);
+        emit DvPSwapStatusChanged(swapId, DvPSwap.DvPSwapStatus.INVALID);
         
-        bool invalid = dvpSwap.markSwapInvalid(swapId, "Invalid parameters");
+        bool invalid = dvpSwap.markDvPSwapInvalid(swapId, "Invalid parameters");
         vm.stopPrank();
         
         assertTrue(invalid);
         
         // Check swap status
-        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
-        assertEq(uint(swap.status), uint(DvPSwap.SwapStatus.INVALID));
+        DvPSwap.DvPSwap memory swap = dvpSwap.getDvPSwap(swapId);
+        assertEq(uint(swap.status), uint(DvPSwap.DvPSwapStatus.INVALID));
         
         // Check tokens returned to sender
         assertEq(tokenA.balanceOf(user1), AMOUNT_A * 10);
@@ -600,7 +601,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -611,13 +612,13 @@ contract DvPSwapTest is Test {
         );
         
         // Change status to AWAITING_APPROVAL
-        dvpSwap.requestApproval(swapId);
+        dvpSwap.requestDvPSwapApproval(swapId);
         vm.stopPrank();
         
         // Claim from AWAITING_APPROVAL state
         vm.startPrank(user2);
         tokenB.approve(address(dvpSwap), AMOUNT_B);
-        bool claimed = dvpSwap.claimSwap(swapId, uniqueSecret);
+        bool claimed = dvpSwap.claimDvPSwap(swapId, uniqueSecret);
         vm.stopPrank();
         
         assertTrue(claimed);
@@ -628,7 +629,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId2 = dvpSwap.createSwap(
+        bytes32 swapId2 = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -639,13 +640,13 @@ contract DvPSwapTest is Test {
         );
         
         // Change status to AWAITING_CLAIM_SECRET
-        dvpSwap.notifySecretReady(swapId2);
+        dvpSwap.notifyDvPSwapSecretReady(swapId2);
         vm.stopPrank();
         
         // Claim from AWAITING_CLAIM_SECRET state
         vm.startPrank(user2);
         tokenB.approve(address(dvpSwap), AMOUNT_B);
-        bool claimed2 = dvpSwap.claimSwap(swapId2, uniqueSecret2);
+        bool claimed2 = dvpSwap.claimDvPSwap(swapId2, uniqueSecret2);
         vm.stopPrank();
         
         assertTrue(claimed2);
@@ -659,7 +660,7 @@ contract DvPSwapTest is Test {
         
         // Zero receiver
         vm.expectRevert(abi.encodeWithSignature("ZeroAddress()"));
-        dvpSwap.createSwap(
+        dvpSwap.createDvPSwap(
             address(0),
             address(tokenA),
             address(tokenB),
@@ -671,7 +672,7 @@ contract DvPSwapTest is Test {
         
         // Zero tokenToSend
         vm.expectRevert(abi.encodeWithSignature("ZeroAddress()"));
-        dvpSwap.createSwap(
+        dvpSwap.createDvPSwap(
             user2,
             address(0),
             address(tokenB),
@@ -683,7 +684,7 @@ contract DvPSwapTest is Test {
         
         // Zero tokenToReceive
         vm.expectRevert(abi.encodeWithSignature("ZeroAddress()"));
-        dvpSwap.createSwap(
+        dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(0),
@@ -702,7 +703,7 @@ contract DvPSwapTest is Test {
         
         // Zero amountToSend
         vm.expectRevert(abi.encodeWithSignature("ZeroAmount()"));
-        dvpSwap.createSwap(
+        dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -714,7 +715,7 @@ contract DvPSwapTest is Test {
         
         // Zero amountToReceive
         vm.expectRevert(abi.encodeWithSignature("ZeroAmount()"));
-        dvpSwap.createSwap(
+        dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -732,7 +733,7 @@ contract DvPSwapTest is Test {
         tokenA.approve(address(dvpSwap), AMOUNT_A);
         
         vm.expectRevert(abi.encodeWithSignature("InvalidTimelock()"));
-        dvpSwap.createSwap(
+        dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -753,7 +754,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -764,13 +765,13 @@ contract DvPSwapTest is Test {
         );
         
         // Mark as failed
-        dvpSwap.markSwapFailed(swapId, "Failed");
+        dvpSwap.markDvPSwapFailed(swapId, "Failed");
         vm.stopPrank();
         
         // Try to request approval on a failed swap
         vm.startPrank(user1);
-        vm.expectRevert(abi.encodeWithSignature("InvalidSwapStatus()"));
-        dvpSwap.requestApproval(swapId);
+        vm.expectRevert(abi.encodeWithSignature("InvalidDvPSwapStatus()"));
+        dvpSwap.requestDvPSwapApproval(swapId);
         vm.stopPrank();
         
         // Create another swap with different hashlock
@@ -779,7 +780,7 @@ contract DvPSwapTest is Test {
         
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
-        bytes32 swapId2 = dvpSwap.createSwap(
+        bytes32 swapId2 = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -790,13 +791,13 @@ contract DvPSwapTest is Test {
         );
         
         // Mark as invalid
-        dvpSwap.markSwapInvalid(swapId2, "Invalid");
+        dvpSwap.markDvPSwapInvalid(swapId2, "Invalid");
         vm.stopPrank();
         
         // Try to notify secret ready on an invalid swap
         vm.startPrank(user1);
-        vm.expectRevert(abi.encodeWithSignature("InvalidSwapStatus()"));
-        dvpSwap.notifySecretReady(swapId2);
+        vm.expectRevert(abi.encodeWithSignature("InvalidDvPSwapStatus()"));
+        dvpSwap.notifyDvPSwapSecretReady(swapId2);
         vm.stopPrank();
     }
     
@@ -812,7 +813,7 @@ contract DvPSwapTest is Test {
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), amountToSend);
         
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -823,9 +824,9 @@ contract DvPSwapTest is Test {
         );
         vm.stopPrank();
         
-        assertTrue(dvpSwap.swapExists(swapId));
+        assertTrue(dvpSwap.dvpSwapExists(swapId));
         
-        DvPSwap.Swap memory swap = dvpSwap.getSwap(swapId);
+        DvPSwap.DvPSwap memory swap = dvpSwap.getDvPSwap(swapId);
         assertEq(swap.amountToSend, amountToSend);
         assertEq(swap.amountToReceive, amountToReceive);
     }
@@ -841,7 +842,7 @@ contract DvPSwapTest is Test {
         vm.startPrank(user1);
         tokenA.approve(address(dvpSwap), AMOUNT_A);
         
-        bytes32 swapId = dvpSwap.createSwap(
+        bytes32 swapId = dvpSwap.createDvPSwap(
             user2,
             address(tokenA),
             address(tokenB),
@@ -855,7 +856,7 @@ contract DvPSwapTest is Test {
         // Claim swap
         vm.startPrank(user2);
         tokenB.approve(address(dvpSwap), AMOUNT_B);
-        bool claimed = dvpSwap.claimSwap(swapId, uniqueSecret);
+        bool claimed = dvpSwap.claimDvPSwap(swapId, uniqueSecret);
         vm.stopPrank();
         
         assertTrue(claimed);

@@ -1,6 +1,6 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { DvPSwap, Swap } from "../../generated/schema";
-import { SwapStatusType } from "../utils/enums";
+import { DvPSwap, DvPSwapEntity } from "../../generated/schema";
+import { DvPSwapStatusType } from "../utils/enums";
 import { fetchAccount } from "./account";
 
 export function fetchDvPSwap(address: Address, timestamp: BigInt | null = null): DvPSwap {
@@ -13,7 +13,7 @@ export function fetchDvPSwap(address: Address, timestamp: BigInt | null = null):
     dvpSwap.creator = creator.id;
     dvpSwap.createdAt = timestamp ? timestamp : BigInt.zero();
     dvpSwap.active = true;
-    dvpSwap.swapCount = 0;
+    dvpSwap.dvpSwapCount = 0;
     dvpSwap.totalValueLocked = BigInt.zero().toBigDecimal();
     dvpSwap.totalValueLockedExact = BigInt.zero();
     
@@ -33,41 +33,41 @@ export function updateDvPSwapCreator(dvpSwapId: Bytes, creator: Address): void {
   }
 }
 
-// Moved from swap.ts to consolidate DvP swap-related functionality
-export function fetchSwap(swapId: Bytes, contractAddress: Address, timestamp: BigInt | null = null): Swap {
-  let swap = Swap.load(swapId);
+// Renamed from fetchSwap to fetchDvPSwapEntity to match entity name
+export function fetchDvPSwapEntity(swapId: Bytes, contractAddress: Address, timestamp: BigInt | null = null): DvPSwapEntity {
+  let dvpSwapEntity = DvPSwapEntity.load(swapId);
 
-  if (!swap) {
-    swap = new Swap(swapId);
+  if (!dvpSwapEntity) {
+    dvpSwapEntity = new DvPSwapEntity(swapId);
     
     const dvpSwap = fetchDvPSwap(contractAddress, timestamp);
-    swap.contract = dvpSwap.id;
-    swap.factory = null; // Will be set if created via factory
+    dvpSwapEntity.contract = dvpSwap.id;
+    dvpSwapEntity.factory = null; // Will be set if created via factory
     
     // Default values, will be updated by event handler
     const zeroAddress = Address.fromString("0x0000000000000000000000000000000000000000");
-    swap.creator = fetchAccount(zeroAddress).id;
-    swap.sender = fetchAccount(zeroAddress).id;
-    swap.receiver = fetchAccount(zeroAddress).id;
-    swap.tokenToSend = zeroAddress;
-    swap.tokenToReceive = zeroAddress;
-    swap.amountToSend = BigInt.zero().toBigDecimal();
-    swap.amountToSendExact = BigInt.zero();
-    swap.amountToReceive = BigInt.zero().toBigDecimal();
-    swap.amountToReceiveExact = BigInt.zero();
-    swap.timelock = BigInt.zero();
-    swap.hashlock = Bytes.empty();
-    swap.status = SwapStatusType.PendingCreation;
-    swap.createdAt = timestamp ? timestamp : BigInt.zero();
-    swap.maxDuration = BigInt.zero();
-    swap.updatedAt = timestamp ? timestamp : BigInt.zero();
+    dvpSwapEntity.creator = fetchAccount(zeroAddress).id;
+    dvpSwapEntity.sender = fetchAccount(zeroAddress).id;
+    dvpSwapEntity.receiver = fetchAccount(zeroAddress).id;
+    dvpSwapEntity.tokenToSend = zeroAddress;
+    dvpSwapEntity.tokenToReceive = zeroAddress;
+    dvpSwapEntity.amountToSend = BigInt.zero().toBigDecimal();
+    dvpSwapEntity.amountToSendExact = BigInt.zero();
+    dvpSwapEntity.amountToReceive = BigInt.zero().toBigDecimal();
+    dvpSwapEntity.amountToReceiveExact = BigInt.zero();
+    dvpSwapEntity.timelock = BigInt.zero();
+    dvpSwapEntity.hashlock = Bytes.empty();
+    dvpSwapEntity.status = DvPSwapStatusType.PENDING_CREATION;
+    dvpSwapEntity.createdAt = timestamp ? timestamp : BigInt.zero();
+    dvpSwapEntity.maxDuration = BigInt.zero();
+    dvpSwapEntity.updatedAt = timestamp ? timestamp : BigInt.zero();
     
-    // Increment swap count
-    dvpSwap.swapCount = dvpSwap.swapCount + 1;
+    // Increment dvpSwap count
+    dvpSwap.dvpSwapCount = dvpSwap.dvpSwapCount + 1;
     dvpSwap.save();
     
-    swap.save();
+    dvpSwapEntity.save();
   }
 
-  return swap;
+  return dvpSwapEntity;
 } 

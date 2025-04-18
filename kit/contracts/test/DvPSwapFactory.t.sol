@@ -13,7 +13,7 @@ contract DvPSwapFactoryTest is Test {
     address public user1;
     address public user2;
     
-    event DvPSwapContractCreated(address indexed swapContract, address indexed creator);
+    event DvPSwapContractCreated(address indexed dvpSwapContract, address indexed creator);
     
     function setUp() public {
         owner = makeAddr("owner");
@@ -37,15 +37,15 @@ contract DvPSwapFactoryTest is Test {
         vm.expectEmit(true, true, false, true);
         emit DvPSwapContractCreated(predicted, user1);
         
-        address swapContract = factory.create(salt);
+        address dvpSwapContract = factory.create(salt);
         vm.stopPrank();
         
-        assertEq(swapContract, predicted);
-        assertTrue(factory.isAddressDeployed(swapContract));
-        assertTrue(factory.isFactorySwap(swapContract));
+        assertEq(dvpSwapContract, predicted);
+        assertTrue(factory.isAddressDeployed(dvpSwapContract));
+        assertTrue(factory.isDvPSwapFromFactory(dvpSwapContract));
         
         // Verify the swap contract is properly initialized
-        DvPSwap swap = DvPSwap(swapContract);
+        DvPSwap swap = DvPSwap(dvpSwapContract);
         assertTrue(swap.hasRole(swap.DEFAULT_ADMIN_ROLE(), user1));
         assertTrue(swap.hasRole(swap.PAUSER_ROLE(), user1));
         assertEq(address(swap.trustedForwarder()), address(forwarder));
@@ -119,7 +119,7 @@ contract DvPSwapFactoryTest is Test {
         
         vm.startPrank(user1);
         
-        address[] memory swapContracts = new address[](count);
+        address[] memory dvpSwapContracts = new address[](count);
         
         for (uint8 i = 0; i < count; i++) {
             bytes32 salt = bytes32(uint256(i + 1)); // Use i+1 to avoid salt=0
@@ -127,13 +127,13 @@ contract DvPSwapFactoryTest is Test {
             address actual = factory.create(salt);
             
             assertEq(actual, predicted);
-            assertTrue(factory.isFactorySwap(actual));
+            assertTrue(factory.isDvPSwapFromFactory(actual));
             
-            swapContracts[i] = actual;
+            dvpSwapContracts[i] = actual;
             
             // Ensure all created contracts are different
             for (uint8 j = 0; j < i; j++) {
-                assertNotEq(swapContracts[i], swapContracts[j]);
+                assertNotEq(dvpSwapContracts[i], dvpSwapContracts[j]);
             }
         }
         
@@ -148,8 +148,8 @@ contract DvPSwapFactoryTest is Test {
         address predicted = factory.predictAddress(user1, salt);
         assertFalse(factory.isAddressDeployed(predicted));
         
-        address swapContract = factory.create(salt);
-        assertTrue(factory.isAddressDeployed(swapContract));
+        address dvpSwapContract = factory.create(salt);
+        assertTrue(factory.isAddressDeployed(dvpSwapContract));
         
         vm.stopPrank();
         

@@ -18,13 +18,13 @@ export function handleDvPSwapContractCreated(event: DvPSwapContractCreated): voi
   const sender = fetchAccount(event.transaction.from);
   
   // Fetch or create DvPSwap entity
-  const dvpSwap = fetchDvPSwap(event.params.swapContract, event.block.timestamp);
+  const dvpSwap = fetchDvPSwap(event.params.dvpSwapContract, event.block.timestamp);
   
   // Update DvPSwap with correct creator
   updateDvPSwapCreator(dvpSwap.id, event.params.creator);
   
   // Increment contract count
-  factory.swapContractsCount = factory.swapContractsCount + 1;
+  factory.dvpSwapContractsCount = factory.dvpSwapContractsCount + 1;
   
   // Create event entity - convert eventId from Bytes to String
   const eventIdValue = eventId(event);
@@ -33,7 +33,7 @@ export function handleDvPSwapContractCreated(event: DvPSwapContractCreated): voi
   contractCreatedEvent.timestamp = event.block.timestamp;
   contractCreatedEvent.factory = factory.id;
   contractCreatedEvent.sender = sender.id;
-  contractCreatedEvent.swapContract = dvpSwap.id;
+  contractCreatedEvent.dvpSwapContract = dvpSwap.id;
   contractCreatedEvent.creator = creator.id;
   
   // Create activity event
@@ -50,12 +50,12 @@ export function handleDvPSwapContractCreated(event: DvPSwapContractCreated): voi
   contractCreatedEvent.save();
   
   // Create contract template
-  DvPSwap.create(event.params.swapContract);
+  DvPSwap.create(event.params.dvpSwapContract);
   
   log.info(
     "DvPSwapFactory - DvPSwap contract created: contract={}, creator={}", 
     [
-      event.params.swapContract.toHexString(),
+      event.params.dvpSwapContract.toHexString(),
       creator.id.toHexString()
     ]
   );

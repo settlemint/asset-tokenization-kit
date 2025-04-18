@@ -18,12 +18,12 @@ contract DvPSwapFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Mapping to track if an address was deployed by this factory
     /// @dev Maps swap contract addresses to a boolean indicating if they were created by this factory
-    mapping(address => bool) public isFactorySwap;
+    mapping(address => bool) public isDvPSwapFromFactory;
 
     /// @notice Emitted when a new DvPSwap contract is created
-    /// @param swapContract The address of the newly created swap contract
+    /// @param dvpSwapContract The address of the newly created swap contract
     /// @param creator The address that created the swap contract
-    event DvPSwapContractCreated(address indexed swapContract, address indexed creator);
+    event DvPSwapContractCreated(address indexed dvpSwapContract, address indexed creator);
 
     /// @notice Deploys a new DvPSwapFactory contract
     /// @dev Sets up the factory with meta-transaction support
@@ -34,11 +34,11 @@ contract DvPSwapFactory is ReentrancyGuard, ERC2771Context {
     /// @dev Uses CREATE2 for deterministic addresses, includes reentrancy protection,
     /// and validates that the predicted address hasn't been used before.
     /// @param salt A unique value used to determine the contract address
-    /// @return swapContract The address of the newly created swap contract
+    /// @return dvpSwapContract The address of the newly created swap contract
     function create(bytes32 salt)
         external
         nonReentrant
-        returns (address swapContract)
+        returns (address dvpSwapContract)
     {
         // Check if address is already deployed
         address predicted = predictAddress(_msgSender(), salt);
@@ -48,18 +48,18 @@ contract DvPSwapFactory is ReentrancyGuard, ERC2771Context {
         bytes32 finalSalt = keccak256(abi.encodePacked(_msgSender(), salt));
 
         // Deploy the DvPSwap contract
-        DvPSwap newSwapContract = new DvPSwap{ salt: finalSalt }(
+        DvPSwap newDvPSwapContract = new DvPSwap{ salt: finalSalt }(
             trustedForwarder()
         );
         
         // Grant roles to the message sender
-        newSwapContract.grantRole(newSwapContract.DEFAULT_ADMIN_ROLE(), _msgSender());
-        newSwapContract.grantRole(newSwapContract.PAUSER_ROLE(), _msgSender());
+        newDvPSwapContract.grantRole(newDvPSwapContract.DEFAULT_ADMIN_ROLE(), _msgSender());
+        newDvPSwapContract.grantRole(newDvPSwapContract.PAUSER_ROLE(), _msgSender());
 
-        swapContract = address(newSwapContract);
-        isFactorySwap[swapContract] = true;
+        dvpSwapContract = address(newDvPSwapContract);
+        isDvPSwapFromFactory[dvpSwapContract] = true;
 
-        emit DvPSwapContractCreated(swapContract, _msgSender());
+        emit DvPSwapContractCreated(dvpSwapContract, _msgSender());
     }
 
     /// @notice Predicts the address where a DvPSwap contract would be deployed
@@ -102,9 +102,9 @@ contract DvPSwapFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Checks if an address was deployed by this factory
     /// @dev Returns true if the address was created by this factory, false otherwise
-    /// @param swapContract The address to check
+    /// @param dvpSwapContract The address to check
     /// @return True if the address was created by this factory, false otherwise
-    function isAddressDeployed(address swapContract) public view returns (bool) {
-        return isFactorySwap[swapContract];
+    function isAddressDeployed(address dvpSwapContract) public view returns (bool) {
+        return isDvPSwapFromFactory[dvpSwapContract];
     }
 } 

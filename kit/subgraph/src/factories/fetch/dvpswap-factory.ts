@@ -9,7 +9,7 @@ export function fetchDvPSwapFactory(address: Address): DvPSwapFactory {
     factory = new DvPSwapFactory(address);
     const account = fetchAccount(address);
     factory.asAccount = account.id;
-    factory.swapContractsCount = 0;
+    factory.dvpSwapContractsCount = 0;
     factory.save();
   }
 

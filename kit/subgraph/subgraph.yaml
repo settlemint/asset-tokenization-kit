@@ -683,11 +683,11 @@ templates:
       entities:
         - Account
         - DvPSwap
-        - Swap
-        - SwapCreatedEvent
-        - SwapStatusChangedEvent
-        - SwapClaimedEvent
-        - SwapRefundedEvent
+        - DvPSwapEntity
+        - DvPSwapCreatedEvent
+        - DvPSwapStatusChangedEvent
+        - DvPSwapClaimedEvent
+        - DvPSwapRefundedEvent
         - TokensLockedEvent
         - DvPSwapStatsData
         - DvPSwapStats
@@ -695,6 +695,14 @@ templates:
         - name: DvPSwap
           file: ../contracts/artifacts/contracts/DvPSwap.sol/DvPSwap.json
       eventHandlers:
-        - event: SwapCreated(indexed bytes32,indexed address,indexed address,address,address,uint256,uint256,uint256,bytes32)
-          handler: handleSwapCreated
+        - event: DvPSwapCreated(indexed bytes32,indexed address,indexed address,address,address,uint256,uint256,uint256,bytes32)
+          handler: handleDvPSwapCreated
+        - event: DvPSwapStatusChanged(indexed bytes32,uint8)
+          handler: handleDvPSwapStatusChanged
+        - event: DvPSwapClaimed(indexed bytes32,indexed address,bytes32)
+          handler: handleDvPSwapClaimed
+        - event: DvPSwapRefunded(indexed bytes32,indexed address)
+          handler: handleDvPSwapRefunded
+        - event: TokensLocked(indexed bytes32,address,uint256,uint256)
+          handler: handleTokensLocked
       file: ./src/dvpswap/dvpswap.ts

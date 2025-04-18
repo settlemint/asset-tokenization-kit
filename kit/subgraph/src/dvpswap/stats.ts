@@ -8,11 +8,11 @@ export function newDvPSwapStatsData(dvpSwapId: Bytes): DvPSwapStatsData {
   nextDvPSwapStatsDataId++;
   
   stats.dvpSwap = dvpSwapId;
-  stats.swapsCreated = 0;
-  stats.swapsClaimed = 0;
-  stats.swapsRefunded = 0;
-  stats.swapsExpired = 0;
-  stats.swapsFailed = 0;
+  stats.dvpSwapsCreated = 0;
+  stats.dvpSwapsClaimed = 0;
+  stats.dvpSwapsRefunded = 0;
+  stats.dvpSwapsExpired = 0;
+  stats.dvpSwapsFailed = 0;
   stats.valueLockedExact = BigInt.zero();
   stats.valueLocked = BigInt.zero().toBigDecimal();
   
