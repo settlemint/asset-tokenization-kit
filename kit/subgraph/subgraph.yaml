@@ -164,11 +164,10 @@ dataSources:
       file: ./src/factories/deposit-factory.ts
   - kind: ethereum/contract
     name: AirdropFactory
-    network: { { network } }
+    network: settlemint
     source:
-      address: "{{factoryAddress}}"
+      address: "0x5e771e1417100000000000000000000000000008"
       abi: AirdropFactory
-      startBlock: { { factoryStartBlock } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -182,13 +181,13 @@ dataSources:
         - Asset
       abis:
         - name: AirdropFactory
-          file: ./abis/AirdropFactory.json
+          file: ../contracts/artifacts/contracts/airdrop/AirdropFactory.sol/AirdropFactory.json
         - name: StandardAirdrop
-          file: ./abis/StandardAirdrop.json
+          file: ../contracts/artifacts/contracts/airdrop/StandardAirdrop.sol/StandardAirdrop.json
         - name: VestingAirdrop
-          file: ./abis/VestingAirdrop.json
+          file: ../contracts/artifacts/contracts/airdrop/VestingAirdrop.sol/VestingAirdrop.json
         - name: LinearVestingStrategy
-          file: ./abis/LinearVestingStrategy.json
+          file: ../contracts/artifacts/contracts/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
       eventHandlers:
         - event:
             StandardAirdropDeployed(indexed address,indexed address,indexed
@@ -695,7 +694,7 @@ templates:
       file: ./src/assets/deposit.ts
   - kind: ethereum/contract
     name: StandardAirdropTemplate
-    network: { { network } }
+    network: settlemint
     source:
       abi: StandardAirdrop
     mapping:
@@ -711,7 +710,7 @@ templates:
         - Asset
       abis:
         - name: StandardAirdrop
-          file: ./abis/StandardAirdrop.json
+          file: ../contracts/artifacts/contracts/airdrop/StandardAirdrop.sol/StandardAirdrop.json
       eventHandlers:
         - event: Claimed(indexed address,uint256)
           handler: handleClaimed
@@ -722,7 +721,7 @@ templates:
       file: ./src/assets/standardAirdrop.ts
   - kind: ethereum/contract
     name: VestingAirdropTemplate
-    network: { { network } }
+    network: settlemint
     source:
       abi: VestingAirdrop
     mapping:
@@ -740,9 +739,9 @@ templates:
         - Asset
       abis:
         - name: VestingAirdrop
-          file: ./abis/VestingAirdrop.json
+          file: ../contracts/artifacts/contracts/airdrop/VestingAirdrop.sol/VestingAirdrop.json
         - name: LinearVestingStrategy
-          file: ./abis/LinearVestingStrategy.json
+          file: ../contracts/artifacts/contracts/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
       eventHandlers:
         - event: Claimed(indexed address,uint256)
           handler: handleClaimed
