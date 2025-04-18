@@ -31,7 +31,6 @@ export class CreateAssetForm extends BasePage {
     faceValue?: string;
     maturityDate?: string;
     underlyingAsset?: string;
-    price?: string;
   }) {
     if (options.maximumSupply !== undefined) {
       await this.page.getByLabel("Maximum supply").fill(options.maximumSupply);
@@ -50,9 +49,6 @@ export class CreateAssetForm extends BasePage {
       await this.page
         .getByRole("option", { name: options.underlyingAsset })
         .click();
-    }
-    if (options.price !== undefined) {
-      await this.page.getByLabel("Price").fill(options.price);
     }
   }
 

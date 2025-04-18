@@ -259,7 +259,6 @@ export const bondData = {
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
   maximumSupply: "1000",
   faceValue: "100",
-  price: "10",
   pincode: pincode,
   sidebarAssetTypes: "Bonds",
   initialSupply: "0",
