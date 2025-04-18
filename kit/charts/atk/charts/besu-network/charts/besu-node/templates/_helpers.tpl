@@ -42,6 +42,7 @@ app.kubernetes.io/component: besu
 app.kubernetes.io/part-of: {{ include "besu-node.fullname" . }}
 app.kubernetes.io/namespace: {{ .Release.Namespace }}
 app.kubernetes.io/release: {{ .Release.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: helm
 {{- if .Values.global.labels }}
 {{ toYaml .Values.global.labels }}

@@ -79,8 +79,7 @@ All resources created by this chart and its subcharts will automatically include
 global:
   labels:
     kots.io/app-slug: settlemint-atk
-    app.kubernetes.io/part-of: settlemint-atk
-    app.kubernetes.io/managed-by: helm
+
 ```
 
 These labels are automatically included in all resources through the `atk.labels` helper template. To use these labels in your templates, include them like this:

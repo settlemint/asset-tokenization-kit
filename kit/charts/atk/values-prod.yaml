@@ -6,8 +6,7 @@
 global:
   labels:
     kots.io/app-slug: settlemint-atk
-    app.kubernetes.io/managed-by: helm
-    app.kubernetes.io/part-of: settlemint-atk
+
 
 imagePullCredentials:
   registries:
@@ -426,12 +425,6 @@ observability:
     adminUser: settlemint
     adminPassword: atk
   tempo:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-  promtail:
     global:
       imagePullSecrets:
         - name: image-pull-secret-docker
