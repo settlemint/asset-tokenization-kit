@@ -66,7 +66,7 @@ export function fetchFixedYield(address: Address): FixedYield {
   if (!periods.reverted && periods.value) {
     for (let i = 0; i < periods.value.length; i++) {
       const periodTimestamp = periods.value[i];
-      const periodId = BigInt.fromI32(i);
+      const periodId = BigInt.fromI32(i + 1);
       const id = Bytes.fromUTF8(
         address.toHexString() + "-" + periodId.toString() // Use period index for unique ID within this schedule
       );
