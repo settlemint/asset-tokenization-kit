@@ -44,16 +44,16 @@ contract AirdropFactoryTest is Test {
         // Deploy token
         token = new MockERC20();
 
-        // Deploy factory
-        factory = new AirdropFactory();
+        // Set up trusted forwarder address
+        trustedForwarder = makeAddr("trustedForwarder");
+
+        // Deploy factory with trusted forwarder
+        factory = new AirdropFactory(trustedForwarder);
 
         // Set up time parameters
         startTime = block.timestamp;
         endTime = block.timestamp + 30 days;
         claimPeriodEnd = block.timestamp + 30 days;
-
-        // Set up trusted forwarder address
-        trustedForwarder = makeAddr("trustedForwarder");
 
         vm.stopPrank();
     }
@@ -65,9 +65,8 @@ contract AirdropFactoryTest is Test {
         // Start recording logs for event testing
         vm.recordLogs();
 
-        // Deploy the standard airdrop
-        address airdropAddress =
-            factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime, trustedForwarder);
+        // Deploy the standard airdrop (remove trustedForwarder argument)
+        address airdropAddress = factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime);
 
         // Get the recorded logs
         Vm.Log[] memory logs = vm.getRecordedLogs();
@@ -116,9 +115,9 @@ contract AirdropFactoryTest is Test {
         // Start recording logs for event testing
         vm.recordLogs();
 
-        // Deploy the linear vesting airdrop
+        // Deploy the linear vesting airdrop (remove trustedForwarder argument)
         (address airdropAddress, address strategyAddress) = factory.deployLinearVestingAirdrop(
-            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd, trustedForwarder
+            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
         );
 
         // Get the recorded logs
@@ -177,7 +176,8 @@ contract AirdropFactoryTest is Test {
         vm.startPrank(deployer);
 
         vm.expectRevert("End time must be after start time");
-        factory.deployStandardAirdrop(address(token), merkleRoot, owner, endTime, startTime, trustedForwarder);
+        // Remove trustedForwarder argument
+        factory.deployStandardAirdrop(address(token), merkleRoot, owner, endTime, startTime);
 
         vm.stopPrank();
     }
@@ -187,8 +187,9 @@ contract AirdropFactoryTest is Test {
         vm.startPrank(deployer);
 
         vm.expectRevert("Claim period must be in the future");
+        // Remove trustedForwarder argument
         factory.deployLinearVestingAirdrop(
-            address(token), merkleRoot, owner, vestingDuration, cliffDuration, block.timestamp, trustedForwarder
+            address(token), merkleRoot, owner, vestingDuration, cliffDuration, block.timestamp
         );
 
         vm.stopPrank();
@@ -199,9 +200,8 @@ contract AirdropFactoryTest is Test {
         vm.startPrank(deployer);
 
         vm.expectRevert("Cliff cannot exceed duration");
-        factory.deployLinearVestingAirdrop(
-            address(token), merkleRoot, owner, 100, 200, claimPeriodEnd, trustedForwarder
-        );
+        // Remove trustedForwarder argument
+        factory.deployLinearVestingAirdrop(address(token), merkleRoot, owner, 100, 200, claimPeriodEnd);
 
         vm.stopPrank();
     }
@@ -210,7 +210,8 @@ contract AirdropFactoryTest is Test {
     function testDeployStandardAirdropZeroToken() public {
         vm.startPrank(deployer);
         vm.expectRevert(AirdropBase.ZeroAddress.selector);
-        factory.deployStandardAirdrop(address(0), merkleRoot, owner, startTime, endTime, trustedForwarder);
+        // Remove trustedForwarder argument
+        factory.deployStandardAirdrop(address(0), merkleRoot, owner, startTime, endTime);
         vm.stopPrank();
     }
 
@@ -218,8 +219,9 @@ contract AirdropFactoryTest is Test {
     function testDeployVestingAirdropZeroToken() public {
         vm.startPrank(deployer);
         vm.expectRevert(AirdropBase.ZeroAddress.selector);
+        // Remove trustedForwarder argument
         factory.deployLinearVestingAirdrop(
-            address(0), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd, trustedForwarder
+            address(0), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
         );
         vm.stopPrank();
     }
@@ -231,14 +233,14 @@ contract AirdropFactoryTest is Test {
         // Expect revert from Ownable constructor when deploying the strategy,
         // including the zero address argument.
         vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableInvalidOwner.selector, address(0)));
+        // Remove trustedForwarder argument
         factory.deployLinearVestingAirdrop(
             address(token),
             merkleRoot,
             address(0), // Zero owner - should cause Ownable revert
             vestingDuration,
             cliffDuration,
-            claimPeriodEnd,
-            trustedForwarder
+            claimPeriodEnd
         );
 
         vm.stopPrank();
@@ -252,18 +254,11 @@ contract AirdropFactoryTest is Test {
     function testDeployMultipleAirdrops() public {
         vm.startPrank(deployer);
 
-        // Deploy first (standard)
-        address standardAirdrop =
-            factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime, trustedForwarder);
-        // Deploy second (vesting)
+        // Deploy first (standard) - remove trustedForwarder argument
+        address standardAirdrop = factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime);
+        // Deploy second (vesting) - remove trustedForwarder argument
         (address vestingAirdrop, address vestingStrategy) = factory.deployLinearVestingAirdrop(
-            address(token),
-            keccak256("root2"),
-            owner,
-            vestingDuration + 1,
-            cliffDuration + 1,
-            claimPeriodEnd + 1,
-            trustedForwarder
+            address(token), keccak256("root2"), owner, vestingDuration + 1, cliffDuration + 1, claimPeriodEnd + 1
         );
 
         assertTrue(standardAirdrop != address(0), "Standard airdrop address should not be zero");
