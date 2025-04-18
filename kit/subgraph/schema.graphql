@@ -936,7 +936,7 @@ type AirdropFactory @entity(immutable: false) {
 interface Airdrop {
   id: Bytes! # Contract address
   factory: AirdropFactory!
-  token: Asset! # Assuming the token being airdropped is already indexed as an Asset
+  token: Bytes! # Changed from Asset! to Bytes!
   merkleRoot: Bytes!
   owner: Account!
   deployedOn: BigInt!
@@ -953,7 +953,7 @@ interface Airdrop {
 type StandardAirdrop implements Airdrop @entity(immutable: false) {
   id: Bytes! # Contract address
   factory: AirdropFactory!
-  token: Asset!
+  token: Bytes! # Matches interface
   merkleRoot: Bytes!
   owner: Account!
   deployedOn: BigInt!
@@ -973,7 +973,7 @@ type StandardAirdrop implements Airdrop @entity(immutable: false) {
 type VestingAirdrop implements Airdrop @entity(immutable: false) {
   id: Bytes! # Contract address
   factory: AirdropFactory!
-  token: Asset!
+  token: Bytes! # Matches interface
   merkleRoot: Bytes!
   owner: Account!
   deployedOn: BigInt!
