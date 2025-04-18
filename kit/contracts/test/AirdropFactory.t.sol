@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Test, console, Vm} from "forge-std/Test.sol";
-import {AirdropFactory} from "../src/AirdropFactory.sol";
-import {StandardAirdrop} from "../src/StandardAirdrop.sol";
-import {VestingAirdrop} from "../src/VestingAirdrop.sol";
-import {LinearVestingStrategy} from "../src/strategies/LinearVestingStrategy.sol";
-import {AirdropBase} from "../src/AirdropBase.sol"; // Import needed for error selector
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol"; // Import Ownable for the error selector
+import { Test, console, Vm } from "forge-std/Test.sol";
+import { AirdropFactory } from "../contracts/airdrop/AirdropFactory.sol";
+import { StandardAirdrop } from "../contracts/airdrop/StandardAirdrop.sol";
+import { VestingAirdrop } from "../contracts/airdrop/VestingAirdrop.sol";
+import { LinearVestingStrategy } from "../contracts/airdrop/strategies/LinearVestingStrategy.sol";
+import { AirdropBase } from "../contracts/airdrop/AirdropBase.sol"; // Import needed for error selector
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol"; // Import Ownable for the error selector
 
 // Mock ERC20 token for testing
 contract MockERC20 is ERC20 {
@@ -34,8 +34,7 @@ contract AirdropFactoryTest is Test {
     uint256 public claimPeriodEnd;
 
     // Event signatures for testing
-    bytes32 constant STANDARD_AIRDROP_DEPLOYED_EVENT_SIG =
-        keccak256("StandardAirdropDeployed(address,address,address)");
+    bytes32 constant STANDARD_AIRDROP_DEPLOYED_EVENT_SIG = keccak256("StandardAirdropDeployed(address,address,address)");
     bytes32 constant VESTING_AIRDROP_DEPLOYED_EVENT_SIG =
         keccak256("VestingAirdropDeployed(address,address,address,address)");
 
@@ -67,47 +66,27 @@ contract AirdropFactoryTest is Test {
         vm.recordLogs();
 
         // Deploy the standard airdrop
-        address airdropAddress = factory.deployStandardAirdrop(
-            address(token),
-            merkleRoot,
-            owner,
-            startTime,
-            endTime,
-            trustedForwarder
-        );
+        address airdropAddress =
+            factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime, trustedForwarder);
 
         // Get the recorded logs
         Vm.Log[] memory logs = vm.getRecordedLogs();
 
         // Find the StandardAirdropDeployed event
         bool foundEvent = false;
-        for (uint i = 0; i < logs.length; i++) {
+        for (uint256 i = 0; i < logs.length; i++) {
             // Check if this is our event
             if (logs[i].topics[0] == STANDARD_AIRDROP_DEPLOYED_EVENT_SIG) {
                 foundEvent = true;
 
                 // Parse the indexed parameters from the topics
-                address emittedAirdropAddress = address(
-                    uint160(uint256(logs[i].topics[1]))
-                );
-                address emittedTokenAddress = address(
-                    uint160(uint256(logs[i].topics[2]))
-                );
-                address emittedOwner = address(
-                    uint160(uint256(logs[i].topics[3]))
-                );
+                address emittedAirdropAddress = address(uint160(uint256(logs[i].topics[1])));
+                address emittedTokenAddress = address(uint160(uint256(logs[i].topics[2])));
+                address emittedOwner = address(uint160(uint256(logs[i].topics[3])));
 
                 // Verify the event parameters
-                assertEq(
-                    emittedAirdropAddress,
-                    airdropAddress,
-                    "Event airdrop address mismatch"
-                );
-                assertEq(
-                    emittedTokenAddress,
-                    address(token),
-                    "Event token address mismatch"
-                );
+                assertEq(emittedAirdropAddress, airdropAddress, "Event airdrop address mismatch");
+                assertEq(emittedTokenAddress, address(token), "Event token address mismatch");
                 assertEq(emittedOwner, owner, "Event owner mismatch");
 
                 break;
@@ -117,18 +96,11 @@ contract AirdropFactoryTest is Test {
         assertTrue(foundEvent, "StandardAirdropDeployed event not emitted");
 
         // Verify the airdrop was deployed correctly
-        assertTrue(
-            airdropAddress != address(0),
-            "Airdrop address should not be zero"
-        );
+        assertTrue(airdropAddress != address(0), "Airdrop address should not be zero");
 
         // Check the deployed contract has the expected parameters
         StandardAirdrop airdrop = StandardAirdrop(airdropAddress);
-        assertEq(
-            address(airdrop.token()),
-            address(token),
-            "Token address mismatch"
-        );
+        assertEq(address(airdrop.token()), address(token), "Token address mismatch");
         assertEq(airdrop.merkleRoot(), merkleRoot, "Merkle root mismatch");
         assertEq(airdrop.owner(), owner, "Owner mismatch");
         assertEq(airdrop.startTime(), startTime, "Start time mismatch");
@@ -145,61 +117,33 @@ contract AirdropFactoryTest is Test {
         vm.recordLogs();
 
         // Deploy the linear vesting airdrop
-        (address airdropAddress, address strategyAddress) = factory
-            .deployLinearVestingAirdrop(
-                address(token),
-                merkleRoot,
-                owner,
-                vestingDuration,
-                cliffDuration,
-                claimPeriodEnd,
-                trustedForwarder
-            );
+        (address airdropAddress, address strategyAddress) = factory.deployLinearVestingAirdrop(
+            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd, trustedForwarder
+        );
 
         // Get the recorded logs
         Vm.Log[] memory logs = vm.getRecordedLogs();
 
         // Find the VestingAirdropDeployed event
         bool foundEvent = false;
-        for (uint i = 0; i < logs.length; i++) {
+        for (uint256 i = 0; i < logs.length; i++) {
             // Check if this is our event
             if (logs[i].topics[0] == VESTING_AIRDROP_DEPLOYED_EVENT_SIG) {
                 foundEvent = true;
 
                 // Parse the indexed parameters from the topics
-                address emittedAirdropAddress = address(
-                    uint160(uint256(logs[i].topics[1]))
-                );
-                address emittedTokenAddress = address(
-                    uint160(uint256(logs[i].topics[2]))
-                );
-                address emittedOwner = address(
-                    uint160(uint256(logs[i].topics[3]))
-                );
+                address emittedAirdropAddress = address(uint160(uint256(logs[i].topics[1])));
+                address emittedTokenAddress = address(uint160(uint256(logs[i].topics[2])));
+                address emittedOwner = address(uint160(uint256(logs[i].topics[3])));
 
                 // Parse the non-indexed parameter from the data
-                address emittedStrategyAddress = abi.decode(
-                    logs[i].data,
-                    (address)
-                );
+                address emittedStrategyAddress = abi.decode(logs[i].data, (address));
 
                 // Verify the event parameters
-                assertEq(
-                    emittedAirdropAddress,
-                    airdropAddress,
-                    "Event airdrop address mismatch"
-                );
-                assertEq(
-                    emittedTokenAddress,
-                    address(token),
-                    "Event token address mismatch"
-                );
+                assertEq(emittedAirdropAddress, airdropAddress, "Event airdrop address mismatch");
+                assertEq(emittedTokenAddress, address(token), "Event token address mismatch");
                 assertEq(emittedOwner, owner, "Event owner mismatch");
-                assertEq(
-                    emittedStrategyAddress,
-                    strategyAddress,
-                    "Event strategy address mismatch"
-                );
+                assertEq(emittedStrategyAddress, strategyAddress, "Event strategy address mismatch");
 
                 break;
             }
@@ -208,47 +152,21 @@ contract AirdropFactoryTest is Test {
         assertTrue(foundEvent, "VestingAirdropDeployed event not emitted");
 
         // Verify the airdrop and strategy were deployed correctly
-        assertTrue(
-            airdropAddress != address(0),
-            "Airdrop address should not be zero"
-        );
-        assertTrue(
-            strategyAddress != address(0),
-            "Strategy address should not be zero"
-        );
+        assertTrue(airdropAddress != address(0), "Airdrop address should not be zero");
+        assertTrue(strategyAddress != address(0), "Strategy address should not be zero");
 
         // Check the deployed airdrop has the expected parameters
         VestingAirdrop airdrop = VestingAirdrop(airdropAddress);
-        assertEq(
-            address(airdrop.token()),
-            address(token),
-            "Token address mismatch"
-        );
+        assertEq(address(airdrop.token()), address(token), "Token address mismatch");
         assertEq(airdrop.merkleRoot(), merkleRoot, "Merkle root mismatch");
         assertEq(airdrop.owner(), owner, "Owner mismatch");
-        assertEq(
-            airdrop.claimPeriodEnd(),
-            claimPeriodEnd,
-            "Claim period end mismatch"
-        );
-        assertEq(
-            address(airdrop.claimStrategy()),
-            strategyAddress,
-            "Strategy address mismatch"
-        );
+        assertEq(airdrop.claimPeriodEnd(), claimPeriodEnd, "Claim period end mismatch");
+        assertEq(address(airdrop.claimStrategy()), strategyAddress, "Strategy address mismatch");
 
         // Check the deployed strategy has the expected parameters
         LinearVestingStrategy strategy = LinearVestingStrategy(strategyAddress);
-        assertEq(
-            strategy.vestingDuration(),
-            vestingDuration,
-            "Vesting duration mismatch"
-        );
-        assertEq(
-            strategy.cliffDuration(),
-            cliffDuration,
-            "Cliff duration mismatch"
-        );
+        assertEq(strategy.vestingDuration(), vestingDuration, "Vesting duration mismatch");
+        assertEq(strategy.cliffDuration(), cliffDuration, "Cliff duration mismatch");
         assertEq(strategy.owner(), owner, "Strategy owner mismatch");
 
         vm.stopPrank();
@@ -259,14 +177,7 @@ contract AirdropFactoryTest is Test {
         vm.startPrank(deployer);
 
         vm.expectRevert("End time must be after start time");
-        factory.deployStandardAirdrop(
-            address(token),
-            merkleRoot,
-            owner,
-            endTime,
-            startTime,
-            trustedForwarder
-        );
+        factory.deployStandardAirdrop(address(token), merkleRoot, owner, endTime, startTime, trustedForwarder);
 
         vm.stopPrank();
     }
@@ -277,13 +188,7 @@ contract AirdropFactoryTest is Test {
 
         vm.expectRevert("Claim period must be in the future");
         factory.deployLinearVestingAirdrop(
-            address(token),
-            merkleRoot,
-            owner,
-            vestingDuration,
-            cliffDuration,
-            block.timestamp,
-            trustedForwarder
+            address(token), merkleRoot, owner, vestingDuration, cliffDuration, block.timestamp, trustedForwarder
         );
 
         vm.stopPrank();
@@ -295,13 +200,7 @@ contract AirdropFactoryTest is Test {
 
         vm.expectRevert("Cliff cannot exceed duration");
         factory.deployLinearVestingAirdrop(
-            address(token),
-            merkleRoot,
-            owner,
-            100,
-            200,
-            claimPeriodEnd,
-            trustedForwarder
+            address(token), merkleRoot, owner, 100, 200, claimPeriodEnd, trustedForwarder
         );
 
         vm.stopPrank();
@@ -311,14 +210,7 @@ contract AirdropFactoryTest is Test {
     function testDeployStandardAirdropZeroToken() public {
         vm.startPrank(deployer);
         vm.expectRevert(AirdropBase.ZeroAddress.selector);
-        factory.deployStandardAirdrop(
-            address(0),
-            merkleRoot,
-            owner,
-            startTime,
-            endTime,
-            trustedForwarder
-        );
+        factory.deployStandardAirdrop(address(0), merkleRoot, owner, startTime, endTime, trustedForwarder);
         vm.stopPrank();
     }
 
@@ -327,13 +219,7 @@ contract AirdropFactoryTest is Test {
         vm.startPrank(deployer);
         vm.expectRevert(AirdropBase.ZeroAddress.selector);
         factory.deployLinearVestingAirdrop(
-            address(0),
-            merkleRoot,
-            owner,
-            vestingDuration,
-            cliffDuration,
-            claimPeriodEnd,
-            trustedForwarder
+            address(0), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd, trustedForwarder
         );
         vm.stopPrank();
     }
@@ -344,12 +230,7 @@ contract AirdropFactoryTest is Test {
 
         // Expect revert from Ownable constructor when deploying the strategy,
         // including the zero address argument.
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                Ownable.OwnableInvalidOwner.selector,
-                address(0)
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableInvalidOwner.selector, address(0)));
         factory.deployLinearVestingAirdrop(
             address(token),
             merkleRoot,
@@ -372,43 +253,23 @@ contract AirdropFactoryTest is Test {
         vm.startPrank(deployer);
 
         // Deploy first (standard)
-        address standardAirdrop = factory.deployStandardAirdrop(
+        address standardAirdrop =
+            factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime, trustedForwarder);
+        // Deploy second (vesting)
+        (address vestingAirdrop, address vestingStrategy) = factory.deployLinearVestingAirdrop(
             address(token),
-            merkleRoot,
+            keccak256("root2"),
             owner,
-            startTime,
-            endTime,
+            vestingDuration + 1,
+            cliffDuration + 1,
+            claimPeriodEnd + 1,
             trustedForwarder
         );
-        // Deploy second (vesting)
-        (address vestingAirdrop, address vestingStrategy) = factory
-            .deployLinearVestingAirdrop(
-                address(token),
-                keccak256("root2"),
-                owner,
-                vestingDuration + 1,
-                cliffDuration + 1,
-                claimPeriodEnd + 1,
-                trustedForwarder
-            );
 
-        assertTrue(
-            standardAirdrop != address(0),
-            "Standard airdrop address should not be zero"
-        );
-        assertTrue(
-            vestingAirdrop != address(0),
-            "Vesting airdrop address should not be zero"
-        );
-        assertTrue(
-            vestingStrategy != address(0),
-            "Vesting strategy address should not be zero"
-        );
-        assertNotEq(
-            standardAirdrop,
-            vestingAirdrop,
-            "Airdrop addresses should differ"
-        );
+        assertTrue(standardAirdrop != address(0), "Standard airdrop address should not be zero");
+        assertTrue(vestingAirdrop != address(0), "Vesting airdrop address should not be zero");
+        assertTrue(vestingStrategy != address(0), "Vesting strategy address should not be zero");
+        assertNotEq(standardAirdrop, vestingAirdrop, "Airdrop addresses should differ");
 
         vm.stopPrank();
     }
