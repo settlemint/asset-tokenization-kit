@@ -4,7 +4,6 @@ import { DataTable } from "@/components/blocks/data-table/data-table";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
 import { Badge } from "@/components/ui/badge";
 import type {
-  Bond,
   YieldPeriod,
   YieldSchedule,
 } from "@/lib/queries/bond/bond-schema";
@@ -17,10 +16,9 @@ import { useCallback, useMemo } from "react";
 
 export interface PeriodTableProps {
   yieldSchedule: YieldSchedule;
-  bond: Bond;
 }
 
-export function YieldPeriodTable({ yieldSchedule, bond }: PeriodTableProps) {
+export function YieldPeriodTable({ yieldSchedule }: PeriodTableProps) {
   const t = useTranslations("admin.bonds.yield.period-table");
   const locale = useLocale();
 
@@ -80,18 +78,8 @@ export function YieldPeriodTable({ yieldSchedule, bond }: PeriodTableProps) {
       },
       {
         accessorKey: "totalClaimed",
-        header: t("claimed-total"),
-        cell: ({ row }) => {
-          const totalClaimed = Number(row.original.totalClaimed);
-          const totalSupply = Number(bond.totalSupply);
-
-          return (
-            <div>
-              {formatNumber(totalClaimed, { locale })} /{" "}
-              {formatNumber(totalSupply, { locale })}
-            </div>
-          );
-        },
+        header: t("total-claimed"),
+        cell: ({ row }) => formatNumber(row.original.totalClaimed, { locale }),
       },
       {
         id: "elapsed",
@@ -148,7 +136,7 @@ export function YieldPeriodTable({ yieldSchedule, bond }: PeriodTableProps) {
         },
       },
     ],
-    [t, bond.totalSupply, locale, getPeriodStatus]
+    [t, locale, getPeriodStatus]
   );
 
   const displayData = data.length > 0 ? data : [];

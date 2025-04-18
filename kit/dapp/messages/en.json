@@ -22,7 +22,7 @@
           "title": "No yield schedule found"
         },
         "period-table": {
-          "claimed-total": "Claimed total",
+          "total-claimed": "Total claimed",
           "end-date": "End date",
           "no-yield-periods": "No yield periods found",
           "period-id": "Period id",
