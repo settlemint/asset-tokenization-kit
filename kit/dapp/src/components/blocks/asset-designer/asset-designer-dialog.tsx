@@ -26,6 +26,8 @@ export type AssetDesignerStep =
   | "type"
   | "details"
   | "configuration"
+  | "permissions"
+  | "regulation"
   | "summary";
 
 interface AssetDesignerDialogProps {
@@ -111,7 +113,7 @@ export function AssetDesignerDialog({
       <DialogContent className="max-h-screen h-screen w-screen p-0 overflow-hidden rounded-none border-none right-0 !max-w-screen">
         <div className="flex h-full flex-col">
           {/* Header */}
-          <DialogHeader className="py-4 px-6 border-b flex-row justify-between items-center">
+          <DialogHeader className="py-4 px-6 border-b flex-row justify-between items-center bg-background">
             <div>
               <DialogTitle className="text-xl">{getAssetTitle()}</DialogTitle>
               <DialogDescription>{getAssetDescription()}</DialogDescription>
@@ -121,11 +123,12 @@ export function AssetDesignerDialog({
           {/* Main content area with sidebar */}
           <div className="flex flex-1 overflow-hidden">
             {/* Sidebar / Steps */}
-            <div className="w-64 bg-muted/40 border-r p-6">
+            <div className="w-64 bg-sidebar border-r p-6">
               <div className="space-y-1">
                 <StepItem
                   number={1}
-                  title="Select asset type"
+                  title="Asset Type"
+                  description="Choose the type of digital asset to create."
                   isActive={currentStep === "type"}
                   isCompleted={
                     currentStep !== "type" && selectedAssetType !== null
@@ -134,7 +137,8 @@ export function AssetDesignerDialog({
                 />
                 <StepItem
                   number={2}
-                  title="Asset basics"
+                  title="Basic information"
+                  description="Provide general information about your asset."
                   isActive={currentStep === "details"}
                   isCompleted={
                     currentStep !== "type" &&
@@ -146,10 +150,14 @@ export function AssetDesignerDialog({
                 />
                 <StepItem
                   number={3}
-                  title="Configuration"
+                  title="Asset configuration"
+                  description="Configure specific parameters for your asset."
                   isActive={currentStep === "configuration"}
                   isCompleted={
-                    currentStep === "summary" && selectedAssetType !== null
+                    currentStep !== "type" &&
+                    currentStep !== "details" &&
+                    currentStep !== "configuration" &&
+                    selectedAssetType !== null
                   }
                   onClick={() =>
                     selectedAssetType && setCurrentStep("configuration")
@@ -158,21 +166,69 @@ export function AssetDesignerDialog({
                 />
                 <StepItem
                   number={4}
-                  title="Summary"
-                  isActive={currentStep === "summary"}
-                  isCompleted={false}
-                  onClick={() => selectedAssetType && setCurrentStep("summary")}
+                  title="Asset permissions"
+                  description="Define who can manage and use this asset."
+                  isActive={currentStep === "permissions"}
+                  isCompleted={
+                    currentStep !== "type" &&
+                    currentStep !== "details" &&
+                    currentStep !== "configuration" &&
+                    currentStep !== "permissions" &&
+                    selectedAssetType !== null
+                  }
+                  onClick={() =>
+                    selectedAssetType && setCurrentStep("permissions")
+                  }
                   disabled={
                     !selectedAssetType ||
                     currentStep === "type" ||
                     currentStep === "details"
                   }
                 />
+                <StepItem
+                  number={5}
+                  title="Regulation"
+                  description="Configure regulatory requirements for your asset."
+                  isActive={currentStep === "regulation"}
+                  isCompleted={
+                    currentStep !== "type" &&
+                    currentStep !== "details" &&
+                    currentStep !== "configuration" &&
+                    currentStep !== "permissions" &&
+                    currentStep !== "regulation" &&
+                    selectedAssetType !== null
+                  }
+                  onClick={() =>
+                    selectedAssetType && setCurrentStep("regulation")
+                  }
+                  disabled={
+                    !selectedAssetType ||
+                    currentStep === "type" ||
+                    currentStep === "details" ||
+                    currentStep === "configuration"
+                  }
+                />
+                <StepItem
+                  number={6}
+                  title="Summary"
+                  description="Review all the details before issuing your asset."
+                  isActive={currentStep === "summary"}
+                  isCompleted={false}
+                  onClick={() => selectedAssetType && setCurrentStep("summary")}
+                  disabled={
+                    !selectedAssetType ||
+                    currentStep === "type" ||
+                    currentStep === "details" ||
+                    currentStep === "configuration" ||
+                    currentStep === "permissions" ||
+                    currentStep === "regulation"
+                  }
+                />
               </div>
             </div>
 
             {/* Content area */}
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-auto bg-background">
               {currentStep === "type" && (
                 <AssetTypeSelection
                   selectedType={selectedAssetType}
@@ -182,11 +238,8 @@ export function AssetDesignerDialog({
               {currentStep === "details" && (
                 <div className="p-6">
                   {/* This will be replaced with the actual details form for the selected asset type */}
-                  <p className="text-lg font-semibold">Asset basics</p>
-                  <p>
-                    Provide the general information required to define your
-                    asset.
-                  </p>
+                  <p className="text-lg font-semibold">Basic information</p>
+                  <p>Provide general information about your asset.</p>
 
                   {/* Navigation buttons */}
                   <div className="mt-8 flex justify-end space-x-4">
@@ -205,17 +258,54 @@ export function AssetDesignerDialog({
               {currentStep === "configuration" && (
                 <div className="p-6">
                   {/* This will be replaced with the actual configuration form for the selected asset type */}
-                  <p className="text-lg font-semibold">Configuration</p>
-                  <p>
-                    Configure the specific parameters for your{" "}
-                    {selectedAssetType} asset.
-                  </p>
+                  <p className="text-lg font-semibold">Asset configuration</p>
+                  <p>Configure specific parameters for your asset.</p>
 
                   {/* Navigation buttons */}
                   <div className="mt-8 flex justify-end space-x-4">
                     <Button
                       variant="outline"
                       onClick={() => setCurrentStep("details")}
+                    >
+                      Back
+                    </Button>
+                    <Button onClick={() => setCurrentStep("permissions")}>
+                      Continue
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {currentStep === "permissions" && (
+                <div className="p-6">
+                  {/* This will be replaced with the actual permissions form for the selected asset type */}
+                  <p className="text-lg font-semibold">Asset permissions</p>
+                  <p>Define who can manage and use this asset.</p>
+
+                  {/* Navigation buttons */}
+                  <div className="mt-8 flex justify-end space-x-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentStep("configuration")}
+                    >
+                      Back
+                    </Button>
+                    <Button onClick={() => setCurrentStep("regulation")}>
+                      Continue
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {currentStep === "regulation" && (
+                <div className="p-6">
+                  {/* This will be replaced with the actual regulation form for the selected asset type */}
+                  <p className="text-lg font-semibold">Regulation</p>
+                  <p>Configure regulatory requirements for your asset.</p>
+
+                  {/* Navigation buttons */}
+                  <div className="mt-8 flex justify-end space-x-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentStep("permissions")}
                     >
                       Back
                     </Button>
@@ -229,13 +319,13 @@ export function AssetDesignerDialog({
                 <div className="p-6">
                   {/* This will be replaced with the actual summary for the selected asset type */}
                   <p className="text-lg font-semibold">Summary</p>
-                  <p>Review all the details before creating your asset.</p>
+                  <p>Review all the details before issuing your asset.</p>
 
                   {/* Navigation buttons */}
                   <div className="mt-8 flex justify-end space-x-4">
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentStep("configuration")}
+                      onClick={() => setCurrentStep("regulation")}
                     >
                       Back
                     </Button>
@@ -256,6 +346,7 @@ export function AssetDesignerDialog({
 interface StepItemProps {
   number: number;
   title: string;
+  description?: string;
   isActive: boolean;
   isCompleted: boolean;
   onClick: () => void;
@@ -265,6 +356,7 @@ interface StepItemProps {
 function StepItem({
   number,
   title,
+  description,
   isActive,
   isCompleted,
   onClick,
@@ -273,23 +365,39 @@ function StepItem({
   return (
     <button
       className={cn(
-        "flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-colors",
-        isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted/80",
+        "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left",
+        isActive
+          ? "bg-primary text-primary-foreground"
+          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
         disabled && "opacity-50 cursor-not-allowed"
       )}
       onClick={onClick}
       disabled={disabled}
     >
-      <div
-        className={cn(
-          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium",
-          isActive ? "border-primary-foreground" : "border-muted-foreground",
-          isCompleted && "bg-primary text-primary-foreground"
-        )}
-      >
-        {isCompleted ? "✓" : number}
+      <div className="flex items-center space-x-3">
+        <div
+          className={cn(
+            "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium",
+            isActive ? "border-primary-foreground" : "border-sidebar-border",
+            isCompleted && "bg-primary text-primary-foreground"
+          )}
+        >
+          {isCompleted ? "✓" : number}
+        </div>
+        <span className="text-sm font-medium">{title}</span>
       </div>
-      <span className="text-sm font-medium">{title}</span>
+      {description && (
+        <p
+          className={cn(
+            "text-xs mt-1 ml-9",
+            isActive
+              ? "text-primary-foreground/80"
+              : "text-sidebar-foreground/70"
+          )}
+        >
+          {description}
+        </p>
+      )}
     </button>
   );
 }
