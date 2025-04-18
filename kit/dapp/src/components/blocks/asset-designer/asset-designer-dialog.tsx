@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Import form steps for each asset type
 import { Basics as BondBasics } from "@/components/blocks/create-forms/bond/steps/basics";
@@ -63,7 +63,11 @@ export function AssetDesignerDialog({
   const [currentStep, setCurrentStep] = useState<AssetDesignerStep>("type");
   const [selectedAssetType, setSelectedAssetType] = useState<AssetType>(null);
 
-  // Create forms for each asset type
+  // Form state tracking
+  const [isBasicInfoValid, setIsBasicInfoValid] = useState(false);
+  const [isConfigurationValid, setIsConfigurationValid] = useState(false);
+
+  // Create forms for each asset type with mode set to run validation always
   const bondForm = useForm({
     defaultValues: {
       assetName: "",
@@ -71,6 +75,7 @@ export function AssetDesignerDialog({
       decimals: 18,
       isin: "",
     },
+    mode: "all", // Validate on all events
   });
 
   const cryptocurrencyForm = useForm({
@@ -79,6 +84,7 @@ export function AssetDesignerDialog({
       symbol: "",
       decimals: 18,
     },
+    mode: "all",
   });
 
   const equityForm = useForm({
@@ -88,6 +94,7 @@ export function AssetDesignerDialog({
       isin: "",
       cusip: "",
     },
+    mode: "all",
   });
 
   const fundForm = useForm({
@@ -97,6 +104,7 @@ export function AssetDesignerDialog({
       isin: "",
       decimals: 18,
     },
+    mode: "all",
   });
 
   const stablecoinForm = useForm({
@@ -105,6 +113,7 @@ export function AssetDesignerDialog({
       symbol: "",
       decimals: 18,
     },
+    mode: "all",
   });
 
   const depositForm = useForm({
@@ -113,10 +122,101 @@ export function AssetDesignerDialog({
       symbol: "",
       decimals: 18,
     },
+    mode: "all",
   });
+
+  // Get the appropriate form based on asset type
+  const getFormForAssetType = () => {
+    switch (selectedAssetType) {
+      case "bond":
+        return bondForm;
+      case "cryptocurrency":
+        return cryptocurrencyForm;
+      case "equity":
+        return equityForm;
+      case "fund":
+        return fundForm;
+      case "stablecoin":
+        return stablecoinForm;
+      case "deposit":
+        return depositForm;
+      default:
+        return bondForm; // Fallback
+    }
+  };
+
+  // Check if all required fields are filled and valid for the current step
+  useEffect(() => {
+    if (!selectedAssetType) return;
+
+    const checkFormValidity = async () => {
+      const form = getFormForAssetType();
+
+      // Get form state
+      const { errors, touchedFields, dirtyFields } = form.formState;
+
+      if (currentStep === "details") {
+        // Mark all fields as touched to force validation
+        form.trigger();
+
+        // For the details step, check specific required fields
+        const formValues = form.getValues();
+        const hasAssetName = !!(formValues as any).assetName;
+        const hasSymbol = !!(formValues as any).symbol;
+        const hasValidDecimals =
+          typeof (formValues as any).decimals === "number" &&
+          (formValues as any).decimals > 0;
+
+        // Check if any fields have errors
+        const hasErrors = Object.keys(errors).length > 0;
+
+        // Form is valid only if all required fields have values and there are no errors
+        const isValid =
+          hasAssetName && hasSymbol && hasValidDecimals && !hasErrors;
+        setIsBasicInfoValid(isValid);
+      }
+
+      if (currentStep === "configuration") {
+        // Trigger validation for all fields
+        form.trigger();
+
+        // For configuration, we check if there are any errors
+        const hasErrors = Object.keys(errors).length > 0;
+
+        // Check if required configuration fields are present based on asset type
+        const configFieldsValid = true;
+        // Asset-specific validation can be added here
+
+        setIsConfigurationValid(configFieldsValid && !hasErrors);
+      }
+    };
+
+    // Check validity immediately and set up a subscription to form changes
+    checkFormValidity();
+
+    // Subscribe to form state changes
+    const form = getFormForAssetType();
+    const subscription = form.watch(() => {
+      checkFormValidity();
+    });
+
+    return () => {
+      if (subscription && typeof subscription === "object") {
+        try {
+          // @ts-expect-error - The subscription object has an unsubscribe method
+          subscription.unsubscribe?.();
+        } catch (error) {
+          console.error("Error unsubscribing from form watch:", error);
+        }
+      }
+    };
+  }, [currentStep, selectedAssetType]);
 
   const handleAssetTypeSelect = (type: AssetType) => {
     setSelectedAssetType(type);
+    // Reset validation states when changing asset type
+    setIsBasicInfoValid(false);
+    setIsConfigurationValid(false);
     // Move to the next step after selecting an asset type
     if (type) {
       setCurrentStep("details");
@@ -126,6 +226,8 @@ export function AssetDesignerDialog({
   const resetDesigner = () => {
     setCurrentStep("type");
     setSelectedAssetType(null);
+    setIsBasicInfoValid(false);
+    setIsConfigurationValid(false);
 
     // Reset all forms
     bondForm.reset();
@@ -185,26 +287,6 @@ export function AssetDesignerDialog({
         return "Digital assets that represent a deposit of a traditional asset.";
       default:
         return "Create your digital asset in a few steps";
-    }
-  };
-
-  // Get the appropriate form based on asset type
-  const getFormForAssetType = () => {
-    switch (selectedAssetType) {
-      case "bond":
-        return bondForm;
-      case "cryptocurrency":
-        return cryptocurrencyForm;
-      case "equity":
-        return equityForm;
-      case "fund":
-        return fundForm;
-      case "stablecoin":
-        return stablecoinForm;
-      case "deposit":
-        return depositForm;
-      default:
-        return bondForm; // Fallback
     }
   };
 
@@ -437,14 +519,14 @@ export function AssetDesignerDialog({
                     </Button>
                     <Button
                       onClick={() => {
-                        // Validate form before proceeding
-                        const form = getFormForAssetType();
-                        form.trigger().then((isValid) => {
-                          if (isValid) {
-                            setCurrentStep("configuration");
-                          }
-                        });
+                        if (isBasicInfoValid) {
+                          setCurrentStep("configuration");
+                        }
                       }}
+                      disabled={!isBasicInfoValid}
+                      className={
+                        !isBasicInfoValid ? "opacity-50 cursor-not-allowed" : ""
+                      }
                     >
                       Continue
                     </Button>
@@ -465,14 +547,16 @@ export function AssetDesignerDialog({
                     </Button>
                     <Button
                       onClick={() => {
-                        // Validate form before proceeding
-                        const form = getFormForAssetType();
-                        form.trigger().then((isValid) => {
-                          if (isValid) {
-                            setCurrentStep("permissions");
-                          }
-                        });
+                        if (isConfigurationValid) {
+                          setCurrentStep("permissions");
+                        }
                       }}
+                      disabled={!isConfigurationValid}
+                      className={
+                        !isConfigurationValid
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }
                     >
                       Continue
                     </Button>
@@ -493,7 +577,10 @@ export function AssetDesignerDialog({
                     >
                       Back
                     </Button>
-                    <Button onClick={() => setCurrentStep("regulation")}>
+                    <Button
+                      onClick={() => setCurrentStep("regulation")}
+                      // Will be disabled until permissions step is implemented
+                    >
                       Continue
                     </Button>
                   </div>
