@@ -20,6 +20,14 @@ import { Basics as EquityBasics } from "@/components/blocks/create-forms/equity/
 import { Basics as FundBasics } from "@/components/blocks/create-forms/fund/steps/basics";
 import { Basics as StablecoinBasics } from "@/components/blocks/create-forms/stablecoin/steps/basics";
 
+// Import configuration components
+import { Configuration as BondConfiguration } from "@/components/blocks/create-forms/bond/steps/configuration";
+import { Configuration as CryptocurrencyConfiguration } from "@/components/blocks/create-forms/cryptocurrency/steps/configuration";
+import { Configuration as DepositConfiguration } from "@/components/blocks/create-forms/deposit/steps/configuration";
+import { Configuration as EquityConfiguration } from "@/components/blocks/create-forms/equity/steps/configuration";
+import { Configuration as FundConfiguration } from "@/components/blocks/create-forms/fund/steps/configuration";
+import { Configuration as StablecoinConfiguration } from "@/components/blocks/create-forms/stablecoin/steps/configuration";
+
 // Import Form Provider
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -244,6 +252,50 @@ export function AssetDesignerDialog({
     }
   };
 
+  // Render the appropriate configuration component for the selected asset type
+  const renderConfigurationComponent = () => {
+    switch (selectedAssetType) {
+      case "bond":
+        return (
+          <FormProvider {...bondForm}>
+            <BondConfiguration />
+          </FormProvider>
+        );
+      case "cryptocurrency":
+        return (
+          <FormProvider {...cryptocurrencyForm}>
+            <CryptocurrencyConfiguration />
+          </FormProvider>
+        );
+      case "equity":
+        return (
+          <FormProvider {...equityForm}>
+            <EquityConfiguration />
+          </FormProvider>
+        );
+      case "fund":
+        return (
+          <FormProvider {...fundForm}>
+            <FundConfiguration />
+          </FormProvider>
+        );
+      case "stablecoin":
+        return (
+          <FormProvider {...stablecoinForm}>
+            <StablecoinConfiguration />
+          </FormProvider>
+        );
+      case "deposit":
+        return (
+          <FormProvider {...depositForm}>
+            <DepositConfiguration />
+          </FormProvider>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-screen h-screen w-screen p-0 overflow-hidden rounded-none border-none right-0 !max-w-screen">
@@ -401,9 +453,7 @@ export function AssetDesignerDialog({
               )}
               {currentStep === "configuration" && (
                 <div className="p-6">
-                  {/* This will be replaced with the actual configuration form for the selected asset type */}
-                  <p className="text-lg font-semibold">Asset configuration</p>
-                  <p>Configure specific parameters for your asset.</p>
+                  {renderConfigurationComponent()}
 
                   {/* Navigation buttons */}
                   <div className="mt-8 flex justify-end space-x-4">
@@ -413,7 +463,17 @@ export function AssetDesignerDialog({
                     >
                       Back
                     </Button>
-                    <Button onClick={() => setCurrentStep("permissions")}>
+                    <Button
+                      onClick={() => {
+                        // Validate form before proceeding
+                        const form = getFormForAssetType();
+                        form.trigger().then((isValid) => {
+                          if (isValid) {
+                            setCurrentStep("permissions");
+                          }
+                        });
+                      }}
+                    >
                       Continue
                     </Button>
                   </div>
