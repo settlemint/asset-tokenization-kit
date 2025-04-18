@@ -144,7 +144,7 @@ export function AssetTypeSelection({
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-semibold mb-4">Select asset type</h2>
+      <h2 className="text-xl font-semibold">Select asset type</h2>
       <p className="text-muted-foreground mb-8">
         Choose the type of digital asset you want to create
       </p>
