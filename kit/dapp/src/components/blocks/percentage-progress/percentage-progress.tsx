@@ -3,12 +3,17 @@ import { formatNumber } from "@/lib/utils/number";
 import * as ProgressPrimitive from "@radix-ui/react-progress";
 import type BigNumber from "bignumber.js";
 import { useLocale } from "next-intl";
+
 interface PercentageProgressBarProps {
   percentage: number | BigNumber;
+  warningThreshold?: number;
+  errorThreshold?: number;
 }
 
 export function PercentageProgressBar({
   percentage,
+  warningThreshold = 75, // Default warning threshold
+  errorThreshold = 90, // Default error threshold
 }: PercentageProgressBarProps) {
   const locale = useLocale();
   const percentageNumber =
@@ -23,9 +28,9 @@ export function PercentageProgressBar({
             "relative h-2 w-full overflow-hidden rounded-full",
             percentageNumber === 0
               ? "bg-muted"
-              : percentageNumber > 90
+              : percentageNumber > errorThreshold
                 ? "bg-destructive/20"
-                : percentageNumber > 75
+                : percentageNumber > warningThreshold
                   ? "bg-warning/20"
                   : "bg-success/20"
           )}
@@ -36,9 +41,9 @@ export function PercentageProgressBar({
               "h-full w-full flex-1 bg-primary transition-all",
               percentageNumber === 0
                 ? "bg-primary"
-                : percentageNumber > 90
+                : percentageNumber > errorThreshold
                   ? "bg-destructive"
-                  : percentageNumber > 75
+                  : percentageNumber > warningThreshold
                     ? "bg-warning"
                     : "bg-success"
             )}
