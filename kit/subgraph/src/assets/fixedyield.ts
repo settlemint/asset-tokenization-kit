@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import { Bond, YieldPeriod } from "../../generated/schema";
 import {
   UnderlyingAssetTopUp as UnderlyingAssetTopUpEvent,
@@ -11,7 +11,6 @@ import { eventId } from "../utils/events";
 import { underlyingAssetTopUpEvent } from "./events/underlyingassettopup";
 import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn";
 import { yieldClaimedEvent } from "./events/yieldclaimed";
-import { fetchAssetDecimals } from "./fetch/asset";
 import { fetchFixedYield } from "./fetch/fixed-yield";
 
 export function handleYieldClaimed(event: YieldClaimedEvent): void {
@@ -63,9 +62,7 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.minus(
     event.params.totalAmount
   );
-  const underlyingDecimals = fetchAssetDecimals(
-    Address.fromBytes(schedule.underlyingAsset)
-  );
+  const underlyingDecimals = schedule.underlyingAssetDecimals;
   schedule.underlyingBalance = toDecimals(
     schedule.underlyingBalanceExact,
     underlyingDecimals
@@ -129,9 +126,7 @@ export function handleUnderlyingAssetTopUp(
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.plus(
     event.params.amount
   );
-  const underlyingDecimals = fetchAssetDecimals(
-    Address.fromBytes(schedule.underlyingAsset)
-  );
+  const underlyingDecimals = schedule.underlyingAssetDecimals;
   schedule.underlyingBalance = toDecimals(
     schedule.underlyingBalanceExact,
     underlyingDecimals
@@ -174,9 +169,7 @@ export function handleUnderlyingAssetWithdrawn(
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.minus(
     event.params.amount
   );
-  const underlyingDecimals = fetchAssetDecimals(
-    Address.fromBytes(schedule.underlyingAsset)
-  );
+  const underlyingDecimals = schedule.underlyingAssetDecimals;
   schedule.underlyingBalance = toDecimals(
     schedule.underlyingBalanceExact,
     underlyingDecimals

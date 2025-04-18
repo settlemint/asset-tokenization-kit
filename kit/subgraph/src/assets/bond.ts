@@ -1235,7 +1235,7 @@ export function handleClawback(event: Clawback): void {
 
 function updateAssociatedFixedYield(bond: Bond, timestamp: BigInt): void {
   if (bond.yieldSchedule) {
-    let fixedYield = fetchFixedYield(bond.yieldSchedule);
+    let fixedYield = fetchFixedYield(Address.fromBytes(bond.yieldSchedule!));
 
     log.info(
       "Updating FixedYield {} due to Bond {} supply change at timestamp {}",
