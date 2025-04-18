@@ -1738,6 +1738,8 @@
         "total-holders-info": "Amount of addresses currently holding the assets",
         "total-issued": "Total issued",
         "total-issued-info": "Total amount of assets issued",
+        "max-supply": "Max supply",
+        "max-supply-info": "The maximum amount of assets that can be issued",
         "total-supply": "Total supply",
         "total-supply-header": "Total supply",
         "total-supply-info": "The total supply of the asset",
