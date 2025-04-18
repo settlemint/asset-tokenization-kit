@@ -1,13 +1,16 @@
 import { metadata as siteMetadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
+import type { PropsWithChildren } from "react";
+
+interface LayoutProps extends PropsWithChildren {
+  params: Promise<{ locale: Locale }>;
+}
 
 export async function generateMetadata({
   params,
-}: {
-  params: { locale: Locale };
-}): Promise<Metadata> {
-  const { locale } = params;
+}: LayoutProps): Promise<Metadata> {
+  const { locale } = await params;
 
   return {
     title: {
