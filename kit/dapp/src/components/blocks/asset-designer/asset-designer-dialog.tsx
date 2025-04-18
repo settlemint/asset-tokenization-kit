@@ -11,6 +11,18 @@ import {
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+
+// Import form steps for each asset type
+import { Basics as BondBasics } from "@/components/blocks/create-forms/bond/steps/basics";
+import { Basics as CryptocurrencyBasics } from "@/components/blocks/create-forms/cryptocurrency/steps/basics";
+import { Basics as DepositBasics } from "@/components/blocks/create-forms/deposit/steps/basics";
+import { Basics as EquityBasics } from "@/components/blocks/create-forms/equity/steps/basics";
+import { Basics as FundBasics } from "@/components/blocks/create-forms/fund/steps/basics";
+import { Basics as StablecoinBasics } from "@/components/blocks/create-forms/stablecoin/steps/basics";
+
+// Import Form Provider
+import { FormProvider, useForm } from "react-hook-form";
+
 import { AssetTypeSelection } from "./steps/asset-type-selection";
 
 export type AssetType =
@@ -43,6 +55,58 @@ export function AssetDesignerDialog({
   const [currentStep, setCurrentStep] = useState<AssetDesignerStep>("type");
   const [selectedAssetType, setSelectedAssetType] = useState<AssetType>(null);
 
+  // Create forms for each asset type
+  const bondForm = useForm({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      decimals: 18,
+      isin: "",
+    },
+  });
+
+  const cryptocurrencyForm = useForm({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      decimals: 18,
+    },
+  });
+
+  const equityForm = useForm({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      isin: "",
+      cusip: "",
+    },
+  });
+
+  const fundForm = useForm({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      isin: "",
+      decimals: 18,
+    },
+  });
+
+  const stablecoinForm = useForm({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      decimals: 18,
+    },
+  });
+
+  const depositForm = useForm({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      decimals: 18,
+    },
+  });
+
   const handleAssetTypeSelect = (type: AssetType) => {
     setSelectedAssetType(type);
     // Move to the next step after selecting an asset type
@@ -54,6 +118,14 @@ export function AssetDesignerDialog({
   const resetDesigner = () => {
     setCurrentStep("type");
     setSelectedAssetType(null);
+
+    // Reset all forms
+    bondForm.reset();
+    cryptocurrencyForm.reset();
+    equityForm.reset();
+    fundForm.reset();
+    stablecoinForm.reset();
+    depositForm.reset();
   };
 
   // When the dialog is closed, reset the state
@@ -105,6 +177,70 @@ export function AssetDesignerDialog({
         return "Digital assets that represent a deposit of a traditional asset.";
       default:
         return "Create your digital asset in a few steps";
+    }
+  };
+
+  // Get the appropriate form based on asset type
+  const getFormForAssetType = () => {
+    switch (selectedAssetType) {
+      case "bond":
+        return bondForm;
+      case "cryptocurrency":
+        return cryptocurrencyForm;
+      case "equity":
+        return equityForm;
+      case "fund":
+        return fundForm;
+      case "stablecoin":
+        return stablecoinForm;
+      case "deposit":
+        return depositForm;
+      default:
+        return bondForm; // Fallback
+    }
+  };
+
+  // Render the appropriate basics component for the selected asset type
+  const renderBasicsComponent = () => {
+    switch (selectedAssetType) {
+      case "bond":
+        return (
+          <FormProvider {...bondForm}>
+            <BondBasics />
+          </FormProvider>
+        );
+      case "cryptocurrency":
+        return (
+          <FormProvider {...cryptocurrencyForm}>
+            <CryptocurrencyBasics />
+          </FormProvider>
+        );
+      case "equity":
+        return (
+          <FormProvider {...equityForm}>
+            <EquityBasics />
+          </FormProvider>
+        );
+      case "fund":
+        return (
+          <FormProvider {...fundForm}>
+            <FundBasics />
+          </FormProvider>
+        );
+      case "stablecoin":
+        return (
+          <FormProvider {...stablecoinForm}>
+            <StablecoinBasics />
+          </FormProvider>
+        );
+      case "deposit":
+        return (
+          <FormProvider {...depositForm}>
+            <DepositBasics />
+          </FormProvider>
+        );
+      default:
+        return null;
     }
   };
 
@@ -237,9 +373,7 @@ export function AssetDesignerDialog({
               )}
               {currentStep === "details" && (
                 <div className="p-6">
-                  {/* This will be replaced with the actual details form for the selected asset type */}
-                  <p className="text-lg font-semibold">Basic information</p>
-                  <p>Provide general information about your asset.</p>
+                  {renderBasicsComponent()}
 
                   {/* Navigation buttons */}
                   <div className="mt-8 flex justify-end space-x-4">
@@ -249,7 +383,17 @@ export function AssetDesignerDialog({
                     >
                       Back
                     </Button>
-                    <Button onClick={() => setCurrentStep("configuration")}>
+                    <Button
+                      onClick={() => {
+                        // Validate form before proceeding
+                        const form = getFormForAssetType();
+                        form.trigger().then((isValid) => {
+                          if (isValid) {
+                            setCurrentStep("configuration");
+                          }
+                        });
+                      }}
+                    >
                       Continue
                     </Button>
                   </div>

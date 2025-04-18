@@ -32,7 +32,7 @@ function AssetTypeCard({
       )}
       onClick={onSelect}
     >
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start">
         <h3 className="text-lg font-semibold">{title}</h3>
         <div
           className={cn(
