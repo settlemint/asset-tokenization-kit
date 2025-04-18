@@ -922,3 +922,141 @@ type AllowedUser @entity(immutable: false) {
   user: Account!
   allowedAt: BigInt!
 }
+
+# --------------------------------------------------
+# Airdrop Contracts
+# --------------------------------------------------
+
+type AirdropFactory @entity {
+  id: Bytes! # Contract address
+  airdrops: [Airdrop!]! @derivedFrom(field: "factory")
+  totalAirdropsDeployed: Int!
+}
+
+interface Airdrop {
+  id: Bytes! # Contract address
+  factory: AirdropFactory!
+  token: Asset! # Assuming the token being airdropped is already indexed as an Asset
+  merkleRoot: Bytes!
+  owner: Account!
+  deployedOn: BigInt!
+  deploymentTx: Bytes!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  totalRecipients: Int! # Count of unique addresses that have claimed
+  totalClaims: Int! # Count of claim events
+  isWithdrawn: Boolean!
+  trustedForwarder: Account!
+  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
+}
+
+type StandardAirdrop implements Airdrop @entity {
+  id: Bytes! # Contract address
+  factory: AirdropFactory!
+  token: Asset!
+  merkleRoot: Bytes!
+  owner: Account!
+  deployedOn: BigInt!
+  deploymentTx: Bytes!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  totalRecipients: Int!
+  totalClaims: Int!
+  isWithdrawn: Boolean!
+  trustedForwarder: Account!
+  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
+  # Standard specific
+  startTime: BigInt!
+  endTime: BigInt!
+}
+
+type VestingAirdrop implements Airdrop @entity {
+  id: Bytes! # Contract address
+  factory: AirdropFactory!
+  token: Asset!
+  merkleRoot: Bytes!
+  owner: Account!
+  deployedOn: BigInt!
+  deploymentTx: Bytes!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  totalRecipients: Int!
+  totalClaims: Int!
+  isWithdrawn: Boolean!
+  trustedForwarder: Account!
+  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
+  # Vesting specific
+  claimPeriodEnd: BigInt!
+  strategy: VestingStrategy!
+}
+
+interface VestingStrategy {
+  id: Bytes! # Strategy contract address
+  type: String! # e.g., "Linear", "Custom"
+  airdrop: VestingAirdrop! # The airdrop using this strategy
+  owner: Account!
+}
+
+type LinearVestingStrategy implements VestingStrategy @entity {
+  id: Bytes! # Strategy contract address
+  type: String! # = "Linear"
+  airdrop: VestingAirdrop! @derivedFrom(field: "strategy") # Derived from VestingAirdrop linking
+  owner: Account!
+  # Linear specific
+  vestingDuration: BigInt!
+  cliffDuration: BigInt!
+  vestingData: [UserVestingData!]! @derivedFrom(field: "strategy")
+}
+
+# Represents a potential recipient listed in the Merkle tree
+# Primarily created/updated upon claim events
+type AirdropRecipient @entity {
+  id: String! # airdropId-recipientAddress
+  airdrop: Airdrop!
+  recipient: Account!
+  firstClaimedTimestamp: BigInt # Timestamp of the first claim event for this recipient
+  lastClaimedTimestamp: BigInt # Timestamp of the most recent claim event
+  totalClaimedByRecipient: BigDecimal! # Sum of all claims by this recipient for this airdrop
+  totalClaimedByRecipientExact: BigInt!
+  claimIndices: [AirdropClaimIndex!]! @derivedFrom(field: "recipient") # Track individual claimed indices
+}
+
+# Represents a specific index claimed by a recipient
+type AirdropClaimIndex @entity {
+  id: String! # airdropId-index
+  index: BigInt!
+  airdrop: Airdrop!
+  recipient: AirdropRecipient! # Who claimed this index
+  amount: BigDecimal! # Amount associated with this index (from claim event)
+  amountExact: BigInt!
+  claim: AirdropClaim! # The claim event that processed this index
+  timestamp: BigInt!
+}
+
+# Records an individual claim event (can be single or batch)
+type AirdropClaim @entity {
+  id: String! # txHash-logIndex
+  airdrop: Airdrop!
+  claimant: Account! # The _msgSender() who initiated the claim
+  totalAmount: BigDecimal! # Total amount in this claim event
+  totalAmountExact: BigInt!
+  indices: [AirdropClaimIndex!]! @derivedFrom(field: "claim") # Link to specific indices claimed
+  timestamp: BigInt!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+}
+
+# Specific vesting data per user for a LinearVestingStrategy
+type UserVestingData @entity {
+  id: String! # strategyId-userAddress
+  strategy: LinearVestingStrategy!
+  user: Account!
+  totalAmountAggregated: BigDecimal! # Total allocated amount across all indices for this user
+  totalAmountAggregatedExact: BigInt!
+  claimedAmountTrackedByStrategy: BigDecimal! # Internal tracking by strategy via recordClaim
+  claimedAmountTrackedByStrategyExact: BigInt!
+  vestingStart: BigInt!
+  initialized: Boolean!
+  lastUpdated: BigInt!
+}

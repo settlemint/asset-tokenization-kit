@@ -162,6 +162,43 @@ dataSources:
         - event: DepositCreated(indexed address,indexed address)
           handler: handleDepositCreated
       file: ./src/factories/deposit-factory.ts
+  - kind: ethereum/contract
+    name: AirdropFactory
+    network: { { network } }
+    source:
+      address: "{{factoryAddress}}"
+      abi: AirdropFactory
+      startBlock: { { factoryStartBlock } }
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AirdropFactory
+        - StandardAirdrop
+        - VestingAirdrop
+        - LinearVestingStrategy
+        - Account
+        - Asset
+      abis:
+        - name: AirdropFactory
+          file: ./abis/AirdropFactory.json
+        - name: StandardAirdrop
+          file: ./abis/StandardAirdrop.json
+        - name: VestingAirdrop
+          file: ./abis/VestingAirdrop.json
+        - name: LinearVestingStrategy
+          file: ./abis/LinearVestingStrategy.json
+      eventHandlers:
+        - event:
+            StandardAirdropDeployed(indexed address,indexed address,indexed
+            address)
+          handler: handleStandardAirdropDeployed
+        - event:
+            VestingAirdropDeployed(indexed address,indexed address,indexed
+            address,address)
+          handler: handleVestingAirdropDeployed
+      file: ./src/factories/airdropFactory.ts
 templates:
   - kind: ethereum/contract
     name: Bond
@@ -241,7 +278,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
@@ -308,7 +346,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -384,7 +423,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: Clawback(indexed address,indexed address,uint256)
           handler: handleClawback
@@ -461,7 +501,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: CollateralUpdated(uint256,uint256,uint256)
           handler: handleCollateralUpdated
@@ -486,7 +527,9 @@ templates:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
-        - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
+        - event:
+            YieldClaimed(indexed
+            address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
@@ -564,7 +607,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: ManagementFeeCollected(uint256,uint256)
           handler: handleManagementFeeCollected
@@ -639,7 +683,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: TokenWithdrawn(indexed address,indexed address,uint256)
           handler: handleTokenWithdrawn
@@ -648,3 +693,61 @@ templates:
         - event: Clawback(indexed address,indexed address,uint256)
           handler: handleClawback
       file: ./src/assets/deposit.ts
+  - kind: ethereum/contract
+    name: StandardAirdropTemplate
+    network: { { network } }
+    source:
+      abi: StandardAirdrop
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - StandardAirdrop
+        - AirdropClaim
+        - AirdropRecipient
+        - AirdropClaimIndex
+        - Account
+        - Asset
+      abis:
+        - name: StandardAirdrop
+          file: ./abis/StandardAirdrop.json
+      eventHandlers:
+        - event: Claimed(indexed address,uint256)
+          handler: handleClaimed
+        - event: BatchClaimed(indexed address,uint256,uint256[])
+          handler: handleBatchClaimed
+        - event: TokensWithdrawn(indexed address,uint256)
+          handler: handleTokensWithdrawn
+      file: ./src/assets/standardAirdrop.ts
+  - kind: ethereum/contract
+    name: VestingAirdropTemplate
+    network: { { network } }
+    source:
+      abi: VestingAirdrop
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - VestingAirdrop
+        - LinearVestingStrategy
+        - AirdropClaim
+        - AirdropRecipient
+        - AirdropClaimIndex
+        - UserVestingData
+        - Account
+        - Asset
+      abis:
+        - name: VestingAirdrop
+          file: ./abis/VestingAirdrop.json
+        - name: LinearVestingStrategy
+          file: ./abis/LinearVestingStrategy.json
+      eventHandlers:
+        - event: Claimed(indexed address,uint256)
+          handler: handleClaimed
+        - event: BatchClaimed(indexed address,uint256,uint256[])
+          handler: handleBatchClaimed
+        - event: TokensWithdrawn(indexed address,uint256)
+          handler: handleTokensWithdrawn
+      file: ./src/assets/vestingAirdrop.ts
