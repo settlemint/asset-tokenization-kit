@@ -218,6 +218,8 @@ templates:
       abis:
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
+        - name: FixedYield
+          file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval

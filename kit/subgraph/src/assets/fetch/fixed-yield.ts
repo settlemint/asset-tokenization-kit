@@ -56,6 +56,9 @@ export function fetchFixedYield(address: Address): FixedYield {
   );
   fixedYield.underlyingBalanceExact = BigInt.zero();
   fixedYield.underlyingBalance = BigDecimal.zero();
+  fixedYield.yieldForNextPeriodExact = BigInt.zero();
+  fixedYield.yieldForNextPeriod = BigDecimal.zero();
+
   log.info("Starting to process {} yield periods for FixedYield: {}", [
     periods.reverted ? "0" : periods.value.length.toString(),
     address.toHexString(),

@@ -6,7 +6,10 @@ import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
 import { updateDerivedFields } from "../bond";
 
-export function fetchBond(address: Address, timestamp: BigInt = BigInt.zero()): Bond {
+export function fetchBond(
+  address: Address,
+  timestamp: BigInt = BigInt.zero()
+): Bond {
   let bond = Bond.load(address);
   if (!bond) {
     let endpoint = BondContract.bind(address);
@@ -52,11 +55,16 @@ export function fetchBond(address: Address, timestamp: BigInt = BigInt.zero()): 
     bond.paused = paused.reverted ? false : paused.value;
     bond.faceValue = faceValue.reverted ? BigInt.zero() : faceValue.value;
 
-    bond.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
+    bond.underlyingAsset = underlyingAsset.reverted
+      ? Address.zero()
+      : underlyingAsset.value;
     bond.redeemedAmount = BigInt.zero();
     bond.underlyingBalanceExact = BigInt.zero();
     bond.underlyingBalance = BigDecimal.zero();
-    bond.yieldSchedule = yieldSchedule.reverted ? null : yieldSchedule.value;
+    bond.yieldSchedule =
+      yieldSchedule.reverted || yieldSchedule.value == Address.zero()
+        ? null
+        : yieldSchedule.value;
     bond.totalUnderlyingNeededExact = BigInt.zero();
     bond.totalUnderlyingNeeded = BigDecimal.zero();
     bond.hasSufficientUnderlying = false;
