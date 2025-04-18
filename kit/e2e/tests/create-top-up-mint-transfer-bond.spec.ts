@@ -190,9 +190,10 @@ test.describe("Create, top up, mint and transfer bonds", () => {
 
   test("Verify transfer user received bonds", async () => {
     await transferUserPages.portfolioPage.goto();
-    await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
-      expectedAmount: bondTransferData.transferAmount,
-      price: bondData.price,
+    await transferUserPages.adminPage.clickSidebarMenuItem("My assets");
+    await transferUserPages.adminPage.filterAssetByName({
+      name: testData.bondName,
+      totalSupply: bondTransferData.transferAmount,
     });
   });
 });
