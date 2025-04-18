@@ -94,13 +94,35 @@ export function YieldPeriodTable({ yieldSchedule, bond }: PeriodTableProps) {
         },
       },
       {
-        id: "progress",
-        header: t("progress"),
+        id: "elapsed",
+        header: t("elapsed"),
         cell: ({ row }) => {
-          const totalClaimed = Number(row.original.totalClaimed);
-          const totalSupply = Number(bond.totalSupply);
-          const percentage =
-            totalSupply > 0 ? (totalClaimed / totalSupply) * 100 : 0;
+          const statusKey = getPeriodStatus(row.original);
+          let percentage = 0;
+
+          switch (statusKey) {
+            case "scheduled":
+              percentage = 0;
+              break;
+            case "completed":
+              percentage = 100;
+              break;
+            case "current": {
+              const currentTime = new Date().getTime();
+              const periodStartDate = Number(row.original.startDate) * 1000;
+              const periodEndDate = Number(row.original.endDate) * 1000;
+              const totalDuration = periodEndDate - periodStartDate;
+              const elapsedTime = currentTime - periodStartDate;
+
+              if (totalDuration > 0) {
+                percentage = Math.min(100, (elapsedTime / totalDuration) * 100);
+              } else {
+                // Handle case where duration is zero or negative (should not happen with valid data)
+                percentage = 0;
+              }
+              break;
+            }
+          }
 
           return <PercentageProgressBar percentage={percentage} />;
         },

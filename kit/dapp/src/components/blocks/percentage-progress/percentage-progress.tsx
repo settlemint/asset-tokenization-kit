@@ -48,7 +48,7 @@ export function PercentageProgressBar({
           />
         </ProgressPrimitive.Root>
       </div>
-      <div className="mr-4 text-right">
+      <div className="ml-4">
         {formatNumber(percentage, {
           percentage: true,
           locale: locale,
