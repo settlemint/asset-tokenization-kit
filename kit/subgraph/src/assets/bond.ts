@@ -25,6 +25,7 @@ import {
   UserBlocked,
   UserUnblocked,
 } from "../../generated/templates/Bond/Bond";
+import { FixedYield as FixedYieldContract } from "../../generated/templates/FixedYield/FixedYield";
 import { fetchAccount } from "../fetch/account";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { blockUser, unblockUser } from "../fetch/block-user";
@@ -54,6 +55,7 @@ import { fetchAssetDecimals } from "./fetch/asset";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
+import { fetchFixedYield } from "./fetch/fixed-yield";
 import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
@@ -119,6 +121,8 @@ export function handleTransfer(event: Transfer): void {
     assetStats.minted = toDecimals(event.params.value, bond.decimals);
     assetStats.mintedExact = event.params.value;
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
+
+    updateAssociatedFixedYield(bond, event.block.timestamp);
 
     accountActivityEvent(
       to,
@@ -194,6 +198,8 @@ export function handleTransfer(event: Transfer): void {
     assetStats.burned = toDecimals(event.params.value, bond.decimals);
     assetStats.burnedExact = event.params.value;
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
+
+    updateAssociatedFixedYield(bond, event.block.timestamp);
 
     accountActivityEvent(
       from,
@@ -648,7 +654,9 @@ export function handleBondRedeemed(event: BondRedeemed): void {
     event.params.underlyingAmount
   );
 
-  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(bond.underlyingAsset));
+  const underlyingDecimals = fetchAssetDecimals(
+    Address.fromBytes(bond.underlyingAsset)
+  );
   bond.underlyingBalance = toDecimals(
     bond.underlyingBalanceExact,
     underlyingDecimals
@@ -972,9 +980,13 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
     ]
   );
 
-  bond.underlyingBalanceExact = bond.underlyingBalanceExact.plus(event.params.amount);
+  bond.underlyingBalanceExact = bond.underlyingBalanceExact.plus(
+    event.params.amount
+  );
 
-  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(bond.underlyingAsset));
+  const underlyingDecimals = fetchAssetDecimals(
+    Address.fromBytes(bond.underlyingAsset)
+  );
   bond.underlyingBalance = toDecimals(
     bond.underlyingBalanceExact,
     underlyingDecimals
@@ -1026,9 +1038,13 @@ export function handleUnderlyingAssetWithdrawn(
     ]
   );
 
-  bond.underlyingBalanceExact = bond.underlyingBalanceExact.minus(event.params.amount);
+  bond.underlyingBalanceExact = bond.underlyingBalanceExact.minus(
+    event.params.amount
+  );
 
-  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(bond.underlyingAsset));
+  const underlyingDecimals = fetchAssetDecimals(
+    Address.fromBytes(bond.underlyingAsset)
+  );
   bond.underlyingBalance = toDecimals(
     bond.underlyingBalanceExact,
     underlyingDecimals
@@ -1065,7 +1081,9 @@ export function handleUnderlyingAssetWithdrawn(
 
 function calculateTotalUnderlyingNeeded(bond: Bond): void {
   // Get underlying asset decimals
-  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(bond.underlyingAsset));
+  const underlyingDecimals = fetchAssetDecimals(
+    Address.fromBytes(bond.underlyingAsset)
+  );
 
   // Calculate exact value in underlying asset's decimals
   bond.totalUnderlyingNeededExact = bond.totalSupplyExact
@@ -1213,4 +1231,66 @@ export function handleClawback(event: Clawback): void {
     AssetType.bond,
     bond.id
   );
+}
+
+function updateAssociatedFixedYield(bond: Bond, timestamp: BigInt): void {
+  if (bond.yieldSchedule) {
+    let fixedYield = fetchFixedYield(bond.yieldSchedule as Bytes);
+
+    log.info(
+      "Updating FixedYield {} due to Bond {} supply change at timestamp {}",
+      [
+        fixedYield.id.toHexString(),
+        bond.id.toHexString(),
+        timestamp.toString(), // Added timestamp for context
+      ]
+    );
+    let fixedYieldContract = FixedYieldContract.bind(
+      Address.fromBytes(fixedYield.id)
+    );
+    let underlyingDecimals = fixedYield.underlyingAssetDecimals;
+
+    let unclaimedYieldResult = fixedYieldContract.try_totalUnclaimedYield();
+    fixedYield.unclaimedYieldExact = unclaimedYieldResult.reverted
+      ? BigInt.zero()
+      : unclaimedYieldResult.value;
+    fixedYield.unclaimedYield = toDecimals(
+      fixedYield.unclaimedYieldExact,
+      underlyingDecimals
+    );
+    log.info("FixedYield {} fetched unclaimedYieldExact: {} (reverted: {})", [
+      fixedYield.id.toHexString(),
+      fixedYield.unclaimedYieldExact.toString(),
+      unclaimedYieldResult.reverted.toString(),
+    ]);
+
+    let nextPeriodYieldResult =
+      fixedYieldContract.try_totalYieldForNextPeriod();
+    fixedYield.yieldForNextPeriodExact = nextPeriodYieldResult.reverted
+      ? BigInt.zero()
+      : nextPeriodYieldResult.value;
+    fixedYield.yieldForNextPeriod = toDecimals(
+      fixedYield.yieldForNextPeriodExact,
+      underlyingDecimals
+    );
+    log.info(
+      "FixedYield {} fetched yieldForNextPeriodExact: {} (reverted: {})",
+      [
+        fixedYield.id.toHexString(),
+        fixedYield.yieldForNextPeriodExact.toString(),
+        nextPeriodYieldResult.reverted.toString(),
+      ]
+    );
+
+    fixedYield.save();
+    log.info("Updated FixedYield {} unclaimed: {}, nextPeriod: {}", [
+      fixedYield.id.toHexString(),
+      fixedYield.unclaimedYield.toString(),
+      fixedYield.yieldForNextPeriod.toString(),
+    ]);
+  } else {
+    log.debug("Bond {} has no yieldSchedule, skipping FixedYield update", [
+      bond.id.toHexString(),
+    ]);
+  }
 }

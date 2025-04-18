@@ -25,9 +25,9 @@ export function fetchFixedYield(address: Address): FixedYield {
 
   // Get underlying asset
   let underlyingAsset = endpoint.try_underlyingAsset();
-  let decimals = underlyingAsset.value
-    ? fetchAssetDecimals(underlyingAsset.value)
-    : 18;
+  let decimals = underlyingAsset.reverted
+    ? 18 // Default to 18 if call reverts
+    : fetchAssetDecimals(underlyingAsset.value);
 
   // Try to get other fields
   let startDate = endpoint.try_startDate();
@@ -40,9 +40,7 @@ export function fetchFixedYield(address: Address): FixedYield {
   // Create the entity
   fixedYield = new FixedYield(address);
   fixedYield.token = token.reverted ? Address.zero() : token.value;
-  fixedYield.underlyingAsset = underlyingAsset.reverted
-    ? Address.zero()
-    : underlyingAsset.value;
+  fixedYield.underlyingAssetDecimals = decimals;
   fixedYield.startDate = startDate.reverted ? BigInt.zero() : startDate.value;
   fixedYield.endDate = endDate.reverted ? BigInt.zero() : endDate.value;
   fixedYield.rate = rate.reverted ? BigInt.zero() : rate.value;
@@ -52,9 +50,10 @@ export function fetchFixedYield(address: Address): FixedYield {
   fixedYield.unclaimedYieldExact = totalUnclaimedYieldExact.reverted
     ? BigInt.zero()
     : totalUnclaimedYieldExact.value;
-  fixedYield.unclaimedYield = decimals
-    ? toDecimals(fixedYield.unclaimedYieldExact, decimals)
-    : BigDecimal.zero();
+  fixedYield.unclaimedYield = toDecimals(
+    fixedYield.unclaimedYieldExact,
+    fixedYield.underlyingAssetDecimals
+  );
   fixedYield.underlyingBalanceExact = BigInt.zero();
   fixedYield.underlyingBalance = BigDecimal.zero();
   log.info("Starting to process {} yield periods for FixedYield: {}", [

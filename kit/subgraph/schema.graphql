@@ -284,18 +284,20 @@ type AssetBalance @entity(immutable: false) {
 type FixedYield @entity(immutable: false) {
   id: Bytes!
   token: Asset!
-  underlyingAsset: Asset!
+  underlyingAssetDecimals: Int!
   startDate: BigInt!
   endDate: BigInt!
   rate: BigInt!
   interval: BigInt!
+  periods: [YieldPeriod!]! @derivedFrom(field: "schedule")
   totalClaimed: BigDecimal!
   totalClaimedExact: BigInt!
   unclaimedYield: BigDecimal!
   unclaimedYieldExact: BigInt!
   underlyingBalance: BigDecimal!
   underlyingBalanceExact: BigInt!
-  periods: [YieldPeriod!]! @derivedFrom(field: "schedule")
+  yieldForNextPeriod: BigDecimal!
+  yieldForNextPeriodExact: BigInt!
 }
 
 type YieldPeriod @entity(immutable: false) {
