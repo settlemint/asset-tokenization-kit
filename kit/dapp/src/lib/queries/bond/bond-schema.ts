@@ -1,5 +1,96 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 
+export const YieldPeriodSchema = t.Object(
+  {
+    id: t.String({
+      description: "The unique identifier of the yield period",
+    }),
+    periodId: t.StringifiedBigInt({
+      description: "The sequential ID of the yield period",
+    }),
+    startDate: t.StringifiedBigInt({
+      description: "The start date of the yield period as a timestamp",
+    }),
+    endDate: t.StringifiedBigInt({
+      description: "The end date of the yield period as a timestamp",
+    }),
+    totalClaimed: t.BigDecimal({
+      description:
+        "The total claimed yield for this period in a human-readable decimal format",
+    }),
+    totalClaimedExact: t.StringifiedBigInt({
+      description:
+        "The exact total claimed yield for this period as a raw big integer",
+    }),
+  },
+  {
+    description: "Information about a single yield period",
+  }
+);
+
+export type YieldPeriod = StaticDecode<typeof YieldPeriodSchema>;
+
+export const YieldScheduleSchema = t.Object({
+  id: t.EthereumAddress({
+    description: "The address of the yield schedule",
+  }),
+  startDate: t.StringifiedBigInt({
+    description: "The start date of the yield schedule as a timestamp",
+  }),
+  endDate: t.StringifiedBigInt({
+    description: "The end date of the yield schedule as a timestamp",
+  }),
+  rate: t.StringifiedBigInt({
+    description: "The yield rate",
+  }),
+  interval: t.StringifiedBigInt({
+    description: "The yield payment interval",
+  }),
+  totalClaimed: t.BigDecimal({
+    description: "The total claimed yield in a human-readable decimal format",
+  }),
+  totalClaimedExact: t.StringifiedBigInt({
+    description: "The exact total claimed yield as a raw big integer",
+  }),
+  unclaimedYield: t.BigDecimal({
+    description: "The unclaimed yield in a human-readable decimal format",
+  }),
+  unclaimedYieldExact: t.StringifiedBigInt({
+    description: "The exact unclaimed yield as a raw big integer",
+  }),
+  underlyingAsset: t.Object(
+    {
+      id: t.EthereumAddress({
+        description: "The address of the underlying asset for yield payments",
+      }),
+      symbol: t.String({
+        description: "The symbol of the underlying asset",
+      }),
+      decimals: t.Decimals({
+        description:
+          "The number of decimal places used by the underlying asset",
+      }),
+      type: t.AssetType({
+        description: "The type of the underlying asset",
+      }),
+    },
+    {
+      description: "Information about the underlying asset for yield payments",
+    }
+  ),
+  underlyingBalance: t.BigDecimal({
+    description:
+      "The underlying asset balance in a human-readable decimal format",
+  }),
+  underlyingBalanceExact: t.StringifiedBigInt({
+    description: "The exact underlying asset balance as a raw big integer",
+  }),
+  periods: t.Array(YieldPeriodSchema, {
+    description: "Array of yield periods",
+  }),
+});
+export type YieldSchedule = StaticDecode<typeof YieldScheduleSchema>;
+
 /**
  * TypeBox schema for bond data
  *
@@ -90,109 +181,9 @@ export const OnChainBondSchema = t.Object(
         "Whether the bond has sufficient underlying assets to cover obligations",
     }),
     yieldSchedule: t.Optional(
-      t.Nullable(
-        t.Object(
-          {
-            id: t.EthereumAddress({
-              description: "The address of the yield schedule",
-            }),
-            startDate: t.StringifiedBigInt({
-              description:
-                "The start date of the yield schedule as a timestamp",
-            }),
-            endDate: t.StringifiedBigInt({
-              description: "The end date of the yield schedule as a timestamp",
-            }),
-            rate: t.StringifiedBigInt({
-              description: "The yield rate",
-            }),
-            interval: t.StringifiedBigInt({
-              description: "The yield payment interval",
-            }),
-            totalClaimed: t.BigDecimal({
-              description:
-                "The total claimed yield in a human-readable decimal format",
-            }),
-            totalClaimedExact: t.StringifiedBigInt({
-              description: "The exact total claimed yield as a raw big integer",
-            }),
-            unclaimedYield: t.BigDecimal({
-              description:
-                "The unclaimed yield in a human-readable decimal format",
-            }),
-            unclaimedYieldExact: t.StringifiedBigInt({
-              description: "The exact unclaimed yield as a raw big integer",
-            }),
-            underlyingAsset: t.Object(
-              {
-                id: t.EthereumAddress({
-                  description:
-                    "The address of the underlying asset for yield payments",
-                }),
-                symbol: t.String({
-                  description: "The symbol of the underlying asset",
-                }),
-                decimals: t.Decimals({
-                  description:
-                    "The number of decimal places used by the underlying asset",
-                }),
-                type: t.AssetType({
-                  description: "The type of the underlying asset",
-                }),
-              },
-              {
-                description:
-                  "Information about the underlying asset for yield payments",
-              }
-            ),
-            underlyingBalance: t.BigDecimal({
-              description:
-                "The underlying asset balance in a human-readable decimal format",
-            }),
-            underlyingBalanceExact: t.StringifiedBigInt({
-              description:
-                "The exact underlying asset balance as a raw big integer",
-            }),
-            periods: t.Array(
-              t.Object(
-                {
-                  id: t.String({
-                    description: "The unique identifier of the yield period",
-                  }),
-                  periodId: t.StringifiedBigInt({
-                    description: "The sequential ID of the yield period",
-                  }),
-                  startDate: t.StringifiedBigInt({
-                    description:
-                      "The start date of the yield period as a timestamp",
-                  }),
-                  endDate: t.StringifiedBigInt({
-                    description:
-                      "The end date of the yield period as a timestamp",
-                  }),
-                  totalClaimed: t.BigDecimal({
-                    description:
-                      "The total claimed yield for this period in a human-readable decimal format",
-                  }),
-                  totalClaimedExact: t.StringifiedBigInt({
-                    description:
-                      "The exact total claimed yield for this period as a raw big integer",
-                  }),
-                },
-                {
-                  description: "Information about a single yield period",
-                }
-              ),
-              {
-                description: "Array of yield periods",
-              }
-            ),
-          },
-          {
-            description: "Information about the bond's yield schedule",
-          }
-        )
-      )
+      t.Nullable(YieldScheduleSchema, {
+        description: "Information about the bond's yield schedule",
+      })
     ),
     redeemedAmount: t.StringifiedBigInt({
       description: "The amount of tokens that have been redeemed",
