@@ -28,7 +28,11 @@
           "period-id": "Period id",
           "progress": "Progress",
           "rate": "Rate",
-          "start-date": "Start date"
+          "start-date": "Start date",
+          "completed": "Completed",
+          "current": "Current",
+          "scheduled": "Scheduled",
+          "status": "Status"
         },
         "periods": "Total periods",
         "rate": "Interest rate",
