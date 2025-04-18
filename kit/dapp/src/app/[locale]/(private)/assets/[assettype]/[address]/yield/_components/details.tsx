@@ -79,12 +79,12 @@ export async function YieldDetails({ address }: DetailsProps) {
       </DetailGridItem>
       <DetailGridItem label={t("underlying-asset-balance")}>
         {formatNumber(yieldSchedule.underlyingBalance, {
-          token: yieldSchedule.underlyingAsset.symbol,
-          decimals: yieldSchedule.underlyingAsset.decimals,
+          token: bond.underlyingAsset.symbol,
+          decimals: bond.underlyingAsset.decimals,
           locale: locale,
         })}
       </DetailGridItem>
-      <DetailGridItem label={t("yield-coverage")}>
+      <DetailGridItem label={t("yield-coverage")} info={t("yield-coverage-info")}>
         {/*
             Yield coverage shows what percentage of unclaimed yield obligations can be covered
             by the available underlying asset balance. If there's no unclaimed yield (equals 0),

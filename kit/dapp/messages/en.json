@@ -22,7 +22,7 @@
           "title": "No yield schedule found"
         },
         "period-table": {
-          "total-claimed": "Total claimed",
+          "claimed": "Claimed",
           "end-date": "End date",
           "no-yield-periods": "No yield periods found",
           "period-id": "Period id",
@@ -83,6 +83,7 @@
         "underlying-asset-balance": "Underlying asset balance",
         "yearly": "Annual",
         "yield-coverage": "Yield coverage",
+        "yield-coverage-info": "Yield coverage shows what percentage of unclaimed yield obligations can be covered by the available underlying asset balance.",
         "yield-per-period": "Yield per period"
       }
     },
