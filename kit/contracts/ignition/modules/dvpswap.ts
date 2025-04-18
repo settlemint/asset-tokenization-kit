@@ -30,7 +30,7 @@ const DvPSwapModule = buildModule("DvPSwapModule", (m) => {
   const readDvPSwapAddress = m.readEventArgument(
     createDvPSwap,
     "DvPSwapContractCreated",
-    "swapContract",
+    "dvpSwapContract",
     {
       id: "readDvPSwapAddress",
     }
