@@ -40,6 +40,10 @@ export class PortfolioPage extends BasePage {
     }
   }
 
+  async verifyMyAssetBalance(options: { expectedAmount: string }) {
+    await this.page.getByRole("link", { name: "My assets" }).click();
+  }
+
   async addContact(options: {
     address: string;
     firstName: string;

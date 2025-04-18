@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: {{ include "besu-node.fullname" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: besu
-    app.kubernetes.io/part-of: settlemint-atk
+
     helm.sh/chart: {{ include "besu-node.chart" . }}
     statefulset.kubernetes.io/pod-name: {{ include "besu-node.fullname" . }}-0
   namespace: {{ .Release.Namespace }}
@@ -67,7 +67,7 @@ metadata:
     app.kubernetes.io/name: {{ include "besu-node.fullname" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: besu
-    app.kubernetes.io/part-of: settlemint-atk
+
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   namespace: {{ .Release.Namespace }}

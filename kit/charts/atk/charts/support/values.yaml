@@ -4,7 +4,7 @@ postgresql-ha:
   fullnameOverride: postgresql
   commonLabels:
     kots.io/app-slug: settlemint-atk
-    app.kubernetes.io/part-of: settlemint-atk
+
     app.kubernetes.io/managed-by: helm
   postgresql:
     username: "postgres"
@@ -57,7 +57,7 @@ redis:
   fullnameOverride: redis
   commonLabels:
     kots.io/app-slug: settlemint-atk
-    app.kubernetes.io/part-of: settlemint-atk
+
     app.kubernetes.io/managed-by: helm
   auth:
     password: "atk"

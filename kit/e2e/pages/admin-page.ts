@@ -42,7 +42,6 @@ export class AdminPage extends BasePage {
     maximumSupply: string;
     faceValue: string;
     underlyingAsset: string;
-    price: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -73,7 +72,6 @@ export class AdminPage extends BasePage {
     await this.page
       .getByRole("option", { name: `Avatar ${options.underlyingAsset}` })
       .click();
-    await this.page.getByLabel("Price").fill(options.price);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
@@ -702,19 +700,29 @@ export class AdminPage extends BasePage {
       .locator("body")
       .click({ position: { x: 1, y: 1 }, force: true });
 
+    const formattedExpected = this.formatAmount(expectedAmount);
+    let initialValue: string;
+
     await expect
       .poll(
         async () => {
           const text = await totalSupplyElement.textContent();
-          return text ? this.formatAmount(text) : "0";
+          const currentValue = text ? this.formatAmount(text) : "";
+          if (!initialValue) {
+            initialValue = currentValue;
+            return currentValue !== "" && currentValue === formattedExpected;
+          }
+          return (
+            currentValue !== initialValue && currentValue === formattedExpected
+          );
         },
         {
-          message: "Waiting for total supply to be updated from 0",
+          message: `Waiting for total supply to update from initial value to ${formattedExpected}`,
           timeout: 120000,
           intervals: [1000],
         }
       )
-      .not.toBe("0");
+      .toBe(true);
 
     const actualAmount = await totalSupplyElement.textContent();
 
@@ -723,8 +731,6 @@ export class AdminPage extends BasePage {
     }
 
     const formattedActual = this.formatAmount(actualAmount);
-    const formattedExpected = this.formatAmount(expectedAmount);
-
     await expect(formattedActual).toBe(formattedExpected);
   }
 
