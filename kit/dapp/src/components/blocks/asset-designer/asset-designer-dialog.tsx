@@ -180,14 +180,68 @@ export function AssetDesignerDialog({
         // Trigger validation for all fields
         form.trigger();
 
-        // For configuration, we check if there are any errors
+        // For configuration, check asset type specific required fields
+        const formValues = form.getValues();
+        let requiredFieldsValid = false;
+
+        // Check if any fields have errors
         const hasErrors = Object.keys(errors).length > 0;
 
-        // Check if required configuration fields are present based on asset type
-        const configFieldsValid = true;
-        // Asset-specific validation can be added here
+        // Asset-specific validation for configuration
+        switch (selectedAssetType) {
+          case "bond":
+            // Bond specific fields like maturity, coupon rate
+            const hasFaceValue =
+              typeof (formValues as any).faceValue?.amount === "number" &&
+              (formValues as any).faceValue.amount > 0;
+            const hasMaturityDate = !!(formValues as any).maturityDate;
+            const hasCouponRate =
+              typeof (formValues as any).couponRateBps === "number";
+            requiredFieldsValid =
+              hasFaceValue && hasMaturityDate && hasCouponRate;
+            break;
 
-        setIsConfigurationValid(configFieldsValid && !hasErrors);
+          case "cryptocurrency":
+            // Cryptocurrency specific fields like max supply
+            const hasMaxSupply =
+              typeof (formValues as any).maxSupply === "number" &&
+              (formValues as any).maxSupply > 0;
+            requiredFieldsValid = hasMaxSupply;
+            break;
+
+          case "equity":
+            // Equity specific fields
+            const hasSharesOutstanding =
+              typeof (formValues as any).sharesOutstanding === "number" &&
+              (formValues as any).sharesOutstanding > 0;
+            requiredFieldsValid = hasSharesOutstanding;
+            break;
+
+          case "fund":
+            // Fund specific fields
+            const hasManagementFee =
+              typeof (formValues as any).managementFeeBps === "number";
+            requiredFieldsValid = hasManagementFee;
+            break;
+
+          case "stablecoin":
+            // Stablecoin specific fields like collateral type
+            const hasCollateralType = !!(formValues as any).collateralType;
+            requiredFieldsValid = hasCollateralType;
+            break;
+
+          case "deposit":
+            // Deposit specific fields
+            const hasDepositType = !!(formValues as any).depositType;
+            requiredFieldsValid = hasDepositType;
+            break;
+
+          default:
+            requiredFieldsValid = true;
+        }
+
+        // Form is valid only if all required configuration fields are valid and there are no errors
+        setIsConfigurationValid(requiredFieldsValid && !hasErrors);
       }
     };
 
