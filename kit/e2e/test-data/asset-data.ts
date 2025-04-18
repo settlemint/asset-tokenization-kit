@@ -304,6 +304,16 @@ export const equityData = {
   initialSupply: "0",
 };
 
+export const equityMintTokenData = {
+  amount: "1500",
+  pincode: pincode,
+};
+
+export const equityTransferData = {
+  transferAmount: "500",
+  pincode: pincode,
+};
+
 export const fundData = {
   assetType: "Fund",
   name: generateFundName(),
