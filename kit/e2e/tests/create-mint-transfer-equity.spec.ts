@@ -1,10 +1,9 @@
 import { type BrowserContext, test } from "@playwright/test";
 import { Pages } from "../pages/pages";
 import {
-  cryptocurrencyData,
-  cryptocurrencyMintTokenData,
-  cryptocurrencyTransferData,
-  cryptocurrencyDataAmountAfterMint,
+  equityData,
+  equityMintTokenData,
+  equityTransferData,
 } from "../test-data/asset-data";
 import { assetMessage } from "../test-data/success-msg-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
@@ -14,10 +13,10 @@ const testData = {
   transferUserEmail: "",
   transferUserWalletAddress: "",
   transferUserName: "",
-  cryptocurrencyName: "",
+  equityName: "",
 };
 
-test.describe("Create, mint and transfer cryptocurrency", () => {
+test.describe("Create, mint and transfer equity", () => {
   test.describe.configure({ mode: "serial" });
   let userContext: BrowserContext | undefined;
   let transferUserContext: BrowserContext | undefined;
@@ -71,63 +70,57 @@ test.describe("Create, mint and transfer cryptocurrency", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates, mint cryptocurrency and transfer to user", async ({
+  test("Admin user creates, mint equity and transfer to user", async ({
     browser,
   }) => {
-    await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
-    testData.cryptocurrencyName = cryptocurrencyData.name;
+    await adminPages.adminPage.createEquity(equityData);
+    testData.equityName = equityData.name;
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
     await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
-      name: testData.cryptocurrencyName,
-      totalSupply: cryptocurrencyData.initialSupply,
+      sidebarAssetTypes: equityData.sidebarAssetTypes,
+      name: testData.equityName,
+      totalSupply: equityData.initialSupply,
     });
-    await adminPages.adminPage.clickAssetDetails(testData.cryptocurrencyName);
+    await adminPages.adminPage.clickAssetDetails(testData.equityName);
     await adminPages.adminPage.mintAsset({
-      sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
+      sidebarAssetTypes: equityData.sidebarAssetTypes,
       user: adminUser.name,
-      ...cryptocurrencyMintTokenData,
+      ...equityMintTokenData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
-    await adminPages.adminPage.verifyTotalSupply(
-      cryptocurrencyDataAmountAfterMint.amount
-    );
+    await adminPages.adminPage.verifyTotalSupply(equityMintTokenData.amount);
   });
-  test("Admin user transfer cryptocurrency to regular tranfer user and verify balance", async () => {
+  test("Admin user transfer equity to regular tranfer user and verify balance", async () => {
     await adminPages.portfolioPage.transferAsset({
-      asset: testData.cryptocurrencyName,
+      asset: testData.equityName,
       walletAddress: testData.transferUserWalletAddress,
       user: testData.transferUserName,
-      ...cryptocurrencyTransferData,
+      ...equityTransferData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
 
-    const mintAmount = Number.parseFloat(
-      cryptocurrencyDataAmountAfterMint.amount
-    );
-    const transferAmount = Number.parseFloat(
-      cryptocurrencyTransferData.transferAmount
-    );
+    const mintAmount = Number.parseFloat(equityMintTokenData.amount);
+    const transferAmount = Number.parseFloat(equityTransferData.transferAmount);
     const expectedBalance = (mintAmount - transferAmount).toString();
     await adminPages.adminPage.clickSidebarMenuItem("My assets");
 
     await adminPages.adminPage.filterAssetByName({
-      name: testData.cryptocurrencyName,
+      name: testData.equityName,
       totalSupply: expectedBalance,
     });
   });
 
-  test("Verify regular transfer user received cryptocurrency", async () => {
+  test("Verify regular transfer user received equity", async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
-      expectedAmount: cryptocurrencyTransferData.transferAmount,
-      price: cryptocurrencyData.price,
+      expectedAmount: equityTransferData.transferAmount,
+      price: equityData.price,
     });
   });
 });
