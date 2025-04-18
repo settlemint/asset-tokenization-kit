@@ -927,7 +927,7 @@ type AllowedUser @entity(immutable: false) {
 # Airdrop Contracts
 # --------------------------------------------------
 
-type AirdropFactory @entity {
+type AirdropFactory @entity(immutable: false) {
   id: Bytes! # Contract address
   airdrops: [Airdrop!]! @derivedFrom(field: "factory")
   totalAirdropsDeployed: Int!
@@ -950,7 +950,7 @@ interface Airdrop {
   claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
 }
 
-type StandardAirdrop implements Airdrop @entity {
+type StandardAirdrop implements Airdrop @entity(immutable: false) {
   id: Bytes! # Contract address
   factory: AirdropFactory!
   token: Asset!
@@ -970,7 +970,7 @@ type StandardAirdrop implements Airdrop @entity {
   endTime: BigInt!
 }
 
-type VestingAirdrop implements Airdrop @entity {
+type VestingAirdrop implements Airdrop @entity(immutable: false) {
   id: Bytes! # Contract address
   factory: AirdropFactory!
   token: Asset!
@@ -997,7 +997,8 @@ interface VestingStrategy {
   owner: Account!
 }
 
-type LinearVestingStrategy implements VestingStrategy @entity {
+type LinearVestingStrategy implements VestingStrategy
+  @entity(immutable: false) {
   id: Bytes! # Strategy contract address
   type: String! # = "Linear"
   airdrop: VestingAirdrop! @derivedFrom(field: "strategy") # Derived from VestingAirdrop linking
@@ -1010,7 +1011,7 @@ type LinearVestingStrategy implements VestingStrategy @entity {
 
 # Represents a potential recipient listed in the Merkle tree
 # Primarily created/updated upon claim events
-type AirdropRecipient @entity {
+type AirdropRecipient @entity(immutable: false) {
   id: String! # airdropId-recipientAddress
   airdrop: Airdrop!
   recipient: Account!
@@ -1022,7 +1023,7 @@ type AirdropRecipient @entity {
 }
 
 # Represents a specific index claimed by a recipient
-type AirdropClaimIndex @entity {
+type AirdropClaimIndex @entity(immutable: true) {
   id: String! # airdropId-index
   index: BigInt!
   airdrop: Airdrop!
@@ -1034,7 +1035,7 @@ type AirdropClaimIndex @entity {
 }
 
 # Records an individual claim event (can be single or batch)
-type AirdropClaim @entity {
+type AirdropClaim @entity(immutable: true) {
   id: String! # txHash-logIndex
   airdrop: Airdrop!
   claimant: Account! # The _msgSender() who initiated the claim
@@ -1048,7 +1049,7 @@ type AirdropClaim @entity {
 }
 
 # Specific vesting data per user for a LinearVestingStrategy
-type UserVestingData @entity {
+type UserVestingData @entity(immutable: false) {
   id: String! # strategyId-userAddress
   strategy: LinearVestingStrategy!
   user: Account!
