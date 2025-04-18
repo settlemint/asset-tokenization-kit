@@ -22,7 +22,7 @@ export function PercentageProgressBar({
           className={cn(
             "relative h-2 w-full overflow-hidden rounded-full",
             percentageNumber === 0
-              ? "bg-background/20"
+              ? "bg-muted"
               : percentageNumber > 90
                 ? "bg-destructive/20"
                 : percentageNumber > 75
