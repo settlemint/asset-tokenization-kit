@@ -15,6 +15,8 @@ export function newDvPSwapStatsData(dvpSwapId: Bytes): DvPSwapStatsData {
   stats.dvpSwapsFailed = 0;
   stats.valueLockedExact = BigInt.zero();
   stats.valueLocked = BigInt.zero().toBigDecimal();
+  stats.valueUnlockedExact = BigInt.zero();
+  stats.valueUnlocked = BigInt.zero().toBigDecimal();
   
   return stats;
 } 
