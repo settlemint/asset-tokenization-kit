@@ -92,7 +92,7 @@ export async function YieldDetails({ address }: DetailsProps) {
           */}
         {Number(yieldSchedule.unclaimedYield) === 0
           ? "N/A"
-          : formatNumber(
+          : Number(yieldSchedule.underlyingBalance) > Number(yieldSchedule.unclaimedYield) ? "100%" : formatNumber(
               (Number(yieldSchedule.underlyingBalance) /
                 Number(yieldSchedule.unclaimedYield)) *
                 100,
