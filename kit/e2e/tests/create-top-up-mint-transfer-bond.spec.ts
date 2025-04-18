@@ -14,7 +14,6 @@ import { adminUser, signUpTransferUserData } from "../test-data/user-data";
 import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
 
 const testData = {
-  userName: "",
   transferUserEmail: "",
   transferUserWalletAddress: "",
   transferUserName: "",
