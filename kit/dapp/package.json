@@ -112,7 +112,7 @@
   "devDependencies": {
     "@better-auth/cli": "1.2.7",
     "@eslint/eslintrc": "3.3.1",
-    "@eslint/js": "9.24.0",
+    "@eslint/js": "9.25.0",
     "@tailwindcss/postcss": "4.1.4",
     "@types/node": "22.14.1",
     "@types/pg": "8.11.13",
@@ -122,7 +122,7 @@
     "babel-plugin-react-compiler": "19.0.0-beta-ebf51a3-20250411",
     "dotenv": "16.5.0",
     "drizzle-kit": "0.31.0",
-    "eslint": "9.24.0",
+    "eslint": "9.25.0",
     "eslint-config-next": "15.3.1",
     "languine": "3.1.4",
     "postcss": "8.5.3",
