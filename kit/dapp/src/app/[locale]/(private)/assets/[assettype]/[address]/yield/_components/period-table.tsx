@@ -2,32 +2,48 @@
 
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
-import type { Bond } from "@/lib/queries/bond/bond-schema";
+import { Badge } from "@/components/ui/badge";
+import type {
+  YieldPeriod,
+  YieldSchedule,
+} from "@/lib/queries/bond/bond-schema";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { ColumnDef } from "@tanstack/react-table";
+import { isAfter, isBefore } from "date-fns";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 export interface PeriodTableProps {
-  bond: Bond;
+  yieldSchedule: YieldSchedule;
 }
 
-type YieldPeriod = NonNullable<Bond["yieldSchedule"]>["periods"][number];
-
-export function YieldPeriodTable({ bond }: PeriodTableProps) {
+export function YieldPeriodTable({ yieldSchedule }: PeriodTableProps) {
   const t = useTranslations("admin.bonds.yield.period-table");
   const locale = useLocale();
 
   const data = useMemo(() => {
-    if (!bond.yieldSchedule || !bond.yieldSchedule.periods.length) {
-      return [];
-    }
-
-    return bond.yieldSchedule.periods.sort((a, b) =>
+    return yieldSchedule.periods.sort((a, b) =>
       Number(a.periodId - b.periodId)
     );
-  }, [bond]);
+  }, [yieldSchedule]);
+
+  const getPeriodStatus = useCallback(
+    (period: YieldPeriod): "scheduled" | "current" | "completed" => {
+      const currentTime = new Date();
+      const periodStartDate = new Date(Number(period.startDate) * 1000);
+      const periodEndDate = new Date(Number(period.endDate) * 1000);
+
+      if (isBefore(currentTime, periodStartDate)) {
+        return "scheduled";
+      }
+      if (isAfter(currentTime, periodEndDate)) {
+        return "completed";
+      }
+      return "current";
+    },
+    []
+  );
 
   const columns = useMemo<ColumnDef<YieldPeriod>[]>(
     () => [
@@ -62,33 +78,65 @@ export function YieldPeriodTable({ bond }: PeriodTableProps) {
       },
       {
         accessorKey: "totalClaimed",
-        header: t("claimed-total"),
-        cell: ({ row }) => {
-          const totalClaimed = Number(row.original.totalClaimed);
-          const totalSupply = Number(bond.totalSupply);
-
-          return (
-            <div>
-              {formatNumber(totalClaimed, { locale })} /{" "}
-              {formatNumber(totalSupply, { locale })}
-            </div>
-          );
-        },
+        header: t("claimed"),
+        cell: ({ row }) => formatNumber(row.original.totalClaimed, { locale }),
       },
       {
-        id: "progress",
-        header: t("progress"),
+        id: "elapsed",
+        header: t("elapsed"),
         cell: ({ row }) => {
-          const totalClaimed = Number(row.original.totalClaimed);
-          const totalSupply = Number(bond.totalSupply);
-          const percentage =
-            totalSupply > 0 ? (totalClaimed / totalSupply) * 100 : 0;
+          const statusKey = getPeriodStatus(row.original);
+          let percentage = 0;
+
+          switch (statusKey) {
+            case "scheduled":
+              percentage = 0;
+              break;
+            case "completed":
+              percentage = 100;
+              break;
+            case "current": {
+              const currentTime = new Date().getTime();
+              const periodStartDate = Number(row.original.startDate) * 1000;
+              const periodEndDate = Number(row.original.endDate) * 1000;
+              const totalDuration = periodEndDate - periodStartDate;
+              const elapsedTime = currentTime - periodStartDate;
+
+              if (totalDuration > 0) {
+                percentage = Math.min(100, (elapsedTime / totalDuration) * 100);
+              } else {
+                // Handle case where duration is zero or negative (should not happen with valid data)
+                percentage = 0;
+              }
+              break;
+            }
+          }
 
           return <PercentageProgressBar percentage={percentage} />;
         },
       },
+      {
+        id: "status",
+        header: t("status"),
+        cell: ({ row }) => {
+          const statusKey = getPeriodStatus(row.original);
+          const statusLabel = t(statusKey);
+          const statusVariantMap = {
+            scheduled: "outline",
+            current: "default",
+            completed: "secondary",
+          } as const;
+          const variant = statusVariantMap[statusKey];
+
+          return (
+            <Badge variant={variant} className="capitalize">
+              {statusLabel}
+            </Badge>
+          );
+        },
+      },
     ],
-    [t, bond.totalSupply, locale]
+    [t, locale, getPeriodStatus]
   );
 
   const displayData = data.length > 0 ? data : [];

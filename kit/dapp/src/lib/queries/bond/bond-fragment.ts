@@ -7,7 +7,6 @@ export const YieldPeriodFragment = theGraphGraphqlKit(`
     periodId
     startDate
     endDate
-    rate
     totalClaimed
     totalClaimedExact
   }
@@ -17,25 +16,19 @@ export const YieldScheduleFragment = theGraphGraphqlKit(
   `
   fragment YieldScheduleFragment on FixedYield {
     id
-      startDate
-      endDate
-      rate
-      interval
-      totalClaimed
-      totalClaimedExact
-      unclaimedYield
-      unclaimedYieldExact
-      underlyingAsset {
-        id
-        symbol
-        decimals
-        type
-      }
-      underlyingBalance
-      underlyingBalanceExact
-      periods {
-        ...YieldPeriodFragment
-      }
+    startDate
+    endDate
+    rate
+    interval
+    totalClaimed
+    totalClaimedExact
+    unclaimedYield
+    unclaimedYieldExact
+    underlyingBalance
+    underlyingBalanceExact
+    periods {
+      ...YieldPeriodFragment
+    }
   }
 `,
   [YieldPeriodFragment]

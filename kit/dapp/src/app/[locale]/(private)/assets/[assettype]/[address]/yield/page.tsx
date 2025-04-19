@@ -38,7 +38,7 @@ export default async function YieldPage({ params }: PageProps) {
         <YieldDetails address={address} />
       </Suspense>
       <div className="mt-8 mb-4">
-        <YieldPeriodTable bond={bond} />
+        <YieldPeriodTable yieldSchedule={bond.yieldSchedule} />
       </div>
     </>
   );

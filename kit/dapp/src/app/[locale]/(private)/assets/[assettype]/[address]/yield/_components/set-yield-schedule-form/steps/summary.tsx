@@ -25,10 +25,12 @@ export function Summary({ address }: SummaryProps) {
   });
 
   return (
-    <FormStep title={t("summary.title")} description={t("description")}>
+    <FormStep
+      title={t("yield-schedule")}
+      description={t("summary.description")}
+    >
       <FormSummaryDetailCard
         title={t("summary.title")}
-        description={t("description")}
         icon={<Percent className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem

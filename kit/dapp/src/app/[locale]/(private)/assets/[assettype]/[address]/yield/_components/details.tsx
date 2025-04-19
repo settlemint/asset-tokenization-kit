@@ -24,10 +24,7 @@ export async function YieldDetails({ address }: DetailsProps) {
 
   const yieldPerPeriod = yieldSchedule.periods[0]?.totalClaimed ?? "0";
   const ratePercentage = Number(yieldSchedule.rate) / 100;
-  const periodCount = Math.floor(
-    (Number(yieldSchedule.endDate) - Number(yieldSchedule.startDate)) /
-      Number(yieldSchedule.interval)
-  );
+  const periodCount = yieldSchedule.periods.length;
 
   const intervalPeriod = secondsToInterval(yieldSchedule.interval.toString());
   // Use the translation from the interval options section
@@ -82,12 +79,12 @@ export async function YieldDetails({ address }: DetailsProps) {
       </DetailGridItem>
       <DetailGridItem label={t("underlying-asset-balance")}>
         {formatNumber(yieldSchedule.underlyingBalance, {
-          token: yieldSchedule.underlyingAsset.symbol,
-          decimals: yieldSchedule.underlyingAsset.decimals,
+          token: bond.underlyingAsset.symbol,
+          decimals: bond.underlyingAsset.decimals,
           locale: locale,
         })}
       </DetailGridItem>
-      <DetailGridItem label={t("yield-coverage")}>
+      <DetailGridItem label={t("yield-coverage")} info={t("yield-coverage-info")}>
         {/*
             Yield coverage shows what percentage of unclaimed yield obligations can be covered
             by the available underlying asset balance. If there's no unclaimed yield (equals 0),
@@ -95,7 +92,7 @@ export async function YieldDetails({ address }: DetailsProps) {
           */}
         {Number(yieldSchedule.unclaimedYield) === 0
           ? "N/A"
-          : formatNumber(
+          : Number(yieldSchedule.underlyingBalance) > Number(yieldSchedule.unclaimedYield) ? "100%" : formatNumber(
               (Number(yieldSchedule.underlyingBalance) /
                 Number(yieldSchedule.unclaimedYield)) *
                 100,

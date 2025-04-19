@@ -3,7 +3,7 @@ import type { PropsWithChildren, ReactNode } from "react";
 interface FormSummaryDetailCardProps extends PropsWithChildren {
   icon: ReactNode;
   title: string;
-  description: string;
+  description?: string;
 }
 
 export function FormSummaryDetailCard({
@@ -21,7 +21,9 @@ export function FormSummaryDetailCard({
           </div>
           <div>
             <h3 className="font-semibold text-sm">{title}</h3>
-            <p className="text-muted-foreground text-xs">{description}</p>
+            {description && (
+              <p className="text-muted-foreground text-xs">{description}</p>
+            )}
           </div>
         </div>
         <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">

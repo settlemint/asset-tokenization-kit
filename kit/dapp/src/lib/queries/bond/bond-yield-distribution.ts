@@ -28,7 +28,7 @@ export const getBondYieldDistribution = async ({
     }
 
     // Get actual yield schedule periods data from the bond
-    const { periods, startDate, endDate, totalClaimed } =
+    const { periods, startDate, endDate, totalClaimed, rate } =
       bondData.yieldSchedule;
 
     // If there are no periods, return empty array
@@ -72,7 +72,7 @@ export const getBondYieldDistribution = async ({
       // Add the period's yield to the total (estimated from rate and duration)
       const periodDuration = Number(period.endDate) - Number(period.startDate);
       const periodYield =
-        (Number(period.rate) * periodDuration) / (365 * 24 * 60 * 60);
+        (Number(rate) * periodDuration) / (365 * 24 * 60 * 60);
 
       accumulatedYield += periodYield;
       accumulatedClaimed += Number(period.totalClaimed);

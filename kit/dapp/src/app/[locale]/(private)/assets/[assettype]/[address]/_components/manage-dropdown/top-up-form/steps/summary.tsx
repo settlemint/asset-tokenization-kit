@@ -21,14 +21,8 @@ export function Summary({ bondDetails }: SummaryProps) {
   });
   const locale = useLocale();
 
-  // Get the appropriate decimals based on target
-  const decimals = values.target === "bond"
-    ? bondDetails.underlyingAsset.decimals
-    : bondDetails.yieldSchedule?.underlyingAsset?.decimals ?? bondDetails.underlyingAsset.decimals;
-
-    const tokenSymbol = values.target === "bond"
-    ? bondDetails.underlyingAsset.symbol
-    : bondDetails.yieldSchedule?.underlyingAsset?.symbol ?? bondDetails.underlyingAsset.symbol;
+  const decimals = bondDetails.underlyingAsset.decimals;
+  const tokenSymbol = bondDetails.underlyingAsset.symbol;
 
   return (
     <FormStep title={t("title.top-up")} description={t("description.top-up")}>
