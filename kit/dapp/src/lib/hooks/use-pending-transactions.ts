@@ -18,7 +18,7 @@ export function usePendingTransactions() {
         },
       });
       if (data) {
-        return data?.filter((tx) => !tx.receipt) ?? [];
+        return data?.filter((tx: { receipt?: unknown }) => !tx.receipt) ?? [];
       }
       return [];
     },
