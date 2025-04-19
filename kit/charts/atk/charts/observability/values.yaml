@@ -1,6 +1,6 @@
 # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
 metrics-server:
-  enabled: false
+  enabled: true
   imagePullSecrets: []
   image:
     repository: registry.k8s.io/metrics-server/metrics-server
@@ -16,7 +16,7 @@ metrics-server:
 
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
 kube-state-metrics:
-  enabled: false
+  enabled: true
   imagePullSecrets: []
   image:
     registry: registry.k8s.io
@@ -31,7 +31,7 @@ kube-state-metrics:
 
 # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
 victoria-metrics-single:
-  enabled: false
+  enabled: true
   global:
     image:
       registry: docker.io
@@ -77,7 +77,7 @@ victoria-metrics-single:
 
 # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
 loki:
-  enabled: false
+  enabled: true
   imagePullSecrets: []
   fullnameOverride: logs
   global:
@@ -221,7 +221,7 @@ loki:
 
 # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
 alloy:
-  enabled: false
+  enabled: true
   image:
     registry: docker.io
   configReloader:
@@ -423,10 +423,12 @@ alloy:
         discovery.kubernetes "kubernetes_pods" {
           role = "pod"
 
+
           selectors {
             role  = "pod"
-            label = "kots.io/app-slug=settlemint-atk"
+            label = "app.kubernetes.io/instance={{ .Release.Name }}"
           }
+
         }
 
         discovery.relabel "kubernetes_pods" {
@@ -610,10 +612,10 @@ alloy:
 
 # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 grafana:
-  enabled: false
+  enabled: true
   podLabels:
     kots.io/app-slug: settlemint-atk
-    app.kubernetes.io/part-of: settlemint-atk
+
     app.kubernetes.io/managed-by: helm
   fullnameOverride: grafana
   adminUser: settlemint
@@ -628,7 +630,7 @@ grafana:
       - grafana.k8s.orb.local
   persistence:
     enabled: false
-    size: 10Gi
+    size: 1Gi
   initChownData:
     enabled: false
   sidecar:
@@ -676,13 +678,27 @@ grafana:
                 matcherRegex: "^.*?traceI[d|D]=(\\w+).*$"
                 name: traceId
                 url: '$${__value.raw}'
+        - name: PostgreSQL
+          type: postgres
+          uid: postgres
+          url: postgresql-pgpool:5432
+          access: proxy
+          isDefault: false
+          database: thegraph
+          user: thegraph
+          jsonData:
+            sslmode: 'disable'
+            postgresVersion: 15
+            timescaledb: false
+          secureJsonData:
+            password: "atk" # WARNING: Store passwords securely (e.g., secrets) in production!
   plugins:
     - https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
 
 
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-node-exporter/values.yaml
 prometheus-node-exporter:
-  enabled: false
+  enabled: true
   image:
     registry: quay.io
   kubeRBACProxy:
@@ -698,5 +714,60 @@ prometheus-node-exporter:
     prometheus.io/scrape: "true"
     prometheus.io/port: "9100"
     cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+  podLabels:
+    kots.io/app-slug: settlemint-atk
+
+# https://github.com/grafana/helm-charts/blob/main/charts/tempo/values.yaml
+tempo:
+  enabled: true
+  fullnameOverride: tempo
+  tempo:
+    repository: docker.io/grafana/tempo
+    pullSecrets:
+      - image-pull-secret-docker
+      - image-pull-secret-ghcr
+      - image-pull-secret-harbor
+    reportingEnabled: false
+    retention: 168h
+    metricsGenerator:
+      enabled: true
+      remoteWriteUrl: http://o11y-metrics:8428/api/v1/write
+    overrides:
+      defaults:
+        ingestion:
+          max_traces_per_user: 100000
+          rate_limit_bytes: 30000000
+        global:
+          max_bytes_per_trace: 20000000
+  tempoQuery:
+    repository: docker.io/grafana/tempo-query
+    pullSecrets:
+      - image-pull-secret-docker
+      - image-pull-secret-ghcr
+      - image-pull-secret-harbor
+    ingress:
+      enabled: false
+      annotations:
+        nginx.ingress.kubernetes.io/auth-type: basic
+        nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+        nginx.ingress.kubernetes.io/client-body-buffer-size: "500m"
+      hosts:
+        - traces.k8s.orb.local
+      ingressClassName: settlemint-nginx
+      pathType: Prefix
+  persistence:
+    enabled: true
+    size: 10Gi
+  securityContext:
+    runAsUser: 65532
+    runAsGroup: 65532
+    fsGroup: 65532
+    runAsNonRoot: true
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3100"
+    prometheus.io/path: /metrics
   podLabels:
     kots.io/app-slug: settlemint-atk

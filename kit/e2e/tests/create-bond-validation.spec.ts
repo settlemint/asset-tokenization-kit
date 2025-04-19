@@ -135,7 +135,6 @@ test.describe.serial("Bond Creation Validation", () => {
       await createAssetForm.fillBondDetails({
         maximumSupply: "0",
         faceValue: "50",
-        price: "10",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage(
@@ -147,7 +146,6 @@ test.describe.serial("Bond Creation Validation", () => {
       await createAssetForm.fillBondDetails({
         maximumSupply: "1",
         faceValue: "0",
-        price: "1",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage(
@@ -160,7 +158,6 @@ test.describe.serial("Bond Creation Validation", () => {
         maximumSupply: "1000",
         faceValue: "100",
         maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
-        price: "1",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage(
@@ -172,7 +169,6 @@ test.describe.serial("Bond Creation Validation", () => {
         maximumSupply: "1000",
         faceValue: "100",
         maturityDate: createAssetForm.getMaturityDate({ isPast: true }),
-        price: "1",
       });
       await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage(
@@ -197,19 +193,6 @@ test.describe.serial("Bond Creation Validation", () => {
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );
-    });
-    test("validates large number in price field", async () => {
-      await createAssetForm.fillBondDetails({
-        maximumSupply: "1",
-        faceValue: "1",
-        price: "10000000000000000000",
-      });
-      await createAssetForm.expectErrorMessage(
-        "Please enter a number no greater than 9007199254740991"
-      );
-    });
-    test("verifies default currency is EUR", async () => {
-      await createAssetForm.verifyCurrencyValue("EUR");
     });
   });
 });
