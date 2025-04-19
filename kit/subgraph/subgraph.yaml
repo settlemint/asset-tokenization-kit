@@ -487,6 +487,8 @@ templates:
       abis:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
+        - name: ERC20Yield
+          file: ../contracts/artifacts/contracts/extensions/ERC20Yield.sol/ERC20Yield.json
       eventHandlers:
         - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
@@ -494,7 +496,7 @@ templates:
           handler: handleUnderlyingAssetTopUp
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
-      file: ./src/assets/fixedyield.ts
+      file: ./src/assets/fixed-yield.ts
   - kind: ethereum/contract
     name: Fund
     network: settlemint

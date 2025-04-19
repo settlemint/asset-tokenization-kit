@@ -308,6 +308,8 @@ type YieldPeriod @entity(immutable: false) {
   endDate: BigInt!
   totalClaimed: BigDecimal!
   totalClaimedExact: BigInt!
+  totalYield: BigDecimal!
+  totalYieldExact: BigInt!
 }
 
 # --------------------------------------------------

@@ -17,19 +17,15 @@ export function fetchFixedYield(address: Address): FixedYield {
     return fixedYield;
   }
 
-  // Try to bind the contract
   let endpoint = FixedYieldContract.bind(address);
 
-  // Get token
   let token = endpoint.try_token();
 
-  // Get underlying asset
   let underlyingAsset = endpoint.try_underlyingAsset();
   let decimals = underlyingAsset.reverted
     ? 18 // Default to 18 if call reverts
     : fetchAssetDecimals(underlyingAsset.value);
 
-  // Try to get other fields
   let startDate = endpoint.try_startDate();
   let endDate = endpoint.try_endDate();
   let rate = endpoint.try_rate();
@@ -37,7 +33,6 @@ export function fetchFixedYield(address: Address): FixedYield {
   let totalUnclaimedYieldExact = endpoint.try_totalUnclaimedYield();
   let periods = endpoint.try_allPeriods();
 
-  // Create the entity
   fixedYield = new FixedYield(address);
   fixedYield.token = token.reverted ? Address.zero() : token.value;
   fixedYield.underlyingAssetDecimals = decimals;
@@ -68,21 +63,21 @@ export function fetchFixedYield(address: Address): FixedYield {
       const periodTimestamp = periods.value[i];
       const periodId = BigInt.fromI32(i + 1);
       const id = Bytes.fromUTF8(
-        address.toHexString() + "-" + periodId.toString() // Use period index for unique ID within this schedule
+        address.toHexString() + "-" + periodId.toString()
       );
 
-      // Create a new YieldPeriod entity for each period timestamp
       let period = new YieldPeriod(id);
 
       period.schedule = fixedYield.id;
       period.periodId = periodId;
       period.totalClaimedExact = BigInt.zero();
       period.totalClaimed = BigDecimal.zero();
-      // Calculate start date based on previous period's end date or schedule start date
+      period.totalYieldExact = BigInt.zero();
+      period.totalYield = BigDecimal.zero();
+
       period.startDate = i === 0 ? fixedYield.startDate : periods.value[i - 1];
       period.endDate = periodTimestamp;
 
-      // Save the newly created period
       period.save();
     }
   } else {
