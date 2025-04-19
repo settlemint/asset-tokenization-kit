@@ -38,6 +38,19 @@ const MAX_RECENT_ITEMS = 5;
 const RECENT_ASSETS_KEY = "recently-selected-search-assets";
 const RECENT_USERS_KEY = "recently-selected-search-users";
 
+// Types for API search results
+interface AssetSearchResult {
+  id: string;
+  type: string;
+  // Add other fields as needed
+}
+
+interface UserSearchResult {
+  id: string;
+  wallet: string;
+  // Add other fields as needed
+}
+
 export const Search = () => {
   const form = useForm({
     defaultValues: {
@@ -266,7 +279,7 @@ export const Search = () => {
                 <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
                   {t("assets-section")}
                 </div>
-                {assets.map((asset) => (
+                {assets.map((asset: AssetSearchResult) => (
                   <div
                     key={asset.id}
                     className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
@@ -344,7 +357,7 @@ export const Search = () => {
                 <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
                   {t("users-section")}
                 </div>
-                {users.map((user) => (
+                {users.map((user: UserSearchResult) => (
                   <div
                     key={user.wallet}
                     className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"

@@ -184,7 +184,9 @@ function FormUsersList({
       });
       const results = data || [];
       return role
-        ? results.filter((user) => isUser(user) && user.role === role)
+        ? results.filter(
+            (user: User | Contact) => isUser(user) && user.role === role
+          )
         : results;
     },
     {
@@ -265,7 +267,7 @@ function FormUsersList({
       {/* Show search results */}
       {(debounced || (!debounced && recentUsers.length === 0)) && (
         <CommandGroup>
-          {users.map((user) => (
+          {users.map((user: User | Contact) => (
             <CommandItem
               key={user.wallet}
               value={user.wallet}
