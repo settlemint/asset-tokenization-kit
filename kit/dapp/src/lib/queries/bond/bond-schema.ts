@@ -1,5 +1,29 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 
+const UnderlyingAssetSchema = t.Object(
+  {
+    id: t.EthereumAddress({
+      description: "The address of the underlying asset",
+    }),
+    symbol: t.String({
+      description: "The symbol of the underlying asset",
+    }),
+    decimals: t.Decimals({
+      description: "The number of decimal places used by the underlying asset",
+    }),
+    type: t.AssetType({
+      description: "The type of the underlying asset",
+    }),
+    totalSupply: t.BigDecimal({
+      description:
+        "The total supply of the token in a human-readable decimal format",
+    }),
+  },
+  {
+    description: "Information about the underlying asset",
+  }
+);
+
 export const YieldPeriodSchema = t.Object(
   {
     id: t.String({
@@ -65,6 +89,7 @@ export const YieldScheduleSchema = t.Object({
   underlyingBalanceExact: t.StringifiedBigInt({
     description: "The exact underlying asset balance as a raw big integer",
   }),
+  underlyingAsset: UnderlyingAssetSchema,
   periods: t.Array(YieldPeriodSchema, {
     description: "Array of yield periods",
   }),
@@ -124,30 +149,7 @@ export const OnChainBondSchema = t.Object(
         description: "Information about the token creator",
       }
     ),
-    underlyingAsset: t.Object(
-      {
-        id: t.EthereumAddress({
-          description: "The address of the underlying asset",
-        }),
-        symbol: t.String({
-          description: "The symbol of the underlying asset",
-        }),
-        decimals: t.Decimals({
-          description:
-            "The number of decimal places used by the underlying asset",
-        }),
-        type: t.AssetType({
-          description: "The type of the underlying asset",
-        }),
-        totalSupply: t.BigDecimal({
-          description:
-            "The total supply of the token in a human-readable decimal format",
-        }),
-      },
-      {
-        description: "Information about the underlying asset",
-      }
-    ),
+    underlyingAsset: UnderlyingAssetSchema,
     maturityDate: t.Optional(
       t.StringifiedBigInt({
         description: "The maturity date of the bond as a timestamp",

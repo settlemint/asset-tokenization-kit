@@ -110,6 +110,6 @@ export function fetchFixedYieldPeriod(
   return period;
 }
 
-export function fixedYieldPeriodId(address: Address, periodId: BigInt): Bytes {
+export function fixedYieldPeriodId(address: Bytes, periodId: BigInt): Bytes {
   return Bytes.fromUTF8(address.toHexString() + "-" + periodId.toString());
 }
