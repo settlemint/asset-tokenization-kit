@@ -35,6 +35,7 @@ export function fetchFixedYield(address: Address): FixedYield {
 
   fixedYield = new FixedYield(address);
   fixedYield.token = token.reverted ? Address.zero() : token.value;
+  fixedYield.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
   fixedYield.underlyingAssetDecimals = decimals;
   fixedYield.startDate = startDate.reverted ? BigInt.zero() : startDate.value;
   fixedYield.endDate = endDate.reverted ? BigInt.zero() : endDate.value;

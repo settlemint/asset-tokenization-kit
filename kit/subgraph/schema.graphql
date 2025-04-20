@@ -284,7 +284,8 @@ type AssetBalance @entity(immutable: false) {
 type FixedYield @entity(immutable: false) {
   id: Bytes!
   token: Asset!
-  underlyingAssetDecimals: Int!
+  underlyingAsset: Asset! # The underlying asset used for yield payments
+  underlyingAssetDecimals: Int! # Storing decimals directly to avoid having to always query the underlying asset
   startDate: BigInt!
   endDate: BigInt!
   rate: BigInt!
