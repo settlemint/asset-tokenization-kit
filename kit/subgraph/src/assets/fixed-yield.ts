@@ -1,8 +1,6 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { BigInt, log } from "@graphprotocol/graph-ts";
 import { Bond } from "../../generated/schema";
-import { ERC20Yield as ERC20YieldContract } from "../../generated/templates/FixedYield/ERC20Yield";
 import {
-  FixedYield as FixedYieldContract,
   UnderlyingAssetTopUp as UnderlyingAssetTopUpEvent,
   UnderlyingAssetWithdrawn as UnderlyingAssetWithdrawnEvent,
   YieldClaimed as YieldClaimedEvent,
@@ -14,9 +12,6 @@ import { underlyingAssetTopUpEvent } from "./events/underlyingassettopup";
 import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn";
 import { yieldClaimedEvent } from "./events/yieldclaimed";
 import { fetchFixedYield, fetchFixedYieldPeriod } from "./fetch/fixed-yield";
-
-// Define constant for basis points calculation
-const RATE_BASIS_POINTS = BigInt.fromI32(10000);
 
 export function handleYieldClaimed(event: YieldClaimedEvent): void {
   const schedule = fetchFixedYield(event.address);
@@ -64,11 +59,6 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     schedule.totalClaimedExact,
     token.decimals
   );
-  schedule.unclaimedYieldExact = event.params.unclaimedYield;
-  schedule.unclaimedYield = toDecimals(
-    schedule.unclaimedYieldExact,
-    token.decimals
-  );
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.minus(
     event.params.totalAmount
   );
@@ -78,9 +68,6 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     underlyingDecimals
   );
   schedule.save();
-
-  const fixedYieldContract = FixedYieldContract.bind(event.address);
-  const tokenContract = ERC20YieldContract.bind(Address.fromBytes(token.id));
 
   for (let i = 0; i < event.params.periodAmounts.length; i++) {
     const periodNumber = event.params.fromPeriod.plus(BigInt.fromI32(i));

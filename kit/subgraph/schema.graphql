@@ -293,8 +293,6 @@ type FixedYield @entity(immutable: false) {
   periods: [YieldPeriod!]! @derivedFrom(field: "schedule")
   totalClaimed: BigDecimal!
   totalClaimedExact: BigInt!
-  unclaimedYield: BigDecimal!
-  unclaimedYieldExact: BigInt!
   underlyingBalance: BigDecimal!
   underlyingBalanceExact: BigInt!
   yieldForNextPeriod: BigDecimal!

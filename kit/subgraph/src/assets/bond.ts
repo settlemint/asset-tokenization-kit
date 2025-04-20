@@ -1245,15 +1245,6 @@ function updateAssociatedFixedYield(bond: Bond, timestamp: BigInt): void {
   );
   let underlyingDecimals = fixedYield.underlyingAssetDecimals;
 
-  let unclaimedYieldResult = fixedYieldContract.try_totalUnclaimedYield();
-  fixedYield.unclaimedYieldExact = unclaimedYieldResult.reverted
-    ? BigInt.zero()
-    : unclaimedYieldResult.value;
-  fixedYield.unclaimedYield = toDecimals(
-    fixedYield.unclaimedYieldExact,
-    underlyingDecimals
-  );
-
   let nextPeriodYieldResult = fixedYieldContract.try_totalYieldForNextPeriod();
   fixedYield.yieldForNextPeriodExact = nextPeriodYieldResult.reverted
     ? BigInt.zero()
@@ -1263,9 +1254,8 @@ function updateAssociatedFixedYield(bond: Bond, timestamp: BigInt): void {
     underlyingDecimals
   );
   fixedYield.save();
-  log.info("Updated FixedYield {} unclaimed: {}, yieldForNextPeriod: {}", [
+  log.info("Updated FixedYield {} yieldForNextPeriod: {}", [
     fixedYield.id.toHexString(),
-    fixedYield.unclaimedYield.toString(),
     fixedYield.yieldForNextPeriod.toString(),
   ]);
 

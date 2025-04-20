@@ -32,7 +32,11 @@ export async function YieldDetails({ address }: DetailsProps) {
   const intervalDisplay = intervalPeriod
     ? t(`set-schedule.interval.options.${intervalPeriod}`)
     : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
-
+  const totalYield = yieldSchedule.periods.reduce(
+    (acc, period) => acc + Number(period.totalYield),
+    0
+  );
+  const totalUnclaimedYield = totalYield - Number(yieldSchedule.totalClaimed);
   return (
     <DetailGrid>
       <DetailGridItem label={t("type")}>{t("type-fixed")}</DetailGridItem>
@@ -68,14 +72,11 @@ export async function YieldDetails({ address }: DetailsProps) {
       </DetailGridItem>
       <DetailGridItem label={t("interval")}>{intervalDisplay}</DetailGridItem>
       <DetailGridItem label={t("periods")}>{periodCount}</DetailGridItem>
-      <DetailGridItem label={t("yield-per-period")}>
-        {yieldPerPeriod}
-      </DetailGridItem>
       <DetailGridItem label={t("total-yield-distributed")}>
         {yieldSchedule.totalClaimed}
       </DetailGridItem>
       <DetailGridItem label={t("total-unclaimed-yield")}>
-        {yieldSchedule.unclaimedYield}
+        {totalUnclaimedYield}
       </DetailGridItem>
       <DetailGridItem label={t("underlying-asset-balance")}>
         {formatNumber(yieldSchedule.underlyingBalance, {
@@ -84,24 +85,30 @@ export async function YieldDetails({ address }: DetailsProps) {
           locale: locale,
         })}
       </DetailGridItem>
-      <DetailGridItem label={t("yield-coverage")} info={t("yield-coverage-info")}>
+      <DetailGridItem
+        label={t("yield-coverage")}
+        info={t("yield-coverage-info")}
+      >
         {/*
             Yield coverage shows what percentage of unclaimed yield obligations can be covered
             by the available underlying asset balance. If there's no unclaimed yield (equals 0),
             we display "N/A" as there's nothing to cover rather than showing 100% which could be misleading.
           */}
-        {Number(yieldSchedule.unclaimedYield) === 0
+        {Number(totalYield) === 0
           ? "N/A"
-          : Number(yieldSchedule.underlyingBalance) > Number(yieldSchedule.unclaimedYield) ? "100%" : formatNumber(
-              (Number(yieldSchedule.underlyingBalance) /
-                Number(yieldSchedule.unclaimedYield)) *
-                100,
-              {
-                percentage: true,
-                decimals: 0,
-                locale,
-              }
-            )}
+          : Number(yieldSchedule.underlyingBalance) >
+              Number(totalUnclaimedYield)
+            ? "100%"
+            : formatNumber(
+                (Number(yieldSchedule.underlyingBalance) /
+                  Number(totalUnclaimedYield)) *
+                  100,
+                {
+                  percentage: true,
+                  decimals: 0,
+                  locale,
+                }
+              )}
       </DetailGridItem>
     </DetailGrid>
   );

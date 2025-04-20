@@ -7,7 +7,6 @@ import {
 } from "@graphprotocol/graph-ts";
 import { FixedYield, YieldPeriod } from "../../../generated/schema";
 import { FixedYield as FixedYieldContract } from "../../../generated/templates/FixedYield/FixedYield";
-import { toDecimals } from "../../utils/decimals";
 import { fetchAssetDecimals } from "./asset";
 
 export function fetchFixedYield(address: Address): FixedYield {
@@ -45,13 +44,6 @@ export function fetchFixedYield(address: Address): FixedYield {
   fixedYield.interval = interval.reverted ? BigInt.zero() : interval.value;
   fixedYield.totalClaimedExact = BigInt.zero();
   fixedYield.totalClaimed = BigDecimal.zero();
-  fixedYield.unclaimedYieldExact = totalUnclaimedYieldExact.reverted
-    ? BigInt.zero()
-    : totalUnclaimedYieldExact.value;
-  fixedYield.unclaimedYield = toDecimals(
-    fixedYield.unclaimedYieldExact,
-    fixedYield.underlyingAssetDecimals
-  );
   fixedYield.underlyingBalanceExact = BigInt.zero();
   fixedYield.underlyingBalance = BigDecimal.zero();
   fixedYield.yieldForNextPeriodExact = BigInt.zero();
