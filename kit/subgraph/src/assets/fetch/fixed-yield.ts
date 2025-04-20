@@ -29,7 +29,6 @@ export function fetchFixedYield(address: Address): FixedYield {
   let endDate = endpoint.try_endDate();
   let rate = endpoint.try_rate();
   let interval = endpoint.try_interval();
-  let totalUnclaimedYieldExact = endpoint.try_totalUnclaimedYield();
   let periods = endpoint.try_allPeriods();
 
   fixedYield = new FixedYield(address);
