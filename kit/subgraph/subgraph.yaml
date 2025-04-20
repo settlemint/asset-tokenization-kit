@@ -243,7 +243,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
@@ -310,7 +311,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -386,7 +388,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: Clawback(indexed address,indexed address,uint256)
           handler: handleClawback
@@ -463,7 +466,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: CollateralUpdated(uint256,uint256,uint256)
           handler: handleCollateralUpdated
@@ -487,10 +491,10 @@ templates:
       abis:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
-        - name: ERC20Yield
-          file: ../contracts/artifacts/contracts/extensions/ERC20Yield.sol/ERC20Yield.json
       eventHandlers:
-        - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
+        - event:
+            YieldClaimed(indexed
+            address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
@@ -568,7 +572,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: ManagementFeeCollected(uint256,uint256)
           handler: handleManagementFeeCollected
@@ -643,7 +648,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: TokenWithdrawn(indexed address,indexed address,uint256)
           handler: handleTokenWithdrawn

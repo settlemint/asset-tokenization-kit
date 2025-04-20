@@ -49,10 +49,6 @@ export function fetchFixedYield(address: Address): FixedYield {
   fixedYield.yieldForNextPeriodExact = BigInt.zero();
   fixedYield.yieldForNextPeriod = BigDecimal.zero();
 
-  log.info("Starting to process {} yield periods for FixedYield: {}", [
-    periods.reverted ? "0" : periods.value.length.toString(),
-    address.toHexString(),
-  ]);
   if (!periods.reverted && periods.value) {
     for (let i = 0; i < periods.value.length; i++) {
       const periodTimestamp = periods.value[i];
@@ -70,7 +66,6 @@ export function fetchFixedYield(address: Address): FixedYield {
     ]);
   }
 
-  // Save the entity
   fixedYield.save();
 
   return fixedYield;

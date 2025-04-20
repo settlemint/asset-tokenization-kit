@@ -12,7 +12,7 @@ import { formatNumber } from "@/lib/utils/number";
 import type { ColumnDef } from "@tanstack/react-table";
 import { isAfter, isBefore } from "date-fns";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 
 export interface PeriodTableProps {
   yieldSchedule: YieldSchedule;
@@ -27,23 +27,6 @@ export function YieldPeriodTable({ yieldSchedule }: PeriodTableProps) {
       Number(a.periodId - b.periodId)
     );
   }, [yieldSchedule]);
-
-  const getPeriodStatus = useCallback(
-    (period: YieldPeriod): "scheduled" | "current" | "completed" => {
-      const currentTime = new Date();
-      const periodStartDate = new Date(Number(period.startDate) * 1000);
-      const periodEndDate = new Date(Number(period.endDate) * 1000);
-
-      if (isBefore(currentTime, periodStartDate)) {
-        return "scheduled";
-      }
-      if (isAfter(currentTime, periodEndDate)) {
-        return "completed";
-      }
-      return "current";
-    },
-    []
-  );
 
   const columns = useMemo<ColumnDef<YieldPeriod>[]>(
     () => [
@@ -105,6 +88,21 @@ export function YieldPeriodTable({ yieldSchedule }: PeriodTableProps) {
         id: "status",
         header: t("status"),
         cell: ({ row }) => {
+          const getPeriodStatus = (
+            period: YieldPeriod
+          ): "scheduled" | "current" | "completed" => {
+            const currentTime = new Date();
+            const periodStartDate = new Date(Number(period.startDate) * 1000);
+            const periodEndDate = new Date(Number(period.endDate) * 1000);
+
+            if (isBefore(currentTime, periodStartDate)) {
+              return "scheduled";
+            }
+            if (isAfter(currentTime, periodEndDate)) {
+              return "completed";
+            }
+            return "current";
+          };
           const statusKey = getPeriodStatus(row.original);
           const statusLabel = t(statusKey);
           const statusVariantMap = {
@@ -122,7 +120,7 @@ export function YieldPeriodTable({ yieldSchedule }: PeriodTableProps) {
         },
       },
     ],
-    [t, locale, getPeriodStatus]
+    [t, locale]
   );
 
   const displayData = data.length > 0 ? data : [];

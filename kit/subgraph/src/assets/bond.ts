@@ -51,7 +51,6 @@ import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
 import { userUnblockedEvent } from "./events/userunblocked";
-import { fetchAssetDecimals } from "./fetch/asset";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
@@ -654,9 +653,7 @@ export function handleBondRedeemed(event: BondRedeemed): void {
     event.params.underlyingAmount
   );
 
-  const underlyingDecimals = fetchAssetDecimals(
-    Address.fromBytes(bond.underlyingAsset)
-  );
+  const underlyingDecimals = bond.underlyingAssetDecimals;
   bond.underlyingBalance = toDecimals(
     bond.underlyingBalanceExact,
     underlyingDecimals
@@ -984,9 +981,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
     event.params.amount
   );
 
-  const underlyingDecimals = fetchAssetDecimals(
-    Address.fromBytes(bond.underlyingAsset)
-  );
+  const underlyingDecimals = bond.underlyingAssetDecimals;
   bond.underlyingBalance = toDecimals(
     bond.underlyingBalanceExact,
     underlyingDecimals
@@ -1042,9 +1037,7 @@ export function handleUnderlyingAssetWithdrawn(
     event.params.amount
   );
 
-  const underlyingDecimals = fetchAssetDecimals(
-    Address.fromBytes(bond.underlyingAsset)
-  );
+  const underlyingDecimals = bond.underlyingAssetDecimals;
   bond.underlyingBalance = toDecimals(
     bond.underlyingBalanceExact,
     underlyingDecimals
@@ -1081,9 +1074,7 @@ export function handleUnderlyingAssetWithdrawn(
 
 function calculateTotalUnderlyingNeeded(bond: Bond): void {
   // Get underlying asset decimals
-  const underlyingDecimals = fetchAssetDecimals(
-    Address.fromBytes(bond.underlyingAsset)
-  );
+  const underlyingDecimals = bond.underlyingAssetDecimals;
 
   // Calculate exact value in underlying asset's decimals
   bond.totalUnderlyingNeededExact = bond.totalSupplyExact
@@ -1234,7 +1225,7 @@ export function handleClawback(event: Clawback): void {
 }
 
 function updateAssociatedFixedYield(bond: Bond, timestamp: BigInt): void {
-  if (!bond.yieldSchedule) {
+  if (!bond.yieldSchedule || bond.yieldSchedule == Address.zero()) {
     return;
   }
 
