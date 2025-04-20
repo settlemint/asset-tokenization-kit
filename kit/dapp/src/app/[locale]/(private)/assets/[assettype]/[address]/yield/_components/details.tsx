@@ -22,7 +22,6 @@ export async function YieldDetails({ address }: DetailsProps) {
   const t = await getTranslations("admin.bonds.yield");
   const locale = await getLocale();
 
-  const yieldPerPeriod = yieldSchedule.periods[0]?.totalClaimed ?? "0";
   const ratePercentage = Number(yieldSchedule.rate) / 100;
   const periodCount = yieldSchedule.periods.length;
 
@@ -73,15 +72,23 @@ export async function YieldDetails({ address }: DetailsProps) {
       <DetailGridItem label={t("interval")}>{intervalDisplay}</DetailGridItem>
       <DetailGridItem label={t("periods")}>{periodCount}</DetailGridItem>
       <DetailGridItem label={t("total-yield-distributed")}>
-        {yieldSchedule.totalClaimed}
+        {formatNumber(yieldSchedule.totalClaimed, {
+          token: yieldSchedule.underlyingAsset.symbol,
+          decimals: yieldSchedule.underlyingAsset.decimals,
+          locale: locale,
+        })}
       </DetailGridItem>
       <DetailGridItem label={t("total-unclaimed-yield")}>
-        {totalUnclaimedYield}
+        {formatNumber(totalUnclaimedYield, {
+          token: yieldSchedule.underlyingAsset.symbol,
+          decimals: yieldSchedule.underlyingAsset.decimals,
+          locale: locale,
+        })}
       </DetailGridItem>
       <DetailGridItem label={t("underlying-asset-balance")}>
         {formatNumber(yieldSchedule.underlyingBalance, {
-          token: bond.underlyingAsset.symbol,
-          decimals: bond.underlyingAsset.decimals,
+          token: yieldSchedule.underlyingAsset.symbol,
+          decimals: yieldSchedule.underlyingAsset.decimals,
           locale: locale,
         })}
       </DetailGridItem>
