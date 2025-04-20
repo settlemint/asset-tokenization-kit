@@ -78,41 +78,27 @@ export function YieldPeriodTable({ yieldSchedule }: PeriodTableProps) {
       },
       {
         accessorKey: "totalClaimed",
-        header: t("claimed"),
-        cell: ({ row }) => formatNumber(row.original.totalClaimed, { locale }),
+        header: t("claimed-total"),
+        cell: ({ row }) =>
+          `${formatNumber(row.original.totalClaimed, { locale })} / ${formatNumber(row.original.totalYield, { locale })}`,
       },
       {
-        id: "elapsed",
-        header: t("elapsed"),
+        id: "progress",
+        header: t("progress"),
         cell: ({ row }) => {
-          const statusKey = getPeriodStatus(row.original);
-          let percentage = 0;
+          const percentage =
+            (Number(row.original.totalClaimed) /
+              Number(row.original.totalYield)) *
+            100;
 
-          switch (statusKey) {
-            case "scheduled":
-              percentage = 0;
-              break;
-            case "completed":
-              percentage = 100;
-              break;
-            case "current": {
-              const currentTime = new Date().getTime();
-              const periodStartDate = Number(row.original.startDate) * 1000;
-              const periodEndDate = Number(row.original.endDate) * 1000;
-              const totalDuration = periodEndDate - periodStartDate;
-              const elapsedTime = currentTime - periodStartDate;
-
-              if (totalDuration > 0) {
-                percentage = Math.min(100, (elapsedTime / totalDuration) * 100);
-              } else {
-                // Handle case where duration is zero or negative (should not happen with valid data)
-                percentage = 0;
-              }
-              break;
-            }
-          }
-
-          return <PercentageProgressBar percentage={percentage} />;
+          return (
+            <PercentageProgressBar
+              percentage={isNaN(percentage) ? 0 : percentage}
+              mode="inverted"
+              errorThreshold={25}
+              warningThreshold={75}
+            />
+          );
         },
       },
       {

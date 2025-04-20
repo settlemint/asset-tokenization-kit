@@ -19,6 +19,8 @@ export const YieldPeriodFragment = theGraphGraphqlKit(`
     endDate
     totalClaimed
     totalClaimedExact
+    totalYield
+    totalYieldExact
   }
 `);
 

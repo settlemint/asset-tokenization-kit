@@ -46,6 +46,13 @@ export const YieldPeriodSchema = t.Object(
       description:
         "The exact total claimed yield for this period as a raw big integer",
     }),
+    totalYield: t.BigDecimal({
+      description:
+        "The total yield for this period in a human-readable decimal format",
+    }),
+    totalYieldExact: t.StringifiedBigInt({
+      description: "The exact total yield for this period as a raw big integer",
+    }),
   },
   {
     description: "Information about a single yield period",
