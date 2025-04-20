@@ -67,14 +67,6 @@ export const FixedYieldSchema = t.Object(
       description:
         "The exact total amount of yield claimed as a raw big integer value",
     }),
-    unclaimedYield: t.BigDecimal({
-      description:
-        "The current unclaimed yield in a human-readable decimal format",
-    }),
-    unclaimedYieldExact: t.StringifiedBigInt({
-      description:
-        "The exact current unclaimed yield as a raw big integer value",
-    }),
     underlyingBalance: t.BigDecimal({
       description:
         "The balance of the underlying asset in a human-readable decimal format",
