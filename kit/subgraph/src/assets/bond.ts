@@ -1225,7 +1225,7 @@ export function handleClawback(event: Clawback): void {
 }
 
 function updateAssociatedFixedYield(bond: Bond, timestamp: BigInt): void {
-  if (!bond.yieldSchedule || bond.yieldSchedule == Address.zero()) {
+  if (!bond.yieldSchedule) {
     return;
   }
 

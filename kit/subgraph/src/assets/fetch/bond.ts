@@ -67,7 +67,10 @@ export function fetchBond(
     bond.redeemedAmount = BigInt.zero();
     bond.underlyingBalanceExact = BigInt.zero();
     bond.underlyingBalance = BigDecimal.zero();
-    bond.yieldSchedule = yieldSchedule.reverted ? null : yieldSchedule.value;
+    bond.yieldSchedule =
+      yieldSchedule.reverted || yieldSchedule.value == Address.zero()
+        ? null
+        : yieldSchedule.value;
     bond.totalUnderlyingNeededExact = BigInt.zero();
     bond.totalUnderlyingNeeded = BigDecimal.zero();
     bond.hasSufficientUnderlying = false;
