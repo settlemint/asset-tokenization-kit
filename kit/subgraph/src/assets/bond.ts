@@ -55,7 +55,7 @@ import { fetchAssetDecimals } from "./fetch/asset";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
-import { fetchFixedYield } from "./fetch/fixed-yield";
+import { fetchFixedYield, fetchFixedYieldPeriod } from "./fetch/fixed-yield";
 import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
@@ -1234,63 +1234,52 @@ export function handleClawback(event: Clawback): void {
 }
 
 function updateAssociatedFixedYield(bond: Bond, timestamp: BigInt): void {
-  if (bond.yieldSchedule) {
-    let fixedYield = fetchFixedYield(Address.fromBytes(bond.yieldSchedule!));
-
-    log.info(
-      "Updating FixedYield {} due to Bond {} supply change at timestamp {}",
-      [
-        fixedYield.id.toHexString(),
-        bond.id.toHexString(),
-        timestamp.toString(), // Added timestamp for context
-      ]
-    );
-    let fixedYieldContract = FixedYieldContract.bind(
-      Address.fromBytes(fixedYield.id)
-    );
-    let underlyingDecimals = fixedYield.underlyingAssetDecimals;
-
-    let unclaimedYieldResult = fixedYieldContract.try_totalUnclaimedYield();
-    fixedYield.unclaimedYieldExact = unclaimedYieldResult.reverted
-      ? BigInt.zero()
-      : unclaimedYieldResult.value;
-    fixedYield.unclaimedYield = toDecimals(
-      fixedYield.unclaimedYieldExact,
-      underlyingDecimals
-    );
-    log.info("FixedYield {} fetched unclaimedYieldExact: {} (reverted: {})", [
-      fixedYield.id.toHexString(),
-      fixedYield.unclaimedYieldExact.toString(),
-      unclaimedYieldResult.reverted.toString(),
-    ]);
-
-    let nextPeriodYieldResult =
-      fixedYieldContract.try_totalYieldForNextPeriod();
-    fixedYield.yieldForNextPeriodExact = nextPeriodYieldResult.reverted
-      ? BigInt.zero()
-      : nextPeriodYieldResult.value;
-    fixedYield.yieldForNextPeriod = toDecimals(
-      fixedYield.yieldForNextPeriodExact,
-      underlyingDecimals
-    );
-    log.info(
-      "FixedYield {} fetched yieldForNextPeriodExact: {} (reverted: {})",
-      [
-        fixedYield.id.toHexString(),
-        fixedYield.yieldForNextPeriodExact.toString(),
-        nextPeriodYieldResult.reverted.toString(),
-      ]
-    );
-
-    fixedYield.save();
-    log.info("Updated FixedYield {} unclaimed: {}, nextPeriod: {}", [
-      fixedYield.id.toHexString(),
-      fixedYield.unclaimedYield.toString(),
-      fixedYield.yieldForNextPeriod.toString(),
-    ]);
-  } else {
-    log.debug("Bond {} has no yieldSchedule, skipping FixedYield update", [
-      bond.id.toHexString(),
-    ]);
+  if (!bond.yieldSchedule) {
+    return;
   }
+
+  let fixedYield = fetchFixedYield(Address.fromBytes(bond.yieldSchedule!));
+
+  let fixedYieldContract = FixedYieldContract.bind(
+    Address.fromBytes(fixedYield.id)
+  );
+  let underlyingDecimals = fixedYield.underlyingAssetDecimals;
+
+  let unclaimedYieldResult = fixedYieldContract.try_totalUnclaimedYield();
+  fixedYield.unclaimedYieldExact = unclaimedYieldResult.reverted
+    ? BigInt.zero()
+    : unclaimedYieldResult.value;
+  fixedYield.unclaimedYield = toDecimals(
+    fixedYield.unclaimedYieldExact,
+    underlyingDecimals
+  );
+
+  let nextPeriodYieldResult = fixedYieldContract.try_totalYieldForNextPeriod();
+  fixedYield.yieldForNextPeriodExact = nextPeriodYieldResult.reverted
+    ? BigInt.zero()
+    : nextPeriodYieldResult.value;
+  fixedYield.yieldForNextPeriod = toDecimals(
+    fixedYield.yieldForNextPeriodExact,
+    underlyingDecimals
+  );
+  fixedYield.save();
+  log.info("Updated FixedYield {} unclaimed: {}, yieldForNextPeriod: {}", [
+    fixedYield.id.toHexString(),
+    fixedYield.unclaimedYield.toString(),
+    fixedYield.yieldForNextPeriod.toString(),
+  ]);
+
+  let currentPeriodResult = fixedYieldContract.try_currentPeriod();
+  let fixedYieldPeriodId = currentPeriodResult.reverted
+    ? BigInt.zero()
+    : currentPeriodResult.value;
+  let fixedYieldPeriod = fetchFixedYieldPeriod(fixedYield, fixedYieldPeriodId);
+  fixedYieldPeriod.totalYield = fixedYield.yieldForNextPeriod;
+  fixedYieldPeriod.totalYieldExact = fixedYield.yieldForNextPeriodExact;
+  fixedYieldPeriod.save();
+  log.info("Updated FixedYieldPeriod {} totalYield: {}, totalYieldExact: {}", [
+    fixedYieldPeriod.id.toHexString(),
+    fixedYieldPeriod.totalYield.toString(),
+    fixedYieldPeriod.totalYieldExact.toString(),
+  ]);
 }

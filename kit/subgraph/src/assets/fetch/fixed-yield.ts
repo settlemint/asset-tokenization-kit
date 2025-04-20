@@ -35,7 +35,9 @@ export function fetchFixedYield(address: Address): FixedYield {
 
   fixedYield = new FixedYield(address);
   fixedYield.token = token.reverted ? Address.zero() : token.value;
-  fixedYield.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
+  fixedYield.underlyingAsset = underlyingAsset.reverted
+    ? Address.zero()
+    : underlyingAsset.value;
   fixedYield.underlyingAssetDecimals = decimals;
   fixedYield.startDate = startDate.reverted ? BigInt.zero() : startDate.value;
   fixedYield.endDate = endDate.reverted ? BigInt.zero() : endDate.value;
@@ -62,19 +64,8 @@ export function fetchFixedYield(address: Address): FixedYield {
   if (!periods.reverted && periods.value) {
     for (let i = 0; i < periods.value.length; i++) {
       const periodTimestamp = periods.value[i];
-      const periodId = BigInt.fromI32(i + 1);
-      const id = Bytes.fromUTF8(
-        address.toHexString() + "-" + periodId.toString()
-      );
-
-      let period = new YieldPeriod(id);
-
-      period.schedule = fixedYield.id;
-      period.periodId = periodId;
-      period.totalClaimedExact = BigInt.zero();
-      period.totalClaimed = BigDecimal.zero();
-      period.totalYieldExact = BigInt.zero();
-      period.totalYield = BigDecimal.zero();
+      const periodNumber = BigInt.fromI32(i + 1);
+      const period = fetchFixedYieldPeriod(fixedYield, periodNumber);
 
       period.startDate = i === 0 ? fixedYield.startDate : periods.value[i - 1];
       period.endDate = periodTimestamp;
@@ -91,4 +82,34 @@ export function fetchFixedYield(address: Address): FixedYield {
   fixedYield.save();
 
   return fixedYield;
+}
+
+export function fetchFixedYieldPeriod(
+  fixedYield: FixedYield,
+  periodId: BigInt
+): YieldPeriod {
+  const id = fixedYieldPeriodId(fixedYield.id, periodId);
+  let period = YieldPeriod.load(id);
+  if (period) {
+    return period;
+  }
+
+  period = new YieldPeriod(id);
+  period.schedule = fixedYield.id;
+  period.periodId = periodId;
+
+  period.totalClaimedExact = BigInt.zero();
+  period.totalClaimed = BigDecimal.zero();
+  period.totalYieldExact = BigInt.zero();
+  period.totalYield = BigDecimal.zero();
+  period.startDate = BigInt.zero();
+  period.endDate = BigInt.zero();
+
+  period.save();
+
+  return period;
+}
+
+export function fixedYieldPeriodId(address: Address, periodId: BigInt): Bytes {
+  return Bytes.fromUTF8(address.toHexString() + "-" + periodId.toString());
 }
