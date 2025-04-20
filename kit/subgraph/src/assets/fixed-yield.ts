@@ -79,7 +79,7 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
       period.totalClaimedExact = period.totalClaimedExact.plus(claimedAmount);
       period.totalClaimed = toDecimals(
         period.totalClaimedExact,
-        token.decimals
+        underlyingDecimals
       );
       period.save();
     }
