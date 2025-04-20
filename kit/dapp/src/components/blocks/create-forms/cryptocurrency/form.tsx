@@ -2,6 +2,7 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import { createCryptoCurrency } from "@/lib/mutations/cryptocurrency/create/create-action";
 import { CreateCryptoCurrencySchema } from "@/lib/mutations/cryptocurrency/create/create-schema";
@@ -29,6 +30,7 @@ export function CreateCryptoCurrencyForm({
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
   const { data: session } = authClient.useSession();
+  const router = useRouter();
 
   return (
     <FormSheet
@@ -65,6 +67,18 @@ export function CreateCryptoCurrencyForm({
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
+        }}
+        toastMessages={{
+          action: (input) => {
+            const assetId = input?.predictedAddress;
+            return assetId
+              ? {
+                  label: t("toast-action.cryptocurrencies"),
+                  onClick: () =>
+                    router.push(`/assets/cryptocurrency/${assetId}`),
+                }
+              : undefined;
+          },
         }}
       >
         <Basics />

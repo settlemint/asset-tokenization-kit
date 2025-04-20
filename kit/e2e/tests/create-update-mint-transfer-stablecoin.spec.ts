@@ -86,6 +86,7 @@ test.describe("Update collateral, mint and transfer assets", () => {
         name: testData.stablecoinName,
         totalSupply: stablecoinData.initialSupply,
       });
+      await adminPages.adminPage.clickAssetDetails(testData.stablecoinName);
       await adminPages.adminPage.updateCollateral({
         sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
         name: testData.stablecoinName,
@@ -97,9 +98,8 @@ test.describe("Update collateral, mint and transfer assets", () => {
       await adminPages.adminPage.verifyCollateral(
         stableCoinUpdateCollateralData.amount
       );
-      await adminPages.adminPage.mintToken({
+      await adminPages.adminPage.mintAsset({
         sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
-        name: testData.stablecoinName,
         user: testData.userName,
         ...stableCoinMintTokenData,
       });

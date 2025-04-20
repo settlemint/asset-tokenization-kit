@@ -1,6 +1,7 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getBondStatus } from "@/lib/utils/bond-status";
@@ -20,8 +21,9 @@ export async function BondsDetails({
   showBalance = false,
   userAddress,
 }: BondsDetailsProps) {
+  const user = await getUser();
   const [bond, t, locale] = await Promise.all([
-    getBondDetail({ address }),
+    getBondDetail({ address, userCurrency: user.currency }),
     getTranslations("private.assets.fields"),
     getLocale(),
   ]);
@@ -137,7 +139,7 @@ export async function BondsDetails({
           locale: locale,
         })}
       </DetailGridItem>
-      <DetailGridItem label={t("price")}>
+      <DetailGridItem label={t("price")} info={t("bonds-price")}>
         {formatNumber(bond.price.amount, {
           currency: bond.price.currency,
           decimals: 2,

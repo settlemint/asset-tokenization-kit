@@ -5,7 +5,7 @@ import { PredictAddressInputSchema } from "@/lib/queries/cryptocurrency-factory/
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
 import { getCryptoCurrencyList } from "@/lib/queries/cryptocurrency/cryptocurrency-list";
 import { CryptoCurrencySchema } from "@/lib/queries/cryptocurrency/cryptocurrency-schema";
-import { betterAuth, superJson } from "@/lib/utils/elysia";
+import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
@@ -34,11 +34,10 @@ export const CryptoCurrencyApi = new Elysia({
   },
 })
   .use(betterAuth)
-  .use(superJson)
   .get(
     "",
-    async () => {
-      return getCryptoCurrencyList();
+    async ({ user }) => {
+      return getCryptoCurrencyList(user.currency);
     },
     {
       auth: true,
@@ -56,9 +55,10 @@ export const CryptoCurrencyApi = new Elysia({
   )
   .get(
     "/:address",
-    ({ params: { address } }) => {
+    ({ params: { address }, user }) => {
       return getCryptoCurrencyDetail({
         address: getAddress(address),
+        userCurrency: user.currency,
       });
     },
     {

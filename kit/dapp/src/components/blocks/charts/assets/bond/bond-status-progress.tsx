@@ -1,4 +1,5 @@
 import { DonutProgressChart } from "@/components/blocks/charts/donut-progress-chart";
+import { getUser } from "@/lib/auth/utils";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getBondStatus } from "@/lib/utils/bond-status";
 import { getBondStatusColor } from "@/lib/utils/chart-colors";
@@ -10,11 +11,14 @@ interface BondStatusProgressProps {
 }
 
 export async function BondStatusProgress({ address }: BondStatusProgressProps) {
-  const t = await getTranslations("components.charts.assets");
+  const [t, user] = await Promise.all([
+    getTranslations("components.charts.assets"),
+    getUser(),
+  ]);
   let bond;
 
   try {
-    bond = await getBondDetail({ address });
+    bond = await getBondDetail({ address, userCurrency: user.currency });
   } catch (error) {
     console.error("Error fetching bond details:", error);
     // Return error state

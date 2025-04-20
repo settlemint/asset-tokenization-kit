@@ -17,9 +17,13 @@ blockscout-stack:
         decimals: 18
   blockscout:
     replicaCount: 1
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "4000"
+      prometheus.io/path: "/metrics"
     image:
-      repository: blockscout/blockscout
-      tag: "7.0.2"
+      repository: ghcr.io/blockscout/blockscout
+      tag: "8.0.1"
     ingress:
       enabled: true
       className: "settlemint-nginx"

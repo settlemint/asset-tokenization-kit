@@ -18,8 +18,8 @@ import type {
   Resolver,
   UseFormReturn,
 } from "react-hook-form";
-import { toast } from "sonner";
-import { type ButtonLabels, FormButton } from "./form-button";
+import { toast, type Action } from "sonner";
+import { FormButton, type ButtonLabels } from "./form-button";
 import { FormProgress } from "./form-progress";
 import { FormOtpDialog } from "./inputs/form-otp-dialog";
 import type { FormStepElement } from "./types";
@@ -43,6 +43,7 @@ interface FormProps<
   toastMessages?: {
     loading?: string;
     success?: string;
+    action?: (input?: Infer<S>) => Action | undefined;
   };
   secureForm?: boolean;
   onAnyFieldChange?: (
@@ -283,15 +284,34 @@ export function Form<
           defaultValues,
         },
         actionProps: {
-          onSuccess: ({ data }) => {
+          onSuccess: async ({ data, input }) => {
             if (secureForm) {
+              const toastId = toast.loading(
+                toastMessages?.loading || t("transactions.sending")
+              );
               const hashes = safeParse(tb.Hashes(), data);
-              toast.promise(waitForTransactions(hashes), {
-                loading: toastMessages?.loading || t("transactions.sending"),
-                success: toastMessages?.success || t("transactions.success"),
-                error: (error: Error) => `Failed to submit: ${error.message}`,
-              });
+              try {
+                await waitForTransactions(hashes);
+                const successMessage =
+                  toastMessages?.success || t("transactions.success");
+                const action = toastMessages?.action
+                  ? toastMessages.action(input)
+                  : undefined;
+                toast.success(successMessage, {
+                  action: action,
+                  id: toastId,
+                  actionButtonStyle: {
+                    backgroundColor: "var(--success-fg-deep)",
+                    color: "var(--primary-foreground)",
+                  },
+                });
+              } catch (error: unknown) {
+                toast.error(`Failed to submit: ${(error as Error).message}`, {
+                  id: toastId,
+                });
+              }
             }
+
             resetFormAndAction();
             onOpenChange?.(false);
           },
@@ -474,7 +494,7 @@ export function Form<
                 />
               )}
             </div>
-            <div className="mt-auto pt-6">
+            <div className="mt-auto pt-6 mb-5">
               <FormButton
                 hideButtons={
                   typeof hideButtons === "function"

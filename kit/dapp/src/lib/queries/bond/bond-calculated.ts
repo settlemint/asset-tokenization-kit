@@ -1,6 +1,7 @@
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { safeParse } from "@/lib/utils/typebox";
-import type { CalculatedBond, OffChainBond, OnChainBond } from "./bond-schema";
+import type { CalculatedBond, OnChainBond } from "./bond-schema";
 import { CalculatedBondSchema } from "./bond-schema";
 
 /**
@@ -12,16 +13,20 @@ import { CalculatedBondSchema } from "./bond-schema";
  */
 export async function bondsCalculateFields(
   onChainBonds: OnChainBond[],
-  _offChainBonds?: (OffChainBond | undefined)[]
+  userCurrency: CurrencyCode
 ) {
   const prices = await getAssetsPricesInUserCurrency(
-    onChainBonds.map((bond) => bond.id)
+    onChainBonds.map((bond) => bond.underlyingAsset.id),
+    userCurrency
   );
 
   return onChainBonds.reduce((acc, bond) => {
-    const price = prices.get(bond.id);
+    const price = prices.get(bond.underlyingAsset.id);
     const calculatedBond = safeParse(CalculatedBondSchema, {
-      price,
+      price: {
+        ...price,
+        amount: price?.amount ? price.amount * Number(bond.faceValue) : 0,
+      },
     });
     acc.set(bond.id, calculatedBond);
     return acc;

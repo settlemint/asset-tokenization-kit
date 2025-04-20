@@ -1,7 +1,7 @@
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import {
   CalculatedCryptoCurrencySchema,
   type CalculatedCryptoCurrency,
-  type OffChainCryptoCurrency,
   type OnChainCryptoCurrency,
 } from "@/lib/queries/cryptocurrency/cryptocurrency-schema";
 import { safeParse } from "../../utils/typebox";
@@ -15,10 +15,11 @@ import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
  */
 export async function cryptoCurrenciesCalculateFields(
   cryptocurrencies: OnChainCryptoCurrency[],
-  _offchainCryptocurrencies?: (OffChainCryptoCurrency | undefined)[]
+  userCurrency: CurrencyCode
 ) {
   const prices = await getAssetsPricesInUserCurrency(
-    cryptocurrencies.map((cryptocurrency) => cryptocurrency.id)
+    cryptocurrencies.map((cryptocurrency) => cryptocurrency.id),
+    userCurrency
   );
 
   return cryptocurrencies.reduce((acc, cryptocurrency) => {

@@ -1,4 +1,5 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
+import { getUser } from "@/lib/auth/utils";
 import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getBondList } from "@/lib/queries/bond/bond-list";
@@ -20,14 +21,15 @@ interface TableProps {
 }
 
 export async function AssetsTable({ assettype }: TableProps) {
-  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
+  const baseCurrency = await getSetting({ key: SETTING_KEYS.BASE_CURRENCY });
+  const user = await getUser();
 
   switch (assettype) {
     case "bond":
       return (
         <DataTable
           columns={BondColumns}
-          data={await getBondList()}
+          data={await getBondList(user.currency)}
           name={assettype}
           columnParams={{ baseCurrency }}
         />
@@ -36,7 +38,7 @@ export async function AssetsTable({ assettype }: TableProps) {
       return (
         <DataTable
           columns={CryptocurrencyColumns}
-          data={await getCryptoCurrencyList()}
+          data={await getCryptoCurrencyList(user.currency)}
           name={assettype}
           columnParams={{ baseCurrency }}
         />
@@ -45,7 +47,7 @@ export async function AssetsTable({ assettype }: TableProps) {
       return (
         <DataTable
           columns={StablecoinColumns}
-          data={await getStableCoinList()}
+          data={await getStableCoinList(user.currency)}
           name={assettype}
           columnParams={{ baseCurrency }}
         />
@@ -54,7 +56,7 @@ export async function AssetsTable({ assettype }: TableProps) {
       return (
         <DataTable
           columns={DepositColumns}
-          data={await getDepositList()}
+          data={await getDepositList(user.currency)}
           name={assettype}
           columnParams={{ baseCurrency }}
         />
@@ -63,7 +65,7 @@ export async function AssetsTable({ assettype }: TableProps) {
       return (
         <DataTable
           columns={EquityColumns}
-          data={await getEquityList()}
+          data={await getEquityList(user.currency)}
           name={assettype}
           columnParams={{ baseCurrency }}
         />
@@ -72,7 +74,7 @@ export async function AssetsTable({ assettype }: TableProps) {
       return (
         <DataTable
           columns={FundColumns}
-          data={await getFundList()}
+          data={await getFundList(user.currency)}
           name={assettype}
           columnParams={{ baseCurrency }}
         />

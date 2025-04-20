@@ -22,7 +22,8 @@ export async function MyAssetsHeader({ locale, user }: MyAssetsHeaderProps) {
   ]);
 
   const assetPrices = await getAssetsPricesInUserCurrency(
-    portfolioStats.map(({ asset }) => asset.id)
+    portfolioStats.map(({ asset }) => asset.id),
+    user.currency
   );
 
   const totalUserAssetsValue = myAssetsBalance.balances.reduce(

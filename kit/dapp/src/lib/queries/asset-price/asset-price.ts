@@ -3,7 +3,6 @@ import "server-only";
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import type { AssetPrice } from "@/lib/queries/asset-price/asset-price-fragment";
-import { getSettingValue } from "@/lib/queries/setting/setting-detail";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
@@ -48,61 +47,66 @@ const AssetPrice = hasuraGraphql(
 export const getAssetsPricesInUserCurrency = withTracing(
   "queries",
   "getAssetsPricesInUserCurrency",
-  cache(async (assetIds: string[]): Promise<Map<string, Price>> => {
-    "use cache";
-    cacheTag("asset");
-    const { value: currency } = await getSettingValue({ key: "baseCurrency" });
-    const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
-    const assetPricesData = await fetchAllHasuraPages(
-      async (pageLimit, offset) => {
-        const assetIds = assetIdsWithoutDuplicates.map((address) => {
-          return getAddress(address);
-        });
-        const pageResult = await hasuraClient.request(
-          AssetPrices,
-          {
-            assetIds,
-            limit: pageLimit,
-            offset,
-          },
-          {
-            "X-GraphQL-Operation-Name": "AssetPrices",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
-        return pageResult.asset_price ?? [];
-      }
-    );
-    const exchangeRates = await getExchangeRates(
-      assetPricesData,
-      currency as CurrencyCode
-    );
-    const pricesForAssetIds = new Map();
-
-    for (const assetId of assetIds) {
-      const assetPrice = assetPricesData.find(
-        (assetPrice) => getAddress(assetPrice.asset_id) === getAddress(assetId)
-      );
-      if (!assetPrice) {
-        pricesForAssetIds.set(assetId, {
-          amount: 0,
-          currency: currency as CurrencyCode,
-        });
-      } else {
-        const validatedPrice = safeParse(AssetPriceSchema, assetPrice);
-        const exchangeRate = exchangeRates.get(validatedPrice.currency);
-        if (!exchangeRate) {
-          throw new Error("Exchange rate not found");
+  cache(
+    async (
+      assetIds: string[],
+      userCurrency: CurrencyCode
+    ): Promise<Map<string, Price>> => {
+      "use cache";
+      cacheTag("asset");
+      const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
+      const assetPricesData = await fetchAllHasuraPages(
+        async (pageLimit, offset) => {
+          const assetIds = assetIdsWithoutDuplicates.map((address) => {
+            return getAddress(address);
+          });
+          const pageResult = await hasuraClient.request(
+            AssetPrices,
+            {
+              assetIds,
+              limit: pageLimit,
+              offset,
+            },
+            {
+              "X-GraphQL-Operation-Name": "AssetPrices",
+              "X-GraphQL-Operation-Type": "query",
+            }
+          );
+          return pageResult.asset_price ?? [];
         }
-        pricesForAssetIds.set(assetId, {
-          amount: validatedPrice.amount * exchangeRate,
-          currency: currency as CurrencyCode,
-        });
-      }
-    }
+      );
+      const exchangeRates = await getExchangeRates(
+        assetPricesData,
+        userCurrency
+      );
+      const pricesForAssetIds = new Map();
 
-    return pricesForAssetIds;
-  })
+      for (const assetId of assetIds) {
+        const assetPrice = assetPricesData.find(
+          (assetPrice) =>
+            getAddress(assetPrice.asset_id) === getAddress(assetId)
+        );
+        if (!assetPrice) {
+          pricesForAssetIds.set(assetId, {
+            amount: 0,
+            currency: userCurrency,
+          });
+        } else {
+          const validatedPrice = safeParse(AssetPriceSchema, assetPrice);
+          const exchangeRate = exchangeRates.get(validatedPrice.currency);
+          if (!exchangeRate) {
+            throw new Error("Exchange rate not found");
+          }
+          pricesForAssetIds.set(assetId, {
+            amount: validatedPrice.amount * exchangeRate,
+            currency: userCurrency,
+          });
+        }
+      }
+
+      return pricesForAssetIds;
+    }
+  )
 );
 
 const getExchangeRates = withTracing(

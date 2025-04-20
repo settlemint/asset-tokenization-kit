@@ -1,3 +1,4 @@
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { YieldDistributionItem } from "@/lib/queries/bond/bond-schema";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
@@ -5,6 +6,7 @@ import type { Address } from "viem";
 
 interface BondYieldDistributionParams {
   address: Address;
+  userCurrency: CurrencyCode;
 }
 
 /**
@@ -13,12 +15,13 @@ interface BondYieldDistributionParams {
  */
 export const getBondYieldDistribution = async ({
   address,
+  userCurrency,
 }: BondYieldDistributionParams): Promise<YieldDistributionItem[]> => {
   "use cache";
   cacheTag("bond");
   try {
     // Get bond details to access yield data
-    const bondData = await getBondDetail({ address });
+    const bondData = await getBondDetail({ address, userCurrency });
 
     if (!bondData.yieldSchedule) {
       return [];

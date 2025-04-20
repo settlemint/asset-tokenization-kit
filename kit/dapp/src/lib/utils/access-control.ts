@@ -45,13 +45,16 @@ export function withAccessControl<
   },
   fn: T
 ) {
-  return async ({
-    ctx,
-    ...args
-  }: AccessControlOptions &
-    (Parameters<T>[0] extends undefined
-      ? unknown
-      : Parameters<T>[0]) = {}): Promise<Awaited<ReturnType<T>>> => {
+  return async (
+    options: AccessControlOptions &
+      (Parameters<T>[0] extends undefined ? unknown : Parameters<T>[0]) = {}
+  ): Promise<Awaited<ReturnType<T>>> => {
+    if (typeof options !== "object") {
+      throw new Error(
+        `Function wrapped in withAccessControl expects an object as options, received: ${typeof options}`
+      );
+    }
+    const { ctx, ...args } = options;
     const user = ctx?.user ?? (await getUser());
     const userRole = user.role ?? "";
     const hasPermission = authClient.admin.checkRolePermission({

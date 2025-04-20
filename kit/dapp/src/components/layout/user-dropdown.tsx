@@ -26,6 +26,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { CurrencyMenuItem } from "../blocks/currency/currency-menu-item";
 import {
   BookTextIcon,
   type BookTextIconHandle,
@@ -144,7 +145,7 @@ export function UserDropdown() {
           <DropdownMenuGroup>
             <ThemeMenuItem />
             <LanguageMenuItem />
-            {/* <CurrencyMenuItem user={user} /> */}
+            <CurrencyMenuItem />
             <DropdownMenuItem
               onMouseEnter={() => bookIconRef.current?.startAnimation()}
               onMouseLeave={() => bookIconRef.current?.stopAnimation()}

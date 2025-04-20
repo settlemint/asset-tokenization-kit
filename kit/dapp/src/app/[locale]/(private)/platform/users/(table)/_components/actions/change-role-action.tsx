@@ -87,10 +87,10 @@ export function ChangeRoleAction({
               })}
 
               {isSelfRoleChange && selectedRole !== "admin" && (
-                <div className="mt-2 p-3 rounded-md border bg-warning/10 border-warning/20 text-sm text-warning-foreground flex items-start gap-2">
+                <span className="mt-2 p-3 rounded-md border bg-warning/10 border-warning/20 text-sm text-warning-foreground flex items-start gap-2">
                   <AlertTriangle className="size-4 mt-0.5 flex-shrink-0" />
                   <span>{t("actions.change-role.self-change-warning")}</span>
-                </div>
+                </span>
               )}
             </DialogDescription>
           </DialogHeader>

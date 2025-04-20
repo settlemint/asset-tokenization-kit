@@ -42,7 +42,6 @@ export class AdminPage extends BasePage {
     maximumSupply: string;
     faceValue: string;
     underlyingAsset: string;
-    price: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
@@ -73,7 +72,6 @@ export class AdminPage extends BasePage {
     await this.page
       .getByRole("option", { name: `Avatar ${options.underlyingAsset}` })
       .click();
-    await this.page.getByLabel("Price").fill(options.price);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.page.getByRole("button", { name: "Next" }).click();
     const buttonName = `Issue a new ${options.assetType?.toLowerCase()}`;
@@ -235,7 +233,12 @@ export class AdminPage extends BasePage {
 
   private async getColumnIndices() {
     const nameColumn = this.page.locator("th", { hasText: "Name" });
-    const supplyColumn = this.page.locator("th", { hasText: "Total Supply" });
+
+    let supplyColumn = this.page.locator("th", { hasText: "Total Supply" });
+
+    if ((await supplyColumn.count()) === 0) {
+      supplyColumn = this.page.locator("th", { hasText: "Balance" });
+    }
 
     await nameColumn.waitFor({ state: "visible", timeout: 40000 });
     await supplyColumn.waitFor({ state: "visible", timeout: 40000 });
@@ -353,12 +356,27 @@ export class AdminPage extends BasePage {
 
   async checkIfAssetExists(options: {
     name: string;
-    sidebarAssetTypes: string;
+    sidebarAssetTypes?: string;
     totalSupply?: string;
   }): Promise<void> {
-    await this.chooseAssetTypeFromSidebar({
+    if (options.sidebarAssetTypes) {
+      await this.chooseAssetTypeFromSidebar({
+        sidebarAssetTypes: options.sidebarAssetTypes,
+      });
+    }
+
+    await this.filterAssetByName({
+      name: options.name,
       sidebarAssetTypes: options.sidebarAssetTypes,
+      totalSupply: options.totalSupply,
     });
+  }
+
+  async filterAssetByName(options: {
+    name: string;
+    sidebarAssetTypes?: string;
+    totalSupply?: string;
+  }) {
     await this.page.getByRole("button", { name: "Filter" }).click();
     await this.page.getByRole("option", { name: "Name" }).click();
     await this.page.getByRole("button", { name: "Contains" }).click();
@@ -459,7 +477,7 @@ export class AdminPage extends BasePage {
     maxSearchAttempts: number,
     refreshCount: number,
     maxRefreshes: number,
-    options: { sidebarAssetTypes: string }
+    options: { sidebarAssetTypes?: string }
   ): Promise<{
     continueSearch: boolean;
     updatedSearchAttempts: number;
@@ -484,9 +502,11 @@ export class AdminPage extends BasePage {
     if (refreshCount < maxRefreshes) {
       updatedRefreshCount = refreshCount + 1;
       await this.page.reload();
-      await this.chooseAssetTypeFromSidebar({
-        sidebarAssetTypes: options.sidebarAssetTypes,
-      });
+      if (options.sidebarAssetTypes) {
+        await this.chooseAssetTypeFromSidebar({
+          sidebarAssetTypes: options.sidebarAssetTypes,
+        });
+      }
       await this.page.waitForTimeout(2000);
     }
 
@@ -502,7 +522,7 @@ export class AdminPage extends BasePage {
     maxSearchAttempts: number,
     refreshCount: number,
     maxRefreshes: number,
-    options: { sidebarAssetTypes: string }
+    options: { sidebarAssetTypes?: string }
   ): Promise<{
     continueSearch: boolean;
     updatedSearchAttempts: number;
@@ -526,9 +546,11 @@ export class AdminPage extends BasePage {
     if (refreshCount < maxRefreshes) {
       updatedRefreshCount = refreshCount + 1;
       await this.page.reload();
-      await this.chooseAssetTypeFromSidebar({
-        sidebarAssetTypes: options.sidebarAssetTypes,
-      });
+      if (options.sidebarAssetTypes) {
+        await this.chooseAssetTypeFromSidebar({
+          sidebarAssetTypes: options.sidebarAssetTypes,
+        });
+      }
       await this.page.waitForTimeout(2000);
     }
 
@@ -545,10 +567,6 @@ export class AdminPage extends BasePage {
     amount: string;
     pincode: string;
   }) {
-    await this.chooseAssetFromTable({
-      name: options.name,
-      sidebarAssetTypes: options.sidebarAssetTypes,
-    });
     await this.page.getByRole("button", { name: "Manage" }).click();
     const updateCollateralOption = this.page.getByRole("menuitem", {
       name: "Update Collateral",
@@ -613,9 +631,8 @@ export class AdminPage extends BasePage {
     await expect(formattedActual).toBe(formattedExpected);
   }
 
-  async mintToken(options: {
+  async mintAsset(options: {
     sidebarAssetTypes: string;
-    name: string;
     user: string;
     amount: string;
     pincode: string;
@@ -647,6 +664,24 @@ export class AdminPage extends BasePage {
     await this.completeAssetCreation("Mint", options.pincode);
   }
 
+  async topUpAsset(options: {
+    sidebarAssetTypes: string;
+    name: string;
+    amount: string;
+    pincode: string;
+  }) {
+    await this.page.reload();
+    await this.page.getByRole("button", { name: "Manage" }).click();
+    const mintTokensOption = this.page.getByRole("menuitem", {
+      name: "Top up",
+    });
+    await mintTokensOption.waitFor({ state: "visible" });
+    await mintTokensOption.click();
+    await this.page.locator("#amount").fill(options.amount);
+    await this.page.getByRole("button", { name: "Next" }).click();
+    await this.completeAssetCreation("Top up", options.pincode);
+  }
+
   async verifyTotalSupply(expectedAmount: string) {
     const totalSupplyElement = this.page
       .locator("div.space-y-1")
@@ -665,19 +700,29 @@ export class AdminPage extends BasePage {
       .locator("body")
       .click({ position: { x: 1, y: 1 }, force: true });
 
+    const formattedExpected = this.formatAmount(expectedAmount);
+    let initialValue: string;
+
     await expect
       .poll(
         async () => {
           const text = await totalSupplyElement.textContent();
-          return text ? this.formatAmount(text) : "0";
+          const currentValue = text ? this.formatAmount(text) : "";
+          if (!initialValue) {
+            initialValue = currentValue;
+            return currentValue !== "" && currentValue === formattedExpected;
+          }
+          return (
+            currentValue !== initialValue && currentValue === formattedExpected
+          );
         },
         {
-          message: "Waiting for total supply to be updated from 0",
+          message: `Waiting for total supply to update from initial value to ${formattedExpected}`,
           timeout: 120000,
           intervals: [1000],
         }
       )
-      .not.toBe("0");
+      .toBe(true);
 
     const actualAmount = await totalSupplyElement.textContent();
 
@@ -686,8 +731,6 @@ export class AdminPage extends BasePage {
     }
 
     const formattedActual = this.formatAmount(actualAmount);
-    const formattedExpected = this.formatAmount(expectedAmount);
-
     await expect(formattedActual).toBe(formattedExpected);
   }
 
@@ -732,11 +775,35 @@ export class AdminPage extends BasePage {
     return pluralToSingular[type] || type.toLowerCase();
   }
 
+  private async isSidebarMenuExpanded(menuName: string): Promise<boolean> {
+    const menuButton = this.page
+      .locator("button[data-sidebar='menu-button']")
+      .filter({ hasText: menuName });
+
+    const exists = (await menuButton.count()) > 0;
+    if (!exists) {
+      return false;
+    }
+
+    const isExpanded =
+      (await menuButton.getAttribute("aria-expanded")) === "true";
+    const state = await menuButton.getAttribute("data-state");
+
+    return isExpanded && state === "open";
+  }
+
   async chooseAssetTypeFromSidebar(options: { sidebarAssetTypes: string }) {
+    const isExpanded = await this.isSidebarMenuExpanded(
+      options.sidebarAssetTypes
+    );
+
     const assetTypeButton = this.page.getByRole("button", {
       name: options.sidebarAssetTypes,
     });
-    await assetTypeButton.click();
+
+    if (!isExpanded) {
+      await assetTypeButton.click();
+    }
 
     const singularForm = this.getSingularForm(options.sidebarAssetTypes);
 
@@ -775,5 +842,54 @@ export class AdminPage extends BasePage {
     await this.page.waitForURL(
       new RegExp(`.*\/assets\/${singularForm}\/0x[a-fA-F0-9]{40}`)
     );
+  }
+
+  async clickAssetDetails(assetName: string): Promise<void> {
+    const rows = this.page.locator("tbody tr");
+    const rowCount = await rows.count();
+
+    let assetFound = false;
+    for (let i = 0; i < rowCount; i++) {
+      const row = rows.nth(i);
+      const nameCell = row.locator("td").nth(1);
+      const nameText = await nameCell.textContent();
+
+      if (nameText?.trim() === assetName) {
+        const detailsLink = row.getByRole("link", { name: "Details" });
+        await detailsLink.click();
+        assetFound = true;
+        break;
+      }
+    }
+
+    if (!assetFound) {
+      throw new Error(
+        `Asset with name "${assetName}" not found in the current table view`
+      );
+    }
+
+    await this.page.waitForURL(/.*\/assets\/.*\/0x[a-fA-F0-9]{40}/);
+  }
+
+  async clickSidebarMenuItem(linkText: string): Promise<void> {
+    const menuLink = this.page.getByRole("link").filter({ hasText: linkText });
+
+    const count = await menuLink.count();
+
+    if (count > 0) {
+      await menuLink.click();
+      return;
+    }
+
+    const sidebarMenuItem = this.page
+      .locator('li[data-sidebar="menu-item"] a')
+      .filter({ hasText: linkText });
+
+    await sidebarMenuItem.click();
+    await this.page.waitForURL(`**/portfolio/my-assets`);
+    await Promise.all([
+      this.page.waitForSelector("table tbody"),
+      this.page.getByRole("button", { name: "Filter" }),
+    ]);
   }
 }
