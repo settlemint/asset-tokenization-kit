@@ -298,7 +298,7 @@ thegraph:
       size: 1Gi
 
 hasura:
-  enabled: false
+  enabled: true
   graphql-engine:
     replicas: 1
     global:
