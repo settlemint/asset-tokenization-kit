@@ -70,7 +70,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Run chart-testing (lint)
-        run: ct lint --chart-dirs kit/charts --check-version-increment=false --target-branch ${{ github.event.repository.default_branch }}
+        run: ct lint --chart-dirs kit/charts --check-version-increment false --target-branch ${{ github.event.repository.default_branch }}
 
       - name: Turbo!
         run: bunx turbo dependencies lint build test genesis abi-output
