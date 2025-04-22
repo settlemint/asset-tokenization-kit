@@ -21,28 +21,42 @@ export function Summary({ bondDetails }: SummaryProps) {
   });
   const locale = useLocale();
 
-  // Get the appropriate decimals based on target
-  const decimals = values.target === "bond"
-    ? bondDetails.underlyingAsset.decimals
-    : bondDetails.yieldSchedule?.underlyingAsset?.decimals ?? bondDetails.underlyingAsset.decimals;
-
-    const tokenSymbol = values.target === "bond"
-    ? bondDetails.underlyingAsset.symbol
-    : bondDetails.yieldSchedule?.underlyingAsset?.symbol ?? bondDetails.underlyingAsset.symbol;
+  const decimals =
+    values.target === "bond"
+      ? bondDetails.underlyingAsset.decimals
+      : (bondDetails.yieldSchedule?.underlyingAsset?.decimals ??
+        bondDetails.underlyingAsset.decimals);
+  const tokenSymbol =
+    values.target === "bond"
+      ? bondDetails.underlyingAsset.symbol
+      : (bondDetails.yieldSchedule?.underlyingAsset?.symbol ??
+        bondDetails.underlyingAsset.symbol);
 
   return (
     <FormStep title={t("title.top-up")} description={t("description.top-up")}>
       <FormSummaryDetailItem
         label={t("target-label")}
-        value={values.bondAddress ? <EvmAddress address={values.bondAddress} /> : "-"}
+        value={
+          values.bondAddress ? <EvmAddress address={values.bondAddress} /> : "-"
+        }
       />
       <FormSummaryDetailItem
         label={t("asset-label")}
-        value={values.underlyingAssetAddress ? <EvmAddress address={values.underlyingAssetAddress} /> : "-"}
+        value={
+          values.underlyingAssetAddress ? (
+            <EvmAddress address={values.underlyingAssetAddress} />
+          ) : (
+            "-"
+          )
+        }
       />
       <FormSummaryDetailItem
         label={t("amount-label")}
-        value={formatNumber(values.amount ?? 0, { locale, decimals, token: tokenSymbol })}
+        value={formatNumber(values.amount ?? 0, {
+          locale,
+          decimals,
+          token: tokenSymbol,
+        })}
       />
     </FormStep>
   );
