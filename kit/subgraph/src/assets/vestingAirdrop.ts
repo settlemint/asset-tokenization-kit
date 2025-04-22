@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
+import { BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 import {
   AirdropClaim,
   AirdropClaimIndex,
@@ -48,9 +48,11 @@ export function handleClaimed(event: Claimed): void {
   );
 
   let claimantAccount = fetchAccount(claimantAddress);
-  let amountBD = toDecimals(amount, token.decimals);
+  let amountBD = toDecimals(amount, 18);
 
-  let claimId = event.transaction.hash.concatI32(event.logIndex.toI32());
+  let claimId = event.transaction.hash
+    .concatI32(event.logIndex.toI32())
+    .toHex();
   let claim = new AirdropClaim(claimId);
   claim.airdrop = airdrop.id;
   claim.claimant = claimantAccount.id;
@@ -62,7 +64,7 @@ export function handleClaimed(event: Claimed): void {
   claim.logIndex = event.logIndex;
   claim.save();
 
-  let recipientId = airdrop.id.concat(claimantAccount.id);
+  let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
   let recipient = AirdropRecipient.load(recipientId);
   if (!recipient) {
     recipient = new AirdropRecipient(recipientId);
@@ -122,9 +124,11 @@ export function handleBatchClaimed(event: BatchClaimed): void {
   );
 
   let claimantAccount = fetchAccount(claimantAddress);
-  let totalAmountBD = toDecimals(totalAmount, token.decimals);
+  let totalAmountBD = toDecimals(totalAmount, 18);
 
-  let claimId = event.transaction.hash.concatI32(event.logIndex.toI32());
+  let claimId = event.transaction.hash
+    .concatI32(event.logIndex.toI32())
+    .toHex();
   let claim = new AirdropClaim(claimId);
   claim.airdrop = airdrop.id;
   claim.claimant = claimantAccount.id;
@@ -136,7 +140,7 @@ export function handleBatchClaimed(event: BatchClaimed): void {
   claim.logIndex = event.logIndex;
   claim.save();
 
-  let recipientId = airdrop.id.concat(claimantAccount.id);
+  let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
   let recipient = AirdropRecipient.load(recipientId);
   if (!recipient) {
     recipient = new AirdropRecipient(recipientId);
@@ -207,49 +211,59 @@ export function handleTokensWithdrawn(event: TokensWithdrawn): void {
 }
 
 export function handleVestingInitialized(event: VestingInitialized): void {
-  let airdropAddress = event.address;
-  let airdrop = VestingAirdrop.load(airdropAddress);
-  if (!airdrop) {
-    return;
-  }
-
-  let strategyAddress = Address.fromBytes(airdrop.strategy);
+  let strategyAddress = event.address;
   let strategy = LinearVestingStrategy.load(strategyAddress);
   if (!strategy) {
+    log.error("LinearVestingStrategy not found: {}", [strategyAddress.toHex()]);
     return;
   }
 
-  let accountAddress = event.params.account;
+  let airdrop = VestingAirdrop.load(strategy.airdrop);
+  if (!airdrop) {
+    log.error("Associated VestingAirdrop not found for strategy: {}", [
+      strategyAddress.toHex(),
+    ]);
+    return;
+  }
+
+  let userAddress = event.params.user;
   let totalAmount = event.params.totalAmount;
   let vestingStart = event.params.vestingStart;
 
-  let userAccount = fetchAccount(accountAddress);
-  let userVestingDataId = strategy.id.concat(userAccount.id);
+  let userAccount = fetchAccount(userAddress);
 
+  let userVestingDataId = strategy.id.toHex() + "-" + userAccount.id.toHex();
   let userVestingData = UserVestingData.load(userVestingDataId);
   if (!userVestingData) {
     userVestingData = new UserVestingData(userVestingDataId);
     userVestingData.strategy = strategy.id;
     userVestingData.user = userAccount.id;
-    userVestingData.claimedAmountTrackedByStrategy = BigDecimal.fromString("0");
-    userVestingData.claimedAmountTrackedByStrategyExact = BigInt.fromI32(0);
-    userVestingData.initialized = false;
+    userVestingData.totalAmountAggregatedExact = BigInt.zero();
+    userVestingData.totalAmountAggregated = BigDecimal.zero();
+    userVestingData.claimedAmountTrackedByStrategyExact = BigInt.zero();
+    userVestingData.claimedAmountTrackedByStrategy = BigDecimal.zero();
   }
 
-  let token = Asset.load(airdrop.token);
-  let decimals = token ? token.decimals : 18;
-  let totalAmountBD = toDecimals(totalAmount, decimals);
+  let decimals = 18;
 
-  userVestingData.totalAmountAggregated = totalAmountBD;
-  userVestingData.totalAmountAggregatedExact = totalAmount;
+  userVestingData.totalAmountAggregatedExact =
+    userVestingData.totalAmountAggregatedExact.plus(totalAmount);
+  userVestingData.totalAmountAggregated = toDecimals(
+    userVestingData.totalAmountAggregatedExact,
+    decimals
+  );
   userVestingData.vestingStart = vestingStart;
   userVestingData.initialized = true;
   userVestingData.lastUpdated = event.block.timestamp;
-
   userVestingData.save();
 
-  log.info("Processed VestingInitialized for user {} on strategy {}", [
-    accountAddress.toHex(),
-    strategyAddress.toHex(),
-  ]);
+  log.info(
+    "VestingInitialized event processed: Strategy {}, User {}, Amount {}, Start {}",
+    [
+      strategyAddress.toHex(),
+      userAddress.toHex(),
+      totalAmount.toString(),
+      vestingStart.toString(),
+    ]
+  );
 }
