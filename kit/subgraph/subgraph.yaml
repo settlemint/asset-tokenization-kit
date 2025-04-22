@@ -754,6 +754,11 @@ templates:
           handler: handleBatchClaimed
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
+        - event: ClaimInitialized(indexed address,uint256)
+          handler: handleClaimInitialized
+        - event: VestingInitialized(indexed address,uint256,uint256)
+          handler: handleVestingInitialized
+          receipt: true
       file: ./src/assets/vestingAirdrop.ts
   - kind: ethereum/contract
     name: PushAirdropTemplate

@@ -24,6 +24,7 @@ import { VestingInitialized } from "../../generated/templates/VestingAirdropTemp
 import {
   BatchClaimed,
   Claimed,
+  ClaimInitialized,
   TokensWithdrawn,
 } from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
 
@@ -212,6 +213,85 @@ export function handleTokensWithdrawn(event: TokensWithdrawn): void {
   );
 
   airdrop.isWithdrawn = true;
+  airdrop.save();
+}
+
+export function handleClaimInitialized(event: ClaimInitialized): void {
+  let airdropAddress = event.address;
+  let airdrop = VestingAirdrop.load(airdropAddress);
+
+  if (!airdrop) {
+    log.error(
+      "VestingAirdrop entity not found for address {}. Skipping ClaimInitialized event.",
+      [airdropAddress.toHex()]
+    );
+    return;
+  }
+
+  let claimantAddress = event.params.claimant;
+  let allocatedAmount = event.params.allocatedAmount;
+
+  log.info(
+    "ClaimInitialized event processed: Airdrop {}, Claimant {}, AllocatedAmount {}",
+    [
+      airdropAddress.toHex(),
+      claimantAddress.toHex(),
+      allocatedAmount.toString(),
+    ]
+  );
+
+  let claimantAccount = fetchAccount(claimantAddress);
+  let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  let allocatedAmountBD = toDecimals(allocatedAmount, decimals);
+
+  // Update AirdropRecipient to track the initial allocation
+  let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
+  let recipient = AirdropRecipient.load(recipientId);
+  if (!recipient) {
+    recipient = new AirdropRecipient(recipientId);
+    recipient.airdrop = airdrop.id;
+    recipient.recipient = claimantAccount.id;
+    recipient.firstClaimedTimestamp = event.block.timestamp;
+    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
+    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
+    airdrop.totalRecipients = airdrop.totalRecipients + 1;
+  }
+  recipient.lastClaimedTimestamp = event.block.timestamp;
+  // Note: We don't increase claimed amounts here since no tokens are actually transferred
+  recipient.save();
+
+  // If we have strategy info, update the UserVestingData
+  let strategy = LinearVestingStrategy.load(airdrop.strategy);
+  if (strategy) {
+    let userVestingDataId =
+      strategy.id.toHex() + "-" + claimantAccount.id.toHex();
+    let userVestingData = UserVestingData.load(userVestingDataId);
+
+    if (!userVestingData) {
+      userVestingData = new UserVestingData(userVestingDataId);
+      userVestingData.strategy = strategy.id;
+      userVestingData.user = claimantAccount.id;
+      userVestingData.totalAmountAggregatedExact = allocatedAmount;
+      userVestingData.totalAmountAggregated = allocatedAmountBD;
+      userVestingData.claimedAmountTrackedByStrategyExact = BigInt.fromI32(0);
+      userVestingData.claimedAmountTrackedByStrategy =
+        BigDecimal.fromString("0");
+      userVestingData.vestingStart = event.block.timestamp;
+      userVestingData.initialized = true;
+      userVestingData.lastUpdated = event.block.timestamp;
+    } else {
+      // If already exists, update with new allocation
+      userVestingData.totalAmountAggregatedExact =
+        userVestingData.totalAmountAggregatedExact.plus(allocatedAmount);
+      userVestingData.totalAmountAggregated =
+        userVestingData.totalAmountAggregated.plus(allocatedAmountBD);
+      userVestingData.lastUpdated = event.block.timestamp;
+      userVestingData.initialized = true;
+    }
+
+    userVestingData.save();
+  }
+
   airdrop.save();
 }
 
