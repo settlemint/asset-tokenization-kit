@@ -154,11 +154,15 @@ export const uploadFile = withTracing(
         "upload-time": new Date().toISOString(),
       };
 
-      // Upload the file directly passing the File object
+      // Convert File to Buffer
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      // Upload the file directly passing the Buffer object
       const uploadOperation = createUploadOperation(
         DEFAULT_BUCKET,
         objectName,
-        file,
+        buffer,
         metadata
       );
       const result = await executeMinioOperation(uploadOperation);
@@ -276,6 +280,10 @@ export const uploadPdfFile = withTracing(
       // Upload the file with simplified approach
       console.log(`Uploading PDF file ${fileName} using simplified approach`);
 
+      // Convert File to Buffer
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
       // Get the upload function from createSimpleUploadOperation with getMinioClient
       const simpleUploadFn = createSimpleUploadOperation(
         await getMinioClient()
@@ -283,7 +291,7 @@ export const uploadPdfFile = withTracing(
 
       // Use the function directly with our parameters
       const result = await simpleUploadFn(
-        file,
+        buffer,
         DEFAULT_BUCKET,
         objectName,
         metadata

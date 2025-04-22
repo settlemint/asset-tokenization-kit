@@ -100,7 +100,7 @@ export type UploadedObjectInfo = {
 export type ItemMetadata = Record<string, string>;
 
 export type SimpleUploadOperation = (
-  file: File,
+  buffer: Buffer,
   bucketName: string,
   objectName: string,
   metadata?: ItemMetadata
@@ -119,7 +119,7 @@ export type ExtendedMinioClient = Client & {
   uploadObject(
     bucketName: string,
     objectName: string,
-    data: File | Blob | ArrayBuffer | Buffer,
+    data: Buffer,
     metadata?: Record<string, string>
   ): Promise<{ etag: string }>;
 };
@@ -167,10 +167,12 @@ export async function ensureBucketExists(
 
 /**
  * Uploads a file to a bucket. If the bucket does not exist, it will be created.
+ * While this function can handle different input types, it's optimized for Buffer objects.
+ * Server-side code should preferably pass Buffer objects directly.
  *
  * @param bucketName The name of the bucket
  * @param objectName The name of the object
- * @param file The file to upload
+ * @param file The file to upload (will be converted to Buffer if not already)
  * @param metadata Optional metadata for the file
  * @returns The ETag of the uploaded file
  */
@@ -183,10 +185,23 @@ export async function uploadFile(
   try {
     await ensureBucketExists(bucketName);
 
+    // Convert input to Buffer if it's not already
+    let buffer: Buffer;
+    if (file instanceof Buffer) {
+      buffer = file;
+    } else if (file instanceof ArrayBuffer) {
+      buffer = Buffer.from(file);
+    } else if (file instanceof Blob || file instanceof File) {
+      const arrayBuffer = await file.arrayBuffer();
+      buffer = Buffer.from(arrayBuffer);
+    } else {
+      throw new Error("Unsupported file type");
+    }
+
     const uploadOperation = createUploadOperation(
       bucketName,
       objectName,
-      file,
+      buffer,
       metadata
     );
 
@@ -287,7 +302,7 @@ export async function deleteObject(
 export function createUploadOperation(
   bucketName: string,
   objectName: string,
-  file: File | Blob | ArrayBuffer | Buffer,
+  data: Buffer,
   metadata?: Record<string, string>
 ): MinioOperation<{ etag: string }> {
   return {
@@ -297,25 +312,13 @@ export function createUploadOperation(
       try {
         const minioClient = await getMinioClient();
 
-        // Convert File/Blob to Buffer if needed
-        let fileData: Buffer;
-
-        if (file instanceof File || file instanceof Blob) {
-          const arrayBuffer = await file.arrayBuffer();
-          fileData = Buffer.from(arrayBuffer);
-        } else if (file instanceof ArrayBuffer) {
-          fileData = Buffer.from(file);
-        } else {
-          fileData = file; // Already a Buffer
-        }
-
         // Use putObject directly with buffer data
         console.log(`Uploading object directly: ${bucketName}/${objectName}`);
         const result = await minioClient.putObject(
           bucketName,
           objectName,
-          fileData,
-          fileData.length,
+          data,
+          data.length,
           metadata
         );
 
@@ -345,22 +348,14 @@ export function createSimpleUploadOperation(
   minioClient: ExtendedMinioClient
 ): SimpleUploadOperation {
   return async (
-    file: File,
+    buffer: Buffer,
     bucketName: string,
     objectName: string,
     metadata?: ItemMetadata
   ) => {
     try {
       logger.debug(
-        `Starting upload for file ${file.name} (${file.size} bytes, type: ${file.type}) to ${bucketName}/${objectName}`
-      );
-
-      // Convert File to buffer
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-
-      logger.debug(
-        `File converted to buffer (${buffer.length} bytes), attempting putObject operation`
+        `Starting upload for buffer (${buffer.length} bytes) to ${bucketName}/${objectName}`
       );
 
       // Upload directly using minioClient's putObject
@@ -373,12 +368,12 @@ export function createSimpleUploadOperation(
       );
 
       logger.debug(
-        `Upload successful for ${file.name} to ${bucketName}/${objectName}, etag: ${result.etag}`
+        `Upload successful to ${bucketName}/${objectName}, etag: ${result.etag}`
       );
       return result;
     } catch (error) {
       logger.error(
-        `Error uploading file ${file.name} (${file.size} bytes, type: ${file.type}) to ${bucketName}/${objectName}`,
+        `Error uploading buffer (${buffer.length} bytes) to ${bucketName}/${objectName}`,
         error
       );
       throw error;
