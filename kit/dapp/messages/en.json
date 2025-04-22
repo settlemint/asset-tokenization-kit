@@ -2129,7 +2129,8 @@
           "status": "Status",
           "transactions": "Transactions",
           "verified_at": "Verified at",
-          "wallet": "Wallet"
+          "wallet": "Wallet",
+          "role": "Role"
         }
       },
       "holdings": {
