@@ -657,7 +657,7 @@ export function AssetDesignerDialog({
 
                 {/* Key Requirements section - only show if regulation is checked */}
                 {selectedRegulations.includes(regulation.id) && (
-                  <div className="pl-8 space-y-2">
+                  <div className="pl-8 space-y-4">
                     <h5 className="text-sm font-medium">Key Requirements</h5>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
@@ -710,6 +710,89 @@ export function AssetDesignerDialog({
                     <p className="text-xs text-muted-foreground">
                       * Required by regulation
                     </p>
+
+                    {/* Documentation section for this specific regulation */}
+                    <div className="mt-4 pt-4 border-t">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h5 className="text-sm font-medium">Documentation</h5>
+                          <p className="text-xs text-muted-foreground">
+                            Upload and manage compliance documentation for{" "}
+                            {regulation.name}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-2">
+                        <div className="flex items-center justify-between mb-2">
+                          <h6 className="text-xs font-medium">Documents</h6>
+                          <button
+                            type="button"
+                            className="inline-flex items-center text-xs text-primary hover:text-primary/80"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="size-3 mr-1"
+                            >
+                              <path d="M5 12h14"></path>
+                              <path d="M12 5v14"></path>
+                            </svg>
+                            Add Document
+                          </button>
+                        </div>
+
+                        <div className="border rounded-md p-4 bg-muted/30 flex flex-col items-center justify-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="size-6 mb-2 text-muted-foreground"
+                          >
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                          </svg>
+                          <p className="text-sm text-center text-muted-foreground mb-2">
+                            No documents uploaded yet
+                          </p>
+                          <button
+                            type="button"
+                            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 text-xs"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="size-3 mr-1"
+                            >
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                              <polyline points="17 8 12 3 7 8"></polyline>
+                              <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Upload Document
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
