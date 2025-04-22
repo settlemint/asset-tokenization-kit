@@ -4,6 +4,9 @@ import { Client } from "minio";
 import "server-only";
 import { Readable } from "stream";
 
+// Use fs.promises for non-blocking operations
+const fsPromises = fs.promises;
+
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
 });
@@ -331,7 +334,9 @@ export function createUploadOperation(
         // Save the buffer to a temporary file and use fPutObject
         const tempFilePath = `/tmp/${objectName.replace(/\//g, "_")}`;
         console.log(`Writing buffer to temporary file: ${tempFilePath}`);
-        fs.writeFileSync(tempFilePath, fileData);
+
+        // Use async write instead of sync
+        await fsPromises.writeFile(tempFilePath, fileData);
 
         console.log(
           `Attempting fPutObject from temp file: ${bucketName}/${objectName}`
@@ -346,9 +351,9 @@ export function createUploadOperation(
           `fPutObject successful for ${objectName}, ETag: ${result.etag}`
         );
 
-        // Clean up the temporary file
+        // Clean up the temporary file using async method
         try {
-          fs.unlinkSync(tempFilePath);
+          await fsPromises.unlink(tempFilePath);
           console.log(`Cleaned up temporary file: ${tempFilePath}`);
         } catch (unlinkError) {
           logger.warn(
@@ -363,20 +368,16 @@ export function createUploadOperation(
           `Failed to upload object ${objectName} to bucket ${bucketName} using fPutObject:`,
           error
         );
-        // Attempt to clean up temp file even on error
+        // Attempt to clean up temp file even on error, using async check and delete
         const tempFilePath = `/tmp/${objectName.replace(/\//g, "_")}`;
-        if (fs.existsSync(tempFilePath)) {
-          try {
-            fs.unlinkSync(tempFilePath);
-            logger.info(
-              `Cleaned up temporary file after error: ${tempFilePath}`
-            );
-          } catch (unlinkError) {
-            logger.warn(
-              `Failed to clean up temporary file ${tempFilePath} after error:`,
-              unlinkError
-            );
-          }
+        try {
+          // Use async access instead of existsSync
+          await fsPromises.access(tempFilePath);
+          // File exists, clean it up asynchronously
+          await fsPromises.unlink(tempFilePath);
+          logger.info(`Cleaned up temporary file after error: ${tempFilePath}`);
+        } catch (unlinkError) {
+          // File doesn't exist or couldn't be accessed, no need to log
         }
         throw error;
       }
