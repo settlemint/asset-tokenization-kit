@@ -3,7 +3,7 @@ import {
   AirdropClaim,
   AirdropClaimIndex,
   AirdropRecipient,
-  Asset,
+  //Asset,
   LinearVestingStrategy,
   UserVestingData,
   VestingAirdrop,
@@ -15,8 +15,8 @@ import {
   TokensWithdrawn,
 } from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
 
-import { fetchAccount } from "../../fetch/account";
-import { toDecimals } from "../../utils/decimals";
+import { fetchAccount } from "../fetch/account";
+import { toDecimals } from "../utils/decimals";
 
 export function handleClaimed(event: Claimed): void {
   let airdropAddress = event.address;
@@ -30,14 +30,14 @@ export function handleClaimed(event: Claimed): void {
     return;
   }
 
-  let token = Asset.load(airdrop.token);
+  /*let token = Asset.load(airdrop.token);
   if (!token) {
     log.error(
       "Token entity not found for address {}. Skipping Claimed event.",
       [airdrop.token.toHex()]
     );
     return;
-  }
+  }*/
 
   let claimantAddress = event.params.claimant;
   let amount = event.params.amount;
