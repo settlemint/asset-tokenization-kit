@@ -197,8 +197,6 @@ dataSources:
             VestingAirdropDeployed(indexed address,indexed address,indexed
             address,address)
           handler: handleVestingAirdropDeployed
-        - event: BatchClaimed(indexed address,uint256,uint256[],uint256[])
-          handler: handleBatchClaimed
       file: ./src/factories/airdropFactory.ts
 templates:
   - kind: ethereum/contract
