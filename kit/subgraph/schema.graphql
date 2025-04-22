@@ -260,8 +260,9 @@ type DvPSwap @entity(immutable: false) {
 # DvPSwap Factory
 # --------------------------------------------------
 
-type DvPSwapFactory @entity(immutable: false) {
+type DvPSwapFactory implements Factory @entity(immutable: false) {
   id: Bytes!
+  type: String!
   asAccount: Account!
   dvpSwapContractsCount: Int!
 }
@@ -794,10 +795,34 @@ type FixedYieldCreatedEvent @entity(immutable: true) {
   fixedYield: FixedYield!
 }
 
+"""
+Entity for yield claimed events in FixedYield.
+Emitted when yield is claimed.
+"""
+type YieldClaimedEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  holder: Account! # The address claiming the yield
+  totalAmount: BigDecimal! # The total yield claimed
+  totalAmountExact: BigInt! # The total yield claimed in exact precision
+  fromPeriod: BigInt! # The first period being claimed
+  toPeriod: BigInt! # The last period being claimed
+  periodAmounts: [BigInt!]! # Array of yield amounts claimed for each period
+  unclaimedYield: BigDecimal! # Total unclaimed yield remaining after this claim
+  unclaimedYieldExact: BigInt! # Total unclaimed yield remaining after this claim in exact precision
+}
+
 # --------------------------------------------------
 # DvPSwap-Specific Events
 # --------------------------------------------------
 
+"""
+Entity for DvP Swap contract creation events.
+Emitted when a new DvP Swap contract is deployed via the factory.
+"""
 type DvPSwapContractCreatedEvent @entity(immutable: true) {
   id: String!
   eventName: String!
@@ -808,6 +833,10 @@ type DvPSwapContractCreatedEvent @entity(immutable: true) {
   creator: Bytes!
 }
 
+"""
+Entity for DvP Swap creation events.
+Emitted when a new atomic swap is created.
+"""
 type DvPSwapCreatedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
@@ -826,6 +855,10 @@ type DvPSwapCreatedEvent @entity(immutable: true) {
   hashlock: Bytes!
 }
 
+"""
+Entity for DvP Swap status change events.
+Emitted when a swap's status changes.
+"""
 type DvPSwapStatusChangedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
@@ -836,6 +869,10 @@ type DvPSwapStatusChangedEvent @entity(immutable: true) {
   status: String!
 }
 
+"""
+Entity for DvP Swap claim events.
+Emitted when tokens are claimed from a swap.
+"""
 type DvPSwapClaimedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
@@ -847,6 +884,10 @@ type DvPSwapClaimedEvent @entity(immutable: true) {
   secret: Bytes!
 }
 
+"""
+Entity for DvP Swap refund events.
+Emitted when a swap is refunded.
+"""
 type DvPSwapRefundedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
@@ -857,6 +898,10 @@ type DvPSwapRefundedEvent @entity(immutable: true) {
   refundedTo: Account!
 }
 
+"""
+Entity for token locking events in DvP Swap.
+Emitted when tokens are locked in a swap contract.
+"""
 type TokensLockedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
