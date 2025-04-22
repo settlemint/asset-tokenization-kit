@@ -99,6 +99,14 @@
       "dependsOn": ["codegen"],
       "cache": false,
       "persistent": true
+    },
+    "helm:package": {
+      "dependsOn": ["helm:deps"],
+      "cache": false
+    },
+    "helm:push": {
+      "dependsOn": ["helm:package"],
+      "cache": false
     }
   }
 }
