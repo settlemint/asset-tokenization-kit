@@ -52,10 +52,12 @@ export function handleClaimed(event: Claimed): void {
   ]);
 
   let claimantAccount = fetchAccount(claimantAddress);
-  let amountBD = toDecimals(amount, token.decimals);
+  let amountBD = toDecimals(amount, 18); // Placeholder: Assuming 18 decimals
 
   // Create AirdropClaim entity
-  let claimId = event.transaction.hash.concatI32(event.logIndex.toI32());
+  let claimId = event.transaction.hash
+    .concatI32(event.logIndex.toI32())
+    .toHex();
   let claim = new AirdropClaim(claimId);
   claim.airdrop = airdrop.id;
   claim.claimant = claimantAccount.id;
@@ -69,7 +71,7 @@ export function handleClaimed(event: Claimed): void {
   claim.save();
 
   // Update or Create AirdropRecipient
-  let recipientId = airdrop.id.concat(claimantAccount.id);
+  let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
   let recipient = AirdropRecipient.load(recipientId);
   if (!recipient) {
     recipient = new AirdropRecipient(recipientId);
@@ -136,10 +138,12 @@ export function handleBatchClaimed(event: BatchClaimed): void {
   );
 
   let claimantAccount = fetchAccount(claimantAddress);
-  let totalAmountBD = toDecimals(totalAmount, token.decimals);
+  let totalAmountBD = toDecimals(totalAmount, 18); // Placeholder: Assuming 18 decimals
 
   // Create AirdropClaim entity
-  let claimId = event.transaction.hash.concatI32(event.logIndex.toI32());
+  let claimId = event.transaction.hash
+    .concatI32(event.logIndex.toI32())
+    .toHex();
   let claim = new AirdropClaim(claimId);
   claim.airdrop = airdrop.id;
   claim.claimant = claimantAccount.id;
@@ -153,7 +157,7 @@ export function handleBatchClaimed(event: BatchClaimed): void {
   claim.save();
 
   // Update or Create AirdropRecipient
-  let recipientId = airdrop.id.concat(claimantAccount.id);
+  let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
   let recipient = AirdropRecipient.load(recipientId);
   if (!recipient) {
     recipient = new AirdropRecipient(recipientId);
