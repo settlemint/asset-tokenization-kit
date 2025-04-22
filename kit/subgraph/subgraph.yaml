@@ -718,7 +718,7 @@ templates:
       eventHandlers:
         - event: Claimed(indexed address,uint256)
           handler: handleClaimed
-        - event: BatchClaimed(indexed address,uint256,uint256[])
+        - event: BatchClaimed(indexed address,uint256,uint256[],uint256[])
           handler: handleBatchClaimed
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
@@ -749,7 +749,7 @@ templates:
       eventHandlers:
         - event: Claimed(indexed address,uint256)
           handler: handleClaimed
-        - event: BatchClaimed(indexed address,uint256,uint256[])
+        - event: BatchClaimed(indexed address,uint256,uint256[],uint256[])
           handler: handleBatchClaimed
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
