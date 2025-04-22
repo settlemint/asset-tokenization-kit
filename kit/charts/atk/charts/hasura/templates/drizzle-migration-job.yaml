@@ -4,25 +4,28 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   # Naming convention similar to subgraph job, but indicating drizzle
-  name: {{ printf "%s-drizzle-migrate" .Release.Name }}
+  name: {{ printf "%s-drizzle-migrate-%d" .Release.Name (.Release.Revision | int) }}
   namespace: {{ .Release.Namespace }}
   labels:
     # Use parent chart's labels helper
     {{- include "atk.labels" . | nindent 4 }}
     app.kubernetes.io/component: drizzle-migrate
+    helm.sh/revision: "{{ .Release.Revision }}"
   annotations:
-    # Run before install/upgrade, delete before creating new one
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-weight": "-5" # Ensure it runs before Hasura deployment
-    "helm.sh/hook-delete-policy": before-hook-creation
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
 spec:
   template:
     metadata:
-      name: {{ printf "%s-drizzle-migrate" .Release.Name }}
+      name: {{ printf "%s-drizzle-migrate-%d" .Release.Name (.Release.Revision | int) }}
       labels:
         # Use parent chart's selector labels helper
         {{- include "atk.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: drizzle-migrate
+        helm.sh/revision: "{{ .Release.Revision }}"
     spec:
       restartPolicy: Never
       # Use global pull secrets if defined in parent chart values
@@ -68,14 +71,10 @@ spec:
         args:
         - |
           set -ex
-          echo "Updating package list and installing build tools..."
-          apt-get update && apt-get install -y --no-install-recommends build-essential python3 make g++
-          echo "Build tools installed."
-          
-          echo "Installing Dapp dependencies..."
-          bun install --frozen-lockfile
+          echo "Installing dependencies..."
+          bun install
           echo "Running Drizzle migrations..."
-          # PG* env vars sourced from secret below
+          export SETTLEMINT_HASURA_DATABASE_URL="postgresql://postgres:${PGPASSWORD}@postgresql-pgpool:5432/postgres"
           bunx drizzle-kit push --force
           echo "Drizzle migrations finished."
         env:
@@ -86,7 +85,7 @@ spec:
               name: postgresql-postgresql # Use the observed secret name
               key: password # Use the observed key name
         # Construct DATABASE_URL using known/assumed values and the password
-        - name: DATABASE_URL
+        - name: SETTLEMINT_HASURA_DATABASE_URL
           value: "postgresql://postgres:$(PGPASSWORD)@postgresql-pgpool:5432/postgres"
         volumeMounts:
           - name: workspace
@@ -95,4 +94,4 @@ spec:
         - name: workspace
           emptyDir: {}
       terminationGracePeriodSeconds: 30
-  backoffLimit: 1 # Try only once per hook execution 
+  backoffLimit: 1 # Try only once per hook execution
