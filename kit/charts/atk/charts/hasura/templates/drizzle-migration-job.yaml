@@ -71,6 +71,10 @@ spec:
         args:
         - |
           set -ex
+          echo "Installing Python and required build tools..."
+          apt-get update
+          apt-get install -y python3 python3-pip build-essential
+          ln -sf /usr/bin/python3 /usr/bin/python
           echo "Installing dependencies..."
           bun install
           echo "Running Drizzle migrations..."
