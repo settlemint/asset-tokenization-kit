@@ -76,8 +76,20 @@ export function AssetDesignerDialog({
   // Document upload state
   const [dialogOpen, setDialogOpen] = useState<string | null>(null); // Stores regulation ID for which dialog is open
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [documentTitle, setDocumentTitle] = useState<string>("");
+  const [documentType, setDocumentType] = useState<string>("");
+  const [documentDescription, setDocumentDescription] = useState<string>("");
   const [uploadedDocuments, setUploadedDocuments] = useState<
-    Record<string, { id: string; name: string }[]>
+    Record<
+      string,
+      {
+        id: string;
+        name: string;
+        title: string;
+        type: string;
+        description: string;
+      }[]
+    >
   >({});
 
   // Create forms for each asset type with mode set to run validation always
@@ -586,6 +598,9 @@ export function AssetDesignerDialog({
     const closeDocumentDialog = () => {
       setDialogOpen(null);
       setSelectedFile(null);
+      setDocumentTitle("");
+      setDocumentType("");
+      setDocumentDescription("");
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -600,6 +615,9 @@ export function AssetDesignerDialog({
         const newDocument = {
           id: Math.random().toString(36).substr(2, 9),
           name: selectedFile.name,
+          title: documentTitle || selectedFile.name,
+          type: documentType,
+          description: documentDescription,
         };
 
         setUploadedDocuments((prev) => ({
@@ -815,7 +833,16 @@ export function AssetDesignerDialog({
                                     <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
                                     <polyline points="14 2 14 8 20 8"></polyline>
                                   </svg>
-                                  <span className="text-sm">{doc.name}</span>
+                                  <div>
+                                    <span className="text-sm font-medium">
+                                      {doc.title}
+                                    </span>
+                                    {doc.type && (
+                                      <span className="text-xs text-muted-foreground ml-2">
+                                        {doc.type}
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
                                 <button
                                   type="button"
@@ -933,29 +960,104 @@ export function AssetDesignerDialog({
               </div>
 
               <p className="text-sm text-muted-foreground mb-4">
-                Upload documentation for compliance requirements.
+                Upload white papers, audit reports, and other compliance
+                documents
               </p>
 
               <div className="space-y-4">
-                <div className="grid w-full max-w-sm items-center gap-1.5">
+                {/* Document Title */}
+                <div className="grid w-full items-center gap-1.5">
+                  <label
+                    htmlFor="document-title"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Document Title
+                  </label>
+                  <input
+                    id="document-title"
+                    type="text"
+                    placeholder="e.g. MiCA Compliance White Paper"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={documentTitle}
+                    onChange={(e) => setDocumentTitle(e.target.value)}
+                  />
+                </div>
+
+                {/* Document Type */}
+                <div className="grid w-full items-center gap-1.5">
+                  <label
+                    htmlFor="document-type"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Document Type
+                  </label>
+                  <select
+                    id="document-type"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={documentType}
+                    onChange={(e) => setDocumentType(e.target.value)}
+                  >
+                    <option value="" disabled>
+                      Select document type
+                    </option>
+                    <option value="Compliance">Compliance</option>
+                    <option value="Legal">Legal</option>
+                    <option value="Financial">Financial</option>
+                    <option value="Audit">Audit</option>
+                    <option value="Whitepaper">Whitepaper</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                {/* Description */}
+                <div className="grid w-full items-center gap-1.5">
+                  <label
+                    htmlFor="document-description"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Description
+                  </label>
+                  <textarea
+                    id="document-description"
+                    placeholder="Brief description of the document"
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={documentDescription}
+                    onChange={(e) => setDocumentDescription(e.target.value)}
+                  />
+                </div>
+
+                {/* File Upload */}
+                <div className="grid w-full items-center gap-1.5">
                   <label
                     htmlFor="document-upload"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    Choose File
+                    Upload File
                   </label>
-                  <input
-                    id="document-upload"
-                    type="file"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    onChange={handleFileSelect}
-                  />
+                  <div className="flex items-center">
+                    <label
+                      htmlFor="document-upload"
+                      className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+                    >
+                      Choose File
+                    </label>
+                    <span className="ml-3 text-sm text-muted-foreground">
+                      {selectedFile ? selectedFile.name : "No file chosen"}
+                    </span>
+                    <input
+                      id="document-upload"
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileSelect}
+                      accept="application/pdf"
+                    />
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    Accepted formats: PDF, JPG, PNG (Max 10MB)
+                    Accepted format: PDF only (Max: 10MB)
                   </p>
                 </div>
 
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-2 mt-6">
                   <button
                     type="button"
                     onClick={closeDocumentDialog}
@@ -966,7 +1068,7 @@ export function AssetDesignerDialog({
                   <button
                     type="button"
                     onClick={handleUploadDocument}
-                    disabled={!selectedFile}
+                    disabled={!selectedFile || !documentTitle}
                     className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2"
                   >
                     Upload

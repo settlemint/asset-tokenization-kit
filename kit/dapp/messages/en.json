@@ -506,6 +506,7 @@
       },
       "input": {
         "letters-only": "Please enter letters only",
+        "alphanumeric-only": "Please enter letters and numbers only",
         "max-value": "Value cannot be higher than {max}",
         "min-value": "Value cannot be lower than {min}",
         "valid-email": "Please enter a valid email address",
