@@ -1,5 +1,5 @@
-import { Address, BigInt, Bytes, log } from '@graphprotocol/graph-ts';
-import { Bond, YieldPeriod } from "../../generated/schema";
+import { BigInt, log } from "@graphprotocol/graph-ts";
+import { Bond } from "../../generated/schema";
 import {
   UnderlyingAssetTopUp as UnderlyingAssetTopUpEvent,
   UnderlyingAssetWithdrawn as UnderlyingAssetWithdrawnEvent,
@@ -11,15 +11,21 @@ import { eventId } from "../utils/events";
 import { underlyingAssetTopUpEvent } from "./events/underlyingassettopup";
 import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn";
 import { yieldClaimedEvent } from "./events/yieldclaimed";
-import { fetchAssetDecimals } from './fetch/asset';
-import { fetchFixedYield } from "./fetch/fixed-yield";
+import { fetchFixedYield, fetchFixedYieldPeriod } from "./fetch/fixed-yield";
 
 export function handleYieldClaimed(event: YieldClaimedEvent): void {
   const schedule = fetchFixedYield(event.address);
   const sender = fetchAccount(event.transaction.from);
   const holder = fetchAccount(event.params.holder);
   const token = Bond.load(schedule.token);
-  if (!token) return;
+
+  if (!token) {
+    log.warning("Bond token {} not found for FixedYield {}", [
+      schedule.token.toHexString(),
+      event.address.toHexString(),
+    ]);
+    return;
+  }
 
   log.info(
     "Fixed yield claimed event: amount={}, holder={}, sender={}, schedule={}, bond={}",
@@ -32,7 +38,6 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     ]
   );
 
-  // Create event record
   yieldClaimedEvent(
     eventId(event),
     event.block.timestamp,
@@ -47,7 +52,6 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     token.decimals
   );
 
-  // Update schedule
   schedule.totalClaimedExact = schedule.totalClaimedExact.plus(
     event.params.totalAmount
   );
@@ -55,37 +59,27 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     schedule.totalClaimedExact,
     token.decimals
   );
-  schedule.unclaimedYieldExact = event.params.unclaimedYield;
-  schedule.unclaimedYield = toDecimals(
-    schedule.unclaimedYieldExact,
-    token.decimals
-  );
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.minus(
     event.params.totalAmount
   );
-  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(schedule.underlyingAsset));
+  const underlyingDecimals = schedule.underlyingAssetDecimals;
   schedule.underlyingBalance = toDecimals(
     schedule.underlyingBalanceExact,
     underlyingDecimals
   );
   schedule.save();
 
-  // Update each period's total claimed amount
-  // We know the array contains all periods in range, with zeros for periods without yield
   for (let i = 0; i < event.params.periodAmounts.length; i++) {
-    const periodId = Bytes.fromUTF8(
-      event.address.toHexString() +
-        "-" +
-        (event.params.fromPeriod.toI32() + i).toString()
-    );
-    const period = YieldPeriod.load(periodId);
-    if (period && event.params.periodAmounts[i].gt(BigInt.zero())) {
-      period.totalClaimedExact = period.totalClaimedExact.plus(
-        event.params.periodAmounts[i]
-      );
+    const periodNumber = event.params.fromPeriod.plus(BigInt.fromI32(i));
+    const period = fetchFixedYieldPeriod(schedule, periodNumber);
+
+    // Update total claimed for the period if amount > 0
+    const claimedAmount = event.params.periodAmounts[i];
+    if (claimedAmount.gt(BigInt.zero())) {
+      period.totalClaimedExact = period.totalClaimedExact.plus(claimedAmount);
       period.totalClaimed = toDecimals(
         period.totalClaimedExact,
-        token.decimals
+        underlyingDecimals
       );
       period.save();
     }
@@ -127,7 +121,7 @@ export function handleUnderlyingAssetTopUp(
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.plus(
     event.params.amount
   );
-  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(schedule.underlyingAsset));
+  const underlyingDecimals = schedule.underlyingAssetDecimals;
   schedule.underlyingBalance = toDecimals(
     schedule.underlyingBalanceExact,
     underlyingDecimals
@@ -170,7 +164,7 @@ export function handleUnderlyingAssetWithdrawn(
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.minus(
     event.params.amount
   );
-  const underlyingDecimals = fetchAssetDecimals(Address.fromBytes(schedule.underlyingAsset));
+  const underlyingDecimals = schedule.underlyingAssetDecimals;
   schedule.underlyingBalance = toDecimals(
     schedule.underlyingBalanceExact,
     underlyingDecimals

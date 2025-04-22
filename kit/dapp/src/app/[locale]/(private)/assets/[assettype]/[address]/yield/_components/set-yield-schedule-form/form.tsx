@@ -37,7 +37,7 @@ export function SetYieldScheduleForm({
       }
       triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
       title={t("title")}
-      description={t("description")}
+      description={t("form-description")}
       asButton={asButton}
     >
       <Form

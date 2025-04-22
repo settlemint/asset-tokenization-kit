@@ -43,8 +43,13 @@ export async function getBondYieldCoverage({
 
   // Get current timestamp to check if yield is currently running
   const now = BigInt(Math.floor(Date.now() / 1000));
-  const { startDate, endDate, unclaimedYieldExact, underlyingBalanceExact } =
-    bondData.yieldSchedule;
+  const {
+    startDate,
+    endDate,
+    underlyingBalanceExact,
+    periods,
+    totalClaimedExact,
+  } = bondData.yieldSchedule;
   const isRunning = now >= startDate && now <= endDate;
 
   // If not running, return 0 coverage
@@ -58,7 +63,11 @@ export async function getBondYieldCoverage({
 
   // Calculate yield coverage percentage
   let yieldCoverage = 0;
-
+  const totalYieldExact = periods.reduce(
+    (acc, period) => acc + period.totalYieldExact,
+    BigInt(0)
+  );
+  const unclaimedYieldExact = totalYieldExact - totalClaimedExact;
   if (unclaimedYieldExact > 0n) {
     // Calculate how much of the unclaimed yield is covered
     // 100% means exactly covering the unclaimed yield
