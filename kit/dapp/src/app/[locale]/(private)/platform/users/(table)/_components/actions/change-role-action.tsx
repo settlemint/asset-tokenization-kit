@@ -22,6 +22,7 @@ import { AlertTriangle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type MouseEvent, useState } from "react";
 import { toast } from "sonner";
+import { revalidateUserCache } from "../../../_actions/revalidate-user";
 
 export function ChangeRoleAction({
   user,
@@ -57,6 +58,9 @@ export function ChangeRoleAction({
       });
       toast.success(t("actions.change-role.success"));
       onOpenChange(false);
+
+      // Revalidate cache before refreshing
+      await revalidateUserCache();
 
       // If the user changed their own role to a non-admin role, redirect to dashboard
       if (isSelfRoleChange && selectedRole !== "admin") {
