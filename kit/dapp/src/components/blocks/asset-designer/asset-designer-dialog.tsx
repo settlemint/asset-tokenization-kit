@@ -73,6 +73,13 @@ export function AssetDesignerDialog({
   const [isRegulationValid, setIsRegulationValid] = useState(true); // Default to true since it's optional
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
 
+  // Document upload state
+  const [dialogOpen, setDialogOpen] = useState<string | null>(null); // Stores regulation ID for which dialog is open
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadedDocuments, setUploadedDocuments] = useState<
+    Record<string, { id: string; name: string }[]>
+  >({});
+
   // Create forms for each asset type with mode set to run validation always
   const bondForm = useForm({
     defaultValues: {
@@ -570,6 +577,41 @@ export function AssetDesignerDialog({
       }
     };
 
+    // Document upload handlers
+    const openDocumentDialog = (regulationId: string) => {
+      setDialogOpen(regulationId);
+      setSelectedFile(null);
+    };
+
+    const closeDocumentDialog = () => {
+      setDialogOpen(null);
+      setSelectedFile(null);
+    };
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        setSelectedFile(e.target.files[0]);
+      }
+    };
+
+    const handleUploadDocument = () => {
+      if (dialogOpen && selectedFile) {
+        // Simulate upload by adding document to state
+        const newDocument = {
+          id: Math.random().toString(36).substr(2, 9),
+          name: selectedFile.name,
+        };
+
+        setUploadedDocuments((prev) => ({
+          ...prev,
+          [dialogOpen]: [...(prev[dialogOpen] || []), newDocument],
+        }));
+
+        // Close dialog
+        closeDocumentDialog();
+      }
+    };
+
     // Get currently selected regulations from form
     const selectedRegulations = form.getValues().selectedRegulations || [];
 
@@ -728,6 +770,7 @@ export function AssetDesignerDialog({
                           <h6 className="text-xs font-medium">Documents</h6>
                           <button
                             type="button"
+                            onClick={() => openDocumentDialog(regulation.id)}
                             className="inline-flex items-center text-xs text-primary hover:text-primary/80"
                           >
                             <svg
@@ -749,29 +792,65 @@ export function AssetDesignerDialog({
                           </button>
                         </div>
 
-                        <div className="border rounded-md p-4 bg-muted/30 flex flex-col items-center justify-center">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="size-6 mb-2 text-muted-foreground"
-                          >
-                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                          </svg>
-                          <p className="text-sm text-center text-muted-foreground mb-2">
-                            No documents uploaded yet
-                          </p>
-                          <button
-                            type="button"
-                            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 text-xs"
-                          >
+                        {uploadedDocuments[regulation.id]?.length > 0 ? (
+                          <div className="space-y-2">
+                            {uploadedDocuments[regulation.id].map((doc) => (
+                              <div
+                                key={doc.id}
+                                className="flex items-center justify-between border rounded-md p-2"
+                              >
+                                <div className="flex items-center">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="size-4 mr-2 text-muted-foreground"
+                                  >
+                                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                  </svg>
+                                  <span className="text-sm">{doc.name}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="text-muted-foreground hover:text-destructive"
+                                  onClick={() => {
+                                    setUploadedDocuments((prev) => ({
+                                      ...prev,
+                                      [regulation.id]: prev[
+                                        regulation.id
+                                      ].filter((d) => d.id !== doc.id),
+                                    }));
+                                  }}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="size-4"
+                                  >
+                                    <path d="M3 6h18"></path>
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                  </svg>
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="border rounded-md p-4 bg-muted/30 flex flex-col items-center justify-center">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               width="24"
@@ -782,15 +861,39 @@ export function AssetDesignerDialog({
                               strokeWidth="2"
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              className="size-3 mr-1"
+                              className="size-6 mb-2 text-muted-foreground"
                             >
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                              <polyline points="17 8 12 3 7 8"></polyline>
-                              <line x1="12" y1="3" x2="12" y2="15"></line>
+                              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                              <polyline points="14 2 14 8 20 8"></polyline>
                             </svg>
-                            Upload Document
-                          </button>
-                        </div>
+                            <p className="text-sm text-center text-muted-foreground mb-2">
+                              No documents uploaded yet
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => openDocumentDialog(regulation.id)}
+                              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 text-xs"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="size-3 mr-1"
+                              >
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                              </svg>
+                              Upload Document
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -799,6 +902,80 @@ export function AssetDesignerDialog({
             ))}
           </div>
         </div>
+
+        {/* Upload Document Dialog */}
+        {dialogOpen && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+            <div className="bg-background rounded-lg shadow-lg w-full max-w-md p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium">Upload Document</h3>
+                <button
+                  type="button"
+                  onClick={closeDocumentDialog}
+                  className="rounded-full p-1 hover:bg-muted"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="size-5"
+                  >
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <p className="text-sm text-muted-foreground mb-4">
+                Upload documentation for compliance requirements.
+              </p>
+
+              <div className="space-y-4">
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <label
+                    htmlFor="document-upload"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Choose File
+                  </label>
+                  <input
+                    id="document-upload"
+                    type="file"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    onChange={handleFileSelect}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Accepted formats: PDF, JPG, PNG (Max 10MB)
+                  </p>
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={closeDocumentDialog}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleUploadDocument}
+                    disabled={!selectedFile}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2"
+                  >
+                    Upload
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
