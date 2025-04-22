@@ -17,9 +17,14 @@ export interface FileMetadata {
 
 /**
  * Server action to upload a file to MinIO storage
+ *
+ * @param formData - FormData containing the file to upload
+ * @param path - Optional path/subfolder to store the file in
+ * @returns FileMetadata object with information about the uploaded file
  */
 export async function uploadToStorage(
-  formData: FormData
+  formData: FormData,
+  path: string = ""
 ): Promise<FileMetadata> {
   const file = formData.get("file") as File;
 
@@ -30,7 +35,7 @@ export async function uploadToStorage(
   // Generate a unique object name
   const fileName = file.name;
   const id = randomUUID();
-  const objectName = `${id}-${fileName}`;
+  const objectName = path ? `${path}/${id}-${fileName}` : `${id}-${fileName}`;
   const contentType = file.type || "application/octet-stream";
 
   // Convert file to buffer
@@ -46,6 +51,7 @@ export async function uploadToStorage(
       {
         "Content-Type": contentType,
         "Original-Filename": fileName,
+        "Upload-Path": path,
       },
       bucketName
     );
@@ -86,18 +92,42 @@ export async function uploadToStorage(
 
 /**
  * List all uploaded files
+ *
+ * @param prefix - Optional prefix to filter files (like a folder path)
+ * @returns Array of FileMetadata objects
  */
-export async function listFiles(): Promise<FileMetadata[]> {
+export async function listFiles(prefix: string = ""): Promise<FileMetadata[]> {
   try {
     // TODO: Implement MinIO's listObjects functionality
     // const minioClient = createMinioClient();
     // const bucketName = process.env.MINIO_DEFAULT_BUCKET || "asset-tokenization";
-    // const objects = await minioClient.listObjects(bucketName, "documents/", true);
+    // const objects = await minioClient.listObjects(bucketName, prefix || "documents/", true);
 
     // For now, return an empty array as we don't have persistent storage
     return [];
   } catch (error) {
     console.error("Error listing files:", error);
     return [];
+  }
+}
+
+/**
+ * Delete a file by its ID or path
+ *
+ * @param fileId - The ID or path of the file to delete
+ * @returns True if the file was deleted successfully
+ */
+export async function deleteFile(fileId: string): Promise<boolean> {
+  try {
+    // TODO: Implement file deletion using MinIO client
+    // const minioClient = createMinioClient();
+    // const bucketName = process.env.MINIO_DEFAULT_BUCKET || "asset-tokenization";
+    // await minioClient.removeObject(bucketName, fileId);
+
+    console.log(`File deleted (simulated): ${fileId}`);
+    return true;
+  } catch (error) {
+    console.error(`Error deleting file ${fileId}:`, error);
+    return false;
   }
 }

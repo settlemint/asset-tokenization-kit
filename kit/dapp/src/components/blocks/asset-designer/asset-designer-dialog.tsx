@@ -12,6 +12,7 @@ import { uploadToStorage } from "@/lib/actions/upload";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 // Import form steps for each asset type
 import { Basics as BondBasics } from "@/components/blocks/create-forms/bond/steps/basics";
@@ -276,14 +277,6 @@ export function AssetDesignerDialog({
           default:
             requiredFieldsValid = true;
         }
-
-        // Debug log to help identify issues
-        console.log("Step 3 validation:", {
-          requiredFieldsValid,
-          hasErrors,
-          formErrors,
-          formValues,
-        });
 
         // Form is valid if required fields are filled and there are no errors
         const isValid = requiredFieldsValid && !hasErrors;
@@ -627,20 +620,42 @@ export function AssetDesignerDialog({
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
-        setSelectedFile(e.target.files[0]);
+        const file = e.target.files[0];
+
+        // Validate file size (max 10MB)
+        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+        if (file.size > maxSize) {
+          toast.error("File is too large. Maximum file size is 10MB.");
+          return;
+        }
+
+        // Validate file type
+        if (file.type !== "application/pdf") {
+          toast.error("Only PDF files are accepted.");
+          return;
+        }
+
+        setSelectedFile(file);
       }
     };
 
     const handleUploadDocument = async () => {
       if (dialogOpen && selectedFile) {
+        if (!documentTitle) {
+          toast.error("Document title is required");
+          return;
+        }
+
         setIsUploading(true);
         try {
           // Create form data for upload
           const formData = new FormData();
           formData.append("file", selectedFile);
 
-          // Use the server action to upload the file
-          const result = await uploadToStorage(formData);
+          // Use the server action to upload the file with the regulation ID as path
+          // This helps organize uploads by regulation
+          const path = `regulations/${dialogOpen}`;
+          const result = await uploadToStorage(formData, path);
 
           // Add the uploaded document to state
           const newDocument = {
@@ -657,11 +672,14 @@ export function AssetDesignerDialog({
             [dialogOpen]: [...(prev[dialogOpen] || []), newDocument],
           }));
 
+          // Show success message
+          toast.success("Document uploaded successfully");
+
           // Close dialog
           closeDocumentDialog();
         } catch (error) {
           console.error("Error uploading document:", error);
-          // You might want to show an error notification here
+          toast.error("Failed to upload document. Please try again.");
         } finally {
           setIsUploading(false);
         }
