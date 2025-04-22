@@ -6,6 +6,7 @@ import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
+import { capitalizeFirstLetter } from "better-auth/react";
 import { Ban, Check } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -27,6 +28,9 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.email")}>
         {user.email}
+      </DetailGridItem>
+      <DetailGridItem label={t("detail.values.role")}>
+        {capitalizeFirstLetter(user.role)}
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.status")}>
         <Badge
