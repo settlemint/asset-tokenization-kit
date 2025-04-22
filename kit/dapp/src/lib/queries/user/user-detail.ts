@@ -90,6 +90,7 @@ const getUserDetailFromIdOrAddress = withTracing(
 
     // Fetch user data from Hasura
     const user = await (async () => {
+      cacheTag("user");
       if (id) {
         const result = await hasuraClient.request(
           UserDetail,

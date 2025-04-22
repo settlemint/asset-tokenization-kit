@@ -20,6 +20,7 @@ import { authClient } from "@/lib/auth/client";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { type KeyboardEvent, type MouseEvent, useState } from "react";
 import { toast } from "sonner";
+import { revalidateUserCache } from "../../../_actions/revalidate-user";
 
 export function BanUserAction({
   user,
@@ -66,6 +67,10 @@ export function BanUserAction({
       toast.success("User banned successfully");
       onOpenChange(false);
       setBanReason("");
+
+      // Revalidate cache before refreshing
+      await revalidateUserCache();
+
       router.refresh();
     } catch (error) {
       toast.error(
@@ -85,6 +90,10 @@ export function BanUserAction({
       });
       toast.success("User unbanned successfully");
       onOpenChange(false);
+
+      // Revalidate cache before refreshing
+      await revalidateUserCache();
+
       router.refresh();
     } catch (error) {
       toast.error(
@@ -163,27 +172,38 @@ export function BanUserAction({
             >
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={(e) => {
-                if (user.banned) {
-                  handleUnbanUser(e).catch((error) => {
-                    toast.error(
-                      `Failed to unban user: ${error instanceof Error ? error.message : "Unknown error"}`
-                    );
-                  });
-                } else {
-                  handleBanUser(e).catch((error) => {
-                    toast.error(
-                      `Failed to ban user: ${error instanceof Error ? error.message : "Unknown error"}`
-                    );
-                  });
-                }
-              }}
-              disabled={!banReason.trim() || isLoading}
-            >
-              {isLoading ? "Banning..." : "Ban User"}
-            </Button>
+            {!user.banned && (
+              <Button
+                variant="destructive"
+                onClick={(e) => {
+                  if (user.banned) {
+                    handleUnbanUser(e).catch((error) => {
+                      toast.error(
+                        `Failed to unban user: ${error instanceof Error ? error.message : "Unknown error"}`
+                      );
+                    });
+                  } else {
+                    handleBanUser(e).catch((error) => {
+                      toast.error(
+                        `Failed to ban user: ${error instanceof Error ? error.message : "Unknown error"}`
+                      );
+                    });
+                  }
+                }}
+                disabled={!banReason.trim() || isLoading}
+              >
+                {isLoading ? "Banning..." : "Ban User"}
+              </Button>
+            )}
+            {user.banned && (
+              <Button
+                variant="destructive"
+                onClick={handleUnbanUser}
+                disabled={isLoading}
+              >
+                {isLoading ? "Unbanning..." : "Unban User"}
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
