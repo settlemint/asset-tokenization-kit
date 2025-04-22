@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {ERC2771Context} from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
 /**
  * @title AirdropBase
@@ -27,11 +27,7 @@ abstract contract AirdropBase is Ownable, ERC2771Context {
     // Events
     event Claimed(address indexed claimant, uint256 amount);
     event TokensWithdrawn(address indexed to, uint256 amount);
-    event BatchClaimed(
-        address indexed claimant,
-        uint256 totalAmount,
-        uint256[] indices
-    );
+    event BatchClaimed(address indexed claimant, uint256 totalAmount, uint256[] indices, uint256[] amounts);
 
     // Custom errors
     error InvalidMerkleProof();
@@ -51,7 +47,10 @@ abstract contract AirdropBase is Ownable, ERC2771Context {
         bytes32 root,
         address initialOwner,
         address trustedForwarder
-    ) Ownable(initialOwner) ERC2771Context(trustedForwarder) {
+    )
+        Ownable(initialOwner)
+        ERC2771Context(trustedForwarder)
+    {
         if (tokenAddress == address(0)) revert ZeroAddress();
         token = IERC20(tokenAddress);
         merkleRoot = root;
@@ -94,11 +93,13 @@ abstract contract AirdropBase is Ownable, ERC2771Context {
         address account,
         uint256 amount,
         bytes32[] calldata merkleProof
-    ) internal view returns (bool verified) {
+    )
+        internal
+        view
+        returns (bool verified)
+    {
         // Double hash the leaf node for domain separation and security
-        bytes32 node = keccak256(
-            abi.encode(keccak256(abi.encode(index, account, amount)))
-        );
+        bytes32 node = keccak256(abi.encode(keccak256(abi.encode(index, account, amount))));
         return MerkleProof.verify(merkleProof, merkleRoot, node);
     }
 
@@ -118,63 +119,44 @@ abstract contract AirdropBase is Ownable, ERC2771Context {
      * This allows different implementations to define their own claim logic
      * @dev Implementations must use `_msgSender()` instead of `msg.sender` and pass it to `_verifyMerkleProof`.
      */
-    function claim(
-        uint256 index,
-        uint256 amount,
-        bytes32[] calldata merkleProof
-    ) external virtual;
+    function claim(uint256 index, uint256 amount, bytes32[] calldata merkleProof) external virtual;
 
     /**
      * @notice Allows users to claim multiple allocations in a single transaction
      * @param indices The indices in the Merkle tree
      * @param amounts The amounts allocated for each index
      * @param merkleProofs The proofs for verification for each index
-     * @dev Implementations must use `_msgSender()` instead of `msg.sender` and pass it to `_verifyMerkleProof` in a loop.
+     * @dev Implementations must use `_msgSender()` instead of `msg.sender` and pass it to `_verifyMerkleProof` in a
+     * loop.
      */
     function batchClaim(
         uint256[] calldata indices,
         uint256[] calldata amounts,
         bytes32[][] calldata merkleProofs
-    ) external virtual;
+    )
+        external
+        virtual;
 
     // --- ERC2771 Context Overrides ---
 
     /**
      * @dev Overrides the underlying `_msgSender` logic to support ERC2771.
      */
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (address sender)
-    {
+    function _msgSender() internal view virtual override(Context, ERC2771Context) returns (address sender) {
         return ERC2771Context._msgSender();
     }
 
     /**
      * @dev Overrides the underlying `_msgData` logic to support ERC2771.
      */
-    function _msgData()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (bytes calldata data)
-    {
+    function _msgData() internal view virtual override(Context, ERC2771Context) returns (bytes calldata data) {
         return ERC2771Context._msgData();
     }
 
     /**
      * @dev Overrides the underlying `_contextSuffixLength` logic for ERC2771 compatibility.
      */
-    function _contextSuffixLength()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (uint256)
-    {
+    function _contextSuffixLength() internal view virtual override(Context, ERC2771Context) returns (uint256) {
         return ERC2771Context._contextSuffixLength();
     }
 }

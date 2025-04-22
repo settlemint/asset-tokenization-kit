@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {AirdropBase} from "./AirdropBase.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { AirdropBase } from "./AirdropBase.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
  * @title StandardAirdrop
@@ -36,7 +36,9 @@ contract StandardAirdrop is AirdropBase {
         uint256 _startTime,
         uint256 _endTime,
         address trustedForwarder
-    ) AirdropBase(tokenAddress, root, initialOwner, trustedForwarder) {
+    )
+        AirdropBase(tokenAddress, root, initialOwner, trustedForwarder)
+    {
         require(_endTime > _startTime, "End time must be after start time");
         startTime = _startTime;
         endTime = _endTime;
@@ -48,11 +50,7 @@ contract StandardAirdrop is AirdropBase {
      * @param amount The amount to claim
      * @param merkleProof The proof for verification
      */
-    function claim(
-        uint256 index,
-        uint256 amount,
-        bytes32[] calldata merkleProof
-    ) external override {
+    function claim(uint256 index, uint256 amount, bytes32[] calldata merkleProof) external override {
         // Check if already claimed
         if (isClaimed(index)) revert AlreadyClaimed();
 
@@ -61,8 +59,9 @@ contract StandardAirdrop is AirdropBase {
         if (block.timestamp > endTime) revert AirdropEnded();
 
         // Verify proof
-        if (!_verifyMerkleProof(index, _msgSender(), amount, merkleProof))
+        if (!_verifyMerkleProof(index, _msgSender(), amount, merkleProof)) {
             revert InvalidMerkleProof();
+        }
 
         // Mark as claimed
         _setClaimed(index);
@@ -83,12 +82,12 @@ contract StandardAirdrop is AirdropBase {
         uint256[] calldata indices,
         uint256[] calldata amounts,
         bytes32[][] calldata merkleProofs
-    ) external override {
+    )
+        external
+        override
+    {
         // Validate input arrays have matching lengths
-        if (
-            indices.length != amounts.length ||
-            amounts.length != merkleProofs.length
-        ) {
+        if (indices.length != amounts.length || amounts.length != merkleProofs.length) {
             revert ArrayLengthMismatch();
         }
 
@@ -108,8 +107,9 @@ contract StandardAirdrop is AirdropBase {
             if (isClaimed(index)) revert AlreadyClaimed();
 
             // Verify Merkle proof
-            if (!_verifyMerkleProof(index, _msgSender(), amount, merkleProof))
+            if (!_verifyMerkleProof(index, _msgSender(), amount, merkleProof)) {
                 revert InvalidMerkleProof();
+            }
 
             // Mark as claimed
             _setClaimed(index);
@@ -121,7 +121,7 @@ contract StandardAirdrop is AirdropBase {
         // Transfer total tokens
         if (totalAmount > 0) {
             token.safeTransfer(_msgSender(), totalAmount);
-            emit BatchClaimed(_msgSender(), totalAmount, indices);
+            emit BatchClaimed(_msgSender(), totalAmount, indices, amounts);
         }
     }
 }

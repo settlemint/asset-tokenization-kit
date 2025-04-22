@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {AirdropBase} from "./AirdropBase.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {IClaimStrategy} from "./interfaces/IClaimStrategy.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { AirdropBase } from "./AirdropBase.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { IClaimStrategy } from "./interfaces/IClaimStrategy.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title VestingAirdrop
@@ -51,17 +51,13 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
         address _claimStrategy,
         uint256 _claimPeriodEnd,
         address trustedForwarder
-    ) AirdropBase(tokenAddress, root, initialOwner, trustedForwarder) {
+    )
+        AirdropBase(tokenAddress, root, initialOwner, trustedForwarder)
+    {
         require(_claimStrategy != address(0), "Invalid claim strategy");
-        require(
-            _claimPeriodEnd > block.timestamp,
-            "Claim period must be in the future"
-        );
+        require(_claimPeriodEnd > block.timestamp, "Claim period must be in the future");
         claimStrategy = IClaimStrategy(_claimStrategy);
-        require(
-            claimStrategy.supportsMultipleClaims(),
-            "Strategy must support vesting"
-        );
+        require(claimStrategy.supportsMultipleClaims(), "Strategy must support vesting");
         claimPeriodEnd = _claimPeriodEnd;
     }
 
@@ -72,10 +68,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
     function setClaimStrategy(address newStrategy) external onlyOwner {
         require(newStrategy != address(0), "Invalid claim strategy");
         claimStrategy = IClaimStrategy(newStrategy);
-        require(
-            claimStrategy.supportsMultipleClaims(),
-            "Strategy must support vesting"
-        );
+        require(claimStrategy.supportsMultipleClaims(), "Strategy must support vesting");
     }
 
     /**
@@ -84,11 +77,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
      * @param amount The amount allocated
      * @param merkleProof The proof for verification
      */
-    function claim(
-        uint256 index,
-        uint256 amount,
-        bytes32[] calldata merkleProof
-    ) external override nonReentrant {
+    function claim(uint256 index, uint256 amount, bytes32[] calldata merkleProof) external override nonReentrant {
         // Check if already initialized (replaces isClaimed check for vesting)
         if (initializedClaims[index]) {
             // If already initialized, subsequent claims don't check claimPeriodEnd
@@ -99,8 +88,9 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
         }
 
         // Verify Merkle proof first
-        if (!_verifyMerkleProof(index, _msgSender(), amount, merkleProof))
+        if (!_verifyMerkleProof(index, _msgSender(), amount, merkleProof)) {
             revert InvalidMerkleProof();
+        }
 
         // Calculate the amount to transfer using vesting logic
         uint256 amountToTransfer = _processVestingClaim(index, amount);
@@ -122,10 +112,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
      * @param amount The amount allocated to the account
      * @return amountToTransfer The amount to transfer immediately
      */
-    function _processVestingClaim(
-        uint256 index,
-        uint256 amount
-    ) internal returns (uint256 amountToTransfer) {
+    function _processVestingClaim(uint256 index, uint256 amount) internal returns (uint256 amountToTransfer) {
         bool isInitialization = !initializedClaims[index];
 
         // For the first claim, initialize vesting
@@ -136,10 +123,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
             claimedAmounts[index] = 0;
 
             // Initialize vesting and get initial amount if any
-            amountToTransfer = claimStrategy.initializeVesting(
-                _msgSender(),
-                amount
-            );
+            amountToTransfer = claimStrategy.initializeVesting(_msgSender(), amount);
 
             // Update claimed amount if there's an immediate transfer
             if (amountToTransfer > 0) {
@@ -153,12 +137,8 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
             uint256 vestingStart = claimTimestamps[index];
             uint256 alreadyClaimed = claimedAmounts[index];
 
-            amountToTransfer = claimStrategy.calculateClaimableAmount(
-                _msgSender(),
-                amount,
-                vestingStart,
-                alreadyClaimed
-            );
+            amountToTransfer =
+                claimStrategy.calculateClaimableAmount(_msgSender(), amount, vestingStart, alreadyClaimed);
 
             if (amountToTransfer > 0) {
                 // Update VestingAirdrop's claimed amount for this index
@@ -181,12 +161,13 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
         uint256[] calldata indices,
         uint256[] calldata amounts,
         bytes32[][] calldata merkleProofs
-    ) external override nonReentrant {
+    )
+        external
+        override
+        nonReentrant
+    {
         // Validate input arrays have matching lengths
-        if (
-            indices.length != amounts.length ||
-            amounts.length != merkleProofs.length
-        ) {
+        if (indices.length != amounts.length || amounts.length != merkleProofs.length) {
             revert ArrayLengthMismatch();
         }
 
@@ -204,18 +185,18 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
             }
 
             // Verify Merkle proof
-            if (!_verifyMerkleProof(index, _msgSender(), amount, merkleProof))
+            if (!_verifyMerkleProof(index, _msgSender(), amount, merkleProof)) {
                 revert InvalidMerkleProof();
+            }
         }
 
         // Process vesting for each allocation
         totalAmountToTransfer = _processBatchVestingClaim(indices, amounts);
 
-        // Transfer total accumulated amount if greater than zero
+        // Transfer total tokens if not zero
         if (totalAmountToTransfer > 0) {
             token.safeTransfer(_msgSender(), totalAmountToTransfer);
-            _recordBatchClaim(indices, amounts, totalAmountToTransfer);
-            emit BatchClaimed(_msgSender(), totalAmountToTransfer, indices);
+            emit BatchClaimed(_msgSender(), totalAmountToTransfer, indices, amounts);
         }
     }
 
@@ -228,7 +209,10 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
     function _processBatchVestingClaim(
         uint256[] calldata indices,
         uint256[] calldata amounts
-    ) internal returns (uint256 totalAmountToTransfer) {
+    )
+        internal
+        returns (uint256 totalAmountToTransfer)
+    {
         totalAmountToTransfer = 0;
 
         for (uint256 i = 0; i < indices.length; i++) {
@@ -248,10 +232,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
                 claimedAmounts[index] = 0;
 
                 // Initialize vesting through strategy
-                uint256 immediateAmount = claimStrategy.initializeVesting(
-                    _msgSender(),
-                    amount
-                );
+                uint256 immediateAmount = claimStrategy.initializeVesting(_msgSender(), amount);
 
                 if (immediateAmount > 0) {
                     totalAmountToTransfer += immediateAmount;
@@ -263,13 +244,8 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
                 uint256 vestingStart = claimTimestamps[index];
                 uint256 alreadyClaimed = claimedAmounts[index];
 
-                uint256 claimableAmount = claimStrategy
-                    .calculateClaimableAmount(
-                        _msgSender(),
-                        amount,
-                        vestingStart,
-                        alreadyClaimed
-                    );
+                uint256 claimableAmount =
+                    claimStrategy.calculateClaimableAmount(_msgSender(), amount, vestingStart, alreadyClaimed);
 
                 if (claimableAmount > 0) {
                     totalAmountToTransfer += claimableAmount;
@@ -297,7 +273,9 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
         uint256[] calldata indices,
         uint256[] calldata amounts,
         uint256 totalAmountTransferred
-    ) internal {
+    )
+        internal
+    {
         // Simple approach: Call recordClaim for the total amount.
         // This assumes the strategy primarily cares about the total claimed by the user.
         // If index-specific details matter *within the strategy* after the claim,

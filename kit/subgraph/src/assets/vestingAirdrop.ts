@@ -1,7 +1,12 @@
-import { BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  ethereum,
+  log,
+} from "@graphprotocol/graph-ts";
 import {
   AirdropClaim,
-  AirdropClaimIndex,
   AirdropRecipient,
   //Asset,
   LinearVestingStrategy,
@@ -109,10 +114,15 @@ export function handleBatchClaimed(event: BatchClaimed): void {
   //   return; // Removed
   // } // Removed
 
-  let claimantAddress = event.params.claimant;
-  let totalAmount = event.params.totalAmount;
-  let indices = event.params.indices;
+  // Extract event parameters
+  const claimantAddress = event.params.claimant;
+  const totalAmount = event.params.totalAmount;
+  const indices = event.params.indices;
+  const amounts = event.params.amounts; // New parameter from enhanced event
 
+  // With the contract update, we now have individual amounts per index
+
+  // Log event information
   log.info(
     "BatchClaimed event processed (Vesting): Airdrop {}, Claimant {}, TotalAmount {}, IndicesCount {}",
     [
@@ -123,66 +133,15 @@ export function handleBatchClaimed(event: BatchClaimed): void {
     ]
   );
 
-  let claimantAccount = fetchAccount(claimantAddress);
-  let totalAmountBD = toDecimals(totalAmount, 18);
-
-  let claimId = event.transaction.hash
-    .concatI32(event.logIndex.toI32())
-    .toHex();
-  let claim = new AirdropClaim(claimId);
-  claim.airdrop = airdrop.id;
-  claim.claimant = claimantAccount.id;
-  claim.totalAmount = totalAmountBD;
-  claim.totalAmountExact = totalAmount;
-  claim.timestamp = event.block.timestamp;
-  claim.txHash = event.transaction.hash;
-  claim.blockNumber = event.block.number;
-  claim.logIndex = event.logIndex;
-  claim.save();
-
-  let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
-  let recipient = AirdropRecipient.load(recipientId);
-  if (!recipient) {
-    recipient = new AirdropRecipient(recipientId);
-    recipient.airdrop = airdrop.id;
-    recipient.recipient = claimantAccount.id;
-    recipient.firstClaimedTimestamp = event.block.timestamp;
-    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
-    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
-    airdrop.totalRecipients = airdrop.totalRecipients + 1;
-  }
-  recipient.lastClaimedTimestamp = event.block.timestamp;
-  recipient.totalClaimedByRecipient =
-    recipient.totalClaimedByRecipient.plus(totalAmountBD);
-  recipient.totalClaimedByRecipientExact =
-    recipient.totalClaimedByRecipientExact.plus(totalAmount);
-  recipient.save();
-
-  for (let i = 0; i < indices.length; i++) {
-    let index = indices[i];
-    let claimIndexId = airdrop.id.toHex() + "-" + index.toString();
-    let claimIndex = AirdropClaimIndex.load(claimIndexId);
-    if (!claimIndex) {
-      claimIndex = new AirdropClaimIndex(claimIndexId);
-      claimIndex.index = index;
-      claimIndex.airdrop = airdrop.id;
-      claimIndex.recipient = recipient.id;
-      claimIndex.amount = BigDecimal.fromString("0");
-      claimIndex.amountExact = BigInt.fromI32(0);
-      claimIndex.claim = claim.id;
-      claimIndex.timestamp = event.block.timestamp;
-      claimIndex.save();
-    } else {
-      claimIndex.claim = claim.id;
-      claimIndex.timestamp = event.block.timestamp;
-      claimIndex.save();
-    }
-  }
-
-  airdrop.totalClaims = airdrop.totalClaims + 1;
-  airdrop.totalClaimed = airdrop.totalClaimed.plus(totalAmountBD);
-  airdrop.totalClaimedExact = airdrop.totalClaimedExact.plus(totalAmount);
-  airdrop.save();
+  // Process batch claim using actual amounts for each index
+  processBatchClaim(
+    airdrop,
+    claimantAddress,
+    totalAmount,
+    indices,
+    amounts, // Pass the actual amounts instead of calculating averages
+    event
+  );
 }
 
 export function handleTokensWithdrawn(event: TokensWithdrawn): void {
@@ -267,4 +226,88 @@ export function handleVestingInitialized(event: VestingInitialized): void {
       vestingStart.toString(),
     ]
   );
+}
+
+/**
+ * Helper function to process batch claims with individual amounts
+ */
+function processBatchClaim(
+  airdrop: VestingAirdrop,
+  claimantAddress: Address,
+  totalAmount: BigInt,
+  indices: BigInt[],
+  amounts: BigInt[],
+  event: ethereum.Event
+): void {
+  const claimantAccount = fetchAccount(claimantAddress);
+  const totalAmountBD = toDecimals(totalAmount, 18); // Assuming 18 decimals
+
+  // Create AirdropClaim entity
+  const claimId = event.transaction.hash
+    .concatI32(event.logIndex.toI32())
+    .toHex();
+  const claim = new AirdropClaim(claimId);
+  claim.airdrop = airdrop.id;
+  claim.claimant = claimantAccount.id;
+  claim.totalAmount = totalAmountBD;
+  claim.totalAmountExact = totalAmount;
+  claim.timestamp = event.block.timestamp;
+  claim.txHash = event.transaction.hash;
+  claim.blockNumber = event.block.number;
+  claim.logIndex = event.logIndex;
+  claim.save();
+
+  // Update or create AirdropRecipient
+  const recipientId = airdrop.id.concat(claimantAccount.id).toHex();
+  let recipient = AirdropRecipient.load(recipientId);
+  if (!recipient) {
+    recipient = new AirdropRecipient(recipientId);
+    recipient.airdrop = airdrop.id;
+    recipient.recipient = claimantAccount.id;
+    recipient.firstClaimedTimestamp = event.block.timestamp;
+    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
+    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
+    // Increment unique recipient count on airdrop
+    airdrop.totalRecipients = airdrop.totalRecipients + 1;
+  }
+  recipient.lastClaimedTimestamp = event.block.timestamp;
+  recipient.totalClaimedByRecipient =
+    recipient.totalClaimedByRecipient.plus(totalAmountBD);
+  recipient.totalClaimedByRecipientExact =
+    recipient.totalClaimedByRecipientExact.plus(totalAmount);
+  recipient.save();
+
+  // Create/update AirdropClaimIndex entities with actual amounts
+  for (let i = 0; i < indices.length; i++) {
+    const index = indices[i];
+    const amount = amounts[i];
+    const amountBD = toDecimals(amount, 18); // Assuming 18 decimals
+
+    const claimIndexId = airdrop.id.toHex() + "-" + index.toString();
+    let claimIndex = AirdropClaimIndex.load(claimIndexId);
+    if (!claimIndex) {
+      claimIndex = new AirdropClaimIndex(claimIndexId);
+      claimIndex.index = index;
+      claimIndex.airdrop = airdrop.id;
+      claimIndex.recipient = recipient.id;
+      claimIndex.amount = amountBD;
+      claimIndex.amountExact = amount;
+      claimIndex.claim = claim.id;
+      claimIndex.timestamp = event.block.timestamp;
+      claimIndex.save();
+    } else {
+      // If index was somehow claimed before (shouldn't happen)
+      claimIndex.claim = claim.id;
+      claimIndex.timestamp = event.block.timestamp;
+      claimIndex.amount = amountBD;
+      claimIndex.amountExact = amount;
+      claimIndex.save();
+    }
+  }
+
+  // Update airdrop totals
+  airdrop.totalClaims = airdrop.totalClaims + 1;
+  airdrop.totalClaimed = airdrop.totalClaimed.plus(totalAmountBD);
+  airdrop.totalClaimedExact = airdrop.totalClaimedExact.plus(totalAmount);
+  airdrop.save();
 }
