@@ -3,6 +3,9 @@
 # Get the absolute path of the script's directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ALL_ALLOCATIONS_FILE="${SCRIPT_DIR}/genesis-output.json"
+# Define the second output location relative to the script directory
+SECOND_OUTPUT_DIR="${SCRIPT_DIR}/../charts/atk/charts/besu-network/charts/besu-genesis/files"
+SECOND_OUTPUT_FILE="${SECOND_OUTPUT_DIR}/genesis-output.json"
 
 # Check if anvil is running, if not start it
 if ! nc -z localhost 8545 2>/dev/null; then
@@ -178,6 +181,12 @@ for sol_file in contracts/*.sol; do
 done
 
 echo "Complete genesis allocation has been written to ${ALL_ALLOCATIONS_FILE}"
+
+# Create the second output directory if it doesn't exist and copy the file
+echo "Copying genesis allocation to ${SECOND_OUTPUT_FILE}..."
+mkdir -p "${SECOND_OUTPUT_DIR}"
+cp "${ALL_ALLOCATIONS_FILE}" "${SECOND_OUTPUT_FILE}"
+echo "Successfully copied genesis allocation to second location."
 
 # Kill anvil if we started it
 if [[ -n "$ANVIL_PID" ]]; then
