@@ -9,8 +9,14 @@ import {
   AirdropClaim,
   AirdropClaimIndex,
   AirdropRecipient,
+  Bond,
+  CryptoCurrency,
+  Deposit,
+  Equity,
+  Fund,
   //Asset,
   LinearVestingStrategy,
+  StableCoin,
   UserVestingData,
   VestingAirdrop,
 } from "../../generated/schema";
@@ -23,6 +29,34 @@ import {
 
 import { fetchAccount } from "../fetch/account";
 import { toDecimals } from "../utils/decimals";
+
+// Helper function to get token decimals from any asset type
+function getTokenDecimals(tokenAddress: Address): i32 {
+  // Try loading each possible asset type
+  let crypto = CryptoCurrency.load(tokenAddress);
+  if (crypto) return crypto.decimals;
+
+  let stable = StableCoin.load(tokenAddress);
+  if (stable) return stable.decimals;
+
+  let bond = Bond.load(tokenAddress);
+  if (bond) return bond.decimals;
+
+  let equity = Equity.load(tokenAddress);
+  if (equity) return equity.decimals;
+
+  let fund = Fund.load(tokenAddress);
+  if (fund) return fund.decimals;
+
+  let deposit = Deposit.load(tokenAddress);
+  if (deposit) return deposit.decimals;
+
+  // Default to 18 if not found
+  log.warning("Token not found for address {}, defaulting to 18 decimals", [
+    tokenAddress.toHex(),
+  ]);
+  return 18;
+}
 
 export function handleClaimed(event: Claimed): void {
   let airdropAddress = event.address;
@@ -54,7 +88,10 @@ export function handleClaimed(event: Claimed): void {
   );
 
   let claimantAccount = fetchAccount(claimantAddress);
-  let amountBD = toDecimals(amount, 18);
+
+  // Get the correct token decimals
+  let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  let amountBD = toDecimals(amount, decimals);
 
   let claimId = event.transaction.hash
     .concatI32(event.logIndex.toI32())
@@ -241,7 +278,10 @@ function processBatchClaim(
   event: ethereum.Event
 ): void {
   const claimantAccount = fetchAccount(claimantAddress);
-  const totalAmountBD = toDecimals(totalAmount, 18); // Assuming 18 decimals
+
+  // Get the correct token decimals
+  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  const totalAmountBD = toDecimals(totalAmount, decimals);
 
   // Create AirdropClaim entity
   const claimId = event.transaction.hash
@@ -282,7 +322,7 @@ function processBatchClaim(
   for (let i = 0; i < indices.length; i++) {
     const index = indices[i];
     const amount = amounts[i];
-    const amountBD = toDecimals(amount, 18); // Assuming 18 decimals
+    const amountBD = toDecimals(amount, decimals); // Use actual token decimals
 
     const claimIndexId = airdrop.id.toHex() + "-" + index.toString();
     let claimIndex = AirdropClaimIndex.load(claimIndexId);
