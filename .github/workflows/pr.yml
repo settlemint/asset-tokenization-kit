@@ -112,7 +112,7 @@ jobs:
           echo "SECONDARY_TAG=$SECONDARY_TAG" >> $GITHUB_ENV
 
       - name: Set the versions
-        if: github.ref_name == 'main'
+        # if: github.ref_name == 'main'
         run: |
           yq eval ".version = strenv(VERSION)" -i kit/charts/atk/Chart.yaml
           yq eval ".appVersion = strenv(VERSION)" -i kit/charts/atk/Chart.yaml
