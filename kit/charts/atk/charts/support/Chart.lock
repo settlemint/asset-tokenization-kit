@@ -10,6 +10,6 @@ dependencies:
   version: 20.12.2
 - name: reloader
   repository: https://stakater.github.io/stakater-charts
-  version: 2.1.1
-digest: sha256:d44f05ad00fdc7ceccce31fb8e1ce0f43606df2d9cbf2f298947442b343a3651
-generated: "2025-04-22T01:16:32.443922476Z"
+  version: 2.1.2
+digest: sha256:23e7b152b7e1f8445921c3aaa7c0631d89b881c66b93beb2cfabf15e2bf2ff5e
+generated: "2025-04-22T04:30:01.109846107Z"
