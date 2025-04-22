@@ -14,8 +14,17 @@ interface EvmAddressBalancesProps {
 interface AssetBalance {
   asset: {
     symbol: string;
+    // Add other properties from asset if needed
   };
-  value: string;
+  value: number; // Changed from string to number
+  // Add other required properties
+  account?: {
+    id: `0x${string}`;
+    lastActivity: Date;
+  };
+  lastActivity?: Date;
+  blocked?: boolean;
+  frozen?: number;
 }
 
 export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
