@@ -1,0 +1,92 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ printf "%s-drizzle-migrate-%d" .Release.Name (.Release.Revision | int) }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "atk.labels" . | nindent 4 }}
+    app.kubernetes.io/component: drizzle-migrate
+    helm.sh/revision: "{{ .Release.Revision }}"
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+spec:
+  template:
+    metadata:
+      name: {{ printf "%s-drizzle-migrate-%d" .Release.Name (.Release.Revision | int) }}
+      labels:
+        {{- include "atk.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: drizzle-migrate
+        helm.sh/revision: "{{ .Release.Revision }}"
+    spec:
+      restartPolicy: Never
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - -c
+          - |
+            SERVICE_HOST="postgresql-pgpool"
+            SERVICE_PORT="5432"
+            echo "Waiting for ${SERVICE_HOST}:${SERVICE_PORT}..."
+            until nc -z -w 2 ${SERVICE_HOST} ${SERVICE_PORT}; do
+              echo "Service ${SERVICE_HOST}:${SERVICE_PORT} not ready yet, waiting 2s..."
+              sleep 2
+            done
+            echo "Service ${SERVICE_HOST}:${SERVICE_PORT} is available."
+      - name: clone-repo
+        image: alpine/git:latest
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - -c
+          - |
+            set -ex
+            git clone https://github.com/settlemint/asset-tokenization-kit.git /workspace
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+      containers:
+      - name: drizzle-migrate
+        image: "oven/bun:1"
+        imagePullPolicy: IfNotPresent
+        workingDir: /workspace/kit/dapp
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          set -ex
+          echo "Installing Python and required build tools..."
+          apt-get update
+          apt-get install -y python3 python3-pip build-essential
+          ln -sf /usr/bin/python3 /usr/bin/python
+          echo "Installing dependencies..."
+          bun install
+          echo "Running Drizzle migrations..."
+          export SETTLEMINT_HASURA_DATABASE_URL="postgresql://postgres:${PGPASSWORD}@postgresql-pgpool:5432/postgres"
+          bunx drizzle-kit push --force
+          echo "Drizzle migrations finished."
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-postgresql
+              key: password
+        - name: SETTLEMINT_HASURA_DATABASE_URL
+          value: "postgresql://postgres:$(PGPASSWORD)@postgresql-pgpool:5432/postgres"
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+      volumes:
+        - name: workspace
+          emptyDir: {}
+      terminationGracePeriodSeconds: 30
+  backoffLimit: 1

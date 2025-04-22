@@ -1,4 +1,3 @@
-import type { User } from "@/lib/auth/types";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { revalidateTag } from "next/cache";
 import { withAccessControl } from "../../utils/access-control";
@@ -30,14 +29,12 @@ export const updateKycStatusFunction = withAccessControl(
     },
   },
   async ({
-    parsedInput: { kycVerified },
-    ctx: { user },
+    parsedInput: { kycVerified, userId },
   }: {
     parsedInput: UpdateKycStatusInput;
-    ctx: { user: User };
   }) => {
     const result = await hasuraClient.request(UpdateKycStatusMutation, {
-      userId: user.id,
+      userId,
       kycVerified,
     });
 
