@@ -993,6 +993,27 @@ type VestingAirdrop implements Airdrop @entity(immutable: false) {
   strategy: VestingStrategy!
 }
 
+type PushAirdrop implements Airdrop @entity(immutable: false) {
+  id: Bytes! # Contract address
+  factory: AirdropFactory!
+  token: Bytes! # Matches interface
+  merkleRoot: Bytes!
+  owner: Account!
+  deployedOn: BigInt!
+  deploymentTx: Bytes!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  totalRecipients: Int!
+  totalClaims: Int!
+  isWithdrawn: Boolean!
+  trustedForwarder: Account!
+  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
+  # PushAirdrop specific
+  distributionCap: BigInt!
+  totalDistributed: BigInt!
+  distributions: [PushDistribution!]! @derivedFrom(field: "airdrop")
+}
+
 interface VestingStrategy {
   id: Bytes! # Strategy contract address
   type: String! # e.g., "Linear", "Custom"
@@ -1064,4 +1085,34 @@ type UserVestingData @entity(immutable: false) {
   vestingStart: BigInt!
   initialized: Boolean!
   lastUpdated: BigInt!
+}
+
+# Records a distribution event from PushAirdrop
+type PushDistribution @entity(immutable: true) {
+  id: String! # txHash-logIndex
+  airdrop: PushAirdrop!
+  distributor: Account! # The admin who performed the distribution
+  recipient: Account! # The recipient who received tokens
+  amount: BigDecimal! # Amount distributed
+  amountExact: BigInt!
+  batchDistribution: PushBatchDistribution
+  timestamp: BigInt!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+}
+
+# Records a batch distribution event from PushAirdrop
+type PushBatchDistribution @entity(immutable: true) {
+  id: String! # txHash-logIndex
+  airdrop: PushAirdrop!
+  distributor: Account! # The admin who performed the distribution
+  recipientCount: Int! # Number of recipients in this batch
+  totalAmount: BigDecimal! # Total amount distributed in this batch
+  totalAmountExact: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+  distributions: [PushDistribution!]! @derivedFrom(field: "batchDistribution")
 }

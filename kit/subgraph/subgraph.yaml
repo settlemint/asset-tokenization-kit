@@ -197,6 +197,9 @@ dataSources:
             VestingAirdropDeployed(indexed address,indexed address,indexed
             address,address)
           handler: handleVestingAirdropDeployed
+        - event:
+            PushAirdropDeployed(indexed address,indexed address,indexed address)
+          handler: handlePushAirdropDeployed
       file: ./src/factories/airdropFactory.ts
 templates:
   - kind: ethereum/contract
@@ -752,3 +755,32 @@ templates:
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
       file: ./src/assets/vestingAirdrop.ts
+  - kind: ethereum/contract
+    name: PushAirdropTemplate
+    network: settlemint
+    source:
+      abi: PushAirdrop
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - PushAirdrop
+        - PushDistribution
+        - PushBatchDistribution
+        - Account
+      abis:
+        - name: PushAirdrop
+          file: ../contracts/artifacts/contracts/airdrop/PushAirdrop.sol/PushAirdrop.json
+      eventHandlers:
+        - event: TokensDistributed(indexed address,uint256)
+          handler: handleTokensDistributed
+        - event: BatchDistributed(uint256,uint256)
+          handler: handleBatchDistributed
+        - event: TokensWithdrawn(indexed address,uint256)
+          handler: handleTokensWithdrawn
+        - event: MerkleRootUpdated(bytes32,bytes32)
+          handler: handleMerkleRootUpdated
+        - event: DistributionCapUpdated(uint256,uint256)
+          handler: handleDistributionCapUpdated
+      file: ./src/assets/pushAirdrop.ts

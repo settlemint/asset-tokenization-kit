@@ -9,22 +9,26 @@ import {
 import {
   AirdropFactory,
   LinearVestingStrategy,
+  PushAirdrop,
   StandardAirdrop,
   VestingAirdrop,
 } from "../../generated/schema";
 
 import {
   AirdropFactory as AirdropFactoryContract,
+  PushAirdropDeployed,
   StandardAirdropDeployed,
   VestingAirdropDeployed,
 } from "../../generated/AirdropFactory/AirdropFactory";
 
 import {
+  PushAirdropTemplate,
   StandardAirdropTemplate,
   VestingAirdropTemplate,
 } from "../../generated/templates";
 
 // Import contract bindings for fetching state
+import { PushAirdrop as PushAirdropContract } from "../../generated/templates/PushAirdropTemplate/PushAirdrop";
 import { StandardAirdrop as StandardAirdropContract } from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
 import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../generated/templates/VestingAirdropTemplate/LinearVestingStrategy";
 import { VestingAirdrop as VestingAirdropContract } from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
@@ -254,6 +258,103 @@ export function handleVestingAirdropDeployed(
     "Created VestingAirdrop {} and Strategy {} entities, started template indexing",
     [airdropAddress.toHex(), strategyAddress.toHex()]
   );
+}
+
+export function handlePushAirdropDeployed(event: PushAirdropDeployed): void {
+  let factoryAddress = event.address;
+  let factoryContract = AirdropFactoryContract.bind(factoryAddress);
+  let factoryEntity = loadOrCreateAirdropFactory(factoryAddress);
+
+  factoryEntity.totalAirdropsDeployed = factoryEntity.totalAirdropsDeployed + 1;
+  factoryEntity.save();
+
+  let airdropAddress = event.params.airdropContract;
+  let tokenAddress = event.params.tokenAddress;
+  let ownerAddress = event.params.owner;
+
+  log.info(
+    "PushAirdropDeployed event processed: Factory {}, Airdrop {}, Token {}, Owner {}",
+    [
+      factoryAddress.toHex(),
+      airdropAddress.toHex(),
+      tokenAddress.toHex(),
+      ownerAddress.toHex(),
+    ]
+  );
+
+  // Create entities
+  let airdrop = new PushAirdrop(airdropAddress);
+  let owner = fetchAccount(ownerAddress);
+
+  airdrop.factory = factoryEntity.id;
+  airdrop.token = tokenAddress; // Store token address directly (Bytes)
+  airdrop.owner = owner.id;
+  airdrop.deployedOn = event.block.timestamp;
+  airdrop.deploymentTx = event.transaction.hash;
+  airdrop.totalClaimed = BigDecimal.fromString("0");
+  airdrop.totalClaimedExact = BigInt.fromI32(0);
+  airdrop.totalRecipients = 0;
+  airdrop.totalClaims = 0;
+  airdrop.isWithdrawn = false;
+  airdrop.distributionCap = BigInt.fromI32(0); // Default, will be updated from contract
+  airdrop.totalDistributed = BigInt.fromI32(0);
+
+  // --- Fetch contract state --- //
+
+  // Fetch TrustedForwarder from Factory state
+  let trustedForwarderResult = factoryContract.try_trustedForwarder();
+  if (!trustedForwarderResult.reverted) {
+    airdrop.trustedForwarder = fetchAccount(trustedForwarderResult.value).id;
+  } else {
+    log.error(
+      "Failed to fetch trustedForwarder for Factory {} while creating PushAirdrop {}",
+      [factoryAddress.toHex(), airdropAddress.toHex()]
+    );
+    airdrop.trustedForwarder = fetchAccount(Address.zero()).id; // Default/Placeholder
+  }
+
+  // Fetch details from the newly deployed PushAirdrop contract
+  let airdropContract = PushAirdropContract.bind(airdropAddress);
+  let merkleRootResult = airdropContract.try_merkleRoot();
+  let distributionCapResult = airdropContract.try_distributionCap();
+  let totalDistributedResult = airdropContract.try_totalDistributed();
+
+  if (!merkleRootResult.reverted) {
+    airdrop.merkleRoot = merkleRootResult.value;
+  } else {
+    log.error("Failed to fetch merkleRoot for PushAirdrop {}", [
+      airdropAddress.toHex(),
+    ]);
+    airdrop.merkleRoot = Bytes.fromHexString("0x00"); // Placeholder
+  }
+
+  if (!distributionCapResult.reverted) {
+    airdrop.distributionCap = distributionCapResult.value;
+  } else {
+    log.error("Failed to fetch distributionCap for PushAirdrop {}", [
+      airdropAddress.toHex(),
+    ]);
+    // Keep default zero value
+  }
+
+  if (!totalDistributedResult.reverted) {
+    airdrop.totalDistributed = totalDistributedResult.value;
+  } else {
+    log.error("Failed to fetch totalDistributed for PushAirdrop {}", [
+      airdropAddress.toHex(),
+    ]);
+    // Keep default zero value
+  }
+  // ---------------------------- //
+
+  airdrop.save();
+
+  // Start indexing the new airdrop contract using the template
+  PushAirdropTemplate.create(airdropAddress);
+
+  log.info("Created PushAirdrop entity {} and started template indexing", [
+    airdropAddress.toHex(),
+  ]);
 }
 
 // Helper function to ensure AirdropFactory entity exists
