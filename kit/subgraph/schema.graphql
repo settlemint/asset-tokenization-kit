@@ -1005,6 +1005,7 @@ type LinearVestingStrategy implements VestingStrategy
   id: Bytes! # Strategy contract address
   type: String! # = "Linear"
   airdrop: VestingAirdrop! @derivedFrom(field: "strategy") # Derived from VestingAirdrop linking
+  airdropRef: Bytes! # Direct reference to airdrop address
   owner: Account!
   # Linear specific
   vestingDuration: BigInt!

@@ -218,11 +218,11 @@ export function handleVestingInitialized(event: VestingInitialized): void {
     return;
   }
 
-  // Load the VestingAirdrop using the ID stored in strategy.airdrop
-  let airdrop = VestingAirdrop.load(strategy.airdrop);
+  // Use the direct reference field we added to the schema
+  let airdrop = VestingAirdrop.load(strategy.airdropRef);
   if (!airdrop) {
     log.error("Associated VestingAirdrop not found for strategy: {}", [
-      strategyAddress.toHex(), // Keep logging strategy address for context
+      strategyAddress.toHex(),
     ]);
     return;
   }
