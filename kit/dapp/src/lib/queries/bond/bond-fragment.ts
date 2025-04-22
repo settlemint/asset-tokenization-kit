@@ -1,15 +1,26 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 
+export const UnderlyingAssetFragment = theGraphGraphqlKit(`
+  fragment UnderlyingAssetFragment on Asset {
+    id
+    symbol
+    decimals
+    type
+    totalSupply
+  }
+`);
+
 export const YieldPeriodFragment = theGraphGraphqlKit(`
   fragment YieldPeriodFragment on YieldPeriod {
     id
     periodId
     startDate
     endDate
-    rate
     totalClaimed
     totalClaimedExact
+    totalYield
+    totalYieldExact
   }
 `);
 
@@ -17,28 +28,23 @@ export const YieldScheduleFragment = theGraphGraphqlKit(
   `
   fragment YieldScheduleFragment on FixedYield {
     id
-      startDate
-      endDate
-      rate
-      interval
-      totalClaimed
-      totalClaimedExact
-      unclaimedYield
-      unclaimedYieldExact
-      underlyingAsset {
-        id
-        symbol
-        decimals
-        type
-      }
-      underlyingBalance
-      underlyingBalanceExact
-      periods {
-        ...YieldPeriodFragment
-      }
+    startDate
+    endDate
+    rate
+    interval
+    totalClaimed
+    totalClaimedExact
+    underlyingBalance
+    underlyingBalanceExact
+    periods {
+      ...YieldPeriodFragment
+    }
+    underlyingAsset {
+      ...UnderlyingAssetFragment
+    }
   }
 `,
-  [YieldPeriodFragment]
+  [YieldPeriodFragment, UnderlyingAssetFragment]
 );
 
 /**
@@ -64,11 +70,7 @@ export const BondFragment = theGraphGraphqlKit(
       id
     }
     underlyingAsset {
-      id
-      symbol
-      decimals
-      type
-      totalSupply
+      ...UnderlyingAssetFragment
     }
     maturityDate
     isMatured
@@ -87,7 +89,7 @@ export const BondFragment = theGraphGraphqlKit(
     concentration
   }
 `,
-  [YieldScheduleFragment]
+  [YieldScheduleFragment, UnderlyingAssetFragment]
 );
 
 /**

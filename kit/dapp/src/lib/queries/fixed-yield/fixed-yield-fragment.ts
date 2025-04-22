@@ -24,8 +24,6 @@ export const FixedYieldFragment = theGraphGraphqlKit(`
     interval
     totalClaimed
     totalClaimedExact
-    unclaimedYield
-    unclaimedYieldExact
     underlyingBalance
     underlyingBalanceExact
     periods {
@@ -33,7 +31,6 @@ export const FixedYieldFragment = theGraphGraphqlKit(`
       periodId
       startDate
       endDate
-      rate
       totalClaimed
       totalClaimedExact
     }
@@ -61,8 +58,6 @@ export const FixedYieldFragmentSchema = t.Object({
   interval: t.StringifiedBigInt(),
   totalClaimed: t.BigDecimal(),
   totalClaimedExact: t.StringifiedBigInt(),
-  unclaimedYield: t.BigDecimal(),
-  unclaimedYieldExact: t.StringifiedBigInt(),
   underlyingBalance: t.BigDecimal(),
   underlyingBalanceExact: t.StringifiedBigInt(),
   periods: t.Array(
