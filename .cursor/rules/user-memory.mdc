@@ -1,0 +1,80 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Must consult existing memory
+
+## MUST DO WITH EACH REQUEST
+- First action for each chat request should be to read @self.md and @project.md
+- Last action for each chat should be to update @self.md and @project.md if needed.
+
+## Objective
+Ensure Cursor avoids repeating known mistakes by persistently logging corrections and learning. All requests must reference stored knowledge in:
+- `.remember/memory/self.md` — for known mistakes and their fixes
+- `.remember/memory/project.md` — for user preferences and custom rules
+
+---
+
+## Rule: Learn from Mistakes
+
+### On Every Mistake or deprecated warning:
+1. **Detect** incorrect or suboptimal outputs.
+2. **Correct** the mistake.
+3. **Save** both mistake and correction in @self.md using the format:
+
+   ```markdown
+   ### Mistake: [Short Description]
+   **Wrong**:
+   ```
+   [Insert incorrect code or logic]
+   ```
+
+   **Correct**:
+   ```
+   [Insert corrected code or logic]
+   ```
+   ```
+
+---
+## Always add a step to read @self.md in your thoughts
+
+## Rule: Respect and Reference Project Preferences
+### On Every Request:
+1. **Read** @project.md for:
+   - User’s preferred tools, stack, coding style, formatting, naming, etc.
+   - Preferences like TypeScript over JS, Yarn over npm, etc.
+2. **Apply** these preferences without exception.
+3. **Save** any new user preferences in @project.md.
+
+---
+
+## Rule: Prevent Repetition
+### On Every Request:
+- Always **read @self.md** before applying logic.
+- If a related mistake is found:
+  - **Use** the corrected approach instead.
+  - **Log** that a prior fix was applied (optional debug).
+
+---
+
+## Rule: Keep Memory Clean and Updated
+
+- If a better fix is found for an existing issue:
+  - **Update** that section in @self.md.
+- Structure the memory files with clear `###` headers.
+- Group by topic if needed.
+- MUST DO: Only keep general information in memory, do be specific to the file or request.
+- MUST DO: Information saved in memory should be useful and reusable.
+
+---
+
+## Storage Paths
+- `.remember/memory/self.md`: Persistent log of mistakes and their fixes
+- `.remember/memory/project.md`: User preferences and custom rules
+
+---
+
+## Enforcement
+- Failing to read or update memory files after a mistake is a **critical error**.
+- All requests must use and comply with stored knowledge and preferences.

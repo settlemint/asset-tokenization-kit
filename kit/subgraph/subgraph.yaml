@@ -218,6 +218,8 @@ templates:
       abis:
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
+        - name: FixedYield
+          file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -492,7 +494,7 @@ templates:
           handler: handleUnderlyingAssetTopUp
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
-      file: ./src/assets/fixedyield.ts
+      file: ./src/assets/fixed-yield.ts
   - kind: ethereum/contract
     name: Fund
     network: settlemint

@@ -5,8 +5,12 @@ import { fetchAccount } from "../../fetch/account";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
 import { updateDerivedFields } from "../bond";
+import { fetchAssetDecimals } from "./asset";
 
-export function fetchBond(address: Address, timestamp: BigInt = BigInt.zero()): Bond {
+export function fetchBond(
+  address: Address,
+  timestamp: BigInt = BigInt.zero()
+): Bond {
   let bond = Bond.load(address);
   if (!bond) {
     let endpoint = BondContract.bind(address);
@@ -20,6 +24,10 @@ export function fetchBond(address: Address, timestamp: BigInt = BigInt.zero()): 
     let faceValue = endpoint.try_faceValue();
     let underlyingAsset = endpoint.try_underlyingAsset();
     let yieldSchedule = endpoint.try_yieldSchedule();
+
+    let underlyingAssetDecimals = underlyingAsset.reverted
+      ? 18 // Default to 18 (most common decimal value)
+      : fetchAssetDecimals(underlyingAsset.value);
 
     const account = fetchAccount(address);
 
@@ -52,11 +60,17 @@ export function fetchBond(address: Address, timestamp: BigInt = BigInt.zero()): 
     bond.paused = paused.reverted ? false : paused.value;
     bond.faceValue = faceValue.reverted ? BigInt.zero() : faceValue.value;
 
-    bond.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
+    bond.underlyingAsset = underlyingAsset.reverted
+      ? Address.zero()
+      : underlyingAsset.value;
+    bond.underlyingAssetDecimals = underlyingAssetDecimals;
     bond.redeemedAmount = BigInt.zero();
     bond.underlyingBalanceExact = BigInt.zero();
     bond.underlyingBalance = BigDecimal.zero();
-    bond.yieldSchedule = yieldSchedule.reverted ? null : yieldSchedule.value;
+    bond.yieldSchedule =
+      yieldSchedule.reverted || yieldSchedule.value == Address.zero()
+        ? null
+        : yieldSchedule.value;
     bond.totalUnderlyingNeededExact = BigInt.zero();
     bond.totalUnderlyingNeeded = BigDecimal.zero();
     bond.hasSufficientUnderlying = false;
