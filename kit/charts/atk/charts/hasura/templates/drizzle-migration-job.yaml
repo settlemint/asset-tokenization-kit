@@ -1,13 +1,9 @@
-# This Job runs Drizzle migrations before Hasura starts.
-# It mimics the structure of the subgraph deployment job where applicable.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  # Naming convention similar to subgraph job, but indicating drizzle
   name: {{ printf "%s-drizzle-migrate-%d" .Release.Name (.Release.Revision | int) }}
   namespace: {{ .Release.Namespace }}
   labels:
-    # Use parent chart's labels helper
     {{- include "atk.labels" . | nindent 4 }}
     app.kubernetes.io/component: drizzle-migrate
     helm.sh/revision: "{{ .Release.Revision }}"
@@ -22,20 +18,18 @@ spec:
     metadata:
       name: {{ printf "%s-drizzle-migrate-%d" .Release.Name (.Release.Revision | int) }}
       labels:
-        # Use parent chart's selector labels helper
         {{- include "atk.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: drizzle-migrate
         helm.sh/revision: "{{ .Release.Revision }}"
     spec:
       restartPolicy: Never
-      # Use global pull secrets if defined in parent chart values
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
       - name: wait-for-postgres
-        image: busybox # Use busybox image like the subgraph job
+        image: busybox
         imagePullPolicy: IfNotPresent
         command:
           - /bin/sh
@@ -49,7 +43,7 @@ spec:
               sleep 2
             done
             echo "Service ${SERVICE_HOST}:${SERVICE_PORT} is available."
-      - name: clone-repo # Clone repo like subgraph job
+      - name: clone-repo
         image: alpine/git:latest
         imagePullPolicy: IfNotPresent
         command:
@@ -57,16 +51,15 @@ spec:
           - -c
           - |
             set -ex
-            # Consider making repo URL configurable via values?
             git clone https://github.com/settlemint/asset-tokenization-kit.git /workspace
         volumeMounts:
           - name: workspace
             mountPath: /workspace
       containers:
       - name: drizzle-migrate
-        image: "oven/bun:1" # Standard Bun image
+        image: "oven/bun:1"
         imagePullPolicy: IfNotPresent
-        workingDir: /workspace/kit/dapp # Dapp dir within cloned repo
+        workingDir: /workspace/kit/dapp
         command: ["/bin/sh", "-c"]
         args:
         - |
@@ -82,13 +75,11 @@ spec:
           bunx drizzle-kit push --force
           echo "Drizzle migrations finished."
         env:
-        # Retrieve the password from the secret first
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
-              name: postgresql-postgresql # Use the observed secret name
-              key: password # Use the observed key name
-        # Construct DATABASE_URL using known/assumed values and the password
+              name: postgresql-postgresql
+              key: password
         - name: SETTLEMINT_HASURA_DATABASE_URL
           value: "postgresql://postgres:$(PGPASSWORD)@postgresql-pgpool:5432/postgres"
         volumeMounts:
@@ -98,4 +89,4 @@ spec:
         - name: workspace
           emptyDir: {}
       terminationGracePeriodSeconds: 30
-  backoffLimit: 1 # Try only once per hook execution
+  backoffLimit: 1
