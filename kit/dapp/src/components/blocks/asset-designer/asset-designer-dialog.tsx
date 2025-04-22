@@ -28,6 +28,9 @@ import { Configuration as EquityConfiguration } from "@/components/blocks/create
 import { Configuration as FundConfiguration } from "@/components/blocks/create-forms/fund/steps/configuration";
 import { Configuration as StablecoinConfiguration } from "@/components/blocks/create-forms/stablecoin/steps/configuration";
 
+// Import Permission components
+import { AssetAdmins } from "@/components/blocks/create-forms/common/asset-admins/asset-admins";
+
 // Import Form Provider
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -66,6 +69,9 @@ export function AssetDesignerDialog({
   // Form state tracking
   const [isBasicInfoValid, setIsBasicInfoValid] = useState(false);
   const [isConfigurationValid, setIsConfigurationValid] = useState(false);
+  const [isPermissionsValid, setIsPermissionsValid] = useState(false);
+  const [isRegulationValid, setIsRegulationValid] = useState(true); // Default to true since it's optional
+  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
 
   // Create forms for each asset type with mode set to run validation always
   const bondForm = useForm({
@@ -74,6 +80,8 @@ export function AssetDesignerDialog({
       symbol: "",
       decimals: 18,
       isin: "",
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all", // Validate on all events
   });
@@ -83,6 +91,8 @@ export function AssetDesignerDialog({
       assetName: "",
       symbol: "",
       decimals: 18,
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all",
   });
@@ -93,6 +103,8 @@ export function AssetDesignerDialog({
       symbol: "",
       isin: "",
       cusip: "",
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all",
   });
@@ -103,6 +115,8 @@ export function AssetDesignerDialog({
       symbol: "",
       isin: "",
       decimals: 18,
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all",
   });
@@ -112,6 +126,8 @@ export function AssetDesignerDialog({
       assetName: "",
       symbol: "",
       decimals: 18,
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all",
   });
@@ -121,6 +137,8 @@ export function AssetDesignerDialog({
       assetName: "",
       symbol: "",
       decimals: 18,
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all",
   });
@@ -177,71 +195,78 @@ export function AssetDesignerDialog({
       }
 
       if (currentStep === "configuration") {
-        // Trigger validation for all fields
+        // Mark all fields as touched to force validation
         form.trigger();
 
-        // For configuration, check asset type specific required fields
+        // Get form values and check specific required fields for configuration
         const formValues = form.getValues();
         let requiredFieldsValid = false;
 
-        // Check if any fields have errors
-        const hasErrors = Object.keys(errors).length > 0;
+        // Get errors from form state explicitly (like in the details step)
+        const formErrors = form.formState.errors;
+        const hasErrors = Object.keys(formErrors).length > 0;
 
-        // Asset-specific validation for configuration
+        // Check asset-specific required fields
         switch (selectedAssetType) {
           case "bond":
-            // Bond specific fields like maturity, coupon rate
-            const hasFaceValue =
-              typeof (formValues as any).faceValue?.amount === "number" &&
-              (formValues as any).faceValue.amount > 0;
+            // Check if required fields are filled
+            const hasCap = !!(formValues as any).cap;
+            const hasFaceValue = !!(formValues as any).faceValue;
             const hasMaturityDate = !!(formValues as any).maturityDate;
-            const hasCouponRate =
-              typeof (formValues as any).couponRateBps === "number";
+            const hasUnderlyingAsset = !!(formValues as any).underlyingAsset;
+
             requiredFieldsValid =
-              hasFaceValue && hasMaturityDate && hasCouponRate;
+              hasCap && hasFaceValue && hasMaturityDate && hasUnderlyingAsset;
             break;
 
           case "cryptocurrency":
-            // Cryptocurrency specific fields like max supply
-            const hasMaxSupply =
-              typeof (formValues as any).maxSupply === "number" &&
-              (formValues as any).maxSupply > 0;
-            requiredFieldsValid = hasMaxSupply;
+            requiredFieldsValid = !!(formValues as any).maxSupply;
             break;
 
           case "equity":
-            // Equity specific fields
-            const hasSharesOutstanding =
-              typeof (formValues as any).sharesOutstanding === "number" &&
-              (formValues as any).sharesOutstanding > 0;
-            requiredFieldsValid = hasSharesOutstanding;
+            requiredFieldsValid = !!(formValues as any).sharesOutstanding;
             break;
 
           case "fund":
-            // Fund specific fields
-            const hasManagementFee =
-              typeof (formValues as any).managementFeeBps === "number";
-            requiredFieldsValid = hasManagementFee;
+            requiredFieldsValid = !!(formValues as any).managementFeeBps;
             break;
 
           case "stablecoin":
-            // Stablecoin specific fields like collateral type
-            const hasCollateralType = !!(formValues as any).collateralType;
-            requiredFieldsValid = hasCollateralType;
+            requiredFieldsValid = !!(formValues as any).collateralType;
             break;
 
           case "deposit":
-            // Deposit specific fields
-            const hasDepositType = !!(formValues as any).depositType;
-            requiredFieldsValid = hasDepositType;
+            requiredFieldsValid = !!(formValues as any).depositType;
             break;
 
           default:
             requiredFieldsValid = true;
         }
 
-        // Form is valid only if all required configuration fields are valid and there are no errors
-        setIsConfigurationValid(requiredFieldsValid && !hasErrors);
+        // Debug log to help identify issues
+        console.log("Step 3 validation:", {
+          requiredFieldsValid,
+          hasErrors,
+          formErrors,
+          formValues,
+        });
+
+        // Form is valid if required fields are filled and there are no errors
+        const isValid = requiredFieldsValid && !hasErrors;
+        setIsConfigurationValid(isValid);
+      }
+
+      if (currentStep === "permissions") {
+        // Since permissions are optional in this step (they will be configurable later),
+        // we'll just validate that the user has made any selections
+        // and there are no form validation errors
+
+        // For the permissions step, we'll validate that at least the current user is assigned as admin
+        const formValues = form.getValues();
+        const assetAdmins = formValues.assetAdmins || [];
+
+        // Always consider permissions valid since the current user is added by default
+        setIsPermissionsValid(true);
       }
     };
 
@@ -432,6 +457,269 @@ export function AssetDesignerDialog({
     }
   };
 
+  // Render the permissions component for the asset
+  const renderPermissionsComponent = () => {
+    const form = getFormForAssetType();
+
+    return (
+      <FormProvider {...form}>
+        <AssetAdmins />
+      </FormProvider>
+    );
+  };
+
+  // Define the regulations available for each region
+  const regionRegulations = {
+    EU: [
+      {
+        id: "mica",
+        name: "MiCA (Markets in Crypto-assets)",
+        description: "EU regulatory framework for crypto-assets",
+      },
+    ],
+    US: [
+      {
+        id: "sec",
+        name: "SEC Compliance",
+        description: "Securities and Exchange Commission requirements",
+      },
+    ],
+    UK: [
+      {
+        id: "fca",
+        name: "FCA Guidance",
+        description: "Financial Conduct Authority regulatory framework",
+      },
+    ],
+    SG: [
+      {
+        id: "mas-psa",
+        name: "MAS PSA",
+        description: "Monetary Authority of Singapore Payment Services Act",
+      },
+      {
+        id: "fsra-sg",
+        name: "FSRA",
+        description: "Financial Services Regulatory Authority",
+      },
+    ],
+    JP: [
+      {
+        id: "fsra-jp",
+        name: "FSRA",
+        description: "Financial Services Regulatory Authority",
+      },
+    ],
+    CH: [
+      {
+        id: "finma",
+        name: "FINMA Regulation",
+        description: "Swiss Financial Market Supervisory Authority",
+      },
+    ],
+  };
+
+  // Render the regulation component for the asset
+  const renderRegulationComponent = () => {
+    const form = getFormForAssetType();
+
+    // Get all available regulations based on selected regions
+    const availableRegulations =
+      selectedRegions.length === 0
+        ? Object.values(regionRegulations).flat()
+        : selectedRegions.flatMap(
+            (region) =>
+              regionRegulations[region as keyof typeof regionRegulations] || []
+          );
+
+    // Handle region selection toggle
+    const toggleRegion = (region: string) => {
+      setSelectedRegions((prev) =>
+        prev.includes(region)
+          ? prev.filter((r) => r !== region)
+          : [...prev, region]
+      );
+    };
+
+    // Handle regulation checkbox toggle
+    const toggleRegulation = (regulationId: string, checked: boolean) => {
+      const currentRegulations = form.getValues().selectedRegulations || [];
+
+      if (checked) {
+        // Add the regulation if it's not already selected
+        if (!currentRegulations.includes(regulationId)) {
+          form.setValue(
+            "selectedRegulations",
+            [...currentRegulations, regulationId],
+            {
+              shouldValidate: true,
+              shouldDirty: true,
+            }
+          );
+        }
+      } else {
+        // Remove the regulation
+        form.setValue(
+          "selectedRegulations",
+          currentRegulations.filter((id) => id !== regulationId),
+          {
+            shouldValidate: true,
+            shouldDirty: true,
+          }
+        );
+      }
+    };
+
+    // Get currently selected regulations from form
+    const selectedRegulations = form.getValues().selectedRegulations || [];
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-semibold">Regulation</h3>
+          <p className="text-sm text-muted-foreground">
+            Select regions and configure the regulations your asset needs to
+            adhere to.
+          </p>
+        </div>
+
+        {/* Region selection */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium">Select Regions</h4>
+          <p className="text-xs text-muted-foreground">
+            Choose the regions where your asset will operate to see applicable
+            regulations.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {Object.keys(regionRegulations).map((region) => (
+              <button
+                key={region}
+                type="button"
+                onClick={() => toggleRegion(region)}
+                className={`flex flex-col items-center justify-center p-3 rounded-md border ${
+                  selectedRegions.includes(region)
+                    ? "border-primary bg-primary/10"
+                    : "border-border hover:border-primary/50"
+                }`}
+              >
+                <span className="font-medium">{region}</span>
+                <span className="text-xs text-muted-foreground">
+                  {region === "EU" && "European Union"}
+                  {region === "US" && "United States"}
+                  {region === "UK" && "United Kingdom"}
+                  {region === "SG" && "Singapore"}
+                  {region === "JP" && "Japan"}
+                  {region === "CH" && "Switzerland"}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Available regulations */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium">Available Regulations</h4>
+          <p className="text-xs text-muted-foreground">
+            Select regulations based on your operating regions. If multiple are
+            selected, all regulations from all selected regions will be
+            displayed.
+          </p>
+          <div className="space-y-3">
+            {availableRegulations.map((regulation) => (
+              <div
+                key={regulation.id}
+                className="border rounded-md p-4 space-y-3"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center pt-1 h-5">
+                    <input
+                      type="checkbox"
+                      id={regulation.id}
+                      checked={selectedRegulations.includes(regulation.id)}
+                      onChange={(e) =>
+                        toggleRegulation(regulation.id, e.target.checked)
+                      }
+                      className="rounded border-gray-300 text-primary focus:ring-primary"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor={regulation.id}
+                      className="font-medium cursor-pointer"
+                    >
+                      {regulation.name}
+                    </label>
+                    <p className="text-sm text-muted-foreground">
+                      {regulation.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Key Requirements section - only show if regulation is checked */}
+                {selectedRegulations.includes(regulation.id) && (
+                  <div className="pl-8 space-y-2">
+                    <h5 className="text-sm font-medium">Key Requirements</h5>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <div className="h-5 w-5 rounded-full border flex items-center justify-center text-xs text-gray-500">
+                            ✓
+                          </div>
+                          <span className="text-sm">
+                            Asset disclosure requirements
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="h-5 w-5 rounded-full border flex items-center justify-center text-xs text-gray-500">
+                            ✓
+                          </div>
+                          <span className="text-sm">Reserve requirements</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="h-5 w-5 rounded-full border flex items-center justify-center text-xs text-gray-500">
+                            ✓
+                          </div>
+                          <span className="text-sm">Anti-fraud provisions</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <div className="h-5 w-5 rounded-full border flex items-center justify-center text-xs text-gray-500">
+                            ✓
+                          </div>
+                          <span className="text-sm">
+                            AML & market protection
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="h-5 w-5 rounded-full border flex items-center justify-center text-xs text-gray-500">
+                            ✓
+                          </div>
+                          <span className="text-sm">
+                            Transparency requirements
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="h-5 w-5 rounded-full border flex items-center justify-center text-xs text-gray-500">
+                            ✓
+                          </div>
+                          <span className="text-sm">Consumer protection</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      * Required by regulation
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-screen h-screen w-screen p-0 overflow-hidden rounded-none border-none right-0 !max-w-screen">
@@ -619,9 +907,7 @@ export function AssetDesignerDialog({
               )}
               {currentStep === "permissions" && (
                 <div className="p-6">
-                  {/* This will be replaced with the actual permissions form for the selected asset type */}
-                  <p className="text-lg font-semibold">Asset permissions</p>
-                  <p>Define who can manage and use this asset.</p>
+                  {renderPermissionsComponent()}
 
                   {/* Navigation buttons */}
                   <div className="mt-8 flex justify-end space-x-4">
@@ -631,10 +917,7 @@ export function AssetDesignerDialog({
                     >
                       Back
                     </Button>
-                    <Button
-                      onClick={() => setCurrentStep("regulation")}
-                      // Will be disabled until permissions step is implemented
-                    >
+                    <Button onClick={() => setCurrentStep("regulation")}>
                       Continue
                     </Button>
                   </div>
@@ -642,9 +925,7 @@ export function AssetDesignerDialog({
               )}
               {currentStep === "regulation" && (
                 <div className="p-6">
-                  {/* This will be replaced with the actual regulation form for the selected asset type */}
-                  <p className="text-lg font-semibold">Regulation</p>
-                  <p>Configure regulatory requirements for your asset.</p>
+                  {renderRegulationComponent()}
 
                   {/* Navigation buttons */}
                   <div className="mt-8 flex justify-end space-x-4">
