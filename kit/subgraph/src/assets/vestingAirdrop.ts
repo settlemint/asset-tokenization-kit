@@ -194,12 +194,20 @@ export function handleTokensWithdrawn(event: TokensWithdrawn): void {
     return;
   }
 
+  // Get token details
+  let tokenAddress = Address.fromBytes(airdrop.token);
+  let amount = event.params.amount;
+  let decimals = getTokenDecimals(tokenAddress);
+  let amountBD = toDecimals(amount, decimals);
+
   log.info(
-    "TokensWithdrawn event processed (Vesting): Airdrop {}, To {}, Amount {}",
+    "TokensWithdrawn event processed (Vesting): Airdrop {}, To {}, Amount {} ({} with {} decimals)",
     [
       airdropAddress.toHex(),
       event.params.to.toHex(),
-      event.params.amount.toString(),
+      amount.toString(),
+      amountBD.toString(),
+      decimals.toString(),
     ]
   );
 
@@ -242,7 +250,8 @@ export function handleVestingInitialized(event: VestingInitialized): void {
     userVestingData.claimedAmountTrackedByStrategy = BigDecimal.zero();
   }
 
-  let decimals = 18;
+  // Get the token decimals from the airdrop's token
+  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
 
   userVestingData.totalAmountAggregatedExact =
     userVestingData.totalAmountAggregatedExact.plus(totalAmount);
