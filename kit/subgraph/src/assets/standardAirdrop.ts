@@ -10,11 +10,11 @@ import {
   BatchClaimed,
   Claimed,
   TokensWithdrawn,
-} from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
+} from "../generated/templates/StandardAirdropTemplate/StandardAirdrop";
 
 // Use fetchAccount and direct constants
-import { fetchAccount } from "../../fetch/account";
-import { toDecimals } from "../../utils/decimals";
+import { fetchAccount } from "../fetch/account";
+import { toDecimals } from "../utils/decimals";
 
 // Handler for individual Claimed events
 export function handleClaimed(event: Claimed): void {
