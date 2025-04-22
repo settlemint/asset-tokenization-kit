@@ -7,6 +7,7 @@ import {
 } from "@graphprotocol/graph-ts";
 import {
   AirdropClaim,
+  AirdropClaimIndex,
   AirdropRecipient,
   //Asset,
   LinearVestingStrategy,
