@@ -10,7 +10,7 @@ import {
   BatchClaimed,
   Claimed,
   TokensWithdrawn,
-} from "../generated/templates/StandardAirdropTemplate/StandardAirdrop";
+} from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
 
 // Use fetchAccount and direct constants
 import { fetchAccount } from "../fetch/account";
