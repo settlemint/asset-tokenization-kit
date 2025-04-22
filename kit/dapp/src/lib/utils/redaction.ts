@@ -12,7 +12,7 @@ export function redactSensitiveFields(obj: unknown): unknown {
 
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => {
-      if (key === "pincode") {
+      if (sensitiveFields.includes(key)) {
         return [key, "******"];
       }
       if (typeof value === "object" && value !== null) {
@@ -22,3 +22,5 @@ export function redactSensitiveFields(obj: unknown): unknown {
     })
   );
 }
+
+const sensitiveFields = ["pincode", "verificationCode", "secretCodes"];
