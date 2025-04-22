@@ -190,55 +190,55 @@ export function Columns() {
       enableColumnFilter: false,
     }),
     session?.user.role === "admin" &&
-    columnHelper.display({
-      id: "actions",
-      header: () => "",
-      cell: ({ row }) => (
-        <DataTableRowActions
-          detailUrl={`/platform/users/${row.original.id}`}
-          actions={[
-            {
-              id: "ban-user",
-              label: row.original.banned ? "Unban User" : "Ban User",
-              component: ({ open, onOpenChange }) => (
-                <BanUserAction
-                  user={row.original}
-                  open={open}
-                  onOpenChange={onOpenChange}
-                />
-              ),
-            },
-            {
-              id: "change-role",
-              label: "Change Role",
-              component: ({ open, onOpenChange }) => (
-                <ChangeRoleAction
-                  user={row.original}
-                  open={open}
-                  onOpenChange={onOpenChange}
-                />
-              ),
-            },
-            {
-              id: "update-kyc-status",
-              label: "Update KYC Status",
-              component: ({ open, onOpenChange }) => (
-                <UpdateKycStatusAction
-                  user={row.original}
-                  open={open}
-                  onOpenChange={onOpenChange}
-                />
-              ),
-            },
-          ]}
-        />
-      ),
-      meta: {
-        displayName: "Actions",
-        icon: MoreHorizontal,
-        type: "text",
-        enableCsvExport: false,
-      } as ColumnMeta<User, unknown>,
-    }),
+      columnHelper.display({
+        id: "actions",
+        header: () => "",
+        cell: ({ row }) => (
+          <DataTableRowActions
+            detailUrl={`/platform/users/${row.original.id}`}
+            actions={[
+              {
+                id: "ban-user",
+                label: row.original.banned ? "Unban User" : "Ban User",
+                component: ({ open, onOpenChange }) => (
+                  <BanUserAction
+                    user={row.original}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+              {
+                id: "change-role",
+                label: "Change Role",
+                component: ({ open, onOpenChange }) => (
+                  <ChangeRoleAction
+                    user={row.original}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+              {
+                id: "update-kyc-status",
+                label: "Update KYC Status",
+                component: ({ open, onOpenChange }) => (
+                  <UpdateKycStatusAction
+                    user={row.original}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+            ]}
+          />
+        ),
+        meta: {
+          displayName: "Actions",
+          icon: MoreHorizontal,
+          type: "text",
+          enableCsvExport: false,
+        } as ColumnMeta<User, unknown>,
+      }),
   ].filter((column) => !!column);
 }
