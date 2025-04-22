@@ -166,59 +166,38 @@ export async function ensureBucketExists(
 }
 
 /**
- * Uploads a file to MinIO
- * @param fileBuffer Buffer containing file data
- * @param objectName Name to save the object as in MinIO
- * @param contentType MIME type of the file
- * @param metadata Additional metadata to store with the file
- * @param bucketName Name of the bucket to upload to
- * @returns Object with the etag, bucket name, and URL
+ * Uploads a file to a bucket. If the bucket does not exist, it will be created.
+ *
+ * @param bucketName The name of the bucket
+ * @param objectName The name of the object
+ * @param file The file to upload
+ * @param metadata Optional metadata for the file
+ * @returns The ETag of the uploaded file
  */
 export async function uploadFile(
-  fileBuffer: Buffer,
+  bucketName: string,
   objectName: string,
-  contentType: string,
-  metadata: Record<string, string> = {},
-  bucketName: string = DEFAULT_BUCKET
-) {
+  file: File | Blob | ArrayBuffer | Buffer,
+  metadata?: Record<string, string>
+): Promise<string> {
   try {
-    // Ensure bucket exists
-    const bucketExists = await ensureBucketExists(bucketName);
-    if (!bucketExists) {
-      throw new Error(
-        `Bucket ${bucketName} does not exist and could not be created`
-      );
-    }
+    await ensureBucketExists(bucketName);
 
-    const client = await createMinioClient();
-
-    // Upload the file
-    const etag = await client.putObject(
+    const uploadOperation = createUploadOperation(
       bucketName,
       objectName,
-      fileBuffer,
-      fileBuffer.length,
-      {
-        "Content-Type": contentType,
-        ...metadata,
-      }
+      file,
+      metadata
     );
 
-    // Generate a URL for the file
-    const url = await generatePresignedUrl(
-      bucketName,
-      objectName,
-      7 * 24 * 60 * 60
-    ); // 7 days
-
-    return {
-      etag,
-      bucketName,
-      url,
-    };
+    const result = await uploadOperation.execute();
+    return result.etag;
   } catch (error) {
-    console.error("Error uploading file to MinIO:", error);
-    throw new Error("Failed to upload file to MinIO");
+    console.error(
+      `Failed to upload file ${objectName} to bucket ${bucketName}:`,
+      error
+    );
+    throw error;
   }
 }
 
@@ -330,55 +309,29 @@ export function createUploadOperation(
           fileData = file; // Already a Buffer
         }
 
-        // Use fPutObject for files (Original working approach for storage-demo)
-        // Save the buffer to a temporary file and use fPutObject
-        const tempFilePath = `/tmp/${objectName.replace(/\//g, "_")}`;
-        console.log(`Writing buffer to temporary file: ${tempFilePath}`);
-
-        // Use async write instead of sync
-        await fsPromises.writeFile(tempFilePath, fileData);
-
-        console.log(
-          `Attempting fPutObject from temp file: ${bucketName}/${objectName}`
-        );
-        const result = await minioClient.fPutObject(
+        // Use putObject directly with buffer data
+        console.log(`Uploading object directly: ${bucketName}/${objectName}`);
+        const result = await minioClient.putObject(
           bucketName,
           objectName,
-          tempFilePath,
-          metadata // Pass metadata again, as fPutObject might handle it differently
+          fileData,
+          fileData.length,
+          metadata
         );
+
+        // Cast the result to UploadedObjectInfo type
+        const uploadResult = result as UploadedObjectInfo;
+
         console.log(
-          `fPutObject successful for ${objectName}, ETag: ${result.etag}`
+          `Upload successful for ${objectName}, ETag: ${uploadResult.etag}`
         );
 
-        // Clean up the temporary file using async method
-        try {
-          await fsPromises.unlink(tempFilePath);
-          console.log(`Cleaned up temporary file: ${tempFilePath}`);
-        } catch (unlinkError) {
-          logger.warn(
-            `Failed to clean up temporary file ${tempFilePath}:`,
-            unlinkError
-          );
-        }
-
-        return { etag: result.etag || "unknown-etag" };
+        return { etag: uploadResult.etag };
       } catch (error) {
         logger.error(
-          `Failed to upload object ${objectName} to bucket ${bucketName} using fPutObject:`,
+          `Failed to upload object ${objectName} to bucket ${bucketName}:`,
           error
         );
-        // Attempt to clean up temp file even on error, using async check and delete
-        const tempFilePath = `/tmp/${objectName.replace(/\//g, "_")}`;
-        try {
-          // Use async access instead of existsSync
-          await fsPromises.access(tempFilePath);
-          // File exists, clean it up asynchronously
-          await fsPromises.unlink(tempFilePath);
-          logger.info(`Cleaned up temporary file after error: ${tempFilePath}`);
-        } catch (unlinkError) {
-          // File doesn't exist or couldn't be accessed, no need to log
-        }
         throw error;
       }
     },

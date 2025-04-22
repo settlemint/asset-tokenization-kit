@@ -9,7 +9,7 @@ import {
   createStatObjectOperation,
   createUploadOperation,
   executeMinioOperation,
-  minioClient,
+  getMinioClient,
 } from "@/lib/storage/minio-client";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
@@ -154,7 +154,7 @@ export const uploadFile = withTracing(
         "upload-time": new Date().toISOString(),
       };
 
-      // Upload the file
+      // Upload the file directly passing the File object
       const uploadOperation = createUploadOperation(
         DEFAULT_BUCKET,
         objectName,
@@ -180,9 +180,6 @@ export const uploadFile = withTracing(
         etag: result.etag,
         url,
       };
-
-      // Don't use cacheTag here as it's not in a "use cache" function
-      // Instead, we'll handle cache invalidation differently
 
       return safeParse(FileMetadataSchema, fileMetadata);
     } catch (error) {
@@ -279,8 +276,10 @@ export const uploadPdfFile = withTracing(
       // Upload the file with simplified approach
       console.log(`Uploading PDF file ${fileName} using simplified approach`);
 
-      // Get the upload function from createSimpleUploadOperation with minioClient
-      const simpleUploadFn = createSimpleUploadOperation(minioClient);
+      // Get the upload function from createSimpleUploadOperation with getMinioClient
+      const simpleUploadFn = createSimpleUploadOperation(
+        await getMinioClient()
+      );
 
       // Use the function directly with our parameters
       const result = await simpleUploadFn(

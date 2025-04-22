@@ -1,6 +1,10 @@
 "use server";
 
-import { uploadFile } from "@/lib/storage/minio-client";
+import {
+  createPresignedUrlOperation,
+  executeMinioOperation,
+  uploadFile,
+} from "@/lib/storage/minio-client";
 import { randomUUID } from "crypto";
 
 export interface FileMetadata {
@@ -44,19 +48,23 @@ export async function uploadToStorage(
   try {
     // Use MinIO client to upload the file
     const bucketName = process.env.MINIO_DEFAULT_BUCKET || "asset-tokenization";
-    const result = await uploadFile(
-      buffer,
-      objectName,
-      contentType,
-      {
-        "Content-Type": contentType,
-        "Original-Filename": fileName,
-        "Upload-Path": path,
-      },
-      bucketName
-    );
+
+    // Call uploadFile with the correct parameter order: bucketName, objectName, buffer, metadata
+    const etag = await uploadFile(bucketName, objectName, buffer, {
+      "Content-Type": contentType,
+      "Original-Filename": fileName,
+      "Upload-Path": path,
+    });
 
     console.log(`File uploaded successfully: ${objectName}`);
+
+    // Generate a presigned URL for the uploaded file
+    const presignedUrlOperation = createPresignedUrlOperation(
+      bucketName,
+      objectName,
+      3600
+    );
+    const url = await executeMinioOperation(presignedUrlOperation);
 
     // Return metadata about the uploaded file
     return {
@@ -65,8 +73,8 @@ export async function uploadToStorage(
       contentType,
       size: file.size,
       uploadedAt: new Date(),
-      etag: typeof result.etag === "string" ? result.etag : id,
-      url: result.url || `/api/files/${id}`,
+      etag,
+      url,
       objectName,
       bucket: bucketName,
     };
