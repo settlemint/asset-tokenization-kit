@@ -6,8 +6,7 @@
 global:
   labels:
     kots.io/app-slug: settlemint-atk
-    app.kubernetes.io/managed-by: helm
-    app.kubernetes.io/part-of: settlemint-atk
+
 
 imagePullCredentials:
   registries:
@@ -176,10 +175,14 @@ blockscout:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "4000"
+      prometheus.io/path: "/metrics"
     blockscout:
       image:
         repository: ghcr.io/blockscout/blockscout
-        tag: "8.0.0"
+        tag: "8.0.1"
       # Add an extra init container to wait for PostgreSQL
       init:
         enabled: true
@@ -197,10 +200,15 @@ blockscout:
             bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
       ingress:
         hostname: explorer.k8s.orb.local
-      resources: {}
       env:
         API_URL: https://explorer.k8s.orb.local
         WEBAPP_URL: https://explorer.k8s.orb.local
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 1024Mi
     frontend:
       image:
         repository: ghcr.io/blockscout/frontend
@@ -218,35 +226,35 @@ thegraph:
         - name: image-pull-secret-docker
         - name: image-pull-secret-ghcr
         - name: image-pull-secret-harbor
-      podMetadata:
-        labels:
-          app.kubernetes.io/part-of: thegraph
-          environment: development
     graphNodeGroups:
       query:
         enabled: false
         replicaCount: 1
-        podMetadata:
-          labels:
-            role: query-node
-            custom-label: custom-value
+        podAnnotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "8040"
+          prometheus.io/path: "/metrics"
       index:
         enabled: false
         replicaCount: 1
-        podMetadata:
-          labels:
-            role: index-node
-            custom-label: custom-value
+        podAnnotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "8040"
+          prometheus.io/path: "/metrics"
       block-ingestor:
         enabled: false
         replicaCount: 1
-        podMetadata:
-          labels:
-            role: block-ingestor
-            custom-label: custom-value
+        podAnnotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "8040"
+          prometheus.io/path: "/metrics"
       combined:
         enabled: true
         replicaCount: 1
+        podAnnotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "8040"
+          prometheus.io/path: "/metrics"
         includeInIndexPools:
           - default
         env:
@@ -276,6 +284,9 @@ thegraph:
               pathType: ImplementationSpecific
               port: 8050
               serviceName: graph-node-combined
+    grafana:
+      # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
+      dashboards: false
   job:
     enabled: true
     fullnameOverride: graph
@@ -297,6 +308,10 @@ hasura:
         - name: image-pull-secret-harbor
     ingress:
       hostName: "hasura.k8s.orb.local"
+    labels:
+      app.kubernetes.io/instance: atk
+      kots.io/app-slug: settlemint-atk
+      app.kubernetes.io/component: hasura
 
 portal:
   enabled: true
@@ -442,12 +457,6 @@ observability:
     adminUser: settlemint
     adminPassword: atk
   tempo:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-  promtail:
     global:
       imagePullSecrets:
         - name: image-pull-secret-docker
