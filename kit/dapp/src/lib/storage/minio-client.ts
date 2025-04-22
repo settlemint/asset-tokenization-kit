@@ -1,12 +1,92 @@
-import { client } from "@/lib/settlemint/minio";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import fs from "fs";
+import { Client } from "minio";
 import "server-only";
 import { Readable } from "stream";
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
 });
+
+// Default values
+const DEFAULT_REGION = "us-east-1";
+const DEFAULT_PORT = 443;
+const DEFAULT_USE_SSL = true;
+const DEFAULT_BUCKET = "assets";
+
+// Simple in-memory cache for the MinIO client
+let cachedClient: Client | null = null;
+let cacheExpiry: number = 0;
+const CACHE_DURATION_MS = 3600 * 1000; // 1 hour in milliseconds
+
+/**
+ * Parses the MinIO endpoint URL from the environment variable
+ * @returns The parsed endpoint details
+ */
+function parseEndpoint() {
+  const endpoint = process.env.SETTLEMINT_MINIO_ENDPOINT || "";
+  const endpointUrlMatch = endpoint.match(/^s3:\/\/(.+?)(\/.*)?$/);
+
+  if (!endpointUrlMatch) {
+    throw new Error(
+      "Invalid MinIO endpoint format. Expected format: s3://host[:port][/path]"
+    );
+  }
+
+  const hostWithPort = endpointUrlMatch[1];
+  const [host, portStr] = hostWithPort.split(":");
+  const port = portStr ? parseInt(portStr, 10) : DEFAULT_PORT;
+
+  return { host, port };
+}
+
+/**
+ * Creates a MinIO client instance using environment variables
+ * @returns A configured MinIO client
+ */
+export async function createMinioClient(): Promise<Client> {
+  try {
+    // Check if we have a valid cached client instance
+    const now = Date.now();
+    if (cachedClient && now < cacheExpiry) {
+      return cachedClient;
+    }
+
+    // Parse the endpoint
+    const { host, port } = parseEndpoint();
+
+    // Get credentials from environment variables
+    const accessKey = process.env.SETTLEMINT_MINIO_ACCESS_KEY || "";
+    const secretKey = process.env.SETTLEMINT_MINIO_SECRET_KEY || "";
+
+    if (!accessKey || !secretKey) {
+      throw new Error("MinIO credentials not found in environment variables");
+    }
+
+    // Create the client
+    const client = new Client({
+      endPoint: host,
+      port,
+      useSSL: DEFAULT_USE_SSL,
+      accessKey,
+      secretKey,
+      region: DEFAULT_REGION,
+    });
+
+    // Cache the client instance
+    cachedClient = client;
+    cacheExpiry = now + CACHE_DURATION_MS;
+
+    return client;
+  } catch (error) {
+    console.error("Error creating MinIO client:", error);
+    throw new Error("Failed to create MinIO client");
+  }
+}
+
+// Default bucket name for application files
+export const DEFAULT_BUCKET_APP =
+  process.env.MINIO_DEFAULT_BUCKET || "asset-tokenization";
 
 // Types for Minio operations
 export type UploadedObjectInfo = {
@@ -26,7 +106,7 @@ export type SimpleUploadOperation = (
 /**
  * Extended client type with additional methods
  */
-type ExtendedMinioClient = typeof client & {
+export type ExtendedMinioClient = Client & {
   presignedPutObject(
     bucketName: string,
     objectName: string,
@@ -41,8 +121,13 @@ type ExtendedMinioClient = typeof client & {
   ): Promise<{ etag: string }>;
 };
 
-// Cast the client to include additional methods
-export const minioClient = client as ExtendedMinioClient;
+/**
+ * Get a cached instance of the MinIO client
+ */
+export async function getMinioClient(): Promise<ExtendedMinioClient> {
+  const client = await createMinioClient();
+  return client as ExtendedMinioClient;
+}
 
 /**
  * Operation type for Minio operations
@@ -52,6 +137,167 @@ export type MinioOperation<T = unknown> = {
   execute: () => Promise<T>;
   bucketName?: string;
 };
+
+/**
+ * Ensures that the specified bucket exists, creating it if necessary
+ * @param bucketName Name of the bucket to ensure exists
+ * @returns True if the bucket exists or was created
+ */
+export async function ensureBucketExists(
+  bucketName: string = DEFAULT_BUCKET
+): Promise<boolean> {
+  try {
+    const client = await createMinioClient();
+    const exists = await client.bucketExists(bucketName);
+
+    if (!exists) {
+      await client.makeBucket(bucketName, DEFAULT_REGION);
+      console.log(`Created bucket: ${bucketName}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error(`Error ensuring bucket exists: ${bucketName}`, error);
+    return false;
+  }
+}
+
+/**
+ * Uploads a file to MinIO
+ * @param fileBuffer Buffer containing file data
+ * @param objectName Name to save the object as in MinIO
+ * @param contentType MIME type of the file
+ * @param metadata Additional metadata to store with the file
+ * @param bucketName Name of the bucket to upload to
+ * @returns Object with the etag, bucket name, and URL
+ */
+export async function uploadFile(
+  fileBuffer: Buffer,
+  objectName: string,
+  contentType: string,
+  metadata: Record<string, string> = {},
+  bucketName: string = DEFAULT_BUCKET
+) {
+  try {
+    // Ensure bucket exists
+    const bucketExists = await ensureBucketExists(bucketName);
+    if (!bucketExists) {
+      throw new Error(
+        `Bucket ${bucketName} does not exist and could not be created`
+      );
+    }
+
+    const client = await createMinioClient();
+
+    // Upload the file
+    const etag = await client.putObject(
+      bucketName,
+      objectName,
+      fileBuffer,
+      fileBuffer.length,
+      {
+        "Content-Type": contentType,
+        ...metadata,
+      }
+    );
+
+    // Generate a URL for the file
+    const url = await generatePresignedUrl(
+      bucketName,
+      objectName,
+      7 * 24 * 60 * 60
+    ); // 7 days
+
+    return {
+      etag,
+      bucketName,
+      url,
+    };
+  } catch (error) {
+    console.error("Error uploading file to MinIO:", error);
+    throw new Error("Failed to upload file to MinIO");
+  }
+}
+
+/**
+ * Generates a presigned URL for object access
+ * @param bucketName Name of the bucket containing the object
+ * @param objectName Name of the object to generate URL for
+ * @param expirySeconds Number of seconds until the URL expires
+ * @returns The presigned URL
+ */
+export async function generatePresignedUrl(
+  bucketName: string = DEFAULT_BUCKET,
+  objectName: string,
+  expirySeconds: number = 3600
+): Promise<string> {
+  try {
+    const client = await createMinioClient();
+    return await client.presignedGetObject(
+      bucketName,
+      objectName,
+      expirySeconds
+    );
+  } catch (error) {
+    console.error("Error generating presigned URL:", error);
+    throw new Error("Failed to generate presigned URL");
+  }
+}
+
+/**
+ * Lists objects in a bucket with a given prefix
+ * @param prefix Prefix to filter objects by
+ * @param bucketName Name of the bucket to list objects from
+ * @returns Array of object information
+ */
+export async function listObjects(
+  prefix: string = "",
+  bucketName: string = DEFAULT_BUCKET
+) {
+  try {
+    const client = await createMinioClient();
+    const objectsStream = client.listObjects(bucketName, prefix, true);
+
+    return new Promise((resolve, reject) => {
+      const objects: any[] = [];
+
+      objectsStream.on("data", (obj) => {
+        objects.push(obj);
+      });
+
+      objectsStream.on("error", (err) => {
+        reject(err);
+      });
+
+      objectsStream.on("end", () => {
+        resolve(objects);
+      });
+    });
+  } catch (error) {
+    console.error("Error listing objects:", error);
+    throw new Error("Failed to list objects from MinIO");
+  }
+}
+
+/**
+ * Deletes an object from a bucket
+ * @param objectName Name of the object to delete
+ * @param bucketName Name of the bucket containing the object
+ * @returns True if deletion was successful
+ */
+export async function deleteObject(
+  objectName: string,
+  bucketName: string = DEFAULT_BUCKET
+): Promise<boolean> {
+  try {
+    const client = await createMinioClient();
+    await client.removeObject(bucketName, objectName);
+    return true;
+  } catch (error) {
+    console.error("Error deleting object:", error);
+    return false;
+  }
+}
 
 /**
  * Creates a typed Minio operation for uploading a file to a bucket
@@ -67,6 +313,8 @@ export function createUploadOperation(
     bucketName,
     execute: async () => {
       try {
+        const minioClient = await getMinioClient();
+
         // Convert File/Blob to Buffer if needed
         let fileData: Buffer;
 
@@ -196,6 +444,7 @@ export function createDownloadOperation(
     bucketName,
     execute: async () => {
       try {
+        const minioClient = await getMinioClient();
         const stream = await minioClient.getObject(bucketName, objectName);
         // Convert stream to Blob
         return streamToBlob(stream);
@@ -237,6 +486,7 @@ export function createListObjectsOperation(
     bucketName,
     execute: async () => {
       try {
+        const minioClient = await getMinioClient();
         const stream = await minioClient.listObjects(
           bucketName,
           prefix,
@@ -298,6 +548,7 @@ export function createDeleteOperation(
     bucketName,
     execute: async () => {
       try {
+        const minioClient = await getMinioClient();
         return await minioClient.removeObject(bucketName, objectName);
       } catch (error) {
         logger.error(
@@ -323,6 +574,7 @@ export function createPresignedUrlOperation(
     bucketName,
     execute: async () => {
       try {
+        const minioClient = await getMinioClient();
         return await minioClient.presignedGetObject(
           bucketName,
           objectName,
@@ -353,6 +605,7 @@ export function createPresignedPutOperation(
     bucketName,
     execute: async () => {
       try {
+        const minioClient = await getMinioClient();
         return await minioClient.presignedPutObject(
           bucketName,
           objectName,
@@ -387,6 +640,7 @@ export function createStatObjectOperation(
     bucketName,
     execute: async () => {
       try {
+        const minioClient = await getMinioClient();
         return await minioClient.statObject(bucketName, objectName);
       } catch (error) {
         logger.error(
@@ -397,49 +651,6 @@ export function createStatObjectOperation(
       }
     },
   };
-}
-
-/**
- * Ensures a bucket exists, creating it if necessary
- *
- * @param bucketName - The name of the bucket to check/create
- * @returns Promise resolving to true if bucket exists or was created
- */
-export async function ensureBucketExists(bucketName: string): Promise<boolean> {
-  try {
-    console.log(`Checking if bucket '${bucketName}' exists...`);
-    const exists = await minioClient.bucketExists(bucketName);
-    if (!exists) {
-      console.log(
-        `Bucket '${bucketName}' does not exist. Attempting to create...`
-      );
-      try {
-        await minioClient.makeBucket(bucketName);
-        console.log(`Successfully created bucket: '${bucketName}'`);
-      } catch (creationError) {
-        console.error(
-          `Failed to create bucket '${bucketName}':`,
-          creationError
-        );
-        // Re-throw the creation error to ensure the operation fails
-        throw creationError;
-      }
-    } else {
-      console.log(`Bucket '${bucketName}' already exists.`);
-    }
-    return true;
-  } catch (error) {
-    // Log the error but don't re-throw if it's just checking/creation
-    // The actual operation (like putObject) will handle the failure if the bucket is truly inaccessible
-    console.error(
-      `Error during ensureBucketExists for '${bucketName}':`,
-      error
-    );
-    // We will let the subsequent operation fail if the bucket is not usable
-    // Re-throwing here might mask the actual upload error cause
-    // For now, let's return false to indicate potential issue
-    return false;
-  }
 }
 
 /**
@@ -455,13 +666,7 @@ export async function executeMinioOperation<T>(
       console.log(
         `Ensuring bucket '${operation.bucketName}' exists before operation.`
       );
-      const bucketOk = await ensureBucketExists(operation.bucketName);
-      if (!bucketOk) {
-        // If ensureBucketExists indicated an issue (returned false or threw), don't proceed
-        throw new Error(
-          `Failed to ensure bucket '${operation.bucketName}' is ready for operation.`
-        );
-      }
+      await ensureBucketExists(operation.bucketName);
       console.log(
         `Bucket '${operation.bucketName}' confirmed or created. Proceeding with operation.`
       );

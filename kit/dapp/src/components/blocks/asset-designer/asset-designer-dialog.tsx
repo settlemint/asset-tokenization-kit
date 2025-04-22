@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { uploadToStorage } from "@/lib/actions/upload";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -35,6 +36,18 @@ import { AssetAdmins } from "@/components/blocks/create-forms/common/asset-admin
 import { FormProvider, useForm } from "react-hook-form";
 
 import { AssetTypeSelection } from "./steps/asset-type-selection";
+
+// Define a base form type that contains all possible fields
+interface BaseFormValues {
+  assetName: string;
+  symbol: string;
+  decimals?: number;
+  isin?: string;
+  cusip?: string;
+  assetAdmins: string[];
+  selectedRegulations: string[];
+  // Add other possible fields here
+}
 
 export type AssetType =
   | "bond"
@@ -79,6 +92,7 @@ export function AssetDesignerDialog({
   const [documentTitle, setDocumentTitle] = useState<string>("");
   const [documentType, setDocumentType] = useState<string>("");
   const [documentDescription, setDocumentDescription] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState<
     Record<
       string,
@@ -88,6 +102,7 @@ export function AssetDesignerDialog({
         title: string;
         type: string;
         description: string;
+        url?: string;
       }[]
     >
   >({});
@@ -99,8 +114,8 @@ export function AssetDesignerDialog({
       symbol: "",
       decimals: 18,
       isin: "",
-      assetAdmins: [],
-      selectedRegulations: [],
+      assetAdmins: [] as string[],
+      selectedRegulations: [] as string[],
     },
     mode: "all", // Validate on all events
   });
@@ -110,8 +125,8 @@ export function AssetDesignerDialog({
       assetName: "",
       symbol: "",
       decimals: 18,
-      assetAdmins: [],
-      selectedRegulations: [],
+      assetAdmins: [] as string[],
+      selectedRegulations: [] as string[],
     },
     mode: "all",
   });
@@ -122,8 +137,8 @@ export function AssetDesignerDialog({
       symbol: "",
       isin: "",
       cusip: "",
-      assetAdmins: [],
-      selectedRegulations: [],
+      assetAdmins: [] as string[],
+      selectedRegulations: [] as string[],
     },
     mode: "all",
   });
@@ -134,8 +149,8 @@ export function AssetDesignerDialog({
       symbol: "",
       isin: "",
       decimals: 18,
-      assetAdmins: [],
-      selectedRegulations: [],
+      assetAdmins: [] as string[],
+      selectedRegulations: [] as string[],
     },
     mode: "all",
   });
@@ -145,8 +160,8 @@ export function AssetDesignerDialog({
       assetName: "",
       symbol: "",
       decimals: 18,
-      assetAdmins: [],
-      selectedRegulations: [],
+      assetAdmins: [] as string[],
+      selectedRegulations: [] as string[],
     },
     mode: "all",
   });
@@ -156,8 +171,8 @@ export function AssetDesignerDialog({
       assetName: "",
       symbol: "",
       decimals: 18,
-      assetAdmins: [],
-      selectedRegulations: [],
+      assetAdmins: [] as string[],
+      selectedRegulations: [] as string[],
     },
     mode: "all",
   });
@@ -393,37 +408,37 @@ export function AssetDesignerDialog({
     switch (selectedAssetType) {
       case "bond":
         return (
-          <FormProvider {...bondForm}>
+          <FormProvider {...(bondForm as any)}>
             <BondBasics />
           </FormProvider>
         );
       case "cryptocurrency":
         return (
-          <FormProvider {...cryptocurrencyForm}>
+          <FormProvider {...(cryptocurrencyForm as any)}>
             <CryptocurrencyBasics />
           </FormProvider>
         );
       case "equity":
         return (
-          <FormProvider {...equityForm}>
+          <FormProvider {...(equityForm as any)}>
             <EquityBasics />
           </FormProvider>
         );
       case "fund":
         return (
-          <FormProvider {...fundForm}>
+          <FormProvider {...(fundForm as any)}>
             <FundBasics />
           </FormProvider>
         );
       case "stablecoin":
         return (
-          <FormProvider {...stablecoinForm}>
+          <FormProvider {...(stablecoinForm as any)}>
             <StablecoinBasics />
           </FormProvider>
         );
       case "deposit":
         return (
-          <FormProvider {...depositForm}>
+          <FormProvider {...(depositForm as any)}>
             <DepositBasics />
           </FormProvider>
         );
@@ -437,37 +452,37 @@ export function AssetDesignerDialog({
     switch (selectedAssetType) {
       case "bond":
         return (
-          <FormProvider {...bondForm}>
+          <FormProvider {...(bondForm as any)}>
             <BondConfiguration />
           </FormProvider>
         );
       case "cryptocurrency":
         return (
-          <FormProvider {...cryptocurrencyForm}>
+          <FormProvider {...(cryptocurrencyForm as any)}>
             <CryptocurrencyConfiguration />
           </FormProvider>
         );
       case "equity":
         return (
-          <FormProvider {...equityForm}>
+          <FormProvider {...(equityForm as any)}>
             <EquityConfiguration />
           </FormProvider>
         );
       case "fund":
         return (
-          <FormProvider {...fundForm}>
+          <FormProvider {...(fundForm as any)}>
             <FundConfiguration />
           </FormProvider>
         );
       case "stablecoin":
         return (
-          <FormProvider {...stablecoinForm}>
+          <FormProvider {...(stablecoinForm as any)}>
             <StablecoinConfiguration />
           </FormProvider>
         );
       case "deposit":
         return (
-          <FormProvider {...depositForm}>
+          <FormProvider {...(depositForm as any)}>
             <DepositConfiguration />
           </FormProvider>
         );
@@ -480,8 +495,9 @@ export function AssetDesignerDialog({
   const renderPermissionsComponent = () => {
     const form = getFormForAssetType();
 
+    // Use a type assertion to ensure FormProvider accepts our form
     return (
-      <FormProvider {...form}>
+      <FormProvider {...(form as any)}>
         <AssetAdmins />
       </FormProvider>
     );
@@ -562,12 +578,15 @@ export function AssetDesignerDialog({
 
     // Handle regulation checkbox toggle
     const toggleRegulation = (regulationId: string, checked: boolean) => {
-      const currentRegulations = form.getValues().selectedRegulations || [];
+      const currentForm = getFormForAssetType();
+      const currentRegulations =
+        currentForm.getValues().selectedRegulations || [];
 
       if (checked) {
         // Add the regulation if it's not already selected
         if (!currentRegulations.includes(regulationId)) {
-          form.setValue(
+          // Type assertion to ensure TypeScript understands the setValue method is valid
+          (currentForm.setValue as any)(
             "selectedRegulations",
             [...currentRegulations, regulationId],
             {
@@ -578,7 +597,7 @@ export function AssetDesignerDialog({
         }
       } else {
         // Remove the regulation
-        form.setValue(
+        (currentForm.setValue as any)(
           "selectedRegulations",
           currentRegulations.filter((id) => id !== regulationId),
           {
@@ -593,6 +612,9 @@ export function AssetDesignerDialog({
     const openDocumentDialog = (regulationId: string) => {
       setDialogOpen(regulationId);
       setSelectedFile(null);
+      setDocumentTitle("");
+      setDocumentType("");
+      setDocumentDescription("");
     };
 
     const closeDocumentDialog = () => {
@@ -609,24 +631,40 @@ export function AssetDesignerDialog({
       }
     };
 
-    const handleUploadDocument = () => {
+    const handleUploadDocument = async () => {
       if (dialogOpen && selectedFile) {
-        // Simulate upload by adding document to state
-        const newDocument = {
-          id: Math.random().toString(36).substr(2, 9),
-          name: selectedFile.name,
-          title: documentTitle || selectedFile.name,
-          type: documentType,
-          description: documentDescription,
-        };
+        setIsUploading(true);
+        try {
+          // Create form data for upload
+          const formData = new FormData();
+          formData.append("file", selectedFile);
 
-        setUploadedDocuments((prev) => ({
-          ...prev,
-          [dialogOpen]: [...(prev[dialogOpen] || []), newDocument],
-        }));
+          // Use the server action to upload the file
+          const result = await uploadToStorage(formData);
 
-        // Close dialog
-        closeDocumentDialog();
+          // Add the uploaded document to state
+          const newDocument = {
+            id: result.id,
+            name: selectedFile.name,
+            title: documentTitle || selectedFile.name,
+            type: documentType,
+            description: documentDescription,
+            url: result.url,
+          };
+
+          setUploadedDocuments((prev) => ({
+            ...prev,
+            [dialogOpen]: [...(prev[dialogOpen] || []), newDocument],
+          }));
+
+          // Close dialog
+          closeDocumentDialog();
+        } catch (error) {
+          console.error("Error uploading document:", error);
+          // You might want to show an error notification here
+        } finally {
+          setIsUploading(false);
+        }
       }
     };
 
@@ -1062,16 +1100,17 @@ export function AssetDesignerDialog({
                     type="button"
                     onClick={closeDocumentDialog}
                     className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+                    disabled={isUploading}
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleUploadDocument}
-                    disabled={!selectedFile || !documentTitle}
+                    disabled={!selectedFile || !documentTitle || isUploading}
                     className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2"
                   >
-                    Upload
+                    {isUploading ? "Uploading..." : "Upload"}
                   </button>
                 </div>
               </div>
