@@ -855,7 +855,7 @@
             "title": "Enter Amount"
           },
           "button-label": "Redeem Assets",
-          "description": "Redeem your bond assets for the underlying asset.",
+          "description": "Burns the specified amount of bonds and transfers equivalent amount of underlying assets to your wallet.",
           "summary": {
             "asset-label": "Asset",
             "description": "Verify the details of your redemption before proceeding",
