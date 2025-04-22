@@ -100,14 +100,14 @@ export function handleBatchClaimed(event: BatchClaimed): void {
     return;
   }
 
-  let token = Asset.load(airdrop.token);
-  if (!token) {
-    log.error(
-      "Token entity not found for address {}. Skipping BatchClaimed event.",
-      [airdrop.token.toHex()]
-    );
-    return;
-  }
+  // let token = Asset.load(airdrop.token); // Removed: Asset interface cannot be loaded directly
+  // if (!token) { // Removed
+  //   log.error( // Removed
+  //     "Token entity not found for address {}. Skipping BatchClaimed event.", // Removed
+  //     [airdrop.token.toHex()] // Removed
+  //   );
+  //   return; // Removed
+  // } // Removed
 
   let claimantAddress = event.params.claimant;
   let totalAmount = event.params.totalAmount;
@@ -226,7 +226,7 @@ export function handleVestingInitialized(event: VestingInitialized): void {
     return;
   }
 
-  let userAddress = event.params.user;
+  let userAddress = event.params.account;
   let totalAmount = event.params.totalAmount;
   let vestingStart = event.params.vestingStart;
 
