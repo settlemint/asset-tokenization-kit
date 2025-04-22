@@ -543,7 +543,8 @@ templates:
         - name: DvPSwap
           file: ../contracts/artifacts/contracts/DvPSwap.sol/DvPSwap.json
       eventHandlers:
-        - event: DvPSwapCreated(indexed bytes32,indexed address,indexed address,address,address,uint256,uint256,uint256,bytes32)
+        - event: DvPSwapCreated(indexed bytes32,indexed address,indexed
+            address,address,address,uint256,uint256,uint256,bytes32)
           handler: handleDvPSwapCreated
         - event: DvPSwapStatusChanged(indexed bytes32,uint8)
           handler: handleDvPSwapStatusChanged

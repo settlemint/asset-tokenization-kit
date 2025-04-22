@@ -28,7 +28,7 @@ interface Asset {
   concentration: BigDecimal!
 }
 
-type Factory @entity(immutable: false) {
+interface Factory {
   id: Bytes!
   type: String!
   asAccount: Account!
