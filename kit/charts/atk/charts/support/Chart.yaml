@@ -20,6 +20,6 @@ dependencies:
     version: "20.12.2"
     repository: oci://registry-1.docker.io/bitnamicharts
   - name: reloader
-    version: 2.1.1
+    version: 2.1.2
     repository: https://stakater.github.io/stakater-charts
 
