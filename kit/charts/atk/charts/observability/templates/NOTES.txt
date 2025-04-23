@@ -1,0 +1,87 @@
+{{- /*
+NOTES.txt for the Observability subchart (Grafana, VictoriaMetrics, Loki).
+*/ -}}
+{{- $grafanaValues := .Values.grafana -}}
+{{- $vmsingleValues := .Values.victoriaMetrics.vmsingle -}}
+{{- $lokiValues := .Values.loki -}}
+========================================================================
+  Observability Stack Deployed
+========================================================================
+
+Your observability components (Grafana, VictoriaMetrics, Loki) have been deployed in the '{{ .Release.Namespace }}' namespace.
+
+------------------------------------------------------------------------
+  Access Information
+------------------------------------------------------------------------
+
+Grafana:
+  - URL (External via Ingress): https://{{ (index $grafanaValues.ingress.hosts 0) | default (printf "grafana.%s" .Values.global.domain) }}
+  - Default Admin User: {{ $grafanaValues.adminUser | default "admin" }}
+  - Getting the Admin Password:
+    kubectl get secret -n {{ .Release.Namespace }} {{ template "grafana.secretName" . }} -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+    (Note: If you set adminPassword in values.yaml, use that password instead.)
+
+VictoriaMetrics (Metrics Storage):
+  - vmsingle Write Endpoint (Internal): http://{{ template "victoria-metrics-single.fullname" . }}:{{ $vmsingleValues.service.port }}/api/v1/write
+  - vmsingle Read Endpoint (Internal): http://{{ template "victoria-metrics-single.fullname" . }}:{{ $vmsingleValues.service.port }}/api/v1/query
+  - vmalert Endpoint (Internal, if enabled): http://{{ template "victoria-metrics-alert.fullname" . }}:{{ .Values.victoriaMetrics.vmalert.service.port }}
+  - Note: These are typically accessed internally by Grafana (datasource) and vmagent/prometheus.
+
+Loki (Log Aggregation):
+  - Write Endpoint (Internal): http://{{ template "loki.fullname" . }}:{{ $lokiValues.service.port }}/loki/api/v1/push
+  - Read Endpoint (Internal): http://{{ template "loki.fullname" . }}:{{ $lokiValues.service.port }}/loki/api/v1/query
+  - Note: These are typically accessed internally by Grafana (datasource) and promtail/log agents.
+
+------------------------------------------------------------------------
+  Health Checks & Status
+------------------------------------------------------------------------
+
+Check Pod Status:
+  - Grafana:         kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "grafana.fullname" . }},app.kubernetes.io/name=grafana
+  - VictoriaMetrics (vmsingle): kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "victoria-metrics-single.fullname" . }},app.kubernetes.io/name=vmsingle
+  - Loki:            kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "loki.fullname" . }},app.kubernetes.io/name=loki
+  - Promtail (if enabled): kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "loki.fullname" . }},app.kubernetes.io/name=promtail
+  - vmagent (if enabled): kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "victoria-metrics-agent.fullname" . }},app.kubernetes.io/name=vmagent
+
+Service Health Endpoints (Internal):
+  - Grafana:      http://{{ template "grafana.fullname" . }}:{{ $grafanaValues.service.port }}/api/health
+  - vmsingle:     http://{{ template "victoria-metrics-single.fullname" . }}:{{ $vmsingleValues.service.port }}/health
+  - Loki:         http://{{ template "loki.fullname" . }}:{{ $lokiValues.service.port }}/ready
+
+------------------------------------------------------------------------
+  Configuration
+------------------------------------------------------------------------
+
+Key Configuration Values (from 'values.yaml'):
+  - Grafana: Ingress settings, admin credentials, persistence, datasources, dashboards.
+  - VictoriaMetrics: Persistence settings for vmsingle, retention period, vmagent scrape configs.
+  - Loki: Persistence settings, retention period, promtail scrape configs.
+
+Default Dashboards & Datasources:
+  - Grafana is likely pre-configured with datasources for VictoriaMetrics and Loki.
+  - Default dashboards might be provisioned. Check the Grafana UI under 'Dashboards'.
+
+Log & Metric Collection:
+  - Check vmagent configuration (ConfigMap: `{{ template "victoria-metrics-agent.fullname" . }}`) for metrics scrape targets.
+  - Check promtail configuration (ConfigMap: `{{ template "loki.promtail.fullname" . }}-config`) for log scrape targets.
+
+------------------------------------------------------------------------
+  Troubleshooting
+------------------------------------------------------------------------
+
+Check Logs:
+  - Use 'kubectl logs -n {{ .Release.Namespace }} -l <label-selector>' for the respective components (Grafana, vmsingle, Loki, Promtail, vmagent).
+
+Common Issues:
+  - Grafana Login Failed: Verify the method used to get the admin password. Check Grafana pod logs.
+  - No Data in Grafana (Metrics): Verify vmsingle is running. Check vmagent pods are running and scraping targets successfully (check vmagent logs). Ensure the Grafana datasource connection to VictoriaMetrics is working.
+  - No Data in Grafana (Logs): Verify Loki is running. Check Promtail pods are running and scraping logs successfully (check Promtail logs). Ensure the Grafana datasource connection to Loki is working.
+  - Pods Crashing/Not Ready: Use 'kubectl describe pod' to investigate events and check resource limits.
+
+Example Log Query (Grafana Explore with Loki datasource):
+  - To find logs for a specific pod:
+    {namespace="{{ .Release.Namespace }}", pod="<pod-name>"}
+  - To find logs containing an error message:
+    {namespace="{{ .Release.Namespace }}"} |= "error"
+
+========================================================================

@@ -1,0 +1,70 @@
+{{- /*
+NOTES.txt for the Support subchart.
+This chart typically contains supporting resources like databases or message queues
+that might not have direct user-facing endpoints.
+*/ -}}
+========================================================================
+  Support Services Deployed
+========================================================================
+
+Supporting services (e.g., databases, message queues) for the ATK
+have been deployed in the '{{ .Release.Namespace }}' namespace.
+
+------------------------------------------------------------------------
+  Access Information
+------------------------------------------------------------------------
+
+Internal Endpoints:
+  - Services in this chart are generally accessed internally by other ATK components.
+  - Common examples (check your specific values.yaml):
+    {{- if .Values.postgresql.enabled }}
+    - PostgreSQL Service: {{ .Values.postgresql.fullnameOverride | default (printf "%s-postgresql" .Release.Name) }}:{{ .Values.postgresql.service.port }}
+    - PostgreSQL Credentials Secret: '{{ .Values.postgresql.auth.existingSecret | default (printf "%s-postgresql" .Release.Name) }}'
+    {{- end }}
+    {{- if .Values.redis.enabled }}
+    - Redis Service: {{ template "redis.fullname" . }}-master:{{ .Values.redis.master.service.port }}
+    - Redis Password Secret: '{{ template "redis.secretName" . }}' (Key: 'redis-password')
+    {{- end }}
+    {{- /* Add other potential support services like Kafka, RabbitMQ etc. here if applicable */}}
+
+External Endpoints:
+  - Typically, support services are not exposed externally via Ingress.
+
+------------------------------------------------------------------------
+  Health Checks & Status
+------------------------------------------------------------------------
+
+Check Pod Status:
+  - To view the status of support pods (adjust labels as needed):
+    {{- if .Values.postgresql.enabled }}
+    - PostgreSQL: kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=postgresql
+    {{- end }}
+    {{- if .Values.redis.enabled }}
+    - Redis:      kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "redis.fullname" . }},app.kubernetes.io/name=redis
+    {{- end }}
+
+Service-Specific Checks:
+  - Refer to the documentation of the specific component (e.g., PostgreSQL, Redis) for detailed health check commands (e.g., `pg_isready`, `redis-cli ping`).
+
+------------------------------------------------------------------------
+  Configuration
+------------------------------------------------------------------------
+
+Key Configuration Values (from 'values.yaml' under 'support'):
+  - Component enablement flags (`postgresql.enabled`, `redis.enabled`, etc.).
+  - Persistence settings (`*.persistence.enabled`, `*.persistence.size`).
+  - Resource limits (`*.resources`).
+  - Authentication details (passwords, secrets - `*.auth.*`).
+
+------------------------------------------------------------------------
+  Troubleshooting
+------------------------------------------------------------------------
+
+Check Logs:
+  - Use 'kubectl logs -n {{ .Release.Namespace }} -l <label-selector>' for the respective component pods.
+
+Common Issues:
+  - Pods Not Ready / Crashing: Check logs for startup errors. Verify persistence volumes are correctly provisioned and attached. Check resource limits.
+  - Connection Errors from Other Services: Ensure the support service pods are running and the service endpoint (e.g., `{{ .Release.Name }}-postgresql`) is correct in the consuming application's configuration. Check network policies if applicable. Verify credentials/secrets.
+
+========================================================================

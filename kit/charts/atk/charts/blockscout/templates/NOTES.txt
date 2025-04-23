@@ -1,0 +1,76 @@
+{{- /*
+NOTES.txt for the Blockscout subchart.
+*/ -}}
+{{- $blockscoutValues := .Values "blockscout-stack" -}}
+========================================================================
+  Blockscout Deployed
+========================================================================
+
+Blockscout blockchain explorer has been deployed in the '{{ .Release.Namespace }}' namespace.
+
+------------------------------------------------------------------------
+  Access Information
+------------------------------------------------------------------------
+
+Web Interface:
+  - URL: https://{{ $blockscoutValues.frontend.ingress.hostname | default (printf "explorer.%s" .Values.global.domain) }}
+
+API Endpoints:
+  - Base URL: https://{{ $blockscoutValues.frontend.ingress.hostname | default (printf "explorer.%s" .Values.global.domain) }}/api
+  - Check Blockscout documentation for specific API v1/v2 paths.
+
+Admin Interface:
+  - Blockscout does not typically have a separate admin interface accessible via URL. Administration tasks are usually done via backend configuration or database access.
+
+Database Access (Internal):
+  - Service Name: {{ $blockscoutValues.postgresql.fullnameOverride | default (printf "%s-postgresql" .Release.Name) }}
+  - Port: 5432
+  - Credentials are store in the secret: '{{ $blockscoutValues.secrets.database_url.secretName | default (printf "%s-blockscout-db" .Release.Name) }}' (Key: 'uri')
+
+------------------------------------------------------------------------
+  Health Checks & Status
+------------------------------------------------------------------------
+
+Check Pod Status:
+  - Frontend Pods: kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=blockscout-frontend
+  - Backend Pods:  kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=blockscout-backend
+  - DB Pod (if deployed by chart): kubectl get pods -n {{ .Release.Namespace }} -l app={{ $blockscoutValues.postgresql.fullnameOverride | default (printf "%s-postgresql" .Release.Name) }}
+
+Check Indexing Status:
+  - Access the Web Interface URL.
+  - Compare the latest block number shown in Blockscout with the current block number of your Besu network (use 'eth_blockNumber' RPC call).
+  - Check the logs of the backend pods for indexing progress or errors.
+
+Verify Database Connection:
+  - Check the logs of the backend pods for messages indicating successful database connection or connection errors.
+    kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=blockscout-backend
+
+------------------------------------------------------------------------
+  Configuration
+------------------------------------------------------------------------
+
+Key Configuration Values (from 'values.yaml'):
+  - Chain ID: '{{ $blockscoutValues.config.chainID }}'
+  - Chain Type: '{{ $blockscoutValues.config.chainType }}'
+  - RPC Endpoint Used: '{{ $blockscoutValues.config.rpcURL }}'
+  - WebSocket Endpoint Used: '{{ $blockscoutValues.config.wsURL }}'
+  - Database URL Secret: '{{ $blockscoutValues.secrets.database_url.secretName | default (printf "%s-blockscout-db" .Release.Name) }}' (Key: 'uri')
+
+Configuration Files:
+  - Primary configuration is managed via environment variables set from Kubernetes Secrets and ConfigMaps defined in the Helm chart templates, based on your 'values.yaml'.
+
+------------------------------------------------------------------------
+  Troubleshooting
+------------------------------------------------------------------------
+
+Check Logs:
+  - Frontend: kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=blockscout-frontend
+  - Backend:  kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=blockscout-backend
+
+Common Issues:
+  - Explorer Not Showing Recent Blocks: Check backend logs for indexing errors. Verify the RPC/WS endpoints configured are correct and reachable by the backend pods. Ensure the indexer process is running.
+  - Database Connection Errors: Verify the database is running and accessible. Check the database URL secret and ensure the backend pods are using the correct credentials.
+  - UI Errors / 5xx Server Errors: Check frontend and backend logs. Restart pods if necessary.
+  - Slow Loading: Check resource allocation (CPU/Memory) for backend and database pods. Consider database indexing performance.
+
+========================================================================

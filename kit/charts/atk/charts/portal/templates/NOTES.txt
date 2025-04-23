@@ -1,0 +1,90 @@
+{{- /*
+NOTES.txt for the Smart Contract API Portal subchart.
+Ref: https://console.settlemint.com/documentation/platform-components/middleware-and-api-layer/smart-contract-api-portal
+*/ -}}
+========================================================================
+  Smart Contract API Portal Deployed
+========================================================================
+
+Your Smart Contract API Portal middleware has been deployed in the '{{ .Release.Namespace }}' namespace.
+This service automatically generates REST & GraphQL APIs from uploaded smart contract ABIs.
+
+------------------------------------------------------------------------
+  Access Information
+------------------------------------------------------------------------
+
+Portal Management UI/Base URL (External via Ingress):
+  - https://{{ (index .Values.ingress.hosts 0).host | default (printf "portal.%s" .Values.global.domain) }}
+    (Used for uploading ABIs, managing webhooks etc.)
+
+Generated API Endpoints (External via Ingress - available *after* ABI upload):
+  - REST API Base:    https://{{ (index .Values.ingress.hosts 0).host | default (printf "portal.%s" .Values.global.domain) }}/api/rest/<abi-name>/<contract-address>
+  - GraphQL Endpoint: https://{{ (index .Values.ingress.hosts 0).host | default (printf "portal.%s" .Values.global.domain) }}/api/graphql
+  - (Note: Consult the Portal UI or documentation for exact paths after ABI upload)
+
+Credentials/Authentication:
+  - Access to the Portal Management UI might be protected. Check authentication settings in 'values.yaml' (`config.auth.*`).
+  - API requests to generated endpoints might require authentication (e.g., API keys) depending on Portal configuration.
+  - The Portal SDK uses an access token (see documentation). How this token is managed/obtained depends on the deployment setup.
+
+Internal Service URL:
+  - http://{{ include "portal.fullname" . }}:{{ .Values.service.port }}
+
+------------------------------------------------------------------------
+  Health Checks & Status
+------------------------------------------------------------------------
+
+Check Pod Status:
+  - To view the status of the Portal pods:
+    kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name={{ include "portal.name" . }}
+
+Health Check Endpoint:
+  - The portal middleware may expose a health check endpoint (e.g., /health). Check the application's documentation or probe configuration.
+  - Example (assuming /health on the service port, requires port-forward or exec):
+    kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "portal.fullname" . }} 8080:{{ .Values.service.port }}
+    curl http://localhost:8080/health
+
+------------------------------------------------------------------------
+  Configuration
+------------------------------------------------------------------------
+
+Key Configuration Values (from 'values.yaml'):
+  - `replicaCount`: Number of portal instances.
+  - `ingress.enabled`, `ingress.hosts`: External access settings.
+  - `config.rpcUrl`: **Crucial.** The internal URL of the target EVM network's RPC endpoint (e.g., `http://{{ .Release.Name }}-erpc:8545`).
+  - `config.auth.*`: Authentication settings for the portal UI/API.
+  - ABI Storage: ABIs are typically uploaded via the Portal UI or its API after deployment, not directly via Helm values.
+  - Webhook configuration: Check `config.webhooks.*` or similar for webhook-related settings.
+
+Configuration Sources:
+  - Environment variables sourced from ConfigMaps (`{{ include "portal.fullname" . }}-config`) and Secrets (`{{ include "portal.fullname" . }}-secrets`).
+
+------------------------------------------------------------------------
+  Troubleshooting
+------------------------------------------------------------------------
+
+Check Logs:
+  - To view logs for Portal pods:
+    kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name={{ include "portal.name" . }}
+
+Common Issues:
+  - Portal UI Not Loading / 5xx Errors: Check Portal pod logs for startup errors. Verify `config.rpcUrl` is correct and the target ERPC service is reachable. Check resource limits.
+  - ABI Upload Failed: Check logs for parsing errors or storage issues. Ensure the uploaded file is a valid JSON ABI.
+  - Generated API Errors: Verify the Portal can connect to the RPC endpoint specified in `config.rpcUrl`. Check logs for errors during contract interaction.
+  - Webhook Not Firing / Failing: Check webhook configuration in the Portal UI. Verify the target webhook receiver endpoint is correct and reachable. Inspect Portal logs for delivery errors.
+
+------------------------------------------------------------------------
+  Integration Information
+------------------------------------------------------------------------
+
+Primary Dependency:
+  - The Portal requires a connection to an EVM-compatible JSON-RPC endpoint, configured via `config.rpcUrl` in 'values.yaml'. This should point to the internal service URL of the `erpc` chart.
+
+Using the Generated APIs:
+  - Applications and services interact with the smart contracts via the REST and GraphQL endpoints generated by this Portal, *not* usually by interacting with the Portal management API directly.
+  - Refer to the Portal UI or documentation for the specific paths and schemas of the generated APIs after uploading your ABIs.
+
+Further Reading:
+  - Smart Contract API Portal Documentation: https://console.settlemint.com/documentation/platform-components/middleware-and-api-layer/smart-contract-api-portal
+
+========================================================================

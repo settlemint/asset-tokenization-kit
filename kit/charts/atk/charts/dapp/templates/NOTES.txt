@@ -1,0 +1,86 @@
+{{- /*
+NOTES.txt for the SettleMint Asset Tokenization Kit DApp subchart.
+Ref: https://www.settlemint.com/asset-tokenization-kit
+*/ -}}
+========================================================================
+  Asset Tokenization DApp Deployed
+========================================================================
+
+The SettleMint Asset Tokenization Kit dApp front-end has been deployed
+in the '{{ .Release.Namespace }}' namespace. This dApp provides a UI for
+interacting with tokenized assets (e.g., ERC20 tokens).
+
+------------------------------------------------------------------------
+  Access Information
+------------------------------------------------------------------------
+
+{{- if .Values.ingress.enabled }}
+DApp URL (External via Ingress):
+  - https://{{ (index .Values.ingress.hosts 0).host | default (printf "dapp.%s" .Values.global.domain) }}
+{{- else }}
+External Access:
+  - Ingress is not enabled for this DApp in values.yaml.
+  - If the service type is NodePort or LoadBalancer, use standard kubectl commands to find the access URL (similar to the ERPC notes).
+{{- end }}
+
+Internal Service URL:
+  - http://{{ include "dapp.fullname" . }}:{{ .Values.service.port }}
+
+------------------------------------------------------------------------
+  Health Checks & Status
+------------------------------------------------------------------------
+
+Check Pod Status:
+  - To view the status of the DApp pods:
+    kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name={{ include "dapp.name" . }}
+
+Health Check Endpoint:
+  - The DApp may expose a health check endpoint (e.g., /health). Check the application's documentation or the liveness/readiness probe configuration.
+  - Example (assuming /health on the service port, requires port-forward or exec):
+    kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "dapp.fullname" . }} 8080:{{ .Values.service.port }}
+    curl http://localhost:8080/health
+
+------------------------------------------------------------------------
+  Configuration
+------------------------------------------------------------------------
+
+Key Configuration Values (from 'values.yaml'):
+  - `replicaCount`: Number of DApp instances.
+  - `ingress.enabled`, `ingress.hosts`: External access settings.
+  - Runtime Configuration (check ConfigMap `{{ include "dapp.fullname" . }}-config` and relevant Secrets):
+    - Target Blockchain RPC URL (e.g., `REACT_APP_RPC_URL` pointing to the ERPC service).
+    - Target Hasura GraphQL URL (e.g., `REACT_APP_HASURA_URL`).
+    - Target Smart Contract API Portal URL (if used, e.g., `REACT_APP_PORTAL_URL`).
+    - Deployed ERC20 Contract Address(es) (e.g., `REACT_APP_ERC20_CONTRACT_ADDRESS`).
+    - Other UI or feature flags specific to the ATK dApp.
+
+Customization:
+  - The source code for this dApp is often provided for customization (branding, features). See ATK documentation.
+
+------------------------------------------------------------------------
+  Troubleshooting
+------------------------------------------------------------------------
+
+Check Logs:
+  - To view logs for DApp pods (primarily useful for server-side rendering issues if applicable, otherwise check browser console):
+    kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name={{ include "dapp.name" . }}
+
+Common Issues:
+  - DApp Not Loading / Blank Page / Errors in Browser Console: Check browser developer console for JavaScript errors, failed API requests, or network issues. Verify that the backend services (ERPC, Hasura) configured in the DApp's environment variables are running and reachable.
+  - Cannot Connect Wallet: Ensure the RPC URL configured in the DApp matches the network the user's wallet (e.g., MetaMask) is connected to.
+  - Cannot See Tokens / Balances: Verify the correct ERC20 contract address is configured. Check if Hasura is running and accessible for querying indexed data. Ensure the connected wallet address has tokens on the configured network.
+  - Transaction Failures: Check browser console for errors from the wallet provider. Check the configured RPC endpoint (ERPC) is working. Check if the transaction is being sent via the txsigner or requires direct user signing.
+
+------------------------------------------------------------------------
+  Integration Information
+------------------------------------------------------------------------
+
+Backend Service Dependencies:
+  - The ATK DApp relies heavily on:
+    - ERPC: For reading blockchain state (balances, token info) and submitting transactions (if signed client-side).
+    - Hasura: For querying indexed on-chain data (transaction history, token holder lists, etc.).
+    - Smart Contract API Portal: May be used as an alternative way to interact with contracts, abstracting direct RPC calls.
+    - txsigner: May be used if the architecture requires server-side signing for certain actions.
+  - Confirm the exact endpoints used by checking the runtime configuration (ConfigMap/Secrets) passed to the DApp pods.
+
+======================================================================== 

@@ -1,0 +1,87 @@
+{{- /*
+NOTES.txt for the Hasura GraphQL Engine subchart.
+*/ -}}
+{{- $hasuraValues := .Values."graphql-engine" -}}
+========================================================================
+  Hasura GraphQL Engine Deployed
+========================================================================
+
+Your Hasura GraphQL Engine instance has been deployed in the '{{ .Release.Namespace }}' namespace.
+It provides a GraphQL API over your connected databases.
+
+------------------------------------------------------------------------
+  Access Information
+------------------------------------------------------------------------
+
+Console UI:
+  - URL (External via Ingress): https://{{ $hasuraValues.ingress.hostName | default (printf "hasura.%s" .Values.global.domain) }}
+  - Accessing the Console requires the Admin Secret.
+
+GraphQL API Endpoint:
+  - URL (External via Ingress): https://{{ $hasuraValues.ingress.hostName | default (printf "hasura.%s" .Values.global.domain) }}/v1/graphql
+
+REST API Endpoint (if enabled via RESTified endpoints):
+  - Base URL (External via Ingress): https://{{ $hasuraValues.ingress.hostName | default (printf "hasura.%s" .Values.global.domain) }}/api/rest/...
+  - (Requires specific configuration within Hasura Console for each REST endpoint)
+
+Authentication (Admin Secret):
+  - The Hasura Admin Secret is required for console access and admin operations via the API.
+  - It's typically configured via `graphql-engine.adminSecret.value` in `values.yaml` or stored in a Kubernetes secret specified by `graphql-engine.adminSecret.secretNameRef`.
+  - If stored in a secret (e.g., '{{ template "hasura.fullname" . }}-admin-secret'):
+    kubectl get secret -n {{ .Release.Namespace }} {{ template "hasura.fullname" . }}-admin-secret -o jsonpath="{.data.admin-secret}" | base64 --decode ; echo
+  - API requests requiring admin privileges must include the header: `X-Hasura-Admin-Secret: <your-admin-secret>`
+
+Internal Service URL:
+  - http://{{ template "hasura.fullname" . }}:{{ $hasuraValues.service.port }}
+
+------------------------------------------------------------------------
+  Health Checks & Status
+------------------------------------------------------------------------
+
+Check Pod Status:
+  - To view the status of the Hasura pods:
+    kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "hasura.fullname" . }},app.kubernetes.io/name=hasura
+
+Health Check Endpoint:
+  - Hasura provides a health check endpoint:
+    https://{{ $hasuraValues.ingress.hostName | default (printf "hasura.%s" .Values.global.domain) }}/healthz
+  - Or internally:
+    http://{{ template "hasura.fullname" . }}:{{ $hasuraValues.service.port }}/healthz
+  - Example using curl (requires port-forward or exec for internal):
+    curl http://localhost:{{ $hasuraValues.service.port }}/healthz
+
+Check Migration Status:
+  - Access the Hasura Console UI.
+  - Navigate to the 'Data' tab, then 'Migrations' in the sidebar.
+  - This shows the status of applied migrations and any inconsistencies.
+  - Alternatively, use the Hasura CLI: `hasura migrate status --endpoint <console-url> --admin-secret <secret>`
+
+------------------------------------------------------------------------
+  Configuration
+------------------------------------------------------------------------
+
+Key Configuration Values (from 'values.yaml'):
+  - `graphql-engine.adminSecret`: Sets the crucial admin secret.
+  - `graphql-engine.database.url`: Connection string or secret reference for the primary PostgreSQL database used by Hasura metadata.
+  - `graphql-engine.ingress.hostName`: External access hostname.
+  - Data Sources: Additional databases are connected and configured via the Hasura Console UI or Metadata API after deployment.
+
+Configuration Files/Metadata:
+  - Hasura's core configuration (connected databases, tracked tables, relationships, permissions, etc.) is stored as metadata in its primary PostgreSQL database.
+  - Migrations and metadata can be managed via the Console UI or the Hasura CLI.
+
+------------------------------------------------------------------------
+  Troubleshooting
+------------------------------------------------------------------------
+
+Check Logs:
+  - To view logs for Hasura pods:
+    kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "hasura.fullname" . }},app.kubernetes.io/name=hasura
+
+Common Issues:
+  - Console Not Accessible / 5xx Errors: Check Hasura pod logs for startup errors. Verify the connection to the primary PostgreSQL database (`graphql-engine.database.url`) is successful. Ensure pods have enough resources.
+  - Incorrect Admin Secret: Double-check the admin secret value/secret reference in `values.yaml` and ensure you are using the correct secret when accessing the console or API.
+  - Migration Status Inconsistent: Check Hasura pod logs for migration errors. Use the Console UI or CLI (`hasura migrate status`) to diagnose. May require manual metadata fixes or rolling back/re-applying migrations.
+  - GraphQL Query Errors: Check the Hasura logs for details. Ensure the connected data sources are available and permissions are correctly configured in Hasura for the relevant roles.
+
+================================================================ 

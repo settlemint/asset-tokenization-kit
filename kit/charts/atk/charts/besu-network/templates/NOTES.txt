@@ -1,0 +1,81 @@
+{{- /*
+NOTES.txt for the Besu Network subchart.
+*/ -}}
+========================================================================
+  Besu Network Deployed
+========================================================================
+
+Your Besu network components have been deployed in the '{{ .Release.Namespace }}' namespace.
+
+------------------------------------------------------------------------
+  Access Information
+------------------------------------------------------------------------
+
+Internal Endpoints (within Kubernetes cluster):
+  - JSON-RPC:   http://{{ include "besu-network.fullname" . }}:{{ .Values.service.rpcPort }}
+  {{- if .Values.service.wsEnabled }}
+  - WebSocket:  ws://{{ include "besu-network.fullname" . }}:{{ .Values.service.wsPort }}
+  {{- end }}
+  {{- if .Values.service.metricsEnabled }}
+  - Metrics:    http://{{ include "besu-network.fullname" . }}:{{ .Values.service.metricsPort }}/metrics
+  {{- end }}
+
+External Endpoints (if Ingress is configured in the main chart):
+  - JSON-RPC:   Refer to the main ATK chart NOTES.txt (typically https://rpc.{{ .Values.global.domain }})
+  {{- if and .Values.service.wsEnabled .Values.ingress.ws.enabled }}
+  - WebSocket:  Refer to the main ATK chart NOTES.txt (typically wss://rpc.{{ .Values.global.domain }}/ws)
+  {{- end }}
+
+Network Details:
+  - Network ID: {{ .Values.genesis.networkId }}
+  - Chain ID:   {{ .Values.genesis.chainId }}
+
+------------------------------------------------------------------------
+  Health Checks & Status
+------------------------------------------------------------------------
+
+Check Pod Status:
+  - To view the status of the Besu pods:
+    kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=besu
+
+Check Node Sync Status:
+  - Connect to a Besu pod and use curl, or port-forward the RPC port:
+    curl -X POST --data '{ "jsonrpc":"2.0", "method":"eth_syncing", "params":[], "id":1 }' -H "Content-Type: application/json" http://localhost:{{ .Values.service.rpcPort }}
+  - If the result is 'false', the node is synced.
+
+Check Validator Status (for IBFT/QBFT):
+  - Use the 'ibft_getValidatorsByBlockNumber' or 'qbft_getValidatorsByBlockNumber' method:
+    curl -X POST --data '{ "jsonrpc":"2.0", "method":"ibft_getValidatorsByBlockNumber", "params":["latest"], "id":1 }' -H "Content-Type: application/json" http://localhost:{{ .Values.service.rpcPort }}
+
+------------------------------------------------------------------------
+  Configuration
+------------------------------------------------------------------------
+
+Genesis File:
+  - The genesis configuration is stored in the ConfigMap: '{{ include "besu-network.fullname" . }}-genesis'
+
+Node Keys & Configuration:
+  - Node keys are typically generated or provided via Secrets.
+  - Key configuration parameters are set in the 'besu-network' section of the main chart's 'values.yaml'. Check parameters like:
+    - `replicaCount`: Number of nodes.
+    - `genesis.networkId`, `genesis.chainId`
+    - `rpcHttpEnabled`, `rpcWsEnabled`, `metricsEnabled`
+    - `persistence.enabled`, `persistence.size`
+    - Bootnode configuration (`bootnodes`)
+
+------------------------------------------------------------------------
+  Troubleshooting
+------------------------------------------------------------------------
+
+Check Logs:
+  - To view logs for a specific Besu node pod (replace <pod-name>):
+    kubectl logs -n {{ .Release.Namespace }} <pod-name>
+  - To follow logs:
+    kubectl logs -f -n {{ .Release.Namespace }} <pod-name>
+
+Common Issues:
+  - Nodes Not Peering: Check bootnode configuration, network policies, and logs for connection errors. Ensure `discoveryEnabled` is true if needed.
+  - Syncing Stalled: Verify peer connections, check resource limits (CPU/memory) on pods, and inspect logs for errors.
+  - Connection Refused (RPC/WS): Ensure the services (`kubectl get svc -n {{ .Release.Namespace }}`) and pods are running. Check if the correct ports are enabled in the configuration.
+
+========================================================================

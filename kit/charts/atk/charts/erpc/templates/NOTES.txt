@@ -1,22 +1,108 @@
-1. Get the application URL by running these commands:
+{{- /*
+NOTES.txt for the ERPC (Ethereum RPC) subchart.
+*/ -}}
+========================================================================
+  ERPC Deployed
+========================================================================
+
+Your ERPC service, acting as a proxy/load balancer for the Besu network,
+has been deployed in the '{{ .Release.Namespace }}' namespace.
+
+------------------------------------------------------------------------
+  Access Information
+------------------------------------------------------------------------
+
 {{- if .Values.ingress.enabled }}
-{{- range $host := .Values.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+External Endpoints (via Ingress):
+  - JSON-RPC:  https://{{ (index .Values.ingress.hosts 0).host | default (printf "rpc.%s" .Values.global.domain) }}
+  {{- if .Values.ingress.ws.enabled }}
+  - WebSocket: wss://{{ (index .Values.ingress.hosts 0).host | default (printf "rpc.%s" .Values.global.domain) }}{{ .Values.ingress.ws.path | default "/" }}
+  {{- else }}
+  - WebSocket: (Not exposed via Ingress according to values.yaml)
   {{- end }}
-{{- end }}
 {{- else if contains "NodePort" .Values.service.type }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "erpc.fullname" . }})
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  echo http://$NODE_IP:$NODE_PORT
+External Endpoint (via NodePort):
+  Get the NodePort URL by running these commands:
+    export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[?(@.name==\"http\")].nodePort}" services {{ include "erpc.fullname" . }})
+    export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[?(@.type==\"ExternalIP\")].address}")
+    echo "JSON-RPC URL: http://$NODE_IP:$NODE_PORT"
+    {{- if .Values.upstream.ws }}
+    export WS_NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[?(@.name==\"ws\")].nodePort}" services {{ include "erpc.fullname" . }})
+    echo "WebSocket URL: ws://$NODE_IP:$WS_NODE_PORT" (If WS enabled)
+    {{- end }}
 {{- else if contains "LoadBalancer" .Values.service.type }}
+External Endpoint (via LoadBalancer):
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
            You can watch its status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "erpc.fullname" . }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "erpc.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-  echo http://$SERVICE_IP:{{ .Values.service.port }}
-{{- else if contains "ClusterIP" .Values.service.type }}
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "erpc.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  echo "Visit http://127.0.0.1:8080 to use your application"
-  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+  Get the LoadBalancer IP:
+    export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "erpc.fullname" . }} --template "{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
+    echo "JSON-RPC URL: http://$SERVICE_IP:{{ .Values.service.port }}"
+    {{- if .Values.upstream.ws }}
+    echo "WebSocket URL: ws://$SERVICE_IP:{{ .Values.service.wsPort | default 8546 }}" (If WS enabled)
+    {{- end }}
+{{- else }}
+External Endpoints:
+  (No Ingress, NodePort, or LoadBalancer service type detected. Access may be limited to ClusterIP.)
 {{- end }}
+
+Internal Endpoints (within Kubernetes cluster):
+  - JSON-RPC:  http://{{ include "erpc.fullname" . }}:{{ .Values.service.port }}
+  {{- if .Values.upstream.ws }}
+  - WebSocket: ws://{{ include "erpc.fullname" . }}:{{ .Values.service.wsPort | default 8546 }}
+  {{- else }}
+  - WebSocket: (Not enabled or upstream not configured in values.yaml)
+  {{- end }}
+
+------------------------------------------------------------------------
+  Health Checks & Status
+------------------------------------------------------------------------
+
+Check Pod Status:
+  - To view the status of the ERPC pods:
+    kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name={{ include "erpc.name" . }}
+
+Health Check Endpoint:
+  - The service may expose a health check endpoint (e.g., /health). Please check the specific ERPC implementation or configuration if needed.
+  - Example (assuming /health on the service port, requires port-forward or exec):
+    kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "erpc.fullname" . }} 8080:{{ .Values.service.port }}
+    curl http://localhost:8080/health
+
+Verify RPC Functionality (Example):
+  - Use curl to send a basic RPC request (e.g., eth_chainId):
+    curl -X POST --data '{ "jsonrpc":"2.0", "method":"eth_chainId", "params":[], "id":1 }' -H "Content-Type: application/json" {{ if .Values.ingress.enabled }}https://{{ (index .Values.ingress.hosts 0).host | default (printf "rpc.%s" .Values.global.domain) }}{{ else }}http://localhost:8080{{ end }}
+    (Requires port-forward if testing internally without Ingress)
+
+------------------------------------------------------------------------
+  Configuration
+------------------------------------------------------------------------
+
+Key Configuration Values (from 'values.yaml'):
+  - `replicaCount`: Number of ERPC instances.
+  - `upstream.http`: Target internal Besu HTTP RPC endpoint.
+  - `upstream.ws`: Target internal Besu WebSocket endpoint (if WS enabled).
+  - `ingress.enabled`, `ingress.hosts`: External access configuration.
+  - Rate Limiting: Check for specific rate limiting configuration keys if implemented.
+
+------------------------------------------------------------------------
+  Troubleshooting
+------------------------------------------------------------------------
+
+Check Logs:
+  - To view logs for ERPC pods:
+    kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name={{ include "erpc.name" . }}
+
+Common Issues:
+  - Connection Refused: Verify ERPC pods are running and the service (`kubectl get svc -n {{ .Release.Namespace }} {{ include "erpc.fullname" . }}`) exists. Check Ingress controller logs if accessing externally.
+  - 5xx Errors (Bad Gateway, Service Unavailable): Check ERPC logs for errors connecting to the upstream Besu service. Verify the Besu service (`{{ .Values.upstream.http }}`) is running and accessible from ERPC pods.
+  - Rate Limit Exceeded: If rate limiting is configured, requests may be blocked. Check ERPC logs or metrics for rate limit details.
+  - WebSocket Issues: Ensure WebSocket upstream (`upstream.ws`) and Ingress (`ingress.ws`) are correctly configured if needed. Test internal WS connectivity first.
+
+------------------------------------------------------------------------
+  Integration Information
+------------------------------------------------------------------------
+
+Connecting other services (Blockscout, TheGraph, DApps, Portal) within the cluster:
+  - Use the internal JSON-RPC endpoint: http://{{ include "erpc.fullname" . }}:{{ .Values.service.port }}
+  - Use the internal WebSocket endpoint (if needed): ws://{{ include "erpc.fullname" . }}:{{ .Values.service.wsPort | default 8546 }}
+
+========================================================================

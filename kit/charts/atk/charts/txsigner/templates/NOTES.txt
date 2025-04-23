@@ -1,22 +1,80 @@
-1. Get the application URL by running these commands:
-{{- if .Values.ingress.enabled }}
-{{- range $host := .Values.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+{{- /*
+NOTES.txt for the Transaction Signer (txsigner) subchart.
+This service typically handles signing transactions using managed private keys.
+*/ -}}
+========================================================================
+  Transaction Signer (txsigner) Deployed
+========================================================================
+
+Your Transaction Signer service has been deployed in the '{{ .Release.Namespace }}' namespace.
+
+------------------------------------------------------------------------
+  Access Information
+------------------------------------------------------------------------
+
+API Endpoint (Internal):
+  - This service is typically accessed internally via its Kubernetes service name.
+  - Internal Service URL: http://{{ include "txsigner.fullname" . }}:{{ .Values.service.port }}
+  - The specific API path for signing requests depends on the implementation (e.g., /sign, /api/v1/sign). Check the service documentation or configuration.
+
+External Access:
+  - This service is generally NOT exposed externally via Ingress due to security implications.
+  {{- if .Values.ingress.enabled }}
+  - WARNING: Ingress is enabled in values.yaml. Ensure this is intended and secured appropriately.
+    URL: https://{{ (index .Values.ingress.hosts 0).host }}
   {{- end }}
-{{- end }}
-{{- else if contains "NodePort" .Values.service.type }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "txsigner.fullname" . }})
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  echo http://$NODE_IP:$NODE_PORT
-{{- else if contains "LoadBalancer" .Values.service.type }}
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "txsigner.fullname" . }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "txsigner.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-  echo http://$SERVICE_IP:{{ .Values.service.port }}
-{{- else if contains "ClusterIP" .Values.service.type }}
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "txsigner.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  echo "Visit http://127.0.0.1:8080 to use your application"
-  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
-{{- end }}
+
+------------------------------------------------------------------------
+  Health Checks & Status
+------------------------------------------------------------------------
+
+Check Pod Status:
+  - To view the status of the txsigner pods:
+    kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name={{ include "txsigner.name" . }}
+
+Health Check Endpoint:
+  - The service may expose a health check endpoint (e.g., /health). Check the application's documentation or probe configuration.
+  - Example (assuming /health on the service port, requires port-forward or exec):
+    kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "txsigner.fullname" . }} 8080:{{ .Values.service.port }}
+    curl http://localhost:8080/health
+
+------------------------------------------------------------------------
+  Configuration
+------------------------------------------------------------------------
+
+Key Configuration Values (from 'values.yaml'):
+  - `replicaCount`: Number of signer instances.
+  - Key Management: Configuration related to how private keys are loaded/accessed.
+    - Check for volume mounts pointing to Kubernetes Secrets (`extraVolumeMounts`, `extraVolumes`).
+    - Check for environment variables referencing secrets or specific key paths (`env`, `envFrom`).
+    - Key storage details are CRITICAL and specific to the implementation.
+  - Target RPC URL (if needed for nonce management or chain ID): Check `config.rpcUrl` or similar.
+
+Secrets:
+  - Private keys MUST be stored securely, typically in Kubernetes Secrets mounted into the pods.
+  - Identify the secret name(s) used for storing keys from the `values.yaml` deployment configuration.
+
+------------------------------------------------------------------------
+  Troubleshooting
+------------------------------------------------------------------------
+
+Check Logs:
+  - To view logs for txsigner pods:
+    kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name={{ include "txsigner.name" . }}
+
+Common Issues:
+  - Signing Failures: Check txsigner logs for errors. Verify the correct private key is loaded and accessible by the service. Ensure the transaction data being sent for signing is valid. Check if the correct Chain ID is being used.
+  - Connection Errors (from calling services): Ensure the txsigner pods are running and the service `{{ include "txsigner.fullname" . }}` is available. Check network policies.
+  - Pods Crashing/Not Ready: Examine logs for startup errors, often related to key loading failures or invalid configuration. Check secret mounts and permissions.
+
+------------------------------------------------------------------------
+  Integration Information
+------------------------------------------------------------------------
+
+Consuming Services:
+  - Services that need to send transactions using centrally managed keys (e.g., custom backend applications, potentially the Portal for certain actions) will call the txsigner's internal API endpoint.
+
+Key Management:
+  - How keys are added or rotated depends heavily on the specific implementation and deployment strategy (e.g., updating secrets, using external secret managers).
+
+========================================================================

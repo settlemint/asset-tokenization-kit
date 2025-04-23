@@ -1,14 +1,85 @@
+{{- /*
+NOTES.txt for the SettleMint Asset Tokenization Kit (ATK) main chart.
+Provides essential information after deployment.
+*/ -}}
 ========================================================================
-  The SettleMint Asset Tokenization Kit has been deployed successfully!
+  The SettleMint Asset Tokenization Kit (ATK) has been deployed!
 ========================================================================
 
-The following endpoints are now available:
+Welcome to the ATK! Below you'll find important information about accessing
+and managing the deployed services within the '{{ .Release.Namespace }}' namespace.
 
-  Blockchain JSON-RPC: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
-   Blockchain Exlorer: https://{{ (index .Values "blockscout" "blockscout-stack" "frontend" "ingress" "hostname" ) | default "explorer.k8s.orb.local" }}
-            The Graph: https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
-               Hasura: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}
-              Grafana: https://{{ (index .Values "observability" "grafana" "ingress" "hosts" 0 ) | default "grafana.k8s.orb.local" }}
+------------------------------------------------------------------------
+  Access Information
+------------------------------------------------------------------------
+
+The following primary service endpoints are exposed via Ingress (HTTPS/443):
+
+  Blockchain JSON-RPC:  https://{{ (index .Values.erpc.ingress.hosts 0).host | default (printf "rpc.%s" .Values.global.domain) }}
+  Blockchain Explorer:  https://{{ (index .Values "blockscout" "blockscout-stack" "frontend" "ingress" "hostname" ) | default (printf "explorer.%s" .Values.global.domain) }}
+  The Graph (GraphQL):  https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default (printf "graph.%s" .Values.global.domain) }}
+  Hasura (GraphQL):     https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default (printf "hasura.%s" .Values.global.domain) }}
+  Grafana (Monitoring): https://{{ (index .Values "observability" "grafana" "ingress" "hosts" 0 ) | default (printf "grafana.%s" .Values.global.domain) }}
 {{- if .Values.dapp.enabled }}
-                 DApp: https://{{ (index .Values.dapp.ingress.hosts 0).host | default "dapp.k8s.orb.local" }}
+  Example DApp:         https://{{ (index .Values.dapp.ingress.hosts 0).host | default (printf "dapp.%s" .Values.global.domain) }}
 {{- end }}
+{{- if .Values.portal.enabled }}
+  Developer Portal:     https://{{ (index .Values.portal.ingress.hosts 0).host | default (printf "portal.%s" .Values.global.domain) }}
+{{- end }}
+
+Default Credentials:
+  - Some services like Grafana or Hasura might have default credentials set during installation.
+  - Refer to the NOTES.txt of the specific subchart (e.g., observability, hasura) for details on initial credentials and how to retrieve them, often stored in Kubernetes Secrets.
+  - Example (replace <secret-name> and <key>):
+    kubectl get secret -n {{ .Release.Namespace }} <secret-name> -o jsonpath='{.data.<key>}' | base64 --decode
+
+Internal Service Access:
+  - Services within the Kubernetes cluster can typically access each other using internal DNS names, e.g., http://{{ .Release.Name }}-erpc:8545 for the RPC service.
+
+------------------------------------------------------------------------
+  Health Checks
+------------------------------------------------------------------------
+
+Check Pod Status:
+  - To view the status of all deployed pods in this release:
+    kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+Individual Service Health:
+  - Refer to the NOTES.txt of each subchart for specific health check endpoints or commands (e.g., Besu sync status, Blockscout indexer status).
+
+------------------------------------------------------------------------
+  Configuration
+------------------------------------------------------------------------
+
+Deployment Configuration:
+  - The deployment was configured using the 'values.yaml' file (and any overrides provided). Review this file for details on enabled features, resource allocation, persistence settings, etc.
+
+Runtime Configuration:
+  - Specific runtime configurations (e.g., Grafana data sources, Hasura database connections) are managed within the respective services. See subchart NOTES.txt for guidance.
+
+------------------------------------------------------------------------
+  Troubleshooting
+------------------------------------------------------------------------
+
+Check Pod Logs:
+  - To view logs for a specific service pod (replace <pod-name>):
+    kubectl logs -n {{ .Release.Namespace }} <pod-name>
+  - To follow logs in real-time:
+    kubectl logs -f -n {{ .Release.Namespace }} <pod-name>
+
+Describe Pods:
+  - For detailed information about a pod's state and events (replace <pod-name>):
+    kubectl describe pod -n {{ .Release.Namespace }} <pod-name>
+
+Common Issues:
+  - Pods in CrashLoopBackOff or Pending state: Use 'describe pod' to investigate.
+  - Service Unreachable: Check Ingress configuration, service status ('kubectl get svc -n {{ .Release.Namespace }}'), and pod logs.
+  - Refer to subchart NOTES.txt for service-specific troubleshooting tips.
+
+Support Resources:
+  - [Link to SettleMint ATK Documentation] (Replace with actual link)
+  - [Link to Community Forum/Support Channel] (Replace with actual link)
+
+========================================================================
+  Happy Tokenizing!
+========================================================================
