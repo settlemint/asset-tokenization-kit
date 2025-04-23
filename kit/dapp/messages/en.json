@@ -265,9 +265,10 @@
       "configuration": {
         "title": "Configuration",
         "description": "Configuration for the swap.",
-        "timelock": "Timelock",
-        "timelock-description": "The time until which you will not be able to refund assets from the swap.",
-        "timelock-error": "Timelock must be in the future.",
+        "expiry": "Expiry",
+        "expiry-description": "The time until which you will not be able to refund assets from the swap. If the swap is not executed, you can refund your assets after this time.",
+        "expiry-required": "Expiry is required",
+        "past-expiry-error": "Expiry must be in the future.",
         "secret": "Secret",
         "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the swap."
       },
@@ -283,7 +284,7 @@
         "amount": "Amount",
         "configuration": "Configuration",
         "configuration-description": "The configuration for the DvP Swap",
-        "timelock": "Timelock",
+        "expiry": "Expiry",
         "secret": "Secret"
       }
     }

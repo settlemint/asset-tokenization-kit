@@ -61,8 +61,8 @@ export function Summary() {
         icon={<Lock className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label={t("timelock")}
-          value={formatDate(values.timelock, {
+          label={t("expiry")}
+          value={formatDate(values.expiry, {
             locale,
           })}
         />

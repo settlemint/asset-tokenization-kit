@@ -17,10 +17,10 @@ export function Configuration() {
       <FormInput
         control={control}
         type="datetime-local"
-        name="timelock"
-        label={t("timelock")}
-        placeholder={t("timelock")}
-        description={t("timelock-description")}
+        name="expiry"
+        label={t("expiry")}
+        placeholder={t("expiry")}
+        description={t("expiry-description")}
         required
       />
 
@@ -38,21 +38,26 @@ export function Configuration() {
 }
 
 Configuration.validatedFields = [
-  "timelock",
+  "expiry",
   "secret",
 ] as (keyof CreateDvpSwapInput)[];
 
-const validateTimelock = async (form: UseFormReturn<CreateDvpSwapInput>) => {
-  const timelock = form.getValues("timelock");
+const validateExpiry = async (form: UseFormReturn<CreateDvpSwapInput>) => {
+  const expiry = form.getValues("expiry");
 
-  if (!timelock) {
+  if (!expiry) {
+    form.setError("expiry", {
+      type: "manual",
+      message: "trade-management.forms.configuration.expiry-required",
+    });
+
     return false;
   }
 
-  if (!isValidFutureDate(timelock)) {
-    form.setError("timelock", {
+  if (!isValidFutureDate(expiry)) {
+    form.setError("expiry", {
       type: "manual",
-      message: "trade-management.forms.configuration.timelock-error",
+      message: "trade-management.forms.configuration.past-expiry-error",
     });
 
     return false;
@@ -61,4 +66,4 @@ const validateTimelock = async (form: UseFormReturn<CreateDvpSwapInput>) => {
   return true;
 };
 
-Configuration.customValidation = [validateTimelock];
+Configuration.customValidation = [validateExpiry];

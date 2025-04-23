@@ -55,9 +55,10 @@ export const CreateDvpSwapSchema = t.Object(
         description: "Asset to receive",
       }
     ),
-    timelock: t.String({
+    expiry: t.String({
       description:
         "The time until which assets cannot be refunded from the swap.",
+      error: "Expiry is required",
     }),
     secret: t.String({
       minLength: 8,
