@@ -74,7 +74,6 @@ function formatNumberWithFormatter(
   });
 
   if (style === "decimal") {
-    // remove leading zeros after the decimal point
     formattedNumber = removeLeadingZerosAfterDecimalPoint(formattedNumber);
   }
 
