@@ -8,6 +8,7 @@ import { CreateDvpSwapSchema } from "@/lib/mutations/dvp/create/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { Amount } from "./steps/amount";
 import { Configuration } from "./steps/configuration";
 import { Participants } from "./steps/participants";
 import { Summary } from "./steps/summary";
@@ -58,6 +59,7 @@ export function CreateDvpSwapForm({
         }}
       >
         <Participants />
+        <Amount />
         <Configuration />
         <Summary />
       </Form>

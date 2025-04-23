@@ -242,40 +242,46 @@
         "dvp-swap": "Create DvP Swap"
       },
       "description": {
-        "dvp-swap": "Create a DvP Swap"
+        "dvp-swap": "A DvP (Delivery vs Payment) Swap enables an atomic exchange of assets between two parties. It allows the sender and receiver to exchange assets without the need for a third party."
       },
       "button": {
         "dvp-swap": "Create DvP Swap"
       },
       "participants": {
         "title": "Participants",
-        "description": "Select the participants for the DvP Swap",
-        "receiver": "Receiver",
+        "description": "Enter the participant for the DvP Swap. You will send and receive assets from the selected wallet. ",
         "sender": "Sender",
+        "receiver": "Receiver"
+      },
+      "amounts": {
+        "title": "Amount to exchange",
+        "description": "Enter the asset and amount of assets that you wish to exchange.",
         "amount-to-send": "Amount to send",
-        "amount-to-receive": "Amount to receive",
         "asset-to-send": "Asset to send",
+        "amount-to-receive": "Amount to receive",
         "asset-to-receive": "Asset to receive"
       },
       "configuration": {
         "title": "Configuration",
-        "description": "Configure the DvP Swap",
+        "description": "Configuration for the swap.",
         "timelock": "Timelock",
-        "timelock-description": "The timelock is the duration of the DvP Swap. The sender will not be able to refund the assets from the DvP Swap before the timelock expires.",
+        "timelock-description": "The time until which you will not be able to refund assets from the swap.",
+        "timelock-error": "Timelock must be in the future.",
         "secret": "Secret",
-        "secret-description": "The secret is the secret key for the DvP Swap."
+        "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the swap."
       },
       "summary": {
         "title": "Summary",
         "description": "Review the DvP Swap details",
+        "sending": "Sending",
+        "receiving": "Receiving",
+        "sending-description": "You are sending",
+        "receiving-description": "You are receiving",
+        "to": "To",
+        "from": "From",
+        "amount": "Amount",
         "participant-details": "Participant details",
         "participant-details-description": "The participants for the DvP Swap",
-        "sender": "Sender",
-        "receiver": "Receiver",
-        "asset-details": "Asset details",
-        "asset-details-description": "The asset details for the DvP Swap",
-        "assets-to-send": "Assets to send",
-        "assets-to-receive": "Assets to receive",
         "configuration": "Configuration",
         "configuration-description": "The configuration for the DvP Swap",
         "timelock": "Timelock",

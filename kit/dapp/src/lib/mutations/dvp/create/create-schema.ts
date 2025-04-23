@@ -48,14 +48,13 @@ export const CreateDvpSwapSchema = t.Object(
         description: "Asset to receive",
       }
     ),
-    timelock: t.Number({
-      error: "Timelock must be a positive integer representing minutes",
-      minimum: 1,
-      integer: true,
+    timelock: t.String({
+      description:
+        "The time until which assets cannot be refunded from the swap.",
     }),
     secret: t.String({
-      minLength: 1,
-      error: "Secret is required",
+      minLength: 8,
+      error: "Secret must be at least 8 characters long",
     }),
   },
   {
