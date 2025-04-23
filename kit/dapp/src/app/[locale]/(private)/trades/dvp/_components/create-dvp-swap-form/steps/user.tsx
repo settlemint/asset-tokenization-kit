@@ -4,8 +4,8 @@ import type { CreateDvpSwapInput } from "@/lib/mutations/dvp/create/create-schem
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function Participants() {
-  const t = useTranslations("trade-management.forms.participants");
+export function User() {
+  const t = useTranslations("trade-management.forms.user");
   const { control } = useFormContext<CreateDvpSwapInput>();
 
   return (
@@ -16,24 +16,13 @@ export function Participants() {
     >
       <FormUsers
         control={control}
-        name="receiver"
-        label={t("receiver")}
-        placeholder={t("receiver")}
+        name="user"
+        label={t("user")}
+        placeholder={t("user")}
         required
-      />
-      <FormUsers
-        control={control}
-        name="sender"
-        label={t("sender")}
-        placeholder={t("sender")}
-        required
-        disabled
       />
     </FormStep>
   );
 }
 
-Participants.validatedFields = [
-  "sender",
-  "receiver",
-] as (keyof CreateDvpSwapInput)[];
+User.validatedFields = ["user"] as (keyof CreateDvpSwapInput)[];

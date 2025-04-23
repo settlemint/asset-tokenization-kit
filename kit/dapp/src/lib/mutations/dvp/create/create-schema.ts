@@ -3,13 +3,10 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 export const CreateDvpSwapSchema = t.Object(
   {
-    sender: t.EthereumAddress({
-      error: "Sender address is required and must be a valid EVM address",
-    }),
-    amountToSend: t.Amount({
+    offerAmount: t.Amount({
       error: "Amount to send is required",
     }),
-    assetToSend: t.Object(
+    offerAsset: t.Object(
       {
         id: t.EthereumAddress({
           minLength: 1,
@@ -29,13 +26,13 @@ export const CreateDvpSwapSchema = t.Object(
         description: "Asset to send",
       }
     ),
-    receiver: t.EthereumAddress({
+    user: t.EthereumAddress({
       error: "Receiver address is required and must be a valid EVM address",
     }),
-    amountToReceive: t.Amount({
+    requestAmount: t.Amount({
       error: "Amount to receive is required",
     }),
-    assetToReceive: t.Object(
+    requestAsset: t.Object(
       {
         id: t.EthereumAddress({
           minLength: 1,

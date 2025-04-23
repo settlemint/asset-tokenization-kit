@@ -242,24 +242,23 @@
         "dvp-swap": "Create a DvP Swap"
       },
       "description": {
-        "dvp-swap": "A DvP (Delivery vs Payment) Swap enables an atomic exchange of assets between two parties. It allows the sender and receiver to exchange assets without the need for a third party."
+        "dvp-swap": "A DvP (Delivery vs Payment) Swap enables an atomic exchange of assets between two parties. It allows you to reliably exchange assets with another user without the need for a third party."
       },
       "button": {
         "dvp-swap": "Create a DvP Swap"
       },
-      "participants": {
-        "title": "Participants",
-        "description": "Enter the receiver for the DvP Swap. You will exchange assets with the receiver. ",
-        "sender": "Sender",
-        "receiver": "Receiver"
+      "user": {
+        "title": "User",
+        "description": "Select the user wallet you wish to swap assets with.",
+        "user": "User wallet"
       },
       "amounts": {
         "title": "Amount to exchange",
         "description": "Enter the asset and amount of assets that you wish to exchange.",
-        "amount-to-send": "Amount to send",
-        "asset-to-send": "Asset to send",
-        "amount-to-receive": "Amount to receive",
-        "asset-to-receive": "Asset to receive",
+        "amount-to-offer": "Offer amount",
+        "asset-to-offer": "Offer asset",
+        "amount-to-request": "Request amount",
+        "asset-to-request": "Request asset",
         "max-amount-to-send": "Available amount to send: {maxAmount}"
       },
       "configuration": {
@@ -274,11 +273,11 @@
       },
       "summary": {
         "title": "Summary",
-        "description": "Review the DvP Swap details. Ensure the receiver, amounts, timelock and secret are correct.",
-        "sending": "Sending",
-        "receiving": "Receiving",
-        "sending-description": "You are sending",
-        "receiving-description": "You are receiving",
+        "description": "Review the DvP Swap details. Ensure the receiver, amounts, expiry and secret are correct.",
+        "offer": "Your offer",
+        "offer-description": "The amount of assets you are offering to the user. This amount will be locked. In case the swap is not executed, you can refund your assets after the expiry.",
+        "request": "Your request",
+        "request-description": "The amount of assets you are requesting from the user.",
         "to": "To",
         "from": "From",
         "amount": "Amount",

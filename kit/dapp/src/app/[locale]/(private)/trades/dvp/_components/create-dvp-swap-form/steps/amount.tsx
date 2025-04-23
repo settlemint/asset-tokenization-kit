@@ -1,6 +1,7 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { authClient } from "@/lib/auth/client";
 import type { CreateDvpSwapInput } from "@/lib/mutations/dvp/create/create-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { useLocale, useTranslations } from "next-intl";
@@ -11,12 +12,12 @@ export function Amount() {
   const t = useTranslations("trade-management.forms.amounts");
   const locale = useLocale();
   const { watch, control } = useFormContext<CreateDvpSwapInput>();
-  const assetToSend = watch("assetToSend");
-  const assetToReceive = watch("assetToReceive");
-  const sender = watch("sender");
-  const receiver = watch("receiver");
-  const maxAmountToSend = assetToSend?.holders.find(
-    (holder) => getAddress(holder.account.id) === getAddress(sender)
+  const offerAsset = watch("offerAsset");
+  const requestAsset = watch("requestAsset");
+  const user = watch("user");
+  const loggedInUserWallet = authClient.useSession().data.user.wallet;
+  const maxAmountToSend = offerAsset?.holders.find(
+    (holder) => getAddress(holder.account.id) === getAddress(user)
   )?.value;
 
   return (
@@ -27,21 +28,21 @@ export function Amount() {
     >
       <FormAssets
         control={control}
-        name="assetToSend"
-        label={t("asset-to-send")}
-        placeholder={t("asset-to-send")}
+        name="offerAsset"
+        label={t("asset-to-offer")}
+        placeholder={t("asset-to-offer")}
         required
-        userWallet={sender}
+        userWallet={loggedInUserWallet}
       />
       <FormInput
         control={control}
-        name="amountToSend"
-        label={t("amount-to-send")}
-        placeholder={t("amount-to-send")}
+        name="offerAmount"
+        label={t("amount-to-offer")}
+        placeholder={t("amount-to-offer")}
         required
         type="number"
-        step={assetToSend?.decimals ? 10 ** -assetToSend.decimals : 1}
-        postfix={assetToSend?.symbol}
+        step={offerAsset?.decimals ? 10 ** -offerAsset.decimals : 1}
+        postfix={offerAsset?.symbol}
         max={
           !isNaN(Number(maxAmountToSend)) ? Number(maxAmountToSend) : undefined
         }
@@ -55,29 +56,29 @@ export function Amount() {
       />
       <FormAssets
         control={control}
-        name="assetToReceive"
-        label={t("asset-to-receive")}
-        placeholder={t("asset-to-receive")}
+        name="requestAsset"
+        label={t("asset-to-request")}
+        placeholder={t("asset-to-request")}
         required
-        userWallet={receiver}
+        userWallet={user}
       />
       <FormInput
         control={control}
-        name="amountToReceive"
-        label={t("amount-to-receive")}
-        placeholder={t("amount-to-receive")}
+        name="requestAmount"
+        label={t("amount-to-request")}
+        placeholder={t("amount-to-request")}
         required
         type="number"
-        step={assetToReceive?.decimals ? 10 ** -assetToReceive.decimals : 1}
-        postfix={assetToReceive?.symbol}
+        step={requestAsset?.decimals ? 10 ** -requestAsset.decimals : 1}
+        postfix={requestAsset?.symbol}
       />
     </FormStep>
   );
 }
 
 Amount.validatedFields = [
-  "assetToSend",
-  "amountToSend",
-  "assetToReceive",
-  "amountToReceive",
+  "offerAsset",
+  "offerAmount",
+  "requestAsset",
+  "requestAmount",
 ] as (keyof CreateDvpSwapInput)[];

@@ -18,40 +18,40 @@ export function Summary() {
   return (
     <FormStep title={t("title")} description={t("description")}>
       <FormSummaryDetailCard
-        title={t("sending")}
-        description={t("sending-description")}
+        title={t("offer")}
+        description={t("offer-description")}
         icon={<ArrowUpRight className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
           label={t("amount")}
-          value={formatNumber(values.amountToSend, {
+          value={formatNumber(values.offerAmount, {
             locale,
-            decimals: values.assetToSend.decimals,
-            token: values.assetToSend.symbol,
+            decimals: values.offerAsset.decimals,
+            token: values.offerAsset.symbol,
           })}
         />
         <FormSummaryDetailItem
           label={t("to")}
-          value={<EvmAddress address={values.receiver} />}
+          value={<EvmAddress address={values.user} />}
         />
       </FormSummaryDetailCard>
 
       <FormSummaryDetailCard
-        title={t("receiving")}
-        description={t("receiving-description")}
+        title={t("request")}
+        description={t("request-description")}
         icon={<ArrowDownLeft className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
           label={t("amount")}
-          value={formatNumber(values.amountToReceive, {
+          value={formatNumber(values.requestAmount, {
             locale,
-            decimals: values.assetToReceive.decimals,
-            token: values.assetToReceive.symbol,
+            decimals: values.requestAsset.decimals,
+            token: values.requestAsset.symbol,
           })}
         />
         <FormSummaryDetailItem
           label={t("from")}
-          value={<EvmAddress address={values.receiver} />}
+          value={<EvmAddress address={values.user} />}
         />
       </FormSummaryDetailCard>
 
