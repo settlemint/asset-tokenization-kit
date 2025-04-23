@@ -269,4 +269,4 @@ reloader:
       readOnlyRootFilesystem: true
     deployment:
       labels:
-        kots.io/app-slug: settlemint-platform
+        kots.io/app-slug: settlemint-atk

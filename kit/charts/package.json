@@ -9,7 +9,9 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "helm:deps": "bash -c 'set -eo pipefail; error_count=0; for d in ./{atk}; do if [ -d \"$d\" ]; then echo \"Updating dependencies for $d...\"; if ! helm dependency update \"$d\"; then echo \"Error updating dependencies for $d\"; error_count=$((error_count+1)); fi; fi; done; for d in ./atk/charts/*; do if [ -d \"$d\" ]; then echo \"Updating dependencies for $d...\"; if ! helm dependency update \"$d\"; then echo \"Error updating dependencies for $d\"; error_count=$((error_count+1)); fi; fi; done; if [ $error_count -gt 0 ]; then echo \"$error_count dependency update errors occurred\"; exit 1; fi'"
+    "helm:deps": "bash -c 'set -eo pipefail; error_count=0; for d in ./{atk}; do if [ -d \"$d\" ]; then echo \"Updating dependencies for $d...\"; if ! helm dependency update \"$d\"; then echo \"Error updating dependencies for $d\"; error_count=$((error_count+1)); fi; fi; done; for d in ./atk/charts/*; do if [ -d \"$d\" ]; then echo \"Updating dependencies for $d...\"; if ! helm dependency update \"$d\"; then echo \"Error updating dependencies for $d\"; error_count=$((error_count+1)); fi; fi; done; if [ $error_count -gt 0 ]; then echo \"$error_count dependency update errors occurred\"; exit 1; fi'",
+    "helm:package": "helm package atk --destination .",
+    "helm:push": "helm push atk-*.tgz oci://ghcr.io/settlemint && helm push ./atk-*.tgz oci://harbor.settlemint.com/atk"
   },
   "dependencies": {},
   "devDependencies": {},
