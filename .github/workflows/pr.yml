@@ -52,7 +52,7 @@ jobs:
 
       - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55
         with:
-          python-version: '3.x'
+          python-version: '3.13.3'
           check-latest: true
 
       - name: Set up chart-testing
