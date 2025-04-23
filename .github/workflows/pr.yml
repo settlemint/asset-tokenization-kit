@@ -50,9 +50,9 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
 
-      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55
+      - uses: actions/setup-python@30eafe95483bd95135b7eda0c66a0369af9afdf1
         with:
-          python-version: '3.x'
+          python-version: '3.13.3'
           check-latest: true
 
       - name: Set up chart-testing
