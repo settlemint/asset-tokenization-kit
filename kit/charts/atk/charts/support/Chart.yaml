@@ -14,7 +14,7 @@ dependencies:
     version: 4.12.1
     repository: https://kubernetes.github.io/ingress-nginx
   - name: postgresql-ha
-    version: "15.3.12"
+    version: "15.3.13"
     repository: oci://registry-1.docker.io/bitnamicharts
   - name: redis
     version: "20.12.2"
