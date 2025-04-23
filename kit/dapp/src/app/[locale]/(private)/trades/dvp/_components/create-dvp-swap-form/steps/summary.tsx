@@ -66,7 +66,11 @@ export function Summary() {
             locale,
           })}
         />
-        <FormSummaryDetailItem label={t("secret")} value={values.secret} />
+        <FormSummaryDetailItem
+          label={t("secret")}
+          value={values.secret}
+          secret={true}
+        />
       </FormSummaryDetailCard>
     </FormStep>
   );

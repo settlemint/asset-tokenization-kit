@@ -23,8 +23,6 @@ export function Amount() {
     (holder) => getAddress(holder.account.id) === getAddress(receiver)
   )?.value;
 
-  console.log({ maxAmountToSend, maxAmountToReceive });
-
   return (
     <FormStep
       title={t("title")}
