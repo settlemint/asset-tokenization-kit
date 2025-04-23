@@ -16,7 +16,7 @@ jobs:
     environment: staging
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v6
+        uses: namespacelabs/nscloud-checkout-action@v7
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
@@ -101,7 +101,7 @@ jobs:
     runs-on: namespace-profile-atk-trivy
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v6
+        uses: namespacelabs/nscloud-checkout-action@v7
 
       - name: Secret Scanning (Trivy)
         uses: aquasecurity/trivy-action@0.30.0
