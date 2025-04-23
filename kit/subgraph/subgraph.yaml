@@ -9,27 +9,28 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: BondFactory
+    name: DvPSwapFactory
     network: settlemint
     source:
-      address: "0x5e771e1417100000000000000000000000000004"
-      abi: BondFactory
+      address: "0x5c6f68F06ab1B8f2F790AF5C2D58FFfE9444E7ED"
+      abi: DvPSwapFactory
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
         - Factory
-        - BondCreatedEvent
+        - DvPSwapFactory
+        - DvPSwapContractCreatedEvent
       abis:
-        - name: BondFactory
-          file: ../contracts/artifacts/contracts/BondFactory.sol/BondFactory.json
-        - name: Bond
-          file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
+        - name: DvPSwapFactory
+          file: ../contracts/artifacts/contracts/DvPSwapFactory.sol/DvPSwapFactory.json
+        - name: DvPSwap
+          file: ../contracts/artifacts/contracts/DvPSwap.sol/DvPSwap.json
       eventHandlers:
-        - event: BondCreated(indexed address,indexed address)
-          handler: handleBondCreated
-      file: ./src/factories/bond-factory.ts
+        - event: DvPSwapContractCreated(indexed address,indexed address)
+          handler: handleDvPSwapContractCreated
+      file: ./src/factories/dvpswap-factory.ts
   - kind: ethereum/contract
     name: CryptoCurrencyFactory
     network: settlemint
@@ -789,3 +790,40 @@ templates:
         - event: DistributionCapUpdated(uint256,uint256)
           handler: handleDistributionCapUpdated
       file: ./src/assets/pushAirdrop.ts
+  - kind: ethereum/contract
+    name: DvPSwap
+    network: settlemint
+    source:
+      abi: DvPSwap
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Account
+        - DvPSwap
+        - DvPSwapEntity
+        - DvPSwapCreatedEvent
+        - DvPSwapStatusChangedEvent
+        - DvPSwapClaimedEvent
+        - DvPSwapRefundedEvent
+        - TokensLockedEvent
+        - DvPSwapStatsData
+        - DvPSwapStats
+      abis:
+        - name: DvPSwap
+          file: ../contracts/artifacts/contracts/DvPSwap.sol/DvPSwap.json
+      eventHandlers:
+        - event:
+            DvPSwapCreated(indexed bytes32,indexed address,indexed
+            address,address,address,uint256,uint256,uint256,bytes32)
+          handler: handleDvPSwapCreated
+        - event: DvPSwapStatusChanged(indexed bytes32,uint8)
+          handler: handleDvPSwapStatusChanged
+        - event: DvPSwapClaimed(indexed bytes32,indexed address,bytes32)
+          handler: handleDvPSwapClaimed
+        - event: DvPSwapRefunded(indexed bytes32,indexed address)
+          handler: handleDvPSwapRefunded
+        - event: TokensLocked(indexed bytes32,address,uint256,uint256)
+          handler: handleTokensLocked
+      file: ./src/dvpswap/dvpswap.ts
