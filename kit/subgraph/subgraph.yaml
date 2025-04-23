@@ -171,7 +171,7 @@ dataSources:
       abi: AirdropFactory
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.7
+      apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
         - AirdropFactory
@@ -705,7 +705,7 @@ templates:
       abi: StandardAirdrop
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.7
+      apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
         - StandardAirdrop
@@ -732,7 +732,7 @@ templates:
       abi: VestingAirdrop
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.7
+      apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
         - VestingAirdrop
@@ -765,7 +765,7 @@ templates:
       abi: PushAirdrop
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.7
+      apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
         - PushAirdrop
