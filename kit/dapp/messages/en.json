@@ -226,7 +226,16 @@
         "profile": "Profile",
         "api": "API",
         "platform": "Platform"
+      },
+      "trade-management": {
+        "group-title": "Trade management",
+        "trades": "Trades"
       }
+    }
+  },
+  "trade-management": {
+    "page": {
+      "title": "Trades"
     }
   },
   "admin-user": "Admin",
@@ -802,7 +811,8 @@
       "asset-management": "Asset management",
       "platform": "Platform management",
       "portfolio": "My portfolio",
-      "title": "Private"
+      "title": "Private",
+      "trade-management": "Trade management"
     },
     "user-dropdown": {
       "documentation": "Documentation",
