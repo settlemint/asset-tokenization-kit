@@ -561,12 +561,7 @@ export class AdminPage extends BasePage {
     };
   }
 
-  async updateCollateral(options: {
-    sidebarAssetTypes: string;
-    name: string;
-    amount: string;
-    pincode: string;
-  }) {
+  async updateCollateral(options: { amount: string; pincode: string }) {
     await this.page.getByRole("button", { name: "Manage" }).click();
     const updateCollateralOption = this.page.getByRole("menuitem", {
       name: "Update Collateral",

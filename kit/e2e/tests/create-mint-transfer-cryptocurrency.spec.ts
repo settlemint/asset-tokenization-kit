@@ -19,7 +19,6 @@ const testData = {
 
 test.describe("Create, mint and transfer cryptocurrency", () => {
   test.describe.configure({ mode: "serial" });
-  let userContext: BrowserContext | undefined;
   let transferUserContext: BrowserContext | undefined;
   let adminContext: BrowserContext | undefined;
   let transferUserPages: ReturnType<typeof Pages>;
@@ -47,9 +46,6 @@ test.describe("Create, mint and transfer cryptocurrency", () => {
       await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
-      if (userContext) {
-        await userContext.close();
-      }
       if (transferUserContext) {
         await transferUserContext.close();
       }
@@ -61,9 +57,6 @@ test.describe("Create, mint and transfer cryptocurrency", () => {
   });
 
   test.afterAll(async () => {
-    if (userContext) {
-      await userContext.close();
-    }
     if (transferUserContext) {
       await transferUserContext.close();
     }

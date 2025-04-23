@@ -18,13 +18,8 @@ const testData = {
   currentTotalSupply: 0,
 };
 
-const supplyTracking = {
-  currentTotalSupply: "",
-};
-
 test.describe("Create, mint, transfer and burn fund", () => {
   test.describe.configure({ mode: "serial" });
-  let userContext: BrowserContext | undefined;
   let transferUserContext: BrowserContext | undefined;
   let adminContext: BrowserContext | undefined;
   let transferUserPages: ReturnType<typeof Pages>;
@@ -52,9 +47,6 @@ test.describe("Create, mint, transfer and burn fund", () => {
       await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
-      if (userContext) {
-        await userContext.close();
-      }
       if (transferUserContext) {
         await transferUserContext.close();
       }
@@ -66,9 +58,6 @@ test.describe("Create, mint, transfer and burn fund", () => {
   });
 
   test.afterAll(async () => {
-    if (userContext) {
-      await userContext.close();
-    }
     if (transferUserContext) {
       await transferUserContext.close();
     }

@@ -65,7 +65,7 @@ test.describe("Create, update collateral, mint and transfer stablecoin", () => {
       await transferUserContext.close();
     }
   });
-  test("Admin user creates stablecoin, updates proven collateral and mints tokens", async ({
+  test("Admin user creates stablecoin, updates proven collateral and mints stablecoins", async ({
     browser,
   }) => {
     await ensureUserIsAdmin(adminUser.email);
@@ -88,8 +88,6 @@ test.describe("Create, update collateral, mint and transfer stablecoin", () => {
       });
       await adminPages.adminPage.clickAssetDetails(testData.stablecoinName);
       await adminPages.adminPage.updateCollateral({
-        sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
-        name: testData.stablecoinName,
         ...stableCoinUpdateCollateralData,
       });
       await adminPages.adminPage.verifySuccessMessage(
