@@ -17,6 +17,9 @@ export const CreateDvpSwapSchema = t.Object(
         decimals: t.Number({
           description: "The number of decimal places for the token",
         }),
+        symbol: t.String({
+          description: "The symbol for the token",
+        }),
       },
       {
         description: "Asset to send",
@@ -36,6 +39,9 @@ export const CreateDvpSwapSchema = t.Object(
         }),
         decimals: t.Number({
           description: "The number of decimal places for the token",
+        }),
+        symbol: t.String({
+          description: "The symbol for the token",
         }),
       },
       {
