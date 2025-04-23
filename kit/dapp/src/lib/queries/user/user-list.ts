@@ -72,6 +72,7 @@ export const getUserList = withTracing(
         cacheTag("user-activity");
         const [users, accounts] = await Promise.all([
           fetchAllHasuraPages(async (pageLimit, offset) => {
+            cacheTag("user");
             const result = await hasuraClient.request(
               UserList,
               {
