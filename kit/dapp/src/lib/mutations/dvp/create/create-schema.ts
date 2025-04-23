@@ -1,3 +1,4 @@
+import { HolderSchema } from "@/lib/queries/asset/asset-users-schema";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 export const CreateDvpSwapSchema = t.Object(
@@ -19,6 +20,9 @@ export const CreateDvpSwapSchema = t.Object(
         }),
         symbol: t.String({
           description: "The symbol for the token",
+        }),
+        holders: t.Array(HolderSchema, {
+          description: "Accounts holding this asset",
         }),
       },
       {
@@ -42,6 +46,9 @@ export const CreateDvpSwapSchema = t.Object(
         }),
         symbol: t.String({
           description: "The symbol for the token",
+        }),
+        holders: t.Array(HolderSchema, {
+          description: "Accounts holding this asset",
         }),
       },
       {

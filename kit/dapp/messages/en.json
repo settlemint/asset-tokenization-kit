@@ -259,7 +259,9 @@
         "amount-to-send": "Amount to send",
         "asset-to-send": "Asset to send",
         "amount-to-receive": "Amount to receive",
-        "asset-to-receive": "Asset to receive"
+        "asset-to-receive": "Asset to receive",
+        "max-amount-to-send": "Available amount to send: {maxAmount}",
+        "max-amount-to-receive": "Available amount to receive: {maxAmount}"
       },
       "configuration": {
         "title": "Configuration",
