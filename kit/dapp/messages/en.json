@@ -259,7 +259,7 @@
         "asset-to-offer": "Offer asset",
         "amount-to-request": "Request amount",
         "asset-to-request": "Request asset",
-        "max-amount-to-send": "Available amount to send: {maxAmount}"
+        "max-amount-to-send": "Amount available to offer: {maxAmount}"
       },
       "configuration": {
         "title": "Configuration",
@@ -275,7 +275,7 @@
         "title": "Summary",
         "description": "Review the DvP Swap details. Ensure the receiver, amounts, expiry and secret are correct.",
         "offer": "Your offer",
-        "offer-description": "The amount of assets you are offering to the user. This amount will be locked. In case the swap is not executed, you can refund your assets after the expiry.",
+        "offer-description": "The amount of assets you are offering to the user. This amount will be locked.",
         "request": "Your request",
         "request-description": "The amount of assets you are requesting from the user.",
         "to": "To",
@@ -283,8 +283,7 @@
         "amount": "Amount",
         "configuration": "Configuration",
         "configuration-description": "The configuration for the DvP Swap",
-        "expiry": "Expiry",
-        "secret": "Secret"
+        "expiry": "Expiry"
       }
     }
   },

@@ -57,10 +57,6 @@ export const CreateDvpSwapSchema = t.Object(
         "The time until which assets cannot be refunded from the swap.",
       error: "Expiry is required",
     }),
-    secret: t.String({
-      minLength: 8,
-      error: "Secret must be at least 8 characters long",
-    }),
   },
   {
     $id: "CreateDvpSwapForm",

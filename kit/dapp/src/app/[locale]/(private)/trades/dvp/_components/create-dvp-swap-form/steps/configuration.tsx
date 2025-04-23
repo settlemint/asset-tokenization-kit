@@ -23,24 +23,11 @@ export function Configuration() {
         description={t("expiry-description")}
         required
       />
-
-      <FormInput
-        control={control}
-        name="secret"
-        label={t("secret")}
-        placeholder={t("secret")}
-        description={t("secret-description")}
-        required
-        type="password"
-      />
     </FormStep>
   );
 }
 
-Configuration.validatedFields = [
-  "expiry",
-  "secret",
-] as (keyof CreateDvpSwapInput)[];
+Configuration.validatedFields = ["expiry"] as (keyof CreateDvpSwapInput)[];
 
 const validateExpiry = async (form: UseFormReturn<CreateDvpSwapInput>) => {
   const expiry = form.getValues("expiry");

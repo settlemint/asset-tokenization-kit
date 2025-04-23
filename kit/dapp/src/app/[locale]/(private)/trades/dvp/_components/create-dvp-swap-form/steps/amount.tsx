@@ -5,20 +5,20 @@ import { authClient } from "@/lib/auth/client";
 import type { CreateDvpSwapInput } from "@/lib/mutations/dvp/create/create-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { useLocale, useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import { getAddress } from "viem";
 
 export function Amount() {
   const t = useTranslations("trade-management.forms.amounts");
   const locale = useLocale();
-  const { watch, control } = useFormContext<CreateDvpSwapInput>();
-  const offerAsset = watch("offerAsset");
-  const requestAsset = watch("requestAsset");
-  const user = watch("user");
+  const { control } = useFormContext<CreateDvpSwapInput>();
+  const offerAsset = useWatch({ control, name: "offerAsset" });
   const loggedInUserWallet = authClient.useSession().data.user.wallet;
   const maxAmountToSend = offerAsset?.holders.find(
-    (holder) => getAddress(holder.account.id) === getAddress(user)
+    (holder) => getAddress(holder.account.id) === getAddress(loggedInUserWallet)
   )?.value;
+  const requestAsset = useWatch({ control, name: "requestAsset" });
+  const user = useWatch({ control, name: "user" });
 
   return (
     <FormStep
