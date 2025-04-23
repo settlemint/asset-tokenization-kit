@@ -23,93 +23,40 @@ The ATK Helm chart includes the following components:
 
 ## Installation
 
-### 1. Add the Helm repository
+### 1. Log in to Harbor Registry
 
 ```bash
-helm repo add atk https://charts.settlemint.com
+helm registry login harbor.settlemint.com \
+  --username <your-harbor-username> \
+  --password <your-harbor-password-or-token>
+```
+
+### 2. Add the Helm repository
+
+```bash
+helm repo add atk https://harbor.settlemint.com
 helm repo update
 ```
 
-### 2. Generate Contract ABIs
-
-Before installing the chart, you need to generate the contract ABIs and place them in the correct location. Follow these steps:
-
-1. Navigate to the contracts directory:
-```bash
-cd kit/contracts
-```
-
-2. Run the following commands in sequence:
-```bash
-# Install dependencies
-bun dependencies
-
-# Compile contracts
-bun compile:forge
-
-# Generate ABI files
-bun abi-output
-```
-
-3. Create the ABIs directory in the portal chart:
-```bash
-mkdir -p ../charts/atk/charts/portal/abis
-```
-
-4. Copy the generated ABI files:
-```bash
-cp portal/*.json ../charts/atk/charts/portal/abis/
-```
-
-> **Note**: The ABI files are essential for the portal to interact with the smart contracts. Make sure to regenerate and copy them whenever you make changes to the contracts.
-
 ### 3. Install the chart
 
+Install the chart using the appropriate values file for your environment.
+
+**For Development:**
+
 ```bash
-helm install atk settlemint/atk -f values.yaml -f values-example.yaml
+helm install atk-dev atk/atk -f values.yaml --namespace <your-dev-namespace>
 ```
+
+**For Production:**
+
+```bash
+helm install atk-prod atk/atk -f values-prod.yaml --namespace <your-prod-namespace>
+```
+
+Replace `<your-dev-namespace>` and `<your-prod-namespace>` with the target Kubernetes namespaces.
 
 ## Configuration
-
-### Global Labels
-
-All resources created by this chart and its subcharts will automatically include the following labels through Helm's global values:
-
-```yaml
-global:
-  labels:
-    kots.io/app-slug: settlemint-atk
-
-```
-
-These labels are automatically included in all resources through the `atk.labels` helper template. To use these labels in your templates, include them like this:
-
-```yaml
-metadata:
-  labels:
-    {{- include "atk.labels" . | nindent 4 }}
-```
-
-You can add additional global labels by modifying the `global.labels` section in your values file:
-
-```yaml
-global:
-  labels:
-    environment: production
-    team: blockchain
-```
-
-The labels will be applied to all resources across the following components:
-- Besu Network
-- ERPC
-- Blockscout
-- TheGraph
-- Hasura
-- Portal
-- Support Services
-- Observability Stack
-
-> **Note**: This approach uses Helm's built-in global value passing mechanism, ensuring consistent label application across all components.
 
 ### Global Parameters
 
@@ -127,39 +74,50 @@ The labels will be applied to all resources across the following components:
 | `portal.image.repository` | Portal image repository | `settlemint/atk-portal` |
 | `portal.image.tag` | Portal image tag | `latest` |
 
-[Additional configuration parameters...]
+### Besu Parameters
 
-## Troubleshooting
+| Parameter          | Description                  | Default |
+|--------------------|------------------------------|---------|
+| `besu.enabled`     | Enable Besu deployment       | `true`  |
+| `besu.image.repo`  | Besu image repository        | `...`   |
+| `besu.image.tag`   | Besu image tag               | `...`   |
+| [...more Besu parameters...] | ...                          | ...     |
 
-### Common Issues
+### ERPC Parameters
 
-1. **Missing ABI Files**
-   - Symptom: Portal fails to interact with contracts
-   - Solution: Ensure you've generated and copied the ABI files to `charts/portal/abis/`
+| Parameter          | Description                  | Default |
+|--------------------|------------------------------|---------|
+| `erpc.enabled`     | Enable ERPC deployment       | `true`  |
+| `erpc.image.repo`  | ERPC image repository        | `...`   |
+| `erpc.image.tag`   | ERPC image tag               | `...`   |
+| [...more ERPC parameters...] | ...                          | ...     |
 
-2. **Contract Compilation Errors**
-   - Symptom: `bun compile:forge` fails
-   - Solution: Check contract syntax and dependencies
+### Blockscout Parameters
 
-[Additional troubleshooting information...]
+| Parameter              | Description                      | Default |
+|------------------------|----------------------------------|---------|
+| `blockscout.enabled`   | Enable Blockscout deployment     | `true`  |
+| `blockscout.image.repo`| Blockscout image repository    | `...`   |
+| `blockscout.image.tag` | Blockscout image tag           | `...`   |
+| [...more Blockscout parameters...] | ...                              | ...     |
 
-## Development
+### Hasura Parameters
 
-### Updating ABIs
+| Parameter          | Description                  | Default |
+|--------------------|------------------------------|---------|
+| `hasura.enabled`   | Enable Hasura deployment     | `true`  |
+| `hasura.image.repo`| Hasura image repository      | `...`   |
+| `hasura.image.tag` | Hasura image tag             | `...`   |
+| [...more Hasura parameters...] | ...                          | ...     |
 
-When you make changes to the smart contracts, you need to:
+### TheGraph Parameters
 
-1. Recompile the contracts
-2. Regenerate the ABIs
-3. Update the portal chart
-
-```bash
-cd kit/contracts
-bun dependencies
-bun compile:forge
-bun abi-output
-cp portal/*.json ../charts/atk/charts/portal/abis/
-```
+| Parameter            | Description                    | Default |
+|----------------------|--------------------------------|---------|
+| `thegraph.enabled`   | Enable TheGraph deployment     | `true`  |
+| `thegraph.image.repo`| TheGraph image repository      | `...`   |
+| `thegraph.image.tag` | TheGraph image tag             | `...`   |
+| [...more TheGraph parameters...] | ...                            | ...     |
 
 ## License
 

@@ -328,6 +328,21 @@ export const fundData = {
   initialSupply: "0",
 };
 
+export const fundMintTokenData = {
+  amount: "10000",
+  pincode: pincode,
+};
+
+export const fundTransferData = {
+  transferAmount: "1000",
+  pincode: pincode,
+};
+
+export const fundBurnData = {
+  amount: "1000",
+  pincode: pincode,
+};
+
 export const stablecoinData = {
   assetType: "Stablecoin",
   name: generateStablecoinName(),

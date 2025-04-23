@@ -1,9 +1,10 @@
 import { type BrowserContext, test } from "@playwright/test";
 import { Pages } from "../pages/pages";
 import {
-  equityData,
-  equityMintTokenData,
-  equityTransferData,
+  fundBurnData,
+  fundData,
+  fundMintTokenData,
+  fundTransferData,
 } from "../test-data/asset-data";
 import { assetMessage } from "../test-data/success-msg-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
@@ -13,10 +14,15 @@ const testData = {
   transferUserEmail: "",
   transferUserWalletAddress: "",
   transferUserName: "",
-  equityName: "",
+  fundName: "",
+  currentTotalSupply: 0,
 };
 
-test.describe("Create, mint and transfer equity", () => {
+const supplyTracking = {
+  currentTotalSupply: "",
+};
+
+test.describe("Create, mint, transfer and burn fund", () => {
   test.describe.configure({ mode: "serial" });
   let userContext: BrowserContext | undefined;
   let transferUserContext: BrowserContext | undefined;
@@ -70,54 +76,63 @@ test.describe("Create, mint and transfer equity", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates and mint equity", async ({ browser }) => {
-    await adminPages.adminPage.createEquity(equityData);
-    testData.equityName = equityData.name;
+  test("Admin user creates, mint and burn fund", async ({ browser }) => {
+    await adminPages.adminPage.createFund(fundData);
+    testData.fundName = fundData.name;
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
     await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: equityData.sidebarAssetTypes,
-      name: testData.equityName,
-      totalSupply: equityData.initialSupply,
+      sidebarAssetTypes: fundData.sidebarAssetTypes,
+      name: testData.fundName,
+      totalSupply: fundData.initialSupply,
     });
-    await adminPages.adminPage.clickAssetDetails(testData.equityName);
+    await adminPages.adminPage.clickAssetDetails(testData.fundName);
     await adminPages.adminPage.mintAsset({
       user: adminUser.name,
-      ...equityMintTokenData,
+      ...fundMintTokenData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
-    await adminPages.adminPage.verifyTotalSupply(equityMintTokenData.amount);
+    await adminPages.adminPage.verifyTotalSupply(fundMintTokenData.amount);
+    await adminPages.adminPage.redeemBurnAsset({
+      ...fundBurnData,
+    });
+    const mintAmount = Number.parseFloat(fundMintTokenData.amount);
+    const burnAmount = Number.parseFloat(fundBurnData.amount);
+    const newTotal = mintAmount - burnAmount;
+    testData.currentTotalSupply = newTotal;
+    await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
   });
-  test("Admin user transfer equity to regular transfer user", async () => {
+  test("Admin user transfer, burn  to regular transfer user and verify balance", async () => {
     await adminPages.portfolioPage.transferAsset({
-      asset: testData.equityName,
+      asset: testData.fundName,
       walletAddress: testData.transferUserWalletAddress,
       user: testData.transferUserName,
-      ...equityTransferData,
+      ...fundTransferData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
 
-    const mintAmount = Number.parseFloat(equityMintTokenData.amount);
-    const transferAmount = Number.parseFloat(equityTransferData.transferAmount);
-    const expectedBalance = (mintAmount - transferAmount).toString();
+    const transferAmount = Number.parseFloat(fundTransferData.transferAmount);
+    const expectedBalance = (
+      testData.currentTotalSupply - transferAmount
+    ).toString();
     await adminPages.adminPage.clickSidebarMenuItem("My assets");
 
     await adminPages.adminPage.filterAssetByName({
-      name: testData.equityName,
+      name: testData.fundName,
       totalSupply: expectedBalance,
     });
   });
 
-  test("Verify regular transfer user received equity", async () => {
+  test("Verify regular transfer user received fund", async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
-      expectedAmount: equityTransferData.transferAmount,
-      price: equityData.price,
+      expectedAmount: fundTransferData.transferAmount,
+      price: fundData.price,
     });
   });
 });

@@ -71,9 +71,7 @@ test.describe("Create, mint and transfer cryptocurrency", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates, mint cryptocurrency and transfer to user", async ({
-    browser,
-  }) => {
+  test("Admin user creates and mint cryptocurrency", async ({ browser }) => {
     await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
     testData.cryptocurrencyName = cryptocurrencyData.name;
     await adminPages.adminPage.verifySuccessMessage(
@@ -86,7 +84,6 @@ test.describe("Create, mint and transfer cryptocurrency", () => {
     });
     await adminPages.adminPage.clickAssetDetails(testData.cryptocurrencyName);
     await adminPages.adminPage.mintAsset({
-      sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
       user: adminUser.name,
       ...cryptocurrencyMintTokenData,
     });
@@ -97,7 +94,7 @@ test.describe("Create, mint and transfer cryptocurrency", () => {
       cryptocurrencyDataAmountAfterMint.amount
     );
   });
-  test("Admin user transfer cryptocurrency to regular tranfer user and verify balance", async () => {
+  test("Admin user transfer cryptocurrency to regular transfer user", async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.cryptocurrencyName,
       walletAddress: testData.transferUserWalletAddress,
