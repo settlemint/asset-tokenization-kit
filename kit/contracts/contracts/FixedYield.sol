@@ -7,6 +7,7 @@ import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
+import { IFixedYield } from "./interfaces/IFixedYield.sol";
 
 /// @title FixedYield - A contract for managing token yield distributions
 /// @notice This contract implements a fixed yield schedule for ERC20 tokens, allowing for periodic
@@ -16,7 +17,7 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 /// support. Works with ERC20Yield-compatible tokens to manage yield distributions. Uses timestamps for
 /// period calculations and maintains a history of distributions.
 /// @custom:security-contact support@settlemint.com
-contract FixedYield is AccessControl, Pausable, ERC2771Context {
+contract FixedYield is AccessControl, Pausable, ERC2771Context, IFixedYield {
     /// @notice Custom errors for the FixedYield contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error InvalidToken();
