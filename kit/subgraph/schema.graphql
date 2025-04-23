@@ -28,7 +28,7 @@ interface Asset {
   concentration: BigDecimal!
 }
 
-interface Factory {
+type Factory @entity(immutable: false) {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -260,7 +260,7 @@ type DvPSwap @entity(immutable: false) {
 # DvPSwap Factory
 # --------------------------------------------------
 
-type DvPSwapFactory implements Factory @entity(immutable: false) {
+type DvPSwapFactory @entity(immutable: false) {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -1009,7 +1009,8 @@ type DvPSwapStatsData @entity(timeseries: true) {
   valueUnlockedExact: BigInt!
 }
 
-type DvPSwapStats @aggregation(intervals: ["hour", "day"], source: "DvPSwapStatsData") {
+type DvPSwapStats
+  @aggregation(intervals: ["hour", "day"], source: "DvPSwapStatsData") {
   id: Int8!
   timestamp: Timestamp!
   ## Filters
@@ -1025,7 +1026,8 @@ type DvPSwapStats @aggregation(intervals: ["hour", "day"], source: "DvPSwapStats
   totalValueLocked: BigDecimal! @aggregate(fn: "last", arg: "valueLocked")
   totalValueLockedExact: BigInt! @aggregate(fn: "last", arg: "valueLockedExact")
   totalValueUnlocked: BigDecimal! @aggregate(fn: "sum", arg: "valueUnlocked")
-  totalValueUnlockedExact: BigInt! @aggregate(fn: "sum", arg: "valueUnlockedExact")
+  totalValueUnlockedExact: BigInt!
+    @aggregate(fn: "sum", arg: "valueUnlockedExact")
 }
 
 # --------------------------------------------------
