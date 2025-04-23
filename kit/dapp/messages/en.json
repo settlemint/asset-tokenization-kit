@@ -239,17 +239,17 @@
     },
     "forms": {
       "title": {
-        "dvp-swap": "Create DvP Swap"
+        "dvp-swap": "Create a DvP Swap"
       },
       "description": {
         "dvp-swap": "A DvP (Delivery vs Payment) Swap enables an atomic exchange of assets between two parties. It allows the sender and receiver to exchange assets without the need for a third party."
       },
       "button": {
-        "dvp-swap": "Create DvP Swap"
+        "dvp-swap": "Create a DvP Swap"
       },
       "participants": {
         "title": "Participants",
-        "description": "Enter the participant for the DvP Swap. You will send and receive assets from the selected wallet. ",
+        "description": "Enter the receiver for the DvP Swap. You will exchange assets with the receiver. ",
         "sender": "Sender",
         "receiver": "Receiver"
       },
@@ -274,7 +274,7 @@
       },
       "summary": {
         "title": "Summary",
-        "description": "Review the DvP Swap details",
+        "description": "Review the DvP Swap details. Ensure the receiver, amounts, timelock and secret are correct.",
         "sending": "Sending",
         "receiving": "Receiving",
         "sending-description": "You are sending",
@@ -282,8 +282,6 @@
         "to": "To",
         "from": "From",
         "amount": "Amount",
-        "participant-details": "Participant details",
-        "participant-details-description": "The participants for the DvP Swap",
         "configuration": "Configuration",
         "configuration-description": "The configuration for the DvP Swap",
         "timelock": "Timelock",

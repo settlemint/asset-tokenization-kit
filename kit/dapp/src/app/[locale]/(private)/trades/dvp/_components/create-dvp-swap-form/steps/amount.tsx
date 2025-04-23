@@ -94,4 +94,6 @@ export function Amount() {
 Amount.validatedFields = [
   "assetToSend",
   "amountToSend",
+  "assetToReceive",
+  "amountToReceive",
 ] as (keyof CreateDvpSwapInput)[];
