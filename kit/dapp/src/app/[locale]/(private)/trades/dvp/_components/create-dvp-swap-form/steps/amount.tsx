@@ -19,10 +19,6 @@ export function Amount() {
     (holder) => getAddress(holder.account.id) === getAddress(sender)
   )?.value;
 
-  const maxAmountToReceive = assetToReceive?.holders.find(
-    (holder) => getAddress(holder.account.id) === getAddress(receiver)
-  )?.value;
-
   return (
     <FormStep
       title={t("title")}
@@ -74,18 +70,6 @@ export function Amount() {
         type="number"
         step={assetToReceive?.decimals ? 10 ** -assetToReceive.decimals : 1}
         postfix={assetToReceive?.symbol}
-        max={
-          !isNaN(Number(maxAmountToReceive))
-            ? Number(maxAmountToReceive)
-            : undefined
-        }
-        description={
-          !isNaN(Number(maxAmountToReceive))
-            ? t("max-amount-to-receive", {
-                maxAmount: formatNumber(Number(maxAmountToReceive), { locale }),
-              })
-            : undefined
-        }
       />
     </FormStep>
   );
