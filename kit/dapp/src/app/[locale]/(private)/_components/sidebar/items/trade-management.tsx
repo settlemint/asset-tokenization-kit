@@ -14,9 +14,9 @@ export function TradeManagement() {
           groupTitle: t("group-title"),
           items: [
             {
-              label: t("trades"),
+              label: t("dvp-swap"),
               icon: <ArrowRightLeft className="size-4" />,
-              path: "/trades",
+              path: "/trades/dvp",
             },
           ],
         },

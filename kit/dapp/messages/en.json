@@ -229,13 +229,13 @@
       },
       "trade-management": {
         "group-title": "Trade management",
-        "trades": "Trades"
+        "dvp-swap": "DvP Swap"
       }
     }
   },
   "trade-management": {
     "page": {
-      "title": "Trades"
+      "dvp-swap": "DvP Swap"
     }
   },
   "admin-user": "Admin",
@@ -812,7 +812,8 @@
       "platform": "Platform management",
       "portfolio": "My portfolio",
       "title": "Private",
-      "trade-management": "Trade management"
+      "trade-management": "Trade management",
+      "dvp-swap": "DvP Swap"
     },
     "user-dropdown": {
       "documentation": "Documentation",
