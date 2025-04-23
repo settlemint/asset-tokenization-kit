@@ -127,7 +127,6 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     );
 
     await adminPages.adminPage.mintAsset({
-      sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
       user: adminUser.name,
       ...stableCoinMintTokenData,
     });
@@ -156,7 +155,6 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       assetMessage.successMessage
     );
     await adminPages.adminPage.mintAsset({
-      sidebarAssetTypes: bondData.sidebarAssetTypes,
       user: adminUser.name,
       ...bondMintTokenData,
     });
@@ -166,7 +164,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     await adminPages.adminPage.verifyTotalSupply(topUpData.amount);
   });
 
-  test("Admin user transfer bonds to user and verify balance", async () => {
+  test("Admin user transfer bonds to regular transfer user", async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.bondName,
       walletAddress: testData.transferUserWalletAddress,
