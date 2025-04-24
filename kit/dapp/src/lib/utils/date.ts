@@ -1,6 +1,10 @@
 import {
   addDays,
   addHours,
+  addMonths,
+  addSeconds,
+  addWeeks,
+  differenceInSeconds,
   formatDistance,
   formatDuration as formatDurationFns,
   formatRelative,
@@ -165,21 +169,39 @@ export function getDateFromTimestamp(timestamp: string | number | Date): Date {
   return new Date(numericTimestamp * 1000);
 }
 
-export function getTimeUnitSeconds(unit: TimeUnit): number {
+/**
+ * Calculates the total number of seconds for a given value and time unit.
+ *
+ * @param value - The numeric value of the time unit (e.g., 12)
+ * @param unit - The time unit (e.g., 'months')
+ * @returns The total number of seconds, calculated accurately using date-fns.
+ */
+export function getTimeUnitSeconds(value: number, unit: TimeUnit): number {
+  const now = new Date();
+  let futureDate: Date;
+
   switch (unit) {
     case "seconds":
-      return 1;
+      futureDate = addSeconds(now, value);
+      break;
     case "hours":
-      return 3600;
+      futureDate = addHours(now, value);
+      break;
     case "days":
-      return 86400;
+      futureDate = addDays(now, value);
+      break;
     case "weeks":
-      return 604800;
+      futureDate = addWeeks(now, value);
+      break;
     case "months":
-      return 2592000; // 30 days
+      futureDate = addMonths(now, value);
+      break;
     default:
-      throw new Error("Unsupported time unit");
+      // Should not happen due to validation, but handle defensively
+      throw new Error(`Unsupported time unit: ${unit}`);
   }
+
+  return differenceInSeconds(futureDate, now);
 }
 
 /**
