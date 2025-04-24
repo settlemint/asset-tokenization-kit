@@ -1319,3 +1319,112 @@ type MerkleRootUpdate @entity(immutable: true) {
   blockNumber: BigInt!
   logIndex: BigInt!
 }
+
+# --------------------------------------------------
+# Airdrop Analytics and Statistics
+# --------------------------------------------------
+
+# Time-series data for airdrop activity
+type AirdropStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  # Filters
+  airdrop: Airdrop!
+  airdropType: String! # "Standard", "Vesting", or "Push"
+  # Activity
+  claims: Int!
+  claimVolume: BigDecimal!
+  claimVolumeExact: BigInt!
+  uniqueClaimants: Int! # New claimants in this period
+  # For PushAirdrop
+  distributions: Int!
+  distributionVolume: BigDecimal!
+  distributionVolumeExact: BigInt!
+}
+
+# Aggregation entities for time-based analysis
+type AirdropStats
+  @aggregation(intervals: ["hour", "day"], source: "AirdropStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+  # Filters
+  airdrop: Airdrop!
+  airdropType: String!
+  # Metrics
+  count: Int8! @aggregate(fn: "count", cumulative: true)
+  # Claims
+  totalClaims: Int! @aggregate(fn: "sum", arg: "claims")
+  totalClaimVolume: BigDecimal! @aggregate(fn: "sum", arg: "claimVolume")
+  totalClaimVolumeExact: BigInt! @aggregate(fn: "sum", arg: "claimVolumeExact")
+  totalUniqueClaimants: Int! @aggregate(fn: "sum", arg: "uniqueClaimants")
+  # Distributions (for PushAirdrop)
+  totalDistributions: Int! @aggregate(fn: "sum", arg: "distributions")
+  totalDistributionVolume: BigDecimal!
+    @aggregate(fn: "sum", arg: "distributionVolume")
+  totalDistributionVolumeExact: BigInt!
+    @aggregate(fn: "sum", arg: "distributionVolumeExact")
+}
+
+# Special statistics for vesting airdrops
+type VestingStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  # Filters
+  airdrop: VestingAirdrop!
+  # Vesting metrics
+  vestedAmount: BigDecimal!
+  vestedAmountExact: BigInt!
+  unlockedAmount: BigDecimal! # Amount that has vested and can be claimed
+  unlockedAmountExact: BigInt!
+  claimedVestedAmount: BigDecimal! # Portion of vested amount that has been claimed
+  claimedVestedAmountExact: BigInt!
+  activeVestingStreams: Int! # Number of active vesting schedules
+  completedVestingStreams: Int! # Number of completed vesting schedules
+}
+
+# Aggregation entity for vesting statistics
+type VestingStats
+  @aggregation(intervals: ["hour", "day"], source: "VestingStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+  # Filters
+  airdrop: VestingAirdrop!
+  # Metrics
+  count: Int8! @aggregate(fn: "count", cumulative: true)
+  # Vesting progress
+  totalVestedAmount: BigDecimal! @aggregate(fn: "last", arg: "vestedAmount")
+  totalVestedAmountExact: BigInt!
+    @aggregate(fn: "last", arg: "vestedAmountExact")
+  totalUnlockedAmount: BigDecimal! @aggregate(fn: "last", arg: "unlockedAmount")
+  totalUnlockedAmountExact: BigInt!
+    @aggregate(fn: "last", arg: "unlockedAmountExact")
+  totalClaimedVestedAmount: BigDecimal!
+    @aggregate(fn: "sum", arg: "claimedVestedAmount")
+  totalClaimedVestedAmountExact: BigInt!
+    @aggregate(fn: "sum", arg: "claimedVestedAmountExact")
+  activeVestingStreams: Int! @aggregate(fn: "last", arg: "activeVestingStreams")
+  completedVestingStreams: Int!
+    @aggregate(fn: "last", arg: "completedVestingStreams")
+}
+
+# Daily and weekly summary of airdrop performance
+type AirdropPerformanceSummary @entity(immutable: false) {
+  id: String! # airdropId-timeframe (e.g., "0x123-daily", "0x123-weekly")
+  airdrop: Airdrop!
+  timeframe: String! # "daily", "weekly"
+  startTime: BigInt!
+  endTime: BigInt!
+  newClaimants: Int!
+  totalClaims: Int!
+  claimVolume: BigDecimal!
+  claimVolumeExact: BigInt!
+  claimRatePercentage: BigDecimal! # Percentage of eligible recipients who claimed
+  # Distribution metrics for PushAirdrop
+  newDistributions: Int!
+  distributionVolume: BigDecimal!
+  distributionVolumeExact: BigInt!
+  # Time metrics
+  avgClaimResponseTime: BigInt! # Average time between eligibility and claim
+  peakClaimHour: Int! # Hour of day with most claims (0-23)
+  lastUpdated: BigInt!
+}

@@ -9,6 +9,7 @@ import {
   AirdropClaim,
   AirdropClaimIndex,
   AirdropRecipient,
+  AirdropStatsData,
   Bond,
   CryptoCurrency,
   Deposit,
@@ -56,6 +57,15 @@ function getTokenDecimals(tokenAddress: Address): i32 {
   return 18;
 }
 
+// Helper function to generate a unique ID for stats data
+function getStatsId(event: ethereum.Event): string {
+  // Generate a unique ID based on transaction hash, log index and a timestamp
+  return event.transaction.hash
+    .concatI32(event.logIndex.toI32())
+    .concatI32(event.block.timestamp.toI32())
+    .toHex();
+}
+
 // Handler for individual Claimed events
 export function handleClaimed(event: Claimed): void {
   let airdropAddress = event.address;
@@ -100,9 +110,12 @@ export function handleClaimed(event: Claimed): void {
   claim.logIndex = event.logIndex;
   claim.save();
 
-  // Update or Create AirdropRecipient
+  // Check if this is a new recipient
   let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
   let recipient = AirdropRecipient.load(recipientId);
+  let isNewClaimant = recipient == null;
+
+  // Update or Create AirdropRecipient
   if (!recipient) {
     recipient = new AirdropRecipient(recipientId);
     recipient.airdrop = airdrop.id;
@@ -125,6 +138,22 @@ export function handleClaimed(event: Claimed): void {
   airdrop.totalClaimed = airdrop.totalClaimed.plus(amountBD);
   airdrop.totalClaimedExact = airdrop.totalClaimedExact.plus(amount);
   airdrop.save();
+
+  // Create AirdropStatsData entry
+  let statsId = getStatsId(event);
+  let statsData = new AirdropStatsData(statsId);
+  statsData.timestamp = event.block.timestamp;
+  statsData.airdrop = airdrop.id;
+  statsData.airdropType = "Standard";
+  statsData.claims = 1;
+  statsData.claimVolume = amountBD;
+  statsData.claimVolumeExact = amount;
+  statsData.uniqueClaimants = isNewClaimant ? 1 : 0;
+  // Set PushAirdrop fields to 0
+  statsData.distributions = 0;
+  statsData.distributionVolume = BigDecimal.fromString("0");
+  statsData.distributionVolumeExact = BigInt.fromI32(0);
+  statsData.save();
 }
 
 /**
@@ -159,9 +188,12 @@ function processBatchClaim(
   claim.logIndex = event.logIndex;
   claim.save();
 
-  // Update or create AirdropRecipient
+  // Check if this is a new recipient
   const recipientId = airdrop.id.concat(claimantAccount.id).toHex();
   let recipient = AirdropRecipient.load(recipientId);
+  let isNewClaimant = recipient == null;
+
+  // Update or create AirdropRecipient
   if (!recipient) {
     recipient = new AirdropRecipient(recipientId);
     recipient.airdrop = airdrop.id;
@@ -212,6 +244,22 @@ function processBatchClaim(
   airdrop.totalClaimed = airdrop.totalClaimed.plus(totalAmountBD);
   airdrop.totalClaimedExact = airdrop.totalClaimedExact.plus(totalAmount);
   airdrop.save();
+
+  // Create AirdropStatsData entry
+  let statsId = getStatsId(event);
+  let statsData = new AirdropStatsData(statsId);
+  statsData.timestamp = event.block.timestamp;
+  statsData.airdrop = airdrop.id;
+  statsData.airdropType = "Standard";
+  statsData.claims = 1;
+  statsData.claimVolume = totalAmountBD;
+  statsData.claimVolumeExact = totalAmount;
+  statsData.uniqueClaimants = isNewClaimant ? 1 : 0;
+  // Set PushAirdrop fields to 0
+  statsData.distributions = 0;
+  statsData.distributionVolume = BigDecimal.fromString("0");
+  statsData.distributionVolumeExact = BigInt.fromI32(0);
+  statsData.save();
 }
 
 // Handler for BatchClaimed events

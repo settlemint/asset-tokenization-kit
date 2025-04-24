@@ -1,5 +1,13 @@
-import { Address, log } from "@graphprotocol/graph-ts";
 import {
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  ethereum,
+  log,
+} from "@graphprotocol/graph-ts";
+import {
+  AirdropStatsData,
   Bond,
   CryptoCurrency,
   Deposit,
@@ -51,6 +59,47 @@ function getTokenDecimals(tokenAddress: Address): i32 {
   return 18;
 }
 
+// Helper function to generate a unique ID for stats data
+function getStatsId(event: ethereum.Event): string {
+  // Generate a unique ID based on transaction hash, log index and a timestamp
+  return event.transaction.hash
+    .concatI32(event.logIndex.toI32())
+    .concatI32(event.block.timestamp.toI32())
+    .toHex();
+}
+
+// Helper function to update distribution statistics
+function updateDistributionStats(
+  airdrop: PushAirdrop,
+  amount: BigInt,
+  recipientCount: i32,
+  distributorAccount: Bytes,
+  event: ethereum.Event
+): void {
+  // Get token decimals
+  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  const amountBD = toDecimals(amount, decimals);
+
+  // Create AirdropStatsData entry
+  let statsId = getStatsId(event);
+  let statsData = new AirdropStatsData(statsId);
+  statsData.timestamp = event.block.timestamp;
+  statsData.airdrop = airdrop.id;
+  statsData.airdropType = "Push";
+
+  // Set claim fields to 0
+  statsData.claims = 0;
+  statsData.claimVolume = BigDecimal.fromString("0");
+  statsData.claimVolumeExact = BigInt.fromI32(0);
+  statsData.uniqueClaimants = 0;
+
+  // Set distribution fields
+  statsData.distributions = recipientCount;
+  statsData.distributionVolume = amountBD;
+  statsData.distributionVolumeExact = amount;
+  statsData.save();
+}
+
 // Handler for individual token distribution events
 export function handleTokensDistributed(event: TokensDistributed): void {
   let airdropAddress = event.address;
@@ -100,6 +149,15 @@ export function handleTokensDistributed(event: TokensDistributed): void {
   // Update airdrop metadata
   airdrop.totalDistributed = airdrop.totalDistributed.plus(amount);
   airdrop.save();
+
+  // Update distribution statistics
+  updateDistributionStats(
+    airdrop,
+    amount,
+    1, // Single recipient
+    distributor.id,
+    event
+  );
 }
 
 // Handler for batch distribution events
@@ -115,7 +173,7 @@ export function handleBatchDistributed(event: BatchDistributed): void {
     return;
   }
 
-  let recipientCount = event.params.recipientCount;
+  let recipientCount = event.params.recipientCount.toI32();
   let totalAmount = event.params.totalAmount;
 
   log.info(
@@ -137,7 +195,7 @@ export function handleBatchDistributed(event: BatchDistributed): void {
   let batchDistribution = new PushBatchDistribution(batchId);
   batchDistribution.airdrop = airdrop.id;
   batchDistribution.distributor = distributor.id;
-  batchDistribution.recipientCount = recipientCount.toI32();
+  batchDistribution.recipientCount = recipientCount;
   batchDistribution.totalAmount = totalAmountBD;
   batchDistribution.totalAmountExact = totalAmount;
   batchDistribution.timestamp = event.block.timestamp;
@@ -149,6 +207,15 @@ export function handleBatchDistributed(event: BatchDistributed): void {
   // Update airdrop data
   // Note: Individual distributions within the batch will already have updated
   // the totalDistributed value via their individual TokensDistributed events
+
+  // Update distribution statistics
+  updateDistributionStats(
+    airdrop,
+    totalAmount,
+    recipientCount,
+    distributor.id,
+    event
+  );
 }
 
 // Handler for tokens withdrawal event

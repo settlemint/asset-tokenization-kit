@@ -180,6 +180,11 @@ dataSources:
         - LinearVestingStrategy
         - Account
         - Asset
+        - AirdropStatsData
+        - AirdropStats
+        - VestingStatsData
+        - VestingStats
+        - AirdropPerformanceSummary
       abis:
         - name: AirdropFactory
           file: ../contracts/artifacts/contracts/airdrop/AirdropFactory.sol/AirdropFactory.json
@@ -714,6 +719,9 @@ templates:
         - AirdropClaimIndex
         - Account
         - Asset
+        - AirdropStatsData
+        - AirdropStats
+        - AirdropPerformanceSummary
       abis:
         - name: StandardAirdrop
           file: ../contracts/artifacts/contracts/airdrop/StandardAirdrop.sol/StandardAirdrop.json
@@ -743,6 +751,11 @@ templates:
         - UserVestingData
         - Account
         - Asset
+        - AirdropStatsData
+        - AirdropStats
+        - VestingStatsData
+        - VestingStats
+        - AirdropPerformanceSummary
       abis:
         - name: VestingAirdrop
           file: ../contracts/artifacts/contracts/airdrop/VestingAirdrop.sol/VestingAirdrop.json
@@ -772,6 +785,9 @@ templates:
         - PushDistribution
         - PushBatchDistribution
         - Account
+        - AirdropStatsData
+        - AirdropStats
+        - AirdropPerformanceSummary
       abis:
         - name: PushAirdrop
           file: ../contracts/artifacts/contracts/airdrop/PushAirdrop.sol/PushAirdrop.json

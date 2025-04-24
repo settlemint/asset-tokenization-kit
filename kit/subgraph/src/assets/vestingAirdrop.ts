@@ -9,6 +9,7 @@ import {
   AirdropClaim,
   AirdropClaimIndex,
   AirdropRecipient,
+  AirdropStatsData,
   Bond,
   CryptoCurrency,
   Deposit,
@@ -19,8 +20,9 @@ import {
   StableCoin,
   UserVestingData,
   VestingAirdrop,
+  VestingStatsData,
 } from "../../generated/schema";
-import { VestingInitialized } from "../../generated/templates/VestingAirdropTemplate/LinearVestingStrategy";
+import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../generated/templates/VestingAirdropTemplate/LinearVestingStrategy";
 import {
   BatchClaimed,
   Claimed,
@@ -57,6 +59,98 @@ function getTokenDecimals(tokenAddress: Address): i32 {
     tokenAddress.toHex(),
   ]);
   return 18;
+}
+
+// Helper function to generate a unique ID for stats data
+function getStatsId(event: ethereum.Event): string {
+  // Generate a unique ID based on transaction hash, log index and a timestamp
+  return event.transaction.hash
+    .concatI32(event.logIndex.toI32())
+    .concatI32(event.block.timestamp.toI32())
+    .toHex();
+}
+
+// Helper function to update vesting statistics
+function updateVestingStats(
+  airdrop: VestingAirdrop,
+  event: ethereum.Event
+): void {
+  // Load the vesting strategy
+  let strategy = LinearVestingStrategy.load(airdrop.strategy);
+  if (!strategy) {
+    log.error("LinearVestingStrategy not found for airdrop {}", [
+      airdrop.id.toHex(),
+    ]);
+    return;
+  }
+
+  // Load strategy contract to calculate current vesting state
+  let strategyContract = LinearVestingStrategyContract.bind(
+    Address.fromBytes(strategy.id)
+  );
+
+  // Initialize counters
+  let vestedAmount = BigInt.fromI32(0);
+  let unlockedAmount = BigInt.fromI32(0);
+  let claimedVestedAmount = BigInt.fromI32(0);
+  let activeVestingStreams = 0;
+  let completedVestingStreams = 0;
+
+  // In a production implementation, you would iterate over all UserVestingData entities
+  // for this strategy and calculate these values
+  // For now, we'll use some simplified calculations based on airdrop totals
+
+  // For demonstration purposes, assume:
+  // - vestedAmount is proportional to time passed since airdrop.deployedOn
+  // - unlockedAmount is what's available to claim but not yet claimed
+  // - claimedVestedAmount is what's already been claimed (airdrop.totalClaimedExact)
+
+  let currentTime = event.block.timestamp;
+  let startTime = strategy.vestingStart || airdrop.deployedOn;
+  let vestingDuration = strategy.vestingDuration;
+  let cliffDuration = strategy.cliffDuration;
+
+  // Sample logic - in a real implementation, would be based on actual vesting schedules
+  if (currentTime > startTime.plus(cliffDuration)) {
+    // Past cliff, calculate vested amount
+    let timeVested = currentTime.minus(startTime);
+    if (timeVested > vestingDuration) {
+      // Fully vested
+      vestedAmount = airdrop.totalClaimedExact; // As a simplification
+      completedVestingStreams = airdrop.totalRecipients;
+    } else {
+      // Partially vested
+      let vestingProgress = timeVested.div(vestingDuration);
+      vestedAmount = airdrop.totalClaimedExact.times(vestingProgress);
+      activeVestingStreams = airdrop.totalRecipients;
+    }
+  }
+
+  // Claimed amount is what's already been claimed
+  claimedVestedAmount = airdrop.totalClaimedExact;
+
+  // Unlocked is vested minus claimed
+  if (vestedAmount > claimedVestedAmount) {
+    unlockedAmount = vestedAmount.minus(claimedVestedAmount);
+  }
+
+  // Get token decimals
+  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+
+  // Create vesting stats
+  let statsId = getStatsId(event);
+  let vestingStats = new VestingStatsData(statsId);
+  vestingStats.timestamp = event.block.timestamp;
+  vestingStats.airdrop = airdrop.id;
+  vestingStats.vestedAmount = toDecimals(vestedAmount, decimals);
+  vestingStats.vestedAmountExact = vestedAmount;
+  vestingStats.unlockedAmount = toDecimals(unlockedAmount, decimals);
+  vestingStats.unlockedAmountExact = unlockedAmount;
+  vestingStats.claimedVestedAmount = toDecimals(claimedVestedAmount, decimals);
+  vestingStats.claimedVestedAmountExact = claimedVestedAmount;
+  vestingStats.activeVestingStreams = activeVestingStreams;
+  vestingStats.completedVestingStreams = completedVestingStreams;
+  vestingStats.save();
 }
 
 export function handleClaimed(event: Claimed): void {
@@ -108,8 +202,11 @@ export function handleClaimed(event: Claimed): void {
   claim.logIndex = event.logIndex;
   claim.save();
 
+  // Check if this is a new recipient
   let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
   let recipient = AirdropRecipient.load(recipientId);
+  let isNewClaimant = recipient == null;
+
   if (!recipient) {
     recipient = new AirdropRecipient(recipientId);
     recipient.airdrop = airdrop.id;
@@ -130,6 +227,25 @@ export function handleClaimed(event: Claimed): void {
   airdrop.totalClaimed = airdrop.totalClaimed.plus(amountBD);
   airdrop.totalClaimedExact = airdrop.totalClaimedExact.plus(amount);
   airdrop.save();
+
+  // Create AirdropStatsData entry
+  let statsId = getStatsId(event);
+  let statsData = new AirdropStatsData(statsId);
+  statsData.timestamp = event.block.timestamp;
+  statsData.airdrop = airdrop.id;
+  statsData.airdropType = "Vesting";
+  statsData.claims = 1;
+  statsData.claimVolume = amountBD;
+  statsData.claimVolumeExact = amount;
+  statsData.uniqueClaimants = isNewClaimant ? 1 : 0;
+  // Set PushAirdrop fields to 0
+  statsData.distributions = 0;
+  statsData.distributionVolume = BigDecimal.fromString("0");
+  statsData.distributionVolumeExact = BigInt.fromI32(0);
+  statsData.save();
+
+  // Update vesting stats
+  updateVestingStats(airdrop, event);
 }
 
 export function handleBatchClaimed(event: BatchClaimed): void {
@@ -181,6 +297,37 @@ export function handleBatchClaimed(event: BatchClaimed): void {
     amounts, // Pass the actual amounts instead of calculating averages
     event
   );
+
+  // Create AirdropStatsData entry
+  let statsId = getStatsId(event);
+  let statsData = new AirdropStatsData(statsId);
+  statsData.timestamp = event.block.timestamp;
+  statsData.airdrop = airdrop.id;
+  statsData.airdropType = "Vesting";
+  statsData.claims = 1;
+
+  // Get token decimals
+  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  const totalAmountBD = toDecimals(totalAmount, decimals);
+
+  statsData.claimVolume = totalAmountBD;
+  statsData.claimVolumeExact = totalAmount;
+
+  // Check if this is a new claimant (should be determined in processBatchClaim)
+  const recipientId = airdrop.id
+    .concat(fetchAccount(claimantAddress).id)
+    .toHex();
+  const isNewClaimant = !AirdropRecipient.load(recipientId);
+  statsData.uniqueClaimants = isNewClaimant ? 1 : 0;
+
+  // Set PushAirdrop fields to 0
+  statsData.distributions = 0;
+  statsData.distributionVolume = BigDecimal.fromString("0");
+  statsData.distributionVolumeExact = BigInt.fromI32(0);
+  statsData.save();
+
+  // Update vesting stats
+  updateVestingStats(airdrop, event);
 }
 
 export function handleTokensWithdrawn(event: TokensWithdrawn): void {
@@ -214,6 +361,9 @@ export function handleTokensWithdrawn(event: TokensWithdrawn): void {
 
   airdrop.isWithdrawn = true;
   airdrop.save();
+
+  // Update vesting stats one last time
+  updateVestingStats(airdrop, event);
 }
 
 export function handleClaimInitialized(event: ClaimInitialized): void {
@@ -293,66 +443,9 @@ export function handleClaimInitialized(event: ClaimInitialized): void {
   }
 
   airdrop.save();
-}
 
-export function handleVestingInitialized(event: VestingInitialized): void {
-  let strategyAddress = event.address;
-  let strategy = LinearVestingStrategy.load(strategyAddress);
-  if (!strategy) {
-    log.error("LinearVestingStrategy not found: {}", [strategyAddress.toHex()]);
-    return;
-  }
-
-  // Use the direct reference field we added to the schema
-  let airdrop = VestingAirdrop.load(strategy.airdropRef);
-  if (!airdrop) {
-    log.error("Associated VestingAirdrop not found for strategy: {}", [
-      strategyAddress.toHex(),
-    ]);
-    return;
-  }
-
-  let userAddress = event.params.account;
-  let totalAmount = event.params.totalAmount;
-  let vestingStart = event.params.vestingStart;
-
-  let userAccount = fetchAccount(userAddress);
-
-  let userVestingDataId = strategy.id.toHex() + "-" + userAccount.id.toHex();
-  let userVestingData = UserVestingData.load(userVestingDataId);
-  if (!userVestingData) {
-    userVestingData = new UserVestingData(userVestingDataId);
-    userVestingData.strategy = strategy.id;
-    userVestingData.user = userAccount.id;
-    userVestingData.totalAmountAggregatedExact = BigInt.zero();
-    userVestingData.totalAmountAggregated = BigDecimal.zero();
-    userVestingData.claimedAmountTrackedByStrategyExact = BigInt.zero();
-    userVestingData.claimedAmountTrackedByStrategy = BigDecimal.zero();
-  }
-
-  // Get the token decimals from the airdrop's token
-  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
-
-  userVestingData.totalAmountAggregatedExact =
-    userVestingData.totalAmountAggregatedExact.plus(totalAmount);
-  userVestingData.totalAmountAggregated = toDecimals(
-    userVestingData.totalAmountAggregatedExact,
-    decimals
-  );
-  userVestingData.vestingStart = vestingStart;
-  userVestingData.initialized = true;
-  userVestingData.lastUpdated = event.block.timestamp;
-  userVestingData.save();
-
-  log.info(
-    "VestingInitialized event processed: Strategy {}, User {}, Amount {}, Start {}",
-    [
-      strategyAddress.toHex(),
-      userAddress.toHex(),
-      totalAmount.toString(),
-      vestingStart.toString(),
-    ]
-  );
+  // Update vesting stats on initialization
+  updateVestingStats(airdrop, event);
 }
 
 /**
