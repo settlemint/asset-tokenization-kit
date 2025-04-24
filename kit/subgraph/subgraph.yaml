@@ -760,7 +760,7 @@ templates:
         - name: VestingAirdrop
           file: ../contracts/artifacts/contracts/VestingAirdrop.sol/VestingAirdrop.json
         - name: LinearVestingStrategy
-          file: ../contracts/artifacts/contracts/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
+          file: ../contracts/artifacts/contracts/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
       eventHandlers:
         - event: Claimed(indexed address,uint256)
           handler: handleClaimed
