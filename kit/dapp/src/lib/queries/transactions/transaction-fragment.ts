@@ -115,7 +115,7 @@ export const ReceiptFragmentSchema = t.Object({
   type: t.String({
     description: "The type of the transaction",
   }),
-  events: t.Optional(
+  events: t.MaybeEmpty(
     t.Array(EventSchema, {
       description: "The events emitted by the transaction",
     })
