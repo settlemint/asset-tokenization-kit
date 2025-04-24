@@ -204,6 +204,33 @@ dataSources:
       file: ./src/factories/airdropFactory.ts
 templates:
   - kind: ethereum/contract
+    name: FixedYield
+    network: settlemint
+    source:
+      abi: FixedYield
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_YieldClaimed
+        - YieldPeriod
+        - YieldMetricsData
+        - YieldMetricsStats
+      abis:
+        - name: FixedYield
+          file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
+      eventHandlers:
+        - event:
+            YieldClaimed(indexed
+            address,uint256,uint256,uint256,uint256[],uint256)
+          handler: handleYieldClaimed
+        - event: UnderlyingAssetTopUp(indexed address,uint256)
+          handler: handleUnderlyingAssetTopUp
+        - event: UnderlyingAssetWithdrawn(indexed address,uint256)
+          handler: handleUnderlyingAssetWithdrawn
+      file: ./src/assets/fixed-yield.ts
+  - kind: ethereum/contract
     name: Bond
     network: settlemint
     source:
@@ -514,33 +541,6 @@ templates:
         - event: Clawback(indexed address,indexed address,uint256)
           handler: handleClawback
       file: ./src/assets/stablecoin.ts
-  - kind: ethereum/contract
-    name: FixedYield
-    network: settlemint
-    source:
-      abi: FixedYield
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Event_YieldClaimed
-        - YieldPeriod
-        - YieldMetricsData
-        - YieldMetricsStats
-      abis:
-        - name: FixedYield
-          file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
-      eventHandlers:
-        - event:
-            YieldClaimed(indexed
-            address,uint256,uint256,uint256,uint256[],uint256)
-          handler: handleYieldClaimed
-        - event: UnderlyingAssetTopUp(indexed address,uint256)
-          handler: handleUnderlyingAssetTopUp
-        - event: UnderlyingAssetWithdrawn(indexed address,uint256)
-          handler: handleUnderlyingAssetWithdrawn
-      file: ./src/assets/fixed-yield.ts
   - kind: ethereum/contract
     name: Fund
     network: settlemint
