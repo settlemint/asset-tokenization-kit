@@ -875,7 +875,8 @@
       "portfolio": "My portfolio",
       "title": "Private",
       "trade-management": "Trade management",
-      "dvp-swap": "DvP Swap"
+      "dvp-swap": "DvP Swap",
+      "actions": "Actions"
     },
     "user-dropdown": {
       "documentation": "Documentation",
@@ -884,6 +885,11 @@
     }
   },
   "paused": "Paused",
+  "actions": {
+    "page": {
+      "actions": "Actions"
+    }
+  },
   "portfolio": {
     "activity": {
       "page-description": "Your activity on chain",
