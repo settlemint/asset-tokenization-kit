@@ -102,7 +102,7 @@ export function FormAssets<T extends FieldValues>({
                     props.disabled
                   )}
                 >
-                  <div className="flex-1 truncate overflow-hidden text-left pr-2">
+                  <div className="flex-1 truncate overflow-hidden text-left pr-2 text-muted-foreground">
                     {field.value ? (
                       <EvmAddress
                         address={field.value.id}
