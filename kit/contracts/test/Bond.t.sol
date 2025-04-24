@@ -851,6 +851,38 @@ contract BondTest is Test {
         vm.stopPrank();
     }
 
+    function test_CannotMintIfYieldScheduleStarted() public {
+        // Setup: Deploy factory and create yield schedule linked to the bond
+        vm.startPrank(owner);
+        FixedYieldFactory factory = new FixedYieldFactory(address(forwarder));
+        uint256 startDate = block.timestamp + 1 days; // Schedule starts in the future
+        uint256 endDate = startDate + 365 days;
+        uint256 yieldRate = 500; // 5%
+        uint256 interval = 30 days;
+
+        address yieldScheduleAddr =
+            factory.create(ERC20YieldMock(address(bond)), startDate, endDate, yieldRate, interval);
+
+        // Verify schedule is linked
+        assertEq(bond.yieldSchedule(), yieldScheduleAddr);
+
+        // Minting should still be allowed BEFORE the schedule starts
+        bond.mint(owner, 1); // Mint 0.01 tokens
+        assertEq(bond.totalSupply(), initialSupply + 1);
+
+        // Warp time to AFTER the schedule start date
+        vm.warp(startDate + 1);
+
+        // Now, attempt to mint again
+        vm.expectRevert(Bond.YieldScheduleActive.selector);
+        bond.mint(owner, 1);
+
+        // Ensure total supply hasn't changed after the revert
+        assertEq(bond.totalSupply(), initialSupply + 1);
+
+        vm.stopPrank();
+    }
+
     function test_BondClawback() public {
         vm.startPrank(owner);
         bond.mint(user1, 1);
