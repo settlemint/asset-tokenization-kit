@@ -1201,6 +1201,7 @@ type PushAirdrop implements Airdrop @entity(immutable: false) {
   distributionCap: BigInt!
   totalDistributed: BigInt!
   distributions: [PushDistribution!]! @derivedFrom(field: "airdrop")
+  merkleRootUpdates: [MerkleRootUpdate!]! @derivedFrom(field: "airdrop")
 }
 
 interface VestingStrategy {
@@ -1304,4 +1305,17 @@ type PushBatchDistribution @entity(immutable: true) {
   blockNumber: BigInt!
   logIndex: BigInt!
   distributions: [PushDistribution!]! @derivedFrom(field: "batchDistribution")
+}
+
+# Records a merkle root update event from PushAirdrop
+type MerkleRootUpdate @entity(immutable: true) {
+  id: String! # txHash-logIndex
+  airdrop: PushAirdrop!
+  updater: Account! # The admin who updated the merkle root
+  oldRoot: Bytes! # The previous merkle root (indexed in contract)
+  newRoot: Bytes! # The new merkle root (indexed in contract)
+  timestamp: BigInt!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
 }

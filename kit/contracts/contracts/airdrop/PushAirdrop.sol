@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {ERC2771Context} from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title PushAirdrop
@@ -38,7 +38,7 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
     // Events
     event TokensDistributed(address indexed recipient, uint256 amount);
     event BatchDistributed(uint256 recipientCount, uint256 totalAmount);
-    event MerkleRootUpdated(bytes32 oldRoot, bytes32 newRoot);
+    event MerkleRootUpdated(bytes32 indexed oldRoot, bytes32 indexed newRoot);
     event DistributionCapUpdated(uint256 oldCap, uint256 newCap);
     event TokensWithdrawn(address indexed to, uint256 amount);
 
@@ -66,7 +66,10 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
         address initialOwner,
         uint256 _distributionCap,
         address trustedForwarder
-    ) Ownable(initialOwner) ERC2771Context(trustedForwarder) {
+    )
+        Ownable(initialOwner)
+        ERC2771Context(trustedForwarder)
+    {
         if (tokenAddress == address(0)) revert ZeroAddress();
         token = IERC20(tokenAddress);
         merkleRoot = root;
@@ -104,17 +107,23 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
         address recipient,
         uint256 amount,
         bytes32[] calldata merkleProof
-    ) external onlyOwner nonReentrant {
+    )
+        external
+        onlyOwner
+        nonReentrant
+    {
         // Check if already distributed
         if (distributed[recipient]) revert AlreadyDistributed();
 
         // Verify Merkle proof
-        if (!_verifyMerkleProof(recipient, amount, merkleProof))
+        if (!_verifyMerkleProof(recipient, amount, merkleProof)) {
             revert InvalidMerkleProof();
+        }
 
         // Check distribution cap
-        if (distributionCap > 0 && totalDistributed + amount > distributionCap)
+        if (distributionCap > 0 && totalDistributed + amount > distributionCap) {
             revert DistributionCapExceeded();
+        }
 
         // Mark as distributed
         distributed[recipient] = true;
@@ -140,15 +149,16 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
         address[] calldata recipients,
         uint256[] calldata amounts,
         bytes32[][] calldata merkleProofs
-    ) external onlyOwner nonReentrant {
+    )
+        external
+        onlyOwner
+        nonReentrant
+    {
         // Check batch size
         if (recipients.length > MAX_BATCH_SIZE) revert BatchSizeTooLarge();
 
         // Validate input arrays have matching lengths
-        if (
-            recipients.length != amounts.length ||
-            amounts.length != merkleProofs.length
-        ) {
+        if (recipients.length != amounts.length || amounts.length != merkleProofs.length) {
             revert ArrayLengthMismatch();
         }
 
@@ -185,10 +195,7 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
         }
 
         // Check distribution cap after calculating batch total
-        if (
-            distributionCap > 0 &&
-            totalDistributed + batchTotal > distributionCap
-        ) revert DistributionCapExceeded();
+        if (distributionCap > 0 && totalDistributed + batchTotal > distributionCap) revert DistributionCapExceeded();
 
         // Update total distributed
         totalDistributed += batchTotal;
@@ -203,9 +210,7 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
      * @dev Only callable by the contract owner
      * @dev Limited to MAX_BATCH_SIZE recipients per transaction to prevent gas issues
      */
-    function markAsDistributed(
-        address[] calldata recipients
-    ) external onlyOwner {
+    function markAsDistributed(address[] calldata recipients) external onlyOwner {
         // Check batch size
         if (recipients.length > MAX_BATCH_SIZE) revert BatchSizeTooLarge();
 
@@ -237,11 +242,13 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
         address recipient,
         uint256 amount,
         bytes32[] calldata merkleProof
-    ) internal view returns (bool verified) {
+    )
+        internal
+        view
+        returns (bool verified)
+    {
         // Double hash the leaf node for domain separation and security
-        bytes32 node = keccak256(
-            abi.encode(keccak256(abi.encode(recipient, amount)))
-        );
+        bytes32 node = keccak256(abi.encode(keccak256(abi.encode(recipient, amount))));
         return MerkleProof.verify(merkleProof, merkleRoot, node);
     }
 
@@ -259,39 +266,21 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
     /**
      * @dev Overrides the underlying `_msgSender` logic to support ERC2771.
      */
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (address sender)
-    {
+    function _msgSender() internal view virtual override(Context, ERC2771Context) returns (address sender) {
         return ERC2771Context._msgSender();
     }
 
     /**
      * @dev Overrides the underlying `_msgData` logic to support ERC2771.
      */
-    function _msgData()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (bytes calldata data)
-    {
+    function _msgData() internal view virtual override(Context, ERC2771Context) returns (bytes calldata data) {
         return ERC2771Context._msgData();
     }
 
     /**
      * @dev Overrides the underlying `_contextSuffixLength` logic for ERC2771 compatibility.
      */
-    function _contextSuffixLength()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (uint256)
-    {
+    function _contextSuffixLength() internal view virtual override(Context, ERC2771Context) returns (uint256) {
         return ERC2771Context._contextSuffixLength();
     }
 }

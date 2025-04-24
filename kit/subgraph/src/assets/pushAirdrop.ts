@@ -5,6 +5,7 @@ import {
   Deposit,
   Equity,
   Fund,
+  MerkleRootUpdate,
   PushAirdrop,
   PushBatchDistribution,
   PushDistribution,
@@ -205,6 +206,23 @@ export function handleMerkleRootUpdated(event: MerkleRootUpdated): void {
     [airdropAddress.toHex(), oldRoot.toHexString(), newRoot.toHexString()]
   );
 
+  // Create MerkleRootUpdate entity to track the change
+  let updateId = event.transaction.hash
+    .concatI32(event.logIndex.toI32())
+    .toHex();
+
+  let merkleRootUpdate = new MerkleRootUpdate(updateId);
+  merkleRootUpdate.airdrop = airdrop.id;
+  merkleRootUpdate.updater = fetchAccount(event.transaction.from).id;
+  merkleRootUpdate.oldRoot = oldRoot;
+  merkleRootUpdate.newRoot = newRoot;
+  merkleRootUpdate.timestamp = event.block.timestamp;
+  merkleRootUpdate.txHash = event.transaction.hash;
+  merkleRootUpdate.blockNumber = event.block.number;
+  merkleRootUpdate.logIndex = event.logIndex;
+  merkleRootUpdate.save();
+
+  // Update airdrop with new merkle root
   airdrop.merkleRoot = newRoot;
   airdrop.save();
 }
