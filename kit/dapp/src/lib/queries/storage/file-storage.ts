@@ -1,18 +1,10 @@
 import "server-only";
 
-import {
-  createDeleteOperation,
-  createListObjectsOperation,
-  createPresignedPutOperation,
-  createPresignedUrlOperation,
-  createSimpleUploadOperation,
-  createStatObjectOperation,
-  createUploadOperation,
-  executeMinioOperation,
-  getMinioClient,
-} from "@/lib/storage/minio-client";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
+
+// Import the configured client instance from the correct location
+import { client as minioClient } from "@/lib/settlemint/minio";
 
 /**
  * Schema for file metadata
@@ -55,18 +47,25 @@ export const getFilesList = withTracing(
     console.log(`Listing files with prefix: "${prefix}"`);
 
     try {
-      const listOperation = createListObjectsOperation(DEFAULT_BUCKET, prefix);
-      const objects = await executeMinioOperation(listOperation);
-      console.log(`Found ${objects.length} files in Minio`);
+      const objectsStream = minioClient.listObjects(
+        DEFAULT_BUCKET,
+        prefix,
+        true
+      );
+
+      const objectsData: any[] = [];
+      for await (const obj of objectsStream) {
+        objectsData.push(obj);
+      }
+      console.log(`Found ${objectsData.length} files in Minio`);
 
       const fileObjects = await Promise.all(
-        objects.map(async (obj) => {
-          const presignedUrlOperation = createPresignedUrlOperation(
+        objectsData.map(async (obj) => {
+          const url = await minioClient.presignedGetObject(
             DEFAULT_BUCKET,
             obj.name,
             3600
           );
-          const url = await executeMinioOperation(presignedUrlOperation);
 
           return {
             id: obj.name,
@@ -101,17 +100,13 @@ export const getFileById = withTracing(
     console.log(`Getting file details for: ${fileId}`);
 
     try {
-      // Get the file metadata
-      const statOperation = createStatObjectOperation(DEFAULT_BUCKET, fileId);
-      const statResult = await executeMinioOperation(statOperation);
+      const statResult = await minioClient.statObject(DEFAULT_BUCKET, fileId);
 
-      // Generate a presigned URL for access
-      const presignedUrlOperation = createPresignedUrlOperation(
+      const url = await minioClient.presignedGetObject(
         DEFAULT_BUCKET,
         fileId,
         3600
       );
-      const url = await executeMinioOperation(presignedUrlOperation);
 
       const fileMetadata = {
         id: fileId,
@@ -147,33 +142,28 @@ export const uploadFile = withTracing(
       const fileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
       const objectName = path ? `${path}/${fileName}` : fileName;
 
-      // Add file metadata
       const metadata = {
         "content-type": file.type,
         "original-name": file.name,
         "upload-time": new Date().toISOString(),
       };
 
-      // Convert File to Buffer
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      // Upload the file directly passing the Buffer object
-      const uploadOperation = createUploadOperation(
+      const result = await minioClient.putObject(
         DEFAULT_BUCKET,
         objectName,
         buffer,
+        buffer.length,
         metadata
       );
-      const result = await executeMinioOperation(uploadOperation);
 
-      // Generate a presigned URL for immediate access
-      const presignedUrlOperation = createPresignedUrlOperation(
+      const url = await minioClient.presignedGetObject(
         DEFAULT_BUCKET,
         objectName,
         3600
       );
-      const url = await executeMinioOperation(presignedUrlOperation);
 
       const fileMetadata = {
         id: objectName,
@@ -204,10 +194,7 @@ export const deleteFile = withTracing(
   "deleteFile",
   async (fileId: string): Promise<boolean> => {
     try {
-      const deleteOperation = createDeleteOperation(DEFAULT_BUCKET, fileId);
-      await executeMinioOperation(deleteOperation);
-
-      // Don't use cacheTag here as it's not in a "use cache" function
+      await minioClient.removeObject(DEFAULT_BUCKET, fileId);
 
       return true;
     } catch (error) {
@@ -239,15 +226,13 @@ export const createPresignedUploadUrl = withTracing(
       const safeFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
       const objectName = path ? `${path}/${safeFileName}` : safeFileName;
 
-      // Create operation for presigned PUT URL
-      const presignedPutOperation = createPresignedPutOperation(
+      const url = await minioClient.presignedPutObject(
         DEFAULT_BUCKET,
         objectName,
-        expirySeconds,
-        { "content-type": contentType }
+        expirySeconds
       );
 
-      return await executeMinioOperation(presignedPutOperation);
+      return url;
     } catch (error) {
       console.error("Failed to create presigned upload URL:", error);
       return null;
@@ -270,40 +255,30 @@ export const uploadPdfFile = withTracing(
       const fileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
       const objectName = path ? `${path}/${fileName}` : fileName;
 
-      // Add file metadata
       const metadata = {
         "content-type": file.type,
         "original-name": file.name,
         "upload-time": new Date().toISOString(),
       };
 
-      // Upload the file with simplified approach
       console.log(`Uploading PDF file ${fileName} using simplified approach`);
 
-      // Convert File to Buffer
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      // Get the upload function from createSimpleUploadOperation with getMinioClient
-      const simpleUploadFn = createSimpleUploadOperation(
-        await getMinioClient()
-      );
-
-      // Use the function directly with our parameters
-      const result = await simpleUploadFn(
-        buffer,
+      const result = await minioClient.putObject(
         DEFAULT_BUCKET,
         objectName,
+        buffer,
+        buffer.length,
         metadata
       );
 
-      // Generate a presigned URL for immediate access
-      const presignedUrlOperation = createPresignedUrlOperation(
+      const url = await minioClient.presignedGetObject(
         DEFAULT_BUCKET,
         objectName,
         3600
       );
-      const url = await executeMinioOperation(presignedUrlOperation);
 
       const fileMetadata = {
         id: objectName,

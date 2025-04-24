@@ -1,10 +1,7 @@
 "use server";
 
-import {
-  createPresignedUrlOperation,
-  executeMinioOperation,
-  uploadFile,
-} from "@/lib/storage/minio-client";
+import { DEFAULT_BUCKET, uploadFile } from "@/lib/queries/storage/file-storage";
+import { client as minioClient } from "@/lib/settlemint/minio";
 import { randomUUID } from "crypto";
 
 export interface FileMetadata {
@@ -36,53 +33,39 @@ export async function uploadToStorage(
     throw new Error("No file provided");
   }
 
-  // Generate a unique object name
-  const fileName = file.name;
-  const id = randomUUID();
-  const objectName = path ? `${path}/${id}-${fileName}` : `${id}-${fileName}`;
-  const contentType = file.type || "application/octet-stream";
-
-  // Convert file to buffer
-  const buffer = Buffer.from(await file.arrayBuffer());
-
   try {
-    // Use MinIO client to upload the file
-    const bucketName = process.env.MINIO_DEFAULT_BUCKET || "asset-tokenization";
+    // Use the imported uploadFile function from file-storage.ts
+    // This function already handles creating the objectName and metadata internally
+    const uploadedMetadata = await uploadFile(file, path);
 
-    // Call uploadFile with the correct parameter order: bucketName, objectName, buffer, metadata
-    const etag = await uploadFile(bucketName, objectName, buffer, {
-      "Content-Type": contentType,
-      "Original-Filename": fileName,
-      "Upload-Path": path,
-    });
+    if (!uploadedMetadata) {
+      throw new Error("Upload function returned null");
+    }
 
-    console.log(`File uploaded successfully: ${objectName}`);
-
-    // Generate a presigned URL for the uploaded file
-    const presignedUrlOperation = createPresignedUrlOperation(
-      bucketName,
-      objectName,
-      3600
-    );
-    const url = await executeMinioOperation(presignedUrlOperation);
+    console.log(`File uploaded successfully: ${uploadedMetadata.id}`);
 
     // Return metadata about the uploaded file
+    // Adapt the structure slightly to match the return type if needed
     return {
-      id,
-      name: fileName,
-      contentType,
-      size: file.size,
-      uploadedAt: new Date(),
-      etag,
-      url,
-      objectName,
-      bucket: bucketName,
+      id: uploadedMetadata.id.split("/").pop() || uploadedMetadata.id, // Extract ID part if needed
+      name: uploadedMetadata.name,
+      contentType: uploadedMetadata.contentType,
+      size: uploadedMetadata.size,
+      uploadedAt: new Date(uploadedMetadata.uploadedAt),
+      etag: uploadedMetadata.etag,
+      url: uploadedMetadata.url || "", // Ensure URL is provided
+      objectName: uploadedMetadata.id, // Use the full object path as objectName
+      bucket: DEFAULT_BUCKET,
     };
   } catch (error) {
-    console.error("Error uploading to MinIO:", error);
+    console.error("Error uploading file:", error);
 
-    // Fallback to simulated upload
+    // Fallback to simulated upload (keep existing logic if needed)
     console.warn("Falling back to simulated upload");
+    const id = randomUUID();
+    const fileName = file.name;
+    const contentType = file.type || "application/octet-stream";
+    const objectName = path ? `${path}/${id}-${fileName}` : `${id}-${fileName}`; // Regenerate objectName for fallback
 
     // Return simulated metadata
     return {
@@ -106,13 +89,32 @@ export async function uploadToStorage(
  */
 export async function listFiles(prefix: string = ""): Promise<FileMetadata[]> {
   try {
-    // TODO: Implement MinIO's listObjects functionality
-    // const minioClient = createMinioClient();
-    // const bucketName = process.env.MINIO_DEFAULT_BUCKET || "asset-tokenization";
-    // const objects = await minioClient.listObjects(bucketName, prefix || "documents/", true);
+    // Use the imported minioClient to list objects
+    const objectsStream = minioClient.listObjects(DEFAULT_BUCKET, prefix, true);
 
-    // For now, return an empty array as we don't have persistent storage
-    return [];
+    const files: FileMetadata[] = [];
+    for await (const obj of objectsStream) {
+      if (obj.name) {
+        // Generate presigned URL for each object
+        const url = await minioClient.presignedGetObject(
+          DEFAULT_BUCKET,
+          obj.name,
+          3600 // 1 hour expiry
+        );
+        files.push({
+          id: obj.name.split("/").pop() || obj.name,
+          name: obj.name.split("/").pop() || obj.name,
+          contentType: "application/octet-stream", // Need to fetch stat for real type
+          size: obj.size || 0,
+          uploadedAt: obj.lastModified || new Date(),
+          etag: obj.etag || "",
+          url: url,
+          objectName: obj.name,
+          bucket: DEFAULT_BUCKET,
+        });
+      }
+    }
+    return files;
   } catch (error) {
     console.error("Error listing files:", error);
     return [];
@@ -127,12 +129,11 @@ export async function listFiles(prefix: string = ""): Promise<FileMetadata[]> {
  */
 export async function deleteFile(fileId: string): Promise<boolean> {
   try {
-    // TODO: Implement file deletion using MinIO client
-    // const minioClient = createMinioClient();
-    // const bucketName = process.env.MINIO_DEFAULT_BUCKET || "asset-tokenization";
-    // await minioClient.removeObject(bucketName, fileId);
+    // Use the imported minioClient to remove the object
+    // Assume fileId might be the full object path/name
+    await minioClient.removeObject(DEFAULT_BUCKET, fileId);
 
-    console.log(`File deleted (simulated): ${fileId}`);
+    console.log(`File deleted: ${fileId}`);
     return true;
   } catch (error) {
     console.error(`Error deleting file ${fileId}:`, error);
