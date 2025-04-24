@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import { StandardAirdrop } from "./StandardAirdrop.sol";
 import { VestingAirdrop } from "./VestingAirdrop.sol";
-import { LinearVestingStrategy } from "./strategies/LinearVestingStrategy.sol";
+import { LinearVestingStrategy } from "./airdrop/strategies/LinearVestingStrategy.sol";
 import { PushAirdrop } from "./PushAirdrop.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
