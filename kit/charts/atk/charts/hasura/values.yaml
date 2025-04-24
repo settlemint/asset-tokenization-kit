@@ -29,10 +29,46 @@ graphql-engine:
     - name: HASURA_GRAPHQL_DATABASE_URL
       value: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
   global:
-    imagePullSecrets: []
+    imagePullSecrets:
+      - image-pull-secret-docker
+      - image-pull-secret-ghcr
+      - image-pull-secret-harbor
   postgres:
     enabled: false
   initContainers:
     - name: wait-for-postgresql
       image: ghcr.io/settlemint/btp-waitforit:v7.7.3
       command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
+
+busybox:
+  registry: docker.io
+  repository: busybox
+  tag: 1.37
+  pullPolicy: IfNotPresent
+
+drizzleMigrate:
+  image:
+    registry: docker.io
+    repository: oven/bun
+    tag: "1"
+    pullPolicy: IfNotPresent
+
+git:
+  image:
+    registry: docker.io
+    repository: alpine/git
+    tag: latest
+    pullPolicy: IfNotPresent
+
+job:
+  workspace:
+    # -- Configure the persistent volume claim for the job workspace
+    enabled: true # Set to false to use emptyDir instead of PVC
+    size: 1Gi
+    storageClass: "" # Optional: specify storage class, otherwise use default
+    accessMode: ReadWriteOnce
+
+imagePullSecrets:
+  - image-pull-secret-docker
+  - image-pull-secret-ghcr
+  - image-pull-secret-harbor

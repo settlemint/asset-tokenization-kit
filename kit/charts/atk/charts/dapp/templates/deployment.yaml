@@ -60,7 +60,7 @@ spec:
         {{- /* Add GraphQL Check if enabled */}}
         {{- if .Values.initContainer.graphQLCheck.enabled }}
         - name: {{ .Values.initContainer.graphQLCheck.name | default "wait-for-graphql" }}
-          image: "{{ .Values.initContainer.graphQLCheck.image.repository }}:{{ .Values.initContainer.graphQLCheck.image.tag }}"
+          image: "{{ .Values.initContainer.graphQLCheck.image.registry }}/{{ .Values.initContainer.graphQLCheck.image.repository }}:{{ .Values.initContainer.graphQLCheck.image.tag }}"
           imagePullPolicy: {{ .Values.initContainer.graphQLCheck.image.pullPolicy }}
           command:
             - /bin/sh

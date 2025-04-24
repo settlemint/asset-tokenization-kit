@@ -196,17 +196,22 @@ node:
 
 image:
   besu:
-    repository: hyperledger/besu
+    repository: docker.io/hyperledger/besu
     tag: 25.3.0
     pullPolicy: IfNotPresent
   tessera:
-    repository: quorumengineering/tessera
+    repository: docker.io/quorumengineering/tessera
     tag: 24.4
     pullPolicy: IfNotPresent
   hooks:
     repository: ghcr.io/settlemint/quorum-genesis-tool
     tag: sha-49c40f5
     pullPolicy: IfNotPresent
+
+busybox:
+  registry: docker.io
+  tag: 1.37
+  pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 
