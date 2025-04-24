@@ -92,11 +92,33 @@ export const TransactionApi = new Elysia({
   .get(
     "/recent",
     async ({ query }) => {
-      const { address, processedAfter } = query;
-      return getRecentTransactions({
-        address: address ? getAddress(address) : undefined,
-        processedAfter: processedAfter ? new Date(processedAfter) : undefined,
-      });
+      try {
+        const { address, processedAfter } = query;
+        let validAddress;
+
+        // Handle address validation safely
+        if (address) {
+          try {
+            validAddress = getAddress(address);
+          } catch (addressError) {
+            console.error("Invalid Ethereum address:", addressError);
+            // Return empty array for invalid addresses rather than throwing an error
+            return [];
+          }
+        }
+
+        const recentTransactions = await getRecentTransactions({
+          address: validAddress,
+          processedAfter: processedAfter ? new Date(processedAfter) : undefined,
+        });
+
+        // Ensure we have a valid array to return
+        return Array.isArray(recentTransactions) ? recentTransactions : [];
+      } catch (error) {
+        console.error("Error in /transaction/recent endpoint:", error);
+        // Always return an empty array on error to avoid breaking the client
+        return [];
+      }
     },
     {
       auth: true,

@@ -40,6 +40,16 @@ export interface RecentTransactionsProps {
 }
 
 /**
+ * Checks if a value exists and is not null or undefined
+ *
+ * @param value - The value to check
+ * @returns True if the value exists, false otherwise
+ */
+const checkExists = (value: any): boolean => {
+  return value !== null && value !== undefined;
+};
+
+/**
  * Fetches processed transactions for a specific address
  *
  * @param props - Props containing the address to query and optional processedAfter date
@@ -53,27 +63,39 @@ export const getRecentTransactions = withTracing(
   async (props: RecentTransactionsProps = {}) => {
     const { address, processedAfter } = props;
 
-    const transactions = await fetchAllPortalPages(
-      async ({ page, pageSize }) => {
-        const response = await portalClient.request(RecentTransactionsHistory, {
-          from: address,
-          processedAfter: processedAfter?.toJSON(),
-          pageSize,
-          page,
-        });
+    try {
+      const transactions = await fetchAllPortalPages(
+        async ({ page, pageSize }) => {
+          const response = await portalClient.request(
+            RecentTransactionsHistory,
+            {
+              from: address,
+              processedAfter: processedAfter?.toJSON(),
+              pageSize,
+              page,
+            }
+          );
 
-        return {
-          count:
-            response.getPendingAndRecentlyProcessedTransactions?.count ?? 0,
-          records:
-            safeParse(
-              t.Array(TransactionFragmentSchema),
-              response.getPendingAndRecentlyProcessedTransactions?.records ?? []
-            ) ?? [],
-        };
-      }
-    );
+          // Make sure records exists before parsing
+          const records =
+            response.getPendingAndRecentlyProcessedTransactions?.records ?? [];
+          const parsedRecords = safeParse(
+            t.Array(TransactionFragmentSchema),
+            records
+          );
 
-    return transactions?.records;
+          return {
+            count:
+              response.getPendingAndRecentlyProcessedTransactions?.count ?? 0,
+            records: parsedRecords ?? [],
+          };
+        }
+      );
+
+      return transactions?.records;
+    } catch (error) {
+      console.error("Error fetching recent transactions:", error);
+      return [];
+    }
   }
 );

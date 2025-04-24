@@ -93,6 +93,16 @@ export const api = new Elysia({
     if (error instanceof AccessControlError) {
       return elysiaError(error.statusCode, error.message);
     }
+
+    // Handle transaction-related errors more specifically
+    if (
+      error instanceof Error &&
+      error.message.includes("Check is not defined")
+    ) {
+      console.error("Transaction processing error:", error.message);
+      return elysiaError(500, "Transaction processing error");
+    }
+
     // TODO: handle specific errors (hasura, postgres, thegraph, portal, etc)
     console.error(
       `Unexpected error: ${error instanceof Error ? error.message : JSON.stringify(error)}`,

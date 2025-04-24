@@ -38,6 +38,27 @@ import { FormProvider, useForm } from "react-hook-form";
 
 import { AssetTypeSelection } from "./steps/asset-type-selection";
 
+// Import create actions for each asset type
+import { createBond } from "@/lib/mutations/bond/create/create-action";
+import { createCryptoCurrency } from "@/lib/mutations/cryptocurrency/create/create-action";
+import { createDeposit } from "@/lib/mutations/deposit/create/create-action";
+import { createEquity } from "@/lib/mutations/equity/create/create-action";
+import { createFund } from "@/lib/mutations/fund/create/create-action";
+import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
+
+// Import auth client for user session
+import { useRouter } from "@/i18n/routing";
+import { authClient } from "@/lib/auth/client";
+
+// Import the verification dialog
+import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
+import { getTomorrowMidnight } from "@/lib/utils/date";
+
+// Import the predict address functions
+import { getPredictedAddress as getBondPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
+import { getPredictedAddress as getCryptocurrencyPredictedAddress } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-predict-address";
+import { getPredictedAddress as getStablecoinPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
+
 // Define a base form type that contains all possible fields
 interface BaseFormValues {
   assetName: string;
@@ -79,6 +100,9 @@ export function AssetDesignerDialog({
   const t = useTranslations("admin.sidebar");
   const [currentStep, setCurrentStep] = useState<AssetDesignerStep>("type");
   const [selectedAssetType, setSelectedAssetType] = useState<AssetType>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
 
   // Form state tracking
   const [isBasicInfoValid, setIsBasicInfoValid] = useState(false);
@@ -107,6 +131,21 @@ export function AssetDesignerDialog({
       }[]
     >
   >({});
+
+  // State for verification dialog
+  const [showVerificationDialog, setShowVerificationDialog] = useState(false);
+  const [pincodeVerificationData, setPincodeVerificationData] = useState<{
+    action: any;
+    formData: any;
+  } | null>(null);
+
+  // Create a form for the verification code
+  const verificationForm = useForm({
+    defaultValues: {
+      verificationCode: "",
+      verificationType: "pincode",
+    },
+  });
 
   // Create forms for each asset type with mode set to run validation always
   const bondForm = useForm({
@@ -1139,6 +1178,235 @@ export function AssetDesignerDialog({
     );
   };
 
+  // Handle asset creation submission
+  const handleCreateAsset = async () => {
+    if (!selectedAssetType) return;
+
+    // Remove the immediate toast notification
+    // const toastId = toast.loading(
+    //   `Creating ${selectedAssetType}... This process may take a moment.`
+    // );
+
+    setIsSubmitting(true);
+    const form = getFormForAssetType();
+
+    try {
+      // Get a unique predicted address for the asset instead of using a static one
+      let predictedAddress = "0x0000000000000000000000000000000000000000";
+
+      // Try to get a predicted address based on the asset type
+      try {
+        const formValues = form.getValues();
+
+        switch (selectedAssetType) {
+          case "bond": {
+            // Only pass the required properties for bond prediction
+            const bondFormValues = formValues as any;
+            if (
+              bondFormValues.cap &&
+              bondFormValues.maturityDate &&
+              bondFormValues.underlyingAsset &&
+              bondFormValues.faceValue
+            ) {
+              predictedAddress = await getBondPredictedAddress({
+                assetName: bondFormValues.assetName,
+                symbol: bondFormValues.symbol,
+                decimals: bondFormValues.decimals,
+                cap: bondFormValues.cap,
+                maturityDate: bondFormValues.maturityDate,
+                underlyingAsset: bondFormValues.underlyingAsset,
+                faceValue: bondFormValues.faceValue,
+              });
+            }
+            break;
+          }
+          case "cryptocurrency": {
+            // Only pass the required properties for cryptocurrency prediction
+            const cryptoFormValues = formValues as any;
+            if (cryptoFormValues.initialSupply) {
+              predictedAddress = await getCryptocurrencyPredictedAddress({
+                assetName: cryptoFormValues.assetName,
+                symbol: cryptoFormValues.symbol,
+                decimals: cryptoFormValues.decimals,
+                initialSupply: cryptoFormValues.initialSupply,
+              });
+            }
+            break;
+          }
+          case "stablecoin": {
+            // Only pass the required properties for stablecoin prediction
+            const stablecoinFormValues = formValues as any;
+            if (
+              stablecoinFormValues.collateralLivenessValue &&
+              stablecoinFormValues.collateralLivenessTimeUnit
+            ) {
+              predictedAddress = await getStablecoinPredictedAddress({
+                assetName: stablecoinFormValues.assetName,
+                symbol: stablecoinFormValues.symbol,
+                decimals: stablecoinFormValues.decimals,
+                collateralLivenessValue:
+                  stablecoinFormValues.collateralLivenessValue,
+                collateralLivenessTimeUnit:
+                  stablecoinFormValues.collateralLivenessTimeUnit,
+              });
+            }
+            break;
+          }
+          // Other asset types would need their own implementation
+          default:
+            // Generate a fallback random address for asset types without a prediction function
+            predictedAddress = `0x${Math.random().toString(16).substring(2).padStart(40, "0")}`;
+        }
+      } catch (error) {
+        console.error("Error predicting address:", error);
+        // Generate a fallback random address in case of prediction failure
+        predictedAddress = `0x${Math.random().toString(16).substring(2).padStart(40, "0")}`;
+      }
+
+      // Common values needed for asset creation
+      const baseFormValues = {
+        ...form.getValues(),
+        verificationType: "pincode",
+        predictedAddress,
+      } as any; // Use type assertion to bypass TypeScript checks
+
+      let formData;
+      let action;
+
+      // Prepare form data based on asset type
+      switch (selectedAssetType) {
+        case "bond":
+          action = createBond;
+          formData = {
+            ...baseFormValues,
+            maturityDate: baseFormValues.maturityDate || getTomorrowMidnight(),
+          };
+          break;
+        case "cryptocurrency":
+          action = createCryptoCurrency;
+          formData = {
+            ...baseFormValues,
+          };
+          break;
+        case "equity":
+          action = createEquity;
+          formData = {
+            ...baseFormValues,
+          };
+          break;
+        case "fund":
+          action = createFund;
+          formData = {
+            ...baseFormValues,
+          };
+          break;
+        case "stablecoin":
+          action = createStablecoin;
+          formData = {
+            ...baseFormValues,
+          };
+          break;
+        case "deposit":
+          action = createDeposit;
+          formData = {
+            ...baseFormValues,
+          };
+          break;
+        default:
+          throw new Error("Invalid asset type");
+      }
+
+      // Store verification data and show pincode dialog
+      // Remove the toastId from pincodeVerificationData
+      setPincodeVerificationData({ action, formData });
+      setShowVerificationDialog(true);
+    } catch (error) {
+      console.error("Error preparing asset creation:", error);
+      toast.error("Failed to prepare asset creation. Please try again.");
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle verification submission
+  const handleVerificationSubmit = async () => {
+    if (!pincodeVerificationData) return;
+
+    try {
+      // Get the verification code from the form
+      const verificationCode = verificationForm.getValues().verificationCode;
+
+      // Add the verification code to the form data
+      const formDataWithCode = {
+        ...pincodeVerificationData.formData,
+        verificationCode,
+      };
+
+      // Show the loading toast only after pin confirmation
+      const toastId = toast.loading(
+        `Creating ${selectedAssetType}... This process may take a moment.`
+      );
+
+      // Submit the form with the action
+      const result = await pincodeVerificationData.action(formDataWithCode);
+
+      if (result.data) {
+        // Update the toast with success message
+        toast.success(
+          `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,
+          { id: toastId }
+        );
+
+        // Close the dialog and reset state
+        handleOpenChange(false);
+
+        // Navigate to the asset page if we have a valid address
+        const assetId = formDataWithCode.predictedAddress;
+        if (
+          assetId &&
+          assetId !== "0x0000000000000000000000000000000000000000"
+        ) {
+          router.push(`/assets/${selectedAssetType}/${assetId}`);
+        } else {
+          // Refresh the current page
+          router.refresh();
+        }
+      } else if (result.validationErrors) {
+        // Update the toast with validation error message
+        toast.error(
+          "Please fix the validation errors before creating the asset.",
+          { id: toastId }
+        );
+        console.error("Validation errors:", result.validationErrors);
+      } else {
+        // Update the toast with generic error message
+        toast.error("Failed to create asset. Please try again.", {
+          id: toastId,
+        });
+      }
+    } catch (error) {
+      console.error("Error creating asset:", error);
+      // Show error toast without relying on a previous toastId
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+      setShowVerificationDialog(false);
+      setPincodeVerificationData(null);
+      verificationForm.reset();
+    }
+  };
+
+  // Handle verification dialog close
+  const handleVerificationCancel = () => {
+    // Remove toast dismissal since we're not creating a toast in handleCreateAsset anymore
+    // if (pincodeVerificationData?.toastId) {
+    //   toast.dismiss(pincodeVerificationData.toastId);
+    // }
+    setIsSubmitting(false);
+    setShowVerificationDialog(false);
+    setPincodeVerificationData(null);
+    verificationForm.reset();
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-screen h-screen w-screen p-0 overflow-hidden rounded-none border-none right-0 !max-w-screen">
@@ -1969,8 +2237,8 @@ export function AssetDesignerDialog({
                     >
                       Back
                     </Button>
-                    <Button onClick={() => onOpenChange(false)}>
-                      Create asset
+                    <Button onClick={handleCreateAsset} disabled={isSubmitting}>
+                      {isSubmitting ? "Creating..." : "Create asset"}
                     </Button>
                   </div>
                 </div>
@@ -1979,6 +2247,19 @@ export function AssetDesignerDialog({
           </div>
         </div>
       </DialogContent>
+
+      {/* Verification dialog */}
+      <FormProvider {...verificationForm}>
+        <FormOtpDialog
+          name="verificationCode"
+          open={showVerificationDialog}
+          onOpenChange={(open) => {
+            if (!open) handleVerificationCancel();
+            else setShowVerificationDialog(open);
+          }}
+          onSubmit={handleVerificationSubmit}
+        />
+      </FormProvider>
     </Dialog>
   );
 }

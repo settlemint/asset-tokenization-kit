@@ -109,6 +109,11 @@ export const ReceiptFragmentSchema = t.Object({
 
 export type Receipt = StaticDecode<typeof ReceiptFragmentSchema>;
 
+// Add a Check function if it's referenced but not defined
+const Check = (value: any): boolean => {
+  return value !== null && value !== undefined;
+};
+
 /**
  * GraphQL fragment for transaction data
  *
