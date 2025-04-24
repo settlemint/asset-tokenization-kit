@@ -90,7 +90,6 @@ export const createDepositFunction = withAccessControl(
       currency: price.currency,
     });
 
-    // Calculate collateralLivenessSeconds using the refactored central function
     const collateralLivenessSeconds = getTimeUnitSeconds(
       collateralLivenessValue,
       collateralLivenessTimeUnit
