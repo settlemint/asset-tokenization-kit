@@ -127,7 +127,7 @@ job:
   busyboxImage:
     registry: docker.io
     repository: busybox
-    tag: 1.36 # Use specific stable tag
+    tag: 1.37 # Use specific stable tag
     pullPolicy: IfNotPresent
 
   # Image for the clone-repo init container
