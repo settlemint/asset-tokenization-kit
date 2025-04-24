@@ -1362,9 +1362,604 @@ export function AssetDesignerDialog({
               )}
               {currentStep === "summary" && (
                 <div className="p-6">
-                  {/* This will be replaced with the actual summary for the selected asset type */}
-                  <p className="text-lg font-semibold">Summary</p>
-                  <p>Review all the details before issuing your asset.</p>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold">Summary</h3>
+                      <p className="text-sm text-muted-foreground">
+                        This is the final step before creating your asset.
+                        Please review all the details you have entered.
+                      </p>
+                    </div>
+
+                    {/* Asset Type section */}
+                    <div className="rounded-md border p-4 space-y-4">
+                      <div className="flex items-center">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+                          1
+                        </div>
+                        <h4 className="text-base font-medium ml-2">
+                          Asset Type
+                        </h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-8">
+                        The type of digital asset you are creating.
+                      </p>
+                      <div className="ml-8">
+                        <div className="bg-muted p-4 rounded-md inline-flex items-center gap-3">
+                          {selectedAssetType === "bond" && (
+                            <>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="text-primary"
+                              >
+                                <rect
+                                  width="18"
+                                  height="12"
+                                  x="3"
+                                  y="6"
+                                  rx="2"
+                                />
+                                <path d="M14 12.25A3.28 3.28 0 0 1 13.24 15c-1.3 1.52-3.56 2-5.5 2a7.5 7.5 0 0 1-5.1-2" />
+                                <path d="M10 9.5a3.28 3.28 0 0 1 5.5 2c0 1.5-1.37 2-3 2" />
+                                <path d="M15 9.5V8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1.5" />
+                              </svg>
+                              <div>
+                                <p className="font-medium">Bond</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Debt instruments issued as tokenized
+                                  securities.
+                                </p>
+                              </div>
+                            </>
+                          )}
+                          {selectedAssetType === "cryptocurrency" && (
+                            <>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="text-primary"
+                              >
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M15 9.354a4 4 0 1 0 0 5.292" />
+                                <path d="M9 12h6" />
+                              </svg>
+                              <div>
+                                <p className="font-medium">Cryptocurrency</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Decentralized digital assets used as a medium
+                                  of exchange or store of value.
+                                </p>
+                              </div>
+                            </>
+                          )}
+                          {selectedAssetType === "equity" && (
+                            <>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="text-primary"
+                              >
+                                <rect
+                                  width="18"
+                                  height="18"
+                                  x="3"
+                                  y="3"
+                                  rx="2"
+                                />
+                                <path d="M15 8h.01" />
+                                <path d="m7 13 3-3 2 2 5-5" />
+                              </svg>
+                              <div>
+                                <p className="font-medium">Equity</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Assets representing ownership in a company.
+                                </p>
+                              </div>
+                            </>
+                          )}
+                          {selectedAssetType === "fund" && (
+                            <>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="text-primary"
+                              >
+                                <path d="M12 2v20" />
+                                <path d="M2 12h20" />
+                                <path d="m4.93 4.93 14.14 14.14" />
+                                <path d="m19.07 4.93-14.14 14.14" />
+                              </svg>
+                              <div>
+                                <p className="font-medium">Fund</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Investment vehicles pooled by professional
+                                  managers.
+                                </p>
+                              </div>
+                            </>
+                          )}
+                          {selectedAssetType === "stablecoin" && (
+                            <>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="text-primary"
+                              >
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                <line x1="9" x2="9.01" y1="9" y2="9" />
+                                <line x1="15" x2="15.01" y1="9" y2="9" />
+                              </svg>
+                              <div>
+                                <p className="font-medium">Stablecoin</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Digital assets pegged to a stable asset like
+                                  USD.
+                                </p>
+                              </div>
+                            </>
+                          )}
+                          {selectedAssetType === "deposit" && (
+                            <>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="text-primary"
+                              >
+                                <path d="M2 9V5c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v4" />
+                                <path d="M2 13v6c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2v-6" />
+                                <path d="M4 9h16v4H4z" />
+                              </svg>
+                              <div>
+                                <p className="font-medium">Deposit</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Digital assets that represent a deposit of a
+                                  traditional asset.
+                                </p>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Basic information section */}
+                    <div className="rounded-md border p-4 space-y-4">
+                      <div className="flex items-center">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+                          2
+                        </div>
+                        <h4 className="text-base font-medium ml-2">
+                          Basic information
+                        </h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-8">
+                        General information about your asset.
+                      </p>
+                      <div className="ml-8 grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm font-medium">Name</p>
+                          <p className="text-sm">
+                            {(getFormForAssetType().getValues() as any)
+                              .assetName || "Not provided"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">Symbol</p>
+                          <p className="text-sm">
+                            {(getFormForAssetType().getValues() as any)
+                              .symbol || "Not provided"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">Decimals</p>
+                          <p className="text-sm">
+                            {(
+                              getFormForAssetType().getValues() as any
+                            ).decimals?.toString() || "Not provided"}
+                          </p>
+                        </div>
+                        {selectedAssetType === "bond" ||
+                        selectedAssetType === "equity" ||
+                        selectedAssetType === "fund" ? (
+                          <div>
+                            <p className="text-sm font-medium">ISIN</p>
+                            <p className="text-sm">
+                              {(getFormForAssetType().getValues() as any)
+                                .isin || "Not provided"}
+                            </p>
+                          </div>
+                        ) : null}
+                        {selectedAssetType === "equity" ? (
+                          <div>
+                            <p className="text-sm font-medium">CUSIP</p>
+                            <p className="text-sm">
+                              {(getFormForAssetType().getValues() as any)
+                                .cusip || "Not provided"}
+                            </p>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    {/* Configuration section */}
+                    <div className="rounded-md border p-4 space-y-4">
+                      <div className="flex items-center">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+                          3
+                        </div>
+                        <h4 className="text-base font-medium ml-2">
+                          Configuration
+                        </h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-8">
+                        Specific parameters for your asset.
+                      </p>
+                      <div className="ml-8 grid grid-cols-2 gap-4">
+                        {selectedAssetType === "bond" && (
+                          <>
+                            <div>
+                              <p className="text-sm font-medium">
+                                Collateral proof validity
+                              </p>
+                              <p className="text-sm">12 months</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">Price</p>
+                              <p className="text-sm">€1</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">Cap</p>
+                              <p className="text-sm">
+                                {(getFormForAssetType().getValues() as any)
+                                  .cap || "Not provided"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">Face Value</p>
+                              <p className="text-sm">
+                                {(getFormForAssetType().getValues() as any)
+                                  .faceValue || "Not provided"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">
+                                Maturity Date
+                              </p>
+                              <p className="text-sm">
+                                {(getFormForAssetType().getValues() as any)
+                                  .maturityDate || "Not provided"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">
+                                Underlying Asset
+                              </p>
+                              <p className="text-sm">
+                                {(() => {
+                                  const asset = (
+                                    getFormForAssetType().getValues() as any
+                                  ).underlyingAsset;
+                                  if (!asset) return "Not provided";
+                                  if (typeof asset === "object") {
+                                    // Extract a displayable property from the object
+                                    return (
+                                      asset.name ||
+                                      asset.symbol ||
+                                      asset.id ||
+                                      JSON.stringify(asset)
+                                    );
+                                  }
+                                  return asset;
+                                })() || "Not provided"}
+                              </p>
+                            </div>
+                          </>
+                        )}
+                        {selectedAssetType === "cryptocurrency" && (
+                          <>
+                            <div>
+                              <p className="text-sm font-medium">Max Supply</p>
+                              <p className="text-sm">
+                                {(getFormForAssetType().getValues() as any)
+                                  .maxSupply || "Not provided"}
+                              </p>
+                            </div>
+                          </>
+                        )}
+                        {selectedAssetType === "equity" && (
+                          <>
+                            <div>
+                              <p className="text-sm font-medium">
+                                Shares Outstanding
+                              </p>
+                              <p className="text-sm">
+                                {(getFormForAssetType().getValues() as any)
+                                  .sharesOutstanding || "Not provided"}
+                              </p>
+                            </div>
+                          </>
+                        )}
+                        {selectedAssetType === "fund" && (
+                          <>
+                            <div>
+                              <p className="text-sm font-medium">
+                                Management Fee BPS
+                              </p>
+                              <p className="text-sm">
+                                {(getFormForAssetType().getValues() as any)
+                                  .managementFeeBps || "Not provided"}
+                              </p>
+                            </div>
+                          </>
+                        )}
+                        {selectedAssetType === "stablecoin" && (
+                          <>
+                            <div>
+                              <p className="text-sm font-medium">
+                                Collateral Type
+                              </p>
+                              <p className="text-sm">
+                                {(getFormForAssetType().getValues() as any)
+                                  .collateralType || "Not provided"}
+                              </p>
+                            </div>
+                          </>
+                        )}
+                        {selectedAssetType === "deposit" && (
+                          <>
+                            <div>
+                              <p className="text-sm font-medium">
+                                Deposit Type
+                              </p>
+                              <p className="text-sm">
+                                {(getFormForAssetType().getValues() as any)
+                                  .depositType || "Not provided"}
+                              </p>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Asset permissions section */}
+                    <div className="rounded-md border p-4 space-y-4">
+                      <div className="flex items-center">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+                          4
+                        </div>
+                        <h4 className="text-base font-medium ml-2">
+                          Asset permissions
+                        </h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-8">
+                        Administrative roles and permissions for managing this
+                        asset.
+                      </p>
+                      <div className="ml-8 space-y-2">
+                        <div>
+                          <p className="text-sm font-medium">
+                            Asset Administrators
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          {/* Always show Patrick Mualaba with all roles */}
+                          <div className="relative flex items-center justify-between rounded-md border p-3 shadow-sm">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm">Patrick Mualaba</span>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <div className="bg-primary/10 text-primary px-2 py-1 rounded-md text-xs">
+                                Admin
+                              </div>
+                              <div className="bg-primary/10 text-primary px-2 py-1 rounded-md text-xs">
+                                User manager
+                              </div>
+                              <div className="bg-primary/10 text-primary px-2 py-1 rounded-md text-xs">
+                                Supply manager
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Show any additional admins from the form */}
+                          {(getFormForAssetType().getValues() as any)
+                            .assetAdmins?.length > 0 &&
+                            (
+                              getFormForAssetType().getValues() as any
+                            ).assetAdmins.map((admin: any, index: number) => {
+                              // Handle both the old string format and the new object format
+                              const adminAddress = admin.wallet || admin;
+                              // Skip if this is the same as Patrick Mualaba (to avoid duplicate entries)
+                              if (adminAddress === "Patrick Mualaba")
+                                return null;
+
+                              const roles = admin.roles || [
+                                "admin",
+                                "user-manager",
+                                "supply-manager",
+                              ];
+
+                              return (
+                                <div
+                                  key={index}
+                                  className="relative flex items-center justify-between rounded-md border p-3 shadow-sm"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm">
+                                      {adminAddress}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
+                                    {roles.includes("admin") && (
+                                      <div className="bg-primary/10 text-primary px-2 py-1 rounded-md text-xs">
+                                        Admin
+                                      </div>
+                                    )}
+                                    {roles.includes("user-manager") && (
+                                      <div className="bg-primary/10 text-primary px-2 py-1 rounded-md text-xs">
+                                        User manager
+                                      </div>
+                                    )}
+                                    {(roles.includes("issuer") ||
+                                      roles.includes("supply-manager")) && (
+                                      <div className="bg-primary/10 text-primary px-2 py-1 rounded-md text-xs">
+                                        Supply manager
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Regulation section */}
+                    <div className="rounded-md border p-4 space-y-4">
+                      <div className="flex items-center">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+                          5
+                        </div>
+                        <h4 className="text-base font-medium ml-2">
+                          Regulation
+                        </h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-8">
+                        Regulatory compliance information for your asset.
+                      </p>
+                      {getFormForAssetType().getValues().selectedRegulations
+                        ?.length ? (
+                        <div className="ml-8 space-y-3">
+                          {getFormForAssetType()
+                            .getValues()
+                            .selectedRegulations.map((regulationId, index) => {
+                              const region = Object.entries(
+                                regionRegulations
+                              ).find(([_, regulations]) =>
+                                regulations.some(
+                                  (reg) => reg.id === regulationId
+                                )
+                              )?.[0];
+
+                              const regulation = Object.values(
+                                regionRegulations
+                              )
+                                .flat()
+                                .find((reg) => reg.id === regulationId);
+
+                              return (
+                                <div
+                                  key={index}
+                                  className="bg-muted p-3 rounded-md"
+                                >
+                                  <div className="flex justify-between">
+                                    <div>
+                                      <p className="text-sm font-medium">
+                                        {regulation?.name}
+                                      </p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {regulation?.description}
+                                      </p>
+                                    </div>
+                                    <div className="bg-background text-xs font-medium px-2 py-1 rounded-md h-fit">
+                                      {region}
+                                    </div>
+                                  </div>
+                                  {uploadedDocuments[regulationId]?.length >
+                                    0 && (
+                                    <div className="mt-3 space-y-2">
+                                      <p className="text-xs font-medium">
+                                        Uploaded Documents:
+                                      </p>
+                                      {uploadedDocuments[regulationId].map(
+                                        (doc, idx) => (
+                                          <div
+                                            key={idx}
+                                            className="flex items-center text-xs"
+                                          >
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              width="12"
+                                              height="12"
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              strokeWidth="2"
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              className="mr-1"
+                                            >
+                                              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                              <polyline points="14 2 14 8 20 8"></polyline>
+                                            </svg>
+                                            {doc.title}
+                                            {doc.type && (
+                                              <span className="text-muted-foreground ml-1">
+                                                ({doc.type})
+                                              </span>
+                                            )}
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground ml-8">
+                          No regulatory compliance selected
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
                   {/* Navigation buttons */}
                   <div className="mt-8 flex justify-end space-x-4">
