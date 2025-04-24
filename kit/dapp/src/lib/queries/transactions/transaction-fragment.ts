@@ -4,27 +4,37 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 export const ReceiptFragment = portalGraphql(`
   fragment ReceiptFragment on TransactionReceiptOutput {
-      revertReasonDecoded
-      gasUsed
-      blobGasPrice
-      blobGasUsed
-      blockHash
-      blockNumber
-      contractAddress
-      cumulativeGasUsed
-      effectiveGasPrice
-      from
-      logs
-      logsBloom
-      revertReason
-      root
-      status
-      to
-      transactionHash
-      transactionIndex
-      type
+    revertReasonDecoded
+    gasUsed
+    blobGasPrice
+    blobGasUsed
+    blockHash
+    blockNumber
+    contractAddress
+    cumulativeGasUsed
+    effectiveGasPrice
+    from
+    logs
+    logsBloom
+    revertReason
+    root
+    status
+    to
+    transactionHash
+    transactionIndex
+    type
+    events
   }
 `);
+
+export const EventSchema = t.Object(
+  {
+    eventName: t.String({ description: "The name of the event" }),
+  },
+  { additionalProperties: true }
+);
+
+export type Event = StaticDecode<typeof EventSchema>;
 
 export const ReceiptFragmentSchema = t.Object({
   status: t.String({
@@ -105,6 +115,11 @@ export const ReceiptFragmentSchema = t.Object({
   type: t.String({
     description: "The type of the transaction",
   }),
+  events: t.Optional(
+    t.Array(EventSchema, {
+      description: "The events emitted by the transaction",
+    })
+  ),
 });
 
 export type Receipt = StaticDecode<typeof ReceiptFragmentSchema>;

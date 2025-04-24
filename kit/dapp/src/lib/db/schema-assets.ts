@@ -7,7 +7,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { actionStatus, actionTypes } from "../utils/typebox/actions";
+import { actionTypes } from "../utils/typebox/actions";
 import { fiatCurrencies } from "../utils/typebox/fiat-currency";
 import { user } from "./schema-auth";
 
@@ -65,7 +65,6 @@ export const contact = pgTable(
 );
 
 const actionsEnum = pgEnum("actions", actionTypes);
-const actionStatusEnum = pgEnum("action_statuses", actionStatus);
 export const actions = pgTable("actions", {
   id: uuid("id").primaryKey().defaultRandom(),
   assetId: text("asset_id")
@@ -78,5 +77,6 @@ export const actions = pgTable("actions", {
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-  status: actionStatusEnum("status").notNull(),
+  dueAt: timestamp("due_at", { withTimezone: true }).notNull(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
 });

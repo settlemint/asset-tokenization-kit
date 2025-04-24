@@ -24,24 +24,3 @@ export const ActionType = (options?: SchemaOptions) =>
   });
 
 export type ActionType = Static<ReturnType<typeof ActionType>>;
-
-export const actionStatus = [
-  "PENDING",
-  "COMPLETED",
-  "FAILED",
-  "UPCOMING",
-  "CANCELLED",
-] as const;
-
-/**
- * Validates an action status
- *
- * @param options - Additional schema options
- * @returns A TypeBox schema that validates action statuses
- */
-export const ActionStatus = (options?: SchemaOptions) =>
-  t.UnionEnum(actionStatus, {
-    ...options,
-  });
-
-export type ActionStatus = Static<ReturnType<typeof ActionStatus>>;
