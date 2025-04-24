@@ -12,6 +12,7 @@ restore_addresses() {
     FIXED_YIELD_FACTORY_ADDRESS="0x5e771e1417100000000000000000000000000006"
     DEPOSIT_FACTORY_ADDRESS="0x5e771e1417100000000000000000000000000007"
     DVP_SWAP_FACTORY_ADDRESS="0x5e771e1417100000000000000000000000000008"
+    AIRDROP_FACTORY_ADDRESS="0x5e771e1417100000000000000000000000000009"
 
     yq -i "(.dataSources[] | select(.name == \"BondFactory\").source.address) = \"$BOND_FACTORY_ADDRESS\"" subgraph.yaml
     yq -i "(.dataSources[] | select(.name == \"CryptoCurrencyFactory\").source.address) = \"$CRYPTO_CURRENCY_FACTORY_ADDRESS\"" subgraph.yaml
@@ -21,6 +22,7 @@ restore_addresses() {
     yq -i "(.dataSources[] | select(.name == \"FixedYieldFactory\").source.address) = \"$FIXED_YIELD_FACTORY_ADDRESS\"" subgraph.yaml
     yq -i "(.dataSources[] | select(.name == \"DepositFactory\").source.address) = \"$DEPOSIT_FACTORY_ADDRESS\"" subgraph.yaml
     yq -i "(.dataSources[] | select(.name == \"DvPSwapFactory\").source.address) = \"$DVP_SWAP_FACTORY_ADDRESS\"" subgraph.yaml
+    yq -i "(.dataSources[] | select(.name == \"AirdropFactory\").source.address) = \"$AIRDROP_FACTORY_ADDRESS\"" subgraph.yaml
     echo "Original addresses restored."
 }
 
@@ -35,7 +37,7 @@ FUND_FACTORY_ADDRESS=$(jq -r '."FundFactoryModule#FundFactory"' ../contracts/ign
 FIXED_YIELD_FACTORY_ADDRESS=$(jq -r '."FixedYieldFactoryModule#FixedYieldFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
 DEPOSIT_FACTORY_ADDRESS=$(jq -r '."DepositFactoryModule#DepositFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
 DVP_SWAP_FACTORY_ADDRESS=$(jq -r '."DvPSwapFactoryModule#DvPSwapFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
-
+AIRDROP_FACTORY_ADDRESS=$(jq -r '."AirdropFactoryModule#AirdropFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
 # Update the addresses in subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"BondFactory\").source.address) = \"$BOND_FACTORY_ADDRESS\"" subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"CryptoCurrencyFactory\").source.address) = \"$CRYPTO_CURRENCY_FACTORY_ADDRESS\"" subgraph.yaml
@@ -45,6 +47,7 @@ yq -i "(.dataSources[] | select(.name == \"FundFactory\").source.address) = \"$F
 yq -i "(.dataSources[] | select(.name == \"FixedYieldFactory\").source.address) = \"$FIXED_YIELD_FACTORY_ADDRESS\"" subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"DepositFactory\").source.address) = \"$DEPOSIT_FACTORY_ADDRESS\"" subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"DvPSwapFactory\").source.address) = \"$DVP_SWAP_FACTORY_ADDRESS\"" subgraph.yaml
+yq -i "(.dataSources[] | select(.name == \"AirdropFactory\").source.address) = \"$AIRDROP_FACTORY_ADDRESS\"" subgraph.yaml
 
 # Print addresses for debugging
 echo "Addresses being used:"
@@ -56,6 +59,7 @@ echo "FundFactory: $FUND_FACTORY_ADDRESS"
 echo "FixedYieldFactory: $FIXED_YIELD_FACTORY_ADDRESS"
 echo "DepositFactory: $DEPOSIT_FACTORY_ADDRESS"
 echo "DvPSwapFactory: $DVP_SWAP_FACTORY_ADDRESS"
+echo "AirdropFactory: $AIRDROP_FACTORY_ADDRESS"
 echo "---"
 
 bun graph codegen

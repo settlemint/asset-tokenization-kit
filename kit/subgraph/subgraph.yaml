@@ -12,7 +12,7 @@ dataSources:
     name: DvPSwapFactory
     network: settlemint
     source:
-      address: "0x5c6f68F06ab1B8f2F790AF5C2D58FFfE9444E7ED"
+      address: "0x5e771e1417100000000000000000000000000008"
       abi: DvPSwapFactory
     mapping:
       kind: ethereum/events
@@ -167,7 +167,7 @@ dataSources:
     name: AirdropFactory
     network: settlemint
     source:
-      address: "0x5e771e1417100000000000000000000000000008"
+      address: "0x5e771e1417100000000000000000000000000009"
       abi: AirdropFactory
     mapping:
       kind: ethereum/events

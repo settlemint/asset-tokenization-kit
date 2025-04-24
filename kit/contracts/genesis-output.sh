@@ -30,7 +30,9 @@ CONTRACT_ADDRESSES=(
     ["FundFactory"]="0x5e771e1417100000000000000000000000000005"
     ["FixedYieldFactory"]="0x5e771e1417100000000000000000000000000006"
     ["DepositFactory"]="0x5e771e1417100000000000000000000000000007"
+
     ["DvPSwapFactory"]="0x5e771e1417100000000000000000000000000008"
+    ["AirdropFactory"]="0x5e771e1417100000000000000000000000000009"
 )
 
 # Initialize an empty JSON object for all allocations
@@ -174,9 +176,7 @@ process_sol_file() {
 }
 
 # Find all .sol files in the contracts directory and process them
-for sol_file in contracts/*.sol; do
-    # Skip if no files found
-    [[ -f "$sol_file" ]] || continue
+find contracts -type f -name '*.sol' | while IFS= read -r sol_file; do
     process_sol_file "$sol_file"
 done
 
