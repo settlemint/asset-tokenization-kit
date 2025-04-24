@@ -782,7 +782,7 @@ templates:
           handler: handleBatchDistributed
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
-        - event: MerkleRootUpdated(bytes32,bytes32)
+        - event: MerkleRootUpdated(indexed bytes32,indexed bytes32)
           handler: handleMerkleRootUpdated
         - event: DistributionCapUpdated(uint256,uint256)
           handler: handleDistributionCapUpdated
