@@ -102,7 +102,7 @@
         "react-hook-form": "7.54.0",
         "react-qr-code": "2.0.15",
         "recharts": "2.15.3",
-        "resend": "4.4.0",
+        "resend": "4.4.1",
         "rtl-detect": "1.1.2",
         "sharp": "0.34.1",
         "sonner": "2.0.3",
@@ -169,13 +169,13 @@
     "prisma",
   ],
   "overrides": {
-    "react-is": "19.1.0",
-    "graphql": "16.10.0",
-    "elliptic": "6.6.1",
-    "ws": "8.18.1",
     "adm-zip": "0.5.16",
-    "undici": "7.8.0",
+    "elliptic": "6.6.1",
+    "graphql": "16.10.0",
     "prettier": "3.5.3",
+    "react-is": "19.1.0",
+    "undici": "7.8.0",
+    "ws": "8.18.1",
   },
   "packages": {
     "@0no-co/graphql.web": ["@0no-co/graphql.web@1.1.2", "", { "peerDependencies": { "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0" }, "optionalPeers": ["graphql"] }, "sha512-N2NGsU5FLBhT8NZ+3l2YrzZSHITjNXNuDhC4iDiikv0IujaJ0Xc6xIxQZ/Ek3Cb+rgPjnLHYyJm11tInuJn+cw=="],
@@ -3234,7 +3234,7 @@
 
     "require-in-the-middle": ["require-in-the-middle@7.5.2", "", { "dependencies": { "debug": "^4.3.5", "module-details-from-path": "^1.0.3", "resolve": "^1.22.8" } }, "sha512-gAZ+kLqBdHarXB64XpAe2VCjB7rIRv+mU8tfRWziHRJ5umKsIHN2tLLv6EtMw7WCdP19S0ERVMldNvxYCHnhSQ=="],
 
-    "resend": ["resend@4.4.0", "", { "dependencies": { "@react-email/render": "1.0.6" } }, "sha512-SmVI3JCpgPNt4/m3Uy403LjoSeeleUE2X+KwPYQZcw+jiBCFsqL6vdf1r/XuQ7yOjvxYmlI8GD/oIWonFF9t9w=="],
+    "resend": ["resend@4.4.1", "", { "dependencies": { "@react-email/render": "1.0.6" } }, "sha512-FR22bzMW3VfoyZSBc8ScGo8ShrMWHmWB0G3FrispzWCnYSEEK5M7pyRvZtInKmM/09lsJETKc2q66mX+dXPSmg=="],
 
     "resolve": ["resolve@1.17.0", "", { "dependencies": { "path-parse": "^1.0.6" } }, "sha512-ic+7JYiV8Vi2yzQGFWOkiZD5Z9z7O2Zhm9XMaTxdJExKasieFCr+yXZ/WmXsckHiKl12ar0y6XiXDx3m4RHn1w=="],
 
