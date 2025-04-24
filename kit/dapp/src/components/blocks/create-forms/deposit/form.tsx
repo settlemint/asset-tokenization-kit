@@ -8,7 +8,8 @@ import { createDeposit } from "@/lib/mutations/deposit/create/create-action";
 import { CreateDepositSchema } from "@/lib/mutations/deposit/create/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { usePostHog } from "posthog-js/react";
+import { useEffect, useState } from "react";
 import { AssetAdmins } from "../common/asset-admins/asset-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
@@ -30,6 +31,13 @@ export function CreateDepositForm({
   const [localOpen, setLocalOpen] = useState(false);
   const { data: session } = authClient.useSession();
   const router = useRouter();
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
+      posthog.capture("create_deposit_form_opened");
+    }
+  }, [open, localOpen, posthog]);
 
   return (
     <FormSheet
