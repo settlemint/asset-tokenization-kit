@@ -8,17 +8,19 @@ import {
   type BondCreatedEvent,
 } from "./types/mature-bond";
 
-export async function updateActionFromTransactions({
-  receipts,
-}: WaitForTransactionsResponse) {
+export async function updateActions({ receipts }: WaitForTransactionsResponse) {
   const promises = [];
   for (const receipt of receipts) {
     promises.push(processReceipt(receipt));
   }
-  return handleSettled(await Promise.allSettled(promises));
+  try {
+    return handleSettled(await Promise.allSettled(promises));
+  } catch (error) {
+    console.error("Could not process actions", error);
+  }
 }
 
-export async function processReceipt(receipt: Receipt) {
+async function processReceipt(receipt: Receipt) {
   const events = receipt.events;
   if (!events || events.length === 0) {
     return;
@@ -30,7 +32,7 @@ export async function processReceipt(receipt: Receipt) {
   return handleSettled(await Promise.allSettled(promises));
 }
 
-export async function processEvent(event: Event) {
+async function processEvent(event: Event) {
   const eventName = event.eventName;
   switch (eventName) {
     case "BondCreated": {

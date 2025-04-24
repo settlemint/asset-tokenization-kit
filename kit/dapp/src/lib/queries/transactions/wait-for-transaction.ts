@@ -1,5 +1,6 @@
 "use server";
 
+import { updateActions } from "@/lib/actions/process";
 import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
@@ -115,6 +116,9 @@ export async function waitForTransactions(
   });
 
   await waitForIndexing(Number(response.lastTransaction.blockNumber));
+
+  // Process events to add any actions
+  updateActions(response);
 
   // Revalidate all cache tags
   revalidateTag("asset");
