@@ -1,6 +1,9 @@
-{{- /*
+{{/*
 NOTES.txt for the Besu Network subchart.
-*/ -}}
+*/}}
+{{- $serviceConfig := .Values.service | default dict -}}
+{{- $genesisConfig := .Values.genesis | default dict -}}
+{{- $ingressConfig := .Values.ingress | default dict -}}
 ========================================================================
   Besu Network Deployed
 ========================================================================
@@ -12,23 +15,23 @@ Your Besu network components have been deployed in the '{{ .Release.Namespace }}
 ------------------------------------------------------------------------
 
 Internal Endpoints (within Kubernetes cluster):
-  - JSON-RPC:   http://{{ include "besu-network.fullname" . }}:{{ .Values.service.rpcPort }}
-  {{- if .Values.service.wsEnabled }}
-  - WebSocket:  ws://{{ include "besu-network.fullname" . }}:{{ .Values.service.wsPort }}
+  - JSON-RPC:   http://{{ .Release.Name }}-besu-network:{{ $serviceConfig.rpcPort | default "8545" }}
+  {{- if $serviceConfig.wsEnabled }}
+  - WebSocket:  ws://{{ .Release.Name }}-besu-network:{{ $serviceConfig.wsPort | default "8546" }}
   {{- end }}
-  {{- if .Values.service.metricsEnabled }}
-  - Metrics:    http://{{ include "besu-network.fullname" . }}:{{ .Values.service.metricsPort }}/metrics
+  {{- if $serviceConfig.metricsEnabled }}
+  - Metrics:    http://{{ .Release.Name }}-besu-network:{{ $serviceConfig.metricsPort | default "9545" }}/metrics
   {{- end }}
 
 External Endpoints (if Ingress is configured in the main chart):
   - JSON-RPC:   Refer to the main ATK chart NOTES.txt (typically https://rpc.{{ .Values.global.domain }})
-  {{- if and .Values.service.wsEnabled .Values.ingress.ws.enabled }}
+  {{- if and $serviceConfig.wsEnabled $ingressConfig.ws.enabled }}
   - WebSocket:  Refer to the main ATK chart NOTES.txt (typically wss://rpc.{{ .Values.global.domain }}/ws)
   {{- end }}
 
 Network Details:
-  - Network ID: {{ .Values.genesis.networkId }}
-  - Chain ID:   {{ .Values.genesis.chainId }}
+  - Network ID: {{ $genesisConfig.networkId | default "1337" }}
+  - Chain ID:   {{ $genesisConfig.chainId | default "1337" }}
 
 ------------------------------------------------------------------------
   Health Checks & Status
@@ -40,19 +43,19 @@ Check Pod Status:
 
 Check Node Sync Status:
   - Connect to a Besu pod and use curl, or port-forward the RPC port:
-    curl -X POST --data '{ "jsonrpc":"2.0", "method":"eth_syncing", "params":[], "id":1 }' -H "Content-Type: application/json" http://localhost:{{ .Values.service.rpcPort }}
+    curl -X POST --data '{ "jsonrpc":"2.0", "method":"eth_syncing", "params":[], "id":1 }' -H "Content-Type: application/json" http://localhost:{{ $serviceConfig.rpcPort | default "8545" }}
   - If the result is 'false', the node is synced.
 
 Check Validator Status (for IBFT/QBFT):
   - Use the 'ibft_getValidatorsByBlockNumber' or 'qbft_getValidatorsByBlockNumber' method:
-    curl -X POST --data '{ "jsonrpc":"2.0", "method":"ibft_getValidatorsByBlockNumber", "params":["latest"], "id":1 }' -H "Content-Type: application/json" http://localhost:{{ .Values.service.rpcPort }}
+    curl -X POST --data '{ "jsonrpc":"2.0", "method":"ibft_getValidatorsByBlockNumber", "params":["latest"], "id":1 }' -H "Content-Type: application/json" http://localhost:{{ $serviceConfig.rpcPort | default "8545" }}
 
 ------------------------------------------------------------------------
   Configuration
 ------------------------------------------------------------------------
 
 Genesis File:
-  - The genesis configuration is stored in the ConfigMap: '{{ include "besu-network.fullname" . }}-genesis'
+  - The genesis configuration is stored in the ConfigMap: '{{ .Release.Name }}-besu-network-genesis'
 
 Node Keys & Configuration:
   - Node keys are typically generated or provided via Secrets.

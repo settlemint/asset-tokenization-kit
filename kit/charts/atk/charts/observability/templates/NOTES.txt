@@ -1,9 +1,16 @@
-{{- /*
+{{/*
 NOTES.txt for the Observability subchart (Grafana, VictoriaMetrics, Loki).
-*/ -}}
-{{- $grafanaValues := .Values.grafana -}}
-{{- $vmsingleValues := .Values.victoriaMetrics.vmsingle -}}
-{{- $lokiValues := .Values.loki -}}
+*/}}
+{{- $grafanaValues := .Values.grafana | default dict -}}
+{{- $grafanaService := $grafanaValues.service | default dict -}}
+{{- $grafanaIngress := $grafanaValues.ingress | default dict -}}
+{{- $victoriaMetricsValues := .Values.victoriaMetrics | default dict -}}
+{{- $vmsingleValues := $victoriaMetricsValues.vmsingle | default dict -}}
+{{- $vmsingleService := $vmsingleValues.service | default dict -}}
+{{- $vmalertValues := $victoriaMetricsValues.vmalert | default dict -}}
+{{- $vmalertService := $vmalertValues.service | default dict -}}
+{{- $lokiValues := .Values.loki | default dict -}}
+{{- $lokiService := $lokiValues.service | default dict -}}
 ========================================================================
   Observability Stack Deployed
 ========================================================================
@@ -15,21 +22,21 @@ Your observability components (Grafana, VictoriaMetrics, Loki) have been deploye
 ------------------------------------------------------------------------
 
 Grafana:
-  - URL (External via Ingress): https://{{ (index $grafanaValues.ingress.hosts 0) | default (printf "grafana.%s" .Values.global.domain) }}
+  - URL (External via Ingress): https://{{ if $grafanaIngress.hosts }}{{ index $grafanaIngress.hosts 0 }}{{ else }}{{ printf "grafana.%s" .Values.global.domain }}{{ end }}
   - Default Admin User: {{ $grafanaValues.adminUser | default "admin" }}
   - Getting the Admin Password:
-    kubectl get secret -n {{ .Release.Namespace }} {{ template "grafana.secretName" . }} -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+    kubectl get secret -n {{ .Release.Namespace }} {{ .Release.Name }}-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
     (Note: If you set adminPassword in values.yaml, use that password instead.)
 
 VictoriaMetrics (Metrics Storage):
-  - vmsingle Write Endpoint (Internal): http://{{ template "victoria-metrics-single.fullname" . }}:{{ $vmsingleValues.service.port }}/api/v1/write
-  - vmsingle Read Endpoint (Internal): http://{{ template "victoria-metrics-single.fullname" . }}:{{ $vmsingleValues.service.port }}/api/v1/query
-  - vmalert Endpoint (Internal, if enabled): http://{{ template "victoria-metrics-alert.fullname" . }}:{{ .Values.victoriaMetrics.vmalert.service.port }}
+  - vmsingle Write Endpoint (Internal): http://{{ .Release.Name }}-victoria-metrics-single:{{ $vmsingleService.port | default "8429" }}/api/v1/write
+  - vmsingle Read Endpoint (Internal): http://{{ .Release.Name }}-victoria-metrics-single:{{ $vmsingleService.port | default "8429" }}/api/v1/query
+  - vmalert Endpoint (Internal, if enabled): http://{{ .Release.Name }}-victoria-metrics-alert:{{ $vmalertService.port | default "8080" }}
   - Note: These are typically accessed internally by Grafana (datasource) and vmagent/prometheus.
 
 Loki (Log Aggregation):
-  - Write Endpoint (Internal): http://{{ template "loki.fullname" . }}:{{ $lokiValues.service.port }}/loki/api/v1/push
-  - Read Endpoint (Internal): http://{{ template "loki.fullname" . }}:{{ $lokiValues.service.port }}/loki/api/v1/query
+  - Write Endpoint (Internal): http://{{ .Release.Name }}-loki:{{ $lokiService.port | default "3100" }}/loki/api/v1/push
+  - Read Endpoint (Internal): http://{{ .Release.Name }}-loki:{{ $lokiService.port | default "3100" }}/loki/api/v1/query
   - Note: These are typically accessed internally by Grafana (datasource) and promtail/log agents.
 
 ------------------------------------------------------------------------
@@ -37,16 +44,16 @@ Loki (Log Aggregation):
 ------------------------------------------------------------------------
 
 Check Pod Status:
-  - Grafana:         kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "grafana.fullname" . }},app.kubernetes.io/name=grafana
-  - VictoriaMetrics (vmsingle): kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "victoria-metrics-single.fullname" . }},app.kubernetes.io/name=vmsingle
-  - Loki:            kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "loki.fullname" . }},app.kubernetes.io/name=loki
-  - Promtail (if enabled): kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "loki.fullname" . }},app.kubernetes.io/name=promtail
-  - vmagent (if enabled): kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "victoria-metrics-agent.fullname" . }},app.kubernetes.io/name=vmagent
+  - Grafana:         kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=grafana
+  - VictoriaMetrics (vmsingle): kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=victoria-metrics-single
+  - Loki:            kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=loki
+  - Promtail (if enabled): kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=promtail
+  - vmagent (if enabled): kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=victoria-metrics-agent
 
 Service Health Endpoints (Internal):
-  - Grafana:      http://{{ template "grafana.fullname" . }}:{{ $grafanaValues.service.port }}/api/health
-  - vmsingle:     http://{{ template "victoria-metrics-single.fullname" . }}:{{ $vmsingleValues.service.port }}/health
-  - Loki:         http://{{ template "loki.fullname" . }}:{{ $lokiValues.service.port }}/ready
+  - Grafana:      http://{{ .Release.Name }}-grafana:{{ $grafanaService.port | default "3000" }}/api/health
+  - vmsingle:     http://{{ .Release.Name }}-victoria-metrics-single:{{ $vmsingleService.port | default "8429" }}/health
+  - Loki:         http://{{ .Release.Name }}-loki:{{ $lokiService.port | default "3100" }}/ready
 
 ------------------------------------------------------------------------
   Configuration
@@ -62,8 +69,8 @@ Default Dashboards & Datasources:
   - Default dashboards might be provisioned. Check the Grafana UI under 'Dashboards'.
 
 Log & Metric Collection:
-  - Check vmagent configuration (ConfigMap: `{{ template "victoria-metrics-agent.fullname" . }}`) for metrics scrape targets.
-  - Check promtail configuration (ConfigMap: `{{ template "loki.promtail.fullname" . }}-config`) for log scrape targets.
+  - Check vmagent configuration (ConfigMap: `{{ .Release.Name }}-victoria-metrics-agent`) for metrics scrape targets.
+  - Check promtail configuration (ConfigMap: `{{ .Release.Name }}-loki-promtail-config`) for log scrape targets.
 
 ------------------------------------------------------------------------
   Troubleshooting

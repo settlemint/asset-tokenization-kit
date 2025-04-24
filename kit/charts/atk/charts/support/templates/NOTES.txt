@@ -17,13 +17,13 @@ have been deployed in the '{{ .Release.Namespace }}' namespace.
 Internal Endpoints:
   - Services in this chart are generally accessed internally by other ATK components.
   - Common examples (check your specific values.yaml):
-    {{- if .Values.postgresql.enabled }}
-    - PostgreSQL Service: {{ .Values.postgresql.fullnameOverride | default (printf "%s-postgresql" .Release.Name) }}:{{ .Values.postgresql.service.port }}
-    - PostgreSQL Credentials Secret: '{{ .Values.postgresql.auth.existingSecret | default (printf "%s-postgresql" .Release.Name) }}'
+    {{- if and .Values.postgresql .Values.postgresql.enabled }}
+    - PostgreSQL Service: {{ .Values.postgresql.fullnameOverride | default (printf "%s-postgresql" .Release.Name) }}:{{ if .Values.postgresql.service }}{{ .Values.postgresql.service.port | default "<pgPort>" }}{{ else }}<pgPort>{{ end }}
+    - PostgreSQL Credentials Secret: '{{ if .Values.postgresql.auth }}{{ .Values.postgresql.auth.existingSecret | default (printf "%s-postgresql" .Release.Name) }}{{ else }}{{ printf "%s-postgresql" .Release.Name }}{{ end }}'
     {{- end }}
-    {{- if .Values.redis.enabled }}
-    - Redis Service: {{ template "redis.fullname" . }}-master:{{ .Values.redis.master.service.port }}
-    - Redis Password Secret: '{{ template "redis.secretName" . }}' (Key: 'redis-password')
+    {{- if and .Values.redis .Values.redis.enabled }}
+    - Redis Service: {{ include "common.names.fullname" . }}-master:{{ if and .Values.redis.master .Values.redis.master.service }}{{ .Values.redis.master.service.port | default "<redisPort>" }}{{ else }}<redisPort>{{ end }}
+    - Redis Password Secret: '{{ include "common.names.fullname" . }}' (Key: 'redis-password')
     {{- end }}
     {{- /* Add other potential support services like Kafka, RabbitMQ etc. here if applicable */}}
 
@@ -36,11 +36,11 @@ External Endpoints:
 
 Check Pod Status:
   - To view the status of support pods (adjust labels as needed):
-    {{- if .Values.postgresql.enabled }}
+    {{- if and .Values.postgresql .Values.postgresql.enabled }}
     - PostgreSQL: kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=postgresql
     {{- end }}
-    {{- if .Values.redis.enabled }}
-    - Redis:      kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ template "redis.fullname" . }},app.kubernetes.io/name=redis
+    {{- if and .Values.redis .Values.redis.enabled }}
+    - Redis:      kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ include "common.names.fullname" . }},app.kubernetes.io/name=redis
     {{- end }}
 
 Service-Specific Checks:

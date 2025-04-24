@@ -1,7 +1,7 @@
 {{- /*
 NOTES.txt for The Graph subchart.
 */ -}}
-{{- $graphNodeValues := .Values "graph-node" -}}
+{{- $graphNodeValues := index .Values "graph-node" -}}
 ========================================================================
   The Graph Deployed
 ========================================================================
@@ -14,34 +14,46 @@ Your Graph Node and supporting components have been deployed in the '{{ .Release
 
 GraphQL Endpoints:
   - Query Endpoint (External via Ingress): https://{{ (index $graphNodeValues.ingress.hosts 0).host | default (printf "graph.%s" .Values.global.domain) }}/subgraphs/name/<your-subgraph-name>
-  - Query Endpoint (Internal): http://{{ template "graph-node.fullname" . }}:{{ $graphNodeValues.service.httpPort }}/subgraphs/name/<your-subgraph-name>
-  - Index Node Endpoint (Internal): http://{{ template "graph-node.fullname" . }}:{{ $graphNodeValues.service.httpPort }}/graphql
+  {{- if $graphNodeValues.enabled }}
+  - Query Endpoint (Internal): http://{{ template "graph-node.fullname" . }}:{{ if $graphNodeValues.service }}{{ $graphNodeValues.service.httpPort | default "<httpPort>" }}{{ else }}<httpPort>{{ end }}/subgraphs/name/<your-subgraph-name>
+  - Index Node Endpoint (Internal): http://{{ template "graph-node.fullname" . }}:{{ if $graphNodeValues.service }}{{ $graphNodeValues.service.httpPort | default "<httpPort>" }}{{ else }}<httpPort>{{ end }}/graphql
+  {{- end }}
 
 Admin Endpoints:
-  - JSON-RPC Endpoint (Internal): http://{{ template "graph-node.fullname" . }}:{{ $graphNodeValues.service.rpcPort }}
+  {{- if $graphNodeValues.enabled }}
+  - JSON-RPC Endpoint (Internal): http://{{ template "graph-node.fullname" . }}:{{ if $graphNodeValues.service }}{{ $graphNodeValues.service.rpcPort | default "<rpcPort>" }}{{ else }}<rpcPort>{{ end }}
     (Used for deploying subgraphs)
+  {{- end }}
 
 IPFS Endpoint (Internal, if deployed by chart):
-  - http://{{ .Release.Name }}-ipfs:{{ .Values.ipfs.service.apiPort }}
+  - http://{{ .Release.Name }}-ipfs:{{ if and .Values.ipfs .Values.ipfs.service }}{{ .Values.ipfs.service.apiPort | default "<apiPort>" }}{{ else }}<apiPort>{{ end }}
 
 Ethereum RPC Endpoint Used:
-  - {{ $graphNodeValues.config.ethereum | quote }}
+  - {{ if $graphNodeValues.config }}{{ $graphNodeValues.config.ethereum | default "<ethereum-rpc>" | quote }}{{ else }}"<ethereum-rpc>"{{ end }}
 
 ------------------------------------------------------------------------
   Health Checks & Status
 ------------------------------------------------------------------------
 
 Check Pod Status:
+  {{- if $graphNodeValues.enabled }}
   - Graph Node Pods: kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=graph-node
+  {{- end }}
   - IPFS Pods (if deployed): kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=ipfs
+  {{- if $graphNodeValues.enabled }}
+  {{- if $graphNodeValues.postgresql.enabled }}
   - Postgres Pod (if deployed): kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "graph-node.postgresql.fullname" . }}
+  {{- end }}
+  {{- end }}
 
 Graph Node Health Endpoint:
+  {{- if $graphNodeValues.enabled }}
   - Access the internal HTTP endpoint:
-    http://{{ template "graph-node.fullname" . }}:{{ $graphNodeValues.service.httpPort }}/health
+    http://{{ template "graph-node.fullname" . }}:{{ if $graphNodeValues.service }}{{ $graphNodeValues.service.httpPort | default "<httpPort>" }}{{ else }}<httpPort>{{ end }}/health
   - Example using port-forwarding:
-    kubectl port-forward -n {{ .Release.Namespace }} svc/{{ template "graph-node.fullname" . }} 8080:{{ $graphNodeValues.service.httpPort }}
+    kubectl port-forward -n {{ .Release.Namespace }} svc/{{ template "graph-node.fullname" . }} 8080:{{ if $graphNodeValues.service }}{{ $graphNodeValues.service.httpPort | default "<httpPort>" }}{{ else }}<httpPort>{{ end }}
     curl http://localhost:8080/health
+  {{- end }}
 
 Check Subgraph Indexing Status:
   - Use the GraphQL query endpoint (port-forward or exec into a pod):
@@ -53,9 +65,13 @@ Check Subgraph Indexing Status:
 ------------------------------------------------------------------------
 
 Key Configuration Values (from 'values.yaml'):
-  - Ethereum Provider: `{{ $graphNodeValues.config.ethereum }}`
-  - IPFS Endpoint: `{{ $graphNodeValues.config.ipfs }}`
+  - Ethereum Provider: `{{ if $graphNodeValues.config }}{{ $graphNodeValues.config.ethereum | default "<ethereum-rpc>" }}{{ else }}<ethereum-rpc>{{ end }}`
+  - IPFS Endpoint: `{{ if $graphNodeValues.config }}{{ $graphNodeValues.config.ipfs | default "<ipfs-endpoint>" }}{{ else }}<ipfs-endpoint>{{ end }}`
+  {{- if $graphNodeValues.enabled }}
+  {{- if $graphNodeValues.postgresql.enabled }}
   - Postgres Connection: Stored in secret `{{ template "graph-node.postgresql.secretName" . }}`
+  {{- end }}
+  {{- end }}
   - Ingress Host: `{{ (index $graphNodeValues.ingress.hosts 0).host }}`
 
 Configuration Files:
@@ -66,7 +82,9 @@ Configuration Files:
 ------------------------------------------------------------------------
 
 Check Logs:
+  {{- if $graphNodeValues.enabled }}
   - Graph Node: kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name=graph-node
+  {{- end }}
 
 Common Issues:
   - Subgraph Deployment Failed: Check the Graph Node logs for errors during deployment. Verify the subgraph manifest (`subgraph.yaml`) and IPFS connectivity.
@@ -76,8 +94,10 @@ Common Issues:
 
 Subgraph Deployment Command Example (using graph-cli):
   - Install graph-cli: `npm install -g @graphprotocol/graph-cli` or `bun install -g @graphprotocol/graph-cli`
+  {{- if $graphNodeValues.enabled }}
   - Deploy (requires port-forwarding the RPC port 8030):
-    kubectl port-forward -n {{ .Release.Namespace }} svc/{{ template "graph-node.fullname" . }} 8030:{{ $graphNodeValues.service.rpcPort }}
-    graph deploy --node http://localhost:8030 --ipfs http://{{ .Release.Name }}-ipfs:{{ .Values.ipfs.service.apiPort }} <your-subgraph-name> subgraph.yaml
+    kubectl port-forward -n {{ .Release.Namespace }} svc/{{ template "graph-node.fullname" . }} 8030:{{ if $graphNodeValues.service }}{{ $graphNodeValues.service.rpcPort | default "<rpcPort>" }}{{ else }}<rpcPort>{{ end }}
+    graph deploy --node http://localhost:8030 --ipfs http://{{ .Release.Name }}-ipfs:{{ if and .Values.ipfs .Values.ipfs.service }}{{ .Values.ipfs.service.apiPort | default "<apiPort>" }}{{ else }}<apiPort>{{ end }} <your-subgraph-name> subgraph.yaml
+  {{- end }}
 
 ========================================================================
