@@ -277,4 +277,4 @@ jobs:
         with:
           commit_message: "chore: update Chart.yaml versions [skip ci]"
           branch: main
-          file_pattern: 'kit/charts/atk/Chart.yaml'
+          file_pattern: "kit/charts/atk/Chart.yaml"

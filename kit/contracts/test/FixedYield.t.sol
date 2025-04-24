@@ -417,6 +417,7 @@ contract FixedYieldTest is Test {
         uint256[] memory periodEnds = yieldSchedule.allPeriods();
         token.setHistoricalBalance(user1, periodEnds[0], toDecimals(10));
         token.setHistoricalBalance(user2, periodEnds[0], toDecimals(20));
+        token.setHistoricalTotalSupply(periodEnds[0], token.totalSupply());
 
         // Calculate expected initial unclaimed yield
         uint256 expectedInitialYield = (toDecimals(30) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
@@ -447,11 +448,122 @@ contract FixedYieldTest is Test {
         for (uint256 i = 0; i < 3; i++) {
             token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
             token.setHistoricalBalance(user2, periodEnds[i], toDecimals(20));
+            token.setHistoricalTotalSupply(periodEnds[i], token.totalSupply());
         }
 
         // Calculate expected total unclaimed yield
         uint256 expectedYield = (toDecimals(30) * YIELD_BASIS * YIELD_RATE * 3) / yieldSchedule.RATE_BASIS_POINTS();
         assertEq(yieldSchedule.totalUnclaimedYield(), expectedYield, "Total unclaimed yield mismatch");
+    }
+
+    function test_TotalUnclaimedYield_AfterPartialClaims() public {
+        // Setup: Transfer tokens to users
+        vm.startPrank(owner);
+        token.transfer(user1, toDecimals(10)); // 10.00 tokens
+        token.transfer(user2, toDecimals(20)); // 20.00 tokens
+        vm.stopPrank();
+
+        uint256[] memory periodEnds = yieldSchedule.allPeriods();
+        uint256 totalUnclaimedPeriod1 = 0;
+        uint256 totalUnclaimedPeriod2 = 0;
+        uint256 totalUnclaimedPeriod3 = 0;
+        uint256 user1YieldAccrued = 0;
+        uint256 user2YieldAccrued = 0;
+        uint256 ownerYieldAccrued = 0;
+
+        vm.warp(startDate); // Move to schedule start
+
+        // --- Period 1 ---
+        uint256 period1End = periodEnds[0];
+        vm.warp(period1End); // Move to end of period 1
+        uint256 totalSupplyP1 = token.totalSupply(); // Should be INITIAL_SUPPLY (30)
+        token.setHistoricalBalance(user1, period1End, toDecimals(10));
+        token.setHistoricalBalance(user2, period1End, toDecimals(20));
+        token.setHistoricalTotalSupply(period1End, totalSupplyP1);
+        totalUnclaimedPeriod1 = (totalSupplyP1 * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        user1YieldAccrued += (toDecimals(10) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        user2YieldAccrued += (toDecimals(20) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+
+        // --- Period 2 ---
+        // Mint more tokens before period 2 ends
+        vm.startPrank(owner);
+        uint256 MINT_AMOUNT = 70;
+        token.mint(owner, toDecimals(MINT_AMOUNT));
+        vm.stopPrank();
+
+        uint256 period2End = periodEnds[1];
+        vm.warp(period2End); // Move to end of period 2
+        uint256 totalSupplyP2 = token.totalSupply(); // Should be 100
+        assertEq(totalSupplyP2, toDecimals(INITIAL_SUPPLY + MINT_AMOUNT), "Total supply mismatch P2");
+        token.setHistoricalBalance(user1, period2End, toDecimals(10));
+        token.setHistoricalBalance(user2, period2End, toDecimals(20));
+        token.setHistoricalBalance(owner, period2End, toDecimals(MINT_AMOUNT));
+        token.setHistoricalTotalSupply(period2End, totalSupplyP2);
+        totalUnclaimedPeriod2 = (totalSupplyP2 * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        user1YieldAccrued += (toDecimals(10) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        user2YieldAccrued += (toDecimals(20) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        ownerYieldAccrued += (toDecimals(MINT_AMOUNT) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+
+        // --- Period 3 ---
+        // Burn some tokens before period 3 ends
+        vm.startPrank(owner);
+        uint256 BURN_AMOUNT = 50;
+        token.burn(owner, toDecimals(BURN_AMOUNT)); // Burn 50, total supply is now 50
+        vm.stopPrank();
+
+        uint256 period3End = periodEnds[2];
+        vm.warp(period3End); // Move to end of period 3
+        uint256 totalSupplyP3 = token.totalSupply(); // Should be 50
+        assertEq(totalSupplyP3, toDecimals(INITIAL_SUPPLY + MINT_AMOUNT - BURN_AMOUNT), "Total supply mismatch P3");
+        token.setHistoricalBalance(user1, period3End, toDecimals(10));
+        token.setHistoricalBalance(user2, period3End, toDecimals(20));
+        token.setHistoricalBalance(owner, period3End, toDecimals(MINT_AMOUNT - BURN_AMOUNT));
+        token.setHistoricalTotalSupply(period3End, totalSupplyP3);
+        totalUnclaimedPeriod3 = (totalSupplyP3 * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        user1YieldAccrued += (toDecimals(10) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        user2YieldAccrued += (toDecimals(20) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        ownerYieldAccrued +=
+            (toDecimals(MINT_AMOUNT - BURN_AMOUNT) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+
+        // --- Verification ---
+        // Calculate expected total unclaimed yield (sum of yields based on each period's historical total supply)
+        uint256 expectedTotalYield = totalUnclaimedPeriod1 + totalUnclaimedPeriod2 + totalUnclaimedPeriod3;
+        assertEq(
+            yieldSchedule.totalUnclaimedYield(),
+            expectedTotalYield,
+            "Initial total unclaimed yield mismatch with dynamic supply"
+        );
+
+        // User1 claims their yield for the 3 periods
+        // Note: user1's yield calculation depends on their balance at each period end, not the changing total supply
+        uint256 expectedUser1TotalYield = user1YieldAccrued;
+        vm.prank(user1);
+        yieldSchedule.claimYield();
+        assertEq(
+            underlyingAsset.balanceOf(user1), expectedUser1TotalYield, "User1 yield claim failed with dynamic supply"
+        );
+
+        // Calculate expected remaining unclaimed yield (only user2's yield should remain)
+        uint256 expectedRemainingYield = expectedTotalYield - expectedUser1TotalYield;
+        assertEq(
+            yieldSchedule.totalUnclaimedYield(),
+            expectedRemainingYield,
+            "Remaining unclaimed yield mismatch after user1 claims with dynamic supply"
+        );
+
+        // User2 claims their yield
+        uint256 expectedUser2TotalYield = user2YieldAccrued;
+        vm.prank(user2);
+        yieldSchedule.claimYield();
+        assertEq(
+            underlyingAsset.balanceOf(user2), expectedUser2TotalYield, "User2 yield claim failed with dynamic supply"
+        );
+
+        assertEq(
+            yieldSchedule.totalUnclaimedYield(),
+            ownerYieldAccrued,
+            "Unclaimed yield should be mismatch after all claims with dynamic supply"
+        );
     }
 
     function test_ExpiredSchedule() public {
@@ -509,6 +621,7 @@ contract FixedYieldTest is Test {
         // Test YieldClaimed event
         vm.warp(startDate + INTERVAL);
         token.setHistoricalBalance(user1, startDate + INTERVAL, toDecimals(10));
+        token.setHistoricalTotalSupply(startDate + INTERVAL, token.totalSupply()); // Set historical total supply
 
         // Calculate expected yield
         uint256 expectedYield = (toDecimals(10) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();

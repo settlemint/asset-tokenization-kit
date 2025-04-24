@@ -51,8 +51,10 @@ export const getPredictedAddress = withTracing(
     } = input;
     const user = await getUser();
 
-    const collateralLivenessSeconds =
-      collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
+    const collateralLivenessSeconds = getTimeUnitSeconds(
+      collateralLivenessValue,
+      collateralLivenessTimeUnit
+    );
 
     const data = await portalClient.request(CreateStablecoinPredictAddress, {
       address: STABLE_COIN_FACTORY_ADDRESS,

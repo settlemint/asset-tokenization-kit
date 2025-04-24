@@ -103,6 +103,11 @@ export const createStablecoinFunction = withAccessControl(
       currency: price.currency,
     });
 
+    const collateralLivenessSeconds = getTimeUnitSeconds(
+      collateralLivenessValue,
+      collateralLivenessTimeUnit
+    );
+
     const createStablecoinResult = await portalClient.request(
       StableCoinFactoryCreate,
       {
@@ -112,9 +117,7 @@ export const createStablecoinFunction = withAccessControl(
           name: assetName,
           symbol: symbol.toString(),
           decimals: decimals || 6,
-          collateralLivenessSeconds:
-            (collateralLivenessValue || 12) *
-            getTimeUnitSeconds(collateralLivenessTimeUnit || "months"),
+          collateralLivenessSeconds,
         },
         ...(await handleChallenge(
           user,

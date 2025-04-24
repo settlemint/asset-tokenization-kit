@@ -8,7 +8,8 @@ import { createEquity } from "@/lib/mutations/equity/create/create-action";
 import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { usePostHog } from "posthog-js/react";
+import { useEffect, useState } from "react";
 import { AssetAdmins } from "../common/asset-admins/asset-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
@@ -30,6 +31,14 @@ export function CreateEquityForm({
   const [localOpen, setLocalOpen] = useState(false);
   const { data: session } = authClient.useSession();
   const router = useRouter();
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
+      posthog.capture("create_equity_form_opened");
+    }
+  }, [open, localOpen, posthog]);
+
   return (
     <FormSheet
       open={open ?? localOpen}
