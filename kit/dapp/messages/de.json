@@ -161,17 +161,21 @@
         "end-date": "Enddatum",
         "interval": "Zahlungsintervall",
         "no-yield": {
-          "description": "Dieser Bond hat noch keinen Ertragszeitplan konfiguriert. Richten Sie einen Ertragszeitplan ein, um automatisierte Zinszahlungen an die Anleiheinhaber zu ermöglichen.",
+          "description": "Dieser Bond hat noch keinen Ertragsplan konfiguriert. Richten Sie einen Ertragsplan ein, um automatisierte Zinszahlungen an die Anleiheinhaber zu ermöglichen.",
           "title": "Kein Ertragszeitplan gefunden"
         },
         "period-table": {
-          "claimed-total": "Beanspruchte Gesamtsumme",
+          "claimed-total": "Beansprucht / Gesamt",
           "end-date": "Enddatum",
           "no-yield-periods": "Keine Ertragsperioden gefunden",
           "period-id": "Perioden-ID",
           "progress": "Fortschritt",
           "rate": "Rate",
-          "start-date": "Startdatum"
+          "start-date": "Startdatum",
+          "completed": "Abgeschlossen",
+          "current": "Aktuell",
+          "scheduled": "Geplant",
+          "status": "Status"
         },
         "periods": "Gesamtperioden",
         "rate": "Zinssatz",
@@ -182,7 +186,7 @@
             "label": "Endzeit"
           },
           "interval": {
-            "description": "Das Intervall, in dem Zinszahlungen an die Anleiheinhaber erfolgen.",
+            "description": "Das Intervall, in dem Zinszahlungen an Anleiheinhaber geleistet werden.",
             "label": "Intervall",
             "options": {
               "annually": "Jährlich",
@@ -195,7 +199,7 @@
             }
           },
           "rate": {
-            "description": "Der Zinssatz, der den Anleiheinhabern gezahlt wird, ausgedrückt als Prozentsatz.",
+            "description": "Der Zinssatz, der an Anleiheinhaber gezahlt werden soll, ausgedrückt als Prozentsatz.",
             "label": "Rate"
           },
           "start-time": {
@@ -207,10 +211,13 @@
             "interval": "Intervall",
             "rate": "Rate",
             "start-time": "Startzeit",
-            "title": "Zusammenfassung des Ertragszeitplans"
+            "title": "Planungsdetails",
+            "description": "Überprüfen Sie die Einzelheiten des Ertragsplans, bevor Sie ihn einreichen."
           },
           "title": "Ertragszeitplan festlegen",
-          "trigger-label": "Ertragszeitplan festlegen"
+          "trigger-label": "Ertragszeitplan festlegen",
+          "form-description": "Ertragspläne ermöglichen automatisierte Zinszahlungen an Anleiheinhaber in den festgelegten Intervallen.",
+          "yield-schedule": "Ertragsplan"
         },
         "start-date": "Startdatum",
         "total-unclaimed-yield": "Gesamter nicht beanspruchter Ertrag",
@@ -220,7 +227,8 @@
         "underlying-asset-balance": "Saldo der zugrunde liegenden Vermögenswerte",
         "yearly": "Jährlich",
         "yield-coverage": "Ertragsabdeckung",
-        "yield-per-period": "Ertrag pro Periode"
+        "yield-per-period": "Ertrag pro Periode",
+        "yield-coverage-info": "Die Ertragsabdeckung zeigt, welcher Prozentsatz der nicht beanspruchten Ertragsverpflichtungen durch den verfügbaren Bestand an zugrunde liegenden Vermögenswerten gedeckt werden kann."
       }
     }
   },
@@ -589,7 +597,8 @@
       "contract": "Vertrag",
       "hash": "Hash",
       "function": "Funktion",
-      "created": "Erstellt"
+      "created": "Erstellt",
+      "view-activity": "Sehen Sie sich Ihre Aktivitäten an"
     }
   },
   "creator-owner": "Ersteller / Eigentümer",
@@ -730,7 +739,7 @@
             "title": "Betrag eingeben"
           },
           "button-label": "Vermögenswerte einlösen",
-          "description": "Lösen Sie Ihre Anleihevermögen in den zugrunde liegenden Vermögenswert ein.",
+          "description": "Verbrennt den angegebenen Betrag an Anleihen und überträgt den entsprechenden Betrag an zugrunde liegenden Vermögenswerten in Ihre Brieftasche.",
           "summary": {
             "asset-label": "Vermögenswert",
             "description": "Überprüfen Sie die Einzelheiten Ihrer Einlösung, bevor Sie fortfahren",
@@ -1063,6 +1072,14 @@
                 "issuer": "Versorgungsmanager"
               }
             }
+          },
+          "toast-action": {
+            "bonds": "Anleihe anzeigen",
+            "cryptocurrencies": "Kryptowährung anzeigen",
+            "deposits": "Einzahlung anzeigen",
+            "equities": "Eigenkapital anzeigen",
+            "funds": "Fonds anzeigen",
+            "stablecoins": "Stablecoin anzeigen"
           }
         },
         "parameters": {
@@ -1405,7 +1422,8 @@
               "unblock": "Benutzer entsperren"
             },
             "errors": {
-              "supply-manager-required": "Rolle des Versorgungsmanagers erforderlich"
+              "supply-manager-required": "Rolle des Versorgungsmanagers erforderlich",
+              "not-in-allowlist-error": "Der Benutzer ist nicht auf der Erlaubenliste für diesen Vermögenswert. Ein Benutzerverwalter muss den Benutzer zur Erlaubenliste hinzufügen, um fortzufahren."
             }
           },
           "account": {
@@ -1455,7 +1473,14 @@
               "burn": "Verfügbares Guthaben zum Verbrennen: {limit}",
               "freeze": "Verfügbares Guthaben zum Einfrieren: {limit}",
               "burn-no-balance": "Kein Guthaben zum Verbrennen verfügbar.",
-              "mint-no-collateral": "Kein Sicherheiten verfügbar. Fügen Sie Sicherheiten hinzu, bevor Sie prägen."
+              "mint-no-collateral": "Kein Sicherheiten verfügbar. Fügen Sie Sicherheiten hinzu, bevor Sie prägen.",
+              "amount-available": "Verfügbarer Betrag zum Minten: {limit}",
+              "collateral-available": "Sicherheiten verfügbar zum Minten: {limit}",
+              "mint-no-amount": "Das maximale Angebot wurde erreicht, es können keine weiteren Vermögenswerte gemintet werden.",
+              "top-up": "Verfügbares Angebot zum Auffüllen: {limit}",
+              "top-up-no-supply": "Kein verfügbares Angebot zum Auffüllen.",
+              "withdraw": "Verfügbarer zugrunde liegender Saldo zum Abheben: {limit}",
+              "withdraw-no-balance": "Kein verfügbarer zugrunde liegender Saldo zum Abheben."
             },
             "label": "Betrag"
           },
@@ -1911,7 +1936,11 @@
         "allowed-since-header": "Erlaubt seit",
         "blocked-since-header": "Blockiert seit",
         "balance": "Guthaben",
-        "total-value": "Gesamtwert"
+        "total-value": "Gesamtwert",
+        "bonds-price": "Preis des zugrunde liegenden Vermögenswerts multipliziert mit dem Nennwert",
+        "fixed": "Fest",
+        "max-supply": "Maximalangebot",
+        "max-supply-info": "Die maximale Menge an Vermögenswerten, die ausgegeben werden kann"
       },
       "table": {
         "asset-management": "Vermögensverwaltung",
@@ -2205,7 +2234,7 @@
             "description": "Diese einmalig verwendbaren Codes können Transaktionen verifizieren oder deine Brieftasche wiederherstellen. Bewahre sie sicher auf, zum Beispiel in einem Passwortmanager oder schriftlich. Wenn sie verloren gehen, wird die Wiederherstellung schwierig sein."
           },
           "summary": {
-            "title": "Deine Brieftasche ist gesichert!",
+            "title": "Ihre Brieftasche ist gesichert!",
             "description": "Du hast deine Brieftasche erfolgreich gesichert. Deine Transaktionen sind jetzt geschützt, und deine Wiederherstellungscodes stellen sicher, dass du immer die Kontrolle hast. Du bist bereit, deine Brieftasche sicher zu nutzen."
           }
         }
@@ -2222,7 +2251,60 @@
       "security": "Sicherheit",
       "switch-account": "Konto wechseln",
       "verify-your-email": "Bestätigen Sie Ihre E-Mail",
-      "verify-your-email-description": "Bitte bestätigen Sie Ihre E-Mail-Adresse. Überprüfen Sie Ihren Posteingang auf die Bestätigungs-E-Mail. Wenn Sie die E-Mail nicht erhalten haben, klicken Sie auf die Schaltfläche unten, um sie erneut zu senden."
+      "verify-your-email-description": "Bitte bestätigen Sie Ihre E-Mail-Adresse. Überprüfen Sie Ihren Posteingang auf die Bestätigungs-E-Mail. Wenn Sie die E-Mail nicht erhalten haben, klicken Sie auf die Schaltfläche unten, um sie erneut zu senden.",
+      "backup-code": "Backup-Code",
+      "backup-code-action": "Konto wiederherstellen",
+      "backup-code-placeholder": "Geben Sie einen Ihrer Backup-Codes ein. Nach der Verwendung kann jeder Code nur einmal verwendet werden und wird nach der Verwendung ungültig.",
+      "backup-code-required": "Backup-Code ist erforderlich",
+      "backup-codes": "Backup-Codes",
+      "backup-codes-description": "Bewahren Sie diese Backup-Codes an einem sicheren Ort auf. Sie können sie verwenden, um auf Ihr Konto zuzugreifen, wenn Sie Ihre Methode zur Zwei-Faktor-Authentifizierung verlieren.",
+      "cancel": "Abbrechen",
+      "confirm-password": "Passwort bestätigen",
+      "confirm-password-placeholder": "Passwort bestätigen",
+      "confirm-password-required": "Bestätigungs-Passwort ist erforderlich",
+      "continue": "Fortfahren",
+      "continue-with-authenticator": "Mit Authenticator fortfahren",
+      "copied-to-clipboard": "In die Zwischenablage kopiert",
+      "copy-all-codes": "Alle Codes kopieren",
+      "delete-account-verify": "Bitte überprüfen Sie Ihre E-Mail, um die Löschung Ihres Kontos zu bestätigen.",
+      "disable": "Deaktivieren",
+      "email-invalid": "E-Mail-Adresse ist ungültig\"",
+      "email-is-the-same": "E-Mail ist gleich",
+      "email-required": "E-Mail-Adresse ist erforderlich",
+      "enable": "Aktivieren",
+      "error": "Fehler",
+      "forgot-authenticator": "Authenticator vergessen?",
+      "go-back": "Zurückgehen",
+      "invalid-password": "Ungültiges Passwort",
+      "invalid-two-factor-cookie": "Ungültiges Zwei-Faktor-Cookie",
+      "is-invalid": "ist ungültig",
+      "is-required": "ist erforderlich",
+      "is-the-same": "ist gleich",
+      "new-password-required": "Neues Passwort ist erforderlich",
+      "one-time-password": "Einmalpasswort",
+      "or-continue-with": "Oder fortfahren mit",
+      "password-required": "Passwort ist erforderlich",
+      "password-too-short": "Passwort zu kurz",
+      "passwords-do-not-match": "Passwörter stimmen nicht überein",
+      "recover-account": "Konto wiederherstellen",
+      "recover-account-action": "Konto wiederherstellen",
+      "recover-account-description": "Bitte geben Sie einen Backup-Code ein, um auf Ihr Konto zuzugreifen",
+      "request-failed": "Anfrage fehlgeschlagen",
+      "resend-code": "Code erneut senden",
+      "send-verification-code": "Verifizierungscode senden",
+      "sign-in-username-placeholder": "Benutzername oder E-Mail",
+      "trust-this-device": "Dieses Gerät vertrauen",
+      "two-factor": "Zwei-Faktor",
+      "two-factor-action": "Code überprüfen",
+      "two-factor-card-description": "Fügen Sie Ihrem Konto eine zusätzliche Sicherheitsebene hinzu.",
+      "two-factor-description": "Bitte geben Sie Ihr Einmalpasswort ein, um fortzufahren",
+      "two-factor-disable-instructions": "Bitte geben Sie Ihr Passwort ein, um 2FA zu deaktivieren.",
+      "two-factor-disabled": "Die Zwei-Faktor-Authentifizierung wurde deaktiviert",
+      "two-factor-enable-instructions": "Bitte geben Sie Ihr Passwort ein, um 2FA zu aktivieren",
+      "two-factor-enabled": "Die Zwei-Faktor-Authentifizierung wurde aktiviert",
+      "two-factor-prompt": "Zwei-Faktor-Authentifizierung",
+      "two-factor-totp-label": "Scannen Sie den QR-Code mit Ihrem Authenticator",
+      "updated-successfully": "Erfolgreich aktualisiert"
     },
     "users": {
       "banned_reason": "Gesperrt wegen {reason}",
@@ -2264,7 +2346,8 @@
           "status": "Status",
           "transactions": "Transaktionen",
           "verified_at": "Verifiziert am",
-          "wallet": "Brieftasche"
+          "wallet": "Brieftasche",
+          "role": "Rolle"
         }
       },
       "holdings": {

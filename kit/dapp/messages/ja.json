@@ -161,17 +161,21 @@
         "end-date": "終了日",
         "interval": "支払い間隔",
         "no-yield": {
-          "description": "この債券にはまだ利回りスケジュールが設定されていません。債券保有者への自動利息支払いを有効にするために、利回りスケジュールを設定してください。",
+          "description": "この債券には、まだ利回りスケジュールが設定されていません。債券保有者への自動利息支払いを有効にするために、利回りスケジュールを設定してください。",
           "title": "利回りスケジュールが見つかりません"
         },
         "period-table": {
-          "claimed-total": "請求済み合計",
+          "claimed-total": "請求済み / 合計",
           "end-date": "終了日",
           "no-yield-periods": "利回り期間が見つかりません",
           "period-id": "期間ID",
           "progress": "進捗",
           "rate": "利率",
-          "start-date": "開始日"
+          "start-date": "開始日",
+          "completed": "完了",
+          "current": "現在",
+          "scheduled": "予定",
+          "status": "ステータス"
         },
         "periods": "総期間",
         "rate": "利率",
@@ -195,7 +199,7 @@
             }
           },
           "rate": {
-            "description": "債券保有者に支払われる利率で、パーセンテージで表されます。",
+            "description": "債券保有者に支払われる利率、パーセンテージで表現されます。",
             "label": "利率"
           },
           "start-time": {
@@ -207,10 +211,13 @@
             "interval": "間隔",
             "rate": "利率",
             "start-time": "開始時間",
-            "title": "利回りスケジュールの概要"
+            "title": "スケジュールの詳細",
+            "description": "提出する前に、利回りスケジュールの詳細を確認してください。"
           },
           "title": "利回りスケジュールを設定",
-          "trigger-label": "利回りスケジュールを設定"
+          "trigger-label": "利回りスケジュールを設定",
+          "form-description": "利回りスケジュールは、指定された間隔で債券保有者への自動利息支払いを可能にします。",
+          "yield-schedule": "利回りスケジュール"
         },
         "start-date": "開始日",
         "total-unclaimed-yield": "未請求の総利回り",
@@ -220,7 +227,8 @@
         "underlying-asset-balance": "基礎資産残高",
         "yearly": "年次",
         "yield-coverage": "利回りカバレッジ",
-        "yield-per-period": "期間ごとの利回り"
+        "yield-per-period": "期間ごとの利回り",
+        "yield-coverage-info": "利回りカバレッジは、未請求の利回り義務の何パーセントが利用可能な基礎資産残高でカバーできるかを示します。"
       }
     }
   },
@@ -589,7 +597,8 @@
       "contract": "契約",
       "hash": "ハッシュ",
       "function": "関数",
-      "created": "作成日"
+      "created": "作成日",
+      "view-activity": "アクティビティを表示"
     }
   },
   "creator-owner": "作成者 / 所有者",
@@ -730,7 +739,7 @@
             "title": "金額を入力"
           },
           "button-label": "資産を引き換える",
-          "description": "債券資産を基礎資産に引き換えます。",
+          "description": "指定された量の債券を焼却し、同等の基礎資産をあなたのウォレットに転送します。",
           "summary": {
             "asset-label": "資産",
             "description": "進む前に引き換えの詳細を確認してください",
@@ -1063,6 +1072,14 @@
                 "issuer": "供給管理者"
               }
             }
+          },
+          "toast-action": {
+            "bonds": "債券を表示",
+            "cryptocurrencies": "暗号通貨を表示",
+            "deposits": "入金を表示",
+            "equities": "株式を表示",
+            "funds": "ファンドを表示",
+            "stablecoins": "ステーブルコインを表示"
           }
         },
         "parameters": {
@@ -1405,7 +1422,8 @@
               "unblock": "ユーザーのブロックを解除する"
             },
             "errors": {
-              "supply-manager-required": "供給管理者の役割が必要です"
+              "supply-manager-required": "供給管理者の役割が必要です",
+              "not-in-allowlist-error": "固定"
             }
           },
           "account": {
@@ -1455,7 +1473,14 @@
               "burn": "燃やすために利用可能な残高: {limit}",
               "freeze": "凍結するために利用可能な残高: {limit}",
               "burn-no-balance": "焼却するための残高がありません。",
-              "mint-no-collateral": "担保がありません。発行する前に担保を追加してください。"
+              "mint-no-collateral": "担保がありません。発行する前に担保を追加してください。",
+              "amount-available": "ミント可能な金額: {limit}",
+              "collateral-available": "ミント可能な担保: {limit}",
+              "mint-no-amount": "最大供給量に達しました。これ以上の資産をミントできません。",
+              "top-up": "補充可能な供給: {limit}",
+              "top-up-no-supply": "補充可能な供給はありません。",
+              "withdraw": "ユーザーはこの資産の許可リストにありません。ユーザー管理者がユーザーを許可リストに追加する必要があります。",
+              "withdraw-no-balance": "基礎資産の価格に額面価値を掛けたもの"
             },
             "label": "金額"
           },
@@ -1911,7 +1936,11 @@
         "allowed-since-header": "許可された日",
         "blocked-since-header": "ブロックされた日",
         "balance": "残高",
-        "total-value": "総価値"
+        "total-value": "総価値",
+        "bonds-price": "最大供給",
+        "fixed": "発行可能な資産の最大量",
+        "max-supply": "バックアップコード",
+        "max-supply-info": "アカウントを復元"
       },
       "table": {
         "asset-management": "資産管理",
@@ -2222,7 +2251,60 @@
       "security": "セキュリティ",
       "switch-account": "アカウントを切り替える",
       "verify-your-email": "メールアドレスを確認してください。",
-      "verify-your-email-description": "メールアドレスを確認してください。受信トレイに確認メールが届いているか確認してください。メールが届いていない場合は、以下のボタンをクリックして再送信してください。"
+      "verify-your-email-description": "メールアドレスを確認してください。受信トレイに確認メールが届いているか確認してください。メールが届いていない場合は、以下のボタンをクリックして再送信してください。",
+      "backup-code": "バックアップコードのいずれかを入力してください。使用後は、各コードは一度だけ使用でき、使用後は無効になります。",
+      "backup-code-action": "バックアップコードが必要です",
+      "backup-code-placeholder": "バックアップコード",
+      "backup-code-required": "これらのバックアップコードを安全な場所に保存してください。二要素認証方法を失った場合にアカウントにアクセスするために使用できます。",
+      "backup-codes": "キャンセル",
+      "backup-codes-description": "パスワードを確認",
+      "cancel": "パスワードを確認",
+      "confirm-password": "確認用パスワードが必要です",
+      "confirm-password-placeholder": "続ける",
+      "confirm-password-required": "認証アプリで続ける",
+      "continue": "クリップボードにコピーされました",
+      "continue-with-authenticator": "すべてのコードをコピー",
+      "copied-to-clipboard": "アカウントの削除を確認するために、メールを確認してください。",
+      "copy-all-codes": "無効にする",
+      "delete-account-verify": "メールアドレスが無効です",
+      "disable": "メールが同じです",
+      "email-invalid": "メールアドレスが必要です",
+      "email-is-the-same": "有効にする",
+      "email-required": "エラー",
+      "enable": "認証アプリを忘れましたか？",
+      "error": "戻る",
+      "forgot-authenticator": "無効なパスワード",
+      "go-back": "無効な二要素クッキー",
+      "invalid-password": "は無効です",
+      "invalid-two-factor-cookie": "は必要です",
+      "is-invalid": "は同じです",
+      "is-required": "新しいパスワードが必要です",
+      "is-the-same": "ワンタイムパスワード",
+      "new-password-required": "または続ける",
+      "one-time-password": "パスワードが必要です",
+      "or-continue-with": "パスワードが短すぎます",
+      "password-required": "パスワードが一致しません",
+      "password-too-short": "アカウントを復元",
+      "passwords-do-not-match": "アカウントを復元",
+      "recover-account": "アカウントにアクセスするためにバックアップコードを入力してください",
+      "recover-account-action": "リクエストに失敗しました",
+      "recover-account-description": "コードを再送信",
+      "request-failed": "確認コードを送信",
+      "resend-code": "ユーザー名またはメール",
+      "send-verification-code": "このデバイスを信頼する",
+      "sign-in-username-placeholder": "二要素",
+      "trust-this-device": "コードを確認",
+      "two-factor": "アカウントに追加のセキュリティ層を追加します。",
+      "two-factor-action": "続行するためにワンタイムパスワードを入力してください",
+      "two-factor-card-description": "2FAを無効にするためにパスワードを入力してください。",
+      "two-factor-description": "二要素認証が無効になりました",
+      "two-factor-disable-instructions": "2FAを有効にするためにパスワードを入力してください",
+      "two-factor-disabled": "二要素認証が有効になりました",
+      "two-factor-enable-instructions": "二要素認証",
+      "two-factor-enabled": "QRコードを認証アプリでスキャンしてください",
+      "two-factor-prompt": "正常に更新されました",
+      "two-factor-totp-label": "あなたのウォレットは保護されています！",
+      "updated-successfully": "役割"
     },
     "users": {
       "banned_reason": "{reason}のため禁止されています",
@@ -2264,7 +2346,8 @@
           "status": "ステータス",
           "transactions": "取引",
           "verified_at": "確認日時",
-          "wallet": "ウォレット"
+          "wallet": "ウォレット",
+          "role": "役割"
         }
       },
       "holdings": {
