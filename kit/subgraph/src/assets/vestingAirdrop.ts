@@ -104,15 +104,16 @@ function updateVestingStats(
   // - claimedVestedAmount is what's already been claimed (airdrop.totalClaimedExact)
 
   let currentTime = event.block.timestamp;
-  let startTime = strategy.vestingStart || airdrop.deployedOn;
+  // Use deployedOn as the start time
+  let startTime = airdrop.deployedOn;
   let vestingDuration = strategy.vestingDuration;
   let cliffDuration = strategy.cliffDuration;
 
   // Sample logic - in a real implementation, would be based on actual vesting schedules
-  if (currentTime > startTime.plus(cliffDuration)) {
+  if (currentTime.gt(startTime.plus(cliffDuration))) {
     // Past cliff, calculate vested amount
     let timeVested = currentTime.minus(startTime);
-    if (timeVested > vestingDuration) {
+    if (timeVested.gt(vestingDuration)) {
       // Fully vested
       vestedAmount = airdrop.totalClaimedExact; // As a simplification
       completedVestingStreams = airdrop.totalRecipients;
@@ -128,7 +129,7 @@ function updateVestingStats(
   claimedVestedAmount = airdrop.totalClaimedExact;
 
   // Unlocked is vested minus claimed
-  if (vestedAmount > claimedVestedAmount) {
+  if (vestedAmount.gt(claimedVestedAmount)) {
     unlockedAmount = vestedAmount.minus(claimedVestedAmount);
   }
 
