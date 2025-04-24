@@ -226,6 +226,64 @@
         "profile": "Profile",
         "api": "API",
         "platform": "Platform"
+      },
+      "trade-management": {
+        "group-title": "Trade management",
+        "dvp-swap": "DvP Swap"
+      }
+    }
+  },
+  "trade-management": {
+    "page": {
+      "dvp-swap": "DvP Swap"
+    },
+    "forms": {
+      "title": {
+        "dvp-swap": "Create a DvP Swap"
+      },
+      "description": {
+        "dvp-swap": "A DvP (Delivery vs Payment) Swap enables an atomic exchange of assets between two parties. It allows you to reliably exchange assets with another user without the need for a third party."
+      },
+      "button": {
+        "dvp-swap": "Create a DvP Swap"
+      },
+      "user": {
+        "title": "User",
+        "description": "Select the user wallet you wish to swap assets with.",
+        "user": "User wallet"
+      },
+      "amounts": {
+        "title": "Amount to exchange",
+        "description": "Enter the asset and amount of assets that you wish to exchange.",
+        "amount-to-offer": "Offer amount",
+        "asset-to-offer": "Offer asset",
+        "amount-to-request": "Request amount",
+        "asset-to-request": "Request asset",
+        "max-amount-to-send": "Amount available to offer: {maxAmount}"
+      },
+      "configuration": {
+        "title": "Configuration",
+        "description": "Configuration for the swap.",
+        "expiry": "Expiry",
+        "expiry-description": "The time until which you will not be able to refund assets from the swap. If the swap is not executed, you can refund your assets after this time.",
+        "expiry-required": "Expiry is required",
+        "past-expiry-error": "Expiry must be in the future.",
+        "secret": "Secret",
+        "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the swap."
+      },
+      "summary": {
+        "title": "Summary",
+        "description": "Review the DvP Swap details. Ensure the receiver, amounts, expiry and secret are correct.",
+        "offer": "Your offer",
+        "offer-description": "The amount of assets you are offering to the user. This amount will be locked.",
+        "request": "Your request",
+        "request-description": "The amount of assets you are requesting from the user.",
+        "to": "To",
+        "from": "From",
+        "amount": "Amount",
+        "configuration": "Configuration",
+        "configuration-description": "The configuration for the DvP Swap",
+        "expiry": "Expiry"
       }
     }
   },
@@ -802,7 +860,9 @@
       "asset-management": "Asset management",
       "platform": "Platform management",
       "portfolio": "My portfolio",
-      "title": "Private"
+      "title": "Private",
+      "trade-management": "Trade management",
+      "dvp-swap": "DvP Swap"
     },
     "user-dropdown": {
       "documentation": "Documentation",

@@ -13,6 +13,7 @@ import { AssetManagementSkeleton } from "./items/asset-management-skeleton";
 import { PlatformManagement } from "./items/platform-management";
 import { PortfolioManagement } from "./items/portfolio-management";
 import { SettingsManagement } from "./items/settings-management";
+import { TradeManagement } from "./items/trade-management";
 
 export async function PrivateSidebar() {
   return (
@@ -30,6 +31,7 @@ export async function PrivateSidebar() {
             <AssetManagement />
           </Suspense>
         </RoleGuard>
+        <TradeManagement />
         <RoleGuard requiredRoles={["admin"]}>
           <PlatformManagement />
         </RoleGuard>
