@@ -1,8 +1,9 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import ForwarderModule from "./forwarder";
 
 const AirdropFactoryModule = buildModule("AirdropFactoryModule", (m) => {
-  // AirdropFactory has no constructor arguments
-  const airdropFactory = m.contract("AirdropFactory");
+  const { forwarder } = m.useModule(ForwarderModule);
+  const airdropFactory = m.contract("AirdropFactory", [forwarder]);
 
   return { airdropFactory };
 });
