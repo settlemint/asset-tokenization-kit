@@ -16,7 +16,7 @@ jobs:
     environment: staging
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v6
+        uses: namespacelabs/nscloud-checkout-action@v7
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
@@ -126,7 +126,10 @@ jobs:
           yq eval ".appVersion = strenv(VERSION)" -i kit/charts/atk/Chart.yaml
 
       - name: Turbo!
-        run: bunx turbo dependencies lint build test genesis abi-output helm:push
+        run:
+          bunx turbo dependencies lint build test genesis abi-output helm:push
+        env:
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
 
       - name: Store predeployed output
         uses: actions/upload-artifact@v4
@@ -203,7 +206,7 @@ jobs:
     runs-on: namespace-profile-atk-trivy
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v6
+        uses: namespacelabs/nscloud-checkout-action@v7
 
       - name: Secret Scanning (Trivy)
         uses: aquasecurity/trivy-action@0.30.0

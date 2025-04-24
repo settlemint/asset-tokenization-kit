@@ -4,11 +4,20 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
+import { usePostHog } from "posthog-js/react";
+import { useEffect } from "react";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Configuration() {
   const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      posthog.capture("create_bond_form_configuration_step_opened");
+    }
+  }, [posthog]);
 
   return (
     <FormStep
