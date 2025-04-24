@@ -7,7 +7,6 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { actionTypes } from "../utils/typebox/actions";
 import { fiatCurrencies } from "../utils/typebox/fiat-currency";
 import { user } from "./schema-auth";
 
@@ -64,13 +63,12 @@ export const contact = pgTable(
   ]
 );
 
-const actionsEnum = pgEnum("actions", actionTypes);
 export const actions = pgTable("actions", {
   id: uuid("id").primaryKey().defaultRandom(),
   assetId: text("asset_id")
     .notNull()
     .references(() => asset.id),
-  actionType: actionsEnum("action_type").notNull(),
+  actionType: text("action_type").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
