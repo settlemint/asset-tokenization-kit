@@ -561,12 +561,7 @@ export class AdminPage extends BasePage {
     };
   }
 
-  async updateCollateral(options: {
-    sidebarAssetTypes: string;
-    name: string;
-    amount: string;
-    pincode: string;
-  }) {
+  async updateCollateral(options: { amount: string; pincode: string }) {
     await this.page.getByRole("button", { name: "Manage" }).click();
     const updateCollateralOption = this.page.getByRole("menuitem", {
       name: "Update Collateral",
@@ -631,12 +626,7 @@ export class AdminPage extends BasePage {
     await expect(formattedActual).toBe(formattedExpected);
   }
 
-  async mintAsset(options: {
-    sidebarAssetTypes: string;
-    user: string;
-    amount: string;
-    pincode: string;
-  }) {
+  async mintAsset(options: { user: string; amount: string; pincode: string }) {
     await this.page.reload();
     await this.page.getByRole("button", { name: "Manage" }).click();
     const mintTokensOption = this.page.getByRole("menuitem", {
@@ -680,6 +670,16 @@ export class AdminPage extends BasePage {
     await this.page.locator("#amount").fill(options.amount);
     await this.page.getByRole("button", { name: "Next" }).click();
     await this.completeAssetCreation("Top up", options.pincode);
+  }
+
+  async redeemBurnAsset(options: { amount: string; pincode: string }) {
+    await this.page
+      .locator('button[data-slot="sheet-trigger"]')
+      .filter({ hasText: "Burn" })
+      .click();
+    await this.page.locator("#amount").fill(options.amount);
+    await this.page.getByRole("button", { name: "Next" }).click();
+    await this.completeAssetCreation("Burn", options.pincode);
   }
 
   async verifyTotalSupply(expectedAmount: string) {

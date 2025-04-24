@@ -33,12 +33,14 @@ spec:
         app.kubernetes.io/namespace: {{ .Release.Namespace }}
         app.kubernetes.io/managed-by: helm
     spec:
-      serviceAccountName: {{ include "besu-genesis.serviceAccountName" . }}
-      restartPolicy: "Never"
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- with .Values.imagePullSecrets }}
-        {{- toYaml . | nindent 8 }}
+        {{- range . }}
+        - name: {{ . }}
         {{- end }}
+      {{- end }}
+      serviceAccountName: {{ include "besu-genesis.serviceAccountName" . }}
       volumes:
         - name: generated-config
           emptyDir: {}

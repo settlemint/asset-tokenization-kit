@@ -24,10 +24,7 @@ export async function depositsCalculateFields(
     // Calculate collateral proof validity date
     const collateralProofValidity =
       Number(deposit.lastCollateralUpdate) > 0
-        ? addSeconds(
-            new Date(Number(deposit.lastCollateralUpdate) * 1000),
-            Number(deposit.liveness)
-          )
+        ? addSeconds(deposit.lastCollateralUpdate, Number(deposit.liveness))
         : undefined;
 
     const price = prices.get(deposit.id);

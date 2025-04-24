@@ -212,7 +212,7 @@ thegraph:
           image: ghcr.io/settlemint/btp-waitforit:v7.7.3
           command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
         - name: random-delay
-          image: busybox:latest # Using busybox as it has sh and sleep
+          image: docker.io/busybox:latest # Using busybox as it has sh and sleep
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "-c"]
           args:
@@ -270,7 +270,7 @@ thegraph:
   job:
     fullnameOverride: graph
     image:
-      repository: node
+      repository: docker.io/node
       tag: "23.11.0-slim"
       pullPolicy: IfNotPresent
     workspace:
@@ -494,6 +494,7 @@ dapp:
       enabled: true
       name: wait-for-graph-subgraph-kit # Name for the init container
       image:
+        registry: docker.io
         repository: curlimages/curl
         tag: latest # Or pin to a specific version like 8.7.1
         pullPolicy: IfNotPresent

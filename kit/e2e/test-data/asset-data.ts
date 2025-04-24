@@ -328,6 +328,21 @@ export const fundData = {
   initialSupply: "0",
 };
 
+export const fundMintTokenData = {
+  amount: "10000",
+  pincode: pincode,
+};
+
+export const fundTransferData = {
+  transferAmount: "1000",
+  pincode: pincode,
+};
+
+export const fundBurnData = {
+  amount: "1000",
+  pincode: pincode,
+};
+
 export const stablecoinData = {
   assetType: "Stablecoin",
   name: generateStablecoinName(),
@@ -351,6 +366,26 @@ export const depositData = {
   pincode: pincode,
   sidebarAssetTypes: "Deposits",
   initialSupply: "0",
+};
+
+export const depositUpdateCollateralData = {
+  amount: "11000",
+  pincode: pincode,
+};
+
+export const depositMintTokenData = {
+  amount: "11000",
+  pincode: pincode,
+};
+
+export const depositBurnData = {
+  amount: "2000",
+  pincode: pincode,
+};
+
+export const depositTransferData = {
+  transferAmount: "1500",
+  pincode: pincode,
 };
 
 export const topUpData = {

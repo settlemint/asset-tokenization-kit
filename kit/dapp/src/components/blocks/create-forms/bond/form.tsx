@@ -8,7 +8,8 @@ import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { usePostHog } from "posthog-js/react";
+import { useEffect, useState } from "react";
 import { AssetAdmins } from "../common/asset-admins/asset-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
@@ -30,6 +31,14 @@ export function CreateBondForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
+      posthog.capture("create_bond_form_opened");
+    }
+  }, [open, localOpen, posthog]);
+
   return (
     <FormSheet
       open={open ?? localOpen}

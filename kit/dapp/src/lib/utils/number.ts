@@ -65,12 +65,17 @@ function formatNumberWithFormatter(
     return token ? `< ${minFormatted} ${token}` : `< ${minFormatted}`;
   }
 
-  const formattedNumber = formatter.number(numberValue, {
-    style: percentage ? "percent" : currency ? "currency" : "decimal",
+  const style = percentage ? "percent" : currency ? "currency" : "decimal";
+  let formattedNumber = formatter.number(numberValue, {
+    style,
     currency,
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals,
   });
+
+  if (style === "decimal") {
+    formattedNumber = removeLeadingZerosAfterDecimalPoint(formattedNumber);
+  }
 
   return token ? `${formattedNumber} ${token}` : formattedNumber;
 }
@@ -99,4 +104,14 @@ export function formatNumber(
   });
 
   return formatNumberWithFormatter(formatter, amount, options);
+}
+
+function removeLeadingZerosAfterDecimalPoint(value: string) {
+  const [integerPart, decimalPart] = value.split(".");
+  if (!decimalPart) return value;
+
+  const nonZeroIndex = decimalPart.search(/[1-9]/);
+  if (nonZeroIndex === -1) return integerPart;
+  const trimmedDecimalPart = decimalPart.slice(nonZeroIndex);
+  return `${integerPart}.${trimmedDecimalPart}`;
 }

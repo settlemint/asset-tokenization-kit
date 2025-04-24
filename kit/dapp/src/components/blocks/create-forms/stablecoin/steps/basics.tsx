@@ -2,11 +2,20 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { useTranslations } from "next-intl";
+import { usePostHog } from "posthog-js/react";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
 export function Basics() {
   const { control } = useFormContext<CreateStablecoinInput>();
   const t = useTranslations("private.assets.create");
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      posthog.capture("create_stablecoin_form_basics_step_opened");
+    }
+  }, [posthog]);
 
   return (
     <FormStep title={t("basics.title")} description={t("basics.description")}>

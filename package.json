@@ -48,16 +48,17 @@
     "secrets": "op inject --force -i kit/charts/atk/values-example.1p.yaml -o kit/charts/atk/values-example.yaml",
     "abis": "bun run --cwd kit/contracts dependencies && bun run --cwd kit/contracts compile:forge && bun run --cwd kit/contracts abi-output && mkdir -p kit/charts/atk/charts/portal/abis && cp kit/contracts/portal/*.json kit/charts/atk/charts/portal/abis/",
     "helm:check-context": "[ \"$(kubectl config current-context)\" = \"orbstack\" ] || (echo \"Error: Not in orbstack context. Current context: $(kubectl config current-context)\" && exit 1)",
-    "helm:full": "bun run helm:check-context && bun run secrets && bun run abis && bunx turbo genesis && cp kit/contracts/genesis-output.json kit/charts/atk/charts/besu-network/charts/besu-genesis/files/genesis-output.json && bunx turbo run helm:deps --force && helm upgrade --install atk kit/charts/atk -f kit/charts/atk/values-example.yaml -n atk --create-namespace",
+    "helm:full": "bun run helm:check-context && bun run secrets && bun run abis && bunx turbo genesis && bunx turbo run helm:deps --force && helm upgrade --install atk kit/charts/atk -f kit/charts/atk/values-example.yaml -n atk --create-namespace",
     "helm:install": "bun run helm:check-context && bunx turbo run helm:deps && helm upgrade --install atk kit/charts/atk -f kit/charts/atk/values-example.yaml -n atk --create-namespace --timeout 15m",
     "helm:delete": "bun run helm:check-context && helm uninstall atk -n atk --wait && kubectl delete pvc --all -n atk && kubectl delete namespace atk",
-    "helm:reset": "bun run helm:delete && bun run helm:install"
+    "helm:reset": "bun run helm:delete && bun run helm:install",
+    "helm:proxy": "turbo run helm:proxy"
   },
   "dependencies": {},
   "devDependencies": {
     "@settlemint/sdk-cli": "2.1.4",
     "prettier": "3.5.3",
-    "turbo": "2.5.0",
+    "turbo": "2.5.1",
     "typescript": "5.8.3"
   },
   "trustedDependencies": [

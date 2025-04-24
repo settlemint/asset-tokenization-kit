@@ -90,8 +90,10 @@ export const createDepositFunction = withAccessControl(
       currency: price.currency,
     });
 
-    const collateralLivenessSeconds =
-      collateralLivenessValue * getTimeUnitSeconds(collateralLivenessTimeUnit);
+    const collateralLivenessSeconds = getTimeUnitSeconds(
+      collateralLivenessValue,
+      collateralLivenessTimeUnit
+    );
 
     const createDepositResult = await portalClient.request(
       DepositFactoryCreate,

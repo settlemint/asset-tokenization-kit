@@ -31,6 +31,9 @@ dependencies:
   - name: portal
     version: "*"
     condition: portal.enabled
+  - name: hasura
+    version: "*"
+    condition: hasura.enabled
   - name: txsigner
     version: "*"
     repository: file://./charts/txsigner

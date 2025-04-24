@@ -20,8 +20,14 @@ dependencies:
 - name: portal
   repository: ""
   version: '*'
-- name: txsigner
+- name: hasura
   repository: ""
   version: '*'
-digest: sha256:7ac439001394f3be8a9016996c449f1e02c3f630ef9bece62086883f0580f4c2
-generated: "2025-04-10T14:56:53.999217+03:00"
+- name: txsigner
+  repository: file://./charts/txsigner
+  version: 0.1.0
+- name: dapp
+  repository: file://./charts/dapp
+  version: 0.1.0
+digest: sha256:35c4904fdc371e1e0c6dca5c18c524d97ecd8304c34c51ab589cec3c43630097
+generated: "2025-04-21T17:16:50.644333+03:00"

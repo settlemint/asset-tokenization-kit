@@ -22,7 +22,7 @@ const testData = {
   stablecoinName: "",
 };
 
-test.describe("Update collateral, mint and transfer assets", () => {
+test.describe("Create, update collateral, mint and transfer stablecoin", () => {
   test.describe.configure({ mode: "serial" });
   let userContext: BrowserContext | undefined;
   let transferUserContext: BrowserContext | undefined;
@@ -65,7 +65,7 @@ test.describe("Update collateral, mint and transfer assets", () => {
       await transferUserContext.close();
     }
   });
-  test("Admin user creates stablecoin, updates proven collateral and mints tokens", async ({
+  test("Admin user creates stablecoin, updates proven collateral and mints stablecoins", async ({
     browser,
   }) => {
     await ensureUserIsAdmin(adminUser.email);
@@ -88,8 +88,6 @@ test.describe("Update collateral, mint and transfer assets", () => {
       });
       await adminPages.adminPage.clickAssetDetails(testData.stablecoinName);
       await adminPages.adminPage.updateCollateral({
-        sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
-        name: testData.stablecoinName,
         ...stableCoinUpdateCollateralData,
       });
       await adminPages.adminPage.verifySuccessMessage(
@@ -99,7 +97,6 @@ test.describe("Update collateral, mint and transfer assets", () => {
         stableCoinUpdateCollateralData.amount
       );
       await adminPages.adminPage.mintAsset({
-        sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
         user: testData.userName,
         ...stableCoinMintTokenData,
       });
@@ -113,7 +110,7 @@ test.describe("Update collateral, mint and transfer assets", () => {
       await adminContext.close();
     }
   });
-  test("Transfer assets to user and verify balance", async () => {
+  test("Transfer stablecoin to regular transfer user", async () => {
     const [firstName, lastName] = testData.transferUserName
       .split(" ")
       .slice(0, 2);
@@ -155,7 +152,7 @@ test.describe("Update collateral, mint and transfer assets", () => {
       stablecoinData.price
     );
   });
-  test("Verify transfer user received the assets", async () => {
+  test("Verify transfer user received stablecoins", async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
       expectedAmount: stableCoinTransferData.transferAmount,

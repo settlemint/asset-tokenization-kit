@@ -4,16 +4,22 @@ import type { PropsWithChildren } from "react";
 interface FormStepProps extends PropsWithChildren {
   title: string;
   description: string;
+  contentClassName?: string;
 }
 
-export function FormStep({ title, description, children }: FormStepProps) {
+export function FormStep({
+  title,
+  description,
+  children,
+  contentClassName,
+}: FormStepProps) {
   return (
     <Card>
       <CardHeader>
         <h2 className="font-semibold text-base">{title}</h2>
         <p className="text-muted-foreground text-xs">{description}</p>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className={contentClassName}>{children}</CardContent>
     </Card>
   );
 }

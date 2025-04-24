@@ -9,7 +9,8 @@ import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-actio
 import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { usePostHog } from "posthog-js/react";
+import { useEffect, useState } from "react";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
@@ -30,6 +31,14 @@ export function CreateStablecoinForm({
   const [localOpen, setLocalOpen] = useState(false);
   const { data: session } = authClient.useSession();
   const router = useRouter();
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
+      posthog.capture("create_stablecoin_form_opened");
+    }
+  }, [open, localOpen, posthog]);
+
   return (
     <FormSheet
       open={open ?? localOpen}

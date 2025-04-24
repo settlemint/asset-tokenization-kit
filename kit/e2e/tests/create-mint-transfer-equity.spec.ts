@@ -18,7 +18,6 @@ const testData = {
 
 test.describe("Create, mint and transfer equity", () => {
   test.describe.configure({ mode: "serial" });
-  let userContext: BrowserContext | undefined;
   let transferUserContext: BrowserContext | undefined;
   let adminContext: BrowserContext | undefined;
   let transferUserPages: ReturnType<typeof Pages>;
@@ -46,9 +45,6 @@ test.describe("Create, mint and transfer equity", () => {
       await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
-      if (userContext) {
-        await userContext.close();
-      }
       if (transferUserContext) {
         await transferUserContext.close();
       }
@@ -60,9 +56,6 @@ test.describe("Create, mint and transfer equity", () => {
   });
 
   test.afterAll(async () => {
-    if (userContext) {
-      await userContext.close();
-    }
     if (transferUserContext) {
       await transferUserContext.close();
     }
@@ -70,9 +63,7 @@ test.describe("Create, mint and transfer equity", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates, mint equity and transfer to user", async ({
-    browser,
-  }) => {
+  test("Admin user creates and mint equity", async ({ browser }) => {
     await adminPages.adminPage.createEquity(equityData);
     testData.equityName = equityData.name;
     await adminPages.adminPage.verifySuccessMessage(
@@ -85,7 +76,6 @@ test.describe("Create, mint and transfer equity", () => {
     });
     await adminPages.adminPage.clickAssetDetails(testData.equityName);
     await adminPages.adminPage.mintAsset({
-      sidebarAssetTypes: equityData.sidebarAssetTypes,
       user: adminUser.name,
       ...equityMintTokenData,
     });
@@ -94,7 +84,7 @@ test.describe("Create, mint and transfer equity", () => {
     );
     await adminPages.adminPage.verifyTotalSupply(equityMintTokenData.amount);
   });
-  test("Admin user transfer equity to regular tranfer user and verify balance", async () => {
+  test("Admin user transfer equity to regular transfer user", async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.equityName,
       walletAddress: testData.transferUserWalletAddress,

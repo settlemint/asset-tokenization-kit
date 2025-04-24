@@ -4,6 +4,8 @@ import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
+import { usePostHog } from "posthog-js/react";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
 export function Configuration() {
@@ -13,6 +15,13 @@ export function Configuration() {
     value: currency,
     label: currency,
   }));
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      posthog.capture("create_cryptocurrency_form_configuration_step_opened");
+    }
+  }, [posthog]);
 
   return (
     <FormStep

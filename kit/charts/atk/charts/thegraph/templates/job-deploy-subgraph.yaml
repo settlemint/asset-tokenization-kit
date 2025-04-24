@@ -10,6 +10,7 @@ metadata:
     "helm.sh/hook-weight": "1"
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
+  ttlSecondsAfterFinished: 300
   template:
     metadata:
       {{- with .Values.job.podAnnotations }}
@@ -22,13 +23,18 @@ spec:
       restartPolicy: Never
       {{- with .Values.job.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
       {{- end }}
+      {{- if .Values.job.podSecurityContext }}
       securityContext:
         {{- toYaml .Values.job.podSecurityContext | nindent 8 }}
+      {{- end }}
       initContainers:
         - name: wait-for-graph-node
-          image: busybox
+          image: "{{ .Values.job.busyboxImage.registry }}/{{ .Values.job.busyboxImage.repository }}:{{ .Values.job.busyboxImage.tag }}"
+          imagePullPolicy: {{ .Values.job.busyboxImage.pullPolicy }}
           command:
             - /bin/sh
             - -c
@@ -52,7 +58,8 @@ spec:
 
               echo "Service ${SERVICE_NAME}:${PORT} is available, proceeding..."
         - name: clone-repo
-          image: alpine/git:latest
+          image: "{{ .Values.job.gitImage.registry }}/{{ .Values.job.gitImage.repository }}:{{ .Values.job.gitImage.tag }}"
+          imagePullPolicy: {{ .Values.job.gitImage.pullPolicy }}
           command:
             - /bin/sh
             - -c
