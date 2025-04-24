@@ -152,6 +152,10 @@
         "profile": "Profil",
         "api": "API",
         "platform": "Plattform"
+      },
+      "trade-management": {
+        "group-title": "Handelsverwaltung",
+        "dvp-swap": "DvP Swap"
       }
     },
     "bonds": {
@@ -687,7 +691,9 @@
       "asset-management": "Vermögensverwaltung",
       "platform": "Plattformverwaltung",
       "portfolio": "Mein Portfolio",
-      "title": "Privat"
+      "title": "Privat",
+      "trade-management": "Handelsverwaltung",
+      "dvp-swap": "DvP Swap"
     },
     "user-dropdown": {
       "documentation": "Dokumentation",
@@ -2585,6 +2591,60 @@
       "description": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben.",
       "go-back": "Zurückgehen",
       "go-home": "Nach Hause gehen"
+    }
+  },
+  "trade-management": {
+    "page": {
+      "dvp-swap": "DvP Swap"
+    },
+    "forms": {
+      "title": {
+        "dvp-swap": "Einen DvP Swap erstellen"
+      },
+      "description": {
+        "dvp-swap": "Ein DvP (Delivery vs Payment) Swap ermöglicht einen atomaren Austausch von Vermögenswerten zwischen zwei Parteien. Es erlaubt Ihnen, Vermögenswerte zuverlässig mit einem anderen Benutzer auszutauschen, ohne dass eine dritte Partei erforderlich ist."
+      },
+      "button": {
+        "dvp-swap": "Einen DvP Swap erstellen"
+      },
+      "user": {
+        "title": "Benutzer",
+        "description": "Wählen Sie die Benutzer-Wallet aus, mit der Sie Vermögenswerte tauschen möchten.",
+        "user": "Benutzer-Wallet"
+      },
+      "amounts": {
+        "title": "Betrag zum Tauschen",
+        "description": "Geben Sie den Vermögenswert und den Betrag der Vermögenswerte ein, die Sie tauschen möchten.",
+        "amount-to-offer": "Angebotsbetrag",
+        "asset-to-offer": "Angebotsvermögenswert",
+        "amount-to-request": "Anforderungsbetrag",
+        "asset-to-request": "Anforderungsvermögenswert",
+        "max-amount-to-send": "Verfügbarer Betrag zum Anbieten: {maxAmount}"
+      },
+      "configuration": {
+        "title": "Konfiguration",
+        "description": "Konfiguration für den Swap.",
+        "expiry": "Ablauf",
+        "expiry-description": "Die Zeit, bis zu der Sie Vermögenswerte aus dem Swap nicht zurückerstatten können. Wenn der Swap nicht ausgeführt wird, können Sie Ihre Vermögenswerte nach dieser Zeit zurückerstatten.",
+        "expiry-required": "Ablauf ist erforderlich",
+        "past-expiry-error": "Der Ablauf muss in der Zukunft liegen.",
+        "secret": "Geheimnis",
+        "secret-description": "Bitte speichern Sie dieses Geheimnis sicher. Sie benötigen es, um die aus dem Swap erhaltenen Vermögenswerte freizuschalten."
+      },
+      "summary": {
+        "title": "Zusammenfassung",
+        "description": "Überprüfen Sie die Details des DvP Swaps. Stellen Sie sicher, dass der Empfänger, die Beträge, der Ablauf und das Geheimnis korrekt sind.",
+        "offer": "Ihr Angebot",
+        "offer-description": "Der Betrag der Vermögenswerte, den Sie dem Benutzer anbieten. Dieser Betrag wird gesperrt.",
+        "request": "Ihre Anfrage",
+        "request-description": "Der Betrag der Vermögenswerte, den Sie vom Benutzer anfordern.",
+        "to": "An",
+        "from": "Von",
+        "amount": "Betrag",
+        "configuration": "Konfiguration",
+        "configuration-description": "Die Konfiguration für den DvP Swap",
+        "expiry": "Ablauf"
+      }
     }
   }
 }

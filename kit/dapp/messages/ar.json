@@ -152,6 +152,10 @@
         "profile": "الملف الشخصي",
         "api": "API",
         "platform": "المنصة"
+      },
+      "trade-management": {
+        "group-title": "إدارة التجارة",
+        "dvp-swap": "مبادلة DvP"
       }
     },
     "bonds": {
@@ -687,7 +691,9 @@
       "asset-management": "إدارة الأصول",
       "platform": "إدارة المنصة",
       "portfolio": "محفظتي",
-      "title": "خاص"
+      "title": "خاص",
+      "trade-management": "إدارة التجارة",
+      "dvp-swap": "مبادلة DvP"
     },
     "user-dropdown": {
       "documentation": "التوثيق",
@@ -2586,6 +2592,60 @@
       "description": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
       "go-back": "ارجع",
       "go-home": "اذهب إلى الصفحة الرئيسية"
+    }
+  },
+  "trade-management": {
+    "page": {
+      "dvp-swap": "مبادلة DvP"
+    },
+    "forms": {
+      "title": {
+        "dvp-swap": "إنشاء مبادلة DvP"
+      },
+      "description": {
+        "dvp-swap": "تتيح مبادلة DvP (التسليم مقابل الدفع) تبادلًا ذريًا للأصول بين طرفين. يسمح لك بتبادل الأصول بشكل موثوق مع مستخدم آخر دون الحاجة إلى طرف ثالث."
+      },
+      "button": {
+        "dvp-swap": "إنشاء مبادلة DvP"
+      },
+      "user": {
+        "title": "المستخدم",
+        "description": "اختر محفظة المستخدم التي ترغب في تبادل الأصول معها.",
+        "user": "محفظة المستخدم"
+      },
+      "amounts": {
+        "title": "المبلغ المراد تبادله",
+        "description": "أدخل الأصل ومقدار الأصول التي ترغب في تبادلها.",
+        "amount-to-offer": "مبلغ العرض",
+        "asset-to-offer": "أصل العرض",
+        "amount-to-request": "مبلغ الطلب",
+        "asset-to-request": "أصل الطلب",
+        "max-amount-to-send": "المبلغ المتاح للعروض: {maxAmount}"
+      },
+      "configuration": {
+        "title": "الإعدادات",
+        "description": "الإعدادات للمبادلة.",
+        "expiry": "تاريخ الانتهاء",
+        "expiry-description": "الوقت الذي لن تتمكن فيه من استرداد الأصول من المبادلة. إذا لم يتم تنفيذ المبادلة، يمكنك استرداد أصولك بعد هذا الوقت.",
+        "expiry-required": "تاريخ الانتهاء مطلوب",
+        "past-expiry-error": "يجب أن يكون تاريخ الانتهاء في المستقبل.",
+        "secret": "السر",
+        "secret-description": "يرجى حفظ هذا السر بشكل آمن. ستحتاجه لفتح الأصول المستلمة من المبادلة."
+      },
+      "summary": {
+        "title": "الملخص",
+        "description": "راجع تفاصيل مبادلة DvP. تأكد من صحة المستلم، والمبالغ، وتاريخ الانتهاء، والسر.",
+        "offer": "عرضك",
+        "offer-description": "مقدار الأصول التي تقدمها للمستخدم. سيتم قفل هذا المبلغ.",
+        "request": "طلبك",
+        "request-description": "مقدار الأصول التي تطلبها من المستخدم.",
+        "to": "إلى",
+        "from": "من",
+        "amount": "المبلغ",
+        "configuration": "الإعدادات",
+        "configuration-description": "الإعدادات لمبادلة DvP",
+        "expiry": "تاريخ الانتهاء"
+      }
     }
   }
 }

@@ -152,6 +152,10 @@
         "profile": "プロフィール",
         "api": "API",
         "platform": "プラットフォーム"
+      },
+      "trade-management": {
+        "group-title": "取引管理",
+        "dvp-swap": "DvPスワップ"
       }
     },
     "bonds": {
@@ -687,7 +691,9 @@
       "asset-management": "資産管理",
       "platform": "プラットフォーム管理",
       "portfolio": "マイポートフォリオ",
-      "title": "プライベート"
+      "title": "プライベート",
+      "trade-management": "取引管理",
+      "dvp-swap": "DvPスワップ"
     },
     "user-dropdown": {
       "documentation": "ドキュメント",
@@ -2585,6 +2591,60 @@
       "description": "お探しのページは存在しないか、移動されました。",
       "go-back": "戻る",
       "go-home": "ホームに戻る"
+    }
+  },
+  "trade-management": {
+    "page": {
+      "dvp-swap": "DvPスワップ"
+    },
+    "forms": {
+      "title": {
+        "dvp-swap": "DvPスワップを作成"
+      },
+      "description": {
+        "dvp-swap": "DvP（Delivery vs Payment）スワップは、2者間での資産の原子的な交換を可能にします。これにより、第三者を介さずに他のユーザーと信頼性のある資産交換ができます。"
+      },
+      "button": {
+        "dvp-swap": "DvPスワップを作成"
+      },
+      "user": {
+        "title": "ユーザー",
+        "description": "資産を交換したいユーザーのウォレットを選択してください。",
+        "user": "ユーザーウォレット"
+      },
+      "amounts": {
+        "title": "交換する金額",
+        "description": "交換したい資産とその金額を入力してください。",
+        "amount-to-offer": "オファー金額",
+        "asset-to-offer": "オファー資産",
+        "amount-to-request": "リクエスト金額",
+        "asset-to-request": "リクエスト資産",
+        "max-amount-to-send": "提供可能な金額: {maxAmount}"
+      },
+      "configuration": {
+        "title": "設定",
+        "description": "スワップの設定。",
+        "expiry": "有効期限",
+        "expiry-description": "スワップから資産を返金できない時間。スワップが実行されなかった場合、この時間以降に資産を返金できます。",
+        "expiry-required": "有効期限は必須です",
+        "past-expiry-error": "有効期限は未来の日付でなければなりません。",
+        "secret": "秘密",
+        "secret-description": "この秘密を安全に保存してください。スワップから受け取った資産を解除するために必要です。"
+      },
+      "summary": {
+        "title": "概要",
+        "description": "DvPスワップの詳細を確認してください。受取人、金額、有効期限、秘密が正しいことを確認してください。",
+        "offer": "あなたのオファー",
+        "offer-description": "ユーザーに提供している資産の金額。この金額はロックされます。",
+        "request": "あなたのリクエスト",
+        "request-description": "ユーザーからリクエストしている資産の金額。",
+        "to": "宛先",
+        "from": "送信元",
+        "amount": "金額",
+        "configuration": "設定",
+        "configuration-description": "DvPスワップの設定",
+        "expiry": "有効期限"
+      }
     }
   }
 }
