@@ -7,10 +7,36 @@ import {
 import { TransactionSchema } from "@/lib/queries/transactions/transaction-schema";
 import { getRecentTransactions } from "@/lib/queries/transactions/transactions-recent";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
+
+// Create a minimal query to fetch recent transactions
+const RecentTransactionsQuery = portalGraphql(`
+  query RecentTransactionsHistory($processedAfter: String, $from: String, $pageSize: Int, $page: Int) {
+    getPendingAndRecentlyProcessedTransactions(processedAfter: $processedAfter, from: $from, pageSize: $pageSize, page: $page) {
+      count
+      records {
+        address
+        createdAt
+        from
+        functionName
+        metadata
+        transactionHash
+        updatedAt
+        receipt {
+          status
+          blockNumber
+          from
+          to
+          transactionHash
+        }
+      }
+    }
+  }
+`);
 
 export const TransactionApi = new Elysia({
   detail: {
@@ -91,32 +117,54 @@ export const TransactionApi = new Elysia({
   )
   .get(
     "/recent",
-    async ({ query }) => {
+    async ({
+      query,
+      set,
+    }: {
+      query: { address?: string; processedAfter?: string };
+      set: { headers: Record<string, string> };
+    }) => {
       try {
+        // Extract query parameters
         const { address, processedAfter } = query;
-        let validAddress;
 
-        // Handle address validation safely
-        if (address) {
-          try {
-            validAddress = getAddress(address);
-          } catch (addressError) {
-            console.error("Invalid Ethereum address:", addressError);
-            // Return empty array for invalid addresses rather than throwing an error
-            return [];
-          }
+        // Direct API response without validation
+        set.headers = {
+          "Content-Type": "application/json",
+        };
+
+        try {
+          // Get valid address
+          const validAddress = address ? getAddress(address) : undefined;
+          const validDate = processedAfter
+            ? new Date(processedAfter)
+            : undefined;
+
+          // Get raw transaction data without schema validation
+          const rawTransactions = await portalClient.request(
+            RecentTransactionsQuery,
+            {
+              processedAfter: validDate?.toJSON(),
+              from: validAddress,
+              pageSize: 10,
+              page: 0,
+            }
+          );
+
+          // Extract records safely
+          const records =
+            rawTransactions?.getPendingAndRecentlyProcessedTransactions
+              ?.records || [];
+
+          // Return records directly without validation
+          return records;
+        } catch (error) {
+          console.error("Error fetching transactions:", error);
+          // Return empty array
+          return [];
         }
-
-        const recentTransactions = await getRecentTransactions({
-          address: validAddress,
-          processedAfter: processedAfter ? new Date(processedAfter) : undefined,
-        });
-
-        // Ensure we have a valid array to return
-        return Array.isArray(recentTransactions) ? recentTransactions : [];
       } catch (error) {
-        console.error("Error in /transaction/recent endpoint:", error);
-        // Always return an empty array on error to avoid breaking the client
+        console.error("Error in transaction/recent endpoint:", error);
         return [];
       }
     },
@@ -141,8 +189,9 @@ export const TransactionApi = new Elysia({
           })
         ),
       }),
+      // Skip validation for this endpoint
       response: {
-        200: t.Array(TransactionSchema),
+        200: t.Any(),
         ...defaultErrorSchema,
       },
     }

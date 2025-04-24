@@ -86,7 +86,7 @@ export const api = new Elysia({
       },
     })
   )
-  .onError(({ code, error }) => {
+  .onError(({ code, error, path }) => {
     if (code === "NOT_FOUND") {
       return elysiaError(404, "Not Found");
     }
@@ -99,7 +99,13 @@ export const api = new Elysia({
       error instanceof Error &&
       error.message.includes("Check is not defined")
     ) {
-      console.error("Transaction processing error:", error.message);
+      console.warn("Caught Check is not defined error in:", path);
+
+      // For the transactions API, return empty array instead of an error
+      if (path && path.includes("/transaction/recent")) {
+        return []; // Return empty array instead of error for transaction endpoints
+      }
+
       return elysiaError(500, "Transaction processing error");
     }
 

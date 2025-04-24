@@ -152,16 +152,30 @@ export const TransactionFragmentSchema = t.Object({
   transactionHash: t.Hash({
     description: "The hash of the transaction",
   }),
-  updatedAt: t.Date({
-    description: "The timestamp when the transaction was last updated",
-  }),
+  updatedAt: t.Union([
+    t.Date({
+      description:
+        "The timestamp when the transaction was last updated as Date object",
+    }),
+    t.String({
+      description:
+        "The timestamp when the transaction was last updated as ISO string",
+    }),
+  ]),
   receipt: t.MaybeEmpty(ReceiptFragmentSchema),
   address: t.EthereumAddress({
     description: "The contract address the transaction interacted with",
   }),
-  createdAt: t.Date({
-    description: "The timestamp when the transaction was created",
-  }),
+  createdAt: t.Union([
+    t.Date({
+      description:
+        "The timestamp when the transaction was created as Date object",
+    }),
+    t.String({
+      description:
+        "The timestamp when the transaction was created as ISO string",
+    }),
+  ]),
   metadata: t.MaybeEmpty(
     t.Record(t.String(), t.Any(), {
       description: "Additional metadata about the transaction",
