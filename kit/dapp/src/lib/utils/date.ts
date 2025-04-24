@@ -197,8 +197,8 @@ export function getTimeUnitSeconds(value: number, unit: TimeUnit): number {
       futureDate = addMonths(now, value);
       break;
     default:
-      // Should not happen due to validation, but handle defensively
-      throw new Error(`Unsupported time unit: ${unit}`);
+      const _exhaustiveCheck: never = unit;
+      throw new Error("Unsupported time unit");
   }
 
   return differenceInSeconds(futureDate, now);
