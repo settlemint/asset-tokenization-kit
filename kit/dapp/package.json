@@ -71,7 +71,7 @@
     "@vercel/otel": "1.11.0",
     "ajv": "8.17.1",
     "better-auth": "1.2.7",
-    "better-call": "1.0.8",
+    "better-call": "1.0.9",
     "bignumber.js": "9.3.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
