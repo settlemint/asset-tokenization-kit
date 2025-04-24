@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { shortHex } from "@/lib/utils/hex";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { usePostHog } from "posthog-js/react";
 import {
   type ReactNode,
   Suspense,
@@ -60,6 +61,7 @@ function TextOrSkeleton({
 
 export function UserDropdown() {
   const { data, error, isPending, refetch } = authClient.useSession();
+  const posthog = usePostHog();
 
   const router = useRouter();
   const t = useTranslations("layout.user-dropdown");
@@ -72,11 +74,14 @@ export function UserDropdown() {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
+          if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+            posthog.reset();
+          }
           router.push("/"); // redirect to login page
         },
       },
     });
-  }, [router]);
+  }, [router, posthog]);
 
   useEffect(() => {
     if (isPending && !data?.user?.id) {
