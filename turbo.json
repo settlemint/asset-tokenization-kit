@@ -100,8 +100,11 @@
       "cache": false,
       "persistent": true
     },
+    "helm:proxy": {
+      "cache": false
+    },
     "helm:package": {
-      "dependsOn": ["helm:deps"],
+      "dependsOn": ["helm:deps", "helm:proxy"],
       "cache": false
     },
     "helm:push": {

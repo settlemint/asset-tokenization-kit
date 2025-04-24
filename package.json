@@ -51,7 +51,8 @@
     "helm:full": "bun run helm:check-context && bun run secrets && bun run abis && bunx turbo genesis && bunx turbo run helm:deps --force && helm upgrade --install atk kit/charts/atk -f kit/charts/atk/values-example.yaml -n atk --create-namespace",
     "helm:install": "bun run helm:check-context && bunx turbo run helm:deps && helm upgrade --install atk kit/charts/atk -f kit/charts/atk/values-example.yaml -n atk --create-namespace --timeout 15m",
     "helm:delete": "bun run helm:check-context && helm uninstall atk -n atk --wait && kubectl delete pvc --all -n atk && kubectl delete namespace atk",
-    "helm:reset": "bun run helm:delete && bun run helm:install"
+    "helm:reset": "bun run helm:delete && bun run helm:install",
+    "helm:proxy": "turbo run helm:proxy"
   },
   "dependencies": {},
   "devDependencies": {

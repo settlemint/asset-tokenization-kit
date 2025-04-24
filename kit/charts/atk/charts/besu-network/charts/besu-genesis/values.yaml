@@ -69,4 +69,7 @@ image:
   tag: sha-49c40f5
   pullPolicy: IfNotPresent
 
-imagePullSecrets: []
+imagePullSecrets:
+  - image-pull-secret-harbor
+  - image-pull-secret-ghcr
+  - image-pull-secret-docker

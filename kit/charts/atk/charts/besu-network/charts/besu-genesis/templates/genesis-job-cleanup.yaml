@@ -32,18 +32,20 @@ spec:
         app.kubernetes.io/namespace: {{ .Release.Namespace }}
         app.kubernetes.io/managed-by: helm
     spec:
-{{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
-      serviceAccountName: {{ .Values.azure.serviceAccountName }}
-{{- else if and (eq .Values.cluster.provider "aws") (.Values.cluster.cloudNativeServices) }}
-      serviceAccountName: {{ .Values.aws.serviceAccountName }}
-{{- else }}
-      serviceAccountName: {{ include "besu-genesis.name" . }}-sa
-{{- end }}
-      restartPolicy: "Never"
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- with .Values.imagePullSecrets }}
-        {{- toYaml . | nindent 8 }}
+        {{- range . }}
+        - name: {{ . }}
         {{- end }}
+      {{- end }}
+      {{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
+      serviceAccountName: {{ .Values.azure.serviceAccountName }}
+     {{- else if and (eq .Values.cluster.provider "aws") (.Values.cluster.cloudNativeServices) }}
+      serviceAccountName: {{ .Values.aws.serviceAccountName }}
+      {{- else }}
+      serviceAccountName: {{ include "besu-genesis.name" . }}-sa
+      {{- end }}
       containers:
         - name: delete-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

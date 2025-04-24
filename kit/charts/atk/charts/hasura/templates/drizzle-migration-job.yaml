@@ -10,10 +10,11 @@ metadata:
   annotations:
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
-    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook": "post-install"
     "helm.sh/hook-weight": "5"
-    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+    "helm.sh/hook-delete-policy": "hook-succeeded"
 spec:
+  ttlSecondsAfterFinished: 300
   template:
     metadata:
       name: {{ printf "%s-drizzle-migrate-%d" .Release.Name (.Release.Revision | int) }}
@@ -23,14 +24,16 @@ spec:
         helm.sh/revision: "{{ .Release.Revision }}"
     spec:
       restartPolicy: Never
-      {{- with .Values.global.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
       {{- end }}
       initContainers:
-      - name: wait-for-postgres
-        image: busybox
-        imagePullPolicy: IfNotPresent
+      - name: wait-for-pgpool
+        image: "{{ .Values.busybox.registry }}/{{ .Values.busybox.repository }}:{{ .Values.busybox.tag }}"
+        imagePullPolicy: {{ .Values.busybox.pullPolicy }}
         command:
           - /bin/sh
           - -c
@@ -44,21 +47,31 @@ spec:
             done
             echo "Service ${SERVICE_HOST}:${SERVICE_PORT} is available."
       - name: clone-repo
-        image: alpine/git:latest
-        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.git.image.registry }}/{{ .Values.git.image.repository }}:{{ .Values.git.image.tag }}"
+        imagePullPolicy: {{ .Values.git.image.pullPolicy }}
         command:
           - /bin/sh
           - -c
           - |
             set -ex
-            git clone https://github.com/settlemint/asset-tokenization-kit.git /workspace
+            # Check if the target directory exists and is a git repo, otherwise clone
+            if [ -d "/workspace/.git" ]; then
+              echo "Repository found in /workspace, pulling latest changes..."
+              cd /workspace
+              git pull
+            else
+              echo "Cloning repository into /workspace..."
+              # Ensure the workspace directory exists before cloning into it
+              mkdir -p /workspace
+              git clone https://github.com/settlemint/asset-tokenization-kit.git /workspace
+            fi
         volumeMounts:
           - name: workspace
             mountPath: /workspace
       containers:
       - name: drizzle-migrate
-        image: "oven/bun:1"
-        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.drizzleMigrate.image.registry }}/{{ .Values.drizzleMigrate.image.repository }}:{{ .Values.drizzleMigrate.image.tag }}"
+        imagePullPolicy: {{ .Values.drizzleMigrate.image.pullPolicy }}
         workingDir: /workspace/kit/dapp
         command: ["/bin/sh", "-c"]
         args:
@@ -87,6 +100,11 @@ spec:
             mountPath: /workspace
       volumes:
         - name: workspace
+          {{- if .Values.job.workspace.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-drizzle-migrate-workspace" .Release.Name }}
+          {{- else }}
           emptyDir: {}
+          {{- end }}
       terminationGracePeriodSeconds: 30
   backoffLimit: 1
