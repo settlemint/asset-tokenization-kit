@@ -2,9 +2,9 @@
 pragma solidity ^0.8.24;
 
 import { Test, console, Vm } from "forge-std/Test.sol";
-import { AirdropFactory } from "../contracts/airdrop/AirdropFactory.sol";
-import { StandardAirdrop } from "../contracts/airdrop/StandardAirdrop.sol";
-import { VestingAirdrop } from "../contracts/airdrop/VestingAirdrop.sol";
+import { AirdropFactory } from "../contracts/AirdropFactory.sol";
+import { StandardAirdrop } from "../contracts/StandardAirdrop.sol";
+import { VestingAirdrop } from "../contracts/VestingAirdrop.sol";
 import { LinearVestingStrategy } from "../contracts/airdrop/strategies/LinearVestingStrategy.sol";
 import { AirdropBase } from "../contracts/airdrop/AirdropBase.sol"; // Import needed for error selector
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";

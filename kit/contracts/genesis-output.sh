@@ -176,7 +176,9 @@ process_sol_file() {
 }
 
 # Find all .sol files in the contracts directory and process them
-find contracts -type f -name '*.sol' | while IFS= read -r sol_file; do
+for sol_file in contracts/*.sol; do
+    # Skip if no files found
+    [[ -f "$sol_file" ]] || continue
     process_sol_file "$sol_file"
 done
 
