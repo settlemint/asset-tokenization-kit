@@ -58,12 +58,10 @@ function getTokenDecimals(tokenAddress: Address): i32 {
 }
 
 // Helper function to generate a unique ID for stats data
-function getStatsId(event: ethereum.Event): string {
-  // Generate a unique ID based on transaction hash, log index and a timestamp
-  return event.transaction.hash
-    .concatI32(event.logIndex.toI32())
-    .concatI32(event.block.timestamp.toI32())
-    .toHex();
+function getStatsId(event: ethereum.Event): i64 {
+  // For time-series entities, we need an Int8 (i64) ID
+  // Convert the block number to i64 to use as a unique identifier
+  return event.block.number.toI64();
 }
 
 // Handler for individual Claimed events
@@ -142,7 +140,9 @@ export function handleClaimed(event: Claimed): void {
   // Create AirdropStatsData entry
   let statsId = getStatsId(event);
   let statsData = new AirdropStatsData(statsId);
-  statsData.timestamp = event.block.timestamp;
+  // Convert BigInt timestamp to Timestamp type
+  let timestamp = new Timestamp(event.block.timestamp.toI64());
+  statsData.timestamp = timestamp;
   statsData.airdrop = airdrop.id;
   statsData.airdropType = "Standard";
   statsData.claims = 1;
@@ -248,7 +248,9 @@ function processBatchClaim(
   // Create AirdropStatsData entry
   let statsId = getStatsId(event);
   let statsData = new AirdropStatsData(statsId);
-  statsData.timestamp = event.block.timestamp;
+  // Convert BigInt timestamp to Timestamp type
+  let timestamp = new Timestamp(event.block.timestamp.toI64());
+  statsData.timestamp = timestamp;
   statsData.airdrop = airdrop.id;
   statsData.airdropType = "Standard";
   statsData.claims = 1;
