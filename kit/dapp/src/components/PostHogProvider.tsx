@@ -20,14 +20,19 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       capture_pageview: false, // We capture pageviews manually
       capture_pageleave: true, // Enable pageleave capture
       person_profiles: "always",
+      enable_recording_console_log: true,
     });
     if (session) {
-      posthog.identify(undefined, {
+      posthog.identify(session.user.id, {
         email: session.user.email,
         name: session.user.name,
         role: session.user.role,
         wallet: session.user.wallet,
       });
+      const emailDomain = session.user.email?.split("@")[1];
+      if (emailDomain) {
+        posthog.group("company", emailDomain);
+      }
     }
   }, [session]);
 
