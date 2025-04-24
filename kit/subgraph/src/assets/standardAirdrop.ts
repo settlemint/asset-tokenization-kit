@@ -140,9 +140,8 @@ export function handleClaimed(event: Claimed): void {
   // Create AirdropStatsData entry
   let statsId = getStatsId(event);
   let statsData = new AirdropStatsData(statsId);
-  // Convert BigInt timestamp to Timestamp type
-  let timestamp = new Timestamp(event.block.timestamp.toI64());
-  statsData.timestamp = timestamp;
+  // Use timestamp directly without wrapping in Timestamp constructor
+  statsData.timestamp = event.block.timestamp;
   statsData.airdrop = airdrop.id;
   statsData.airdropType = "Standard";
   statsData.claims = 1;
@@ -248,9 +247,8 @@ function processBatchClaim(
   // Create AirdropStatsData entry
   let statsId = getStatsId(event);
   let statsData = new AirdropStatsData(statsId);
-  // Convert BigInt timestamp to Timestamp type
-  let timestamp = new Timestamp(event.block.timestamp.toI64());
-  statsData.timestamp = timestamp;
+  // Use timestamp directly without wrapping in Timestamp constructor
+  statsData.timestamp = event.block.timestamp;
   statsData.airdrop = airdrop.id;
   statsData.airdropType = "Standard";
   statsData.claims = 1;

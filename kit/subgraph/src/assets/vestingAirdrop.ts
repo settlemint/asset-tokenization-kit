@@ -138,8 +138,7 @@ function updateVestingStats(
   // Create vesting stats
   let statsId = getStatsId(event);
   let vestingStats = new VestingStatsData(statsId);
-  let timestamp = new Timestamp(event.block.timestamp.toI64());
-  vestingStats.timestamp = timestamp;
+  vestingStats.timestamp = event.block.timestamp;
   vestingStats.airdrop = airdrop.id;
   vestingStats.vestedAmount = toDecimals(vestedAmount, decimals);
   vestingStats.vestedAmountExact = vestedAmount;
@@ -230,8 +229,7 @@ export function handleClaimed(event: Claimed): void {
   // Create AirdropStatsData entry
   let statsId = getStatsId(event);
   let statsData = new AirdropStatsData(statsId);
-  let timestamp = new Timestamp(event.block.timestamp.toI64());
-  statsData.timestamp = timestamp;
+  statsData.timestamp = event.block.timestamp;
   statsData.airdrop = airdrop.id;
   statsData.airdropType = "Vesting";
   statsData.claims = 1;
@@ -301,8 +299,7 @@ export function handleBatchClaimed(event: BatchClaimed): void {
   // Create AirdropStatsData entry
   let statsId = getStatsId(event);
   let statsData = new AirdropStatsData(statsId);
-  let timestamp = new Timestamp(event.block.timestamp.toI64());
-  statsData.timestamp = timestamp;
+  statsData.timestamp = event.block.timestamp;
   statsData.airdrop = airdrop.id;
   statsData.airdropType = "Vesting";
   statsData.claims = 1;
