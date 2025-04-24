@@ -223,9 +223,8 @@
       "settings-management": {
         "api": "API",
         "group-title": "Settings",
-        "platform": "Platform",
         "profile": "Profile",
-        "settings": "Settings"
+        "settings": "Settings",
         "platform": "Platform"
       },
       "trade-management": {
