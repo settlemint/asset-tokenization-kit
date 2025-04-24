@@ -81,8 +81,8 @@ function updateDistributionStats(
   // Create AirdropStatsData entry
   let statsId = getStatsId(event);
   let statsData = new AirdropStatsData(statsId);
-  let timestamp = new Timestamp(event.block.timestamp.toI64());
-  statsData.timestamp = timestamp;
+  // Directly assign the timestamp as i64
+  statsData.timestamp = event.block.timestamp.toI64();
   statsData.airdrop = airdrop.id;
   statsData.airdropType = "Push";
 
