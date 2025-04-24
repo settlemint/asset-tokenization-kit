@@ -21,7 +21,9 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       capture_pageleave: true, // Enable pageleave capture
       person_profiles: "always",
     });
+    console.log("posthog initialized", session);
     if (session) {
+      console.log("posthog identify", session);
       posthog.identify(undefined, {
         email: session.user.email,
         name: session.user.name,
