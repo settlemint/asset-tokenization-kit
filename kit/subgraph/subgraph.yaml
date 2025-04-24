@@ -187,11 +187,11 @@ dataSources:
         - AirdropPerformanceSummary
       abis:
         - name: AirdropFactory
-          file: ../contracts/artifacts/contracts/airdrop/AirdropFactory.sol/AirdropFactory.json
+          file: ../contracts/artifacts/contracts/AirdropFactory.sol/AirdropFactory.json
         - name: StandardAirdrop
-          file: ../contracts/artifacts/contracts/airdrop/StandardAirdrop.sol/StandardAirdrop.json
+          file: ../contracts/artifacts/contracts/StandardAirdrop.sol/StandardAirdrop.json
         - name: VestingAirdrop
-          file: ../contracts/artifacts/contracts/airdrop/VestingAirdrop.sol/VestingAirdrop.json
+          file: ../contracts/artifacts/contracts/VestingAirdrop.sol/VestingAirdrop.json
         - name: LinearVestingStrategy
           file: ../contracts/artifacts/contracts/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
       eventHandlers:
@@ -724,7 +724,7 @@ templates:
         - AirdropPerformanceSummary
       abis:
         - name: StandardAirdrop
-          file: ../contracts/artifacts/contracts/airdrop/StandardAirdrop.sol/StandardAirdrop.json
+          file: ../contracts/artifacts/contracts/StandardAirdrop.sol/StandardAirdrop.json
       eventHandlers:
         - event: Claimed(indexed address,uint256)
           handler: handleClaimed
@@ -758,9 +758,9 @@ templates:
         - AirdropPerformanceSummary
       abis:
         - name: VestingAirdrop
-          file: ../contracts/artifacts/contracts/airdrop/VestingAirdrop.sol/VestingAirdrop.json
+          file: ../contracts/artifacts/contracts/VestingAirdrop.sol/VestingAirdrop.json
         - name: LinearVestingStrategy
-          file: ../contracts/artifacts/contracts/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
+          file: ../contracts/artifacts/contracts/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
       eventHandlers:
         - event: Claimed(indexed address,uint256)
           handler: handleClaimed
@@ -790,7 +790,7 @@ templates:
         - AirdropPerformanceSummary
       abis:
         - name: PushAirdrop
-          file: ../contracts/artifacts/contracts/airdrop/PushAirdrop.sol/PushAirdrop.json
+          file: ../contracts/artifacts/contracts/PushAirdrop.sol/PushAirdrop.json
       eventHandlers:
         - event: TokensDistributed(indexed address,uint256)
           handler: handleTokensDistributed
