@@ -700,7 +700,8 @@
     "user-dropdown": {
       "documentation": "ドキュメント",
       "logout": "ログアウト",
-      "pending-transactions": "保留中のトランザクション"
+      "pending-transactions": "保留中のトランザクション",
+      "profile": "プロフィールを管理"
     },
     "modeswitch": {
       "assets": "資産管理",

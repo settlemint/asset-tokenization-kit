@@ -700,7 +700,8 @@
     "user-dropdown": {
       "documentation": "التوثيق",
       "logout": "تسجيل الخروج",
-      "pending-transactions": "المعاملات المعلقة"
+      "pending-transactions": "المعاملات المعلقة",
+      "profile": "إدارة الملف الشخصي"
     },
     "modeswitch": {
       "assets": "إدارة الأصول",

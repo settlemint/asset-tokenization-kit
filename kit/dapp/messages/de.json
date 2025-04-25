@@ -700,7 +700,8 @@
     "user-dropdown": {
       "documentation": "Dokumentation",
       "logout": "Abmelden",
-      "pending-transactions": "Ausstehende Transaktionen"
+      "pending-transactions": "Ausstehende Transaktionen",
+      "profile": "Profil verwalten"
     },
     "modeswitch": {
       "assets": "Asset-Verwaltung",
