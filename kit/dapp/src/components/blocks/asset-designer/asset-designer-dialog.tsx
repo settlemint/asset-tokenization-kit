@@ -1481,20 +1481,20 @@ export function AssetDesignerDialog({
 
                   return (
                     <div key={step} className="relative py-2">
-                      {/* Vertical line - Conditionally render */}
+                      {/* Vertical line - Conditionally render with lower z-index */}
                       {index < stepsOrder.length - 1 && (
-                        <div className="absolute left-[1.5rem] top-[1.4rem] h-[calc(100%+0.5rem)] w-0 border-l-2 border-dashed border-slate-300 z-0"></div>
+                        <div className="absolute left-[1.5rem] top-[1.4rem] h-[calc(100%+0.5rem)] w-0 border-l-2 border-dashed border-slate-300 z-10"></div>
                       )}
 
                       <button
                         type="button"
                         className={cn(
-                          "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-10",
+                          "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-20", // Ensure button itself has z-20
                           isCurrent
-                            ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" // Active state styles (though background might not change)
-                            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground", // Inactive state styles
-                          finalDisabled && "cursor-not-allowed", // Disabled cursor
-                          !isCurrent && "text-muted-foreground" // Muted text for inactive steps (applied to button text)
+                            ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                          finalDisabled && "cursor-not-allowed",
+                          !isCurrent && "text-muted-foreground"
                         )}
                         onClick={() => !finalDisabled && setCurrentStep(step)}
                         disabled={finalDisabled}
@@ -1502,15 +1502,73 @@ export function AssetDesignerDialog({
                         <div className="flex items-center space-x-3">
                           <div
                             className={cn(
-                              "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium bg-sidebar z-20 relative",
-                              isCurrent
-                                ? "border-primary font-bold" // Active indicator
-                                : "border-sidebar-border", // Inactive indicator border
-                              isCompleted &&
-                                "bg-primary text-primary-foreground" // Completed indicator
+                              "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 relative", // Icon container z-index > line
+                              // Conditional Size:
+                              isCompleted ? "h-6 w-6" : "h-7 w-7",
+                              // Add bg-sidebar for current/inactive states to cover the line
+                              isCompleted
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : isCurrent
+                                  ? "border-none text-primary bg-sidebar"
+                                  : "border-none text-muted-foreground bg-sidebar"
                             )}
                           >
-                            {isCompleted ? "✓" : index + 1}
+                            {/* Conditional Icon Rendering with adjusted sizes */}
+                            {isCompleted ? (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M20 6 9 17l-5-5" />
+                              </svg>
+                            ) : isCurrent ? (
+                              <svg
+                                width="18" // Increased size
+                                height="18" // Increased size
+                                viewBox="0 0 16 16"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="text-current"
+                              >
+                                <circle
+                                  cx="8"
+                                  cy="8"
+                                  r="7"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                />
+                                <circle
+                                  cx="8"
+                                  cy="8"
+                                  r="3"
+                                  fill="currentColor"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                width="18" // Increased size
+                                height="18" // Increased size
+                                viewBox="0 0 16 16"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="text-current"
+                              >
+                                <circle
+                                  cx="8"
+                                  cy="8"
+                                  r="7"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                />
+                              </svg>
+                            )}
                           </div>
                           <span
                             className={cn(
