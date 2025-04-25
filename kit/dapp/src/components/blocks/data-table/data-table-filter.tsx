@@ -43,7 +43,7 @@ import { cn } from "@/lib/utils";
 import { getDateLocale } from "@/lib/utils/date";
 import type { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { formatDate, isEqual } from "date-fns";
-import { ArrowRight, Ellipsis, Filter, FilterXIcon, X } from "lucide-react";
+import { ArrowRight, Ellipsis, Filter, X } from "lucide-react";
 import { useLocale, type Locale } from "next-intl";
 import {
   cloneElement,
@@ -61,10 +61,7 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   if (isMobile) {
     return (
       <div className="flex w-full items-start justify-between gap-2">
-        <div className="flex gap-1">
-          <TableFilter table={table} />
-          <TableFilterActions table={table} />
-        </div>
+        <TableFilter table={table} />
         <DataTableFilterMobileContainer>
           <PropertyFilterList table={table} />
         </DataTableFilterMobileContainer>
@@ -78,7 +75,6 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
         <TableFilter table={table} />
         <PropertyFilterList table={table} />
       </div>
-      <TableFilterActions table={table} />
     </div>
   );
 }
@@ -151,26 +147,6 @@ export function DataTableFilterMobileContainer({
         <div className="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none bg-gradient-to-l from-background to-transparent animate-in fade-in-0 " />
       )}
     </div>
-  );
-}
-
-export function TableFilterActions<TData>({ table }: { table: Table<TData> }) {
-  const hasFilters = table.getState().columnFilters.length > 0;
-
-  function clearFilters() {
-    table.setColumnFilters([]);
-    table.setGlobalFilter("");
-  }
-
-  return (
-    <Button
-      className={cn("h-8 !px-2", !hasFilters && "hidden")}
-      variant="destructive"
-      onClick={clearFilters}
-    >
-      <FilterXIcon />
-      <span className="hidden md:block">Clear</span>
-    </Button>
   );
 }
 
