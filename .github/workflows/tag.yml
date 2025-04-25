@@ -159,7 +159,7 @@ jobs:
       #     command: platform update custom-deployment ${{ env.VERSION }} --wait
 
   create:
-    name: NPM Package for settlemint create
+    name: NPM Package and Helm Chart for settlemint create
     runs-on: namespace-profile-atk
     steps:
       - name: Setup 1Password
@@ -172,57 +172,13 @@ jobs:
         env:
           NPM_TOKEN: op://platform/npmjs/credential
           PAT_TOKEN: op://platform/github-commit-pat/credential
+          HARBOR_USER: op://platform/harbor/username
+          HARBOR_PASS: op://platform/harbor/password
 
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
         with:
           token: ${{ env.PAT_TOKEN }}
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: .bun-version
-
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v5
-
-      - name: Update package versions
-        id: package-version
-        run: bash .github/scripts/update-version.sh
-
-      - name: Login to npm
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ env.NPM_TOKEN }}" >> ~/.npmrc
-
-      - name: Publish NPM Package
-        continue-on-error: true
-        run: |
-          bun publish --tag ${{ env.TAG }} --access public
-
-      - name: Auto-commit updated package versions
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: update package versions [skip ci]"
-          branch: main
-          file_pattern: "package.json"
-
-  helm:
-    name: Helm Chart
-    runs-on: namespace-profile-atk
-    steps:
-      - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v7
-
-      - name: Setup 1Password
-        uses: 1password/load-secrets-action/configure@v2
-        with:
-          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-      - name: Load secrets
-        uses: 1password/load-secrets-action@v2
-        env:
-          HARBOR_USER: op://platform/harbor/username
-          HARBOR_PASS: op://platform/harbor/password
 
       - name: Login to Harbor
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
@@ -258,6 +214,22 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: .bun-version
+
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v5
+
+      - name: Update package versions
+        id: package-version
+        run: bash .github/scripts/update-version.sh
+
+      - name: Login to npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ env.NPM_TOKEN }}" >> ~/.npmrc
+
+      - name: Publish NPM Package
+        continue-on-error: true
+        run: |
+          bun publish --tag ${{ env.TAG }} --access public
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -304,8 +276,9 @@ jobs:
         run: bunx turbo genesis abi-output helm:push
 
       - name: Auto-commit updated package versions
-        uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: update Chart.yaml versions [skip ci]"
+          commit_message: "chore: update package versions [skip ci]"
           branch: main
-          file_pattern: "kit/charts/atk/Chart.yaml"
+          file_pattern: "package.json kit/charts/atk/Chart.yaml"
+
