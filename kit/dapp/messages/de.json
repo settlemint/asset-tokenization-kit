@@ -1723,7 +1723,7 @@
             "title": {
               "bonds": "Anleihen einlösen",
               "equities": "Angebotsmenge der Anteile reduzieren",
-              "funds": "Anleihen einlösen",
+              "funds": "Fondsanteile verbrennen",
               "stablecoins": "Die Menge reduzieren",
               "tokenizeddeposits": "Angebotsmenge der tokenisierten Einlagen reduzieren",
               "deposits": "Einzahlungsangebot reduzieren",
@@ -1744,7 +1744,7 @@
               "bonds": "Anleihen ausgeben",
               "cryptocurrencies": "Assets prägen",
               "equities": "Neue Anteile ausgeben",
-              "funds": "Anleihen ausgeben",
+              "funds": "Neue Fondsanteile ausgeben",
               "stablecoins": "Die Menge erhöhen",
               "tokenizeddeposits": "Die Menge erhöhen",
               "deposits": "Das Angebot erhöhen"

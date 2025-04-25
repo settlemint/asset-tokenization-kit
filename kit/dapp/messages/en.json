@@ -1545,7 +1545,7 @@
               "cryptocurrencies": "Decrease supply",
               "deposits": "Reduce deposit supply",
               "equities": "Reduce share supply",
-              "funds": "Redeem bonds",
+              "funds": "Burn fund shares",
               "stablecoins": "Decrease the supply"
             }
           },
@@ -1563,7 +1563,7 @@
               "cryptocurrencies": "Mint assets",
               "deposits": "Increase the supply",
               "equities": "Issue new shares",
-              "funds": "Issue bonds",
+              "funds": "Issue new fund shares",
               "stablecoins": "Increase the supply"
             }
           },
