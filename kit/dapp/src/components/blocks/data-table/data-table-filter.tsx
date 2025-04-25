@@ -163,7 +163,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
     .getAllColumns()
     .filter((column) => column.getCanFilter());
 
-  const hasFilters = table.getState().columnFilters.length > 0;
+  const hasFilters = properties.length > 0;
 
   useEffect(() => {
     if (property && inputRef) {
@@ -173,7 +173,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
   }, [property]);
 
   useEffect(() => {
-    if (!open) setTimeout(() => setValue(""), 150);
+    if (!open) setValue("");
   }, [open]);
 
   const content = useMemo(
@@ -210,21 +210,20 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
     [property, column, columnMeta, value, table, properties]
   );
 
+  if (!hasFilters) return null;
+
   return (
     <Popover
       open={open}
       onOpenChange={async (value) => {
         setOpen(value);
-        if (!value) setTimeout(() => setProperty(undefined), 100);
+        if (!value) setProperty(undefined);
       }}
     >
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn("h-8", hasFilters && "w-fit !px-2")}
-        >
+        <Button variant="outline" className="h-8 w-fit px-2">
           <Filter className="size-4" />
-          {!hasFilters && <span>Filter</span>}
+          <span className="hidden md:block">Filter</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
