@@ -551,7 +551,7 @@ function PropertyFilterOptionOperatorMenu<TData>({
   const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      operator: operator,
+      operator,
     }));
     console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
@@ -584,7 +584,7 @@ function PropertyFilterMultiOptionOperatorMenu<TData>({
   const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      operator: operator,
+      operator,
     }));
     console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
@@ -617,7 +617,7 @@ function PropertyFilterDateOperatorMenu<TData>({
   const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      operator: operator,
+      operator,
     }));
     console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
@@ -650,7 +650,7 @@ export function PropertyFilterTextOperatorMenu<TData>({
   const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      operator: operator,
+      operator,
     }));
     console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
@@ -679,7 +679,7 @@ function PropertyFilterNumberOperatorMenu<TData>({
   const changeOperator = (operator: string) => {
     column.setFilterValue((old: FilterValue<"number", TData>) => ({
       ...old,
-      operator: operator,
+      operator,
     }));
     console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
