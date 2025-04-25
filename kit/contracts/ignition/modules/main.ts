@@ -1,4 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import SMARTModule from "./../../dependencies/@smartprotocol-v0.0.1/ignition/modules/main";
 import AirdropFactoryModule from "./airdrop-factory";
 import BondsModule from "./bonds";
 import CryptoCurrenciesModule from "./crypto-currencies";
@@ -13,6 +14,8 @@ import StableCoinsModule from "./stable-coins";
 
 const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
   m.useModule(ForwarderModule);
+  const smart = m.useModule(SMARTModule);
+
   const { ustb } = m.useModule(BondsModule);
   const { btc } = m.useModule(CryptoCurrenciesModule);
   const { usdc } = m.useModule(StableCoinsModule);
@@ -25,6 +28,7 @@ const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
   const { airdropFactory } = m.useModule(AirdropFactoryModule);
 
   return {
+    ...smart,
     ustb,
     btc,
     usdc,
