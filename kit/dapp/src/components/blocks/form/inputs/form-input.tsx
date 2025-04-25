@@ -94,6 +94,8 @@ export function FormInput<T extends FieldValues>({
         },
       }}
       render={({ field, fieldState }) => {
+        const { alphanumeric: _, ...inputProps } = props;
+
         return (
           <FormItem className="flex flex-col space-y-1">
             {label && (
@@ -104,7 +106,7 @@ export function FormInput<T extends FieldValues>({
               >
                 <span>
                   {label}
-                  {props.required && (
+                  {inputProps.required && (
                     <span className="text-destructive">*</span>
                   )}
                 </span>
@@ -119,19 +121,21 @@ export function FormInput<T extends FieldValues>({
               >
                 <Input
                   {...register(field.name, {
-                    valueAsNumber: props.type === "number",
+                    valueAsNumber: inputProps.type === "number",
                   })}
                   {...field}
-                  {...props}
+                  {...inputProps}
                   className={cn(
                     className,
                     postfix &&
                       "-mr-px rounded-r-none shadow-none focus:mr-[1px]"
                   )}
-                  type={props.type}
-                  value={props.defaultValue ? undefined : (field.value ?? "")}
+                  type={inputProps.type}
+                  value={
+                    inputProps.defaultValue ? undefined : (field.value ?? "")
+                  }
                   onChange={async (evt: ChangeEvent<HTMLInputElement>) => {
-                    if (props.type === "number") {
+                    if (inputProps.type === "number") {
                       const value = evt.target.value;
 
                       if (value === "") {
@@ -155,14 +159,14 @@ export function FormInput<T extends FieldValues>({
                       const numValue = parseFloat(value);
                       if (!isNaN(numValue)) {
                         if (
-                          typeof props.max === "number" &&
-                          numValue > props.max
+                          typeof inputProps.max === "number" &&
+                          numValue > inputProps.max
                         ) {
                           return;
                         }
                         if (
-                          typeof props.min === "number" &&
-                          numValue < props.min
+                          typeof inputProps.min === "number" &&
+                          numValue < inputProps.min
                         ) {
                           return;
                         }
@@ -173,14 +177,14 @@ export function FormInput<T extends FieldValues>({
                       await form.trigger(field.name);
                     } else {
                       field.onChange(evt);
-                      if (!props.required && evt.target.value === "") {
+                      if (!inputProps.required && evt.target.value === "") {
                         form.clearErrors(field.name);
                       } else if (form.formState.errors[field.name]) {
                         await form.trigger(field.name);
                       }
                     }
                   }}
-                  inputMode={props.type === "number" ? "decimal" : "text"}
+                  inputMode={inputProps.type === "number" ? "decimal" : "text"}
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,

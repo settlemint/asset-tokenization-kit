@@ -34,7 +34,7 @@ export function Basics() {
             name="symbol"
             label={t("parameters.common.symbol-label")}
             placeholder={t("parameters.bonds.symbol-placeholder")}
-            textOnly
+            alphanumeric
             required
             maxLength={10}
           />

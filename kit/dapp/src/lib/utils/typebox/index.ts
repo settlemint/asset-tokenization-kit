@@ -117,7 +117,7 @@ export function safeParse<T extends TSchema>(
     console.error(redactSensitiveFields(value));
 
     console.error("\n❌ Error Details:");
-    errors.map((error) => {
+    errors.forEach((error) => {
       console.error(
         `${error.path}: ${error.message} (${JSON.stringify(error.value)} = ${typeof error.value})`
       );
