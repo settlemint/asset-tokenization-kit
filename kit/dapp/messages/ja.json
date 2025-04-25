@@ -1723,7 +1723,7 @@
             "title": {
               "bonds": "債券を償還する",
               "equities": "株式供給を減少させる",
-              "funds": "債券を償還する",
+              "funds": "ファンドの株式を焼却する",
               "stablecoins": "供給を減少させる",
               "tokenizeddeposits": "トークン化された預金供給を減少させる",
               "deposits": "預金供給を減少させる",
@@ -1744,7 +1744,7 @@
               "bonds": "債券を発行する",
               "cryptocurrencies": "資産を発行",
               "equities": "新しい株式を発行する",
-              "funds": "債券を発行する",
+              "funds": "新しいファンドの株式を発行する",
               "stablecoins": "供給を増加させる",
               "tokenizeddeposits": "供給を増加させる",
               "deposits": "供給を増加させる"
