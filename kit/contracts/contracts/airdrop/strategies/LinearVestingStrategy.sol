@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.27;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {IClaimStrategy} from "../interfaces/IClaimStrategy.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import {ERC2771Context} from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { IClaimStrategy } from "../interfaces/IClaimStrategy.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
 /**
  * @title LinearVestingStrategy
@@ -14,12 +14,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
  * It relies on the Airdrop contract calling `recordClaim` to keep state synchronized.
  * Now includes ERC2771 support for meta-transactions (primarily for Ownable).
  */
-contract LinearVestingStrategy is
-    IClaimStrategy,
-    Ownable,
-    ReentrancyGuard,
-    ERC2771Context
-{
+contract LinearVestingStrategy is IClaimStrategy, Ownable, ReentrancyGuard, ERC2771Context {
     // Vesting parameters
     uint256 public immutable vestingDuration;
     uint256 public immutable cliffDuration;
@@ -36,11 +31,7 @@ contract LinearVestingStrategy is
     mapping(address => VestingData) public vestingData;
 
     // Events
-    event VestingInitialized(
-        address indexed account,
-        uint256 totalAmount,
-        uint256 vestingStart
-    );
+    event VestingInitialized(address indexed account, uint256 totalAmount, uint256 vestingStart);
 
     // Removed VestingClaimed as strategy doesn't reliably track claims anymore
 
@@ -56,13 +47,13 @@ contract LinearVestingStrategy is
         uint256 _cliffDuration,
         address initialOwner,
         address trustedForwarder
-    ) Ownable(initialOwner) ERC2771Context(trustedForwarder) {
+    )
+        Ownable(initialOwner)
+        ERC2771Context(trustedForwarder)
+    {
         require(_vestingDuration > 0, "Vesting duration must be positive");
         // Allow cliffDuration == 0
-        require(
-            _cliffDuration <= _vestingDuration,
-            "Cliff cannot exceed duration"
-        );
+        require(_cliffDuration <= _vestingDuration, "Cliff cannot exceed duration");
         vestingDuration = _vestingDuration;
         cliffDuration = _cliffDuration;
     }
@@ -75,10 +66,7 @@ contract LinearVestingStrategy is
      * @param account The address for whom the claim was made
      * @param amountClaimed The amount of tokens successfully transferred
      */
-    function recordClaim(
-        address account,
-        uint256 amountClaimed
-    ) external override nonReentrant {
+    function recordClaim(address account, uint256 amountClaimed) external override nonReentrant {
         VestingData storage data = vestingData[account];
         // Only record if initialized and amount is positive
         if (data.initialized && amountClaimed > 0) {
@@ -93,9 +81,7 @@ contract LinearVestingStrategy is
      * @param account The address to check
      * @return eligible Whether the account might be able to claim more tokens.
      */
-    function isEligibleToClaim(
-        address account
-    ) external view override returns (bool eligible) {
+    function isEligibleToClaim(address account) external view override returns (bool eligible) {
         VestingData storage data = vestingData[account];
         // Must be initialized to be eligible
         if (!data.initialized) {
@@ -119,7 +105,12 @@ contract LinearVestingStrategy is
         uint256 amount,
         uint256 startTimestamp,
         uint256 alreadyClaimed
-    ) external view override returns (uint256 claimableAmount) {
+    )
+        external
+        view
+        override
+        returns (uint256 claimableAmount)
+    {
         // Suppress unused variable warning
         account;
 
@@ -148,9 +139,7 @@ contract LinearVestingStrategy is
         }
 
         // Return claimable amount (vested for this index minus already claimed for this index)
-        uint256 claimableNow = vestedAmountForIndex > alreadyClaimed
-            ? vestedAmountForIndex - alreadyClaimed
-            : 0;
+        uint256 claimableNow = vestedAmountForIndex > alreadyClaimed ? vestedAmountForIndex - alreadyClaimed : 0;
 
         return claimableNow;
     }
@@ -163,10 +152,7 @@ contract LinearVestingStrategy is
      * @param amount Total allocation amount for the index being initialized
      * @return initialAmount Amount to transfer immediately (if cliff duration is 0).
      */
-    function initializeVesting(
-        address account,
-        uint256 amount
-    ) external override returns (uint256 initialAmount) {
+    function initializeVesting(address account, uint256 amount) external override returns (uint256 initialAmount) {
         VestingData storage data = vestingData[account];
         initialAmount = 0;
 
@@ -177,11 +163,7 @@ contract LinearVestingStrategy is
             data.claimedAmount = 0; // Initialize claimed amount to zero
             data.totalAmount = amount; // Start aggregating total amount
 
-            emit VestingInitialized(
-                account,
-                data.totalAmount,
-                data.vestingStart
-            );
+            emit VestingInitialized(account, data.totalAmount, data.vestingStart);
 
             // If there's no cliff, calculate initial release based on 1 second elapsed
             if (cliffDuration == 0 && vestingDuration > 0) {
@@ -201,11 +183,7 @@ contract LinearVestingStrategy is
             // just add to the total amount. Start time and claimed amount remain.
             data.totalAmount += amount;
             // Emit event again to signal updated total amount (optional)
-            emit VestingInitialized(
-                account,
-                data.totalAmount,
-                data.vestingStart
-            );
+            emit VestingInitialized(account, data.totalAmount, data.vestingStart);
 
             // Recalculate initial amount for zero-cliff case based on the *new total*
             // This handles batching correctly if cliff is zero.
@@ -214,8 +192,7 @@ contract LinearVestingStrategy is
                 // For robustness on the exact init block, use at least 1 sec
                 if (timeElapsed == 0) timeElapsed = 1;
 
-                uint256 totalVestedImmediately = (data.totalAmount *
-                    timeElapsed) / vestingDuration;
+                uint256 totalVestedImmediately = (data.totalAmount * timeElapsed) / vestingDuration;
 
                 if (totalVestedImmediately > data.totalAmount) {
                     totalVestedImmediately = data.totalAmount;
@@ -223,10 +200,9 @@ contract LinearVestingStrategy is
 
                 // How much *newly* vested amount needs to be released now?
                 if (totalVestedImmediately > data.claimedAmount) {
-                    uint256 newlyClaimable = totalVestedImmediately -
-                        data.claimedAmount;
+                    uint256 newlyClaimable = totalVestedImmediately - data.claimedAmount;
                     initialAmount = newlyClaimable; // This call returns the newly claimable part
-                    // DO NOT update claimedAmount here. `recordClaim` handles it.
+                        // DO NOT update claimedAmount here. `recordClaim` handles it.
                 } else {
                     initialAmount = 0; // Nothing new claimable right now
                 }
@@ -239,7 +215,7 @@ contract LinearVestingStrategy is
      * @notice Finalize batch processing. Called by VestingAirdrop.
      * @dev No strategy-specific state needs cleanup in this simplified version.
      */
-    function finalizeBatch(address /* account */) external pure override {
+    function finalizeBatch(address /* account */ ) external pure override {
         // Intentionally empty in this strategy implementation
     }
 
@@ -262,9 +238,7 @@ contract LinearVestingStrategy is
      * @return startTimestamp The vesting start timestamp
      * @return initialized Whether vesting has been initialized
      */
-    function getVestingStatus(
-        address account
-    )
+    function getVestingStatus(address account)
         external
         view
         returns (
@@ -288,9 +262,7 @@ contract LinearVestingStrategy is
 
         // Calculate total vested based on strategy's state
         vestedAmount = _calculateVestedAmount(account);
-        claimableAmount = vestedAmount > claimedAmount
-            ? vestedAmount - claimedAmount
-            : 0;
+        claimableAmount = vestedAmount > claimedAmount ? vestedAmount - claimedAmount : 0;
     }
 
     /**
@@ -299,9 +271,7 @@ contract LinearVestingStrategy is
      * @param account The account to calculate for
      * @return amount The total vested amount calculated based on strategy state.
      */
-    function _calculateVestedAmount(
-        address account
-    ) internal view returns (uint256 amount) {
+    function _calculateVestedAmount(address account) internal view returns (uint256 amount) {
         VestingData storage data = vestingData[account];
 
         // If not initialized or total amount is 0
@@ -338,39 +308,21 @@ contract LinearVestingStrategy is
     /**
      * @dev Overrides the underlying `_msgSender` logic to support ERC2771.
      */
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (address sender)
-    {
+    function _msgSender() internal view virtual override(Context, ERC2771Context) returns (address sender) {
         return ERC2771Context._msgSender();
     }
 
     /**
      * @dev Overrides the underlying `_msgData` logic to support ERC2771.
      */
-    function _msgData()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (bytes calldata data)
-    {
+    function _msgData() internal view virtual override(Context, ERC2771Context) returns (bytes calldata data) {
         return ERC2771Context._msgData();
     }
 
     /**
      * @dev Overrides the underlying `_contextSuffixLength` logic for ERC2771 compatibility.
      */
-    function _contextSuffixLength()
-        internal
-        view
-        virtual
-        override(Context, ERC2771Context)
-        returns (uint256)
-    {
+    function _contextSuffixLength() internal view virtual override(Context, ERC2771Context) returns (uint256) {
         return ERC2771Context._contextSuffixLength();
     }
 }
