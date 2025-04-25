@@ -1,7 +1,9 @@
+import NavInset from "@/components/layout/nav-inset";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
+import { PlatformSidebar } from "../_components/sidebar/platform-sidebar";
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{ locale: Locale }>;
@@ -22,5 +24,10 @@ export async function generateMetadata({
 }
 
 export default function PlatformLayout({ children }: LayoutProps) {
-  return <>{children}</>;
+  return (
+    <>
+      <PlatformSidebar />
+      <NavInset>{children}</NavInset>
+    </>
+  );
 }

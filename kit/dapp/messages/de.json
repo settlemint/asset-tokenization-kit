@@ -60,7 +60,8 @@
         "description": "Willkommen im Dashboard",
         "latest-events-heading": "Neueste Ereignisse",
         "stats-heading": "Statistiken",
-        "title": "Dashboard"
+        "title": "Dashboard",
+        "platform-management": "Plattformverwaltung"
       },
       "table": {
         "latest-events": {
@@ -133,8 +134,9 @@
       },
       "platform-management": {
         "group-title": "Plattformverwaltung",
-        "settings": "Plattform",
-        "user-management": "Benutzerverwaltung"
+        "settings": "Einstellungen",
+        "user-management": "Benutzerverwaltung",
+        "api": "API"
       },
       "portfolio-management": {
         "dashboard": "Dashboard",
@@ -699,6 +701,12 @@
       "documentation": "Dokumentation",
       "logout": "Abmelden",
       "pending-transactions": "Ausstehende Transaktionen"
+    },
+    "modeswitch": {
+      "assets": "Asset-Verwaltung",
+      "label": "Betriebsmodus",
+      "platform": "Plattformverwaltung",
+      "portfolio": "Mein Portfolio"
     }
   },
   "paused": "Pausiert",
@@ -1715,7 +1723,7 @@
             "title": {
               "bonds": "Anleihen einlösen",
               "equities": "Angebotsmenge der Anteile reduzieren",
-              "funds": "Anleihen einlösen",
+              "funds": "Fondsanteile verbrennen",
               "stablecoins": "Die Menge reduzieren",
               "tokenizeddeposits": "Angebotsmenge der tokenisierten Einlagen reduzieren",
               "deposits": "Einzahlungsangebot reduzieren",
@@ -1736,7 +1744,7 @@
               "bonds": "Anleihen ausgeben",
               "cryptocurrencies": "Assets prägen",
               "equities": "Neue Anteile ausgeben",
-              "funds": "Anleihen ausgeben",
+              "funds": "Neue Fondsanteile ausgeben",
               "stablecoins": "Die Menge erhöhen",
               "tokenizeddeposits": "Die Menge erhöhen",
               "deposits": "Das Angebot erhöhen"

@@ -60,7 +60,8 @@
         "description": "مرحبًا بك في لوحة التحكم",
         "latest-events-heading": "أحدث الأحداث",
         "stats-heading": "الإحصائيات",
-        "title": "لوحة التحكم"
+        "title": "لوحة التحكم",
+        "platform-management": "إدارة المنصة"
       },
       "table": {
         "latest-events": {
@@ -133,8 +134,9 @@
       },
       "platform-management": {
         "group-title": "إدارة المنصة",
-        "settings": "المنصة",
-        "user-management": "إدارة المستخدمين"
+        "settings": "الإعدادات",
+        "user-management": "إدارة المستخدمين",
+        "api": "واجهة برمجة التطبيقات"
       },
       "portfolio-management": {
         "dashboard": "لوحة التحكم",
@@ -699,6 +701,12 @@
       "documentation": "التوثيق",
       "logout": "تسجيل الخروج",
       "pending-transactions": "المعاملات المعلقة"
+    },
+    "modeswitch": {
+      "assets": "إدارة الأصول",
+      "label": "وضع التشغيل",
+      "platform": "إدارة المنصة",
+      "portfolio": "محفظتي"
     }
   },
   "paused": "مُعلق",
@@ -1715,7 +1723,7 @@
             "title": {
               "bonds": "استرداد السندات",
               "equities": "تقليل عرض الأسهم",
-              "funds": "استرداد السندات",
+              "funds": "حرق أسهم الصندوق",
               "stablecoins": "تقليل العرض",
               "tokenizeddeposits": "تقليل عرض الودائع المرمزة",
               "deposits": "تقليل عرض الإيداع",
@@ -1736,7 +1744,7 @@
               "bonds": "إصدار السندات",
               "cryptocurrencies": "سك الأصول",
               "equities": "إصدار أسهم جديدة",
-              "funds": "إصدار السندات",
+              "funds": "إصدار أسهم جديدة للصندوق",
               "stablecoins": "زيادة العرض",
               "tokenizeddeposits": "زيادة العرض",
               "deposits": "زيادة العرض"
