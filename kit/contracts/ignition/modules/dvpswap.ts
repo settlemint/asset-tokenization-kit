@@ -1,44 +1,43 @@
 // SPDX-License-Identifier: MIT
 // SettleMint.com
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-// Import ethers correctly for keccak256
+// Remove unused ethers utils import
+// import { utils } from "ethers"; 
 import DvPSwapFactoryModule from "./dvpswap-factory";
 
 const DvPSwapModule = buildModule("DvPSwapModule", (m) => {
   // Get the deployer address which will be the owner
   const deployer = m.getAccount(0);
 
-  // Use the DvPSwapFactory module
   const { dvpSwapFactory } = m.useModule(DvPSwapFactoryModule);
 
-  // Create a DvPSwap contract using the factory with a name parameter
-  // This follows the pattern used by other factories in the codebase
+  // Create a DvPSwap instance using the factory
   const createDvPSwap = m.call(
     dvpSwapFactory,
     "create",
-    ["DvPSwap Exchange"], // Pass a name parameter instead of a salt
+    ["DvPSwap Exchange"], // The factory's create function takes a name
     {
       id: "createDvPSwap",
       from: deployer,
     }
   );
 
-  // Get the DvPSwap address from the creation event
+  // Get the DvPSwap address from the creation event emitted by the factory
   const readDvPSwapAddress = m.readEventArgument(
     createDvPSwap,
-    "DvPSwapContractCreated",
-    "dvpSwapContract",
+    "DvPSwapCreated", // Correct event name from DvPSwapFactory.sol
+    "token", // Correct argument name from the event
     {
       id: "readDvPSwapAddress",
     }
   );
+  const dvpSwap = m.contractAt("DvPSwap", readDvPSwapAddress, { id: "dvpSwap" });
 
-  // Get the DvPSwap contract at the created address
-  const dvpSwap = m.contractAt("DvPSwap", readDvPSwapAddress, {
-    id: "dvpSwap",
-  });
+  // No additional role setup needed here.
+  // DEFAULT_ADMIN_ROLE is granted by the factory during creation.
+  // SUPPLY_MANAGEMENT_ROLE and USER_MANAGEMENT_ROLE are not used by DvPSwap.sol.
 
-  return { dvpSwap, dvpSwapFactory };
+  return { dvpSwap };
 });
 
 export default DvPSwapModule; 

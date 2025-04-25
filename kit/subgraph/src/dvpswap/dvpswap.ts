@@ -1,334 +1,497 @@
-import { log } from "@graphprotocol/graph-ts";
-import { DvPSwapClaimedEvent, DvPSwapCreatedEvent, DvPSwapRefundedEvent, DvPSwapStatusChangedEvent, TokensLockedEvent } from "../../generated/schema";
-import { DvPSwapClaimed, DvPSwapCreated, DvPSwapRefunded, DvPSwapStatusChanged, TokensLocked } from "../../generated/templates/DvPSwap/DvPSwap";
+import {
+  BigInt,
+  log
+} from "@graphprotocol/graph-ts";
+import {
+  DvPSwapApproval,
+  DvPSwapApprovalRevokedEvent,
+  DvPSwapApprovedEvent,
+  DvPSwapAutoExecutionFailedEvent,
+  DvPSwapCreatedEvent,
+  DvPSwapExecutedEvent,
+  DvPSwapExpiredEvent,
+  DvPSwapStatusChangedEvent,
+  DvPSwapTransaction,
+  Flow
+} from "../../generated/schema";
+import {
+  DvPSwapApprovalRevoked,
+  DvPSwapApproved,
+  DvPSwapAutoExecutionFailed,
+  DvPSwapCreated,
+  DvPSwapExecuted,
+  DvPSwapExpiredEvent as DvPSwapExpiredContractEvent,
+  DvPSwapStatusChanged,
+  FlowAdded,
+  Paused,
+  RoleAdminChanged,
+  RoleGranted,
+  RoleRevoked,
+  Unpaused
+} from "../../generated/templates/DvPSwap/DvPSwap";
 import { accountActivityEvent } from "../assets/events/accountactivity";
+import { pausedEvent } from "../assets/events/paused";
+import { roleAdminChangedEvent } from "../assets/events/roleadminchanged";
+import { roleGrantedEvent } from "../assets/events/rolegranted";
+import { roleRevokedEvent } from "../assets/events/rolerevoked";
+import { unpausedEvent } from "../assets/events/unpaused";
 import { fetchAccount } from "../fetch/account";
-import { fetchDvPSwap, fetchDvPSwapEntity } from "../fetch/dvpswap";
-import { toDecimals } from "../utils/decimals";
-import { AssetType, DvPSwapStatusType, EventName } from "../utils/enums";
+import { fetchDvPSwap } from "../fetch/dvpswap";
+import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
-import { newDvPSwapStatsData } from "./stats";
 
-// Handler for DvPSwapCreated events
+// Handle role-based events
+export function handleRoleGranted(event: RoleGranted): void {
+  const dvpSwap = fetchDvPSwap(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  
+  const account = fetchAccount(event.params.account);
+  
+  roleGrantedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.dvpswap,
+    event.params.role,
+    account.id
+  );
+  
+  // Update specific roles if needed based on role parameter
+}
+
+// Handle DvPSwap-specific events
 export function handleDvPSwapCreated(event: DvPSwapCreated): void {
+  const dvpSwap = fetchDvPSwap(event.address);
   const sender = fetchAccount(event.transaction.from);
-  const receiver = fetchAccount(event.params.receiver);
-  const dvpSwap = fetchDvPSwap(event.address, event.block.timestamp);
+  const creator = fetchAccount(event.params.creator);
   
-  // Fetch token details
-  const tokenToSend = event.params.tokenToSend;
-  const tokenToReceive = event.params.tokenToReceive;
+  log.info("DvPSwap created: id={}, creator={}", [
+    event.params.dvpSwapId.toHexString(),
+    creator.id.toHexString()
+  ]);
   
-  // Fetch or create swap entity
-  const dvpSwapEntity = fetchDvPSwapEntity(event.params.dvpSwapId, event.address, event.block.timestamp);
+  // Create a new swap transaction entity
+  const transaction = new DvPSwapTransaction(
+    event.params.dvpSwapId.toHexString()
+  );
+  transaction.dvpSwap = dvpSwap.id;
+  transaction.creator = creator.id;
+  transaction.status = "OPEN"; // Initial status is OPEN
+  transaction.createdAt = event.block.timestamp;
+  transaction.cutoffDate = event.params.cutoffDate;
+  transaction.flowsCount = BigInt.fromI32(0);
+  transaction.save();
   
-  // Update swap details
-  dvpSwapEntity.creator = sender.id;
-  dvpSwapEntity.sender = sender.id;
-  dvpSwapEntity.receiver = receiver.id;
-  dvpSwapEntity.tokenToSend = tokenToSend;
-  dvpSwapEntity.tokenToReceive = tokenToReceive;
-  dvpSwapEntity.amountToSendExact = event.params.amountToSend;
-  dvpSwapEntity.amountToSend = toDecimals(event.params.amountToSend, 18); // Assuming ERC20 has 18 decimals
-  dvpSwapEntity.amountToReceiveExact = event.params.amountToReceive;
-  dvpSwapEntity.amountToReceive = toDecimals(event.params.amountToReceive, 18); // Assuming ERC20 has 18 decimals
-  dvpSwapEntity.timelock = event.params.timelock;
-  dvpSwapEntity.hashlock = event.params.hashlock;
-  dvpSwapEntity.status = DvPSwapStatusType.OPEN;
-  dvpSwapEntity.updatedAt = event.block.timestamp;
-  
-  // Create event entity
-  const dvpSwapCreatedEvent = new DvPSwapCreatedEvent(eventId(event));
-  dvpSwapCreatedEvent.eventName = EventName.DvPSwapCreated;
-  dvpSwapCreatedEvent.timestamp = event.block.timestamp;
-  dvpSwapCreatedEvent.contract = dvpSwap.id;
-  dvpSwapCreatedEvent.sender = sender.id;
-  dvpSwapCreatedEvent.swap = dvpSwapEntity.id;
-  dvpSwapCreatedEvent.receiver = receiver.id;
-  dvpSwapCreatedEvent.tokenToSend = tokenToSend;
-  dvpSwapCreatedEvent.tokenToReceive = tokenToReceive;
-  dvpSwapCreatedEvent.amountToSendExact = event.params.amountToSend;
-  dvpSwapCreatedEvent.amountToSend = toDecimals(event.params.amountToSend, 18);
-  dvpSwapCreatedEvent.amountToReceiveExact = event.params.amountToReceive;
-  dvpSwapCreatedEvent.amountToReceive = toDecimals(event.params.amountToReceive, 18);
-  dvpSwapCreatedEvent.timelock = event.params.timelock;
-  dvpSwapCreatedEvent.hashlock = event.params.hashlock;
-  
-  // Track TVL
-  dvpSwap.totalValueLockedExact = dvpSwap.totalValueLockedExact.plus(event.params.amountToSend);
-  dvpSwap.totalValueLocked = toDecimals(dvpSwap.totalValueLockedExact, 18);
-  
-  // Save entities
-  dvpSwapEntity.save();
-  dvpSwapCreatedEvent.save();
+  // Update DvPSwap stats
+  dvpSwap.transactionsCount = dvpSwap.transactionsCount.plus(BigInt.fromI32(1));
   dvpSwap.save();
   
-  // Create stats
-  const stats = newDvPSwapStatsData(dvpSwap.id);
-  stats.dvpSwapsCreated = 1;
-  stats.valueLockedExact = event.params.amountToSend;
-  stats.valueLocked = toDecimals(event.params.amountToSend, 18);
-  stats.save();
-  
-  // Generate activity events
-  accountActivityEvent(
-    sender, 
-    EventName.DvPSwapCreated, 
-    event.block.timestamp, 
-    AssetType.dvpswap, 
-    dvpSwap.id
-  );
+  // Create event entity
+  const createdEvent = new DvPSwapCreatedEvent(eventId(event));
+  createdEvent.eventName = EventName.DvPSwapCreated;
+  createdEvent.timestamp = event.block.timestamp;
+  createdEvent.emitter = dvpSwap.id;
+  createdEvent.sender = sender.id;
+  createdEvent.assetType = AssetType.dvpswap;
+  createdEvent.transaction = event.transaction.hash;
+  createdEvent.dvpSwapId = event.params.dvpSwapId;
+  createdEvent.creator = creator.id;
+  createdEvent.status = "OPEN";
+  createdEvent.cutoffDate = event.params.cutoffDate;
+  createdEvent.save();
   
   accountActivityEvent(
-    receiver, 
-    EventName.DvPSwapCreated, 
-    event.block.timestamp, 
+    sender,
+    EventName.DvPSwapCreated,
+    event.block.timestamp,
     AssetType.dvpswap,
-    dvpSwap.id
-  );
-  
-  log.info(
-    "DvPSwap - DvPSwap created: dvpSwapId={}, sender={}, receiver={}, tokenToSend={}, tokenToReceive={}, amountToSend={}, amountToReceive={}", 
-    [
-      event.params.dvpSwapId.toHexString(),
-      sender.id.toHexString(),
-      receiver.id.toHexString(),
-      tokenToSend.toHexString(),
-      tokenToReceive.toHexString(),
-      event.params.amountToSend.toString(),
-      event.params.amountToReceive.toString()
-    ]
+    event.address
   );
 }
 
-// Handler for DvPSwapStatusChanged events
 export function handleDvPSwapStatusChanged(event: DvPSwapStatusChanged): void {
+  const dvpSwap = fetchDvPSwap(event.address);
   const sender = fetchAccount(event.transaction.from);
-  const dvpSwap = fetchDvPSwap(event.address, event.block.timestamp);
-  const dvpSwapEntity = fetchDvPSwapEntity(event.params.dvpSwapId, event.address, event.block.timestamp);
   
-  // Update swap status
-  let statusString = DvPSwapStatusType.PENDING_CREATION;
+  log.info("DvPSwap status changed: id={}, status={}", [
+    event.params.dvpSwapId.toHexString(),
+    event.params.status.toString()
+  ]);
   
-  // Map status enum value to string
-  if (event.params.status == 0) {
-    statusString = DvPSwapStatusType.PENDING_CREATION;
-  } else if (event.params.status == 1) {
-    statusString = DvPSwapStatusType.OPEN;
-  } else if (event.params.status == 2) {
-    statusString = DvPSwapStatusType.CLAIMED;
-  } else if (event.params.status == 3) {
-    statusString = DvPSwapStatusType.REFUNDED;
-  } else if (event.params.status == 4) {
-    statusString = DvPSwapStatusType.EXPIRED;
-  } else if (event.params.status == 5) {
-    statusString = DvPSwapStatusType.CANCELLED;
-  } else if (event.params.status == 6) {
-    statusString = DvPSwapStatusType.FAILED;
-  } else if (event.params.status == 7) {
-    statusString = DvPSwapStatusType.INVALID;
-  } else if (event.params.status == 8) {
-    statusString = DvPSwapStatusType.AWAITING_APPROVAL;
-  } else if (event.params.status == 9) {
-    statusString = DvPSwapStatusType.AWAITING_CLAIM_SECRET;
+  // Get the status as string
+  let statusString = "UNKNOWN";
+  const status = event.params.status;
+  if (status == 0) statusString = "OPEN";
+  else if (status == 1) statusString = "CLAIMED";
+  else if (status == 2) statusString = "REFUNDED";
+  else if (status == 3) statusString = "EXPIRED";
+  else if (status == 4) statusString = "CANCELLED";
+  else if (status == 5) statusString = "FAILED";
+  
+  // Update swap transaction status
+  const transactionId = event.params.dvpSwapId.toHexString();
+  const transaction = DvPSwapTransaction.load(transactionId);
+  
+  if (transaction) {
+    const oldStatus = transaction.status;
+    transaction.status = statusString;
+    transaction.lastUpdatedAt = event.block.timestamp;
+    transaction.save();
+    
+    // Update DvPSwap entity counts based on status change
+    if (statusString == "CLAIMED" && oldStatus != "CLAIMED") {
+      dvpSwap.executedTransactionsCount = dvpSwap.executedTransactionsCount.plus(BigInt.fromI32(1));
+    } else if (statusString == "CANCELLED" && oldStatus != "CANCELLED") {
+      dvpSwap.cancelledTransactionsCount = dvpSwap.cancelledTransactionsCount.plus(BigInt.fromI32(1));
+    } else if (statusString == "EXPIRED" && oldStatus != "EXPIRED") {
+      dvpSwap.expiredTransactionsCount = dvpSwap.expiredTransactionsCount.plus(BigInt.fromI32(1));
+    }
+    dvpSwap.save();
+    
+    // Create event entity
+    const statusChangedEvent = new DvPSwapStatusChangedEvent(eventId(event));
+    statusChangedEvent.eventName = EventName.DvPSwapStatusChanged;
+    statusChangedEvent.timestamp = event.block.timestamp;
+    statusChangedEvent.emitter = dvpSwap.id;
+    statusChangedEvent.sender = sender.id;
+    statusChangedEvent.assetType = AssetType.dvpswap;
+    statusChangedEvent.transaction = event.transaction.hash;
+    statusChangedEvent.dvpSwapId = event.params.dvpSwapId;
+    statusChangedEvent.status = statusString;
+    statusChangedEvent.save();
+    
+    accountActivityEvent(
+      sender,
+      EventName.DvPSwapStatusChanged,
+      event.block.timestamp,
+      AssetType.dvpswap,
+      event.address
+    );
   }
+}
+
+export function handleDvPSwapApproved(event: DvPSwapApproved): void {
+  const dvpSwap = fetchDvPSwap(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const party = fetchAccount(event.params.party);
   
-  dvpSwapEntity.status = statusString;
-  dvpSwapEntity.updatedAt = event.block.timestamp;
+  log.info("DvPSwap approved: id={}, party={}", [
+    event.params.dvpSwapId.toHexString(),
+    party.id.toHexString()
+  ]);
+  
+  // Update swap transaction with new approval
+  const transactionId = event.params.dvpSwapId.toHexString();
+  const transaction = DvPSwapTransaction.load(transactionId);
+  
+  if (transaction) {
+    // Create approval entity
+    const approvalId = transactionId + "-" + party.id.toHexString();
+    const approval = new DvPSwapApproval(approvalId);
+    approval.dvpSwapTransaction = transaction.id;
+    approval.party = party.id;
+    approval.approvedAt = event.block.timestamp;
+    approval.active = true;
+    approval.save();
+    
+    // Update DvPSwap entity counts
+    dvpSwap.approvedTransactionsCount = dvpSwap.approvedTransactionsCount.plus(BigInt.fromI32(1));
+    dvpSwap.save();
+    
+    // Create event entity
+    const approvedEvent = new DvPSwapApprovedEvent(eventId(event));
+    approvedEvent.eventName = EventName.DvPSwapApproved;
+    approvedEvent.timestamp = event.block.timestamp;
+    approvedEvent.emitter = dvpSwap.id;
+    approvedEvent.sender = sender.id;
+    approvedEvent.assetType = AssetType.dvpswap;
+    approvedEvent.transaction = event.transaction.hash;
+    approvedEvent.dvpSwapId = event.params.dvpSwapId;
+    approvedEvent.party = party.id;
+    approvedEvent.save();
+    
+    accountActivityEvent(
+      sender,
+      EventName.DvPSwapApproved,
+      event.block.timestamp,
+      AssetType.dvpswap,
+      event.address
+    );
+  }
+}
+
+export function handleDvPSwapApprovalRevoked(event: DvPSwapApprovalRevoked): void {
+  const dvpSwap = fetchDvPSwap(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const party = fetchAccount(event.params.party);
+  
+  log.info("DvPSwap approval revoked: id={}, party={}", [
+    event.params.dvpSwapId.toHexString(),
+    party.id.toHexString()
+  ]);
+  
+  // Update approval entity
+  const transactionId = event.params.dvpSwapId.toHexString();
+  const approvalId = transactionId + "-" + party.id.toHexString();
+  const approval = DvPSwapApproval.load(approvalId);
+  
+  if (approval) {
+    approval.active = false;
+    approval.revokedAt = event.block.timestamp;
+    approval.save();
+    
+    // Update DvPSwap entity counts if needed
+    dvpSwap.approvedTransactionsCount = dvpSwap.approvedTransactionsCount.minus(BigInt.fromI32(1));
+    dvpSwap.save();
+    
+    // Create event entity
+    const revokedEvent = new DvPSwapApprovalRevokedEvent(eventId(event));
+    revokedEvent.eventName = EventName.DvPSwapApprovalRevoked;
+    revokedEvent.timestamp = event.block.timestamp;
+    revokedEvent.emitter = dvpSwap.id;
+    revokedEvent.sender = sender.id;
+    revokedEvent.assetType = AssetType.dvpswap;
+    revokedEvent.transaction = event.transaction.hash;
+    revokedEvent.dvpSwapId = event.params.dvpSwapId;
+    revokedEvent.party = party.id;
+    revokedEvent.save();
+    
+    accountActivityEvent(
+      sender,
+      EventName.DvPSwapApprovalRevoked,
+      event.block.timestamp,
+      AssetType.dvpswap,
+      event.address
+    );
+  }
+}
+
+export function handleDvPSwapExecuted(event: DvPSwapExecuted): void {
+  const dvpSwap = fetchDvPSwap(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const executor = fetchAccount(event.params.executor);
+  
+  log.info("DvPSwap executed: id={}, executor={}", [
+    event.params.dvpSwapId.toHexString(),
+    executor.id.toHexString()
+  ]);
+  
+  // Get the transaction
+  const transactionId = event.params.dvpSwapId.toHexString();
+  const transaction = DvPSwapTransaction.load(transactionId);
+  
+  if (transaction) {
+    // Update transaction
+    transaction.executor = executor.id;
+    transaction.executedAt = event.block.timestamp;
+    transaction.save();
+    
+    // Create event entity
+    const executedEvent = new DvPSwapExecutedEvent(eventId(event));
+    executedEvent.eventName = EventName.DvPSwapExecuted;
+    executedEvent.timestamp = event.block.timestamp;
+    executedEvent.emitter = dvpSwap.id;
+    executedEvent.sender = sender.id;
+    executedEvent.assetType = AssetType.dvpswap;
+    executedEvent.transaction = event.transaction.hash;
+    executedEvent.dvpSwapId = event.params.dvpSwapId;
+    executedEvent.executor = executor.id;
+    executedEvent.save();
+    
+    accountActivityEvent(
+      sender,
+      EventName.DvPSwapExecuted,
+      event.block.timestamp,
+      AssetType.dvpswap,
+      event.address
+    );
+  }
+}
+
+export function handleDvPSwapExpired(event: DvPSwapExpiredContractEvent): void {
+  const dvpSwap = fetchDvPSwap(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  
+  log.info("DvPSwap expired: id={}, timestamp={}", [
+    event.params.dvpSwapId.toHexString(),
+    event.params.timestamp.toString()
+  ]);
+  
+  // Get the transaction
+  const transactionId = event.params.dvpSwapId.toHexString();
+  const transaction = DvPSwapTransaction.load(transactionId);
+  
+  if (transaction) {
+    // Update transaction
+    transaction.expiredAt = event.block.timestamp;
+    transaction.save();
+    
+    // Create event entity
+    const expiredEvent = new DvPSwapExpiredEvent(eventId(event));
+    expiredEvent.eventName = EventName.DvPSwapExpired;
+    expiredEvent.timestamp = event.block.timestamp;
+    expiredEvent.emitter = dvpSwap.id;
+    expiredEvent.sender = sender.id;
+    expiredEvent.assetType = AssetType.dvpswap;
+    expiredEvent.transaction = event.transaction.hash;
+    expiredEvent.dvpSwapId = event.params.dvpSwapId;
+    expiredEvent.save();
+    
+    accountActivityEvent(
+      sender,
+      EventName.DvPSwapExpired,
+      event.block.timestamp,
+      AssetType.dvpswap,
+      event.address
+    );
+  }
+}
+
+export function handleFlowAdded(event: FlowAdded): void {
+  const dvpSwap = fetchDvPSwap(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const from = fetchAccount(event.params.from);
+  const to = fetchAccount(event.params.to);
+  
+  log.info("Flow added: id={}, from={}, to={}, token={}, amount={}", [
+    event.params.dvpSwapId.toHexString(),
+    from.id.toHexString(),
+    to.id.toHexString(),
+    event.params.token.toHexString(),
+    event.params.amount.toString()
+  ]);
+  
+  // Get the transaction
+  const transactionId = event.params.dvpSwapId.toHexString();
+  const transaction = DvPSwapTransaction.load(transactionId);
+  
+  if (transaction) {
+    // Increment flow count
+    const flowCount = transaction.flowsCount;
+    transaction.flowsCount = flowCount.plus(BigInt.fromI32(1));
+    transaction.save();
+    
+    // Create new flow entity
+    const flowId = transactionId + "-flow-" + flowCount.toString();
+    const flow = new Flow(flowId);
+    flow.dvpSwapTransaction = transaction.id;
+    flow.flowId = flowCount;
+    flow.from = from.id;
+    flow.to = to.id;
+    flow.token = event.params.token;
+    flow.amount = event.params.amount;
+    flow.createdAt = event.block.timestamp;
+    flow.save();
+    
+    accountActivityEvent(
+      sender,
+      EventName.FlowAdded,
+      event.block.timestamp,
+      AssetType.dvpswap,
+      event.address
+    );
+  }
+}
+
+export function handleDvPSwapAutoExecutionFailed(event: DvPSwapAutoExecutionFailed): void {
+  const dvpSwap = fetchDvPSwap(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const executor = fetchAccount(event.params.executor);
+  
+  log.info("DvPSwap auto-execution failed: id={}, executor={}, reason={}", [
+    event.params.dvpSwapId.toHexString(),
+    executor.id.toHexString(),
+    event.params.reason
+  ]);
   
   // Create event entity
-  const statusChangedEvent = new DvPSwapStatusChangedEvent(eventId(event));
-  statusChangedEvent.eventName = EventName.DvPSwapStatusChanged;
-  statusChangedEvent.timestamp = event.block.timestamp;
-  statusChangedEvent.contract = dvpSwap.id;
-  statusChangedEvent.sender = sender.id;
-  statusChangedEvent.swap = dvpSwapEntity.id;
-  statusChangedEvent.status = statusString;
+  const failedEvent = new DvPSwapAutoExecutionFailedEvent(eventId(event));
+  failedEvent.eventName = EventName.DvPSwapAutoExecutionFailed;
+  failedEvent.timestamp = event.block.timestamp;
+  failedEvent.emitter = dvpSwap.id;
+  failedEvent.sender = sender.id;
+  failedEvent.assetType = AssetType.dvpswap;
+  failedEvent.transaction = event.transaction.hash;
+  failedEvent.dvpSwapId = event.params.dvpSwapId;
+  failedEvent.executor = executor.id;
+  failedEvent.reason = event.params.reason;
+  failedEvent.save();
   
-  // Save entities
-  dvpSwapEntity.save();
-  statusChangedEvent.save();
-  
-  // Generate activity event
   accountActivityEvent(
-    sender, 
-    EventName.DvPSwapStatusChanged, 
-    event.block.timestamp, 
+    sender,
+    EventName.DvPSwapAutoExecutionFailed,
+    event.block.timestamp,
     AssetType.dvpswap,
-    dvpSwap.id
-  );
-  
-  log.info(
-    "DvPSwap - Status changed: dvpSwapId={}, status={}", 
-    [
-      event.params.dvpSwapId.toHexString(),
-      statusString
-    ]
+    event.address
   );
 }
 
-// Handler for DvPSwapClaimed events
-export function handleDvPSwapClaimed(event: DvPSwapClaimed): void {
+export function handlePaused(event: Paused): void {
+  const dvpSwap = fetchDvPSwap(event.address);
   const sender = fetchAccount(event.transaction.from);
-  const receiver = fetchAccount(event.params.receiver);
-  const dvpSwap = fetchDvPSwap(event.address, event.block.timestamp);
-  const dvpSwapEntity = fetchDvPSwapEntity(event.params.dvpSwapId, event.address, event.block.timestamp);
   
-  // Update swap status
-  dvpSwapEntity.status = DvPSwapStatusType.CLAIMED;
-  dvpSwapEntity.updatedAt = event.block.timestamp;
-  
-  // Create event entity
-  const claimedEvent = new DvPSwapClaimedEvent(eventId(event));
-  claimedEvent.eventName = EventName.DvPSwapClaimed;
-  claimedEvent.timestamp = event.block.timestamp;
-  claimedEvent.contract = dvpSwap.id;
-  claimedEvent.sender = sender.id;
-  claimedEvent.swap = dvpSwapEntity.id;
-  claimedEvent.receiver = receiver.id;
-  claimedEvent.secret = event.params.secret;
-  
-  // Update stats
-  const stats = newDvPSwapStatsData(dvpSwap.id);
-  stats.dvpSwapsClaimed = 1;
-  stats.valueUnlockedExact = dvpSwapEntity.amountToSendExact;
-  stats.valueUnlocked = dvpSwapEntity.amountToSend;
-  
-  // Update TVL
-  dvpSwap.totalValueLockedExact = dvpSwap.totalValueLockedExact.minus(dvpSwapEntity.amountToSendExact);
-  dvpSwap.totalValueLocked = toDecimals(dvpSwap.totalValueLockedExact, 18);
-  
-  // Save entities
-  dvpSwapEntity.save();
-  claimedEvent.save();
+  // Update DvPSwap entity
+  dvpSwap.paused = true;
   dvpSwap.save();
-  stats.save();
   
-  // Generate activity events
-  accountActivityEvent(
-    sender, 
-    EventName.DvPSwapClaimed, 
-    event.block.timestamp, 
-    AssetType.dvpswap,
-    dvpSwap.id
-  );
-  
-  accountActivityEvent(
-    receiver, 
-    EventName.DvPSwapClaimed, 
-    event.block.timestamp, 
-    AssetType.dvpswap,
-    dvpSwap.id
-  );
-  
-  log.info(
-    "DvPSwap - DvPSwap claimed: dvpSwapId={}, receiver={}, secret={}", 
-    [
-      event.params.dvpSwapId.toHexString(),
-      receiver.id.toHexString(),
-      event.params.secret.toHexString()
-    ]
+  pausedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.dvpswap
   );
 }
 
-// Handler for DvPSwapRefunded events
-export function handleDvPSwapRefunded(event: DvPSwapRefunded): void {
+export function handleUnpaused(event: Unpaused): void {
+  const dvpSwap = fetchDvPSwap(event.address);
   const sender = fetchAccount(event.transaction.from);
-  const refundedTo = fetchAccount(event.params.sender);
-  const dvpSwap = fetchDvPSwap(event.address, event.block.timestamp);
-  const dvpSwapEntity = fetchDvPSwapEntity(event.params.dvpSwapId, event.address, event.block.timestamp);
   
-  // Update swap status
-  dvpSwapEntity.status = DvPSwapStatusType.REFUNDED;
-  dvpSwapEntity.updatedAt = event.block.timestamp;
-  
-  // Create event entity
-  const refundedEvent = new DvPSwapRefundedEvent(eventId(event));
-  refundedEvent.eventName = EventName.DvPSwapRefunded;
-  refundedEvent.timestamp = event.block.timestamp;
-  refundedEvent.contract = dvpSwap.id;
-  refundedEvent.sender = sender.id;
-  refundedEvent.swap = dvpSwapEntity.id;
-  refundedEvent.refundedTo = refundedTo.id;
-  
-  // Update stats
-  const stats = newDvPSwapStatsData(dvpSwap.id);
-  stats.dvpSwapsRefunded = 1;
-  stats.valueUnlockedExact = dvpSwapEntity.amountToSendExact;
-  stats.valueUnlocked = dvpSwapEntity.amountToSend;
-  
-  // Update TVL
-  dvpSwap.totalValueLockedExact = dvpSwap.totalValueLockedExact.minus(dvpSwapEntity.amountToSendExact);
-  dvpSwap.totalValueLocked = toDecimals(dvpSwap.totalValueLockedExact, 18);
-  
-  // Save entities
-  dvpSwapEntity.save();
-  refundedEvent.save();
+  // Update DvPSwap entity
+  dvpSwap.paused = false;
   dvpSwap.save();
-  stats.save();
   
-  // Generate activity events
-  accountActivityEvent(
-    sender, 
-    EventName.DvPSwapRefunded, 
-    event.block.timestamp, 
-    AssetType.dvpswap,
-    dvpSwap.id
-  );
-  
-  accountActivityEvent(
-    refundedTo, 
-    EventName.DvPSwapRefunded, 
-    event.block.timestamp, 
-    AssetType.dvpswap,
-    dvpSwap.id
-  );
-  
-  log.info(
-    "DvPSwap - DvPSwap refunded: dvpSwapId={}, refundedTo={}", 
-    [
-      event.params.dvpSwapId.toHexString(),
-      refundedTo.id.toHexString()
-    ]
+  unpausedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.dvpswap
   );
 }
 
-// Handler for TokensLocked events
-export function handleTokensLocked(event: TokensLocked): void {
+export function handleRoleRevoked(event: RoleRevoked): void {
+  const dvpSwap = fetchDvPSwap(event.address);
   const sender = fetchAccount(event.transaction.from);
-  const dvpSwap = fetchDvPSwap(event.address, event.block.timestamp);
-  const dvpSwapEntity = fetchDvPSwapEntity(event.params.dvpSwapId, event.address, event.block.timestamp);
   
-  // Create event entity
-  const tokensLockedEvent = new TokensLockedEvent(eventId(event));
-  tokensLockedEvent.eventName = EventName.TokensLocked;
-  tokensLockedEvent.timestamp = event.block.timestamp;
-  tokensLockedEvent.contract = dvpSwap.id;
-  tokensLockedEvent.sender = sender.id;
-  tokensLockedEvent.swap = dvpSwapEntity.id;
-  tokensLockedEvent.tokenAddress = event.params.tokenAddress;
-  tokensLockedEvent.amountExact = event.params.amount;
-  tokensLockedEvent.amount = toDecimals(event.params.amount, 18); // Assuming 18 decimals
-  tokensLockedEvent.lockTimestamp = event.params.timestamp;
+  const account = fetchAccount(event.params.account);
   
-  // Save entity
-  tokensLockedEvent.save();
-  
-  // Generate activity event
-  accountActivityEvent(
-    sender, 
-    EventName.TokensLocked, 
-    event.block.timestamp, 
+  roleRevokedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
     AssetType.dvpswap,
-    dvpSwap.id
+    event.params.role,
+    account.id
   );
   
-  log.info(
-    "DvPSwap - Tokens locked: dvpSwapId={}, tokenAddress={}, amount={}", 
-    [
-      event.params.dvpSwapId.toHexString(),
-      event.params.tokenAddress.toHexString(),
-      event.params.amount.toString()
-    ]
+  // Update specific roles if revoked
+}
+
+export function handleRoleAdminChanged(event: RoleAdminChanged): void {
+  const dvpSwap = fetchDvPSwap(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  
+  roleAdminChangedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.dvpswap,
+    event.params.role,
+    event.params.previousAdminRole,
+    event.params.newAdminRole
   );
 } 

@@ -54,24 +54,12 @@ export class EventName {
   // Stablecoin specific events
   static CollateralUpdated: string = "Collateral Updated";
   // DvPSwap specific events
-  static DvPSwapContractCreated: string = "DvPSwap Contract Created";
-  static DvPSwapCreated: string = "DvPSwap Created";
-  static DvPSwapStatusChanged: string = "DvPSwap Status Changed";
-  static DvPSwapClaimed: string = "DvPSwap Claimed";
-  static DvPSwapRefunded: string = "DvPSwap Refunded";
-  static TokensLocked: string = "Tokens Locked";
-}
-
-// Update DvPSwap status type enum to match the contract
-export class DvPSwapStatusType {
-  static PENDING_CREATION: string = "PENDING_CREATION";
-  static OPEN: string = "OPEN";
-  static CLAIMED: string = "CLAIMED";
-  static REFUNDED: string = "REFUNDED";
-  static EXPIRED: string = "EXPIRED";
-  static CANCELLED: string = "CANCELLED";
-  static FAILED: string = "FAILED";
-  static INVALID: string = "INVALID";
-  static AWAITING_APPROVAL: string = "AWAITING_APPROVAL";
-  static AWAITING_CLAIM_SECRET: string = "AWAITING_CLAIM_SECRET";
+  static DvPSwapCreated: string = "DvP Swap Created";
+  static DvPSwapStatusChanged: string = "DvP Swap Status Changed";
+  static DvPSwapApproved: string = "DvP Swap Approved";
+  static DvPSwapApprovalRevoked: string = "DvP Swap Approval Revoked";
+  static DvPSwapExecuted: string = "DvP Swap Executed";
+  static DvPSwapExpired: string = "DvP Swap Expired";
+  static FlowAdded: string = "Flow Added";
+  static DvPSwapAutoExecutionFailed: string = "DvP Swap Auto-Execution Failed";
 }

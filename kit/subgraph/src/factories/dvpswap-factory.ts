@@ -1,62 +1,62 @@
-import { log } from "@graphprotocol/graph-ts";
-import { DvPSwapContractCreated } from "../../generated/DvPSwapFactory/DvPSwapFactory";
-import { DvPSwapContractCreatedEvent } from "../../generated/schema";
+import { DvPSwapCreated } from "../../generated/DvPSwapFactory/DvPSwapFactory";
 import { DvPSwap } from "../../generated/templates";
 import { accountActivityEvent } from "../assets/events/accountactivity";
+import { assetCreatedEvent } from "../assets/events/assetcreated";
+import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchAccount } from "../fetch/account";
-import { fetchDvPSwap, updateDvPSwapCreator } from "../fetch/dvpswap";
-import { EventName } from "../utils/enums";
+import { fetchDvPSwap } from "../fetch/dvpswap";
+import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
-import { fetchDvPSwapFactory } from "./fetch/dvpswap-factory";
 
-export function handleDvPSwapContractCreated(event: DvPSwapContractCreated): void {
-  // Fetch or create factory entity
-  const factory = fetchDvPSwapFactory(event.address);
-  
-  // Fetch accounts
+/**
+ * Handles DvPSwapCreated events from the DvPSwapFactory contract.
+ * Ensures the factory and creator are registered as Accounts,
+ * creates the DvPSwap asset entity, updates counts, logs events,
+ * and starts indexing the new DvPSwap contract via template.
+ * @param event The DvPSwapCreated event
+ */
+export function handleDvPSwapCreated(event: DvPSwapCreated): void {
+  // Ensure the Factory contract itself is registered as an Account
+  // This was the likely intent of the previous fetchFactory call.
+  const factoryAccount = fetchAccount(event.address);
+  // Optionally update factoryAccount fields if needed, e.g., lastActivity
+  factoryAccount.lastActivity = event.block.timestamp; 
+  factoryAccount.save();
+
+  // Get creator account
   const creator = fetchAccount(event.params.creator);
-  const sender = fetchAccount(event.transaction.from);
   
-  // Fetch or create DvPSwap entity
-  const dvpSwap = fetchDvPSwap(event.params.dvpSwapContract, event.block.timestamp);
+  // Create or fetch the DvPSwap asset entity
+  const asset = fetchDvPSwap(event.params.token, event.block.timestamp);
+  asset.creator = creator.id;
+  // Link the asset to its account representation if not already done in fetchDvPSwap
+  const assetAsAccount = fetchAccount(event.params.token); 
+  assetAsAccount.asAsset = asset.id; 
+  assetAsAccount.save();
+  asset.save();
+
+  // Update asset count for DvPSwap type
+  const assetCount = fetchAssetCount(AssetType.dvpswap);
+  assetCount.count = assetCount.count + 1;
+  assetCount.save();
+
+  // Create event entities
+  assetCreatedEvent(
+    eventId(event),
+    event.block.timestamp,
+    asset.id,
+    creator.id,
+    AssetType.dvpswap
+  );
   
-  // Update DvPSwap with correct creator
-  updateDvPSwapCreator(dvpSwap.id, event.params.creator);
-  
-  // Increment contract count
-  factory.dvpSwapContractsCount = factory.dvpSwapContractsCount + 1;
-  
-  // Create event entity - convert eventId from Bytes to String
-  const eventIdValue = eventId(event);
-  const contractCreatedEvent = new DvPSwapContractCreatedEvent(eventIdValue.toHexString());
-  contractCreatedEvent.eventName = EventName.DvPSwapContractCreated;
-  contractCreatedEvent.timestamp = event.block.timestamp;
-  contractCreatedEvent.factory = factory.id;
-  contractCreatedEvent.sender = sender.id;
-  contractCreatedEvent.dvpSwapContract = dvpSwap.id;
-  contractCreatedEvent.creator = creator.id;
-  
-  // Create activity event
   accountActivityEvent(
     creator,
-    EventName.DvPSwapContractCreated,
+    EventName.AssetCreated,
     event.block.timestamp,
-    "dvpswap",
-    dvpSwap.id
+    AssetType.dvpswap,
+    asset.id
   );
-  
-  // Save entities
-  factory.save();
-  contractCreatedEvent.save();
-  
-  // Create contract template
-  DvPSwap.create(event.params.dvpSwapContract);
-  
-  log.info(
-    "DvPSwapFactory - DvPSwap contract created: contract={}, creator={}", 
-    [
-      event.params.dvpSwapContract.toHexString(),
-      creator.id.toHexString()
-    ]
-  );
+
+  // Register DvPSwap contract for dynamic data source indexing
+  DvPSwap.create(event.params.token);
 } 
