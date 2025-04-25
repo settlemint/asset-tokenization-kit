@@ -15,14 +15,17 @@ import { userRoles } from "@/lib/utils/typebox/user-roles";
 import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
+  ActivityIcon,
   BadgeCheck,
   BadgePlus,
   BadgeX,
   Ban,
   Check,
+  MailIcon,
   MoreHorizontal,
   ShieldCheck,
   User2,
+  WalletIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type ComponentType, Suspense } from "react";
@@ -106,7 +109,7 @@ export function Columns() {
       filterFn: filterFn("text"),
       meta: defineMeta((row) => row.wallet || "", {
         displayName: t("columns.wallet"),
-        icon: ShieldCheck,
+        icon: WalletIcon,
         type: "text",
       }),
     }),
@@ -116,7 +119,7 @@ export function Columns() {
       filterFn: filterFn("text"),
       meta: defineMeta((row) => row.email, {
         displayName: t("columns.email"),
-        icon: User2,
+        icon: MailIcon,
         type: "text",
       }),
     }),
@@ -165,7 +168,7 @@ export function Columns() {
       filterFn: filterFn("option"),
       meta: defineMeta((row) => (row.banned ? "banned" : "active"), {
         displayName: t("columns.status"),
-        icon: Check,
+        icon: ActivityIcon,
         type: "option",
         options: STATUS_OPTIONS,
       }),

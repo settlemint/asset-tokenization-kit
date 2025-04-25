@@ -13,12 +13,16 @@
     "deploy:local": "bash graph-local-deploy.sh",
     "deploy:remote": "bash graph-remote-deploy.sh",
     "format": "prettier --write .",
-    "subgraph:deploy": "settlemint scs subgraph deploy"
+    "subgraph:deploy": "settlemint scs subgraph deploy",
+    "lint": "eslint src/ --ext .ts"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.0",
     "@graphprotocol/graph-ts": "0.38.0",
-    "contracts": "workspace:*"
+    "@typescript-eslint/parser": "8.31.0",
+    "contracts": "workspace:*",
+    "eslint": "9.25.1",
+    "eslint-plugin-import": "2.31.0"
   },
   "devDependencies": {
     "matchstick-as": "0.6.0"

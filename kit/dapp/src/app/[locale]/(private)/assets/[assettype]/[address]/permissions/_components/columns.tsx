@@ -14,7 +14,12 @@ import { formatDate } from "@/lib/utils/date";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ClockIcon, MoreHorizontal, UsersIcon, WalletIcon } from "lucide-react";
+import {
+  ClockIcon,
+  MoreHorizontal,
+  ShieldCheckIcon,
+  WalletIcon,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { Address } from "viem";
 
@@ -61,7 +66,7 @@ export function columns({
       filterFn: filterFn("multiOption"),
       meta: defineMeta((row) => row.roles, {
         displayName: t("roles-header"),
-        icon: UsersIcon,
+        icon: ShieldCheckIcon,
         type: "multiOption",
         options: Object.values(ROLES).map((role) => ({
           label: role.displayName,

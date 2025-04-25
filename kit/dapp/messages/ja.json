@@ -60,7 +60,8 @@
         "description": "ダッシュボードへようこそ",
         "latest-events-heading": "最新のイベント",
         "stats-heading": "統計",
-        "title": "ダッシュボード"
+        "title": "ダッシュボード",
+        "platform-management": "プラットフォーム管理"
       },
       "table": {
         "latest-events": {
@@ -133,8 +134,9 @@
       },
       "platform-management": {
         "group-title": "プラットフォーム管理",
-        "settings": "プラットフォーム",
-        "user-management": "ユーザー管理"
+        "settings": "設定",
+        "user-management": "ユーザー管理",
+        "api": "API"
       },
       "portfolio-management": {
         "dashboard": "ダッシュボード",
@@ -698,7 +700,14 @@
     "user-dropdown": {
       "documentation": "ドキュメント",
       "logout": "ログアウト",
-      "pending-transactions": "保留中のトランザクション"
+      "pending-transactions": "保留中のトランザクション",
+      "profile": "プロフィールを管理"
+    },
+    "modeswitch": {
+      "assets": "資産管理",
+      "label": "運用モード",
+      "platform": "プラットフォーム管理",
+      "portfolio": "マイポートフォリオ"
     }
   },
   "paused": "一時停止",
@@ -1715,7 +1724,7 @@
             "title": {
               "bonds": "債券を償還する",
               "equities": "株式供給を減少させる",
-              "funds": "債券を償還する",
+              "funds": "ファンドの株式を焼却する",
               "stablecoins": "供給を減少させる",
               "tokenizeddeposits": "トークン化された預金供給を減少させる",
               "deposits": "預金供給を減少させる",
@@ -1736,7 +1745,7 @@
               "bonds": "債券を発行する",
               "cryptocurrencies": "資産を発行",
               "equities": "新しい株式を発行する",
-              "funds": "債券を発行する",
+              "funds": "新しいファンドの株式を発行する",
               "stablecoins": "供給を増加させる",
               "tokenizeddeposits": "供給を増加させる",
               "deposits": "供給を増加させる"
