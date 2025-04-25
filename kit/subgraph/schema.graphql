@@ -243,52 +243,6 @@ type Deposit implements Asset @entity(immutable: false) {
 }
 
 # --------------------------------------------------
-# DvPSwap Contract
-# --------------------------------------------------
-
-type DvPSwap @entity(immutable: false) {
-  id: Bytes!
-  creator: Account!
-  createdAt: BigInt!
-  active: Boolean!
-  dvpSwapCount: Int!
-  totalValueLocked: BigDecimal!
-  totalValueLockedExact: BigInt!
-}
-
-# --------------------------------------------------
-# DvPSwap Factory
-# --------------------------------------------------
-
-type DvPSwapFactory implements Factory @entity(immutable: false) {
-  id: Bytes!
-  type: String!
-  asAccount: Account!
-  dvpSwapContractsCount: Int!
-}
-
-type DvPSwapEntity @entity(immutable: false) {
-  id: Bytes!
-  contract: DvPSwap!
-  factory: Factory
-  creator: Account!
-  sender: Account!
-  receiver: Account!
-  tokenToSend: Bytes!
-  tokenToReceive: Bytes!
-  amountToSend: BigDecimal!
-  amountToSendExact: BigInt!
-  amountToReceive: BigDecimal!
-  amountToReceiveExact: BigInt!
-  timelock: BigInt!
-  hashlock: Bytes!
-  status: String!
-  createdAt: BigInt!
-  maxDuration: BigInt!
-  updatedAt: BigInt!
-}
-
-# --------------------------------------------------
 # Accounts
 # --------------------------------------------------
 
@@ -816,106 +770,6 @@ type YieldClaimedEvent @entity(immutable: true) {
 }
 
 # --------------------------------------------------
-# DvPSwap-Specific Events
-# --------------------------------------------------
-
-"""
-Entity for DvP Swap contract creation events.
-Emitted when a new DvP Swap contract is deployed via the factory.
-"""
-type DvPSwapContractCreatedEvent @entity(immutable: true) {
-  id: String!
-  eventName: String!
-  timestamp: BigInt!
-  factory: Bytes!
-  sender: Bytes!
-  dvpSwapContract: Bytes!
-  creator: Bytes!
-}
-
-"""
-Entity for DvP Swap creation events.
-Emitted when a new atomic swap is created.
-"""
-type DvPSwapCreatedEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  contract: DvPSwap!
-  sender: Account!
-  swap: DvPSwapEntity!
-  receiver: Account!
-  tokenToSend: Bytes!
-  tokenToReceive: Bytes!
-  amountToSend: BigDecimal!
-  amountToSendExact: BigInt!
-  amountToReceive: BigDecimal!
-  amountToReceiveExact: BigInt!
-  timelock: BigInt!
-  hashlock: Bytes!
-}
-
-"""
-Entity for DvP Swap status change events.
-Emitted when a swap's status changes.
-"""
-type DvPSwapStatusChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  contract: DvPSwap!
-  sender: Account!
-  swap: DvPSwapEntity!
-  status: String!
-}
-
-"""
-Entity for DvP Swap claim events.
-Emitted when tokens are claimed from a swap.
-"""
-type DvPSwapClaimedEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  contract: DvPSwap!
-  sender: Account!
-  swap: DvPSwapEntity!
-  receiver: Account!
-  secret: Bytes!
-}
-
-"""
-Entity for DvP Swap refund events.
-Emitted when a swap is refunded.
-"""
-type DvPSwapRefundedEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  contract: DvPSwap!
-  sender: Account!
-  swap: DvPSwapEntity!
-  refundedTo: Account!
-}
-
-"""
-Entity for token locking events in DvP Swap.
-Emitted when tokens are locked in a swap contract.
-"""
-type TokensLockedEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  contract: DvPSwap!
-  sender: Account!
-  swap: DvPSwapEntity!
-  tokenAddress: Bytes!
-  amount: BigDecimal!
-  amountExact: BigInt!
-  lockTimestamp: BigInt!
-}
-
-# --------------------------------------------------
 # Asset Statistics
 # --------------------------------------------------
 
@@ -985,47 +839,6 @@ type AssetStats
   ## Collateral
   totalCollateral: BigDecimal! @aggregate(fn: "last", arg: "collateral")
   totalCollateralExact: BigInt! @aggregate(fn: "last", arg: "collateralExact")
-}
-
-# --------------------------------------------------
-# DvPSwap Statistics
-# --------------------------------------------------
-
-type DvPSwapStatsData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  ## Filters
-  dvpSwap: DvPSwap!
-  ## Activity
-  dvpSwapsCreated: Int!
-  dvpSwapsClaimed: Int!
-  dvpSwapsRefunded: Int!
-  dvpSwapsExpired: Int!
-  dvpSwapsFailed: Int!
-  ## Value
-  valueLocked: BigDecimal!
-  valueLockedExact: BigInt!
-  valueUnlocked: BigDecimal!
-  valueUnlockedExact: BigInt!
-}
-
-type DvPSwapStats @aggregation(intervals: ["hour", "day"], source: "DvPSwapStatsData") {
-  id: Int8!
-  timestamp: Timestamp!
-  ## Filters
-  dvpSwap: DvPSwap!
-  ## Activity
-  count: Int8! @aggregate(fn: "count", cumulative: true)
-  totalDvpSwapsCreated: Int! @aggregate(fn: "sum", arg: "dvpSwapsCreated")
-  totalDvpSwapsClaimed: Int! @aggregate(fn: "sum", arg: "dvpSwapsClaimed")
-  totalDvpSwapsRefunded: Int! @aggregate(fn: "sum", arg: "dvpSwapsRefunded")
-  totalDvpSwapsExpired: Int! @aggregate(fn: "sum", arg: "dvpSwapsExpired")
-  totalDvpSwapsFailed: Int! @aggregate(fn: "sum", arg: "dvpSwapsFailed")
-  ## Value
-  totalValueLocked: BigDecimal! @aggregate(fn: "last", arg: "valueLocked")
-  totalValueLockedExact: BigInt! @aggregate(fn: "last", arg: "valueLockedExact")
-  totalValueUnlocked: BigDecimal! @aggregate(fn: "sum", arg: "valueUnlocked")
-  totalValueUnlockedExact: BigInt! @aggregate(fn: "sum", arg: "valueUnlockedExact")
 }
 
 # --------------------------------------------------
@@ -1111,4 +924,168 @@ type AllowedUser @entity(immutable: false) {
   asset: Asset!
   user: Account!
   allowedAt: BigInt!
+}
+
+# --------------------------------------------------
+# DvPSwap-Specific Types
+# --------------------------------------------------
+
+type DvPSwap implements Asset @entity(immutable: false) {
+  id: Bytes!
+  type: String!
+  asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  lastActivity: BigInt!
+  creator: Account!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalHolders: Int!
+  deployedOn: BigInt!
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
+  # DvPSwap-Specific Fields
+  paused: Boolean!
+  transactionsCount: BigInt!
+  executedTransactionsCount: BigInt!
+  approvedTransactionsCount: BigInt!
+  cancelledTransactionsCount: BigInt!
+  expiredTransactionsCount: BigInt!
+  transactions: [DvPSwapTransaction!]! @derivedFrom(field: "dvpSwap")
+}
+
+type DvPSwapTransaction @entity(immutable: false) {
+  id: String!
+  dvpSwap: DvPSwap!
+  creator: Account!
+  status: String!
+  createdAt: BigInt!
+  lastUpdatedAt: BigInt
+  cutoffDate: BigInt!
+  executedAt: BigInt
+  expiredAt: BigInt
+  executor: Account
+  flowsCount: BigInt!
+  flows: [Flow!]! @derivedFrom(field: "dvpSwapTransaction")
+  approvals: [DvPSwapApproval!]! @derivedFrom(field: "dvpSwapTransaction")
+}
+
+type DvPSwapApproval @entity(immutable: false) {
+  id: String!
+  dvpSwapTransaction: DvPSwapTransaction!
+  party: Account!
+  approvedAt: BigInt!
+  revokedAt: BigInt
+  active: Boolean!
+}
+
+type Flow @entity(immutable: false) {
+  id: String!
+  dvpSwapTransaction: DvPSwapTransaction!
+  flowId: BigInt!
+  from: Account!
+  to: Account!
+  token: Bytes!
+  amount: BigInt!
+  createdAt: BigInt!
+}
+
+# --------------------------------------------------
+# DvPSwap-Specific Events
+# --------------------------------------------------
+
+type DvPSwapCreatedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  transaction: Bytes!
+  dvpSwapId: Bytes!
+  creator: Account!
+  status: String!
+  cutoffDate: BigInt!
+}
+
+type DvPSwapStatusChangedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  transaction: Bytes!
+  dvpSwapId: Bytes!
+  status: String!
+}
+
+type DvPSwapApprovedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  transaction: Bytes!
+  dvpSwapId: Bytes!
+  party: Account!
+}
+
+type DvPSwapApprovalRevokedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  transaction: Bytes!
+  dvpSwapId: Bytes!
+  party: Account!
+}
+
+type DvPSwapExecutedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  transaction: Bytes!
+  dvpSwapId: Bytes!
+  executor: Account!
+}
+
+type DvPSwapExpiredEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  transaction: Bytes!
+  dvpSwapId: Bytes!
+}
+
+type DvPSwapAutoExecutionFailedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  transaction: Bytes!
+  dvpSwapId: Bytes!
+  executor: Account!
+  reason: String!
 }
