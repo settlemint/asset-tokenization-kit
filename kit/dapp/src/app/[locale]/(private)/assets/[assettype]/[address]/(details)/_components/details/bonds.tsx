@@ -132,7 +132,10 @@ export async function BondsDetails({
           : 0}
         %
       </DetailGridItem>
-      <DetailGridItem label={t("ownership-concentration")}>
+      <DetailGridItem
+        label={t("ownership-concentration")}
+        info={t("ownership-concentration-info")}
+      >
         {formatNumber(bond.concentration, {
           percentage: true,
           decimals: 2,
