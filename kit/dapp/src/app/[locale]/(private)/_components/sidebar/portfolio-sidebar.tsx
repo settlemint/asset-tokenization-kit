@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/sidebar";
 import { PortfolioManagement } from "./items/portfolio-management";
 import { TradeManagement } from "./items/trade-management";
-import { UserSettingsManagement } from "./items/user-settings-management";
 
 export async function PortfolioSidebar() {
   return (
@@ -22,7 +21,6 @@ export async function PortfolioSidebar() {
       <SidebarContent className="pt-4">
         <PortfolioManagement />
         <TradeManagement />
-        <UserSettingsManagement />
       </SidebarContent>
       <RoleGuard requiredRoles={["admin", "issuer"]}>
         <SidebarFooter>

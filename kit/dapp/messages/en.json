@@ -821,7 +821,8 @@
     "user-dropdown": {
       "documentation": "Documentation",
       "logout": "Log out",
-      "pending-transactions": "Pending Transactions"
+      "pending-transactions": "Pending Transactions",
+      "profile": "Manage profile"
     }
   },
   "paused": "Paused",
