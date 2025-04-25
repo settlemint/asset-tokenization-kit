@@ -238,6 +238,13 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup caches
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            .turbo
+            ~/.bun/install/cache
+
       - name: Install Helm
         uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
 
@@ -247,8 +254,32 @@ jobs:
           print-summary: false
           yq: latest
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
       - name: Install Bun dependencies
         run: bun install
+
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: ${{ secrets.SETTLEMINT_INSTANCE }}
+          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
+          dotEnvFile: ${{ secrets.ENV_FILE }}
+          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Version
         id: version
