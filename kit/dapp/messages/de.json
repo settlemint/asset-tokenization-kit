@@ -60,7 +60,8 @@
         "description": "Willkommen im Dashboard",
         "latest-events-heading": "Neueste Ereignisse",
         "stats-heading": "Statistiken",
-        "title": "Dashboard"
+        "title": "Dashboard",
+        "platform-management": "Plattformverwaltung"
       },
       "table": {
         "latest-events": {
@@ -133,8 +134,9 @@
       },
       "platform-management": {
         "group-title": "Plattformverwaltung",
-        "settings": "Plattform",
-        "user-management": "Benutzerverwaltung"
+        "settings": "Einstellungen",
+        "user-management": "Benutzerverwaltung",
+        "api": "API"
       },
       "portfolio-management": {
         "dashboard": "Dashboard",
@@ -699,6 +701,12 @@
       "documentation": "Dokumentation",
       "logout": "Abmelden",
       "pending-transactions": "Ausstehende Transaktionen"
+    },
+    "modeswitch": {
+      "assets": "Asset-Verwaltung",
+      "label": "Betriebsmodus",
+      "platform": "Plattformverwaltung",
+      "portfolio": "Mein Portfolio"
     }
   },
   "paused": "Pausiert",

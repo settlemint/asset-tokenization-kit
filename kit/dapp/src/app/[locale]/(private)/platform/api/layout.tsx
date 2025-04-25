@@ -27,11 +27,11 @@ export default async function ApiLayout({ children }: PropsWithChildren) {
           items={[
             {
               name: t("api-keys"),
-              href: "/portfolio/settings/api",
+              href: "/platform/api",
             },
             {
               name: t("api-docs"),
-              href: "/portfolio/settings/api/docs",
+              href: "/platform/api/docs",
             },
           ]}
         />
