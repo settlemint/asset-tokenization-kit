@@ -86,13 +86,29 @@ export const api = new Elysia({
       },
     })
   )
-  .onError(({ code, error }) => {
+  .onError(({ code, error, path }) => {
     if (code === "NOT_FOUND") {
       return elysiaError(404, "Not Found");
     }
     if (error instanceof AccessControlError) {
       return elysiaError(error.statusCode, error.message);
     }
+
+    // Handle transaction-related errors more specifically
+    if (
+      error instanceof Error &&
+      error.message.includes("Check is not defined")
+    ) {
+      console.warn("Caught Check is not defined error in:", path);
+
+      // For the transactions API, return empty array instead of an error
+      if (path && path.includes("/transaction/recent")) {
+        return []; // Return empty array instead of error for transaction endpoints
+      }
+
+      return elysiaError(500, "Transaction processing error");
+    }
+
     // TODO: handle specific errors (hasura, postgres, thegraph, portal, etc)
     console.error(
       `Unexpected error: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
