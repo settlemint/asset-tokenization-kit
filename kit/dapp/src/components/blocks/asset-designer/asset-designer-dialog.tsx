@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { uploadToStorage } from "@/lib/actions/upload";
@@ -1409,21 +1408,21 @@ export function AssetDesignerDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-screen h-screen w-screen p-0 overflow-hidden rounded-none border-none right-0 !max-w-screen">
+      <DialogContent className="max-h-screen h-[90vh] w-[90vw] p-0 overflow-hidden rounded-none border-none right-0 !max-w-screen rounded-2xl">
         <div className="flex h-full flex-col">
-          {/* Header */}
-          <DialogHeader className="py-4 px-6 border-b flex-row justify-between items-center bg-background">
-            <div>
-              <DialogTitle className="text-xl">{getAssetTitle()}</DialogTitle>
-              <DialogDescription>{getAssetDescription()}</DialogDescription>
-            </div>
-          </DialogHeader>
+          {/* Header - Removed from here */}
 
           {/* Main content area with sidebar */}
           <div className="flex flex-1 overflow-hidden">
             {/* Sidebar / Steps */}
-            <div className="w-64 bg-sidebar border-r p-6">
-              <div className="space-y-1">
+            <div className="w-64 bg-sidebar border-r p-6 flex flex-col">
+              {/* Moved Title and Description Here */}
+              <div className="mb-6">
+                <DialogTitle className="text-xl">{getAssetTitle()}</DialogTitle>
+                <DialogDescription>{getAssetDescription()}</DialogDescription>
+              </div>
+              {/* Existing Sidebar Content */}
+              <div className="space-y-1 flex-1 overflow-y-auto">
                 <StepItem
                   number={1}
                   title="Asset Type"
@@ -1528,6 +1527,7 @@ export function AssetDesignerDialog({
 
             {/* Content area */}
             <div className="flex-1 overflow-auto bg-background">
+              {/* Removed DialogHeader from here */}
               {currentStep === "type" && (
                 <AssetTypeSelection
                   selectedType={selectedAssetType}
