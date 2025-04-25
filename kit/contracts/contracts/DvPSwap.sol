@@ -27,15 +27,12 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
     /// @notice Status of a DvP swap
     /// @dev Defines the possible states for a DvP swap
     enum DvPSwapStatus {
-        PENDING_CREATION,     // Initial state when swap is being created
         OPEN,                 // Swap is created and waiting for approvals from all parties
         CLAIMED,              // Swap has been executed successfully
         REFUNDED,             // Swap has been refunded to the original parties
         EXPIRED,              // Swap has expired without being executed
         CANCELLED,            // Swap was cancelled before execution
-        FAILED,               // Swap failed due to execution error
-        INVALID,              // Swap parameters or state is invalid
-        AWAITING_APPROVAL     // Explicit status for waiting approval from counterparties
+        FAILED               // Swap failed due to execution error
     }
 
     /// @notice Flow represents a single token transfer between two parties
@@ -48,7 +45,7 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
 
     /// @notice DvP swap data structure
     /// @dev Stores all information about a DvP swap
-    struct DvPSwap {
+    struct DvPSwapData {
         string id;                   // Human-readable identifier for the swap
         address creator;             // Address that created the swap
         uint256 cutoffDate;          // Timestamp after which the swap expires
@@ -77,10 +74,11 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
     error DvPSwapNotApproved();
     error InvalidToken();
     error FailedExecution(string reason);
+    error InsufficientAllowance(address token, address owner, address spender, uint256 required, uint256 allowed);
 
     /// @notice Maps DvP swap ID to swap details
     /// @dev Stores all swaps by their unique ID
-    mapping(bytes32 => DvPSwap) private _dvpSwaps;
+    mapping(bytes32 => DvPSwapData) private _dvpSwaps;
 
     /// @notice Maps DvP swap ID to a boolean indicating if the swap exists
     /// @dev Used to quickly check if a swap ID is valid
@@ -150,7 +148,7 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
     /// @notice Event emitted when a DvP swap has expired
     /// @param dvpSwapId Unique identifier for the swap
     /// @param timestamp Time when the swap was marked as expired
-    event DvPSwapExpired(
+    event DvPSwapExpiredEvent(
         bytes32 indexed dvpSwapId,
         uint256 timestamp
     );
@@ -242,12 +240,12 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
         if (dvpSwapExists[dvpSwapId]) revert DvPSwapAlreadyExists();
         
         // Create swap
-        DvPSwap storage dvpSwap = _dvpSwaps[dvpSwapId];
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
         dvpSwap.id = id;
         dvpSwap.creator = _msgSender();
         dvpSwap.cutoffDate = cutoffDate;
         dvpSwap.createdAt = block.timestamp;
-        dvpSwap.status = DvPSwapStatus.PENDING_CREATION;
+        dvpSwap.status = DvPSwapStatus.OPEN;
         dvpSwap.isAutoExecuted = isAutoExecuted;
         
         // Add flows and validate tokens
@@ -268,12 +266,11 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
             emit FlowAdded(dvpSwapId, flow.from, flow.to, flow.token, flow.amount);
         }
         
-        // Mark swap as exists and open
+        // Mark swap as exists and set status to OPEN
         dvpSwapExists[dvpSwapId] = true;
         dvpSwap.status = DvPSwapStatus.OPEN;
         
         emit DvPSwapCreated(dvpSwapId, _msgSender(), id, cutoffDate);
-        emit DvPSwapStatusChanged(dvpSwapId, DvPSwapStatus.OPEN);
         
         return dvpSwapId;
     }
@@ -286,33 +283,56 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
         external 
         nonReentrant 
         whenNotPaused 
+        checkDvPSwapExists(dvpSwapId)
+        checkStatusIsOpenForAction(dvpSwapId)
+        checkDvPSwapNotExpired(dvpSwapId)
+        checkCallerIsNotApproved(dvpSwapId)
+        checkCallerIsInvolvedSender(dvpSwapId)
         returns (bool success) 
     {
-        // Verify swap exists
-        if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
+        // Verify swap exists - Handled by checkDvPSwapExists modifier
+        // if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
         
-        DvPSwap storage dvpSwap = _dvpSwaps[dvpSwapId];
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
         
-        // Verify swap state
-        if (dvpSwap.status != DvPSwapStatus.OPEN && 
-            dvpSwap.status != DvPSwapStatus.AWAITING_APPROVAL) 
-            revert InvalidDvPSwapStatus();
+        // Verify swap state - Handled by checkStatusIsOpenForAction modifier
+        // if (dvpSwap.status != DvPSwapStatus.OPEN && 
+        //     dvpSwap.status != DvPSwapStatus.AWAITING_APPROVAL) 
+        //     revert InvalidDvPSwapStatus();
         
-        // Verify swap not expired
-        if (block.timestamp > dvpSwap.cutoffDate) revert DvPSwapExpired();
+        // Verify swap not expired - Handled by checkDvPSwapNotExpired modifier
+        // if (block.timestamp > dvpSwap.cutoffDate) revert DvPSwapExpired();
         
-        // Verify caller is not already approved
-        if (dvpSwap.approvals[_msgSender()]) revert AlreadyApproved();
+        // Verify caller is not already approved - Handled by checkCallerIsNotApproved modifier
+        // if (dvpSwap.approvals[_msgSender()]) revert AlreadyApproved();
         
-        // Verify caller is involved in swap
-        bool isInvolved = false;
-        for (uint256 i = 0; i < dvpSwap.flows.length; i++) {
-            if (dvpSwap.flows[i].from == _msgSender()) {
-                isInvolved = true;
-                break;
+        // Verify caller is involved in swap - Handled by checkCallerIsInvolvedSender modifier
+        // bool isInvolved = false;
+        // for (uint256 i = 0; i < dvpSwap.flows.length; i++) {
+        //     if (dvpSwap.flows[i].from == _msgSender()) {
+        //         isInvolved = true;
+        //         break;
+        //     }
+        // }
+        // if (!isInvolved) revert NotInvolved();
+        
+        // Check allowance for all flows initiated by the caller
+        uint256 flowsLength = dvpSwap.flows.length;
+        for (uint256 i = 0; i < flowsLength; i++) {
+            Flow storage flow = dvpSwap.flows[i];
+            if (flow.from == _msgSender()) {
+                uint256 currentAllowance = IERC20(flow.token).allowance(_msgSender(), address(this));
+                if (currentAllowance < flow.amount) {
+                    revert InsufficientAllowance(
+                        flow.token, 
+                        _msgSender(), 
+                        address(this), 
+                        flow.amount, 
+                        currentAllowance
+                    );
+                }
             }
         }
-        if (!isInvolved) revert NotInvolved();
         
         // Mark as approved
         dvpSwap.approvals[_msgSender()] = true;
@@ -338,7 +358,7 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
     function isDvPSwapFullyApproved(bytes32 dvpSwapId) public view returns (bool) {
         if (!dvpSwapExists[dvpSwapId]) return false;
         
-        DvPSwap storage dvpSwap = _dvpSwaps[dvpSwapId];
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
         
         // Check all unique "from" addresses for approval
         for (uint256 i = 0; i < dvpSwap.flows.length; i++) {
@@ -358,23 +378,27 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
         external 
         nonReentrant 
         whenNotPaused 
+        checkDvPSwapExists(dvpSwapId)
+        checkStatusIsOpenForAction(dvpSwapId)
+        checkDvPSwapNotExpired(dvpSwapId)
+        checkFullyApproved(dvpSwapId)
         returns (bool) 
     {
-        // Verify swap exists
-        if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
+        // Verify swap exists - Handled by checkDvPSwapExists
+        // if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
         
-        DvPSwap storage dvpSwap = _dvpSwaps[dvpSwapId];
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
         
-        // Verify swap state
-        if (dvpSwap.status != DvPSwapStatus.OPEN && 
-            dvpSwap.status != DvPSwapStatus.AWAITING_APPROVAL) 
-            revert InvalidDvPSwapStatus();
+        // Verify swap state - Handled by checkStatusIsOpenForAction
+        // if (dvpSwap.status != DvPSwapStatus.OPEN && 
+        //     dvpSwap.status != DvPSwapStatus.AWAITING_APPROVAL) 
+        //     revert InvalidDvPSwapStatus();
         
-        // Verify swap is not expired
-        if (block.timestamp > dvpSwap.cutoffDate) revert DvPSwapExpired();
+        // Verify swap is not expired - Handled by checkDvPSwapNotExpired
+        // if (block.timestamp > dvpSwap.cutoffDate) revert DvPSwapExpired();
         
-        // Verify all parties have approved
-        if (!isDvPSwapFullyApproved(dvpSwapId)) revert DvPSwapNotApproved();
+        // Verify all parties have approved - Handled by checkFullyApproved
+        // if (!isDvPSwapFullyApproved(dvpSwapId)) revert DvPSwapNotApproved();
         
         // Execute all token transfers
         for (uint256 i = 0; i < dvpSwap.flows.length; i++) {
@@ -398,20 +422,23 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
         external 
         nonReentrant 
         whenNotPaused 
+        checkDvPSwapExists(dvpSwapId)
+        checkStatusIsOpenForAction(dvpSwapId)
+        checkCallerIsApproved(dvpSwapId)
         returns (bool) 
     {
-        // Verify swap exists
-        if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
+        // Verify swap exists - Handled by checkDvPSwapExists
+        // if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
         
-        DvPSwap storage dvpSwap = _dvpSwaps[dvpSwapId];
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
         
-        // Verify swap state
-        if (dvpSwap.status != DvPSwapStatus.OPEN && 
-            dvpSwap.status != DvPSwapStatus.AWAITING_APPROVAL) 
-            revert InvalidDvPSwapStatus();
+        // Verify swap state - Handled by checkStatusIsOpenForAction
+        // if (dvpSwap.status != DvPSwapStatus.OPEN && 
+        //     dvpSwap.status != DvPSwapStatus.AWAITING_APPROVAL) 
+        //     revert InvalidDvPSwapStatus();
         
-        // Verify caller has approved
-        if (!dvpSwap.approvals[_msgSender()]) revert NotApproved();
+        // Verify caller has approved - Handled by checkCallerIsApproved
+        // if (!dvpSwap.approvals[_msgSender()]) revert NotApproved();
         
         // Revoke approval
         dvpSwap.approvals[_msgSender()] = false;
@@ -427,24 +454,27 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
         external 
         nonReentrant 
         whenNotPaused 
+        checkDvPSwapExists(dvpSwapId)
+        checkStatusIsOpenForAction(dvpSwapId)
+        checkDvPSwapIsExpired(dvpSwapId)
         returns (bool) 
     {
-        // Verify swap exists
-        if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
+        // Verify swap exists - Handled by checkDvPSwapExists
+        // if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
         
-        DvPSwap storage dvpSwap = _dvpSwaps[dvpSwapId];
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
         
-        // Verify swap state
-        if (dvpSwap.status != DvPSwapStatus.OPEN && 
-            dvpSwap.status != DvPSwapStatus.AWAITING_APPROVAL) 
-            revert InvalidDvPSwapStatus();
+        // Verify swap state - Handled by checkStatusIsOpenForAction
+        // if (dvpSwap.status != DvPSwapStatus.OPEN && 
+        //     dvpSwap.status != DvPSwapStatus.AWAITING_APPROVAL) 
+        //     revert InvalidDvPSwapStatus();
         
-        // Verify swap is expired
-        if (block.timestamp <= dvpSwap.cutoffDate) revert InvalidDvPSwapParameters();
+        // Verify swap is expired - Handled by checkDvPSwapIsExpired
+        // if (block.timestamp <= dvpSwap.cutoffDate) revert InvalidDvPSwapParameters();
         
         // Update swap status
         dvpSwap.status = DvPSwapStatus.EXPIRED;
-        emit DvPSwapExpired(dvpSwapId, block.timestamp);
+        emit DvPSwapExpiredEvent(dvpSwapId, block.timestamp);
         emit DvPSwapStatusChanged(dvpSwapId, DvPSwapStatus.EXPIRED);
         
         return true;
@@ -458,20 +488,23 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
         external 
         nonReentrant 
         whenNotPaused 
+        checkDvPSwapExists(dvpSwapId)
+        checkStatusIsOpenForCancel(dvpSwapId)
+        checkCallerIsCreator(dvpSwapId)
         returns (bool) 
     {
-        // Verify swap exists
-        if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
+        // Verify swap exists - Handled by checkDvPSwapExists
+        // if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
         
-        DvPSwap storage dvpSwap = _dvpSwaps[dvpSwapId];
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
         
-        // Verify swap state
-        if (dvpSwap.status != DvPSwapStatus.PENDING_CREATION && 
-            dvpSwap.status != DvPSwapStatus.OPEN) 
-            revert InvalidDvPSwapStatus();
+        // Verify swap state - Handled by checkStatusIsOpenForCancel
+        // if (dvpSwap.status != DvPSwapStatus.PENDING_CREATION && 
+        //     dvpSwap.status != DvPSwapStatus.OPEN) 
+        //     revert InvalidDvPSwapStatus();
         
-        // Verify caller is the creator
-        if (_msgSender() != dvpSwap.creator) revert NotAuthorized();
+        // Verify caller is the creator - Handled by checkCallerIsCreator
+        // if (_msgSender() != dvpSwap.creator) revert NotAuthorized();
         
         // Update swap status
         dvpSwap.status = DvPSwapStatus.CANCELLED;
@@ -489,80 +522,42 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
         external 
         nonReentrant 
         whenNotPaused 
+        checkDvPSwapExists(dvpSwapId)
+        checkCallerCanMarkFailed(dvpSwapId)
+        checkStatusAllowsFailure(dvpSwapId)
         returns (bool) 
     {
-        // Verify swap exists
-        if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
+        // Verify swap exists - Handled by checkDvPSwapExists
+        // if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
         
-        DvPSwap storage dvpSwap = _dvpSwaps[dvpSwapId];
+        // DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId]; // Already accessed in modifiers
         
-        // Verify caller is either involved in swap or admin
-        bool isAuthorized = false;
+        // Verify caller is either involved in swap or admin - Handled by checkCallerCanMarkFailed
+        // bool isAuthorized = false;
+        // for (uint256 i = 0; i < dvpSwap.flows.length; i++) {
+        //     if (dvpSwap.flows[i].from == _msgSender() || 
+        //         dvpSwap.flows[i].to == _msgSender()) {
+        //         isAuthorized = true;
+        //         break;
+        //     }
+        // }
+        // if (!isAuthorized && hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) {
+        //     isAuthorized = true;
+        // }
+        // if (!isAuthorized) revert NotAuthorized();
         
-        // Check if caller is involved in the swap
-        for (uint256 i = 0; i < dvpSwap.flows.length; i++) {
-            if (dvpSwap.flows[i].from == _msgSender() || 
-                dvpSwap.flows[i].to == _msgSender()) {
-                isAuthorized = true;
-                break;
-            }
-        }
-        
-        // Check if caller is admin
-        if (!isAuthorized && hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) {
-            isAuthorized = true;
-        }
-        
-        if (!isAuthorized) revert NotAuthorized();
-        
-        // Verify swap state allows failure marking
-        if (dvpSwap.status == DvPSwapStatus.CLAIMED || 
-            dvpSwap.status == DvPSwapStatus.EXPIRED ||
-            dvpSwap.status == DvPSwapStatus.CANCELLED || 
-            dvpSwap.status == DvPSwapStatus.FAILED ||
-            dvpSwap.status == DvPSwapStatus.INVALID) 
-            revert InvalidDvPSwapStatus();
+        // Verify swap state allows failure marking - Handled by checkStatusAllowsFailure
+        // if (dvpSwap.status == DvPSwapStatus.CLAIMED || 
+        //     dvpSwap.status == DvPSwapStatus.EXPIRED ||
+        //     dvpSwap.status == DvPSwapStatus.CANCELLED || 
+        //     dvpSwap.status == DvPSwapStatus.FAILED ||
+        //     dvpSwap.status == DvPSwapStatus.INVALID) 
+        //     revert InvalidDvPSwapStatus();
         
         // Update swap status
-        dvpSwap.status = DvPSwapStatus.FAILED;
+        _dvpSwaps[dvpSwapId].status = DvPSwapStatus.FAILED;
         emit DvPSwapStatusChanged(dvpSwapId, DvPSwapStatus.FAILED);
         emit DvPSwapAutoExecutionFailed(dvpSwapId, _msgSender(), reason);
-        
-        return true;
-    }
-
-    /// @notice Updates the status of a DvP swap to AWAITING_APPROVAL
-    /// @dev Only callable for swaps in OPEN status
-    /// @param dvpSwapId Unique identifier of the swap
-    /// @return success True if the status was updated successfully
-    function requestDvPSwapApproval(bytes32 dvpSwapId) 
-        external 
-        nonReentrant 
-        whenNotPaused 
-        returns (bool) 
-    {
-        // Verify swap exists
-        if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
-        
-        DvPSwap storage dvpSwap = _dvpSwaps[dvpSwapId];
-        
-        // Verify swap state
-        if (dvpSwap.status != DvPSwapStatus.OPEN) revert InvalidDvPSwapStatus();
-        
-        // Verify caller is involved in swap
-        bool isInvolved = false;
-        for (uint256 i = 0; i < dvpSwap.flows.length; i++) {
-            if (dvpSwap.flows[i].from == _msgSender() || 
-                dvpSwap.flows[i].to == _msgSender()) {
-                isInvolved = true;
-                break;
-            }
-        }
-        if (!isInvolved) revert NotInvolved();
-        
-        // Update swap status
-        dvpSwap.status = DvPSwapStatus.AWAITING_APPROVAL;
-        emit DvPSwapStatusChanged(dvpSwapId, DvPSwapStatus.AWAITING_APPROVAL);
         
         return true;
     }
@@ -592,7 +587,7 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
     {
         if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
         
-        DvPSwap storage dvpSwap = _dvpSwaps[dvpSwapId];
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
         
         return (
             dvpSwap.id,
@@ -628,5 +623,133 @@ contract DvPSwap is ReentrancyGuard, Pausable, AccessControl, ERC2771Context {
     {
         if (!dvpSwapExists[dvpSwapId]) return false;
         return block.timestamp > _dvpSwaps[dvpSwapId].cutoffDate;
+    }
+
+    // =========================================================================
+    // Modifiers
+    // =========================================================================
+
+    /// @dev Modifier to check if a DvP swap exists.
+    modifier checkDvPSwapExists(bytes32 dvpSwapId) {
+        if (!dvpSwapExists[dvpSwapId]) revert DvPSwapNotFound();
+        _;
+    }
+
+    /// @dev Modifier to check if a DvP swap has not expired.
+    modifier checkDvPSwapNotExpired(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        if (block.timestamp > dvpSwap.cutoffDate) revert DvPSwapExpired();
+        _;
+    }
+
+    /// @dev Modifier to check if a DvP swap has expired.
+    modifier checkDvPSwapIsExpired(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        if (block.timestamp <= dvpSwap.cutoffDate) revert InvalidDvPSwapParameters(); // Reusing error for "not expired yet"
+        _;
+    }
+
+    /// @dev Modifier to check if swap status is OPEN (suitable for actions like approve, execute, revoke, expire).
+    modifier checkStatusIsOpenForAction(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        // Only check for OPEN status
+        if (dvpSwap.status != DvPSwapStatus.OPEN) 
+            revert InvalidDvPSwapStatus();
+        _;
+    }
+
+    /// @dev Modifier to check if swap status is OPEN (suitable for cancellation).
+    modifier checkStatusIsOpenForCancel(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        // Only check for OPEN status
+        if (dvpSwap.status != DvPSwapStatus.OPEN) 
+            revert InvalidDvPSwapStatus();
+        _;
+    }
+
+    /// @dev Modifier to check if swap status allows marking as failed.
+    modifier checkStatusAllowsFailure(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        if (dvpSwap.status == DvPSwapStatus.CLAIMED || 
+            dvpSwap.status == DvPSwapStatus.EXPIRED ||
+            dvpSwap.status == DvPSwapStatus.CANCELLED || 
+            dvpSwap.status == DvPSwapStatus.FAILED)
+            // Removed: dvpSwap.status == DvPSwapStatus.INVALID
+            revert InvalidDvPSwapStatus();
+        _;
+    }
+
+    /// @dev Modifier to check if the caller has not already approved the swap.
+    modifier checkCallerIsNotApproved(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        if (dvpSwap.approvals[_msgSender()]) revert AlreadyApproved();
+        _;
+    }
+
+    /// @dev Modifier to check if the caller has already approved the swap.
+    modifier checkCallerIsApproved(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        if (!dvpSwap.approvals[_msgSender()]) revert NotApproved();
+        _;
+    }
+
+    /// @dev Modifier to check if the caller is a sender in any flow.
+    modifier checkCallerIsInvolvedSender(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        bool isInvolved = false;
+        for (uint256 i = 0; i < dvpSwap.flows.length; i++) {
+            if (dvpSwap.flows[i].from == _msgSender()) {
+                isInvolved = true;
+                break;
+            }
+        }
+        if (!isInvolved) revert NotInvolved();
+        _;
+    }
+
+    /// @dev Modifier to check if the caller is involved (sender or receiver) in any flow.
+    modifier checkCallerIsInvolvedAny(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        bool isInvolved = false;
+        for (uint256 i = 0; i < dvpSwap.flows.length; i++) {
+            if (dvpSwap.flows[i].from == _msgSender() || 
+                dvpSwap.flows[i].to == _msgSender()) {
+                isInvolved = true;
+                break;
+            }
+        }
+        if (!isInvolved) revert NotInvolved();
+        _;
+    }
+
+    /// @dev Modifier to check if the caller is the creator of the swap.
+    modifier checkCallerIsCreator(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        if (_msgSender() != dvpSwap.creator) revert NotAuthorized();
+        _;
+    }
+
+    /// @dev Modifier to check if the caller is authorized to mark the swap as failed.
+    modifier checkCallerCanMarkFailed(bytes32 dvpSwapId) {
+        DvPSwapData storage dvpSwap = _dvpSwaps[dvpSwapId];
+        bool isAuthorized = false;
+        for (uint256 i = 0; i < dvpSwap.flows.length; i++) {
+            if (dvpSwap.flows[i].from == _msgSender() || 
+                dvpSwap.flows[i].to == _msgSender()) {
+                isAuthorized = true;
+                break;
+            }
+        }
+        if (!isAuthorized && hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) {
+            isAuthorized = true;
+        }
+        if (!isAuthorized) revert NotAuthorized();
+        _;
+    }
+
+    /// @dev Modifier to check if the swap is fully approved by all senders.
+    modifier checkFullyApproved(bytes32 dvpSwapId) {
+        if (!isDvPSwapFullyApproved(dvpSwapId)) revert DvPSwapNotApproved();
+        _;
     }
 }
