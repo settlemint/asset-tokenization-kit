@@ -541,12 +541,12 @@ function PropertyFilterOptionOperatorMenu<TData>({
     (o) => o.target === filterDetails.target
   );
 
-  const changeValue = (value: string) => {
+  const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      values: [value],
+      operator: operator,
     }));
-    console.log(`Setting filter value for ${column.id} to:`, value);
+    console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
   };
 
@@ -554,7 +554,7 @@ function PropertyFilterOptionOperatorMenu<TData>({
     <CommandGroup heading="Operators">
       {relatedFilters.map((r) => {
         return (
-          <CommandItem onSelect={changeValue} value={r.value} key={r.value}>
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
             {r.label}
           </CommandItem>
         );
@@ -574,12 +574,12 @@ function PropertyFilterMultiOptionOperatorMenu<TData>({
     (o) => o.target === filterDetails.target
   );
 
-  const changeValue = (value: string) => {
+  const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      values: [value],
+      operator: operator,
     }));
-    console.log(`Setting filter value for ${column.id} to:`, value);
+    console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
   };
 
@@ -587,7 +587,7 @@ function PropertyFilterMultiOptionOperatorMenu<TData>({
     <CommandGroup heading="Operators">
       {relatedFilters.map((r) => {
         return (
-          <CommandItem onSelect={changeValue} value={r.value} key={r.value}>
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
             {r.label}
           </CommandItem>
         );
@@ -607,12 +607,12 @@ function PropertyFilterDateOperatorMenu<TData>({
     (o) => o.target === filterDetails.target
   );
 
-  const changeValue = (value: string) => {
+  const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      values: [value],
+      operator: operator,
     }));
-    console.log(`Setting filter value for ${column.id} to:`, value);
+    console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
   };
 
@@ -620,7 +620,7 @@ function PropertyFilterDateOperatorMenu<TData>({
     <CommandGroup>
       {relatedFilters.map((r) => {
         return (
-          <CommandItem onSelect={changeValue} value={r.value} key={r.value}>
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
             {r.label}
           </CommandItem>
         );
@@ -640,12 +640,12 @@ export function PropertyFilterTextOperatorMenu<TData>({
     (o) => o.target === filterDetails.target
   );
 
-  const changeValue = (value: string) => {
+  const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      values: [value],
+      operator: operator,
     }));
-    console.log(`Setting filter value for ${column.id} to:`, value);
+    console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
   };
 
@@ -653,7 +653,7 @@ export function PropertyFilterTextOperatorMenu<TData>({
     <CommandGroup heading="Operators">
       {relatedFilters.map((r) => {
         return (
-          <CommandItem onSelect={changeValue} value={r.value} key={r.value}>
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
             {r.label}
           </CommandItem>
         );
@@ -669,12 +669,12 @@ function PropertyFilterNumberOperatorMenu<TData>({
   // Show all related operators
   const relatedFilters = Object.values(numberFilterDetails);
 
-  const changeValue = (value: keyof typeof numberFilterDetails) => {
+  const changeOperator = (operator: string) => {
     column.setFilterValue((old: FilterValue<"number", TData>) => ({
       ...old,
-      values: [value],
+      operator: operator,
     }));
-    console.log(`Setting filter value for ${column.id} to:`, value);
+    console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
   };
 
@@ -682,12 +682,8 @@ function PropertyFilterNumberOperatorMenu<TData>({
     <div>
       <CommandGroup heading="Operators">
         {relatedFilters.map((r) => (
-          <CommandItem
-            onSelect={() => changeValue(r.value)}
-            value={r.value}
-            key={r.value}
-          >
-            {r.label} {/**/}
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
+            {r.label}
           </CommandItem>
         ))}
       </CommandGroup>
