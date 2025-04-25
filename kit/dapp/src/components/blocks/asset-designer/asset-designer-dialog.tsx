@@ -87,6 +87,47 @@ export type AssetDesignerStep =
   | "regulation"
   | "summary";
 
+// Define the order of steps
+const stepsOrder: AssetDesignerStep[] = [
+  "type",
+  "details",
+  "configuration",
+  "permissions",
+  "regulation",
+  "summary",
+];
+
+// Define details for each step (title, description)
+const stepDetailsMap: Record<
+  AssetDesignerStep,
+  { title: string; description: string }
+> = {
+  type: {
+    title: "Asset Type",
+    description: "Choose the type of digital asset to create.",
+  },
+  details: {
+    title: "Basic information",
+    description: "Provide general information about your asset.",
+  },
+  configuration: {
+    title: "Asset configuration",
+    description: "Configure specific parameters for your asset.",
+  },
+  permissions: {
+    title: "Asset permissions",
+    description: "Define who can manage and use this asset.",
+  },
+  regulation: {
+    title: "Regulation",
+    description: "Configure regulatory requirements for your asset.",
+  },
+  summary: {
+    title: "Summary",
+    description: "Review all the details before issuing your asset.",
+  },
+};
+
 interface AssetDesignerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -1406,6 +1447,8 @@ export function AssetDesignerDialog({
     verificationForm.reset();
   };
 
+  const currentStepIndex = stepsOrder.indexOf(currentStep);
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-screen h-[90vh] w-[90vw] p-0 overflow-hidden rounded-none border-none right-0 !max-w-screen rounded-2xl">
@@ -1421,434 +1464,77 @@ export function AssetDesignerDialog({
                 <DialogTitle className="text-xl">{getAssetTitle()}</DialogTitle>
                 <DialogDescription>{getAssetDescription()}</DialogDescription>
               </div>
-              {/* Existing Sidebar Content */}
+              {/* Existing Sidebar Content - Refactored */}
               <div className="space-y-0 flex-1 overflow-y-auto relative">
-                {/* Step 1 */}
-                <div className="relative py-2">
-                  {/* Vertical line from the middle of this step number to the next */}
-                  <div className="absolute left-[1.5rem] top-[1.4rem] h-[calc(100%+0.5rem)] w-0 border-l-2 border-dashed border-slate-300 z-0"></div>
+                {stepsOrder.map((step, index) => {
+                  const isCurrent = currentStep === step;
+                  const isCompleted =
+                    index < currentStepIndex && selectedAssetType !== null;
+                  // Step is disabled if it's beyond the current step, OR if no asset type is selected and it's not the first step.
+                  const isDisabled =
+                    index > currentStepIndex ||
+                    (!selectedAssetType && index > 0);
+                  // Special case: Step 1 ('type') is never disabled based on currentStepIndex
+                  const finalDisabled = step === "type" ? false : isDisabled;
 
-                  <button
-                    type="button"
-                    className={cn(
-                      "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-10",
-                      currentStep === "type"
-                        ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" // Remove bg-primary and text-primary-foreground
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                      !selectedAssetType && "cursor-pointer"
-                    )}
-                    onClick={() => setCurrentStep("type")}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className={cn(
-                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium bg-sidebar z-20 relative",
-                          currentStep === "type"
-                            ? "border-primary font-bold" // Add font-bold to make the number bold
-                            : "border-sidebar-border",
-                          currentStep !== "type" &&
-                            selectedAssetType !== null &&
-                            "bg-primary text-primary-foreground"
-                        )}
-                      >
-                        {currentStep !== "type" && selectedAssetType !== null
-                          ? "✓"
-                          : "1"}
-                      </div>
-                      <span
-                        className={cn(
-                          "text-sm",
-                          currentStep === "type" ? "font-bold" : "font-medium" // Use bold for active step
-                        )}
-                      >
-                        Asset Type
-                      </span>
-                    </div>
-                    <p
-                      className={cn(
-                        "text-xs mt-1 ml-9",
-                        currentStep === "type"
-                          ? "text-sidebar-foreground/70"
-                          : "text-sidebar-foreground/25"
+                  const stepDetails = stepDetailsMap[step];
+
+                  return (
+                    <div key={step} className="relative py-2">
+                      {/* Vertical line - Conditionally render */}
+                      {index < stepsOrder.length - 1 && (
+                        <div className="absolute left-[1.5rem] top-[1.4rem] h-[calc(100%+0.5rem)] w-0 border-l-2 border-dashed border-slate-300 z-0"></div>
                       )}
-                    >
-                      Choose the type of digital asset to create.
-                    </p>
-                  </button>
-                </div>
 
-                {/* Step 2 */}
-                <div className="relative py-2">
-                  {/* Vertical line from the middle of this step number to the next */}
-                  <div className="absolute left-[1.5rem] top-[1.4rem] h-[calc(100%+0.5rem)] w-0 border-l-2 border-dashed border-slate-300 z-0"></div>
-
-                  <button
-                    type="button"
-                    className={cn(
-                      "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-10",
-                      currentStep === "details"
-                        ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                      (!selectedAssetType || currentStep === "type") &&
-                        "cursor-not-allowed",
-                      (currentStep === "type" ||
-                        currentStep === "configuration" ||
-                        currentStep === "permissions" ||
-                        currentStep === "regulation" ||
-                        currentStep === "summary") &&
-                        "text-muted-foreground"
-                    )}
-                    onClick={() =>
-                      selectedAssetType && setCurrentStep("details")
-                    }
-                    disabled={!selectedAssetType}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div
+                      <button
+                        type="button"
                         className={cn(
-                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium bg-sidebar z-20 relative",
-                          currentStep === "details"
-                            ? "border-primary font-bold"
-                            : "border-sidebar-border",
-                          currentStep !== "type" &&
-                            currentStep !== "details" &&
-                            selectedAssetType !== null &&
-                            "bg-primary text-primary-foreground"
+                          "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-10",
+                          isCurrent
+                            ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" // Active state styles (though background might not change)
+                            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground", // Inactive state styles
+                          finalDisabled && "cursor-not-allowed", // Disabled cursor
+                          !isCurrent && "text-muted-foreground" // Muted text for inactive steps (applied to button text)
                         )}
+                        onClick={() => !finalDisabled && setCurrentStep(step)}
+                        disabled={finalDisabled}
                       >
-                        {currentStep !== "type" &&
-                        currentStep !== "details" &&
-                        selectedAssetType !== null
-                          ? "✓"
-                          : "2"}
-                      </div>
-                      <span
-                        className={cn(
-                          "text-sm",
-                          currentStep === "details"
-                            ? "font-bold"
-                            : "font-medium"
-                        )}
-                      >
-                        Basic information
-                      </span>
+                        <div className="flex items-center space-x-3">
+                          <div
+                            className={cn(
+                              "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium bg-sidebar z-20 relative",
+                              isCurrent
+                                ? "border-primary font-bold" // Active indicator
+                                : "border-sidebar-border", // Inactive indicator border
+                              isCompleted &&
+                                "bg-primary text-primary-foreground" // Completed indicator
+                            )}
+                          >
+                            {isCompleted ? "✓" : index + 1}
+                          </div>
+                          <span
+                            className={cn(
+                              "text-sm",
+                              isCurrent ? "font-bold" : "font-medium" // Active title bold
+                            )}
+                          >
+                            {stepDetails.title}
+                          </span>
+                        </div>
+                        <p
+                          className={cn(
+                            "text-xs mt-1 ml-9",
+                            isCurrent
+                              ? "text-sidebar-foreground/70" // Active description opacity
+                              : "text-sidebar-foreground/25" // Inactive description opacity
+                          )}
+                        >
+                          {stepDetails.description}
+                        </p>
+                      </button>
                     </div>
-                    <p
-                      className={cn(
-                        "text-xs mt-1 ml-9",
-                        currentStep === "details"
-                          ? "text-sidebar-foreground/70"
-                          : "text-sidebar-foreground/25"
-                      )}
-                    >
-                      Provide general information about your asset.
-                    </p>
-                  </button>
-                </div>
-
-                {/* Step 3 */}
-                <div className="relative py-2">
-                  {/* Vertical line from the middle of this step number to the next */}
-                  <div className="absolute left-[1.5rem] top-[1.4rem] h-[calc(100%+0.5rem)] w-0 border-l-2 border-dashed border-slate-300 z-0"></div>
-
-                  <button
-                    type="button"
-                    className={cn(
-                      "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-10",
-                      currentStep === "configuration"
-                        ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                      // Remove opacity-50, keep cursor-not-allowed for disabled state
-                      (!selectedAssetType || currentStep === "type") &&
-                        "cursor-not-allowed",
-                      (currentStep === "type" ||
-                        currentStep === "details" ||
-                        currentStep === "permissions" ||
-                        currentStep === "regulation" ||
-                        currentStep === "summary") &&
-                        "text-muted-foreground"
-                    )}
-                    onClick={() =>
-                      selectedAssetType && setCurrentStep("configuration")
-                    }
-                    disabled={!selectedAssetType || currentStep === "type"}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className={cn(
-                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium bg-sidebar z-20 relative",
-                          currentStep === "configuration"
-                            ? "border-primary font-bold"
-                            : "border-sidebar-border",
-                          currentStep !== "type" &&
-                            currentStep !== "details" &&
-                            currentStep !== "configuration" &&
-                            selectedAssetType !== null &&
-                            "bg-primary text-primary-foreground"
-                        )}
-                      >
-                        {currentStep !== "type" &&
-                        currentStep !== "details" &&
-                        currentStep !== "configuration" &&
-                        selectedAssetType !== null
-                          ? "✓"
-                          : "3"}
-                      </div>
-                      <span
-                        className={cn(
-                          "text-sm",
-                          currentStep === "configuration"
-                            ? "font-bold"
-                            : "font-medium"
-                        )}
-                      >
-                        Asset configuration
-                      </span>
-                    </div>
-                    <p
-                      className={cn(
-                        "text-xs mt-1 ml-9",
-                        currentStep === "configuration"
-                          ? "text-sidebar-foreground/70"
-                          : "text-sidebar-foreground/25"
-                      )}
-                    >
-                      Configure specific parameters for your asset.
-                    </p>
-                  </button>
-                </div>
-
-                {/* Step 4 */}
-                <div className="relative py-2">
-                  {/* Vertical line from the middle of this step number to the next */}
-                  <div className="absolute left-[1.5rem] top-[1.4rem] h-[calc(100%+0.5rem)] w-0 border-l-2 border-dashed border-slate-300 z-0"></div>
-
-                  <button
-                    type="button"
-                    className={cn(
-                      "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-10",
-                      currentStep === "permissions"
-                        ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                      (!selectedAssetType ||
-                        currentStep === "type" ||
-                        currentStep === "details") &&
-                        "cursor-not-allowed",
-                      (currentStep === "type" ||
-                        currentStep === "details" ||
-                        currentStep === "configuration" ||
-                        currentStep === "regulation" ||
-                        currentStep === "summary") &&
-                        "text-muted-foreground"
-                    )}
-                    onClick={() =>
-                      selectedAssetType && setCurrentStep("permissions")
-                    }
-                    disabled={
-                      !selectedAssetType ||
-                      currentStep === "type" ||
-                      currentStep === "details"
-                    }
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className={cn(
-                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium bg-sidebar z-20 relative",
-                          currentStep === "permissions"
-                            ? "border-primary font-bold"
-                            : "border-sidebar-border",
-                          currentStep !== "type" &&
-                            currentStep !== "details" &&
-                            currentStep !== "configuration" &&
-                            currentStep !== "permissions" &&
-                            selectedAssetType !== null &&
-                            "bg-primary text-primary-foreground"
-                        )}
-                      >
-                        {currentStep !== "type" &&
-                        currentStep !== "details" &&
-                        currentStep !== "configuration" &&
-                        currentStep !== "permissions" &&
-                        selectedAssetType !== null
-                          ? "✓"
-                          : "4"}
-                      </div>
-                      <span
-                        className={cn(
-                          "text-sm",
-                          currentStep === "permissions"
-                            ? "font-bold"
-                            : "font-medium"
-                        )}
-                      >
-                        Asset permissions
-                      </span>
-                    </div>
-                    <p
-                      className={cn(
-                        "text-xs mt-1 ml-9",
-                        currentStep === "permissions"
-                          ? "text-sidebar-foreground/70"
-                          : "text-sidebar-foreground/25"
-                      )}
-                    >
-                      Define who can manage and use this asset.
-                    </p>
-                  </button>
-                </div>
-
-                {/* Step 5 - Has a connector line from step 4 */}
-                <div className="relative py-2">
-                  {/* Vertical line from the middle of this step number to the next */}
-                  <div className="absolute left-[1.5rem] top-[1.4rem] h-[calc(100%+0.5rem)] w-0 border-l-2 border-dashed border-slate-300 z-0"></div>
-
-                  <button
-                    type="button"
-                    className={cn(
-                      "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-10",
-                      currentStep === "regulation"
-                        ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                      (!selectedAssetType ||
-                        currentStep === "type" ||
-                        currentStep === "details" ||
-                        currentStep === "configuration") &&
-                        "cursor-not-allowed",
-                      (currentStep === "type" ||
-                        currentStep === "details" ||
-                        currentStep === "configuration" ||
-                        currentStep === "permissions" ||
-                        currentStep === "summary") &&
-                        "text-muted-foreground"
-                    )}
-                    onClick={() =>
-                      selectedAssetType && setCurrentStep("regulation")
-                    }
-                    disabled={
-                      !selectedAssetType ||
-                      currentStep === "type" ||
-                      currentStep === "details" ||
-                      currentStep === "configuration"
-                    }
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className={cn(
-                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium bg-sidebar z-20 relative",
-                          currentStep === "regulation"
-                            ? "border-primary font-bold"
-                            : "border-sidebar-border",
-                          currentStep !== "type" &&
-                            currentStep !== "details" &&
-                            currentStep !== "configuration" &&
-                            currentStep !== "permissions" &&
-                            currentStep !== "regulation" &&
-                            selectedAssetType !== null &&
-                            "bg-primary text-primary-foreground"
-                        )}
-                      >
-                        {currentStep !== "type" &&
-                        currentStep !== "details" &&
-                        currentStep !== "configuration" &&
-                        currentStep !== "permissions" &&
-                        currentStep !== "regulation" &&
-                        selectedAssetType !== null
-                          ? "✓"
-                          : "5"}
-                      </div>
-                      <span
-                        className={cn(
-                          "text-sm",
-                          currentStep === "regulation"
-                            ? "font-bold"
-                            : "font-medium"
-                        )}
-                      >
-                        Regulation
-                      </span>
-                    </div>
-                    <p
-                      className={cn(
-                        "text-xs mt-1 ml-9",
-                        currentStep === "regulation"
-                          ? "text-sidebar-foreground/70"
-                          : "text-sidebar-foreground/25"
-                      )}
-                    >
-                      Configure regulatory requirements for your asset.
-                    </p>
-                  </button>
-                </div>
-
-                {/* Step 6 - Last step doesn't need a connector */}
-                <div className="relative py-2">
-                  <button
-                    type="button"
-                    className={cn(
-                      "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-10",
-                      currentStep === "summary"
-                        ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                      (!selectedAssetType ||
-                        currentStep === "type" ||
-                        currentStep === "details" ||
-                        currentStep === "configuration" ||
-                        currentStep === "permissions" ||
-                        currentStep === "regulation") &&
-                        "cursor-not-allowed",
-                      (currentStep === "type" ||
-                        currentStep === "details" ||
-                        currentStep === "configuration" ||
-                        currentStep === "permissions" ||
-                        currentStep === "regulation") &&
-                        "text-muted-foreground"
-                    )}
-                    onClick={() =>
-                      selectedAssetType && setCurrentStep("summary")
-                    }
-                    disabled={
-                      !selectedAssetType ||
-                      currentStep === "type" ||
-                      currentStep === "details" ||
-                      currentStep === "configuration" ||
-                      currentStep === "permissions" ||
-                      currentStep === "regulation"
-                    }
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className={cn(
-                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium bg-sidebar z-20 relative",
-                          currentStep === "summary"
-                            ? "border-primary font-bold"
-                            : "border-sidebar-border"
-                        )}
-                      >
-                        6
-                      </div>
-                      <span
-                        className={cn(
-                          "text-sm",
-                          currentStep === "summary"
-                            ? "font-bold"
-                            : "font-medium"
-                        )}
-                      >
-                        Summary
-                      </span>
-                    </div>
-                    <p
-                      className={cn(
-                        "text-xs mt-1 ml-9",
-                        currentStep === "summary"
-                          ? "text-sidebar-foreground/70"
-                          : "text-sidebar-foreground/25"
-                      )}
-                    >
-                      Review all the details before issuing your asset.
-                    </p>
-                  </button>
-                </div>
+                  );
+                })}
               </div>
             </div>
 
