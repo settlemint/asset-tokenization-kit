@@ -1467,8 +1467,9 @@ export function AssetDesignerDialog({
                     <p
                       className={cn(
                         "text-xs mt-1 ml-9",
-                        "text-sidebar-foreground/70",
-                        currentStep !== "type" && "opacity-50"
+                        currentStep === "type"
+                          ? "text-sidebar-foreground/70"
+                          : "text-sidebar-foreground/25"
                       )}
                     >
                       Choose the type of digital asset to create.
@@ -1489,7 +1490,7 @@ export function AssetDesignerDialog({
                         ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                         : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                       (!selectedAssetType || currentStep === "type") &&
-                        "opacity-50 cursor-not-allowed",
+                        "cursor-not-allowed",
                       (currentStep === "type" ||
                         currentStep === "configuration" ||
                         currentStep === "permissions" ||
@@ -1535,8 +1536,9 @@ export function AssetDesignerDialog({
                     <p
                       className={cn(
                         "text-xs mt-1 ml-9",
-                        "text-sidebar-foreground/70",
-                        currentStep !== "details" && "opacity-50"
+                        currentStep === "details"
+                          ? "text-sidebar-foreground/70"
+                          : "text-sidebar-foreground/25"
                       )}
                     >
                       Provide general information about your asset.
@@ -1556,8 +1558,9 @@ export function AssetDesignerDialog({
                       currentStep === "configuration"
                         ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                         : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      // Remove opacity-50, keep cursor-not-allowed for disabled state
                       (!selectedAssetType || currentStep === "type") &&
-                        "opacity-50 cursor-not-allowed",
+                        "cursor-not-allowed",
                       (currentStep === "type" ||
                         currentStep === "details" ||
                         currentStep === "permissions" ||
@@ -1605,8 +1608,9 @@ export function AssetDesignerDialog({
                     <p
                       className={cn(
                         "text-xs mt-1 ml-9",
-                        "text-sidebar-foreground/70",
-                        currentStep !== "configuration" && "opacity-50"
+                        currentStep === "configuration"
+                          ? "text-sidebar-foreground/70"
+                          : "text-sidebar-foreground/25"
                       )}
                     >
                       Configure specific parameters for your asset.
@@ -1629,7 +1633,7 @@ export function AssetDesignerDialog({
                       (!selectedAssetType ||
                         currentStep === "type" ||
                         currentStep === "details") &&
-                        "opacity-50 cursor-not-allowed",
+                        "cursor-not-allowed",
                       (currentStep === "type" ||
                         currentStep === "details" ||
                         currentStep === "configuration" ||
@@ -1683,8 +1687,9 @@ export function AssetDesignerDialog({
                     <p
                       className={cn(
                         "text-xs mt-1 ml-9",
-                        "text-sidebar-foreground/70",
-                        currentStep !== "permissions" && "opacity-50"
+                        currentStep === "permissions"
+                          ? "text-sidebar-foreground/70"
+                          : "text-sidebar-foreground/25"
                       )}
                     >
                       Define who can manage and use this asset.
@@ -1708,7 +1713,7 @@ export function AssetDesignerDialog({
                         currentStep === "type" ||
                         currentStep === "details" ||
                         currentStep === "configuration") &&
-                        "opacity-50 cursor-not-allowed",
+                        "cursor-not-allowed",
                       (currentStep === "type" ||
                         currentStep === "details" ||
                         currentStep === "configuration" ||
@@ -1765,8 +1770,9 @@ export function AssetDesignerDialog({
                     <p
                       className={cn(
                         "text-xs mt-1 ml-9",
-                        "text-sidebar-foreground/70",
-                        currentStep !== "regulation" && "opacity-50"
+                        currentStep === "regulation"
+                          ? "text-sidebar-foreground/70"
+                          : "text-sidebar-foreground/25"
                       )}
                     >
                       Configure regulatory requirements for your asset.
@@ -1789,7 +1795,7 @@ export function AssetDesignerDialog({
                         currentStep === "configuration" ||
                         currentStep === "permissions" ||
                         currentStep === "regulation") &&
-                        "opacity-50 cursor-not-allowed",
+                        "cursor-not-allowed",
                       (currentStep === "type" ||
                         currentStep === "details" ||
                         currentStep === "configuration" ||
@@ -1834,8 +1840,9 @@ export function AssetDesignerDialog({
                     <p
                       className={cn(
                         "text-xs mt-1 ml-9",
-                        "text-sidebar-foreground/70",
-                        currentStep !== "summary" && "opacity-50"
+                        currentStep === "summary"
+                          ? "text-sidebar-foreground/70"
+                          : "text-sidebar-foreground/25"
                       )}
                     >
                       Review all the details before issuing your asset.
