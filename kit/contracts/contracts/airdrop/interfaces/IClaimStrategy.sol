@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.27;
 
 /**
  * @title IClaimStrategy
@@ -20,9 +20,7 @@ interface IClaimStrategy {
      * @param account Address to check eligibility for
      * @return eligible Whether the account is currently eligible to claim
      */
-    function isEligibleToClaim(
-        address account
-    ) external view returns (bool eligible);
+    function isEligibleToClaim(address account) external view returns (bool eligible);
 
     /**
      * @notice Returns whether this strategy requires multiple claims (e.g., vesting)
@@ -43,7 +41,10 @@ interface IClaimStrategy {
         uint256 amount,
         uint256 startTimestamp,
         uint256 alreadyClaimed
-    ) external view returns (uint256 claimableAmount);
+    )
+        external
+        view
+        returns (uint256 claimableAmount);
 
     /**
      * @notice Process a batch of claims for an account
@@ -57,8 +58,5 @@ interface IClaimStrategy {
      * @param amount Total allocation amount
      * @return initialAmount Amount to transfer immediately (if any)
      */
-    function initializeVesting(
-        address account,
-        uint256 amount
-    ) external returns (uint256 initialAmount);
+    function initializeVesting(address account, uint256 amount) external returns (uint256 initialAmount);
 }
