@@ -1087,7 +1087,7 @@ files:
     private.assets.details.related.decrease-supply.title.cryptocurrencies: d1a1bed66434e0c36cb124cba8f4fdba
     private.assets.details.related.decrease-supply.title.deposits: 101f62f549ca0a39adb767689365c1da
     private.assets.details.related.decrease-supply.title.equities: 0d3049ddf0f203753ba97feaa3e29558
-    private.assets.details.related.decrease-supply.title.funds: fb23d9f4943e73e60499deae6a58273c
+    private.assets.details.related.decrease-supply.title.funds: 712671063531d0f2cdde412102b19851
     private.assets.details.related.decrease-supply.title.stablecoins: d9c20f809740c93ee82f9561c4a5d1a1
     private.assets.details.related.increase-supply.description.bonds: 40dd3387c8d704ce436d88f59b28ab7f
     private.assets.details.related.increase-supply.description.cryptocurrencies: ef06be05867b0f99b25c685ce5e97e31
@@ -1099,7 +1099,7 @@ files:
     private.assets.details.related.increase-supply.title.cryptocurrencies: 3b3c269f4fce09f8b53a369035c10b3f
     private.assets.details.related.increase-supply.title.deposits: 765fa1cd6896f4cb878517371ba11c2a
     private.assets.details.related.increase-supply.title.equities: a2d080995e248c96f9c5a3602c37a0f8
-    private.assets.details.related.increase-supply.title.funds: 573bd5b7b82af9c152e488c55e07f275
+    private.assets.details.related.increase-supply.title.funds: cb8be633afaacdd49d17c556c2f06fd6
     private.assets.details.related.increase-supply.title.stablecoins: 765fa1cd6896f4cb878517371ba11c2a
     private.assets.details.related.title: a2005fe8651d38ccc7a7e285d2e51db8
     private.assets.details.related.update-collateral.description.deposits: 2da21a29e0e0ec6a214940c4b5ee7217
