@@ -43,7 +43,14 @@ import { cn } from "@/lib/utils";
 import { getDateLocale } from "@/lib/utils/date";
 import type { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { formatDate, isEqual } from "date-fns";
-import { ArrowRight, Ellipsis, Filter, X } from "lucide-react";
+import {
+  ArrowRight,
+  Circle,
+  CircleCheck,
+  Ellipsis,
+  Filter,
+  X,
+} from "lucide-react";
 import { useLocale, type Locale } from "next-intl";
 import {
   cloneElement,
@@ -1249,11 +1256,11 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
                 className="group flex items-center justify-between gap-1.5"
               >
                 <div className="flex items-center gap-1.5">
-                  {/* Use Radio button visually for single select? Or keep checkbox? Using checkbox for now */}
-                  <Checkbox
-                    checked={checked}
-                    className="opacity-0 group-hover:opacity-100 data-[state=checked]:opacity-100"
-                  />
+                  {checked ? (
+                    <CircleCheck className="size-4 text-primary group-hover:text-foreground" />
+                  ) : (
+                    <Circle className="size-4 opacity-0 group-hover:opacity-100" />
+                  )}
                   {v.icon &&
                     (isValidElement(v.icon) ? (
                       v.icon
@@ -1262,14 +1269,14 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
                     ))}
                   <span>
                     {v.label}
-                    <sup
+                    <span
                       className={cn(
-                        "ml-0.5 tabular-nums tracking-tight text-muted-foreground",
+                        "ml-2 tabular-nums tracking-tight text-muted-foreground text-xs",
                         count === 0 && "slashed-zero"
                       )}
                     >
                       {count < 100 ? count : "100+"}
-                    </sup>
+                    </span>
                   </span>
                 </div>
               </CommandItem>
