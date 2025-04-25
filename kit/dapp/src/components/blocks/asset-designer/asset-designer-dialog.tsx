@@ -1597,20 +1597,28 @@ export function AssetDesignerDialog({
             </div>
 
             {/* Content area */}
-            <div className="flex-1 overflow-auto bg-background ml-6 rounded-lg">
-              {/* Removed DialogHeader from here */}
+            <div
+              className={cn(
+                "flex flex-col flex-1 overflow-auto bg-background ml-6 rounded-lg p-10",
+                // Conditionally apply justify-start for the first step, otherwise justify-center
+                currentStep === "type" ? "justify-start" : "justify-center"
+              )}
+            >
               {currentStep === "type" && (
+                // Type selection is now aligned to top
                 <AssetTypeSelection
                   selectedType={selectedAssetType}
                   onSelect={handleAssetTypeSelect}
                 />
               )}
               {currentStep === "details" && (
-                <div className="p-6">
+                // Wrap content in a centered, max-width container
+                <div className="mx-[20%]">
                   {renderBasicsComponent()}
-
-                  {/* Navigation buttons */}
+                  {/* Navigation buttons with standard margin */}
                   <div className="mt-8 flex justify-end space-x-4">
+                    {" "}
+                    {/* Removed mt-auto, added mt-8 */}
                     <Button
                       variant="outline"
                       onClick={() => setCurrentStep("type")}
@@ -1634,11 +1642,13 @@ export function AssetDesignerDialog({
                 </div>
               )}
               {currentStep === "configuration" && (
-                <div className="p-6">
+                // Wrap content in a centered, max-width container
+                <div className="mx-[20%]">
                   {renderConfigurationComponent()}
-
-                  {/* Navigation buttons */}
+                  {/* Navigation buttons with standard margin */}
                   <div className="mt-8 flex justify-end space-x-4">
+                    {" "}
+                    {/* Removed mt-auto, added mt-8 */}
                     <Button
                       variant="outline"
                       onClick={() => setCurrentStep("details")}
@@ -1664,11 +1674,13 @@ export function AssetDesignerDialog({
                 </div>
               )}
               {currentStep === "permissions" && (
-                <div className="p-6">
+                // Wrap content in a centered, max-width container
+                <div className="mx-[20%]">
                   {renderPermissionsComponent()}
-
-                  {/* Navigation buttons */}
+                  {/* Navigation buttons with standard margin */}
                   <div className="mt-8 flex justify-end space-x-4">
+                    {" "}
+                    {/* Removed mt-auto, added mt-8 */}
                     <Button
                       variant="outline"
                       onClick={() => setCurrentStep("configuration")}
@@ -1682,11 +1694,13 @@ export function AssetDesignerDialog({
                 </div>
               )}
               {currentStep === "regulation" && (
-                <div className="p-6">
+                // Wrap content in a centered, max-width container
+                <div className="mx-[20%]">
                   {renderRegulationComponent()}
-
-                  {/* Navigation buttons */}
+                  {/* Navigation buttons with standard margin */}
                   <div className="mt-8 flex justify-end space-x-4">
+                    {" "}
+                    {/* Removed mt-auto, added mt-8 */}
                     <Button
                       variant="outline"
                       onClick={() => setCurrentStep("permissions")}
@@ -1700,8 +1714,10 @@ export function AssetDesignerDialog({
                 </div>
               )}
               {currentStep === "summary" && (
-                <div className="p-6">
-                  <div className="space-y-6">
+                // Wrap content in a centered, max-width container
+                <div className="mx-[20%]">
+                  <div className="space-y-6 flex-grow">
+                    {/* Summary content */}
                     <div>
                       <h3 className="text-lg font-semibold">Summary</h3>
                       <p className="text-sm text-muted-foreground">
@@ -2299,9 +2315,10 @@ export function AssetDesignerDialog({
                       )}
                     </div>
                   </div>
-
-                  {/* Navigation buttons */}
+                  {/* Navigation buttons with standard margin */}
                   <div className="mt-8 flex justify-end space-x-4">
+                    {" "}
+                    {/* Removed mt-auto, added mt-8 */}
                     <Button
                       variant="outline"
                       onClick={() => setCurrentStep("regulation")}
