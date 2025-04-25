@@ -1458,7 +1458,7 @@ export function AssetDesignerDialog({
           {/* Main content area with sidebar */}
           <div className="flex flex-1 overflow-hidden p-6">
             {/* Sidebar / Steps */}
-            <div className="w-64 bg-sidebar border-r p-6 flex flex-col rounded-xl">
+            <div className="w-80 bg-sidebar border-r p-6 flex flex-col rounded-xl">
               {/* Moved Title and Description Here */}
               <div className="mb-6">
                 <DialogTitle className="text-xl">{getAssetTitle()}</DialogTitle>
@@ -1600,12 +1600,14 @@ export function AssetDesignerDialog({
             <div
               className={cn(
                 "flex flex-col flex-1 overflow-auto bg-background ml-6 rounded-lg p-10",
-                // Conditionally apply justify-start for the first step, otherwise justify-center
-                currentStep === "type" ? "justify-start" : "justify-center"
+                // Adjust spacing from top for different steps
+                currentStep === "type"
+                  ? "pt-[20vh]" // 20% of viewport height for first step
+                  : "pt-[20vh]" // 20% of viewport height for other steps
               )}
             >
               {currentStep === "type" && (
-                // Type selection is now aligned to top
+                // Type selection with 20% top margin
                 <AssetTypeSelection
                   selectedType={selectedAssetType}
                   onSelect={handleAssetTypeSelect}
