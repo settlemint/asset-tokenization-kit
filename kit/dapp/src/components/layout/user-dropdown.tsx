@@ -5,6 +5,10 @@ import { LanguageMenuItem } from "@/components/blocks/language/language-menu-ite
 import { ThemeMenuItem } from "@/components/blocks/theme/theme-menu-item";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
+  UsersIcon,
+  type UsersIconHandle,
+} from "@/components/ui/animated-icons/users";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -69,6 +73,7 @@ export function UserDropdown() {
   // Create refs for each icon
   const bookIconRef = useRef<BookTextIconHandle>(null);
   const logoutIconRef = useRef<LogoutIconHandle>(null);
+  const usersIconRef = useRef<UsersIconHandle>(null);
 
   const handleSignOut = useCallback(async () => {
     await authClient.signOut({
@@ -148,6 +153,13 @@ export function UserDropdown() {
           sideOffset={4}
         >
           <DropdownMenuGroup>
+            <DropdownMenuItem
+              onMouseEnter={() => usersIconRef.current?.startAnimation()}
+              onMouseLeave={() => usersIconRef.current?.stopAnimation()}
+            >
+              <UsersIcon ref={usersIconRef} className="mr-2 size-4" />
+              <Link href="/portfolio/settings/profile">{t("profile")}</Link>
+            </DropdownMenuItem>
             <ThemeMenuItem />
             <LanguageMenuItem />
             <CurrencyMenuItem />
