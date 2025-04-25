@@ -9,7 +9,7 @@ jobs:
   codestudio:
     name: Codestudio
     runs-on: namespace-profile-atk
-    environment: production
+    environment: staging
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
@@ -51,7 +51,7 @@ jobs:
 
   custom-deployment:
     name: Custom Deployment dAPP
-    environment: production
+    environment: staging
     runs-on: namespace-profile-atk
     steps:
       - name: Checkout repository
@@ -159,7 +159,7 @@ jobs:
           command: platform update custom-deployment ${{ env.VERSION }} --wait
 
   create:
-    name: NPM Package for settlemint create
+    name: NPM Package and Helm Chart for settlemint create
     runs-on: namespace-profile-atk
     steps:
       - name: Setup 1Password
@@ -172,11 +172,43 @@ jobs:
         env:
           NPM_TOKEN: op://platform/npmjs/credential
           PAT_TOKEN: op://platform/github-commit-pat/credential
+          HARBOR_USER: op://platform/harbor/username
+          HARBOR_PASS: op://platform/harbor/password
 
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
         with:
           token: ${{ env.PAT_TOKEN }}
+
+      - name: Login to Harbor
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        with:
+          registry: harbor.settlemint.com
+          username: ${{ env.HARBOR_USER }}
+          password: ${{ env.HARBOR_PASS }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup caches
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            .turbo
+            ~/.bun/install/cache
+
+      - name: Install Helm
+        uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
+
+      - name: Install YQ
+        uses: alexellis/arkade-get@master
+        with:
+          print-summary: false
+          yq: latest
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -199,56 +231,27 @@ jobs:
         run: |
           bun publish --tag ${{ env.TAG }} --access public
 
-      - name: Auto-commit updated package versions
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Install Node.js
+        uses: actions/setup-node@v4
         with:
-          commit_message: "chore: update package versions [skip ci]"
-          branch: main
-          file_pattern: "package.json"
+          node-version-file: .nvmrc
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-  helm:
-    name: Helm Chart
-    runs-on: namespace-profile-atk
-    steps:
-      - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v7
-
-      - name: Setup 1Password
-        uses: 1password/load-secrets-action/configure@v2
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
         with:
-          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-      - name: Load secrets
-        uses: 1password/load-secrets-action@v2
-        env:
-          HARBOR_USER: op://platform/harbor/username
-          HARBOR_PASS: op://platform/harbor/password
-
-      - name: Login to Harbor
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
-        with:
-          registry: harbor.settlemint.com
-          username: ${{ env.HARBOR_USER }}
-          password: ${{ env.HARBOR_PASS }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install Helm
-        uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
-
-      - name: Install YQ
-        uses: alexellis/arkade-get@master
-        with:
-          print-summary: false
-          yq: latest
+          version: stable
 
       - name: Install Bun dependencies
         run: bun install
+
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: ${{ secrets.SETTLEMINT_INSTANCE }}
+          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
+          dotEnvFile: ${{ secrets.ENV_FILE }}
+          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Version
         id: version
@@ -273,8 +276,9 @@ jobs:
         run: bunx turbo genesis abi-output helm:push
 
       - name: Auto-commit updated package versions
-        uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: update Chart.yaml versions [skip ci]"
+          commit_message: "chore: update package versions [skip ci]"
           branch: main
-          file_pattern: "kit/charts/atk/Chart.yaml"
+          file_pattern: "package.json kit/charts/atk/Chart.yaml"
+

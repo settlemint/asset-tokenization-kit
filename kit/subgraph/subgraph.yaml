@@ -202,7 +202,7 @@ dataSources:
           handler: handleVestingAirdropDeployed
         - event: PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
-      file: ./src/factories/airdropFactory.ts
+      file: ./src/factories/airdrop-factory.ts
 templates:
   - kind: ethereum/contract
     name: FixedYield
@@ -720,7 +720,7 @@ templates:
           handler: handleBatchClaimed
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
-      file: ./src/assets/standardAirdrop.ts
+      file: ./src/assets/standard-airdrop.ts
   - kind: ethereum/contract
     name: VestingAirdropTemplate
     network: settlemint
@@ -758,7 +758,7 @@ templates:
           handler: handleTokensWithdrawn
         - event: ClaimInitialized(indexed address,uint256)
           handler: handleClaimInitialized
-      file: ./src/assets/vestingAirdrop.ts
+      file: ./src/assets/vesting-airdrop.ts
   - kind: ethereum/contract
     name: PushAirdropTemplate
     network: settlemint
@@ -790,7 +790,7 @@ templates:
           handler: handleMerkleRootUpdated
         - event: DistributionCapUpdated(uint256,uint256)
           handler: handleDistributionCapUpdated
-      file: ./src/assets/pushAirdrop.ts
+      file: ./src/assets/push-airdrop.ts
   - kind: ethereum/contract
     name: DvPSwap
     network: settlemint

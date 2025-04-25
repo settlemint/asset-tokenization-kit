@@ -43,7 +43,14 @@ import { cn } from "@/lib/utils";
 import { getDateLocale } from "@/lib/utils/date";
 import type { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { formatDate, isEqual } from "date-fns";
-import { ArrowRight, Ellipsis, Filter, FilterXIcon, X } from "lucide-react";
+import {
+  ArrowRight,
+  Circle,
+  CircleCheck,
+  Ellipsis,
+  Filter,
+  X,
+} from "lucide-react";
 import { useLocale, type Locale } from "next-intl";
 import {
   cloneElement,
@@ -61,10 +68,7 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   if (isMobile) {
     return (
       <div className="flex w-full items-start justify-between gap-2">
-        <div className="flex gap-1">
-          <TableFilter table={table} />
-          <TableFilterActions table={table} />
-        </div>
+        <TableFilter table={table} />
         <DataTableFilterMobileContainer>
           <PropertyFilterList table={table} />
         </DataTableFilterMobileContainer>
@@ -78,7 +82,6 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
         <TableFilter table={table} />
         <PropertyFilterList table={table} />
       </div>
-      <TableFilterActions table={table} />
     </div>
   );
 }
@@ -154,26 +157,6 @@ export function DataTableFilterMobileContainer({
   );
 }
 
-export function TableFilterActions<TData>({ table }: { table: Table<TData> }) {
-  const hasFilters = table.getState().columnFilters.length > 0;
-
-  function clearFilters() {
-    table.setColumnFilters([]);
-    table.setGlobalFilter("");
-  }
-
-  return (
-    <Button
-      className={cn("h-8 !px-2", !hasFilters && "hidden")}
-      variant="destructive"
-      onClick={clearFilters}
-    >
-      <FilterXIcon />
-      <span className="hidden md:block">Clear</span>
-    </Button>
-  );
-}
-
 export function TableFilter<TData>({ table }: { table: Table<TData> }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -187,7 +170,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
     .getAllColumns()
     .filter((column) => column.getCanFilter());
 
-  const hasFilters = table.getState().columnFilters.length > 0;
+  const hasFilters = properties.length > 0;
 
   useEffect(() => {
     if (property && inputRef) {
@@ -197,7 +180,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
   }, [property]);
 
   useEffect(() => {
-    if (!open) setTimeout(() => setValue(""), 150);
+    if (!open) setValue("");
   }, [open]);
 
   const content = useMemo(
@@ -234,21 +217,23 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
     [property, column, columnMeta, value, table, properties]
   );
 
+  if (!hasFilters) return null;
+
   return (
     <Popover
       open={open}
       onOpenChange={async (value) => {
         setOpen(value);
-        if (!value) setTimeout(() => setProperty(undefined), 100);
+        if (!value) setProperty(undefined);
       }}
     >
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className={cn("h-8", hasFilters && "w-fit !px-2")}
+          className="h-8 w-fit px-2 text-muted-foreground"
         >
           <Filter className="size-4" />
-          {!hasFilters && <span>Filter</span>}
+          <span className="hidden md:block">Filter</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -566,12 +551,12 @@ function PropertyFilterOptionOperatorMenu<TData>({
     (o) => o.target === filterDetails.target
   );
 
-  const changeValue = (value: string) => {
+  const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      values: [value],
+      operator,
     }));
-    console.log(`Setting filter value for ${column.id} to:`, value);
+    console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
   };
 
@@ -579,7 +564,7 @@ function PropertyFilterOptionOperatorMenu<TData>({
     <CommandGroup heading="Operators">
       {relatedFilters.map((r) => {
         return (
-          <CommandItem onSelect={changeValue} value={r.value} key={r.value}>
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
             {r.label}
           </CommandItem>
         );
@@ -599,12 +584,12 @@ function PropertyFilterMultiOptionOperatorMenu<TData>({
     (o) => o.target === filterDetails.target
   );
 
-  const changeValue = (value: string) => {
+  const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      values: [value],
+      operator,
     }));
-    console.log(`Setting filter value for ${column.id} to:`, value);
+    console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
   };
 
@@ -612,7 +597,7 @@ function PropertyFilterMultiOptionOperatorMenu<TData>({
     <CommandGroup heading="Operators">
       {relatedFilters.map((r) => {
         return (
-          <CommandItem onSelect={changeValue} value={r.value} key={r.value}>
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
             {r.label}
           </CommandItem>
         );
@@ -632,12 +617,12 @@ function PropertyFilterDateOperatorMenu<TData>({
     (o) => o.target === filterDetails.target
   );
 
-  const changeValue = (value: string) => {
+  const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      values: [value],
+      operator,
     }));
-    console.log(`Setting filter value for ${column.id} to:`, value);
+    console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
   };
 
@@ -645,7 +630,7 @@ function PropertyFilterDateOperatorMenu<TData>({
     <CommandGroup>
       {relatedFilters.map((r) => {
         return (
-          <CommandItem onSelect={changeValue} value={r.value} key={r.value}>
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
             {r.label}
           </CommandItem>
         );
@@ -665,12 +650,12 @@ export function PropertyFilterTextOperatorMenu<TData>({
     (o) => o.target === filterDetails.target
   );
 
-  const changeValue = (value: string) => {
+  const changeOperator = (operator: string) => {
     column.setFilterValue((old: typeof filter) => ({
       ...old,
-      values: [value],
+      operator,
     }));
-    console.log(`Setting filter value for ${column.id} to:`, value);
+    console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
   };
 
@@ -678,7 +663,7 @@ export function PropertyFilterTextOperatorMenu<TData>({
     <CommandGroup heading="Operators">
       {relatedFilters.map((r) => {
         return (
-          <CommandItem onSelect={changeValue} value={r.value} key={r.value}>
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
             {r.label}
           </CommandItem>
         );
@@ -694,12 +679,12 @@ function PropertyFilterNumberOperatorMenu<TData>({
   // Show all related operators
   const relatedFilters = Object.values(numberFilterDetails);
 
-  const changeValue = (value: keyof typeof numberFilterDetails) => {
+  const changeOperator = (operator: string) => {
     column.setFilterValue((old: FilterValue<"number", TData>) => ({
       ...old,
-      values: [value],
+      operator,
     }));
-    console.log(`Setting filter value for ${column.id} to:`, value);
+    console.log(`Setting filter operator for ${column.id} to:`, operator);
     closeController();
   };
 
@@ -707,12 +692,8 @@ function PropertyFilterNumberOperatorMenu<TData>({
     <div>
       <CommandGroup heading="Operators">
         {relatedFilters.map((r) => (
-          <CommandItem
-            onSelect={() => changeValue(r.value)}
-            value={r.value}
-            key={r.value}
-          >
-            {r.label} {/**/}
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
+            {r.label}
           </CommandItem>
         ))}
       </CommandGroup>
@@ -1278,11 +1259,11 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
                 className="group flex items-center justify-between gap-1.5"
               >
                 <div className="flex items-center gap-1.5">
-                  {/* Use Radio button visually for single select? Or keep checkbox? Using checkbox for now */}
-                  <Checkbox
-                    checked={checked}
-                    className="opacity-0 group-hover:opacity-100 data-[state=checked]:opacity-100"
-                  />
+                  {checked ? (
+                    <CircleCheck className="size-4 text-primary group-hover:text-foreground" />
+                  ) : (
+                    <Circle className="size-4 opacity-0 group-hover:opacity-100" />
+                  )}
                   {v.icon &&
                     (isValidElement(v.icon) ? (
                       v.icon
@@ -1291,14 +1272,14 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
                     ))}
                   <span>
                     {v.label}
-                    <sup
+                    <span
                       className={cn(
-                        "ml-0.5 tabular-nums tracking-tight text-muted-foreground",
+                        "ml-2 tabular-nums tracking-tight text-muted-foreground text-xs",
                         count === 0 && "slashed-zero"
                       )}
                     >
                       {count < 100 ? count : "100+"}
-                    </sup>
+                    </span>
                   </span>
                 </div>
               </CommandItem>
@@ -1456,14 +1437,14 @@ export function PropertyFilterMultiOptionValueMenu<
                     ))}
                   <span>
                     {v.label}
-                    <sup
+                    <span
                       className={cn(
-                        "ml-0.5 tabular-nums tracking-tight text-muted-foreground",
+                        "ml-2 tabular-nums tracking-tight text-muted-foreground text-xs",
                         count === 0 && "slashed-zero"
                       )}
                     >
                       {count < 100 ? count : "100+"}
-                    </sup>
+                    </span>
                   </span>
                 </div>
               </CommandItem>
