@@ -228,7 +228,10 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
       }}
     >
       <PopoverTrigger asChild>
-        <Button variant="outline" className="h-8 w-fit px-2">
+        <Button
+          variant="outline"
+          className="h-8 w-fit px-2 text-muted-foreground"
+        >
           <Filter className="size-4" />
           <span className="hidden md:block">Filter</span>
         </Button>
@@ -1434,14 +1437,14 @@ export function PropertyFilterMultiOptionValueMenu<
                     ))}
                   <span>
                     {v.label}
-                    <sup
+                    <span
                       className={cn(
-                        "ml-0.5 tabular-nums tracking-tight text-muted-foreground",
+                        "ml-2 tabular-nums tracking-tight text-muted-foreground text-xs",
                         count === 0 && "slashed-zero"
                       )}
                     >
                       {count < 100 ? count : "100+"}
-                    </sup>
+                    </span>
                   </span>
                 </div>
               </CommandItem>
