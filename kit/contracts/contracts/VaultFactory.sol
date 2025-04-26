@@ -24,7 +24,7 @@ contract VaultFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Emitted when a new vault is created
     /// @param vault The address of the newly created vault
-    event VaultCreated(address indexed vault, address indexed creator);
+    event VaultCreated(address indexed vault, address indexed creator, address[] signers, uint256 required);
 
     /// @notice Deploys a new VaultFactory contract
     /// @dev Sets up the factory with meta-transaction support
@@ -36,29 +36,20 @@ contract VaultFactory is ReentrancyGuard, ERC2771Context {
     /// and validates that the predicted address hasn't been used before.
     /// @param signers Array of initial signer addresses
     /// @param required Number of confirmations required to execute a transaction
-    /// @param initialOwner Address that will have admin role
     /// @return vault The address of the newly created vault
-    function create(
-        address[] memory signers,
-        uint256 required,
-        address initialOwner
-    )
-        external
-        nonReentrant
-        returns (address vault)
-    {
+    function create(address[] memory signers, uint256 required) external nonReentrant returns (address vault) {
         // Check if address is already deployed
         address predicted = predictAddress(_msgSender(), signers, required);
         if (isAddressDeployed(predicted)) revert AddressAlreadyDeployed();
 
-        bytes32 salt = _calculateSalt(signers, required, initialOwner);
+        bytes32 salt = _calculateSalt(signers, required, _msgSender());
 
-        Vault newVault = new Vault{ salt: salt }(signers, required, initialOwner, trustedForwarder());
+        Vault newVault = new Vault{ salt: salt }(signers, required, _msgSender(), trustedForwarder());
 
         vault = address(newVault);
         isFactoryVault[vault] = true;
 
-        emit VaultCreated(vault, _msgSender());
+        emit VaultCreated(vault, _msgSender(), signers, required);
     }
 
     /// @notice Predicts the address where a vault would be deployed

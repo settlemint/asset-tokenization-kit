@@ -12,7 +12,7 @@ const VaultsModule = buildModule("VaultsModule", (m) => {
   const createVault = m.call(
     vaultFactory,
     "create",
-    [[deployer, signer1, signer2], 2, deployer],
+    [[deployer, signer1, signer2], 2],
     {
       id: "createVault",
       from: deployer,

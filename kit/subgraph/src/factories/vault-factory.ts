@@ -12,12 +12,24 @@ export function handleVaultCreated(event: VaultCreated): void {
   fetchVault(event.params.vault, event.block.timestamp);
   const vaultAccount = fetchAccount(event.params.vault);
 
+  const involved = [creator, vaultAccount];
+  let signersString = "";
+  for (let i = 0; i < event.params.signers.length; i++) {
+    const signer = fetchAccount(event.params.signers[i]);
+    involved.push(signer);
+
+    signersString += event.params.signers[i].toHex();
+    if (i < event.params.signers.length - 1) {
+      signersString += ",";
+    }
+  }
+
   createEvent(
     event,
     EventName.VaultCreated,
     creator,
-    [creator, vaultAccount],
-    `{"creator": "${event.params.creator.toHex()}", "vault": "${event.params.vault.toHex()}"}`
+    involved,
+    `{"creator": "${event.params.creator.toHex()}", "vault": "${event.params.vault.toHex()}", "signers": "${signersString}", "required": "${event.params.required.toString()}"}`
   );
 
   Vault.create(event.params.vault);

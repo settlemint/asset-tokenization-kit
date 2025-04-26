@@ -27,7 +27,7 @@ dataSources:
         - name: Vault
           file: ../contracts/artifacts/contracts/Vault.sol/Vault.json
       eventHandlers:
-        - event: VaultCreated(indexed address,indexed address)
+        - event: VaultCreated(indexed address,indexed address,address[],uint256)
           handler: handleVaultCreated
       file: ./src/factories/vault-factory.ts
   - kind: ethereum/contract
