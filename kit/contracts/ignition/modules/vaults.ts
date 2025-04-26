@@ -28,7 +28,7 @@ const VaultsModule = buildModule("VaultsModule", (m) => {
     id: "vault",
   });
 
-  m.call(vault, "pause", [], {
+  const pauseVault = m.call(vault, "pause", [], {
     id: "pauseVault",
     from: deployer,
   });
@@ -36,6 +36,7 @@ const VaultsModule = buildModule("VaultsModule", (m) => {
   const unpauseVault = m.call(vault, "unpause", [], {
     id: "unpauseVault",
     from: deployer,
+    after: [pauseVault],
   });
 
   m.send("sendETHToVault", vault, 1_000_000_000_000_000_000n, undefined, {

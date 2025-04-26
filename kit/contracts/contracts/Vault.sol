@@ -87,8 +87,9 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
     event ExecuteTransaction(address indexed signer, uint256 indexed txIndex);
 
     /// @notice Emitted when the confirmation requirement changes
+    /// @param account Address of the account that changed the requirement
     /// @param required New number of required confirmations
-    event RequirementChanged(uint256 required);
+    event RequirementChanged(address indexed account, uint256 required);
 
     /// @notice Emitted when transaction execution fails after reaching the required confirmations
     /// @param txIndex Index of the failed transaction
@@ -182,7 +183,7 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
             _grantRole(SIGNER_ROLE, _signers[i]);
         }
         required = _required;
-        emit RequirementChanged(_required);
+        emit RequirementChanged(_msgSender(), _required);
     }
 
     /// @notice Allows the contract to receive ETH
@@ -217,7 +218,7 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
         // Ensure the requirement is valid (between 1 and number of signers)
         if (_required == 0 || _required > ownerCount) revert InvalidRequirement(_required, ownerCount);
         required = _required;
-        emit RequirementChanged(_required);
+        emit RequirementChanged(_msgSender(), _required);
     }
 
     /// @notice Submits a new transaction to the vault

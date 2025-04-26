@@ -1,3 +1,4 @@
+import { ByteArray, crypto } from "@graphprotocol/graph-ts";
 // These need to match the keys of the assetConfig object in the dapp
 export class AssetType {
   static bond: string = "bond";
@@ -64,6 +65,7 @@ export class EventName {
   // Vault specific events
   static VaultCreated: string = "Vault Created";
   static Deposit: string = "Deposit";
+  static RequirementChanged: string = "Requirement Changed";
 }
 
 // Update DvPSwap status type enum to match the contract
@@ -78,4 +80,12 @@ export class DvPSwapStatusType {
   static INVALID: string = "INVALID";
   static AWAITING_APPROVAL: string = "AWAITING_APPROVAL";
   static AWAITING_CLAIM_SECRET: string = "AWAITING_CLAIM_SECRET";
+}
+
+export class Role {
+  static DEFAULT_ADMIN_ROLE: string =
+    "0x0000000000000000000000000000000000000000000000000000000000000000";
+  static SIGNER_ROLE: string = crypto
+    .keccak256(ByteArray.fromUTF8("SIGNER_ROLE"))
+    .toHexString();
 }

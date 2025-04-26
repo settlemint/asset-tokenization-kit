@@ -899,8 +899,14 @@ templates:
       eventHandlers:
         - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit
+        - event: RequirementChanged(indexed address,uint256)
+          handler: handleRequirementChanged
         - event: Paused(address)
           handler: handlePaused
         - event: Unpaused(address)
           handler: handleUnpaused
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
       file: ./src/vault/vault.ts

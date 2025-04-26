@@ -364,6 +364,7 @@ type YieldPeriod @entity(immutable: false) {
 
 type Vault @entity(immutable: false) {
   id: Bytes!
+  admins: [Account!]!
   signers: [Account!]!
   requiredSigners: BigInt!
   totalSigners: BigInt!
