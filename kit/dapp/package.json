@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "prod:local": "next build && cp -r .next/static .next/standalone/kit/dapp/.next/static && cp -r public .next/standalone/public && node .next/standalone/kit/dapp/server.js",
-    "build": "next build",
+    "build": "next build --turbopack",
     "start": "next start",
     "test": "bun test",
     "format": "prettier --write .",
