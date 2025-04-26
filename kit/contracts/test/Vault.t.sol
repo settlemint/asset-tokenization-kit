@@ -161,12 +161,12 @@ contract VaultTest is Test {
     function test_setRequirement_asAdmin() public {
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, true);
-        emit Vault.RequirementChanged(1);
+        emit Vault.RequirementChanged(admin, 1);
         vault.setRequirement(1);
         assertEq(vault.requirement(), 1, "Requirement not updated");
 
         vm.expectEmit(true, true, true, true);
-        emit Vault.RequirementChanged(3);
+        emit Vault.RequirementChanged(admin, 3);
         vault.setRequirement(3);
         assertEq(vault.requirement(), 3, "Requirement not updated");
         vm.stopPrank();
