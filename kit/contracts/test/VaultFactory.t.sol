@@ -14,8 +14,6 @@ contract VaultFactoryTest is Test {
     address[] public signers;
     uint256 public requiredConfirmations;
 
-    event VaultCreated(address indexed vault, address indexed creator);
-
     function setUp() public {
         owner = address(this); // Use the test contract itself as the owner for simplicity
         forwarder = address(0xdead); // Use a mock forwarder address
@@ -51,9 +49,11 @@ contract VaultFactoryTest is Test {
         address predicted = factory.predictAddress(owner, signers, requiredConfirmations);
         assertFalse(factory.isAddressDeployed(predicted), "Address should not be deployed yet");
 
-        // Check the event emitted by the factory
-        vm.expectEmit(true, true, false, false); // Match VaultCreated(address indexed vault, address indexed creator,
-            // address[] signers, uint256 required)
+        // Expect the VaultCreated event with specific arguments.
+        // This checks the emitter (implied), topics (indexed args), and data (non-indexed args).
+        vm.expectEmit();
+        emit VaultFactory.VaultCreated(predicted, owner, signers, requiredConfirmations);
+
         address vaultAddr = factory.create(signers, requiredConfirmations);
 
         assertEq(vaultAddr, predicted, "Created vault address should match predicted address");
