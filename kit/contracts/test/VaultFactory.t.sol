@@ -54,7 +54,7 @@ contract VaultFactoryTest is Test {
         vm.expectEmit(true, true, false, true); // Check indexed creator, indexed vault
         emit VaultCreated(predicted, owner);
 
-        address vaultAddr = factory.create(signers, requiredConfirmations, owner);
+        address vaultAddr = factory.create(signers, requiredConfirmations);
 
         assertEq(vaultAddr, predicted, "Created vault address should match predicted address");
         assertTrue(factory.isAddressDeployed(vaultAddr), "isAddressDeployed should be true after creation");
@@ -74,19 +74,19 @@ contract VaultFactoryTest is Test {
         address predicted = factory.predictAddress(owner, signers, requiredConfirmations);
 
         // First creation should succeed
-        factory.create(signers, requiredConfirmations, owner);
+        factory.create(signers, requiredConfirmations);
         assertTrue(factory.isAddressDeployed(predicted), "Vault should be marked as deployed");
 
         // Second creation with same parameters should fail
         vm.expectRevert(VaultFactory.AddressAlreadyDeployed.selector);
-        factory.create(signers, requiredConfirmations, owner);
+        factory.create(signers, requiredConfirmations);
     }
 
     function test_IsAddressDeployed() public {
         address nonDeployedAddress = address(0xcafe);
         assertFalse(factory.isAddressDeployed(nonDeployedAddress), "Random address should not be marked as deployed");
 
-        address vaultAddr = factory.create(signers, requiredConfirmations, owner);
+        address vaultAddr = factory.create(signers, requiredConfirmations);
         assertTrue(factory.isAddressDeployed(vaultAddr), "Created vault address should be marked as deployed");
     }
 }
