@@ -33,6 +33,7 @@ CONTRACT_ADDRESSES=(
 
     ["DvPSwapFactory"]="0x5e771e1417100000000000000000000000000008"
     ["AirdropFactory"]="0x5e771e1417100000000000000000000000000009"
+    ["VaultFactory"]="0x5e771e141710000000000000000000000000000a"
 )
 
 # Initialize an empty JSON object for all allocations
