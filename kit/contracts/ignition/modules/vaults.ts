@@ -1,4 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import StableCoinsModule from "./stable-coins";
 import VaultFactoryModule from "./vault-factory";
 
 const VaultsModule = buildModule("VaultsModule", (m) => {
@@ -42,6 +43,62 @@ const VaultsModule = buildModule("VaultsModule", (m) => {
   m.send("sendETHToVault", vault, 1_000_000_000_000_000_000n, undefined, {
     from: deployer,
     after: [unpauseVault],
+  });
+
+  const payoutETH = m.call(
+    vault,
+    "submitTransaction",
+    [deployer, 100000000n, "0x", "Payout ETH"],
+    {
+      id: "submitETHTransfer",
+      from: signer1,
+      after: [unpauseVault],
+    }
+  );
+
+  const readTxIndex2 = m.readEventArgument(
+    payoutETH,
+    "SubmitTransaction",
+    "txIndex",
+    { id: "readTxIndex2" }
+  );
+
+  m.call(vault, "confirm", [readTxIndex2], {
+    id: "confirmPayoutETH",
+    from: signer2,
+    after: [payoutETH],
+  });
+
+  const { usdc } = m.useModule(StableCoinsModule);
+
+  const depositUSDC = m.call(usdc, "transfer", [vault, 200000000n], {
+    id: "depositUSDC",
+    from: deployer,
+    after: [unpauseVault],
+  });
+
+  const payoutUSDC = m.call(
+    vault,
+    "submitERC20Transfer",
+    [usdc, deployer, 100000000n, "Payout USDC"],
+    {
+      id: "submitERC20Transfer",
+      from: signer1,
+      after: [depositUSDC],
+    }
+  );
+
+  const readTxIndex = m.readEventArgument(
+    payoutUSDC,
+    "SubmitERC20TransferTransaction",
+    "txIndex",
+    { id: "readTxIndex" }
+  );
+
+  m.call(vault, "confirm", [readTxIndex], {
+    id: "confirmPayoutUSDC",
+    from: signer2,
+    after: [payoutUSDC],
   });
 
   return { vault };
