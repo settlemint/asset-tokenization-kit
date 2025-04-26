@@ -8,7 +8,7 @@ dataSources:
     name: Vault
     network: mainnet
     source:
-      address: "0x5e771e1417100000000000000000000000000099"
+      address: "0x5e771e141710000000000000000000000000000a"
       abi: Vault
       startBlock: 0
     mapping:

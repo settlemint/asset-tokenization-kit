@@ -27,25 +27,25 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
     event Deposit(address indexed sender, uint256 value, uint256 balance);
 
     /// @notice Emitted when a general transaction is submitted
-    /// @param owner Address of the signer who submitted the transaction
+    /// @param signer Address of the signer who submitted the transaction
     /// @param txIndex Index of the transaction in the transactions array
     /// @param to Destination address for the transaction
     /// @param value Amount of ETH to send with the transaction
     /// @param data Function call data
     /// @param comment Description of the transaction
     event SubmitTransaction(
-        address indexed owner, uint256 indexed txIndex, address indexed to, uint256 value, bytes data, string comment
+        address indexed signer, uint256 indexed txIndex, address indexed to, uint256 value, bytes data, string comment
     );
 
     /// @notice Emitted when an ERC20 transfer transaction is submitted
-    /// @param owner Address of the signer who submitted the transaction
+    /// @param signer Address of the signer who submitted the transaction
     /// @param txIndex Index of the transaction in the transactions array
     /// @param token Address of the ERC20 token to transfer
     /// @param to Recipient address for the token transfer
     /// @param amount Amount of tokens to transfer
     /// @param comment Description of the transaction
     event SubmitERC20TransferTransaction(
-        address indexed owner,
+        address indexed signer,
         uint256 indexed txIndex,
         address indexed token,
         address to,
@@ -54,7 +54,7 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
     );
 
     /// @notice Emitted when a contract call transaction is submitted
-    /// @param owner Address of the signer who submitted the transaction
+    /// @param signer Address of the signer who submitted the transaction
     /// @param txIndex Index of the transaction in the transactions array
     /// @param target Contract address to call
     /// @param value Amount of ETH to send with the call
@@ -62,7 +62,7 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
     /// @param abiEncodedArguments ABI-encoded arguments for the function call
     /// @param comment Description of the transaction
     event SubmitContractCallTransaction(
-        address indexed owner,
+        address indexed signer,
         uint256 indexed txIndex,
         address indexed target,
         uint256 value,
@@ -72,19 +72,19 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
     );
 
     /// @notice Emitted when a transaction is confirmed by a signer
-    /// @param owner Address of the signer who confirmed the transaction
+    /// @param signer Address of the signer who confirmed the transaction
     /// @param txIndex Index of the confirmed transaction
-    event ConfirmTransaction(address indexed owner, uint256 indexed txIndex);
+    event ConfirmTransaction(address indexed signer, uint256 indexed txIndex);
 
     /// @notice Emitted when a signer revokes their confirmation
-    /// @param owner Address of the signer who revoked confirmation
+    /// @param signer Address of the signer who revoked confirmation
     /// @param txIndex Index of the transaction
-    event RevokeConfirmation(address indexed owner, uint256 indexed txIndex);
+    event RevokeConfirmation(address indexed signer, uint256 indexed txIndex);
 
     /// @notice Emitted when a transaction is executed
-    /// @param executor Address of the signer who triggered execution
+    /// @param signer Address of the signer who triggered execution
     /// @param txIndex Index of the executed transaction
-    event ExecuteTransaction(address indexed executor, uint256 indexed txIndex);
+    event ExecuteTransaction(address indexed signer, uint256 indexed txIndex);
 
     /// @notice Emitted when the confirmation requirement changes
     /// @param required New number of required confirmations
