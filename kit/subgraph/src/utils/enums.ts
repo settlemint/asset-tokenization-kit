@@ -18,6 +18,7 @@ export class FactoryType {
   static fixedyield: string = "fixedyield";
   static deposit: string = "deposit";
   static dvpswap: string = "dvpswap";
+  static vault: string = "vault";
 }
 
 export class EventName {
@@ -60,6 +61,9 @@ export class EventName {
   static DvPSwapClaimed: string = "DvPSwap Claimed";
   static DvPSwapRefunded: string = "DvPSwap Refunded";
   static TokensLocked: string = "Tokens Locked";
+  // Vault specific events
+  static VaultCreated: string = "Vault Created";
+  static Deposit: string = "Deposit";
 }
 
 // Update DvPSwap status type enum to match the contract

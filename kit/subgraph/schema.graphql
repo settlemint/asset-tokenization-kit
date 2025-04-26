@@ -359,6 +359,35 @@ type YieldPeriod @entity(immutable: false) {
 }
 
 # --------------------------------------------------
+# Vault Contract
+# --------------------------------------------------
+
+type Vault @entity(immutable: false) {
+  id: Bytes!
+  signers: [Account!]!
+  requiredSigners: BigInt!
+  totalSigners: BigInt!
+  paused: Boolean!
+  deployedOn: BigInt!
+  lastActivity: BigInt!
+  asAccount: Account!
+}
+
+# --------------------------------------------------
+# Simplified Events
+# --------------------------------------------------
+
+type HandledEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Account!
+  sender: Account!
+  involved: [Account!]!
+  details: String!
+}
+
+# --------------------------------------------------
 # Grouping Events by Contract Type
 # --------------------------------------------------
 
@@ -375,7 +404,7 @@ interface AssetEvent {
 # Activity Events
 # --------------------------------------------------
 
-type AccountActivityEvent @entity(immutable: true) {
+type AccountActivityEvent @entity(immutable: false) {
   id: Bytes!
   eventName: String!
   assetType: String!

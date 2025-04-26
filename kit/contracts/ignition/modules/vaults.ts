@@ -1,5 +1,4 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import { keccak256, toUtf8Bytes } from "ethers";
 import VaultFactoryModule from "./vault-factory";
 
 const VaultsModule = buildModule("VaultsModule", (m) => {
@@ -29,12 +28,19 @@ const VaultsModule = buildModule("VaultsModule", (m) => {
     id: "vault",
   });
 
-  // Set up roles for the tokenized deposit
-  const signerRole = keccak256(toUtf8Bytes("SIGNER_ROLE"));
+  m.call(vault, "pause", [], {
+    id: "pauseVault",
+    from: deployer,
+  });
 
-  // Grant roles to the deployer
-  m.call(vault, "grantRole", [signerRole, deployer], {
-    id: "grantSignerRole",
+  const unpauseVault = m.call(vault, "unpause", [], {
+    id: "unpauseVault",
+    from: deployer,
+  });
+
+  m.send("sendETHToVault", vault, 1_000_000_000_000_000_000n, undefined, {
+    from: deployer,
+    after: [unpauseVault],
   });
 
   return { vault };
