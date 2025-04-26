@@ -9,6 +9,28 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
+    name: VaultFactory
+    network: settlemint
+    source:
+      address: "0x5e771e141710000000000000000000000000000a"
+      abi: VaultFactory
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Vault
+      abis:
+        - name: VaultFactory
+          file: ../contracts/artifacts/contracts/VaultFactory.sol/VaultFactory.json
+        - name: Vault
+          file: ../contracts/artifacts/contracts/Vault.sol/Vault.json
+      eventHandlers:
+        - event: VaultCreated(indexed address,indexed address)
+          handler: handleVaultCreated
+      file: ./src/factories/vault-factory.ts
+  - kind: ethereum/contract
     name: DvPSwapFactory
     network: settlemint
     source:
@@ -217,12 +239,16 @@ dataSources:
         - name: LinearVestingStrategy
           file: ../contracts/artifacts/contracts/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
       eventHandlers:
-        - event: StandardAirdropDeployed(indexed address,indexed address,indexed address)
+        - event:
+            StandardAirdropDeployed(indexed address,indexed address,indexed
+            address)
           handler: handleStandardAirdropDeployed
-        - event: VestingAirdropDeployed(indexed address,indexed address,indexed
+        - event:
+            VestingAirdropDeployed(indexed address,indexed address,indexed
             address,address)
           handler: handleVestingAirdropDeployed
-        - event: PushAirdropDeployed(indexed address,indexed address,indexed address)
+        - event:
+            PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
       file: ./src/factories/airdrop-factory.ts
 templates:
@@ -244,7 +270,9 @@ templates:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
-        - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
+        - event:
+            YieldClaimed(indexed
+            address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
@@ -331,7 +359,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
@@ -398,7 +427,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -474,7 +504,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: Clawback(indexed address,indexed address,uint256)
           handler: handleClawback
@@ -551,7 +582,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: CollateralUpdated(uint256,uint256,uint256)
           handler: handleCollateralUpdated
@@ -629,7 +661,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: ManagementFeeCollected(uint256,uint256)
           handler: handleManagementFeeCollected
@@ -704,7 +737,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: TokenWithdrawn(indexed address,indexed address,uint256)
           handler: handleTokenWithdrawn
@@ -837,7 +871,8 @@ templates:
         - name: DvPSwap
           file: ../contracts/artifacts/contracts/DvPSwap.sol/DvPSwap.json
       eventHandlers:
-        - event: DvPSwapCreated(indexed bytes32,indexed address,indexed
+        - event:
+            DvPSwapCreated(indexed bytes32,indexed address,indexed
             address,address,address,uint256,uint256,uint256,bytes32)
           handler: handleDvPSwapCreated
         - event: DvPSwapStatusChanged(indexed bytes32,uint8)
