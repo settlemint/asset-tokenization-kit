@@ -106,8 +106,8 @@ export function handleRoleGranted(event: RoleGranted): void {
   const sender = fetchAccount(event.params.sender);
   const account = fetchAccount(event.params.account);
 
-  // Handle different roles
-  if (event.params.role.toHexString() == Role.DEFAULT_ADMIN_ROLE) {
+  const roleHex = event.params.role.toHexString();
+  if (roleHex == Role.DEFAULT_ADMIN_ROLE) {
     // DEFAULT_ADMIN_ROLE
     let found = false;
     for (let i = 0; i < vault.admins.length; i++) {
@@ -127,7 +127,7 @@ export function handleRoleGranted(event: RoleGranted): void {
         `{"sender": "${event.params.sender.toHex()}", "account": "${event.params.account.toHex()}", "role": "DEFAULT_ADMIN_ROLE"}`
       );
     }
-  } else if (event.params.role.toHexString() == Role.SIGNER_ROLE) {
+  } else if (roleHex == Role.SIGNER_ROLE) {
     // SIGNER_ROLE
     let found = false;
     for (let i = 0; i < vault.signers.length; i++) {
@@ -160,8 +160,8 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   const sender = fetchAccount(event.params.sender);
   const account = fetchAccount(event.params.account);
 
-  // Handle different roles
-  if (event.params.role.toHexString() == Role.DEFAULT_ADMIN_ROLE) {
+  const roleHex = event.params.role.toHexString();
+  if (roleHex == Role.DEFAULT_ADMIN_ROLE) {
     // DEFAULT_ADMIN_ROLE
     const newAdmins: Bytes[] = [];
     for (let i = 0; i < vault.admins.length; i++) {
@@ -178,7 +178,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
       [sender, vaultAccount, account],
       `{"sender": "${event.params.sender.toHex()}", "account": "${event.params.account.toHex()}", "role": "DEFAULT_ADMIN_ROLE"}`
     );
-  } else if (event.params.role.toHexString() == Role.SIGNER_ROLE) {
+  } else if (roleHex == Role.SIGNER_ROLE) {
     // SIGNER_ROLE
     const newSigners: Bytes[] = [];
     for (let i = 0; i < vault.signers.length; i++) {
