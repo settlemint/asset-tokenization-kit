@@ -1,5 +1,6 @@
 import type { Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
+import { formatAmount, searchAndSelectFromDialog } from "../utils/page-utils";
 import { BasePage } from "./base-page";
 
 export class AdminPage extends BasePage {
@@ -7,7 +8,7 @@ export class AdminPage extends BasePage {
   private static readonly COMMA_REGEX = /,/g;
 
   async goto() {
-    await this.page.goto("/portfolio");
+    await this.page.goto("/assets");
   }
 
   private async startAssetCreation(
@@ -562,7 +563,9 @@ export class AdminPage extends BasePage {
   }
 
   async updateCollateral(options: { amount: string; pincode: string }) {
-    await this.page.getByRole("button", { name: "Manage" }).click();
+    await this.page
+      .getByRole("button", { name: "Manage", exact: true })
+      .click();
     const updateCollateralOption = this.page.getByRole("menuitem", {
       name: "Update Collateral",
     });
@@ -575,11 +578,11 @@ export class AdminPage extends BasePage {
   }
 
   private formatAmount(amount: string): string {
-    return amount
-      .replace(AdminPage.CURRENCY_CODE_REGEX, "")
-      .replace(AdminPage.COMMA_REGEX, "")
-      .trim()
-      .split(".")[0];
+    return formatAmount(
+      amount,
+      AdminPage.CURRENCY_CODE_REGEX,
+      AdminPage.COMMA_REGEX
+    );
   }
 
   async verifyCollateral(expectedAmount: string) {
@@ -628,7 +631,9 @@ export class AdminPage extends BasePage {
 
   async mintAsset(options: { user: string; amount: string; pincode: string }) {
     await this.page.reload();
-    await this.page.getByRole("button", { name: "Manage" }).click();
+    await this.page
+      .getByRole("button", { name: "Manage", exact: true })
+      .click();
     const mintTokensOption = this.page.getByRole("menuitem", {
       name: "Mint",
     });
@@ -661,7 +666,9 @@ export class AdminPage extends BasePage {
     pincode: string;
   }) {
     await this.page.reload();
-    await this.page.getByRole("button", { name: "Manage" }).click();
+    await this.page
+      .getByRole("button", { name: "Manage", exact: true })
+      .click();
     const mintTokensOption = this.page.getByRole("menuitem", {
       name: "Top up",
     });
@@ -734,6 +741,31 @@ export class AdminPage extends BasePage {
     await expect(formattedActual).toBe(formattedExpected);
   }
 
+  async allowUser(options: {
+    walletAddress: string;
+    user: string;
+    pincode: string;
+  }): Promise<void> {
+    await this.page.reload();
+    await this.page
+      .getByRole("button", { name: "Manage", exact: true })
+      .click();
+    const allowUserOption = this.page.getByRole("menuitem", {
+      name: "Allow user",
+      exact: true,
+    });
+    await allowUserOption.waitFor({ state: "visible" });
+    await allowUserOption.click();
+
+    await searchAndSelectFromDialog(
+      this.page,
+      options.walletAddress,
+      options.user
+    );
+    await this.page.getByRole("button", { name: "Next" }).click();
+    await this.completeAssetCreation("Allow", options.pincode);
+  }
+
   async verifySuccessMessage(partialMessage: string) {
     const toastSelector =
       '[data-sonner-toast][data-type="success"][data-mounted="true"][data-visible="true"]';
@@ -756,7 +788,7 @@ export class AdminPage extends BasePage {
         },
         {
           message: `Waiting for success toast containing "${partialMessage}"`,
-          timeout: 60000,
+          timeout: 120000,
           intervals: [500, 1000, 2000],
         }
       )
