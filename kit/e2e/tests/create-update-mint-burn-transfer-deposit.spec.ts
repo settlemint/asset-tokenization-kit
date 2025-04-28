@@ -68,7 +68,7 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates deposit, updates proven collateral and mints deposits", async ({
+  test("Admin user creates deposit, updates proven collateral, mints, burn deposits and allows user to transfer deposits", async ({
     browser,
   }) => {
     await adminPages.adminPage.createDeposit(depositData);
@@ -107,6 +107,14 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
     const newTotal = mintAmount - burnAmount;
     testData.currentTotalSupply = newTotal;
     await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
+    await adminPages.adminPage.allowUser({
+      walletAddress: testData.transferUserWalletAddress,
+      user: testData.transferUserName,
+      pincode: depositData.pincode,
+    });
+    await adminPages.adminPage.verifySuccessMessage(
+      assetMessage.successMessage
+    );
   });
   test("Admin user transfer deposits to regular transfer user", async () => {
     await adminPages.portfolioPage.transferAsset({
