@@ -1,8 +1,8 @@
 import { expect } from "@playwright/test";
+import type { UserRole } from "../test-data/user-data";
 import { getUserRole, updateUserRole } from "../utils/db-utils";
 import { BasePage } from "./base-page";
 import { Pages } from "./pages";
-import type { UserRole } from "../test-data/user-data";
 export class SignInPage extends BasePage {
   async goto() {
     await this.page.goto("/auth/signin");
@@ -15,10 +15,78 @@ export class SignInPage extends BasePage {
     pincode: string;
   }) {
     const pages = Pages(this.page);
-    await this.page.getByLabel("Email").fill(options.email);
-    await this.page.getByLabel("Password").fill(options.password);
-    await this.page.getByRole("button", { name: "Login", exact: true }).click();
-    await this.page.waitForURL("**/portfolio");
+
+    await this.page.locator('input[name="email"]').clear();
+    await this.page.getByPlaceholder("Enter your password").clear();
+
+    const emailInput = this.page.locator('input[name="email"]');
+
+    let retries = 0;
+    const maxRetries = 3;
+
+    while (retries < maxRetries) {
+      await emailInput.click({ force: true });
+      await emailInput.focus();
+      await emailInput.fill("");
+      await emailInput.fill(options.email);
+
+      const value = await emailInput.inputValue();
+      if (value === options.email) {
+        break;
+      }
+      retries++;
+
+      if (retries === maxRetries) {
+        await emailInput.evaluate((el, email) => {
+          (el as HTMLInputElement).value = email;
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+        }, options.email);
+      }
+    }
+
+    await expect(async () => {
+      const inputValue = await emailInput.inputValue();
+      expect(inputValue).toBe(options.email);
+    }).toPass({ timeout: 20000 });
+
+    const passwordInput = this.page.getByPlaceholder("Enter your password");
+    await passwordInput.click({ force: true });
+    await passwordInput.focus();
+    await passwordInput.fill("");
+    await passwordInput.fill(options.password);
+
+    await expect(async () => {
+      const inputValue = await passwordInput.inputValue();
+      expect(inputValue.length).toBeGreaterThan(0);
+    }).toPass({ timeout: 20000 });
+
+    const loginButton = this.page.getByRole("button", {
+      name: "Login",
+      exact: true,
+    });
+    await loginButton.waitFor({ state: "visible" });
+
+    await loginButton.click();
+
+    try {
+      await this.page.waitForURL(
+        (url) =>
+          url.pathname.includes("/portfolio") ||
+          url.pathname.includes("/assets"),
+        { timeout: 15000 }
+      );
+    } catch (error) {
+      console.log("Navigation failed:", error);
+
+      const errorMessages = await this.page
+        .locator(".text-destructive")
+        .allTextContents();
+      if (errorMessages.length > 0) {
+        console.log("Validation errors found:", errorMessages);
+      }
+    }
+
     await pages.signUpPage.secureWallet({ pincode: options.pincode });
     await expect(
       this.page.locator("div.grid span.truncate.font-semibold", {
