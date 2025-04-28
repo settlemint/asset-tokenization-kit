@@ -20,8 +20,19 @@ const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
   const { EURD } = m.useModule(DepositsModule);
   const { fixedYieldFactory } = m.useModule(FixedYieldFactoryModule);
   const { dvpSwapFactory } = m.useModule(DvPSwapFactoryModule);
+  const { airdropFactory } = m.useModule(AirdropFactoryModule);
 
-  return { ustb, btc, usdc, aapl, gmf, EURD, fixedYieldFactory, dvpSwapFactory, airdropFactory };
+  return {
+    ustb,
+    btc,
+    usdc,
+    aapl,
+    gmf,
+    EURD,
+    fixedYieldFactory,
+    dvpSwapFactory,
+    airdropFactory,
+  };
 });
 
 export default AssetTokenizationModule;

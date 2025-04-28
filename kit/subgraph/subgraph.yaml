@@ -218,8 +218,7 @@ dataSources:
       eventHandlers:
         - event: StandardAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handleStandardAirdropDeployed
-        - event: VestingAirdropDeployed(indexed address,indexed address,indexed
-            address,address)
+        - event: VestingAirdropDeployed(indexed address,indexed address,indexed address,address)
           handler: handleVestingAirdropDeployed
         - event: PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
@@ -263,8 +262,7 @@ templates:
           handler: handleDvPSwapExecuted
         - event: DvPSwapExpiredEvent(indexed bytes32,uint256)
           handler: handleDvPSwapExpired
-        - event: FlowAdded(indexed bytes32,indexed address,indexed
-            address,address,uint256)
+        - event: FlowAdded(indexed bytes32,indexed address,indexed address,address,uint256)
           handler: handleFlowAdded
         - event: DvPSwapAutoExecutionFailed(indexed bytes32,indexed address,string)
           handler: handleDvPSwapAutoExecutionFailed
