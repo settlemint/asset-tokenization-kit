@@ -317,7 +317,7 @@ export function AssetDesignerDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-screen h-[90vh] w-[90vw] p-0 overflow-hidden rounded-none border-none right-0 !max-w-screen rounded-2xl">
+      <DialogContent className="max-h-screen h-[90vh] w-[90vw] p-0 overflow-hidden border-none right-0 !max-w-screen rounded-2xl">
         <DialogTitle className="sr-only">
           {getAssetTitle(selectedAssetType)}
         </DialogTitle>

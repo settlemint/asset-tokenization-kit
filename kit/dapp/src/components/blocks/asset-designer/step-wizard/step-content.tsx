@@ -30,7 +30,9 @@ export function StepContent({
   centerContent = true,
 }: StepContentProps) {
   return (
-    <div className={cn(centerContent ? "mx-[20%]" : "", className)}>
+    <div
+      className={cn(centerContent ? "StepContent" : "StepContent", className)}
+    >
       {children}
 
       {/* Navigation buttons */}
