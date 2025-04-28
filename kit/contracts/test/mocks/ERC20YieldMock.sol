@@ -14,6 +14,8 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
     mapping(address => mapping(uint256 => uint256)) private _historicalBalances;
     // Mapping: account => blocked from managing yield
     mapping(address => bool) private _yieldManagementBlocked;
+    // Mapping: timestamp => totalSupply
+    mapping(uint256 => uint256) private _historicalTotalSupplies;
 
     constructor(
         string memory name,
@@ -46,6 +48,10 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
         return _yieldToken;
     }
 
+    function totalSupplyAt(uint256 timepoint) public view virtual override returns (uint256) {
+        return _historicalTotalSupplies[timepoint];
+    }
+
     function canManageYield(address account) public view override returns (bool) {
         return !_yieldManagementBlocked[account];
     }
@@ -59,7 +65,20 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
         _historicalBalances[holder][timestamp] = balance;
     }
 
+    // Test helper function to set historical total supply
+    function setHistoricalTotalSupply(uint256 timestamp, uint256 supply) public {
+        _historicalTotalSupplies[timestamp] = supply;
+    }
+
     function balanceOfAt(address account, uint256 timepoint) public view virtual override returns (uint256) {
         return _historicalBalances[account][timepoint];
+    }
+
+    function mint(address to, uint256 amount) public onlyOwner {
+        _mint(to, amount);
+    }
+
+    function burn(address from, uint256 amount) public onlyOwner {
+        _burn(from, amount);
     }
 }

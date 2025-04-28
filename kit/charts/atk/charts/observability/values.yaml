@@ -701,15 +701,17 @@ prometheus-node-exporter:
   enabled: true
   image:
     registry: quay.io
+  imagePullSecrets:
+    - image-pull-secret-docker
+    - image-pull-secret-ghcr
+    - image-pull-secret-harbor
   kubeRBACProxy:
     image:
       registry: quay.io
   global:
     imageRegistry: quay.io
-    imagePullSecrets: []
   fullnameOverride: node-exporter
   nameOverride: node-exporter
-  imagePullSecrets: []
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "9100"

@@ -48,7 +48,8 @@ spec:
 {{- if has .Values.cluster.provider .Values.volumePermissionsFix }}
       # fix for minikube and PVC's only writable as root https://github.com/kubernetes/minikube/issues/1990
       - name: volume-permission-besu
-        image: busybox
+        image: "{{ .Values.busybox.registry }}/busybox:{{ .Values.busybox.tag }}"
+        imagePullPolicy: {{ .Values.busybox.pullPolicy }}
         command: ["sh", "-c", "chown -R 1000:1000 /data"]
         volumeMounts:
           - name: data

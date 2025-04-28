@@ -15,6 +15,7 @@ import { ERC20HistoricalBalances } from "./extensions/ERC20HistoricalBalances.so
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { IFixedYield } from "./interfaces/IFixedYield.sol";
 
 /// @title Bond - A standard bond token implementation with face value in underlying asset
 /// @notice This contract implements an ERC20 token representing a standard bond with fixed-income characteristics and
@@ -54,6 +55,7 @@ contract Bond is
     error InvalidTokenAddress();
     error InsufficientTokenBalance();
     error CannotWithdrawUnderlyingAsset();
+    error YieldScheduleActive();
 
     /// @notice Role identifier for addresses that can manage token supply
     /// @dev Keccak256 hash of "SUPPLY_MANAGEMENT_ROLE"
@@ -130,6 +132,18 @@ contract Bond is
     /// @dev Reverts with BondNotYetMatured if the bond has not matured
     modifier onlyMatured() {
         if (!isMatured) revert BondNotYetMatured();
+        _;
+    }
+
+    /// @notice Modifier to prevent operations if the yield schedule has started
+    modifier yieldNotStarted() {
+        if (yieldSchedule != address(0)) {
+            // Use the interface to call the external contract
+            // Revert if the yield schedule has already started
+            if (IFixedYield(yieldSchedule).startDate() <= block.timestamp) {
+                revert YieldScheduleActive();
+            }
+        }
         _;
     }
 
@@ -241,7 +255,7 @@ contract Bond is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Emits a Transfer event.
     /// @param to The address that will receive the minted tokens
     /// @param amount The quantity of tokens to create in base units
-    function mint(address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+    function mint(address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) yieldNotStarted {
         _mint(to, amount);
     }
 

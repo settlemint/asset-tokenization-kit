@@ -4,12 +4,14 @@ import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import { defineMeta, filterFn } from "@/lib/filters";
 import type { AllowedUser } from "@/lib/queries/asset/asset-users-schema";
+import { addressNameFilter } from "@/lib/utils/address-name-cache";
 import { formatDate } from "@/lib/utils/date";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { CalendarIcon, MoreHorizontal, User2Icon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { DisallowForm } from "../../_components/disallow-form/form";
@@ -31,6 +33,8 @@ export function columns({
   return [
     columnHelper.accessor("user.id", {
       header: t("name"),
+      enableColumnFilter: true,
+      filterFn: addressNameFilter,
       cell: ({ getValue }) => {
         const wallet = getValue();
         return (
@@ -39,13 +43,23 @@ export function columns({
           </EvmAddress>
         );
       },
-      enableColumnFilter: false,
+      meta: defineMeta((row) => row.user.id, {
+        displayName: t("name"),
+        icon: User2Icon,
+        type: "text",
+      }),
     }),
     columnHelper.accessor("allowedAt", {
       header: t("allowed-since-header"),
       cell: ({ getValue }) =>
         getValue() ? formatDate(getValue(), { type: "distance", locale }) : "-",
-      enableColumnFilter: false,
+      enableColumnFilter: true,
+      filterFn: filterFn("date"),
+      meta: defineMeta((row) => row.allowedAt, {
+        displayName: t("allowed-since-header"),
+        icon: CalendarIcon,
+        type: "date",
+      }),
     }),
     columnHelper.display({
       id: "actions",

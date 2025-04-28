@@ -7,6 +7,7 @@ import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
+import { IFixedYield } from "./interfaces/IFixedYield.sol";
 
 /// @title FixedYield - A contract for managing token yield distributions
 /// @notice This contract implements a fixed yield schedule for ERC20 tokens, allowing for periodic
@@ -16,7 +17,7 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 /// support. Works with ERC20Yield-compatible tokens to manage yield distributions. Uses timestamps for
 /// period calculations and maintains a history of distributions.
 /// @custom:security-contact support@settlemint.com
-contract FixedYield is AccessControl, Pausable, ERC2771Context {
+contract FixedYield is AccessControl, Pausable, ERC2771Context, IFixedYield {
     /// @notice Custom errors for the FixedYield contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error InvalidToken();
@@ -227,24 +228,38 @@ contract FixedYield is AccessControl, Pausable, ERC2771Context {
     }
 
     /// @notice Calculates the total unclaimed yield across all holders
-    /// @dev This includes all completed periods that haven't been claimed yet
+    /// @dev This includes all completed periods that haven't been claimed yet. It iterates through
+    /// each completed period, using the historical total supply at the end of that period
+    /// for accurate calculation. This approach is more gas-intensive than using the current
+    /// total supply but provides correct results if total supply changes over time.
     /// @return The total amount of unclaimed yield
     function totalUnclaimedYield() public view returns (uint256) {
         uint256 lastPeriod = lastCompletedPeriod();
         if (lastPeriod == 0) return 0;
 
-        // Get total supply and basis for yield calculation
-        uint256 totalSupply = IERC20(address(_token)).totalSupply();
+        uint256 totalYieldAccrued = 0;
+        // Note: Basis per unit might vary per holder, but for total unclaimed,
+        // we use the generic basis for address(0). Assume this basis is constant over time.
         uint256 basis = ERC20Yield(_token).yieldBasisPerUnit(address(0));
 
-        // Calculate yield for all completed periods
-        uint256 periodYield = (totalSupply * basis * _rate) / RATE_BASIS_POINTS;
-        uint256 total = periodYield * lastPeriod;
+        // Iterate through each completed period to calculate yield based on historical total supply
+        for (uint256 period = 1; period <= lastPeriod; period++) {
+            uint256 periodEndTimestamp = _periodEndTimestamps[period - 1];
+            // Fetch the total supply as it was at the end of the specific period
+            uint256 historicalTotalSupply = ERC20Yield(_token).totalSupplyAt(periodEndTimestamp);
+            if (historicalTotalSupply > 0) {
+                // Calculate yield for this specific period using its historical supply
+                totalYieldAccrued += (historicalTotalSupply * basis * _rate) / RATE_BASIS_POINTS;
+            }
+        }
 
-        // Subtract claimed amounts
-        total -= _totalClaimed;
+        // Subtract amounts already claimed by holders
+        // Ensure no underflow if _totalClaimed somehow exceeds calculated accrued yield
+        if (totalYieldAccrued <= _totalClaimed) {
+            return 0;
+        }
 
-        return total;
+        return totalYieldAccrued - _totalClaimed;
     }
 
     /// @notice Calculates the total yield that will be needed for the next period

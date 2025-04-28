@@ -74,9 +74,9 @@ export const getPredictedAddress = withTracing(
       return predictedAddress.CryptoCurrencyFactory.predictAddress.predicted;
     } catch (error) {
       console.error("Error predicting cryptocurrency address:", error);
-      // Return a fallback address that will get replaced during actual deployment
-      // This allows the form to proceed
-      return "0x0000000000000000000000000000000000000000" as Address;
+      // Return a uniquely generated fallback address
+      // This allows the form to proceed and will get replaced during actual deployment
+      return `0x${Math.random().toString(16).substring(2).padStart(40, "0")}` as Address;
     }
   }
 );

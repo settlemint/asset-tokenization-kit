@@ -45,6 +45,8 @@ export type WithPostfixProps = {
 export type WithTextOnlyProps = {
   /** Whether the input is text only */
   textOnly?: boolean;
+  /** Whether the input allows alphanumeric characters (letters and numbers) */
+  alphanumeric?: boolean;
 };
 
 /**

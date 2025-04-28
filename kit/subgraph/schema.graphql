@@ -28,7 +28,7 @@ interface Asset {
   concentration: BigDecimal!
 }
 
-interface Factory {
+type Factory @entity(immutable: false) {
   id: Bytes!
   type: String!
   asAccount: Account!
@@ -1088,4 +1088,316 @@ type DvPSwapAutoExecutionFailedEvent implements AssetEvent @entity(immutable: tr
   dvpSwapId: Bytes!
   executor: Account!
   reason: String!
+=======
+# Airdrop Contracts
+# --------------------------------------------------
+
+type AirdropFactory @entity(immutable: false) {
+  id: Bytes! # Contract address
+  airdrops: [Airdrop!]! @derivedFrom(field: "factory")
+  totalAirdropsDeployed: Int!
+}
+
+interface Airdrop {
+  id: Bytes! # Contract address
+  factory: AirdropFactory!
+  token: Bytes! # Changed from Asset! to Bytes!
+  merkleRoot: Bytes!
+  owner: Account!
+  deployedOn: BigInt!
+  deploymentTx: Bytes!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  totalRecipients: Int! # Count of unique addresses that have claimed
+  totalClaims: Int! # Count of claim events
+  isWithdrawn: Boolean!
+  trustedForwarder: Account!
+  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
+}
+
+type StandardAirdrop implements Airdrop @entity(immutable: false) {
+  id: Bytes! # Contract address
+  factory: AirdropFactory!
+  token: Bytes! # Matches interface
+  merkleRoot: Bytes!
+  owner: Account!
+  deployedOn: BigInt!
+  deploymentTx: Bytes!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  totalRecipients: Int!
+  totalClaims: Int!
+  isWithdrawn: Boolean!
+  trustedForwarder: Account!
+  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
+  # Standard specific
+  startTime: BigInt!
+  endTime: BigInt!
+}
+
+type VestingAirdrop implements Airdrop @entity(immutable: false) {
+  id: Bytes! # Contract address
+  factory: AirdropFactory!
+  token: Bytes! # Matches interface
+  merkleRoot: Bytes!
+  owner: Account!
+  deployedOn: BigInt!
+  deploymentTx: Bytes!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  totalRecipients: Int!
+  totalClaims: Int!
+  isWithdrawn: Boolean!
+  trustedForwarder: Account!
+  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
+  # Vesting specific
+  claimPeriodEnd: BigInt!
+  strategy: VestingStrategy!
+}
+
+type PushAirdrop implements Airdrop @entity(immutable: false) {
+  id: Bytes! # Contract address
+  factory: AirdropFactory!
+  token: Bytes! # Matches interface
+  merkleRoot: Bytes!
+  owner: Account!
+  deployedOn: BigInt!
+  deploymentTx: Bytes!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  totalRecipients: Int!
+  totalClaims: Int!
+  isWithdrawn: Boolean!
+  trustedForwarder: Account!
+  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
+  # PushAirdrop specific
+  distributionCap: BigInt!
+  totalDistributed: BigInt!
+  distributions: [PushDistribution!]! @derivedFrom(field: "airdrop")
+  merkleRootUpdates: [MerkleRootUpdate!]! @derivedFrom(field: "airdrop")
+}
+
+interface VestingStrategy {
+  id: Bytes! # Strategy contract address
+  type: String! # e.g., "Linear", "Custom"
+  airdrop: VestingAirdrop! # The airdrop using this strategy
+  owner: Account!
+}
+
+type LinearVestingStrategy implements VestingStrategy
+  @entity(immutable: false) {
+  id: Bytes! # Strategy contract address
+  type: String! # = "Linear"
+  airdrop: VestingAirdrop! @derivedFrom(field: "strategy") # Derived from VestingAirdrop linking
+  airdropRef: Bytes! # Direct reference to airdrop address
+  owner: Account!
+  # Linear specific
+  vestingDuration: BigInt!
+  cliffDuration: BigInt!
+  vestingData: [UserVestingData!]! @derivedFrom(field: "strategy")
+}
+
+# Represents a potential recipient listed in the Merkle tree
+# Primarily created/updated upon claim events
+type AirdropRecipient @entity(immutable: false) {
+  id: String! # airdropId-recipientAddress
+  airdrop: Airdrop!
+  recipient: Account!
+  firstClaimedTimestamp: BigInt # Timestamp of the first claim event for this recipient
+  lastClaimedTimestamp: BigInt # Timestamp of the most recent claim event
+  totalClaimedByRecipient: BigDecimal! # Sum of all claims by this recipient for this airdrop
+  totalClaimedByRecipientExact: BigInt!
+  claimIndices: [AirdropClaimIndex!]! @derivedFrom(field: "recipient") # Track individual claimed indices
+}
+
+# Represents a specific index claimed by a recipient
+type AirdropClaimIndex @entity(immutable: true) {
+  id: String! # airdropId-index
+  index: BigInt!
+  airdrop: Airdrop!
+  recipient: AirdropRecipient! # Who claimed this index
+  amount: BigDecimal! # Amount associated with this index (from claim event)
+  amountExact: BigInt!
+  claim: AirdropClaim! # The claim event that processed this index
+  timestamp: BigInt!
+}
+
+# Records an individual claim event (can be single or batch)
+type AirdropClaim @entity(immutable: true) {
+  id: String! # txHash-logIndex
+  airdrop: Airdrop!
+  claimant: Account! # The _msgSender() who initiated the claim
+  totalAmount: BigDecimal! # Total amount in this claim event
+  totalAmountExact: BigInt!
+  indices: [AirdropClaimIndex!]! @derivedFrom(field: "claim") # Link to specific indices claimed
+  timestamp: BigInt!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+}
+
+# Specific vesting data per user for a LinearVestingStrategy
+type UserVestingData @entity(immutable: false) {
+  id: String! # strategyId-userAddress
+  strategy: LinearVestingStrategy!
+  user: Account!
+  totalAmountAggregated: BigDecimal! # Total allocated amount across all indices for this user
+  totalAmountAggregatedExact: BigInt!
+  claimedAmountTrackedByStrategy: BigDecimal! # Internal tracking by strategy via recordClaim
+  claimedAmountTrackedByStrategyExact: BigInt!
+  vestingStart: BigInt!
+  initialized: Boolean!
+  lastUpdated: BigInt!
+}
+
+# Records a distribution event from PushAirdrop
+type PushDistribution @entity(immutable: true) {
+  id: String! # txHash-logIndex
+  airdrop: PushAirdrop!
+  distributor: Account! # The admin who performed the distribution
+  recipient: Account! # The recipient who received tokens
+  amount: BigDecimal! # Amount distributed
+  amountExact: BigInt!
+  batchDistribution: PushBatchDistribution
+  timestamp: BigInt!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+}
+
+# Records a batch distribution event from PushAirdrop
+type PushBatchDistribution @entity(immutable: true) {
+  id: String! # txHash-logIndex
+  airdrop: PushAirdrop!
+  distributor: Account! # The admin who performed the distribution
+  recipientCount: Int! # Number of recipients in this batch
+  totalAmount: BigDecimal! # Total amount distributed in this batch
+  totalAmountExact: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+  distributions: [PushDistribution!]! @derivedFrom(field: "batchDistribution")
+}
+
+# Records a merkle root update event from PushAirdrop
+type MerkleRootUpdate @entity(immutable: true) {
+  id: String! # txHash-logIndex
+  airdrop: PushAirdrop!
+  updater: Account! # The admin who updated the merkle root
+  oldRoot: Bytes! # The previous merkle root (indexed in contract)
+  newRoot: Bytes! # The new merkle root (indexed in contract)
+  timestamp: BigInt!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+}
+
+# --------------------------------------------------
+# Airdrop Analytics and Statistics
+# --------------------------------------------------
+
+# Time-series data for airdrop activity
+type AirdropStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  # Filters
+  airdrop: Airdrop!
+  airdropType: String! # "Standard", "Vesting", or "Push"
+  # Activity
+  claims: Int!
+  claimVolume: BigDecimal!
+  claimVolumeExact: BigInt!
+  uniqueClaimants: Int! # New claimants in this period
+  # For PushAirdrop
+  distributions: Int!
+  distributionVolume: BigDecimal!
+  distributionVolumeExact: BigInt!
+}
+
+# Aggregation entities for time-based analysis
+type AirdropStats
+  @aggregation(intervals: ["hour", "day"], source: "AirdropStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+  # Filters
+  airdrop: Airdrop!
+  airdropType: String!
+  # Metrics
+  count: Int8! @aggregate(fn: "count", cumulative: true)
+  # Claims
+  totalClaims: Int! @aggregate(fn: "sum", arg: "claims")
+  totalClaimVolume: BigDecimal! @aggregate(fn: "sum", arg: "claimVolume")
+  totalClaimVolumeExact: BigInt! @aggregate(fn: "sum", arg: "claimVolumeExact")
+  totalUniqueClaimants: Int! @aggregate(fn: "sum", arg: "uniqueClaimants")
+  # Distributions (for PushAirdrop)
+  totalDistributions: Int! @aggregate(fn: "sum", arg: "distributions")
+  totalDistributionVolume: BigDecimal!
+    @aggregate(fn: "sum", arg: "distributionVolume")
+  totalDistributionVolumeExact: BigInt!
+    @aggregate(fn: "sum", arg: "distributionVolumeExact")
+}
+
+# Special statistics for vesting airdrops
+type VestingStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  # Filters
+  airdrop: VestingAirdrop!
+  # Vesting metrics
+  vestedAmount: BigDecimal!
+  vestedAmountExact: BigInt!
+  unlockedAmount: BigDecimal! # Amount that has vested and can be claimed
+  unlockedAmountExact: BigInt!
+  claimedVestedAmount: BigDecimal! # Portion of vested amount that has been claimed
+  claimedVestedAmountExact: BigInt!
+  activeVestingStreams: Int! # Number of active vesting schedules
+  completedVestingStreams: Int! # Number of completed vesting schedules
+}
+
+# Aggregation entity for vesting statistics
+type VestingStats
+  @aggregation(intervals: ["hour", "day"], source: "VestingStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+  # Filters
+  airdrop: VestingAirdrop!
+  # Metrics
+  count: Int8! @aggregate(fn: "count", cumulative: true)
+  # Vesting progress
+  totalVestedAmount: BigDecimal! @aggregate(fn: "last", arg: "vestedAmount")
+  totalVestedAmountExact: BigInt!
+    @aggregate(fn: "last", arg: "vestedAmountExact")
+  totalUnlockedAmount: BigDecimal! @aggregate(fn: "last", arg: "unlockedAmount")
+  totalUnlockedAmountExact: BigInt!
+    @aggregate(fn: "last", arg: "unlockedAmountExact")
+  totalClaimedVestedAmount: BigDecimal!
+    @aggregate(fn: "sum", arg: "claimedVestedAmount")
+  totalClaimedVestedAmountExact: BigInt!
+    @aggregate(fn: "sum", arg: "claimedVestedAmountExact")
+  activeVestingStreams: Int! @aggregate(fn: "last", arg: "activeVestingStreams")
+  completedVestingStreams: Int!
+    @aggregate(fn: "last", arg: "completedVestingStreams")
+}
+
+# Daily and weekly summary of airdrop performance
+type AirdropPerformanceSummary @entity(immutable: false) {
+  id: String! # airdropId-timeframe (e.g., "0x123-daily", "0x123-weekly")
+  airdrop: Airdrop!
+  timeframe: String! # "daily", "weekly"
+  startTime: BigInt!
+  endTime: BigInt!
+  newClaimants: Int!
+  totalClaims: Int!
+  claimVolume: BigDecimal!
+  claimVolumeExact: BigInt!
+  claimRatePercentage: BigDecimal! # Percentage of eligible recipients who claimed
+  # Distribution metrics for PushAirdrop
+  newDistributions: Int!
+  distributionVolume: BigDecimal!
+  distributionVolumeExact: BigInt!
+  # Time metrics
+  avgClaimResponseTime: BigInt! # Average time between eligibility and claim
+  peakClaimHour: Int! # Hour of day with most claims (0-23)
+  lastUpdated: BigInt!
 }

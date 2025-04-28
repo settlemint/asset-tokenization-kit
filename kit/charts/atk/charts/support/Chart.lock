@@ -4,12 +4,12 @@ dependencies:
   version: 4.12.1
 - name: postgresql-ha
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 15.3.14
+  version: 15.3.15
 - name: redis
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 20.13.1
+  version: 20.13.2
 - name: reloader
   repository: https://stakater.github.io/stakater-charts
   version: 2.1.2
-digest: sha256:eea0fedff7a2b3ad94c1788cabec0a4312a2ad03388088117841d53e33a1e6e6
-generated: "2025-04-23T15:53:00.59524603Z"
+digest: sha256:3472cc710014af701219cd625510ea539c09dc684d54084f209b76176dbe91d4
+generated: "2025-04-24T21:48:48.468121871Z"

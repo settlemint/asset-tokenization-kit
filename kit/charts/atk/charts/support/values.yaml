@@ -1,12 +1,20 @@
 # https://github.com/bitnami/charts/blob/main/bitnami/postgresql-ha/values.yaml
 postgresql-ha:
   enabled: true
+  global:
+    security:
+      allowInsecureImages: true
+    imagePullSecrets:
+      - image-pull-secret-docker
+      - image-pull-secret-ghcr
+      - image-pull-secret-harbor
   fullnameOverride: postgresql
   commonLabels:
     kots.io/app-slug: settlemint-atk
-
     app.kubernetes.io/managed-by: helm
   postgresql:
+    image:
+      registry: docker.io
     username: "postgres"
     password: "atk"
     repmgrUsername: repmgr
@@ -39,6 +47,8 @@ postgresql-ha:
         \c portal;
         GRANT ALL ON SCHEMA public TO portal;
   pgpool:
+    image:
+      registry: docker.io
     replicaCount: 1
     adminUsername: "pgpool"
     adminPassword: "atk"
@@ -54,6 +64,15 @@ postgresql-ha:
 # https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
 redis:
   enabled: true
+  global:
+    security:
+      allowInsecureImages: true
+    imagePullSecrets:
+      - image-pull-secret-docker
+      - image-pull-secret-ghcr
+      - image-pull-secret-harbor
+  image:
+    registry: docker.io
   fullnameOverride: redis
   commonLabels:
     kots.io/app-slug: settlemint-atk
@@ -66,14 +85,18 @@ redis:
   replica:
     replicaCount: 1
     resourcesPreset: "none"
-  global:
-    imagePullSecrets: []
 
 # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
 ingress-nginx:
   enabled: true
+  global:
+    image:
+      registry: registry.k8s.io
   fullnameOverride: 'ingress-nginx'
-  imagePullSecrets: []
+  imagePullSecrets:
+    - image-pull-secret-docker
+    - image-pull-secret-ghcr
+    - image-pull-secret-harbor
   defaultBackend:
     enabled: false
   controller:

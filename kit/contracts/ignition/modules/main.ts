@@ -1,4 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import AirdropFactoryModule from "./airdrop-factory";
 import BondsModule from "./bonds";
 import CryptoCurrenciesModule from "./crypto-currencies";
 import DepositsModule from "./deposits";
@@ -20,7 +21,7 @@ const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
   const { fixedYieldFactory } = m.useModule(FixedYieldFactoryModule);
   const { dvpSwapFactory } = m.useModule(DvPSwapFactoryModule);
 
-  return { ustb, btc, usdc, aapl, gmf, EURD, fixedYieldFactory, dvpSwapFactory };
+  return { ustb, btc, usdc, aapl, gmf, EURD, fixedYieldFactory, dvpSwapFactory, airdropFactory };
 });
 
 export default AssetTokenizationModule;

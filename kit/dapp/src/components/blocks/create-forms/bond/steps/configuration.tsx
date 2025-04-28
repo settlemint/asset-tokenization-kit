@@ -4,12 +4,12 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { usePostHog } from "posthog-js/react";
-import { useEffect } from "react";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Configuration() {
-  const { control } = useFormContext<CreateBondInput>();
+  const { control, setValue } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
   const posthog = usePostHog();
 
@@ -18,6 +18,22 @@ export function Configuration() {
       posthog.capture("create_bond_form_configuration_step_opened");
     }
   }, [posthog]);
+
+  // Get default maturity date (current date + 1 day)
+  const [defaultMaturityDate, setDefaultMaturityDate] = useState<string>("");
+
+  useEffect(() => {
+    // Set default maturity date to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Format as YYYY-MM-DDThh:mm
+    const formattedDate = tomorrow.toISOString().slice(0, 16);
+    setDefaultMaturityDate(formattedDate);
+
+    // Set the default value in the form
+    setValue("maturityDate", formattedDate);
+  }, [setValue]);
 
   return (
     <FormStep

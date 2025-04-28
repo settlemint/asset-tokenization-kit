@@ -110,7 +110,7 @@ job:
 
   # Image configuration
   image:
-    repository: node
+    repository: docker.io/node
     tag: "23.11.0-slim"
     pullPolicy: IfNotPresent
 
@@ -118,7 +118,24 @@ job:
   podAnnotations: {}
 
   # Image pull secrets
-  imagePullSecrets: []
+  imagePullSecrets:
+    - image-pull-secret-docker
+    - image-pull-secret-ghcr
+    - image-pull-secret-harbor
+
+  # Image for the wait-for-graph-node init container
+  busyboxImage:
+    registry: docker.io
+    repository: busybox
+    tag: 1.37 # Use specific stable tag
+    pullPolicy: IfNotPresent
+
+  # Image for the clone-repo init container
+  gitImage:
+    registry: docker.io
+    repository: alpine/git
+    tag: latest # Or pin to a specific version
+    pullPolicy: IfNotPresent
 
   # Custom Init Containers (add definitions here if needed, e.g., for dependencies)
   # extraInitContainers: []
@@ -128,7 +145,7 @@ job:
   #   enabled: false # Set to true to enable the random delay
   #   maxSeconds: 31 # Max random sleep duration (exclusive, e.g., 31 means 0-30 seconds)
   #   image:
-  #     repository: busybox
+  #     repository: docker.io/busybox
   #     tag: latest
   #     pullPolicy: IfNotPresent
 
