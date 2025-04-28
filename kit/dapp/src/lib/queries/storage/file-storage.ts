@@ -26,7 +26,6 @@ export type FileMetadata = StaticDecode<typeof FileMetadataSchema>;
 
 /**
  * Default bucket to use for file storage
- * Changed from 'asset-files' to a more common bucket name that might already exist
  */
 export const DEFAULT_BUCKET = "uploads";
 
