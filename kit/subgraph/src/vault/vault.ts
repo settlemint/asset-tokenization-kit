@@ -19,7 +19,6 @@ import {
   SubmitContractCallTransaction,
   SubmitERC20TransferTransaction,
   SubmitTransaction,
-  TransactionExecutionFailed,
   Unpaused,
 } from "../../generated/templates/Vault/Vault";
 import { fetchAssetDecimals } from "../assets/fetch/asset";
@@ -241,7 +240,7 @@ export function handleSubmitTransaction(event: SubmitTransaction): void {
     EventName.SubmitTransaction,
     submitter,
     [submitter, vaultAccount, toAccount],
-    `{"submitter": "${submitter.id.toHex()}", "txIndex": ${tx.txIndex.toString()}, "to": "${toAccount.id.toHex()}", "valueExact": "${tx.valueExact.toString()}", "value": "${tx.value.toString()}", "comment": "${tx.comment}"}`
+    `{"signer": "${submitter.id.toHex()}", "txIndex": ${tx.txIndex.toString()}, "to": "${toAccount.id.toHex()}", "valueExact": "${tx.valueExact.toString()}", "value": "${tx.value.toString()}", "data": "${tx.data.toHex()}", "comment": "${tx.comment}"}`
   );
 }
 
@@ -285,7 +284,7 @@ export function handleSubmitERC20TransferTransaction(
     EventName.SubmitERC20TransferTransaction,
     sender,
     [sender, vaultAccount, submitter, toAccount, tokenAsset],
-    `{"submitter": "${submitter.id.toHex()}", "txIndex": ${tx.txIndex.toString()}, "token": "${tokenAsset.id.toHex()}", "to": "${toAccount.id.toHex()}", "amount": "${tx.amountExact.toString()}", "comment": "${tx.comment}"}`
+    `{"signer": "${submitter.id.toHex()}", "txIndex": ${tx.txIndex.toString()}, "token": "${tokenAsset.id.toHex()}", "to": "${toAccount.id.toHex()}", "amount": "${tx.amountExact.toString()}", "comment": "${tx.comment}"}`
   );
 }
 
@@ -327,7 +326,7 @@ export function handleSubmitContractCallTransaction(
     EventName.SubmitContractCallTransaction,
     sender,
     [sender, vaultAccount, submitter, targetAccount],
-    `{"submitter": "${submitter.id.toHex()}", "txIndex": ${tx.txIndex.toString()}, "target": "${targetAccount.id.toHex()}", "value": "${tx.value.toString()}", "selector": "${tx.selector.toHex()}", "comment": "${tx.comment}"}`
+    `{"signer": "${submitter.id.toHex()}", "txIndex": ${tx.txIndex.toString()}, "target": "${targetAccount.id.toHex()}", "value": "${tx.value.toString()}", "selector": "${tx.selector.toHex()}", "abiEncodedArguments": "${tx.abiEncodedArguments.toHex()}", "comment": "${tx.comment}"}`
   );
 }
 
@@ -534,11 +533,6 @@ export function handleExecuteTransaction(event: ExecuteTransaction): void {
     EventName.ExecuteTransaction,
     sender,
     [sender, vaultAccount, executor],
-    `{"executor": "${executor.id.toHex()}", "txIndex": ${event.params.txIndex.toString()}, "type": "${txType}"}`
+    `{"signer": "${executor.id.toHex()}", "txIndex": ${event.params.txIndex.toString()}, "type": "${txType}"}`
   );
 }
-
-// Transaction Execution Failed
-export function handleTransactionExecutionFailed(
-  event: TransactionExecutionFailed
-): void {}
