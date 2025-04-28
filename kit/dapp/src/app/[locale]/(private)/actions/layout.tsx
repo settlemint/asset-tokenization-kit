@@ -1,3 +1,5 @@
+import { AssetsSidebar } from "@/app/[locale]/(private)/_components/sidebar/assets-sidebar";
+import NavInset from "@/components/layout/nav-inset";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
@@ -26,5 +28,10 @@ export async function generateMetadata({
 }
 
 export default function ActionsLayout({ children }: LayoutProps) {
-  return <>{children}</>;
+  return (
+    <>
+      <AssetsSidebar />
+      <NavInset>{children}</NavInset>
+    </>
+  );
 }

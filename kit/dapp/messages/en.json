@@ -191,6 +191,7 @@
         "bonds": "Bonds",
         "cryptocurrencies": "Cryptocurrencies",
         "dashboard": "Dashboard",
+        "actions": "Actions",
         "equities": "Equities",
         "funds": "Funds",
         "group-title": "Asset management",
@@ -854,6 +855,11 @@
   "actions": {
     "page": {
       "actions": "Actions"
+    },
+    "tabs": {
+      "pending": "Pending",
+      "upcoming": "Upcoming",
+      "completed": "Completed"
     }
   },
   "portfolio": {

@@ -4,7 +4,7 @@ import { type NavItem, NavMain } from "@/components/layout/nav-main";
 import { ActivityIcon } from "@/components/ui/animated-icons/activity";
 import { ChartScatterIcon } from "@/components/ui/animated-icons/chart-scatter";
 import { getSidebarAssets } from "@/lib/queries/sidebar-assets/sidebar-assets";
-import { EllipsisIcon } from "lucide-react";
+import { EllipsisIcon, Inbox } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 export async function AssetManagement() {
@@ -106,6 +106,11 @@ export async function AssetManagement() {
               path: "/assets",
             },
             ...processedAssetItems,
+            {
+              label: t("actions"),
+              icon: <Inbox className="size-4" />,
+              path: "/actions/pending",
+            },
             {
               label: t("asset-activity"),
               icon: <ActivityIcon className="size-4" />,
