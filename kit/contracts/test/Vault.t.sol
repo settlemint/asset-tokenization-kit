@@ -811,24 +811,24 @@ contract VaultTest is Test {
         vm.prank(signer1);
         uint256 txIndex = vault.submitTransaction(address(targetContract), 0, badData, "Test Fail Exec");
 
-        // Signer 2 confirms, expecting execution failure event
+        // Signer 2 confirms, expecting the confirm call itself to revert because execution fails
         vm.startPrank(signer2);
-        vm.expectEmit(true, true, false, true); // Confirm event
+        vm.expectEmit(true, true, false, true); // Confirm event still emitted before execution attempt
         emit Vault.ConfirmTransaction(signer2, txIndex);
 
-        // Expect the TransactionExecutionFailed event instead of a revert
-        vm.expectEmit(true, false, false, true); // txIndex is indexed
-        emit Vault.TransactionExecutionFailed(txIndex, address(targetContract), badData);
-
+        // Expect the confirm() call to revert with ExecutionFailed
+        vm.expectRevert(
+            abi.encodeWithSelector(Vault.ExecutionFailed.selector, txIndex, address(targetContract), badData)
+        );
         vault.confirm(txIndex);
         vm.stopPrank();
 
-        // Verify state wasn't changed incorrectly
+        // Verify state: Transaction should NOT be executed, and signer2's confirmation was rolled back
         Vault.Transaction memory txn = vault.transaction(txIndex);
         assertFalse(txn.executed, "Txn should not be marked executed on failure");
-        assertEq(txn.numConfirmations, 2, "Confirmations should remain on failed execution");
-        assertTrue(vault.confirmations(txIndex, signer1), "Signer 1 confirmation should persist on failure");
-        assertTrue(vault.confirmations(txIndex, signer2), "Signer 2 confirmation should persist on failure");
+        assertEq(txn.numConfirmations, 1, "Confirmations should be 1 (only signer1's)");
+        assertTrue(vault.confirmations(txIndex, signer1), "Signer 1 confirmation should persist");
+        assertFalse(vault.confirmations(txIndex, signer2), "Signer 2 confirmation should have been rolled back");
     }
 
     // --- Test View Functions (Post-Tx) ---
@@ -895,24 +895,27 @@ contract VaultTest is Test {
         // Trigger: Signer 2 confirms, which executes the call to MockTarget.performReentrantAction
         // MockTarget then tries to call vault.confirm(0) again.
         vm.startPrank(signer2);
-        vm.expectEmit(true, true, false, true); // Confirm event for signer 2
+        vm.expectEmit(true, true, false, true); // Confirm event for signer 2 emitted before execution attempt
         emit Vault.ConfirmTransaction(signer2, txIndex);
 
-        // Expect the event from MockTarget *before* the execution failure event
+        // Expect the event from MockTarget *before* the revert
         vm.expectEmit(true, false, false, true);
         emit MockTarget.ReentrancyAttempt(address(vault), txIndex);
 
-        // Expect the TransactionExecutionFailed event because the reentrant call failed
-        vm.expectEmit(true, false, false, true); // txIndex indexed
-        emit Vault.TransactionExecutionFailed(txIndex, address(targetContract), reentrantData);
-
-        vault.confirm(txIndex); // This call itself no longer reverts
+        // Expect the confirm() call to revert with ExecutionFailed because the target call failed (due to reentrancy
+        // guard on Vault.confirm)
+        vm.expectRevert(
+            abi.encodeWithSelector(Vault.ExecutionFailed.selector, txIndex, address(targetContract), reentrantData)
+        );
+        vault.confirm(txIndex);
         vm.stopPrank();
 
-        // Check state: Transaction should NOT be executed because the reentrant call failed
+        // Check state: Transaction should NOT be executed, and signer2's confirmation was rolled back
         Vault.Transaction memory txn = vault.transaction(txIndex);
         assertFalse(txn.executed, "Transaction should not be executed after failed reentrant call");
-        assertEq(txn.numConfirmations, 2, "Confirmations should still be 2");
+        assertEq(txn.numConfirmations, 1, "Confirmations should be 1 (only signer1's)");
+        assertTrue(vault.confirmations(txIndex, signer1), "Signer 1 confirmation should persist");
+        assertFalse(vault.confirmations(txIndex, signer2), "Signer 2 confirmation should have been rolled back");
     }
 
     function test_RevertIf_Reentrancy_onBatchConfirm() public {
@@ -934,31 +937,44 @@ contract VaultTest is Test {
         indices[0] = txIndex0;
         indices[1] = txIndex1;
 
-        // Trigger: Signer 3 batch confirms. Confirming txIndex1 executes the reentrant call.
+        // Trigger: Signer 3 batch confirms.
+        // Confirming txIndex0 succeeds and executes.
+        // Confirming txIndex1 triggers the reentrant call, causing execution failure and reverting the batchConfirm
+        // call.
         vm.startPrank(signer3);
         vm.expectEmit(true, true, false, true); // Confirm tx 0
         emit Vault.ConfirmTransaction(signer3, txIndex0);
         vm.expectEmit(true, true, false, true); // Execute tx 0 (signer1 + signer3)
         emit Vault.ExecuteTransaction(signer3, txIndex0);
 
-        vm.expectEmit(true, true, false, true); // Confirm tx 1
+        vm.expectEmit(true, true, false, true); // Confirm tx 1 (emitted before execution attempt)
         emit Vault.ConfirmTransaction(signer3, txIndex1);
 
-        // Expect the event from MockTarget *before* the execution failure event
+        // Expect the event from MockTarget *before* the revert
         vm.expectEmit(true, false, false, true);
         emit MockTarget.ReentrancyAttempt(address(vault), txIndex1);
 
-        // Expect the TransactionExecutionFailed event for txIndex 1
-        vm.expectEmit(true, false, false, true); // txIndex indexed
-        emit Vault.TransactionExecutionFailed(txIndex1, address(targetContract), reentrantData);
-
-        vault.batchConfirm(indices); // This call itself no longer reverts
+        // Expect the batchConfirm() call to revert with ExecutionFailed when processing txIndex1
+        vm.expectRevert(
+            abi.encodeWithSelector(Vault.ExecutionFailed.selector, txIndex1, address(targetContract), reentrantData)
+        );
+        vault.batchConfirm(indices);
         vm.stopPrank();
 
-        // Check state
-        assertTrue(vault.transaction(txIndex0).executed, "Tx 0 should be executed");
-        assertFalse(vault.transaction(txIndex1).executed, "Tx 1 should not be executed after failed reentrant call");
-        assertEq(vault.transaction(txIndex1).numConfirmations, 2, "Tx 1 Confirmations should still be 2");
+        // Check state: The entire batchConfirm reverted. Tx 0 was NOT executed, and Signer 3's confirmations were
+        // rolled back.
+        assertFalse(vault.transaction(txIndex0).executed, "Tx 0 should NOT be executed due to batch revert");
+        assertFalse(vault.transaction(txIndex1).executed, "Tx 1 should not be executed");
+
+        // Check original confirmations are still present
+        assertEq(vault.transaction(txIndex0).numConfirmations, 1, "Tx 0 Confirmations should be 1 (only signer1's)");
+        assertTrue(vault.confirmations(txIndex0, signer1), "Signer 1 confirmation for Tx 0 should persist");
+        assertEq(vault.transaction(txIndex1).numConfirmations, 1, "Tx 1 Confirmations should be 1 (only signer2's)");
+        assertTrue(vault.confirmations(txIndex1, signer2), "Signer 2 confirmation for Tx 1 should persist");
+
+        // Check Signer 3's confirmations were rolled back for both
+        assertFalse(vault.confirmations(txIndex0, signer3), "Signer 3 confirmation for Tx 0 should be rolled back");
+        assertFalse(vault.confirmations(txIndex1, signer3), "Signer 3 confirmation for Tx 1 should be rolled back");
     }
 
     // Add similar tests for reentrancy on submitTransaction, batchSubmit*, etc. if necessary,

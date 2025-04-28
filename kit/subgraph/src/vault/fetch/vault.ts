@@ -10,6 +10,8 @@ export function fetchVault(address: Address, timestamp: BigInt): Vault {
 
     vault.signers = [];
     vault.admins = [];
+    vault.pendingTransactionsCount = 0;
+    vault.executedTransactionsCount = 0;
     vault.requiredSigners = BigInt.zero();
     vault.totalSigners = BigInt.zero();
     vault.paused = false;

@@ -896,7 +896,23 @@ templates:
       abis:
         - name: Vault
           file: ../contracts/artifacts/contracts/Vault.sol/Vault.json
+        - name: ERC20
+          file: ../contracts/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json
       eventHandlers:
+        - event: ConfirmTransaction(indexed address,indexed uint256)
+          handler: handleConfirmTransaction
+        - event: ExecuteTransaction(indexed address,indexed uint256)
+          handler: handleExecuteTransaction
+        - event: RevokeConfirmation(indexed address,indexed uint256)
+          handler: handleRevokeConfirmation
+        - event: SubmitContractCallTransaction(indexed address,indexed uint256,indexed address,uint256,bytes4,bytes,string)
+          handler: handleSubmitContractCallTransaction
+        - event: SubmitERC20TransferTransaction(indexed address,indexed uint256,indexed address,address,uint256,string)
+          handler: handleSubmitERC20TransferTransaction
+        - event: TransactionExecutionFailed(indexed uint256,address,bytes)
+          handler: handleTransactionExecutionFailed
+        - event: SubmitTransaction(indexed address,indexed uint256,indexed address,uint256,bytes,string)
+          handler: handleSubmitTransaction
         - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit
         - event: RequirementChanged(indexed address,uint256)

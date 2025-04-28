@@ -573,9 +573,9 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
         if (txn.numConfirmations >= required && !txn.executed) {
             bool executedSuccessfully = _executeTransaction(txIndex, confirmer);
             if (!executedSuccessfully) {
-                // Execution was attempted but failed. Emit an event.
-                // State changes in _confirm (adding confirmer, incrementing count) persist.
-                emit TransactionExecutionFailed(txIndex, txn.to, txn.data);
+                // Execution was attempted but failed. Revert the entire confirm transaction.
+                // State changes in _confirm (adding confirmer, incrementing count) will be rolled back.
+                revert ExecutionFailed(txIndex, txn.to, txn.data);
             }
         }
     }

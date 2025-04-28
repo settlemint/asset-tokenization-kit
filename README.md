@@ -283,24 +283,3 @@ To modify database schema:
 > in the `useSession` hook, try clearing cookies and signing in again. See
 > [Better Auth database core schema](https://www.better-auth.com/docs/concepts/database#core-schema)
 > for more information.
-
-### Performance Monitoring
-
-The kit includes a performance monitoring system that collects and visualizes
-metrics and traces from the application. Set the `OTEL_EXPORTER_OTLP_ENDPOINT`
-environment variable to your OpenTelemetry collector endpoint.
-
-```bash
-OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
-OTEL_EXPORTER_OTLP_PROTOCOL=grpc
-```
-
-If working in a development environment, you can use the following command to
-start a local OTEL collector and view the metrics and traces in your browser:
-
-```bash
-docker compose up -d
-```
-
-Then browse to <http://localhost:16686/> to view the traces and
-<http://localhost:9090/> to view the metrics.

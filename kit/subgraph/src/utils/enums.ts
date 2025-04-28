@@ -66,6 +66,13 @@ export class EventName {
   static VaultCreated: string = "Vault Created";
   static Deposit: string = "Deposit";
   static RequirementChanged: string = "Requirement Changed";
+  static SubmitTransaction: string = "Initiate Native Currency Transfer";
+  static SubmitERC20TransferTransaction: string = "Initiate ERC20 Transfer";
+  static SubmitContractCallTransaction: string = "Initiate Contract Call";
+  static ConfirmTransaction: string = "Confirm Transaction";
+  static RevokeConfirmation: string = "Revoke Confirmation";
+  static ExecuteTransaction: string = "Execute Transaction";
+  static TransactionExecutionFailed: string = "Transaction Execution Failed";
 }
 
 // Update DvPSwap status type enum to match the contract

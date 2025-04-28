@@ -1,5 +1,13 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { Bond, CryptoCurrency, Deposit, Equity, Fund, StableCoin } from "../../../generated/schema";
+import {
+  Bond,
+  CryptoCurrency,
+  Deposit,
+  Equity,
+  Fund,
+  StableCoin,
+} from "../../../generated/schema";
+import { ERC20 } from "../../../generated/templates/Vault/ERC20";
 
 /**
  * Fetches any asset entity by its address and returns its decimals
@@ -40,6 +48,9 @@ export function fetchAssetDecimals(address: Address): i32 {
     return deposit.decimals;
   }
 
+  const endpoint = ERC20.bind(address);
+  const decimals = endpoint.try_decimals();
+
   // Default to 18 if asset not found (most common decimals value)
-  return 18;
+  return decimals.reverted ? 18 : decimals.value;
 }

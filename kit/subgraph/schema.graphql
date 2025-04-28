@@ -372,6 +372,103 @@ type Vault @entity(immutable: false) {
   deployedOn: BigInt!
   lastActivity: BigInt!
   asAccount: Account!
+  transactions: [VaultTransaction!]! @derivedFrom(field: "vault")
+  pendingTransactionsCount: Int!
+  executedTransactionsCount: Int!
+}
+
+# --------------------------------------------------
+# Vault Transactions
+# --------------------------------------------------
+
+interface VaultTransaction {
+  id: Bytes! # vaultAddress-txIndex
+  vault: Vault!
+  txIndex: BigInt!
+  type: String! # "General", "ERC20Transfer", "ContractCall"
+  submitter: Account! # Signer who submitted the transaction
+  createdAt: BigInt! # Timestamp of submission
+  comment: String!
+  executed: Boolean!
+  executedAt: BigInt # Timestamp of execution, null if not executed
+  executor: Account # Signer who triggered execution, null if not executed
+  confirmationsCount: Int!
+  confirmations: [VaultTransactionConfirmation!]!
+    @derivedFrom(field: "transaction")
+}
+
+type VaultNativeCurrencyTransaction implements VaultTransaction
+  @entity(immutable: false) {
+  id: Bytes! # vaultAddress-txIndex
+  vault: Vault!
+  txIndex: BigInt!
+  type: String! # = "General"
+  submitter: Account!
+  createdAt: BigInt!
+  comment: String!
+  executed: Boolean!
+  executedAt: BigInt
+  executor: Account
+  confirmationsCount: Int!
+  confirmations: [VaultTransactionConfirmation!]!
+    @derivedFrom(field: "transaction")
+  # General specific fields
+  to: Account!
+  value: BigDecimal! # ETH value sent with call
+  valueExact: BigInt! # ETH value sent with call
+  data: Bytes!
+}
+
+type VaultERC20Transaction implements VaultTransaction
+  @entity(immutable: false) {
+  id: Bytes! # vaultAddress-txIndex
+  vault: Vault!
+  txIndex: BigInt!
+  type: String! # = "ERC20Transfer"
+  submitter: Account!
+  createdAt: BigInt!
+  comment: String!
+  executed: Boolean!
+  executedAt: BigInt
+  executor: Account
+  confirmationsCount: Int!
+  confirmations: [VaultTransactionConfirmation!]!
+    @derivedFrom(field: "transaction")
+  # ERC20 Transfer specific fields
+  token: Account! # The ERC20 token being transferred
+  to: Account! # Recipient
+  amount: BigDecimal!
+  amountExact: BigInt!
+}
+
+type VaultContractCallTransaction implements VaultTransaction
+  @entity(immutable: false) {
+  id: Bytes! # vaultAddress-txIndex
+  vault: Vault!
+  txIndex: BigInt!
+  type: String! # = "ContractCall"
+  submitter: Account!
+  createdAt: BigInt!
+  comment: String!
+  executed: Boolean!
+  executedAt: BigInt
+  executor: Account
+  confirmationsCount: Int!
+  confirmations: [VaultTransactionConfirmation!]!
+    @derivedFrom(field: "transaction")
+  # Contract Call specific fields
+  target: Account! # Contract being called
+  value: BigDecimal! # ETH value sent with call
+  valueExact: BigInt! # ETH value sent with call
+  selector: Bytes! # Function selector (bytes4)
+  abiEncodedArguments: Bytes! # Arguments for the call
+}
+
+type VaultTransactionConfirmation @entity(immutable: false) {
+  id: Bytes! # txId-signerAddress
+  transaction: VaultTransaction!
+  signer: Account!
+  confirmedAt: BigInt!
 }
 
 # --------------------------------------------------
