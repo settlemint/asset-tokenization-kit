@@ -1188,7 +1188,7 @@ interface VestingStrategy {
 type LinearVestingStrategy implements VestingStrategy
   @entity(immutable: false) {
   id: Bytes! # Strategy contract address
-  type: String! # = "Linear"
+  type: String! # "Linear"
   airdrop: VestingAirdrop! @derivedFrom(field: "strategy") # Derived from VestingAirdrop linking
   airdropRef: Bytes! # Direct reference to airdrop address
   owner: Account!
