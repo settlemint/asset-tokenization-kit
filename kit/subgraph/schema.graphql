@@ -1088,6 +1088,7 @@ type DvPSwapAutoExecutionFailedEvent implements AssetEvent @entity(immutable: tr
   dvpSwapId: Bytes!
   executor: Account!
   reason: String!
+}
 
 # --------------------------------------------------
 # Airdrop Contracts
