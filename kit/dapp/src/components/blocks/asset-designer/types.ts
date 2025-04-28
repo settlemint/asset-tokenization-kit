@@ -90,6 +90,8 @@ export interface UploadedDocument {
   type: string;
   description: string;
   url?: string;
+  objectName?: string; // Path in MinIO storage
+  fileName?: string; // Original file name
 }
 
 export interface UploadedDocumentsState {

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { deleteFile } from "@/lib/actions/delete-file";
 import { uploadToStorage } from "@/lib/actions/upload";
 import { cn } from "@/lib/utils";
 import { XCircle } from "lucide-react";
@@ -73,11 +74,59 @@ export function AssetRegulationStep({
   };
 
   // Handle document deletion
-  const handleDeleteDocument = (regulationId: string, documentId: string) => {
-    setUploadedDocuments((prev) => ({
-      ...prev,
-      [regulationId]: prev[regulationId].filter((doc) => doc.id !== documentId),
-    }));
+  const handleDeleteDocument = async (
+    regulationId: string,
+    documentId: string
+  ) => {
+    // Find the document to delete
+    const docToDelete = uploadedDocuments[regulationId]?.find(
+      (doc) => doc.id === documentId
+    );
+
+    if (!docToDelete) {
+      console.error(
+        `Document with ID ${documentId} not found for regulation ${regulationId}`
+      );
+      return;
+    }
+
+    console.log(`Attempting to delete document:`, {
+      id: docToDelete.id,
+      title: docToDelete.title,
+      objectName: docToDelete.objectName,
+      type: docToDelete.type,
+    });
+
+    try {
+      // Call our enhanced deleteFile function to delete from MinIO
+      if (docToDelete.objectName) {
+        // Try to delete with both the objectName and possible variations
+        const result = await deleteFile(docToDelete.objectName);
+        console.log("MinIO Delete Result:", result);
+
+        if (!result.success && docToDelete.type === "mica") {
+          // Try the specific MiCA path if the first attempt failed
+          const micaPath = `regulations/mica/${docToDelete.fileName || ""}`;
+          console.log(
+            `First attempt failed, trying with MiCA path: ${micaPath}`
+          );
+
+          const secondResult = await deleteFile(micaPath);
+          console.log("Second delete attempt with MiCA path:", secondResult);
+        }
+      }
+
+      // Update local state regardless of whether the delete from MinIO was successful
+      // This ensures the UI is updated even if the backend delete might have issues
+      setUploadedDocuments((prev) => ({
+        ...prev,
+        [regulationId]: prev[regulationId].filter(
+          (doc) => doc.id !== documentId
+        ),
+      }));
+    } catch (error) {
+      console.error("Error deleting document from MinIO:", error);
+    }
   };
 
   // Available regions

@@ -183,22 +183,96 @@ export const uploadFile = withTracing(
 );
 
 /**
- * Deletes a file from storage
+ * Deletes a file from storage with enhanced reliability
  *
  * @param fileId - The file identifier/path to delete
- * @returns Success status
+ * @returns Success status and details
  */
 export const deleteFile = withTracing(
   "queries",
   "deleteFile",
-  async (fileId: string): Promise<boolean> => {
-    try {
-      await minioClient.removeObject(DEFAULT_BUCKET, fileId);
+  async (
+    fileId: string
+  ): Promise<{
+    success: boolean;
+    message: string;
+    error?: any;
+  }> => {
+    console.log(
+      `Attempting to delete file: ${fileId} from bucket: ${DEFAULT_BUCKET}`
+    );
 
-      return true;
+    if (!fileId) {
+      return {
+        success: false,
+        message: "No file ID provided",
+      };
+    }
+
+    try {
+      // First check if file exists
+      let fileExists = true;
+      let fileInfo = null;
+      try {
+        fileInfo = await minioClient.statObject(DEFAULT_BUCKET, fileId);
+        console.log(
+          `File exists with size: ${fileInfo.size}, last modified: ${fileInfo.lastModified}`
+        );
+      } catch (statError: any) {
+        fileExists = false;
+        // If file doesn't exist, consider the deletion successful
+        if (statError.code === "NotFound") {
+          console.log(
+            `File not found at path: ${fileId} - considering deletion successful`
+          );
+          return {
+            success: true,
+            message: "File does not exist (already deleted)",
+          };
+        }
+        console.log(`Error checking file existence: ${statError.message}`);
+      }
+
+      if (fileExists) {
+        // Remove the file
+        await minioClient.removeObject(DEFAULT_BUCKET, fileId);
+
+        // Verify deletion success
+        let stillExists = false;
+        try {
+          await minioClient.statObject(DEFAULT_BUCKET, fileId);
+          stillExists = true;
+        } catch (verifyError) {
+          // This is good - file should be gone
+          stillExists = false;
+        }
+
+        if (stillExists) {
+          console.error(`File still exists after deletion attempt: ${fileId}`);
+          return {
+            success: false,
+            message: "File still exists after deletion attempt",
+          };
+        }
+
+        return {
+          success: true,
+          message: "File successfully deleted",
+        };
+      }
+
+      // Fall through to failure if we couldn't confirm existence but also not a clear "not found"
+      return {
+        success: false,
+        message: "Could not confirm file status",
+      };
     } catch (error) {
       console.error(`Failed to delete file ${fileId}:`, error);
-      return false;
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : "Unknown error",
+        error,
+      };
     }
   }
 );

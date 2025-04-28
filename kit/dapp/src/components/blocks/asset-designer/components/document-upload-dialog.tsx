@@ -76,6 +76,8 @@ export function DocumentUploadDialog({
         type: documentType,
         description: documentDescription,
         url: result.url,
+        objectName: result.id,
+        fileName: selectedFile.name,
       };
 
       // Send the document back to the parent component

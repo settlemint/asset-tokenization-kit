@@ -35,7 +35,13 @@ import { useRef, useState } from "react";
 import { useForm, useFormContext, type FieldValues } from "react-hook-form";
 import type { BaseFormInputProps } from "./types";
 
-export type DocumentType = "audit" | "legal" | "financial" | "other";
+export type DocumentType =
+  | "audit"
+  | "legal"
+  | "financial"
+  | "other"
+  | "mica"
+  | "regulations";
 
 export interface Document {
   id: string;
@@ -47,8 +53,9 @@ export interface Document {
   fileType: string;
   uploadedAt: string;
   downloadUrl?: string;
-  status: "uploading" | "complete" | "error";
+  status: "uploading" | "complete" | "error" | "deleting";
   progress: number;
+  objectName: string;
 }
 
 interface FormDocumentUploadProps<T extends FieldValues>
@@ -88,6 +95,8 @@ export function FormDocumentUpload<T extends FieldValues>({
     { value: "audit", label: "Audit" },
     { value: "legal", label: "Legal" },
     { value: "financial", label: "Financial" },
+    { value: "mica", label: "MiCA" },
+    { value: "regulations", label: "Regulations" },
     { value: "other", label: "Other" },
   ],
   maxFileSize = 10,
@@ -187,6 +196,12 @@ export function FormDocumentUpload<T extends FieldValues>({
 
     const data = uploadForm.getValues();
 
+    // Check if we're dealing with a MiCA document (for regulatory compliance)
+    // This will help with consistency between upload and delete operations
+    const documentType = data.type;
+    const isMicaDocument =
+      documentType === "mica" || documentType === "regulations";
+
     // Create document object with initial uploading state
     const newDocument: Document = {
       id: crypto.randomUUID(),
@@ -199,6 +214,7 @@ export function FormDocumentUpload<T extends FieldValues>({
       uploadedAt: new Date().toISOString(),
       status: "uploading",
       progress: 0,
+      objectName: "",
     };
 
     setActiveUpload(newDocument);
@@ -214,7 +230,13 @@ export function FormDocumentUpload<T extends FieldValues>({
       formData.append("file", selectedFile);
       formData.append("title", data.title);
       formData.append("description", data.description || "");
-      formData.append("type", data.type);
+
+      // Make sure we're sending the consistent document type for MiCA documents
+      if (isMicaDocument) {
+        formData.append("type", "mica");
+      } else {
+        formData.append("type", data.type);
+      }
 
       // Call server action directly and cast the response
       // The server action returns an object with id, name, url, title, description, and type
@@ -241,7 +263,15 @@ export function FormDocumentUpload<T extends FieldValues>({
         status: "complete",
         progress: 100,
         downloadUrl: responseData.url,
+        objectName: responseData.id,
       };
+
+      console.log("Document uploaded successfully:", {
+        id: updatedDocument.id,
+        objectName: updatedDocument.objectName,
+        title: updatedDocument.title,
+        type: updatedDocument.type,
+      });
 
       setDocuments((prev) =>
         prev.map((doc) => (doc.id === newDocument.id ? updatedDocument : doc))
@@ -276,22 +306,168 @@ export function FormDocumentUpload<T extends FieldValues>({
     }
   };
 
-  const deleteDocument = (id: string) => {
-    // Remove document from state
-    setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+  const deleteDocument = async (id: string) => {
+    try {
+      // Find the document
+      const docToDelete = documents.find((doc) => doc.id === id);
+      if (!docToDelete) {
+        console.error(`Document with ID ${id} not found`);
+        return;
+      }
 
-    // Notify parent component
-    if (onDocumentDeleted) {
-      onDocumentDeleted(id);
+      // Log document details to console for debugging
+      console.log("DIRECT DOCUMENT DELETE: Document information:", {
+        id: docToDelete.id,
+        fileName: docToDelete.fileName,
+        objectName: docToDelete.objectName,
+        type: docToDelete.type,
+        downloadUrl: docToDelete.downloadUrl
+          ? docToDelete.downloadUrl.substring(0, 100) +
+            (docToDelete.downloadUrl.length > 100 ? "..." : "")
+          : "none",
+        status: docToDelete.status,
+      });
+
+      // Add a deletion indicator to the document (for UI feedback)
+      setDocuments((prev) =>
+        prev.map((doc) =>
+          doc.id === id ? { ...doc, status: "deleting" } : doc
+        )
+      );
+
+      // Only attempt server deletion for complete uploads with real URLs
+      if (
+        docToDelete.status === "complete" &&
+        docToDelete.downloadUrl &&
+        !docToDelete.downloadUrl.startsWith("/mock")
+      ) {
+        // Try both direct API endpoint and test endpoint for maximum chance of success
+        try {
+          // First, try the enhanced direct-delete endpoint
+          const fileToDelete = docToDelete.objectName;
+          const documentType = docToDelete.type;
+
+          console.log(
+            `Attempting direct deletion for file: ${fileToDelete}, type: ${documentType}`
+          );
+
+          const response = await fetch(
+            `/api/direct-delete?path=${encodeURIComponent(fileToDelete)}&type=${encodeURIComponent(documentType)}`,
+            { method: "DELETE" }
+          );
+
+          const result = await response.json();
+          console.log("Direct deletion result:", result);
+
+          if (result.success) {
+            console.log(`Successfully deleted file`);
+
+            // Remove document from state
+            setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+
+            // Notify parent component
+            if (onDocumentDeleted) {
+              onDocumentDeleted(id);
+            }
+            return;
+          }
+
+          console.log("First attempt failed, trying second method...");
+
+          // Second, try the test-minio-delete endpoint as fallback
+          const testResponse = await fetch(
+            `/api/test-minio-delete?path=${encodeURIComponent(fileToDelete)}`,
+            { method: "DELETE" }
+          );
+
+          const testResult = await testResponse.json();
+          console.log("Test deletion result:", testResult);
+
+          if (testResult.success) {
+            console.log(`Successfully deleted file using test endpoint`);
+
+            // Remove document from state
+            setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+
+            // Notify parent component
+            if (onDocumentDeleted) {
+              onDocumentDeleted(id);
+            }
+            return;
+          }
+
+          // If MiCA document, try with the regulations path
+          if (documentType === "mica" || documentType === "regulations") {
+            const fileName = docToDelete.fileName;
+            const micaPath = `regulations/mica/${fileName}`;
+
+            console.log(`Trying with explicit MiCA path: ${micaPath}`);
+
+            const micaResponse = await fetch(
+              `/api/test-minio-delete?path=${encodeURIComponent(micaPath)}`,
+              { method: "DELETE" }
+            );
+
+            const micaResult = await micaResponse.json();
+            console.log("MiCA path deletion result:", micaResult);
+
+            if (micaResult.success) {
+              console.log(`Successfully deleted file using MiCA path`);
+
+              // Remove document from state
+              setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+
+              // Notify parent component
+              if (onDocumentDeleted) {
+                onDocumentDeleted(id);
+              }
+              return;
+            }
+          }
+
+          // All attempts failed
+          console.error("All deletion attempts failed");
+
+          // Mark document as error
+          setDocuments((prev) =>
+            prev.map((doc) =>
+              doc.id === id ? { ...doc, status: "error" } : doc
+            )
+          );
+        } catch (error) {
+          console.error("Error in deletion process:", error);
+
+          // Mark document as error
+          setDocuments((prev) =>
+            prev.map((doc) =>
+              doc.id === id ? { ...doc, status: "error" } : doc
+            )
+          );
+        }
+      } else {
+        // For non-uploaded or mock documents, just remove from state
+        setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+
+        // Notify parent component
+        if (onDocumentDeleted) {
+          onDocumentDeleted(id);
+        }
+      }
+
+      // Update the form value
+      const updatedDocuments = documents.filter((doc) => doc.id !== id);
+      const documentIds = updatedDocuments.map((doc) => doc.id);
+      parentForm.setValue(props.name, documentIds.join(",") as any, {
+        shouldValidate: true,
+      });
+    } catch (error) {
+      console.error("Error deleting document:", error);
+
+      // Reset document status
+      setDocuments((prev) =>
+        prev.map((doc) => (doc.id === id ? { ...doc, status: "error" } : doc))
+      );
     }
-
-    // Update the form value
-    const documentIds = documents
-      .filter((doc) => doc.id !== id)
-      .map((doc) => doc.id);
-    parentForm.setValue(props.name, documentIds.join(",") as any, {
-      shouldValidate: true,
-    });
   };
 
   const formatFileSize = (bytes: number) => {
@@ -380,7 +556,12 @@ export function FormDocumentUpload<T extends FieldValues>({
                             variant="ghost"
                             size="icon"
                             className="size-7 shrink-0"
-                            onClick={() => deleteDocument(doc.id)}
+                            onClick={() => {
+                              console.log(
+                                `DELETE BUTTON CLICKED for document: ${doc.id}, fileName: ${doc.fileName}`
+                              );
+                              deleteDocument(doc.id);
+                            }}
                             disabled={disabled || doc.status === "uploading"}
                           >
                             <Trash2Icon className="size-4" />
