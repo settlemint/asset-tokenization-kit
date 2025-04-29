@@ -125,6 +125,7 @@ export const createFundFunction = withAccessControl(
       return safeParse(t.Hashes(), [createTxHash]);
     }
 
+    // Wait for the creation transaction to be mined
     await waitForTransactions([createTxHash]);
 
     // Grant roles to admins using the shared helper
