@@ -94,10 +94,6 @@ contract SMARTStableCoin is SMART, AccessControl, SMARTCollateral, SMARTCustodia
         return super.decimals();
     }
 
-    function hasRole(bytes32 role, address account) public view virtual override(AccessControl) returns (bool) {
-        return AccessControl.hasRole(role, account);
-    }
-
     // --- Hooks (Overrides for Chaining) ---
     // These ensure that logic from multiple inherited extensions (SMART, SMARTCustodian, etc.) is called correctly.
 
