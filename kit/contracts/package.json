@@ -9,7 +9,7 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "dependencies": "forge soldeer install && find dependencies -name .git -type d -exec rm -rf {} +",
+    "dependencies": "forge soldeer install && find dependencies -name .git -type d -exec rm -rf {} + && find ./dependencies/ -name '*.sol' -type f -exec bash -c 'if [[ \"$(uname)\" == \"Darwin\" ]]; then sed -i \"\" \"s/pragma solidity 0.8/pragma solidity ^0.8/g\" \"$1\"; else sed -i \"s/pragma solidity 0.8/pragma solidity ^0.8/g\" \"$1\"; fi' _ {} \\;",
     "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
     "format": "settlemint scs foundry format && prettier --write .",
     "compile:forge": "settlemint scs foundry build --sizes",
