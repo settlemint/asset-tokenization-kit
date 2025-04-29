@@ -191,6 +191,7 @@
         "bonds": "Bonds",
         "cryptocurrencies": "Cryptocurrencies",
         "dashboard": "Dashboard",
+        "actions": "Actions",
         "equities": "Equities",
         "funds": "Funds",
         "group-title": "Asset management",
@@ -836,11 +837,12 @@
     "navigation": {
       "admin": "Issuer portal",
       "asset-management": "Asset management",
-      "dvp-swap": "DvP Swap",
       "platform": "Platform management",
       "portfolio": "My portfolio",
       "title": "Private",
-      "trade-management": "Trade management"
+      "trade-management": "Trade management",
+      "dvp-swap": "DvP Swap",
+      "actions": "Actions"
     },
     "user-dropdown": {
       "documentation": "Documentation",
@@ -850,6 +852,36 @@
     }
   },
   "paused": "Paused",
+  "actions": {
+    "page": {
+      "actions": "Actions"
+    },
+    "tabs": {
+      "pending": "Pending",
+      "upcoming": "Upcoming",
+      "completed": "Completed"
+    },
+    "all-tasks-complete": "All tasks complete!",
+    "all-tasks-complete-description": "You have no pending actions.",
+    "subject": "Subject",
+    "action-type-header": "Action type",
+    "description-header": "Description",
+    "active-on-header": "Active on",
+    "sender-header": "Sender",
+    "completed-on-header": "Completed on",
+    "action-type": {
+      "bond-mature": "Mature Bond"
+    },
+    "pending-description": {
+      "bond-mature": "You need to send the transaction to mature the bond."
+    },
+    "upcoming-description": {
+      "bond-mature": "You will need to send the transaction to mature the bond."
+    },
+    "completed-description": {
+      "bond-mature": "The bond has been matured successfully."
+    }
+  },
   "portfolio": {
     "activity": {
       "page-description": "Your activity on chain",

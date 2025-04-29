@@ -44,11 +44,12 @@ export function NavMode() {
 
   const { data: session } = authClient.useSession();
   const userRole = session?.user?.role;
-  const mode = pathname.includes("/assets")
-    ? "assets"
-    : pathname.includes("/platform")
-      ? "platform"
-      : "portfolio";
+  const mode =
+    pathname.includes("/assets") || pathname.includes("/actions")
+      ? "assets"
+      : pathname.includes("/platform")
+        ? "platform"
+        : "portfolio";
 
   function handleMouseEnter() {
     if (mode === "assets") {
