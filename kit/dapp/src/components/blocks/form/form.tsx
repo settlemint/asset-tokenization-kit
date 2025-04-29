@@ -293,16 +293,23 @@ export function Form<
               const action = toastMessages?.action
                 ? toastMessages.action(input)
                 : undefined;
+
+              const toastId = Date.now();
               toast.promise(waitForTransactions(hashes), {
                 loading: t("transactions.sending"),
-                success: successMessage,
+                success: () => {
+                  toast.dismiss(toastId);
+                  return toast.success(successMessage, {
+                    action,
+                    actionButtonStyle: {
+                      backgroundColor: "var(--success-fg-deep)",
+                      color: "var(--primary-foreground)",
+                    },
+                  });
+                },
                 error: (error) =>
                   `Failed to submit: ${(error as Error).message}`,
-                action,
-                actionButtonStyle: {
-                  backgroundColor: "var(--success-fg-deep)",
-                  color: "var(--primary-foreground)",
-                },
+                id: toastId,
               });
             }
 
