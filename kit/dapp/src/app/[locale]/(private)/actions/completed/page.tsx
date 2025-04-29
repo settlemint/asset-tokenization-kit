@@ -1,6 +1,4 @@
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
-import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
-import { PageHeader } from "@/components/layout/page-header";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
@@ -54,8 +52,7 @@ export default async function ActionsPage({
 
   return (
     <>
-      <PageHeader title={t("page.actions")} />
-      <TabNavigation items={tabItems} />
+      <div>Something</div>
     </>
   );
 }
