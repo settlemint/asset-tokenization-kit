@@ -1,5 +1,6 @@
 "use client";
 
+import { MatureForm } from "@/components/blocks/bonds/mature-form/form";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,7 +29,6 @@ import { hasAllowlist, hasBlocklist } from "../features-enabled";
 import { MintForm } from "../mint-form/form";
 import { UnblockForm } from "../unblock-form/form";
 import { GrantRoleForm } from "./grant-role-form/form";
-import { MatureForm } from "./mature-form/form";
 import { PauseForm } from "./pause-form/form";
 import { TopUpForm } from "./top-up-form/form";
 import { UpdateCollateralForm } from "./update-collateral-form/form";
