@@ -1,6 +1,0 @@
-[submodule "kit/contracts/kit/contracts/lib/forge-std"]
-	path = kit/contracts/kit/contracts/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "kit/contracts/kit/contracts/lib/eas-contracts"]
-	path = kit/contracts/kit/contracts/lib/eas-contracts
-	url = https://github.com/ethereum-attestation-service/eas-contracts
