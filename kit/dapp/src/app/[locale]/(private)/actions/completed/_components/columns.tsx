@@ -14,14 +14,14 @@ const columnHelper =
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("actions.completed");
+  const t = useTranslations("actions");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
   return [
     columnHelper.accessor("actionType", {
       header: t("action-type-header"),
-      cell: ({ getValue }) => t(getValue()),
+      cell: ({ getValue }) => t(`action-type.${getValue()}`),
     }),
     columnHelper.accessor("subject", {
       header: t("subject"),

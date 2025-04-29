@@ -16,14 +16,14 @@ const columnHelper =
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("actions.upcoming");
+  const t = useTranslations("actions");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
   return [
     columnHelper.accessor("actionType", {
       header: t("action-type-header"),
-      cell: ({ getValue }) => t(getValue()),
+      cell: ({ getValue }) => t(`action-type.${getValue()}`),
     }),
     columnHelper.accessor("subject", {
       header: t("subject"),
@@ -42,7 +42,7 @@ export function columns() {
     }),
     columnHelper.accessor("id", {
       header: t("description-header"),
-      cell: ({ row }) => t(`${row.original.actionType}-description`),
+      cell: ({ row }) => t(`upcoming-description.${row.original.actionType}`),
     }),
     columnHelper.accessor("activeAtMs", {
       header: t("active-on-header"),
