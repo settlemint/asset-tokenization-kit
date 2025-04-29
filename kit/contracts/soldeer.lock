@@ -17,3 +17,9 @@ name = "openzeppelin-community-contracts"
 version = "0.0.1"
 source = "https://github.com/OpenZeppelin/openzeppelin-community-contracts.git"
 checksum = "e33f73d1957e46b9ed17c319ed607bb3c7137944"
+
+[[dependencies]]
+name = "eas-contracts"
+version = "1.4.1"
+url = "https://github.com/ethereum-attestation-service/eas-contracts.git"
+tag = "v1.4.1"
