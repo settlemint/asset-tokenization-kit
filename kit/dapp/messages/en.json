@@ -860,6 +860,14 @@
       "pending": "Pending",
       "upcoming": "Upcoming",
       "completed": "Completed"
+    },
+    "pending": {
+      "subject": "Subject",
+      "action-type-header": "Action type",
+      "description-header": "Description",
+      "active-on-header": "Active on",
+      "bond-mature": "Mature Bond",
+      "bond-mature-description": "You need to send the the transaction to mature the bond on chain."
     }
   },
   "portfolio": {
