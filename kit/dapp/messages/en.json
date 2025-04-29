@@ -861,6 +861,8 @@
       "upcoming": "Upcoming",
       "completed": "Completed"
     },
+    "allTasksCompleteTitle": "All tasks complete!",
+    "allTasksCompleteDescription": "You have no pending actions.",
     "pending": {
       "subject": "Subject",
       "action-type-header": "Action type",
@@ -876,6 +878,14 @@
       "completed-on-header": "Completed on",
       "bond-mature": "Mature Bond",
       "bond-mature-description": "You need to send the the transaction to mature the bond on chain."
+    },
+    "upcoming": {
+      "subject": "Subject",
+      "action-type-header": "Action type",
+      "description-header": "Description",
+      "active-on-header": "Active on",
+      "bond-mature": "Mature Bond",
+      "bond-mature-description": "You will need to send the the transaction to mature the bond on chain."
     }
   },
   "portfolio": {

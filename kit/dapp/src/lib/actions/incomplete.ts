@@ -12,12 +12,16 @@ type PendingAction = {
   activeAtMs: number;
 };
 
-export const getPendingActions = withTracing(
+export const getIncompleteActions = withTracing(
   "queries",
-  "getPendingActions",
+  "getIncompleteActions",
   async () => {
-    const { pending: bondPending } = await getIncompleteBondActions();
-    return [...bondPending];
+    const { pending: bondPending, upcoming: bondUpcoming } =
+      await getIncompleteBondActions();
+    return {
+      pending: [...bondPending],
+      upcoming: [...bondUpcoming],
+    };
   }
 );
 

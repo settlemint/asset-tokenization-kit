@@ -1,13 +1,12 @@
 "use client";
 
-import { MatureForm } from "@/components/blocks/bonds/mature-form/form";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { getIncompleteActions } from "@/lib/actions/incomplete";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
-import { getAddress, isAddress } from "viem";
+import { isAddress } from "viem";
 
 const columnHelper =
   createColumnHelper<
@@ -17,7 +16,7 @@ const columnHelper =
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("actions.pending");
+  const t = useTranslations("actions.upcoming");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
@@ -48,21 +47,12 @@ export function columns() {
     columnHelper.accessor("activeAtMs", {
       header: t("active-on-header"),
       cell: ({ row }) =>
-        formatDate(row.original.activeAtMs.toString(), {
+        `${formatDate(row.original.activeAtMs.toString(), {
           locale,
-        }),
-    }),
-    columnHelper.display({
-      id: "actions",
-      cell: ({ row }) => {
-        const actionType = row.original.actionType;
-
-        if (actionType === "bond-mature") {
-          const subject = row.original.subject;
-          return <MatureForm address={getAddress(subject)} asButton />;
-        }
-        return <></>;
-      },
+        })} (${formatDate(row.original.activeAtMs.toString(), {
+          locale,
+          type: "distance",
+        })})`,
     }),
   ];
 }
