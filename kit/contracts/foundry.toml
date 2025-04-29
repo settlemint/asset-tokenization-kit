@@ -28,7 +28,7 @@ eas-contracts = { version = "1.4.0", git = "https://github.com/ethereum-attestat
   libs = ["dependencies"]
   test = 'test'
   cache_path  = 'cache_forge'
-  solc = "0.8.27"
+  solc = "0.8.28"
   optimizer = true
   optimizer_runs = 200
   gas_reports = ["*"]
