@@ -1,21 +1,20 @@
 "use client";
 
-import { MatureForm } from "@/components/blocks/bonds/mature-form/form";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import type { getPendingActions } from "@/lib/actions/pending";
+import type { getCompletedActions } from "@/lib/actions/completed";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
-import { getAddress, isAddress } from "viem";
+import { isAddress } from "viem";
 
 const columnHelper =
-  createColumnHelper<Awaited<ReturnType<typeof getPendingActions>>[number]>();
+  createColumnHelper<Awaited<ReturnType<typeof getCompletedActions>>[number]>();
 
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("actions.pending");
+  const t = useTranslations("actions.completed");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
 
@@ -39,28 +38,28 @@ export function columns() {
         return subject;
       },
     }),
-    columnHelper.accessor("id", {
-      header: t("description-header"),
-      cell: ({ row }) => t(`${row.original.actionType}-description`),
+    columnHelper.accessor("sender", {
+      header: t("sender-header"),
+      cell: ({ getValue }) => {
+        const sender = getValue();
+        if (isAddress(sender)) {
+          return (
+            <EvmAddress
+              address={sender}
+              copyToClipboard={true}
+              verbose={true}
+            />
+          );
+        }
+        return sender;
+      },
     }),
-    columnHelper.accessor("activeAtMs", {
-      header: t("active-on-header"),
+    columnHelper.accessor("completedAtMs", {
+      header: t("completed-on-header"),
       cell: ({ row }) =>
-        formatDate(row.original.activeAtMs.toString(), {
+        formatDate(row.original.completedAtMs, {
           locale,
         }),
-    }),
-    columnHelper.display({
-      id: "actions",
-      cell: ({ row }) => {
-        const actionType = row.original.actionType;
-
-        if (actionType === "bond-mature") {
-          const subject = row.original.subject;
-          return <MatureForm address={getAddress(subject)} asButton />;
-        }
-        return <></>;
-      },
     }),
   ];
 }

@@ -868,6 +868,14 @@
       "active-on-header": "Active on",
       "bond-mature": "Mature Bond",
       "bond-mature-description": "You need to send the the transaction to mature the bond on chain."
+    },
+    "completed": {
+      "subject": "Subject",
+      "action-type-header": "Action type",
+      "sender-header": "Sender",
+      "completed-on-header": "Completed on",
+      "bond-mature": "Mature Bond",
+      "bond-mature-description": "You need to send the the transaction to mature the bond on chain."
     }
   },
   "portfolio": {

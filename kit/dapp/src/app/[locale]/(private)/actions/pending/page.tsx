@@ -29,5 +29,6 @@ export async function generateMetadata({
 export default async function ActionsPage() {
   const actions = await getPendingActions();
 
+  // TODO: Nice "all tasks complete" message when no pending actions
   return <DataTable columns={columns} data={actions} name="actions" />;
 }

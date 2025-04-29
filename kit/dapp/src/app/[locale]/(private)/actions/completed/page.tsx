@@ -1,8 +1,10 @@
-import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
+import { DataTable } from "@/components/blocks/data-table/data-table";
+import { getCompletedActions } from "@/lib/actions/completed";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { columns } from "./_components/columns";
 
 export async function generateMetadata({
   params,
@@ -24,35 +26,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function ActionsPage({
-  params,
-}: {
-  params: Promise<{ locale: Locale }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslations({
-    locale,
-    namespace: "actions",
-  });
+export default async function ActionsPage() {
+  const actions = await getCompletedActions();
 
-  const tabItems: TabItemProps[] = [
-    {
-      name: t("tabs.pending"),
-      href: `/actions/pending`,
-    },
-    {
-      name: t("tabs.upcoming"),
-      href: `/actions/upcoming`,
-    },
-    {
-      name: t("tabs.completed"),
-      href: `/actions/completed`,
-    },
-  ];
-
-  return (
-    <>
-      <div>Something</div>
-    </>
-  );
+  return <DataTable columns={columns} data={actions} name="actions" />;
 }
