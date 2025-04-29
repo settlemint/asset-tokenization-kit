@@ -21,9 +21,9 @@ export const BondMaturedEventSchema = t.Object({
   id: t.String(),
   timestamp: t.Timestamp(),
   emitter: t.Object({
-    id: t.String(),
+    id: t.EthereumAddress(),
   }),
   sender: t.Object({
-    id: t.String(),
+    id: t.EthereumAddress(),
   }),
 });
