@@ -55,7 +55,24 @@ export function AssetConfigurationStep({
       isNextDisabled={!isValid}
       centerContent={true}
     >
-      <FormProvider {...form}>{renderConfigurationComponent()}</FormProvider>
+      <FormProvider {...form}>
+        {" "}
+        <div className="flex flex-col space-y-6">
+          <div>
+            <h3 className="text-lg font-medium mb-2">
+              {assetType
+                ? assetType.charAt(0).toUpperCase() + assetType?.slice(1)
+                : "Asset"}{" "}
+              configuration
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Configure specific parameters for this {assetType}.
+            </p>
+
+            {renderConfigurationComponent()}
+          </div>
+        </div>
+      </FormProvider>
     </StepContent>
   );
 }

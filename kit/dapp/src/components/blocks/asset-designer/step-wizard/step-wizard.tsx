@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -16,6 +17,8 @@ interface StepWizardProps {
   description: string;
   onStepChange: (stepId: string) => void;
   children: ReactNode;
+  sidebarStyle?: React.CSSProperties;
+  onClose?: () => void;
 }
 
 export function StepWizard({
@@ -25,6 +28,8 @@ export function StepWizard({
   description,
   onStepChange,
   children,
+  sidebarStyle,
+  onClose,
 }: StepWizardProps) {
   const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
 
@@ -32,11 +37,16 @@ export function StepWizard({
     <div className="flex h-full flex-col">
       <div className="flex flex-1 overflow-hidden p-6">
         {/* Sidebar / Steps */}
-        <div className="w-64 bg-sidebar border-r p-6 flex flex-col rounded-xl">
+        <div
+          className="w-[25%] bg-primary p-6 flex flex-col rounded-xl"
+          style={sidebarStyle}
+        >
           {/* Title and Description */}
           <div className="mb-6">
-            <h2 className="text-xl font-semibold">{title}</h2>
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <h2 className="text-xl font-semibold text-primary-foreground">
+              {title}
+            </h2>
+            <p className="text-sm text-primary-foreground">{description}</p>
           </div>
 
           {/* Steps */}
@@ -61,8 +71,8 @@ export function StepWizard({
                     className={cn(
                       "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-20",
                       isCurrent
-                        ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                        ? "hover:bg-primary hover:text-primary-foreground"
+                        : "text-primary-foreground hover:bg-primary hover:text-primary-foreground",
                       finalDisabled && "cursor-not-allowed",
                       !isCurrent && "text-muted-foreground"
                     )}
@@ -72,15 +82,15 @@ export function StepWizard({
                     <div className="flex items-center space-x-3">
                       <div
                         className={cn(
-                          "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 relative",
+                          "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 relative ",
                           // Conditional Size:
                           isCompleted ? "h-6 w-6" : "h-7 w-7",
                           // Add bg-sidebar for current/inactive states to cover the line
                           isCompleted
-                            ? "bg-primary text-primary-foreground border-primary"
+                            ? "bg-primary-foreground text-primary border-primary"
                             : isCurrent
-                              ? "border-none text-primary bg-sidebar"
-                              : "border-none text-muted-foreground bg-sidebar"
+                              ? "border-none text-primary-foreground bg-primary"
+                              : "border-none text-primary-foreground bg-primary"
                         )}
                       >
                         {/* Conditional Icon Rendering */}
@@ -137,7 +147,7 @@ export function StepWizard({
                       </div>
                       <span
                         className={cn(
-                          "text-sm",
+                          "text-sm text-primary-foreground",
                           isCurrent ? "font-bold" : "font-medium"
                         )}
                       >
@@ -148,8 +158,8 @@ export function StepWizard({
                       className={cn(
                         "text-xs mt-1 ml-9",
                         isCurrent
-                          ? "text-sidebar-foreground/70"
-                          : "text-sidebar-foreground/25"
+                          ? "text-primary-foreground/70"
+                          : "text-primary-foreground/25"
                       )}
                     >
                       {step.description}
@@ -159,6 +169,17 @@ export function StepWizard({
               );
             })}
           </div>
+
+          {/* Close Button */}
+          {onClose && (
+            <Button
+              variant="ghost"
+              className="mt-auto w-full text-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+          )}
         </div>
 
         {/* Content area */}

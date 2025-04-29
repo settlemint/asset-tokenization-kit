@@ -3,6 +3,7 @@
 import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/routing";
+import { useTheme } from "next-themes";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -53,6 +54,7 @@ export function AssetDesignerDialog({
   const [currentStep, setCurrentStep] = useState<AssetDesignerStep>("type");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { theme } = useTheme();
 
   // Use the custom hook for form management
   const {
@@ -315,9 +317,25 @@ export function AssetDesignerDialog({
     verificationForm.reset();
   };
 
+  // Conditionally apply the sidebar background style
+  const sidebarStyle = {
+    backgroundImage:
+      theme === "dark"
+        ? "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)), url('/backgrounds/sidebar-bg.png')"
+        : "url('/backgrounds/sidebar-bg.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "top",
+    backgroundRepeat: "no-repeat",
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-screen h-[90vh] w-[90vw] p-0 overflow-hidden border-none right-0 !max-w-screen rounded-2xl">
+      <DialogContent
+        className="max-h-screen h-[75vh] w-[75vw] p-0 overflow-hidden border-none right-0 !max-w-screen rounded-2xl"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogTitle className="sr-only">
           {getAssetTitle(selectedAssetType)}
         </DialogTitle>
@@ -327,6 +345,8 @@ export function AssetDesignerDialog({
           title={getAssetTitle(selectedAssetType)}
           description={getAssetDescription(selectedAssetType)}
           onStepChange={(stepId) => setCurrentStep(stepId as AssetDesignerStep)}
+          sidebarStyle={sidebarStyle}
+          onClose={() => handleOpenChange(false)}
         >
           {/* Type Selection Step */}
           {currentStep === "type" && (

@@ -55,7 +55,18 @@ export function AssetBasicsStep({
       isNextDisabled={!isValid}
       centerContent={true}
     >
-      <FormProvider {...form}>{renderBasicsComponent()}</FormProvider>
+      <FormProvider {...form}>
+        <div className="flex flex-col space-y-6">
+          <div>
+            <h3 className="text-lg font-medium mb-2">Basic information</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Specify the basic information for this {assetType}.
+            </p>
+
+            {renderBasicsComponent()}
+          </div>
+        </div>
+      </FormProvider>
     </StepContent>
   );
 }
