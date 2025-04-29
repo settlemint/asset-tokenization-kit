@@ -109,11 +109,21 @@ export function AssetTypeSelection({
             <Card
               key={assetInfo.type}
               className={cn(
-                "cursor-pointer transition-all hover:shadow-md hover:bg-accent focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0",
-                selectedType === assetInfo.type
-                  ? "border-primary"
-                  : "border-border"
+                "cursor-pointer transition-all hover:shadow-md hover:bg-accent focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               )}
+              style={
+                selectedType === assetInfo.type
+                  ? {
+                      borderWidth: "2px",
+                      borderStyle: "solid",
+                      borderColor: "var(--sm-accent)",
+                    }
+                  : {
+                      borderWidth: "2px",
+                      borderStyle: "solid",
+                      borderColor: "transparent",
+                    }
+              }
               onClick={() => assetInfo.type && onSelect(assetInfo.type)}
             >
               <CardHeader className="flex flex-row items-center justify-between pb-0">
