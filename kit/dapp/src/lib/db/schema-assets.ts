@@ -62,19 +62,3 @@ export const contact = pgTable(
     index("contact_user_id_idx").on(table.userId),
   ]
 );
-
-export const actions = pgTable("actions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  assetId: text("asset_id")
-    .notNull()
-    .references(() => asset.id),
-  actionType: text("action_type").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  dueAt: timestamp("due_at", { withTimezone: true }).notNull(),
-  completedAt: timestamp("completed_at", { withTimezone: true }),
-});
