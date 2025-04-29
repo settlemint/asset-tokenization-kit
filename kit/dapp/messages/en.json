@@ -873,13 +873,13 @@
       "bond-mature": "Mature Bond"
     },
     "pending-description": {
-      "bond-mature": "You need to send the the transaction to mature the bond on chain."
+      "bond-mature": "You need to send the the transaction to mature the bond."
     },
     "upcoming-description": {
-      "bond-mature": "You will need to send the the transaction to mature the bond on chain."
+      "bond-mature": "You will need to send the the transaction to mature the bond."
     },
     "completed-description": {
-      "bond-mature": "The bond has been matured on chain."
+      "bond-mature": "The bond has been matured successfully."
     }
   },
   "portfolio": {
