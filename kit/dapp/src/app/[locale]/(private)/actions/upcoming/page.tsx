@@ -29,6 +29,5 @@ export async function generateMetadata({
 export default async function ActionsPage() {
   const { upcoming } = await getIncompleteActions();
 
-  // TODO: Nice "no upcoming tasks" message when no upcoming actions?
   return <DataTable columns={columns} data={upcoming} name="actions" />;
 }
