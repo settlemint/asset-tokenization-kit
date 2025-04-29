@@ -861,8 +861,8 @@
       "upcoming": "Upcoming",
       "completed": "Completed"
     },
-    "allTasksCompleteTitle": "All tasks complete!",
-    "allTasksCompleteDescription": "You have no pending actions.",
+    "all-tasks-complete": "All tasks complete!",
+    "all-tasks-complete-description": "You have no pending actions.",
     "subject": "Subject",
     "action-type-header": "Action type",
     "description-header": "Description",

@@ -36,8 +36,10 @@ export default async function ActionsPage() {
     return (
       <Alert>
         <CheckCircle className="h-4 w-4" />
-        <AlertTitle>{t("allTasksCompleteTitle")}</AlertTitle>
-        <AlertDescription>{t("allTasksCompleteDescription")}</AlertDescription>
+        <AlertTitle>{t("all-tasks-complete")}</AlertTitle>
+        <AlertDescription>
+          {t("all-tasks-complete-description")}
+        </AlertDescription>
       </Alert>
     );
   }
