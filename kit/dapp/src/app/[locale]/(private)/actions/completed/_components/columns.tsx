@@ -74,7 +74,9 @@ export function columns() {
       header: t("sender-header"),
       cell: ({ getValue }) => {
         const sender = getValue();
-        <EvmAddress address={sender} copyToClipboard={true} verbose={true} />;
+        return (
+          <EvmAddress address={sender} copyToClipboard={true} verbose={true} />
+        );
       },
       enableColumnFilter: true,
       filterFn: addressNameFilter,
