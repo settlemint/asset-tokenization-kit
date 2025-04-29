@@ -273,6 +273,51 @@
     "blocked": "Blocked",
     "paused": "Paused"
   },
+  "asset-designer": {
+    "type-selection": {
+      "title": "Select asset type",
+      "description": "Choose the type of digital asset you want to create",
+      "key-features": "Key features:",
+      "features": {
+        "bond": {
+          "fixed-interest": "Fixed interest payments",
+          "maturity-management": "Maturity date management",
+          "transferable-ownership": "Transferable ownership",
+          "principal-repayment": "Principal repayment"
+        },
+        "cryptocurrency": {
+          "secure-transactions": "Secure transactions",
+          "decentralized-ownership": "Decentralized ownership",
+          "global-payments": "Global payments",
+          "programmable-money": "Programmable money"
+        },
+        "equity": {
+          "voting-rights": "Voting rights",
+          "dividend-distribution": "Dividend distribution",
+          "fractional-ownership": "Fractional ownership",
+          "liquidity": "Liquidity"
+        },
+        "fund": {
+          "portfolio-diversification": "Portfolio diversification",
+          "performance-tracking": "Performance tracking",
+          "redemption-rights": "Redemption rights",
+          "lower-investment": "Lower investment barriers"
+        },
+        "stablecoin": {
+          "price-stability": "Price stability",
+          "collateral-backing": "Collateral backing",
+          "transparent-reserves": "Transparent reserves",
+          "fast-settlements": "Fast settlements"
+        },
+        "deposit": {
+          "interest-earning": "Interest earning",
+          "redeemable": "Redeemable",
+          "term-options": "Term options",
+          "institutional-backing": "Institutional backing"
+        }
+      }
+    }
+  },
   "asset-type": {
     "bonds": "Bond",
     "bonds-plural": "Bonds",
