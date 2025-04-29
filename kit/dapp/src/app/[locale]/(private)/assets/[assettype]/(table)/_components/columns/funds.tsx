@@ -6,7 +6,6 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { getFundList } from "@/lib/queries/fund/fund-list";
-import { addressNameFilter } from "@/lib/utils/address-name-cache";
 import { formatNumber } from "@/lib/utils/number";
 import { fundCategories } from "@/lib/utils/typebox/fund-categories";
 import { fundClasses } from "@/lib/utils/typebox/fund-classes";
@@ -99,7 +98,7 @@ export function FundColumns() {
         </EvmAddress>
       ),
       enableColumnFilter: true,
-      filterFn: addressNameFilter,
+      filterFn: filterFn("text"),
       meta: defineMeta((row) => row.id, {
         displayName: t("address-header"),
         icon: WalletIcon,
