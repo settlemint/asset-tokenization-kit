@@ -3,7 +3,7 @@ import { Pages } from "../pages/pages";
 import {
   fundBurnData,
   fundData,
-  fundMintTokenData,
+  fundMintData,
   fundTransferData,
 } from "../test-data/asset-data";
 import { assetMessage } from "../test-data/success-msg-data";
@@ -18,7 +18,7 @@ const testData = {
   currentTotalSupply: 0,
 };
 
-test.describe("Create, mint, transfer and burn fund", () => {
+test.describe("Create, mint, burn and transfer fund", () => {
   test.describe.configure({ mode: "serial" });
   let transferUserContext: BrowserContext | undefined;
   let adminContext: BrowserContext | undefined;
@@ -65,7 +65,7 @@ test.describe("Create, mint, transfer and burn fund", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates, mint and burn fund", async ({ browser }) => {
+  test("Admin user creates, mints and burns fund", async ({ browser }) => {
     await adminPages.adminPage.createFund(fundData);
     testData.fundName = fundData.name;
     await adminPages.adminPage.verifySuccessMessage(
@@ -79,22 +79,22 @@ test.describe("Create, mint, transfer and burn fund", () => {
     await adminPages.adminPage.clickAssetDetails(testData.fundName);
     await adminPages.adminPage.mintAsset({
       user: adminUser.name,
-      ...fundMintTokenData,
+      ...fundMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
-    await adminPages.adminPage.verifyTotalSupply(fundMintTokenData.amount);
+    await adminPages.adminPage.verifyTotalSupply(fundMintData.amount);
     await adminPages.adminPage.redeemBurnAsset({
       ...fundBurnData,
     });
-    const mintAmount = Number.parseFloat(fundMintTokenData.amount);
+    const mintAmount = Number.parseFloat(fundMintData.amount);
     const burnAmount = Number.parseFloat(fundBurnData.amount);
     const newTotal = mintAmount - burnAmount;
     testData.currentTotalSupply = newTotal;
     await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
   });
-  test("Admin user transfer, burn  to regular transfer user and verify balance", async () => {
+  test("Admin user transfers fund to regular transfer user", async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.fundName,
       walletAddress: testData.transferUserWalletAddress,

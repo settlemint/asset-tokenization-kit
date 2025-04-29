@@ -2,9 +2,10 @@ import { type BrowserContext, test } from "@playwright/test";
 import { Pages } from "../pages/pages";
 import {
   cryptocurrencyData,
-  cryptocurrencyMintTokenData,
+  cryptocurrencyMintData,
   cryptocurrencyTransferData,
   cryptocurrencyDataAmountAfterMint,
+  cryptocurrencyBurnData,
 } from "../test-data/asset-data";
 import { assetMessage } from "../test-data/success-msg-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
@@ -15,9 +16,10 @@ const testData = {
   transferUserWalletAddress: "",
   transferUserName: "",
   cryptocurrencyName: "",
+  currentTotalSupply: 0,
 };
 
-test.describe("Create, mint and transfer cryptocurrency", () => {
+test.describe("Create, mint, burn and transfer cryptocurrency", () => {
   test.describe.configure({ mode: "serial" });
   let transferUserContext: BrowserContext | undefined;
   let adminContext: BrowserContext | undefined;
@@ -64,7 +66,9 @@ test.describe("Create, mint and transfer cryptocurrency", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates and mint cryptocurrency", async ({ browser }) => {
+  test("Admin user creates, mints and burns cryptocurrency", async ({
+    browser,
+  }) => {
     await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
     testData.cryptocurrencyName = cryptocurrencyData.name;
     await adminPages.adminPage.verifySuccessMessage(
@@ -78,7 +82,7 @@ test.describe("Create, mint and transfer cryptocurrency", () => {
     await adminPages.adminPage.clickAssetDetails(testData.cryptocurrencyName);
     await adminPages.adminPage.mintAsset({
       user: adminUser.name,
-      ...cryptocurrencyMintTokenData,
+      ...cryptocurrencyMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
@@ -86,8 +90,18 @@ test.describe("Create, mint and transfer cryptocurrency", () => {
     await adminPages.adminPage.verifyTotalSupply(
       cryptocurrencyDataAmountAfterMint.amount
     );
+    await adminPages.adminPage.redeemBurnAsset({
+      ...cryptocurrencyBurnData,
+    });
+    const mintAmount = Number.parseFloat(
+      cryptocurrencyDataAmountAfterMint.amount
+    );
+    const burnAmount = Number.parseFloat(cryptocurrencyBurnData.amount);
+    const newTotal = mintAmount - burnAmount;
+    testData.currentTotalSupply = newTotal;
+    await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
   });
-  test("Admin user transfer cryptocurrency to regular transfer user", async () => {
+  test("Admin user transfers cryptocurrency to regular transfer user", async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.cryptocurrencyName,
       walletAddress: testData.transferUserWalletAddress,
@@ -98,13 +112,12 @@ test.describe("Create, mint and transfer cryptocurrency", () => {
       assetMessage.successMessage
     );
 
-    const mintAmount = Number.parseFloat(
-      cryptocurrencyDataAmountAfterMint.amount
-    );
     const transferAmount = Number.parseFloat(
       cryptocurrencyTransferData.transferAmount
     );
-    const expectedBalance = (mintAmount - transferAmount).toString();
+    const expectedBalance = (
+      testData.currentTotalSupply - transferAmount
+    ).toString();
     await adminPages.adminPage.clickSidebarMenuItem("My assets");
 
     await adminPages.adminPage.filterAssetByName({

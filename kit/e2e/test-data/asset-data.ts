@@ -201,7 +201,7 @@ export const generateCryptoName = (): string => {
   const name = `${getRandomElement(prefixes)}${getRandomElement(middles)}`;
   const uniqueId = getUniqueId();
 
-  return `${name} Token-${uniqueId}`;
+  return `${name} Asset-${uniqueId}`;
 };
 
 export const generateEquityName = (): string => {
@@ -275,7 +275,7 @@ export const cryptocurrencyData = {
   sidebarAssetTypes: "Cryptocurrencies",
 };
 
-export const cryptocurrencyMintTokenData = {
+export const cryptocurrencyMintData = {
   amount: "100",
   pincode: pincode,
 };
@@ -286,6 +286,11 @@ export const cryptocurrencyDataAmountAfterMint = {
 
 export const cryptocurrencyTransferData = {
   transferAmount: "100",
+  pincode: pincode,
+};
+
+export const cryptocurrencyBurnData = {
+  amount: "50",
   pincode: pincode,
 };
 
@@ -303,13 +308,18 @@ export const equityData = {
   initialSupply: "0",
 };
 
-export const equityMintTokenData = {
+export const equityMintData = {
   amount: "1500",
   pincode: pincode,
 };
 
 export const equityTransferData = {
   transferAmount: "500",
+  pincode: pincode,
+};
+
+export const equityBurnData = {
+  amount: "600",
   pincode: pincode,
 };
 
@@ -328,7 +338,7 @@ export const fundData = {
   initialSupply: "0",
 };
 
-export const fundMintTokenData = {
+export const fundMintData = {
   amount: "10000",
   pincode: pincode,
 };
@@ -373,7 +383,7 @@ export const depositUpdateCollateralData = {
   pincode: pincode,
 };
 
-export const depositMintTokenData = {
+export const depositMintData = {
   amount: "11000",
   pincode: pincode,
 };
@@ -393,8 +403,13 @@ export const topUpData = {
   pincode: pincode,
 };
 
-export const bondMintTokenData = {
+export const bondMintData = {
   amount: "1000",
+  pincode: pincode,
+};
+
+export const bondBurnData = {
+  amount: "80",
   pincode: pincode,
 };
 
@@ -408,8 +423,13 @@ export const stableCoinUpdateCollateralData = {
   pincode: pincode,
 };
 
-export const stableCoinMintTokenData = {
+export const stableCoinMintData = {
   amount: "10000",
+  pincode: pincode,
+};
+
+export const stableCoinBurnData = {
+  amount: "1900",
   pincode: pincode,
 };
 
