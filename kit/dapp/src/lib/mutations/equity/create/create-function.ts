@@ -117,6 +117,12 @@ export const createEquityFunction = withAccessControl(
       throw new Error("Failed to create equity: no transaction hash received");
     }
 
+    const hasMoreAdmins = assetAdmins.length > 0;
+
+    if (!hasMoreAdmins) {
+      return safeParse(t.Hashes(), [createTxHash]);
+    }
+
     // Wait for the equity creation transaction to be mined
     await waitForTransactions([createTxHash]);
 

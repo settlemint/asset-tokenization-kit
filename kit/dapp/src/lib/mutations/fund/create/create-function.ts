@@ -119,6 +119,12 @@ export const createFundFunction = withAccessControl(
       throw new Error("Failed to create fund: no transaction hash received");
     }
 
+    const hasMoreAdmins = assetAdmins.length > 0;
+
+    if (!hasMoreAdmins) {
+      return safeParse(t.Hashes(), [createTxHash]);
+    }
+
     await waitForTransactions([createTxHash]);
 
     // Grant roles to admins using the shared helper

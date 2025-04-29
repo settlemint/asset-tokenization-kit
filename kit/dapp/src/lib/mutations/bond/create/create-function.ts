@@ -120,6 +120,12 @@ export const createBondFunction = withAccessControl(
       throw new Error("Failed to create bond: no transaction hash received");
     }
 
+    const hasMoreAdmins = assetAdmins.length > 0;
+
+    if (!hasMoreAdmins) {
+      return safeParse(t.Hashes(), [createTxHash]);
+    }
+
     // Wait for the stablecoin creation transaction to be mined
     await waitForTransactions([createTxHash]);
 
