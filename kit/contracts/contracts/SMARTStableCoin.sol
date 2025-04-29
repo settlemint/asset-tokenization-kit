@@ -6,7 +6,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 // Constants
 import { SMARTConstants } from "./SMARTConstants.sol";
 
@@ -32,7 +32,15 @@ import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonE
 ///         backed by collateral and using custom roles.
 /// @dev Combines core SMART features (compliance, verification) with extensions for pausing,
 ///      burning, custodian actions, and collateral tracking. Access control uses custom roles.
-contract SMARTStableCoin is SMART, AccessControl, SMARTCollateral, SMARTCustodian, SMARTPausable, SMARTBurnable {
+contract SMARTStableCoin is
+    SMART,
+    AccessControl,
+    SMARTCollateral,
+    SMARTCustodian,
+    SMARTPausable,
+    SMARTBurnable,
+    ERC2771Context
+{
     /// @notice Deploys a new SMARTStableCoin token contract.
     /// @dev Initializes SMART core, AccessControl, ERC20Collateral, and grants custom roles.
     /// @param name_ Token name
@@ -53,7 +61,8 @@ contract SMARTStableCoin is SMART, AccessControl, SMARTCollateral, SMARTCustodia
         address compliance_,
         uint256[] memory requiredClaimTopics_,
         ISMART.ComplianceModuleParamPair[] memory initialModulePairs_,
-        address initialOwner_
+        address initialOwner_,
+        address forwarder
     )
         // Initialize the core SMART logic (which includes ERC20)
         SMART(
@@ -66,6 +75,7 @@ contract SMARTStableCoin is SMART, AccessControl, SMARTCollateral, SMARTCustodia
             requiredClaimTopics_,
             initialModulePairs_
         )
+        ERC2771Context(forwarder)
         SMARTCollateral(SMARTConstants.CLAIM_TOPIC_COLLATERAL)
     {
         // Grant standard admin role
@@ -158,8 +168,18 @@ contract SMARTStableCoin is SMART, AccessControl, SMARTCollateral, SMARTCustodia
     }
 
     /// @dev Resolves msgSender across Context and SMARTPausable.
-    function _msgSender() internal view virtual override(Context, SMARTPausable) returns (address) {
+    function _msgSender() internal view virtual override(Context, ERC2771Context, SMARTPausable) returns (address) {
         return super._msgSender();
+    }
+
+    /// @dev Resolves msgData across Context and ERC2771Context.
+    function _msgData() internal view virtual override(Context, ERC2771Context) returns (bytes calldata) {
+        return super._msgData();
+    }
+
+    /// @dev Hook defining the length of the trusted forwarder address suffix in `msg.data`.
+    function _contextSuffixLength() internal view virtual override(Context, ERC2771Context) returns (uint256) {
+        return ERC2771Context._contextSuffixLength();
     }
 
     // --- Authorization Hook Implementations ---
@@ -213,5 +233,10 @@ contract SMARTStableCoin is SMART, AccessControl, SMARTCollateral, SMARTCustodia
     function _authorizeRecoveryAddress() internal view virtual override {
         address sender = _msgSender();
         if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+    }
+
+    function _authorizeRecoverERC20() internal view virtual override {
+        address sender = _msgSender();
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
     }
 }
