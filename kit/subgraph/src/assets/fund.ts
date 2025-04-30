@@ -31,12 +31,10 @@ import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { calculateConcentration } from "./calculations/concentration";
-import { approvalEvent } from "./events/approval";
 import { clawbackEvent } from "./events/clawback";
 import { managementFeeCollectedEvent } from "./events/managementfeecollected";
 import { pausedEvent } from "./events/paused";
 import { performanceFeeCollectedEvent } from "./events/performancefeecollected";
-import { roleAdminChangedEvent } from "./events/roleadminchanged";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { tokenWithdrawnEvent } from "./events/tokenwithdrawn";
 import { unpausedEvent } from "./events/unpaused";
@@ -360,23 +358,9 @@ export function handleApproval(event: Approval): void {
   ownerBalance.lastActivity = event.block.timestamp;
   ownerBalance.save();
 
-  const approval = approvalEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.fund,
-    owner.id,
-    spender.id,
-    event.params.value,
-    fund.decimals
-  );
-
-  log.info("Fund approval event: amount={}, owner={}, spender={}, fund={}", [
-    approval.value.toString(),
-    approval.owner.toHexString(),
-    approval.spender.toHexString(),
-    event.address.toHexString(),
+  createActivityLogEntry(event, EventType.Approval, [
+    event.params.owner,
+    event.params.spender,
   ]);
 
   fund.lastActivity = event.block.timestamp;
@@ -385,28 +369,8 @@ export function handleApproval(event: Approval): void {
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   const fund = fetchFund(event.address);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleAdminChanged = roleAdminChangedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.fund,
-    event.params.role,
-    event.params.previousAdminRole,
-    event.params.newAdminRole
-  );
-
-  log.info(
-    "Fund role admin changed event: role={}, previousAdminRole={}, newAdminRole={}, fund={}",
-    [
-      roleAdminChanged.role.toHexString(),
-      roleAdminChanged.previousAdminRole.toHexString(),
-      roleAdminChanged.newAdminRole.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
 
   fund.lastActivity = event.block.timestamp;
   fund.save();

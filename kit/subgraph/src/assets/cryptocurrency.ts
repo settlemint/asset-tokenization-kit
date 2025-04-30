@@ -4,7 +4,6 @@ import {
   ByteArray,
   Bytes,
   crypto,
-  log,
   store,
 } from "@graphprotocol/graph-ts";
 import {
@@ -19,10 +18,7 @@ import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
-import { eventId } from "../utils/events";
 import { calculateConcentration } from "./calculations/concentration";
-import { approvalEvent } from "./events/approval";
-import { roleAdminChangedEvent } from "./events/roleadminchanged";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchCryptoCurrency } from "./fetch/cryptocurrency";
 import { newAssetStatsData } from "./stats/assets";
@@ -379,27 +375,10 @@ export function handleApproval(event: Approval): void {
   ownerBalance.lastActivity = event.block.timestamp;
   ownerBalance.save();
 
-  const approval = approvalEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.cryptocurrency,
-    owner.id,
-    spender.id,
-    event.params.value,
-    cryptoCurrency.decimals
-  );
-
-  log.info(
-    "CryptoCurrency approval event: amount={}, owner={}, spender={}, cryptocurrency={}",
-    [
-      approval.value.toString(),
-      approval.owner.toHexString(),
-      approval.spender.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.Approval, [
+    event.params.owner,
+    event.params.spender,
+  ]);
 
   cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
@@ -407,28 +386,8 @@ export function handleApproval(event: Approval): void {
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleAdminChanged = roleAdminChangedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.cryptocurrency,
-    event.params.role,
-    event.params.previousAdminRole,
-    event.params.newAdminRole
-  );
-
-  log.info(
-    "CryptoCurrency role admin changed event: role={}, previousAdminRole={}, newAdminRole={}, cryptocurrency={}",
-    [
-      roleAdminChanged.role.toHexString(),
-      roleAdminChanged.previousAdminRole.toHexString(),
-      roleAdminChanged.newAdminRole.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
 
   cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();

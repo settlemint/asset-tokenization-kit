@@ -31,11 +31,9 @@ import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { depositCollateralCalculatedFields } from "./calculations/collateral";
 import { calculateConcentration } from "./calculations/concentration";
-import { approvalEvent } from "./events/approval";
 import { clawbackEvent } from "./events/clawback";
 import { collateralUpdatedEvent } from "./events/collateralupdated";
 import { pausedEvent } from "./events/paused";
-import { roleAdminChangedEvent } from "./events/roleadminchanged";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { unpausedEvent } from "./events/unpaused";
 import { userAllowedEvent } from "./events/userallowed";
@@ -283,32 +281,12 @@ export function handleTransfer(event: Transfer): void {
 
 export function handleApproval(event: Approval): void {
   const deposit = fetchDeposit(event.address);
-  const sender = fetchAccount(event.transaction.from);
   const owner = fetchAccount(event.params.owner);
-  const spender = fetchAccount(event.params.spender);
 
-  const approval = approvalEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.deposit,
-    owner.id,
-    spender.id,
-    event.params.value,
-    deposit.decimals
-  );
-
-  log.info(
-    "Deposit approval event: amount={}, owner={}, spender={}, sender={}, token={}",
-    [
-      approval.value.toString(),
-      approval.owner.toHexString(),
-      approval.spender.toHexString(),
-      approval.sender.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.Approval, [
+    event.params.owner,
+    event.params.spender,
+  ]);
 
   const balance = fetchAssetBalance(
     deposit.id,
@@ -725,28 +703,8 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   const deposit = fetchDeposit(event.address);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleAdminChanged = roleAdminChangedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.deposit,
-    event.params.role,
-    event.params.previousAdminRole,
-    event.params.newAdminRole
-  );
-
-  log.info(
-    "Deposit role admin changed event: role={}, previousAdminRole={}, newAdminRole={}, deposit={}",
-    [
-      roleAdminChanged.role.toHexString(),
-      roleAdminChanged.previousAdminRole.toHexString(),
-      roleAdminChanged.newAdminRole.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
 
   deposit.lastActivity = event.block.timestamp;
   deposit.save();

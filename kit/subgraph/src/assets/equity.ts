@@ -28,10 +28,8 @@ import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { calculateConcentration } from "./calculations/concentration";
-import { approvalEvent } from "./events/approval";
 import { clawbackEvent } from "./events/clawback";
 import { pausedEvent } from "./events/paused";
-import { roleAdminChangedEvent } from "./events/roleadminchanged";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
@@ -364,27 +362,10 @@ export function handleApproval(event: Approval): void {
   ownerBalance.lastActivity = event.block.timestamp;
   ownerBalance.save();
 
-  const approval = approvalEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.equity,
-    owner.id,
-    spender.id,
-    event.params.value,
-    equity.decimals
-  );
-
-  log.info(
-    "Equity approval event: amount={}, owner={}, spender={}, equity={}",
-    [
-      approval.value.toString(),
-      approval.owner.toHexString(),
-      approval.spender.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.Approval, [
+    event.params.owner,
+    event.params.spender,
+  ]);
 
   equity.lastActivity = event.block.timestamp;
   equity.save();
@@ -394,26 +375,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   const equity = fetchEquity(event.address);
   const sender = fetchAccount(event.transaction.from);
 
-  const roleAdminChanged = roleAdminChangedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.equity,
-    event.params.role,
-    event.params.previousAdminRole,
-    event.params.newAdminRole
-  );
-
-  log.info(
-    "Equity role admin changed event: role={}, previousAdminRole={}, newAdminRole={}, equity={}",
-    [
-      roleAdminChanged.role.toHexString(),
-      roleAdminChanged.previousAdminRole.toHexString(),
-      roleAdminChanged.newAdminRole.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
 
   equity.lastActivity = event.block.timestamp;
   equity.save();

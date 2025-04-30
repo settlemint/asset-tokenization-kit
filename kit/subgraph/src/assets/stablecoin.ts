@@ -30,11 +30,9 @@ import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { collateralCalculatedFields } from "./calculations/collateral";
 import { calculateConcentration } from "./calculations/concentration";
-import { approvalEvent } from "./events/approval";
 import { clawbackEvent } from "./events/clawback";
 import { collateralUpdatedEvent } from "./events/collateralupdated";
 import { pausedEvent } from "./events/paused";
-import { roleAdminChangedEvent } from "./events/roleadminchanged";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
@@ -433,27 +431,10 @@ export function handleApproval(event: Approval): void {
   ownerBalance.lastActivity = event.block.timestamp;
   ownerBalance.save();
 
-  const approval = approvalEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.stablecoin,
-    owner.id,
-    spender.id,
-    event.params.value,
-    stableCoin.decimals
-  );
-
-  log.info(
-    "StableCoin approval event: amount={}, owner={}, spender={}, stablecoin={}",
-    [
-      approval.value.toString(),
-      approval.owner.toHexString(),
-      approval.spender.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.Approval, [
+    event.params.owner,
+    event.params.spender,
+  ]);
 
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
@@ -461,27 +442,8 @@ export function handleApproval(event: Approval): void {
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   const stableCoin = fetchStableCoin(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const roleAdminChanged = roleAdminChangedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.stablecoin,
-    event.params.role,
-    event.params.previousAdminRole,
-    event.params.newAdminRole
-  );
 
-  log.info(
-    "StableCoin role admin changed event: role={}, previousAdminRole={}, newAdminRole={}, stablecoin={}",
-    [
-      roleAdminChanged.role.toHexString(),
-      roleAdminChanged.previousAdminRole.toHexString(),
-      roleAdminChanged.newAdminRole.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
 
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();

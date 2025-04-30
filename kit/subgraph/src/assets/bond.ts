@@ -34,12 +34,10 @@ import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { calculateConcentration } from "./calculations/concentration";
-import { approvalEvent } from "./events/approval";
 import { bondMaturedEvent } from "./events/bondmatured";
 import { bondRedeemedEvent } from "./events/bondredeemed";
 import { clawbackEvent } from "./events/clawback";
 import { pausedEvent } from "./events/paused";
-import { roleAdminChangedEvent } from "./events/roleadminchanged";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { underlyingAssetTopUpEvent } from "./events/underlyingassettopup";
 import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn";
@@ -348,8 +346,6 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 export function handleApproval(event: Approval): void {
   const bond = fetchBond(event.address);
   const owner = fetchAccount(event.params.owner);
-  const spender = fetchAccount(event.params.spender);
-  const sender = fetchAccount(event.transaction.from);
 
   // Update the owner's balance approved amount
   const ownerBalance = fetchAssetBalance(
@@ -367,23 +363,9 @@ export function handleApproval(event: Approval): void {
   updateDerivedFields(bond);
   bond.save();
 
-  const approval = approvalEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.bond,
-    owner.id,
-    spender.id,
-    event.params.value,
-    bond.decimals
-  );
-
-  log.info("Bond approval event: amount={}, owner={}, spender={}, bond={}", [
-    approval.value.toString(),
-    approval.owner.toHexString(),
-    approval.spender.toHexString(),
-    event.address.toHexString(),
+  createActivityLogEntry(event, EventType.Approval, [
+    event.params.owner,
+    event.params.spender,
   ]);
 }
 
@@ -395,26 +377,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   updateDerivedFields(bond);
   bond.save();
 
-  const roleAdminChanged = roleAdminChangedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.bond,
-    event.params.role,
-    event.params.previousAdminRole,
-    event.params.newAdminRole
-  );
-
-  log.info(
-    "Bond role admin changed event: role={}, previousAdminRole={}, newAdminRole={}, bond={}",
-    [
-      roleAdminChanged.role.toHexString(),
-      roleAdminChanged.previousAdminRole.toHexString(),
-      roleAdminChanged.newAdminRole.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
 }
 
 export function handleBondMatured(event: BondMatured): void {

@@ -11,6 +11,8 @@ export class EventType {
   static Burn: string = "Burn";
   static RoleGranted: string = "RoleGranted";
   static RoleRevoked: string = "RoleRevoked";
+  static RoleAdminChanged: string = "RoleAdminChanged";
+  static Approval: string = "Approval";
 }
 
 function activityLogEntryId(event: ethereum.Event): Bytes {
