@@ -1,34 +1,30 @@
 import { type BrowserContext, test } from "@playwright/test";
 import { Pages } from "../pages/pages";
 import {
-  depositData,
-  depositUpdateCollateralData,
-  depositMintData,
-  depositBurnData,
-  depositTransferData,
+  equityData,
+  equityMintData,
+  equityTransferData,
+  equityBurnData,
 } from "../test-data/asset-data";
 import { assetMessage } from "../test-data/success-msg-data";
-import {
-  adminUser,
-  signUpTransferUserData,
-  signUpUserData,
-} from "../test-data/user-data";
+import { adminUser, signUpTransferUserData } from "../test-data/user-data";
 import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
 
 const testData = {
   transferUserEmail: "",
   transferUserWalletAddress: "",
   transferUserName: "",
-  depositName: "",
+  equityName: "",
   currentTotalSupply: 0,
 };
 
-test.describe("Create, update collateral, mint and transfer deposit", () => {
+test.describe("Create, mint, burn and transfer equity", () => {
   test.describe.configure({ mode: "serial" });
   let transferUserContext: BrowserContext | undefined;
-  let transferUserPages: ReturnType<typeof Pages>;
   let adminContext: BrowserContext | undefined;
+  let transferUserPages: ReturnType<typeof Pages>;
   let adminPages: ReturnType<typeof Pages>;
+
   test.beforeAll(async ({ browser }) => {
     try {
       transferUserContext = await browser.newContext();
@@ -60,6 +56,7 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       throw error;
     }
   });
+
   test.afterAll(async () => {
     if (transferUserContext) {
       await transferUserContext.close();
@@ -68,83 +65,63 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates deposit, updates proven collateral, mints, burns and allows user to transfer deposits", async ({
-    browser,
-  }) => {
-    await adminPages.adminPage.createDeposit(depositData);
-    testData.depositName = depositData.name;
+  test("Admin user creates, mints and burns equity", async ({ browser }) => {
+    await adminPages.adminPage.createEquity(equityData);
+    testData.equityName = equityData.name;
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
     await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: depositData.sidebarAssetTypes,
-      name: testData.depositName,
-      totalSupply: depositData.initialSupply,
+      sidebarAssetTypes: equityData.sidebarAssetTypes,
+      name: testData.equityName,
+      totalSupply: equityData.initialSupply,
     });
-    await adminPages.adminPage.clickAssetDetails(testData.depositName);
-    await adminPages.adminPage.updateCollateral({
-      ...depositUpdateCollateralData,
-    });
-    await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
-    );
-    await adminPages.adminPage.verifyCollateral(
-      depositUpdateCollateralData.amount
-    );
+    await adminPages.adminPage.clickAssetDetails(testData.equityName);
     await adminPages.adminPage.mintAsset({
       user: adminUser.name,
-      ...depositMintData,
+      ...equityMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
-    await adminPages.adminPage.verifyTotalSupply(depositMintData.amount);
+    await adminPages.adminPage.verifyTotalSupply(equityMintData.amount);
     await adminPages.adminPage.redeemBurnAsset({
-      ...depositBurnData,
+      ...equityBurnData,
     });
-    const mintAmount = Number.parseFloat(depositMintData.amount);
-    const burnAmount = Number.parseFloat(depositBurnData.amount);
+    const mintAmount = Number.parseFloat(equityMintData.amount);
+    const burnAmount = Number.parseFloat(equityBurnData.amount);
     const newTotal = mintAmount - burnAmount;
     testData.currentTotalSupply = newTotal;
     await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
-    await adminPages.adminPage.allowUser({
-      walletAddress: testData.transferUserWalletAddress,
-      user: testData.transferUserName,
-      pincode: depositData.pincode,
-    });
-    await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
-    );
   });
-  test("Admin user transfers deposits to regular transfer user", async () => {
+  test("Admin user transfers equity to regular transfer user", async () => {
     await adminPages.portfolioPage.transferAsset({
-      asset: testData.depositName,
+      asset: testData.equityName,
       walletAddress: testData.transferUserWalletAddress,
       user: testData.transferUserName,
-      ...depositTransferData,
+      ...equityTransferData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
 
-    const transferAmount = Number.parseFloat(
-      depositTransferData.transferAmount
-    );
+    const transferAmount = Number.parseFloat(equityTransferData.transferAmount);
     const expectedBalance = (
       testData.currentTotalSupply - transferAmount
     ).toString();
     await adminPages.adminPage.clickSidebarMenuItem("My assets");
 
     await adminPages.adminPage.filterAssetByName({
-      name: testData.depositName,
+      name: testData.equityName,
       totalSupply: expectedBalance,
     });
   });
-  test("Verify regular transfer user received deposits", async () => {
+
+  test("Verify regular transfer user received equity", async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
-      expectedAmount: depositTransferData.transferAmount,
-      price: depositData.price,
+      expectedAmount: equityTransferData.transferAmount,
+      price: equityData.price,
     });
   });
 });
