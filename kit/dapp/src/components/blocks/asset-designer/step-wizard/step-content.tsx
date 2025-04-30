@@ -53,49 +53,41 @@ export function StepContent({
   );
 
   return (
-    <div className={cn("flex flex-col h-full", className)} tabIndex={-1}>
-      {/* Main scrollable container */}
-      <div
-        className="flex-1 overflow-y-auto pr-2"
-        style={{ paddingBottom: fixedButtons ? "4rem" : "1rem" }}
-        tabIndex={-1}
-      >
-        {/* Content container - WRAP this part (children + non-fixed buttons) with FocusScope */}
-        <FocusScope asChild>
-          <div className={cn(centerContent ? "mx-auto" : "")} tabIndex={-1}>
+    <FocusScope loop trapped>
+      <div className={cn("flex flex-col h-full", className)}>
+        {/* Main scrollable container */}
+        <div
+          className="flex-1 overflow-y-auto pr-2"
+          style={{ paddingBottom: fixedButtons ? "4rem" : "1rem" }}
+        >
+          {/* Content container with form fields */}
+          <div className={cn(centerContent ? "mx-auto" : "")}>
             {/* Main content */}
             {children}
 
             {/* Show buttons within scroll area if not fixed */}
             {!fixedButtons && (showBackButton || showNextButton) && (
-              <div
-                className="mt-6 py-4 flex justify-end space-x-4"
-                tabIndex={-1}
-              >
+              <div className="mt-6 py-4 flex justify-end space-x-4">
                 <ButtonContent />
               </div>
             )}
           </div>
-        </FocusScope>
-      </div>
+        </div>
 
-      {/* Only show fixed buttons at bottom if fixedButtons is true */}
-      {fixedButtons && (showBackButton || showNextButton) && (
-        /* WRAP the fixed buttons container with FocusScope as well */
-        <FocusScope asChild>
-          <div className="pt-4 mt-auto" tabIndex={-1}>
+        {/* Only show fixed buttons at bottom if fixedButtons is true */}
+        {fixedButtons && (showBackButton || showNextButton) && (
+          <div className="pt-4 mt-auto">
             <div
               className={cn(
                 "flex justify-end space-x-4",
                 centerContent ? "mx-auto" : ""
               )}
-              tabIndex={-1}
             >
               <ButtonContent />
             </div>
           </div>
-        </FocusScope>
-      )}
-    </div>
+        )}
+      </div>
+    </FocusScope>
   );
 }
