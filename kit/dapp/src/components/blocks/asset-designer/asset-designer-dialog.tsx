@@ -335,6 +335,8 @@ export function AssetDesignerDialog({
         onInteractOutside={(e) => {
           e.preventDefault();
         }}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onFocusOutside={(e) => e.preventDefault()}
       >
         <DialogTitle className="sr-only">
           {getAssetTitle(selectedAssetType)}

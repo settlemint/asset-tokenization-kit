@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
+import * as React from "react";
 
 export interface Step {
   id: string;
@@ -34,12 +35,14 @@ export function StepWizard({
   const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
 
   return (
-    <div className="flex h-[75vh] flex-col">
-      <div className="flex flex-1 overflow-hidden p-6">
+    <div className="flex h-[75vh] flex-col" tabIndex={-1}>
+      <div className="flex flex-1 overflow-hidden p-6" tabIndex={-1}>
         {/* Sidebar / Steps */}
         <div
           className="w-[25%] bg-primary p-6 flex flex-col rounded-xl"
           style={sidebarStyle}
+          aria-hidden="true"
+          tabIndex={-1}
         >
           {/* Title and Description */}
           <div className="mb-6">
@@ -73,6 +76,7 @@ export function StepWizard({
 
                   <button
                     type="button"
+                    tabIndex={-1}
                     className={cn(
                       "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-20",
                       isCurrent
@@ -189,13 +193,14 @@ export function StepWizard({
               variant="ghost"
               className="mt-auto w-full text-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               onClick={onClose}
+              tabIndex={-1}
             >
               Cancel
             </Button>
           )}
         </div>
 
-        {/* Content area */}
+        {/* Content area - REMOVED FOCUS SCOPE */}
         <div className="flex flex-col flex-1 overflow-hidden bg-background ml-6 rounded-lg p-10">
           {children}
         </div>
