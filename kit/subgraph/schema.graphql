@@ -472,20 +472,6 @@ type VaultTransactionConfirmation @entity(immutable: false) {
 }
 
 # --------------------------------------------------
-# Simplified Events
-# --------------------------------------------------
-
-type HandledEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Account!
-  sender: Account!
-  involved: [Account!]!
-  details: String!
-}
-
-# --------------------------------------------------
 # Grouping Events by Contract Type
 # --------------------------------------------------
 
@@ -940,6 +926,114 @@ type YieldClaimedEvent @entity(immutable: true) {
   periodAmounts: [BigInt!]! # Array of yield amounts claimed for each period
   unclaimedYield: BigDecimal! # Total unclaimed yield remaining after this claim
   unclaimedYieldExact: BigInt! # Total unclaimed yield remaining after this claim in exact precision
+}
+
+# --------------------------------------------------
+# Vault Events
+# --------------------------------------------------
+
+type ConfirmTransaction @entity(immutable: true) {
+  id: Bytes!
+  signer: Bytes! # address
+  txIndex: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Deposit @entity(immutable: true) {
+  id: Bytes!
+  sender: Bytes! # address
+  value: BigInt! # uint256
+  balance: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ExecuteTransaction @entity(immutable: true) {
+  id: Bytes!
+  signer: Bytes! # address
+  txIndex: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Paused @entity(immutable: true) {
+  id: Bytes!
+  account: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RequirementChanged @entity(immutable: true) {
+  id: Bytes!
+  account: Bytes! # address
+  required: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RevokeConfirmation @entity(immutable: true) {
+  id: Bytes!
+  signer: Bytes! # address
+  txIndex: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type SubmitContractCallTransaction @entity(immutable: true) {
+  id: Bytes!
+  signer: Bytes! # address
+  txIndex: BigInt! # uint256
+  target: Bytes! # address
+  value: BigInt! # uint256
+  selector: Bytes! # bytes4
+  abiEncodedArguments: Bytes! # bytes
+  comment: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type SubmitERC20TransferTransaction @entity(immutable: true) {
+  id: Bytes!
+  signer: Bytes! # address
+  txIndex: BigInt! # uint256
+  token: Bytes! # address
+  to: Bytes! # address
+  amount: BigInt! # uint256
+  comment: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type SubmitTransaction @entity(immutable: true) {
+  id: Bytes!
+  signer: Bytes! # address
+  txIndex: BigInt! # uint256
+  to: Bytes! # address
+  value: BigInt! # uint256
+  data: Bytes! # bytes
+  comment: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type TransactionExecutionFailed @entity(immutable: true) {
+  id: Bytes!
+  txIndex: BigInt! # uint256
+  to: Bytes! # address
+  data: Bytes! # bytes
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
 }
 
 # --------------------------------------------------

@@ -25,7 +25,6 @@ import { fetchAssetDecimals } from "../assets/fetch/asset";
 import { fetchAccount } from "../fetch/account";
 import { toDecimals } from "../utils/decimals";
 import { EventName, Role } from "../utils/enums";
-import { createEvent } from "../utils/events";
 import { transactionId } from "./fetch/transaction";
 import { fetchVault } from "./fetch/vault";
 
