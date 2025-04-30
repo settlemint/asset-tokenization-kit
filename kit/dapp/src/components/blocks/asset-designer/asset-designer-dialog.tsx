@@ -63,14 +63,14 @@ function MiniProgressBar({
   currentStepIndex,
 }: MiniProgressBarProps) {
   return (
-    <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 z-10">
+    <div className="absolute bottom-10 left-[61%] transform -translate-x-1/2 flex justify-center items-center gap-2 pointer-events-none">
       {Array.from({ length: totalSteps }).map((_, index) => (
         <div
           key={index}
           className={`transition-all duration-300 ${
             index === currentStepIndex
-              ? "w-4 h-1 bg-primary rounded-full animate-pulse"
-              : "w-1 h-1 bg-muted-foreground/30 rounded-full"
+              ? "w-4 h-1.5 bg-primary rounded-full animate-pulse"
+              : "w-1.5 h-1.5 bg-muted-foreground/30 rounded-full"
           }`}
         />
       ))}
@@ -394,86 +394,90 @@ export function AssetDesignerDialog({
         onOpenAutoFocus={(e) => e.preventDefault()}
         onFocusOutside={(e) => e.preventDefault()}
       >
-        <DialogTitle className="sr-only">
-          {getAssetTitle(selectedAssetType)}
-        </DialogTitle>
-        <StepWizard
-          steps={wizardSteps}
-          currentStepId={currentStep}
-          title={getAssetTitle(selectedAssetType)}
-          description={getAssetDescription(selectedAssetType)}
-          onStepChange={(stepId) => setCurrentStep(stepId as AssetDesignerStep)}
-          sidebarStyle={sidebarStyle}
-          onClose={() => handleOpenChange(false)}
-        >
-          {/* Type Selection Step */}
-          {currentStep === "type" && (
-            <AssetTypeSelection
-              selectedType={selectedAssetType}
-              onSelect={handleAssetTypeSelect}
-            />
-          )}
+        <div className="relative h-full">
+          <DialogTitle className="sr-only">
+            {getAssetTitle(selectedAssetType)}
+          </DialogTitle>
+          <StepWizard
+            steps={wizardSteps}
+            currentStepId={currentStep}
+            title={getAssetTitle(selectedAssetType)}
+            description={getAssetDescription(selectedAssetType)}
+            onStepChange={(stepId) =>
+              setCurrentStep(stepId as AssetDesignerStep)
+            }
+            sidebarStyle={sidebarStyle}
+            onClose={() => handleOpenChange(false)}
+          >
+            {/* Type Selection Step */}
+            {currentStep === "type" && (
+              <AssetTypeSelection
+                selectedType={selectedAssetType}
+                onSelect={handleAssetTypeSelect}
+              />
+            )}
 
-          {/* Basics Step */}
-          {currentStep === "details" && selectedAssetType && (
-            <AssetBasicsStep
-              assetType={selectedAssetType}
-              form={getFormForAssetType()}
-              isValid={isBasicInfoFormValid}
-              onBack={() => setCurrentStep("type")}
-              onNext={() => setCurrentStep("configuration")}
-            />
-          )}
+            {/* Basics Step */}
+            {currentStep === "details" && selectedAssetType && (
+              <AssetBasicsStep
+                assetType={selectedAssetType}
+                form={getFormForAssetType()}
+                isValid={isBasicInfoFormValid}
+                onBack={() => setCurrentStep("type")}
+                onNext={() => setCurrentStep("configuration")}
+              />
+            )}
 
-          {/* Configuration Step */}
-          {currentStep === "configuration" && selectedAssetType && (
-            <AssetConfigurationStep
-              assetType={selectedAssetType}
-              form={getFormForAssetType()}
-              isValid={isConfigurationFormValid}
-              onBack={() => setCurrentStep("details")}
-              onNext={() => setCurrentStep("permissions")}
-            />
-          )}
+            {/* Configuration Step */}
+            {currentStep === "configuration" && selectedAssetType && (
+              <AssetConfigurationStep
+                assetType={selectedAssetType}
+                form={getFormForAssetType()}
+                isValid={isConfigurationFormValid}
+                onBack={() => setCurrentStep("details")}
+                onNext={() => setCurrentStep("permissions")}
+              />
+            )}
 
-          {/* Permissions Step */}
-          {currentStep === "permissions" && selectedAssetType && (
-            <AssetPermissionsStep
-              assetType={selectedAssetType}
-              form={getFormForAssetType()}
-              isValid={isPermissionsFormValid}
-              onBack={() => setCurrentStep("configuration")}
-              onNext={() => setCurrentStep("regulation")}
-            />
-          )}
+            {/* Permissions Step */}
+            {currentStep === "permissions" && selectedAssetType && (
+              <AssetPermissionsStep
+                assetType={selectedAssetType}
+                form={getFormForAssetType()}
+                isValid={isPermissionsFormValid}
+                onBack={() => setCurrentStep("configuration")}
+                onNext={() => setCurrentStep("regulation")}
+              />
+            )}
 
-          {/* Regulation Step */}
-          {currentStep === "regulation" && selectedAssetType && (
-            <AssetRegulationStep
-              assetType={selectedAssetType}
-              form={getFormForAssetType()}
-              onBack={() => setCurrentStep("permissions")}
-              onNext={() => setCurrentStep("summary")}
-            />
-          )}
+            {/* Regulation Step */}
+            {currentStep === "regulation" && selectedAssetType && (
+              <AssetRegulationStep
+                assetType={selectedAssetType}
+                form={getFormForAssetType()}
+                onBack={() => setCurrentStep("permissions")}
+                onNext={() => setCurrentStep("summary")}
+              />
+            )}
 
-          {/* Summary Step */}
-          {currentStep === "summary" && selectedAssetType && (
-            <AssetSummaryStep
-              assetType={selectedAssetType}
-              form={getFormForAssetType()}
-              isSubmitting={isSubmitting}
-              onBack={() => setCurrentStep("regulation")}
-              onSubmit={handleCreateAsset}
-            />
-          )}
-        </StepWizard>
+            {/* Summary Step */}
+            {currentStep === "summary" && selectedAssetType && (
+              <AssetSummaryStep
+                assetType={selectedAssetType}
+                form={getFormForAssetType()}
+                isSubmitting={isSubmitting}
+                onBack={() => setCurrentStep("regulation")}
+                onSubmit={handleCreateAsset}
+              />
+            )}
+          </StepWizard>
 
-        {/* Mini progress bar */}
-        <MiniProgressBar
-          totalSteps={stepsOrder.length}
-          currentStepIndex={currentStepIndex}
-        />
+          {/* Mini progress bar */}
+          <MiniProgressBar
+            totalSteps={stepsOrder.length}
+            currentStepIndex={currentStepIndex}
+          />
+        </div>
       </DialogContent>
 
       {/* Verification dialog */}
