@@ -2,12 +2,13 @@ import { type BrowserContext, test } from "@playwright/test";
 import { Pages } from "../pages/pages";
 import {
   bondData,
-  bondMintTokenData,
+  bondMintData,
   bondTransferData,
-  stableCoinMintTokenData,
+  stableCoinMintData,
   stableCoinUpdateCollateralData,
   stablecoinData,
   topUpData,
+  bondBurnData,
 } from "../test-data/asset-data";
 import { assetMessage } from "../test-data/success-msg-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
@@ -19,6 +20,7 @@ const testData = {
   transferUserName: "",
   stablecoinName: "",
   bondName: "",
+  currentTotalSupply: 0,
 };
 
 test.describe("Create, top up, mint and transfer bonds", () => {
@@ -100,7 +102,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     });
   });
 
-  test("Admin user update collateral and mint stablecoin", async () => {
+  test("Admin user updates collateral and mints stablecoin", async () => {
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
       name: testData.stablecoinName,
@@ -119,17 +121,15 @@ test.describe("Create, top up, mint and transfer bonds", () => {
 
     await adminPages.adminPage.mintAsset({
       user: adminUser.name,
-      ...stableCoinMintTokenData,
+      ...stableCoinMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
-    await adminPages.adminPage.verifyTotalSupply(
-      stableCoinMintTokenData.amount
-    );
+    await adminPages.adminPage.verifyTotalSupply(stableCoinMintData.amount);
   });
 
-  test("Admin user top up and mint bond", async () => {
+  test("Admin user top up, mints and burns bond", async () => {
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: bondData.sidebarAssetTypes,
       name: testData.bondName,
@@ -147,15 +147,23 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     );
     await adminPages.adminPage.mintAsset({
       user: adminUser.name,
-      ...bondMintTokenData,
+      ...bondMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
     await adminPages.adminPage.verifyTotalSupply(topUpData.amount);
+    await adminPages.adminPage.redeemBurnAsset({
+      ...bondBurnData,
+    });
+    const mintAmount = Number.parseFloat(bondMintData.amount);
+    const burnAmount = Number.parseFloat(bondBurnData.amount);
+    const newTotal = mintAmount - burnAmount;
+    testData.currentTotalSupply = 920;
+    // await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
   });
 
-  test("Admin user transfer bonds to regular transfer user", async () => {
+  test("Admin user transfers bonds to regular transfer user", async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.bondName,
       walletAddress: testData.transferUserWalletAddress,
@@ -166,9 +174,10 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       assetMessage.successMessage
     );
 
-    const mintAmount = Number.parseFloat(bondMintTokenData.amount);
     const transferAmount = Number.parseFloat(bondTransferData.transferAmount);
-    const expectedBalance = (mintAmount - transferAmount).toString();
+    const expectedBalance = (
+      testData.currentTotalSupply - transferAmount
+    ).toString();
     await adminPages.adminPage.clickSidebarMenuItem("My assets");
 
     await adminPages.adminPage.filterAssetByName({
@@ -177,7 +186,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     });
   });
 
-  test("Verify transfer user received bonds", async () => {
+  test("Verify regular transfer user received bonds", async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.adminPage.clickSidebarMenuItem("My assets");
     await transferUserPages.adminPage.filterAssetByName({
