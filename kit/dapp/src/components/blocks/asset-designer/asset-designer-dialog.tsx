@@ -52,6 +52,32 @@ interface AssetDesignerDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Mini progress bar component
+interface MiniProgressBarProps {
+  totalSteps: number;
+  currentStepIndex: number;
+}
+
+function MiniProgressBar({
+  totalSteps,
+  currentStepIndex,
+}: MiniProgressBarProps) {
+  return (
+    <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 z-10">
+      {Array.from({ length: totalSteps }).map((_, index) => (
+        <div
+          key={index}
+          className={`transition-all duration-300 ${
+            index === currentStepIndex
+              ? "w-4 h-1 bg-primary rounded-full animate-pulse"
+              : "w-1 h-1 bg-muted-foreground/30 rounded-full"
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function AssetDesignerDialog({
   open,
   onOpenChange,
@@ -355,6 +381,9 @@ export function AssetDesignerDialog({
     backgroundRepeat: "no-repeat",
   };
 
+  // Get current step index for the progress bar
+  const currentStepIndex = stepsOrder.findIndex((step) => step === currentStep);
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
@@ -439,6 +468,12 @@ export function AssetDesignerDialog({
             />
           )}
         </StepWizard>
+
+        {/* Mini progress bar */}
+        <MiniProgressBar
+          totalSteps={stepsOrder.length}
+          currentStepIndex={currentStepIndex}
+        />
       </DialogContent>
 
       {/* Verification dialog */}
