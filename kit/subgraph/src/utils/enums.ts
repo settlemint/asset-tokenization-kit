@@ -53,5 +53,4 @@ export class EventName {
   static UnderlyingAssetWithdrawn: string = "Underlying Asset Withdrawn";
   // Stablecoin specific events
   static CollateralUpdated: string = "Collateral Updated";
-  // DvPSwap specific events
 }

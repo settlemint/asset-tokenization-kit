@@ -14,8 +14,6 @@ import { fetchAccount } from "../fetch/account";
 import { fetchApproval, fetchXvPSettlement } from "../fetch/xvp-settlement";
 import { eventId } from "../utils/events";
 
-// Handle DvPSwap-specific events
-
 export function handleXvPSettlementApproved(
   event: XvPSettlementApproved
 ): void {
