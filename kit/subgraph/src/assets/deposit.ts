@@ -42,6 +42,7 @@ import { userDisallowedEvent } from "./events/userdisallowed";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchDeposit } from "./fetch/deposit";
+import { handleBurn } from "./handlers/burn";
 import { handleMint } from "./handlers/mint";
 import { newAssetStatsData, updateDepositCollateralData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
@@ -70,78 +71,20 @@ export function handleTransfer(event: Transfer): void {
     );
     depositCollateralCalculatedFields(deposit);
     updateDepositCollateralData(assetStats, deposit);
-  } else if (event.params.to.equals(Address.zero())) {
-    const from = fetchAccount(event.params.from);
+  } else if (to.equals(Address.zero())) {
     createActivityLogEntry(event, EventType.Burn, [event.params.from]);
-
-    // decrease total supply
-    deposit.totalSupplyExact = deposit.totalSupplyExact.minus(
-      event.params.value
+    handleBurn(
+      deposit,
+      deposit.id,
+      AssetType.deposit,
+      event.block.timestamp,
+      event.params.from,
+      event.params.value,
+      decimals,
+      false
     );
-    deposit.totalSupply = toDecimals(
-      deposit.totalSupplyExact,
-      deposit.decimals
-    );
-    deposit.totalBurnedExact = deposit.totalBurnedExact.plus(
-      event.params.value
-    );
-    deposit.totalBurned = toDecimals(
-      deposit.totalBurnedExact,
-      deposit.decimals
-    );
-
-    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
-      event.params.value
-    );
-    assetActivity.totalSupply = toDecimals(
-      assetActivity.totalSupplyExact,
-      deposit.decimals
-    );
-
-    // Update collateral calculated fields after supply change
     depositCollateralCalculatedFields(deposit);
-    deposit.concentration = calculateConcentration(
-      deposit.holders.load(),
-      deposit.totalSupplyExact
-    );
-
-    const balance = fetchAssetBalance(
-      deposit.id,
-      from.id,
-      deposit.decimals,
-      true
-    );
-    balance.valueExact = balance.valueExact.minus(event.params.value);
-    balance.value = toDecimals(balance.valueExact, deposit.decimals);
-    balance.lastActivity = event.block.timestamp;
-    balance.save();
-
-    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
-    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
-    from.save();
-
-    if (balance.valueExact.equals(BigInt.zero())) {
-      decrease(deposit, "totalHolders");
-      store.remove("AssetBalance", balance.id.toHexString());
-      decrease(from, "balancesCount");
-      from.save();
-    }
-
-    const portfolioStats = newPortfolioStatsData(
-      from.id,
-      deposit.id,
-      AssetType.deposit
-    );
-    portfolioStats.balance = balance.value;
-    portfolioStats.balanceExact = balance.valueExact;
-    portfolioStats.save();
-
-    assetStats.burned = toDecimals(event.params.value, deposit.decimals);
-    assetStats.burnedExact = event.params.value;
-    // Update collateral data in asset stats
     updateDepositCollateralData(assetStats, deposit);
-
-    increase(assetActivity, "burnEventCount");
   } else {
     const from = fetchAccount(event.params.from);
     const to = fetchAccount(event.params.to);

@@ -28,6 +28,8 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
     cryptoCurrency.userManagers = [];
     cryptoCurrency.lastActivity = BigInt.zero();
     cryptoCurrency.creator = Address.zero();
+    cryptoCurrency.totalMinted = BigDecimal.zero();
+    cryptoCurrency.totalMintedExact = BigInt.zero();
     cryptoCurrency.totalBurned = BigDecimal.zero();
     cryptoCurrency.totalBurnedExact = BigInt.zero();
     cryptoCurrency.totalHolders = BigInt.zero();

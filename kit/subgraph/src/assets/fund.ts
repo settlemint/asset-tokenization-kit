@@ -44,6 +44,7 @@ import { userUnblockedEvent } from "./events/userunblocked";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchFund } from "./fetch/fund";
+import { handleBurn } from "./handlers/burn";
 import { handleMint } from "./handlers/mint";
 import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
@@ -76,54 +77,18 @@ export function handleTransfer(event: Transfer): void {
       decimals,
       false
     );
-  } else if (event.params.to.equals(Address.zero())) {
-    const from = fetchAccount(event.params.from);
-
+  } else if (to.equals(Address.zero())) {
     createActivityLogEntry(event, EventType.Burn, [event.params.from]);
-
-    // decrease total supply
-    fund.totalSupplyExact = fund.totalSupplyExact.minus(event.params.value);
-    fund.totalSupply = toDecimals(fund.totalSupplyExact, fund.decimals);
-    fund.totalBurnedExact = fund.totalBurnedExact.plus(event.params.value);
-    fund.totalBurned = toDecimals(fund.totalBurnedExact, fund.decimals);
-
-    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
-      event.params.value
-    );
-    assetActivity.totalSupply = toDecimals(
-      assetActivity.totalSupplyExact,
-      fund.decimals
-    );
-
-    const balance = fetchAssetBalance(fund.id, from.id, fund.decimals, false);
-    balance.valueExact = balance.valueExact.minus(event.params.value);
-    balance.value = toDecimals(balance.valueExact, fund.decimals);
-    balance.lastActivity = event.block.timestamp;
-    balance.save();
-
-    if (balance.valueExact.equals(BigInt.zero())) {
-      decrease(fund, "totalHolders");
-      store.remove("AssetBalance", balance.id.toHexString());
-      decrease(from, "balancesCount");
-      from.save();
-    }
-
-    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
-    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
-    from.save();
-
-    const portfolioStats = newPortfolioStatsData(
-      from.id,
+    handleBurn(
+      fund,
       fund.id,
-      AssetType.fund
+      AssetType.fund,
+      event.block.timestamp,
+      event.params.from,
+      event.params.value,
+      decimals,
+      false
     );
-    portfolioStats.balance = balance.value;
-    portfolioStats.balanceExact = balance.valueExact;
-    portfolioStats.save();
-
-    assetStats.burned = toDecimals(event.params.value, fund.decimals);
-    assetStats.burnedExact = event.params.value;
-    increase(assetActivity, "burnEventCount");
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);

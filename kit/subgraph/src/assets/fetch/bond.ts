@@ -44,6 +44,8 @@ export function fetchBond(
     bond.userManagers = [];
     bond.lastActivity = BigInt.zero();
     bond.creator = Address.zero();
+    bond.totalMinted = BigDecimal.zero();
+    bond.totalMintedExact = BigInt.zero();
     bond.totalBurned = BigDecimal.zero();
     bond.totalBurnedExact = BigInt.zero();
     bond.totalHolders = BigInt.zero();

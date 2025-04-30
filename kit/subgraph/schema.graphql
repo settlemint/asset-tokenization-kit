@@ -14,6 +14,8 @@ interface Asset {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: BigInt!
@@ -50,6 +52,8 @@ type Bond implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: BigInt!
@@ -92,6 +96,8 @@ type Equity implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: BigInt!
@@ -122,6 +128,8 @@ type Fund implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: BigInt!
@@ -154,6 +162,8 @@ type StableCoin implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: BigInt!
@@ -190,6 +200,8 @@ type CryptoCurrency implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: BigInt!
@@ -217,6 +229,8 @@ type Deposit implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: BigInt!

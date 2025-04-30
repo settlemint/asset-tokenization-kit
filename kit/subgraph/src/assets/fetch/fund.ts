@@ -31,6 +31,8 @@ export function fetchFund(address: Address): Fund {
     fund.userManagers = [];
     fund.lastActivity = BigInt.zero();
     fund.creator = Address.zero();
+    fund.totalMinted = BigDecimal.zero();
+    fund.totalMintedExact = BigInt.zero();
     fund.totalBurned = BigDecimal.zero();
     fund.totalBurnedExact = BigInt.zero();
     fund.totalHolders = BigInt.zero();

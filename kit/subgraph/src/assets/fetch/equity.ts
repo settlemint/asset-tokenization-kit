@@ -30,6 +30,8 @@ export function fetchEquity(address: Address): Equity {
     equity.userManagers = [];
     equity.lastActivity = BigInt.zero();
     equity.creator = Address.zero();
+    equity.totalMinted = BigDecimal.zero();
+    equity.totalMintedExact = BigInt.zero();
     equity.totalBurned = BigDecimal.zero();
     equity.totalBurnedExact = BigInt.zero();
     equity.totalHolders = BigInt.zero();

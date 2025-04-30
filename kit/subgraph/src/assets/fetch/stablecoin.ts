@@ -30,6 +30,8 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.auditors = [];
     stableCoin.lastActivity = BigInt.zero();
     stableCoin.creator = Address.zero();
+    stableCoin.totalMinted = BigDecimal.zero();
+    stableCoin.totalMintedExact = BigInt.zero();
     stableCoin.totalBurned = BigDecimal.zero();
     stableCoin.totalBurnedExact = BigInt.zero();
     stableCoin.totalHolders = BigInt.zero();

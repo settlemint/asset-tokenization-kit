@@ -49,6 +49,7 @@ import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
 import { fetchFixedYield, fetchFixedYieldPeriod } from "./fetch/fixed-yield";
+import { handleBurn } from "./handlers/burn";
 import { handleMint } from "./handlers/mint";
 import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
@@ -76,55 +77,18 @@ export function handleTransfer(event: Transfer): void {
       false
     );
     updateAssociatedFixedYield(bond, event.block.timestamp);
-  } else if (event.params.to.equals(Address.zero())) {
-    const from = fetchAccount(event.params.from);
-
+  } else if (to.equals(Address.zero())) {
     createActivityLogEntry(event, EventType.Burn, [event.params.from]);
-
-    // decrease total supply
-    bond.totalSupplyExact = bond.totalSupplyExact.minus(event.params.value);
-    bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
-    bond.totalBurnedExact = bond.totalBurnedExact.plus(event.params.value);
-    bond.totalBurned = toDecimals(bond.totalBurnedExact, bond.decimals);
-
-    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
-      event.params.value
-    );
-    assetActivity.totalSupply = toDecimals(
-      assetActivity.totalSupplyExact,
-      bond.decimals
-    );
-
-    const balance = fetchAssetBalance(bond.id, from.id, bond.decimals, false);
-    balance.valueExact = balance.valueExact.minus(event.params.value);
-    balance.value = toDecimals(balance.valueExact, bond.decimals);
-    balance.lastActivity = event.block.timestamp;
-    balance.save();
-
-    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
-    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
-    from.save();
-
-    if (balance.valueExact.equals(BigInt.zero())) {
-      decrease(bond, "totalHolders");
-      store.remove("AssetBalance", balance.id.toHexString());
-      decrease(from, "balancesCount");
-      from.save();
-    }
-
-    const portfolioStats = newPortfolioStatsData(
-      from.id,
+    handleBurn(
+      bond,
       bond.id,
-      AssetType.bond
+      AssetType.bond,
+      event.block.timestamp,
+      event.params.from,
+      event.params.value,
+      decimals,
+      false
     );
-    portfolioStats.balance = balance.value;
-    portfolioStats.balanceExact = balance.valueExact;
-    portfolioStats.save();
-
-    assetStats.burned = toDecimals(event.params.value, bond.decimals);
-    assetStats.burnedExact = event.params.value;
-    increase(assetActivity, "burnEventCount");
-
     updateAssociatedFixedYield(bond, event.block.timestamp);
   } else {
     // This will only execute for regular transfers (both addresses non-zero)

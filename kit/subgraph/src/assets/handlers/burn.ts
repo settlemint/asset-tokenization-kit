@@ -1,20 +1,20 @@
-import { Address, BigInt, Bytes, Entity } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, Entity, store } from "@graphprotocol/graph-ts";
 import { Account, AssetBalance } from "../../../generated/schema";
 import { fetchAccount } from "../../fetch/account";
-import { fetchAssetBalance, hasBalance } from "../../fetch/balance";
-import { increase } from "../../utils/counters";
+import { fetchAssetBalance } from "../../fetch/balance";
+import { decrease, increase } from "../../utils/counters";
 import { setValueWithDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
 import { fetchAssetActivity } from "../fetch/assets";
 import { newAssetStatsData } from "../stats/assets";
 import { newPortfolioStatsData } from "../stats/portfolio";
 
-export function handleMint(
+export function handleBurn(
   asset: Entity,
   assetAddress: Bytes,
   assetType: string,
   timestamp: BigInt,
-  to: Address,
+  from: Address,
   value: BigInt,
   decimals: number,
   initialBlockedState: boolean
@@ -22,29 +22,23 @@ export function handleMint(
   // increase total supply
   const newTotalSupply = handleTotalSupply(asset, value, decimals);
   // increase total minted
-  handleTotalMinted(asset, value, decimals);
+  handleTotalBurned(asset, value, decimals);
   // update asset activity
   handleAssetActivity(assetType, newTotalSupply, decimals);
   // update to account
-  const toAccount = handleToAccount(
-    asset,
-    assetAddress,
-    to,
-    value,
-    decimals,
-    initialBlockedState
-  );
+  const fromAccount = handleFromAccount(from, value, decimals);
   // update balance
   const balance = handleBalance(
+    asset,
     assetAddress,
-    toAccount,
+    fromAccount,
     value,
     decimals,
     timestamp,
     initialBlockedState
   );
   // update portfolio stats
-  handlePortfolioStats(toAccount, assetAddress, balance, decimals);
+  handlePortfolioStats(fromAccount, assetAddress, balance, decimals);
   // update asset stats
   handleAssetStats(assetAddress, assetType, value, decimals);
 }
@@ -59,24 +53,23 @@ function handleTotalSupply(
   if (totalSupplyValue) {
     totalSupply = totalSupplyValue.toBigInt();
   }
-
-  const newTotalSupply = totalSupply.plus(value);
+  const newTotalSupply = totalSupply.minus(value);
   setValueWithDecimals(asset, "totalSupply", newTotalSupply, decimals);
   return newTotalSupply;
 }
 
-function handleTotalMinted(
+function handleTotalBurned(
   asset: Entity,
   value: BigInt,
   decimals: number
 ): void {
-  let totalMinted = BigInt.zero();
-  let totalMintedValue = asset.get("totalMintedExact");
-  if (totalMintedValue) {
-    totalMinted = totalMintedValue.toBigInt();
+  let totalBurned = BigInt.zero();
+  let totalBurnedValue = asset.get("totalBurnedExact");
+  if (totalBurnedValue) {
+    totalBurned = totalBurnedValue.toBigInt();
   }
-  const newTotalMinted = totalMinted.plus(value);
-  setValueWithDecimals(asset, "totalMinted", newTotalMinted, decimals);
+  const newTotalBurned = totalBurned.plus(value);
+  setValueWithDecimals(asset, "totalBurned", newTotalBurned, decimals);
 }
 
 function handleAssetActivity(
@@ -86,34 +79,27 @@ function handleAssetActivity(
 ): void {
   const assetActivity = fetchAssetActivity(assetType);
   setValueWithDecimals(assetActivity, "totalSupply", newTotalSupply, decimals);
-  increase(assetActivity, "mintEventCount");
+  increase(assetActivity, "burnEventCount");
   assetActivity.save();
 }
 
-function handleToAccount(
-  asset: Entity,
-  assetAddress: Bytes,
-  to: Address,
+function handleFromAccount(
+  from: Address,
   value: BigInt,
-  decimals: number,
-  initialBlockedState: boolean
+  decimals: number
 ): Account {
-  const toAccount = fetchAccount(to);
+  const fromAccount = fetchAccount(from);
 
-  const totalBalance = toAccount.totalBalanceExact.plus(value);
-  setValueWithDecimals(toAccount, "totalBalance", totalBalance, decimals);
+  const totalBalance = fromAccount.totalBalanceExact.minus(value);
+  setValueWithDecimals(fromAccount, "totalBalance", totalBalance, decimals);
 
-  if (!hasBalance(assetAddress, toAccount.id, decimals, initialBlockedState)) {
-    increase(asset, "totalHolders");
-    increase(toAccount, "balancesCount");
-    toAccount.save();
-  }
-  return toAccount;
+  return fromAccount;
 }
 
 function handleBalance(
+  asset: Entity,
   assetAddress: Bytes,
-  toAccount: Account,
+  fromAccount: Account,
   value: BigInt,
   decimals: number,
   timestamp: BigInt,
@@ -121,15 +107,22 @@ function handleBalance(
 ): AssetBalance {
   const balance = fetchAssetBalance(
     assetAddress,
-    toAccount.id,
+    fromAccount.id,
     decimals,
     initialBlockedState
   );
-  const newBalance = balance.valueExact.plus(value);
+  const newBalance = balance.valueExact.minus(value);
   setValueWithDecimals(balance, "value", newBalance, decimals);
 
   balance.lastActivity = timestamp;
   balance.save();
+
+  if (balance.valueExact.equals(BigInt.zero())) {
+    decrease(asset, "totalHolders");
+    store.remove("AssetBalance", balance.id.toHexString());
+    decrease(fromAccount, "balancesCount");
+    fromAccount.save();
+  }
 
   return balance;
 }
@@ -156,6 +149,6 @@ function handleAssetStats(
   decimals: number
 ): void {
   const assetStats = newAssetStatsData(assetAddress, assetType);
-  setValueWithDecimals(assetStats, "minted", value, decimals);
+  setValueWithDecimals(assetStats, "burned", value, decimals);
   assetStats.save();
 }
