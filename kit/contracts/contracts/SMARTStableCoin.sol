@@ -48,20 +48,21 @@ contract SMARTStableCoin is
     /// @param symbol_ Token symbol
     /// @param decimals_ Token decimals
     /// @param onchainID_ Optional on-chain identifier address
-    /// @param identityRegistry_ Address of the identity registry contract
-    /// @param compliance_ Address of the compliance contract
     /// @param requiredClaimTopics_ Initial list of required claim topics
     /// @param initialModulePairs_ Initial list of compliance modules
+    /// @param identityRegistry_ Address of the identity registry contract
+    /// @param compliance_ Address of the compliance contract
     /// @param initialOwner_ Address receiving admin and operational roles
+    /// @param forwarder Address of the forwarder contract
     constructor(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         address onchainID_,
-        address identityRegistry_,
-        address compliance_,
         uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        address identityRegistry_,
+        address compliance_,
         address initialOwner_,
         address forwarder
     )

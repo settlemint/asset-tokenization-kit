@@ -7,6 +7,8 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 import { SMARTStableCoinRegistry } from "./SMARTStableCoinRegistry.sol";
 import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTIdentityRegistry } from "@smartprotocol/contracts/SMARTIdentityRegistry.sol";
+import { SMARTCompliance } from "@smartprotocol/contracts/SMARTCompliance.sol";
 
 /// @title SMARTStableCoinFactory - A factory contract for creating SMARTStableCoin tokens
 /// @notice This contract allows the creation of new SMARTStableCoin tokens with deterministic addresses using CREATE2.
@@ -21,6 +23,9 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
     /// @notice The address of the SMARTStableCoinRegistry used by this factory.
     SMARTStableCoinRegistry public immutable registry;
 
+    SMARTIdentityRegistry public immutable identityRegistry;
+    SMARTCompliance public immutable compliance;
+
     /// @notice Emitted when a new SMART stablecoin is created and registered
     /// @param token The address of the newly created token
     /// @param creator The address that initiated the creation
@@ -31,9 +36,18 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
     /// @dev Sets up the factory with meta-transaction support and links it to the registry.
     /// @param forwarder The address of the trusted forwarder for meta-transactions
     /// @param _registry The address of the SMARTStableCoinRegistry contract
-    constructor(address forwarder, address _registry) ERC2771Context(forwarder) {
+    constructor(
+        address forwarder,
+        address _registry,
+        address identityRegistry_,
+        address compliance_
+    )
+        ERC2771Context(forwarder)
+    {
         require(_registry != address(0), "Registry address cannot be zero");
         registry = SMARTStableCoinRegistry(_registry);
+        identityRegistry = SMARTIdentityRegistry(identityRegistry_);
+        compliance = SMARTCompliance(compliance_);
     }
 
     /// @notice Creates a new SMART stablecoin token, registers it, and emits an event.
@@ -43,8 +57,6 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
     /// @param symbol The symbol of the token (e.g., "CUSD")
     /// @param decimals The number of decimals for the token (e.g., 6)
     /// @param onchainID Optional on-chain identifier address (can be address(0))
-    /// @param identityRegistry Address of the identity registry contract
-    /// @param compliance Address of the compliance contract
     /// @param requiredClaimTopics Initial list of required claim topics
     /// @param initialModulePairs Initial list of compliance modules
     /// @return token The address of the newly created token
@@ -53,8 +65,6 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
         string memory symbol,
         uint8 decimals,
         address onchainID,
-        address identityRegistry,
-        address compliance,
         uint256[] memory requiredClaimTopics,
         SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
@@ -65,17 +75,8 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
         address creator = _msgSender(); // Cache msgSender
 
         // Predict address
-        address predicted = predictAddress(
-            creator,
-            name,
-            symbol,
-            decimals,
-            onchainID,
-            identityRegistry,
-            compliance,
-            requiredClaimTopics,
-            initialModulePairs
-        );
+        address predicted =
+            predictAddress(creator, name, symbol, decimals, onchainID, requiredClaimTopics, initialModulePairs);
 
         // Check if address already has code (CREATE2 collision prevention)
         uint256 codeSize;
@@ -93,10 +94,10 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
             symbol,
             decimals,
             onchainID,
-            identityRegistry,
-            compliance,
             requiredClaimTopics,
             initialModulePairs,
+            address(identityRegistry),
+            address(compliance),
             creator, // Initial owner
             trustedForwarder() // ERC2771 forwarder
         );
@@ -117,8 +118,7 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
     /// @param onchainID Optional on-chain identifier address
-    /// @param identityRegistry Address of the identity registry contract
-    /// @param compliance Address of the compliance contract
+
     /// @param requiredClaimTopics Initial list of required claim topics
     /// @param initialModulePairs Initial list of compliance modules
     /// @return predicted The address where the token would be deployed
@@ -128,8 +128,6 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
         string memory symbol,
         uint8 decimals,
         address onchainID,
-        address identityRegistry,
-        address compliance,
         uint256[] memory requiredClaimTopics,
         SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
@@ -147,10 +145,10 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
             symbol,
             decimals,
             onchainID,
-            identityRegistry,
-            compliance,
             requiredClaimTopics,
             initialModulePairs,
+            identityRegistry,
+            compliance,
             sender, // Use the provided sender as the initial owner for prediction
             trustedForwarder() // Use the factory's trusted forwarder for prediction
         );

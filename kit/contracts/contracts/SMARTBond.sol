@@ -152,25 +152,30 @@ contract SMARTBond is
     /// @param name_ Token name
     /// @param symbol_ Token symbol
     /// @param decimals_ Token decimals
+    /// @param cap_ Token cap
+    /// @param maturityDate_ Bond maturity date
+    /// @param faceValue_ Bond face value
+    /// @param underlyingAsset_ Underlying asset contract address
     /// @param onchainID_ Optional on-chain identifier address
-    /// @param identityRegistry_ Address of the identity registry contract
-    /// @param compliance_ Address of the compliance contract
     /// @param requiredClaimTopics_ Initial list of required claim topics
     /// @param initialModulePairs_ Initial list of compliance modules
+    /// @param identityRegistry_ Address of the identity registry contract
+    /// @param compliance_ Address of the compliance contract
     /// @param initialOwner_ Address receiving admin and operational roles
+    /// @param forwarder Address of the forwarder contract
     constructor(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        uint256 _cap,
-        uint256 _maturityDate,
-        uint256 _faceValue,
-        address _underlyingAsset,
+        uint256 cap_,
+        uint256 maturityDate_,
+        uint256 faceValue_,
+        address underlyingAsset_,
         address onchainID_,
-        address identityRegistry_,
-        address compliance_,
         uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        address identityRegistry_,
+        address compliance_,
         address initialOwner_,
         address forwarder
     )
@@ -186,23 +191,23 @@ contract SMARTBond is
             initialModulePairs_
         )
         ERC2771Context(forwarder)
-        ERC20Capped(_cap)
+        ERC20Capped(cap_)
     {
-        if (_maturityDate <= block.timestamp) revert BondInvalidMaturityDate();
-        if (_faceValue == 0) revert InvalidFaceValue();
-        if (_underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
+        if (maturityDate_ <= block.timestamp) revert BondInvalidMaturityDate();
+        if (faceValue_ == 0) revert InvalidFaceValue();
+        if (underlyingAsset_ == address(0)) revert InvalidUnderlyingAsset();
 
         // Verify the underlying asset contract exists by attempting to call a view function
-        try IERC20(_underlyingAsset).totalSupply() returns (uint256) {
+        try IERC20(underlyingAsset_).totalSupply() returns (uint256) {
             // Contract exists and implements IERC20
         } catch {
             revert InvalidUnderlyingAsset();
         }
 
         _decimals = decimals_;
-        maturityDate = _maturityDate;
-        faceValue = _faceValue;
-        underlyingAsset = IERC20(_underlyingAsset);
+        maturityDate = maturityDate_;
+        faceValue = faceValue_;
+        underlyingAsset = IERC20(underlyingAsset_);
 
         // Grant standard admin role
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
