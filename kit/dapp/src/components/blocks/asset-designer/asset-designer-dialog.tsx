@@ -1,6 +1,5 @@
 "use client";
 
-import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/routing";
 import { useTheme } from "next-themes";
@@ -41,6 +40,12 @@ import { getPredictedAddress as getBondPredictedAddress } from "@/lib/queries/bo
 import { getPredictedAddress as getCryptocurrencyPredictedAddress } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-predict-address";
 import { getPredictedAddress as getStablecoinPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
 import { getTomorrowMidnight } from "@/lib/utils/date";
+
+// Import FormOtpDialog
+import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
+
+// Import the waitForTransactions function
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 
 interface AssetDesignerDialogProps {
   open: boolean;
@@ -264,25 +269,47 @@ export function AssetDesignerDialog({
       const result = await pincodeVerificationData.action(formDataWithCode);
 
       if (result.data) {
-        // Update the toast with success message
-        toast.success(
-          `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,
-          { id: toastId }
-        );
+        try {
+          // Parse the transaction hashes from the response
+          const hashes = Array.isArray(result.data)
+            ? result.data
+            : [result.data];
 
-        // Close the dialog and reset state
-        handleOpenChange(false);
+          // Wait for the transactions to be confirmed using the dedicated function
+          await waitForTransactions(hashes);
 
-        // Navigate to the asset page if we have a valid address
-        const assetId = formDataWithCode.predictedAddress;
-        if (
-          assetId &&
-          assetId !== "0x0000000000000000000000000000000000000000"
-        ) {
-          router.push(`/assets/${selectedAssetType}/${assetId}`);
-        } else {
-          // Refresh the current page
-          router.refresh();
+          // Add a small delay to allow indexing to complete
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+
+          // Update the toast with success message
+          toast.success(
+            `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,
+            { id: toastId }
+          );
+
+          // Close the dialog and reset state
+          handleOpenChange(false);
+
+          // Navigate to the asset page if we have a valid address
+          const assetId = formDataWithCode.predictedAddress;
+          if (
+            assetId &&
+            assetId !== "0x0000000000000000000000000000000000000000"
+          ) {
+            router.push(`/assets/${selectedAssetType}/${assetId}`);
+          } else {
+            // Refresh the current page
+            router.refresh();
+          }
+        } catch (error) {
+          console.error("Error waiting for transaction:", error);
+          toast.error(
+            "Transaction submitted but failed to confirm. Please check your activity history.",
+            {
+              id: toastId,
+            }
+          );
+          handleOpenChange(false);
         }
       } else if (result.validationErrors) {
         // Update the toast with validation error message
@@ -419,7 +446,7 @@ export function AssetDesignerDialog({
         <FormOtpDialog
           name="verificationCode"
           open={showVerificationDialog}
-          onOpenChange={(open) => {
+          onOpenChange={(open: boolean) => {
             if (!open) handleVerificationCancel();
             else setShowVerificationDialog(open);
           }}
