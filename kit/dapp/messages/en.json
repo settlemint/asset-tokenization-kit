@@ -191,6 +191,7 @@
         "bonds": "Bonds",
         "cryptocurrencies": "Cryptocurrencies",
         "dashboard": "Dashboard",
+        "actions": "Actions",
         "equities": "Equities",
         "funds": "Funds",
         "group-title": "Asset management",
@@ -272,6 +273,51 @@
     "active": "Active",
     "blocked": "Blocked",
     "paused": "Paused"
+  },
+  "asset-designer": {
+    "type-selection": {
+      "title": "Select asset type",
+      "description": "Choose the type of digital asset you want to create",
+      "key-features": "Key features:",
+      "features": {
+        "bond": {
+          "fixed-interest": "Fixed interest payments",
+          "maturity-management": "Maturity date management",
+          "transferable-ownership": "Transferable ownership",
+          "principal-repayment": "Principal repayment"
+        },
+        "cryptocurrency": {
+          "secure-transactions": "Secure transactions",
+          "decentralized-ownership": "Decentralized ownership",
+          "global-payments": "Global payments",
+          "programmable-money": "Programmable money"
+        },
+        "equity": {
+          "voting-rights": "Voting rights",
+          "dividend-distribution": "Dividend distribution",
+          "fractional-ownership": "Fractional ownership",
+          "liquidity": "Liquidity"
+        },
+        "fund": {
+          "portfolio-diversification": "Portfolio diversification",
+          "performance-tracking": "Performance tracking",
+          "redemption-rights": "Redemption rights",
+          "lower-investment": "Lower investment barriers"
+        },
+        "stablecoin": {
+          "price-stability": "Price stability",
+          "collateral-backing": "Collateral backing",
+          "transparent-reserves": "Transparent reserves",
+          "fast-settlements": "Fast settlements"
+        },
+        "deposit": {
+          "interest-earning": "Interest earning",
+          "redeemable": "Redeemable",
+          "term-options": "Term options",
+          "institutional-backing": "Institutional backing"
+        }
+      }
+    }
   },
   "asset-type": {
     "bonds": "Bond",
@@ -836,11 +882,12 @@
     "navigation": {
       "admin": "Issuer portal",
       "asset-management": "Asset management",
-      "dvp-swap": "DvP Swap",
       "platform": "Platform management",
       "portfolio": "My portfolio",
       "title": "Private",
-      "trade-management": "Trade management"
+      "trade-management": "Trade management",
+      "dvp-swap": "DvP Swap",
+      "actions": "Actions"
     },
     "user-dropdown": {
       "documentation": "Documentation",
@@ -850,6 +897,36 @@
     }
   },
   "paused": "Paused",
+  "actions": {
+    "page": {
+      "actions": "Actions"
+    },
+    "tabs": {
+      "pending": "Pending",
+      "upcoming": "Upcoming",
+      "completed": "Completed"
+    },
+    "all-tasks-complete": "All tasks complete!",
+    "all-tasks-complete-description": "You have no pending actions.",
+    "subject": "Subject",
+    "action-type-header": "Action type",
+    "description-header": "Description",
+    "active-on-header": "Active on",
+    "sender-header": "Sender",
+    "completed-on-header": "Completed on",
+    "action-type": {
+      "bond-mature": "Mature Bond"
+    },
+    "pending-description": {
+      "bond-mature": "You need to send the transaction to mature the bond."
+    },
+    "upcoming-description": {
+      "bond-mature": "You will need to send the transaction to mature the bond."
+    },
+    "completed-description": {
+      "bond-mature": "The bond has been matured successfully."
+    }
+  },
   "portfolio": {
     "activity": {
       "page-description": "Your activity on chain",
