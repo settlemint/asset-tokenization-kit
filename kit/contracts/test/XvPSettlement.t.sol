@@ -73,7 +73,7 @@ contract XvPSettlementTest is Test {
 
         // Test data
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenC), from: alice, to: bob, amount: 100 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenC), from: alice, to: bob, amount: 100 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -119,7 +119,7 @@ contract XvPSettlementTest is Test {
 
         // Test data
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenD), from: alice, to: bob, amount: 100 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenD), from: alice, to: bob, amount: 100 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -177,8 +177,8 @@ contract XvPSettlementTest is Test {
 
         // Test data - Bidirectional swap between Alice and Bob
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](2);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenX), from: alice, to: bob, amount: 200 * 10 ** 18 });
-        flows[1] = XvPSettlement.Flow({ token: address(tokenY), from: bob, to: alice, amount: 100 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenX), from: alice, to: bob, amount: 200 * 10 ** 18 });
+        flows[1] = XvPSettlement.Flow({ asset: address(tokenY), from: bob, to: alice, amount: 100 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -226,7 +226,7 @@ contract XvPSettlementTest is Test {
 
         // Test data
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenZ), from: alice, to: bob, amount: 300 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenZ), from: alice, to: bob, amount: 300 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = true;
@@ -257,7 +257,7 @@ contract XvPSettlementTest is Test {
 
         // Test data
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenR), from: alice, to: bob, amount: 150 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenR), from: alice, to: bob, amount: 150 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -299,7 +299,7 @@ contract XvPSettlementTest is Test {
 
         // Test data
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenE), from: alice, to: bob, amount: 400 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenE), from: alice, to: bob, amount: 400 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -334,7 +334,7 @@ contract XvPSettlementTest is Test {
 
         // Test data
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenF), from: alice, to: bob, amount: 250 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenF), from: alice, to: bob, amount: 250 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -372,7 +372,7 @@ contract XvPSettlementTest is Test {
 
         // Test data
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenG), from: alice, to: bob, amount: 350 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenG), from: alice, to: bob, amount: 350 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -403,7 +403,7 @@ contract XvPSettlementTest is Test {
 
         // Test data
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenI), from: alice, to: bob, amount: 100 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenI), from: alice, to: bob, amount: 100 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -448,7 +448,7 @@ contract XvPSettlementTest is Test {
 
         // Test with invalid cutoff date (in the past)
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenJ), from: alice, to: bob, amount: 100 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenJ), from: alice, to: bob, amount: 100 * 10 ** 18 });
 
         vm.warp(10 hours); // Set block.timestamp to 10 hours
         uint256 pastCutoffDate = block.timestamp - 1 hours; // 9 hours (in the past)
@@ -461,7 +461,7 @@ contract XvPSettlementTest is Test {
         // Test with zero amount
         XvPSettlement.Flow[] memory flowsZeroAmount = new XvPSettlement.Flow[](1);
         flowsZeroAmount[0] = XvPSettlement.Flow({
-            token: address(tokenJ),
+            asset: address(tokenJ),
             from: alice,
             to: bob,
             amount: 0 // Zero amount
@@ -475,7 +475,7 @@ contract XvPSettlementTest is Test {
         // Test with zero address
         XvPSettlement.Flow[] memory flowsZeroAddress = new XvPSettlement.Flow[](1);
         flowsZeroAddress[0] = XvPSettlement.Flow({
-            token: address(tokenJ),
+            asset: address(tokenJ),
             from: alice,
             to: address(0), // Zero address
             amount: 100 * 10 ** 18
@@ -489,7 +489,7 @@ contract XvPSettlementTest is Test {
         // Test with invalid token
         XvPSettlement.Flow[] memory flowsInvalidToken = new XvPSettlement.Flow[](1);
         flowsInvalidToken[0] = XvPSettlement.Flow({
-            token: address(0), // Invalid token (zero address)
+            asset: address(0), // Invalid token (zero address)
             from: alice,
             to: bob,
             amount: 100 * 10 ** 18
@@ -514,8 +514,8 @@ contract XvPSettlementTest is Test {
 
         // Test data - Bidirectional swap between Alice and Bob
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](2);
-        flows[0] = XvPSettlement.Flow({ token: address(tokenP), from: alice, to: bob, amount: 200 * 10 ** 18 });
-        flows[1] = XvPSettlement.Flow({ token: address(tokenQ), from: bob, to: alice, amount: 100 * 10 ** 18 });
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenP), from: alice, to: bob, amount: 200 * 10 ** 18 });
+        flows[1] = XvPSettlement.Flow({ asset: address(tokenQ), from: bob, to: alice, amount: 100 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;

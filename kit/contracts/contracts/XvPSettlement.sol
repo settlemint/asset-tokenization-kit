@@ -22,7 +22,7 @@ contract XvPSettlement is ReentrancyGuard, Pausable, AccessControl, ERC2771Conte
 
     /// @notice Flow represents a single token transfer between two parties
     struct Flow {
-        address token; // Address of ERC-20 token
+        address asset; // Address of ERC-20 token
         address from; // Party sending address
         address to; // Party receiving address
         uint256 amount; // Amount of tokens
@@ -172,13 +172,13 @@ contract XvPSettlement is ReentrancyGuard, Pausable, AccessControl, ERC2771Conte
 
         for (uint256 i = 0; i < flows.length; i++) {
             Flow memory flow = flows[i];
-            if (flow.token == address(0)) revert InvalidToken();
+            if (flow.asset == address(0)) revert InvalidToken();
             if (flow.from == address(0)) revert ZeroAddress();
             if (flow.to == address(0)) revert ZeroAddress();
             if (flow.amount == 0) revert ZeroAmount();
 
             // Validate ERC20 token by checking if it has decimals() function
-            (bool success, bytes memory result) = flow.token.staticcall(abi.encodeWithSelector(bytes4(0x313ce567)));
+            (bool success, bytes memory result) = flow.asset.staticcall(abi.encodeWithSelector(bytes4(0x313ce567)));
             if (!success || result.length != 32) revert InvalidToken();
 
             settlement.flows.push(flow);
@@ -208,9 +208,9 @@ contract XvPSettlement is ReentrancyGuard, Pausable, AccessControl, ERC2771Conte
         for (uint256 i = 0; i < flowsLength; i++) {
             Flow storage flow = settlement.flows[i];
             if (flow.from == _msgSender()) {
-                uint256 currentAllowance = IERC20(flow.token).allowance(_msgSender(), address(this));
+                uint256 currentAllowance = IERC20(flow.asset).allowance(_msgSender(), address(this));
                 if (currentAllowance < flow.amount) {
-                    revert InsufficientAllowance(flow.token, _msgSender(), address(this), flow.amount, currentAllowance);
+                    revert InsufficientAllowance(flow.asset, _msgSender(), address(this), flow.amount, currentAllowance);
                 }
             }
         }
@@ -245,7 +245,7 @@ contract XvPSettlement is ReentrancyGuard, Pausable, AccessControl, ERC2771Conte
 
         for (uint256 i = 0; i < settlement.flows.length; i++) {
             Flow storage flow = settlement.flows[i];
-            IERC20(flow.token).safeTransferFrom(flow.from, flow.to, flow.amount);
+            IERC20(flow.asset).safeTransferFrom(flow.from, flow.to, flow.amount);
         }
 
         settlement.claimed = true;
