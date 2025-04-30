@@ -73,7 +73,7 @@ export function AssetSummaryStep({
       nextLabel={
         isSubmitting
           ? "Creating..."
-          : `Issue new ${assetType.charAt(0).toUpperCase() + assetType.slice(1)}`
+          : `Issue new ${assetType ? assetType.charAt(0).toUpperCase() + assetType.slice(1) : "Asset"}`
       }
       className="max-w-3xl w-full mx-auto"
       fixedButtons={true}
