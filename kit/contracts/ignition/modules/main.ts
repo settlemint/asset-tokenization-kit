@@ -5,6 +5,7 @@ import CryptoCurrenciesModule from "./crypto-currencies";
 import DepositsModule from "./deposits";
 import DvPSwapModule from "./dvpswap";
 import DvPSwapFactoryModule from "./dvpswap-factory";
+import EASModule from "./eas";
 import EquitiesModule from "./equities";
 import FixedYieldFactoryModule from "./fixed-yield-factory";
 import ForwarderModule from "./forwarder";
@@ -23,6 +24,7 @@ const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
   const { dvpSwapFactory } = m.useModule(DvPSwapFactoryModule);
   const { dvpSwap } = m.useModule(DvPSwapModule);
   const { airdropFactory } = m.useModule(AirdropFactoryModule);
+  const { schemaRegistry, eas } = m.useModule(EASModule);
 
   return {
     ustb,
@@ -35,6 +37,8 @@ const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
     dvpSwap,
     dvpSwapFactory,
     airdropFactory,
+    schemaRegistry,
+    eas,
   };
 });
 
