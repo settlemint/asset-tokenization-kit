@@ -18,8 +18,13 @@ export function Basics() {
   }, [posthog]);
 
   return (
-    <FormStep title={t("basics.title")} description={t("basics.description")}>
-      <div className="grid grid-cols-1 gap-6">
+    <FormStep
+      title={t("basics.title")}
+      description={t("basics.description")}
+      className="w-full"
+      contentClassName="w-full"
+    >
+      <div className="grid grid-cols-1 gap-6 w-full">
         <FormInput
           control={control}
           name="assetName"
