@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { deleteFile } from "@/lib/actions/delete-file";
-import { uploadToStorage } from "@/lib/actions/upload";
+import { uploadDocument } from "@/lib/actions/upload-document";
 import { cn } from "@/lib/utils";
 import { XCircle } from "lucide-react";
 import { useState } from "react";
@@ -284,7 +284,7 @@ export function AssetRegulationStep({
           regulationId={currentRegulationId}
           onClose={() => setShowUploadDialog(false)}
           onUpload={handleDocumentUploaded}
-          uploadAction={uploadToStorage}
+          uploadAction={uploadDocument}
         />
       )}
     </StepContent>
