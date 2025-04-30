@@ -36,8 +36,6 @@ import { clawbackEvent } from "./events/clawback";
 import { collateralUpdatedEvent } from "./events/collateralupdated";
 import { pausedEvent } from "./events/paused";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
-import { roleGrantedEvent } from "./events/rolegranted";
-import { roleRevokedEvent } from "./events/rolerevoked";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { unpausedEvent } from "./events/unpaused";
 import { userAllowedEvent } from "./events/userallowed";
@@ -594,23 +592,8 @@ export function handleTokenWithdrawn(event: TokenWithdrawn): void {
 export function handleRoleGranted(event: RoleGranted): void {
   const deposit = fetchDeposit(event.address);
   const account = fetchAccount(event.params.account);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleGranted = roleGrantedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.deposit,
-    event.params.role,
-    account.id
-  );
-
-  log.info("Deposit role granted event: role={}, account={}, deposit={}", [
-    roleGranted.role.toHexString(),
-    roleGranted.account.toHexString(),
-    event.address.toHexString(),
-  ]);
+  createActivityLogEntry(event, EventType.RoleGranted, [event.params.account]);
 
   // Handle different roles
   if (
@@ -682,23 +665,8 @@ export function handleRoleGranted(event: RoleGranted): void {
 export function handleRoleRevoked(event: RoleRevoked): void {
   const deposit = fetchDeposit(event.address);
   const account = fetchAccount(event.params.account);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleRevoked = roleRevokedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.deposit,
-    event.params.role,
-    account.id
-  );
-
-  log.info("Deposit role revoked event: role={}, account={}, deposit={}", [
-    roleRevoked.role.toHexString(),
-    roleRevoked.account.toHexString(),
-    event.address.toHexString(),
-  ]);
+  createActivityLogEntry(event, EventType.RoleRevoked, [event.params.account]);
 
   // Handle different roles
   if (

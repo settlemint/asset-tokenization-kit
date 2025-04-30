@@ -23,8 +23,6 @@ import { eventId } from "../utils/events";
 import { calculateConcentration } from "./calculations/concentration";
 import { approvalEvent } from "./events/approval";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
-import { roleGrantedEvent } from "./events/rolegranted";
-import { roleRevokedEvent } from "./events/rolerevoked";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchCryptoCurrency } from "./fetch/cryptocurrency";
 import { newAssetStatsData } from "./stats/assets";
@@ -252,26 +250,8 @@ export function handleTransfer(event: Transfer): void {
 export function handleRoleGranted(event: RoleGranted): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
   const account = fetchAccount(event.params.account);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleGranted = roleGrantedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.cryptocurrency,
-    event.params.role,
-    account.id
-  );
-
-  log.info(
-    "CryptoCurrency role granted event: role={}, account={}, cryptocurrency={}",
-    [
-      roleGranted.role.toHexString(),
-      roleGranted.account.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.RoleGranted, [event.params.account]);
 
   // Handle different roles
   if (
@@ -332,26 +312,8 @@ export function handleRoleGranted(event: RoleGranted): void {
 export function handleRoleRevoked(event: RoleRevoked): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
   const account = fetchAccount(event.params.account);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleRevoked = roleRevokedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.cryptocurrency,
-    event.params.role,
-    account.id
-  );
-
-  log.info(
-    "CryptoCurrency role revoked event: role={}, account={}, cryptocurrency={}",
-    [
-      roleRevoked.role.toHexString(),
-      roleRevoked.account.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
+  createActivityLogEntry(event, EventType.RoleRevoked, [event.params.account]);
 
   // Handle different roles
   if (

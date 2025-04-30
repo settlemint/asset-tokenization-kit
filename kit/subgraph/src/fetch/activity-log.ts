@@ -9,6 +9,8 @@ export class EventType {
   static Transfer: string = "Transfer";
   static Mint: string = "Mint";
   static Burn: string = "Burn";
+  static RoleGranted: string = "RoleGranted";
+  static RoleRevoked: string = "RoleRevoked";
 }
 
 function activityLogEntryId(event: ethereum.Event): Bytes {

@@ -32,8 +32,6 @@ import { approvalEvent } from "./events/approval";
 import { clawbackEvent } from "./events/clawback";
 import { pausedEvent } from "./events/paused";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
-import { roleGrantedEvent } from "./events/rolegranted";
-import { roleRevokedEvent } from "./events/rolerevoked";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
@@ -244,23 +242,8 @@ export function handleTransfer(event: Transfer): void {
 export function handleRoleGranted(event: RoleGranted): void {
   const equity = fetchEquity(event.address);
   const account = fetchAccount(event.params.account);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleGranted = roleGrantedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.equity,
-    event.params.role,
-    account.id
-  );
-
-  log.info("Equity role granted event: role={}, account={}, equity={}", [
-    roleGranted.role.toHexString(),
-    roleGranted.account.toHexString(),
-    event.address.toHexString(),
-  ]);
+  createActivityLogEntry(event, EventType.RoleGranted, [event.params.account]);
 
   // Handle different roles
   if (
@@ -317,23 +300,8 @@ export function handleRoleGranted(event: RoleGranted): void {
 export function handleRoleRevoked(event: RoleRevoked): void {
   const equity = fetchEquity(event.address);
   const account = fetchAccount(event.params.account);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleRevoked = roleRevokedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.equity,
-    event.params.role,
-    account.id
-  );
-
-  log.info("Equity role revoked event: role={}, account={}, equity={}", [
-    roleRevoked.role.toHexString(),
-    roleRevoked.account.toHexString(),
-    event.address.toHexString(),
-  ]);
+  createActivityLogEntry(event, EventType.RoleRevoked, [event.params.account]);
 
   // Handle different roles
   if (

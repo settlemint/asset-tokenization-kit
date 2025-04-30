@@ -40,8 +40,6 @@ import { bondRedeemedEvent } from "./events/bondredeemed";
 import { clawbackEvent } from "./events/clawback";
 import { pausedEvent } from "./events/paused";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
-import { roleGrantedEvent } from "./events/rolegranted";
-import { roleRevokedEvent } from "./events/rolerevoked";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { underlyingAssetTopUpEvent } from "./events/underlyingassettopup";
 import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn";
@@ -57,7 +55,6 @@ import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
   const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
   const assetActivity = fetchAssetActivity(AssetType.bond);
 
   const assetStats = newAssetStatsData(bond.id, AssetType.bond);
@@ -242,23 +239,8 @@ export function handleTransfer(event: Transfer): void {
 export function handleRoleGranted(event: RoleGranted): void {
   const bond = fetchBond(event.address);
   const account = fetchAccount(event.params.account);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleGranted = roleGrantedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.bond,
-    event.params.role,
-    account.id
-  );
-
-  log.info("Bond role granted event: role={}, account={}, bond={}", [
-    roleGranted.role.toHexString(),
-    roleGranted.account.toHexString(),
-    event.address.toHexString(),
-  ]);
+  createActivityLogEntry(event, EventType.RoleGranted, [event.params.account]);
 
   // Handle different roles
   if (
@@ -316,23 +298,8 @@ export function handleRoleGranted(event: RoleGranted): void {
 export function handleRoleRevoked(event: RoleRevoked): void {
   const bond = fetchBond(event.address);
   const account = fetchAccount(event.params.account);
-  const sender = fetchAccount(event.transaction.from);
 
-  const roleRevoked = roleRevokedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.bond,
-    event.params.role,
-    account.id
-  );
-
-  log.info("Bond role revoked event: role={}, account={}, bond={}", [
-    roleRevoked.role.toHexString(),
-    roleRevoked.account.toHexString(),
-    event.address.toHexString(),
-  ]);
+  createActivityLogEntry(event, EventType.RoleRevoked, [event.params.account]);
 
   // Handle different roles
   if (
