@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { uploadToStorage } from "@/lib/actions/upload";
+import { uploadToStorage } from "@/lib/upload";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";

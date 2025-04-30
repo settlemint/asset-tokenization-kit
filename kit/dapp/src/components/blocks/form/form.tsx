@@ -286,30 +286,31 @@ export function Form<
         actionProps: {
           onSuccess: async ({ data, input }) => {
             if (secureForm) {
-              const toastId = toast.loading(
-                toastMessages?.loading || t("transactions.sending")
-              );
               const hashes = safeParse(tb.Hashes(), data);
-              try {
-                await waitForTransactions(hashes);
-                const successMessage =
-                  toastMessages?.success || t("transactions.success");
-                const action = toastMessages?.action
-                  ? toastMessages.action(input)
-                  : undefined;
-                toast.success(successMessage, {
-                  action: action,
-                  id: toastId,
-                  actionButtonStyle: {
-                    backgroundColor: "var(--success-fg-deep)",
-                    color: "var(--primary-foreground)",
-                  },
-                });
-              } catch (error: unknown) {
-                toast.error(`Failed to submit: ${(error as Error).message}`, {
-                  id: toastId,
-                });
-              }
+
+              const successMessage =
+                toastMessages?.success || t("transactions.success");
+              const action = toastMessages?.action
+                ? toastMessages.action(input)
+                : undefined;
+
+              const toastId = Date.now();
+              toast.promise(waitForTransactions(hashes), {
+                loading: t("transactions.sending"),
+                success: () => {
+                  toast.dismiss(toastId);
+                  return toast.success(successMessage, {
+                    action,
+                    actionButtonStyle: {
+                      backgroundColor: "var(--success-fg-deep)",
+                      color: "var(--primary-foreground)",
+                    },
+                  });
+                },
+                error: (error) =>
+                  `Failed to submit: ${(error as Error).message}`,
+                id: toastId,
+              });
             }
 
             resetFormAndAction();
