@@ -11,7 +11,7 @@ import {
   getRegulationById,
   getRegulationsByAssetId,
   updateRegulation,
-} from "./index";
+} from "./regulation-provider";
 
 // Create a base mock provider with all methods
 const mockProvider = {
@@ -62,7 +62,6 @@ describe("Regulation Provider API", () => {
   });
 
   test("createRegulation calls the appropriate provider", async () => {
-    // Arrange
     const baseConfig = {
       assetId: "asset-123",
       regulationType: RegulationType.MICA,
@@ -70,10 +69,8 @@ describe("Regulation Provider API", () => {
     };
     const specificConfig = { documents: [] };
 
-    // Act
     const result = await createRegulation(baseConfig, specificConfig);
 
-    // Assert
     expect(result).toBe("mock-id");
     expect(mockProvider.create).toHaveBeenCalledWith(
       baseConfig,
@@ -82,16 +79,13 @@ describe("Regulation Provider API", () => {
   });
 
   test("updateRegulation calls the appropriate provider", async () => {
-    // Arrange
     const id = "regulation-123";
     const baseConfig = { status: RegulationStatus.NOT_COMPLIANT };
     const regulationType = RegulationType.MICA;
     const specificConfig = { documents: [] };
 
-    // Act
     await updateRegulation(id, baseConfig, regulationType, specificConfig);
 
-    // Assert
     expect(mockProvider.update).toHaveBeenCalledWith(
       id,
       baseConfig,
@@ -100,27 +94,21 @@ describe("Regulation Provider API", () => {
   });
 
   test("getRegulationById calls the appropriate provider", async () => {
-    // Arrange
     const id = "regulation-123";
     const regulationType = RegulationType.MICA;
 
-    // Act
     const result = await getRegulationById(id, regulationType);
 
-    // Assert
     expect(result).toBeTruthy();
     expect(mockProvider.getById).toHaveBeenCalledWith(id);
   });
 
   test("getRegulationsByAssetId calls the appropriate provider", async () => {
-    // Arrange
     const assetId = "asset-123";
     const regulationType = RegulationType.MICA;
 
-    // Act
     const result = await getRegulationsByAssetId(assetId, regulationType);
 
-    // Assert
     expect(result).toHaveLength(1);
     expect(mockProvider.getByAssetId).toHaveBeenCalledWith(assetId);
   });

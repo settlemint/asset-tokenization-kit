@@ -78,58 +78,58 @@ export const micaRegulationConfigs = pgTable("mica_regulation_configs", {
     .unique(),
 
   // Documents specific to MICA
-  documents: jsonb("documents").$type<MicaDocument[]>(),
+  documents: jsonb("documents").$type<MicaDocument[] | null>(),
 
   // Reserve data specific to MICA
   reserveComposition: jsonb("reserve_composition").$type<{
-    bankDeposits: number;
-    governmentBonds: number;
-    highQualityLiquidAssets: number;
-    corporateBonds: number;
-    centralBankAssets: number;
-    commodities: number;
-    otherAssets: number;
-  }>(),
+    bankDeposits?: number;
+    governmentBonds?: number;
+    highQualityLiquidAssets?: number;
+    corporateBonds?: number;
+    centralBankAssets?: number;
+    commodities?: number;
+    otherAssets?: number;
+  } | null>(),
   lastAuditDate: timestamp("last_audit_date", { withTimezone: true }),
   reserveStatus: text("reserve_status"),
   tokenType: text("token_type"),
 
   // Legal entity data
   legalEntity: jsonb("legal_entity").$type<{
-    leiCode: string;
-    registrationNumber: string;
-    registeredOfficeAddress: {
-      street: string;
-      city: string;
-      postalCode: string;
-      country: string;
+    leiCode?: string;
+    registrationNumber?: string;
+    registeredOfficeAddress?: {
+      street?: string;
+      city?: string;
+      postalCode?: string;
+      country?: string;
     };
-  }>(),
+  } | null>(),
 
   // Management vetting data
   managementVetting: jsonb("management_vetting").$type<{
-    ceoName: string;
-    cfoName: string;
-    boardOfDirectors: string[];
-    complianceOfficer: string;
+    ceoName?: string;
+    cfoName?: string;
+    boardOfDirectors?: string[];
+    complianceOfficer?: string;
     vettingProcessDetails?: string;
-  }>(),
+  } | null>(),
 
   // Regulatory approval data
   regulatoryApproval: jsonb("regulatory_approval").$type<{
-    licenceNumber: string;
-    regulatoryAuthority: string;
+    licenceNumber?: string;
+    regulatoryAuthority?: string;
     approvalDate?: number;
     approvalDetails?: string;
-  }>(),
+  } | null>(),
 
   // EU passport status data
   euPassportStatus: jsonb("eu_passport_status").$type<{
-    homeMemberState: string;
+    homeMemberState?: string;
     passportEffectiveDate?: number;
-    notifiedCountries: string[];
+    notifiedCountries?: string[];
     additionalDetails?: string;
-  }>(),
+  } | null>(),
 });
 
 // Define relation to regulation configs

@@ -6,7 +6,6 @@
  */
 
 import { db } from "@/lib/db";
-import type { RegulationConfig } from "@/lib/db/regulations/schema-base-regulation-configs";
 import {
   micaRegulationConfigs,
   type MicaRegulationConfig,
@@ -30,27 +29,15 @@ export class MicaRegulationProvider extends BaseRegulationProvider {
   protected async createTypeSpecificConfig(
     tx: any,
     regulationConfigId: string,
-    specificConfig: unknown
+    specificConfig: Omit<NewMicaRegulationConfig, "id" | "regulationConfigId">
   ): Promise<void> {
-    const micaConfig = specificConfig as Omit<
-      NewMicaRegulationConfig,
-      "id" | "regulationConfigId"
-    >;
     const micaId = randomUUID();
 
-    // Create a new object with id and regulationConfigId explicitly to avoid property overwriting
     const micaConfigToInsert = {
       id: micaId,
       regulationConfigId,
+      ...specificConfig,
     };
-
-    // Add remaining properties from micaConfig
-    Object.entries(micaConfig).forEach(([key, value]) => {
-      if (key !== "id" && key !== "regulationConfigId") {
-        // @ts-ignore - Dynamic property assignment
-        micaConfigToInsert[key] = value;
-      }
-    });
 
     await tx
       .insert(micaRegulationConfigs)
@@ -67,12 +54,10 @@ export class MicaRegulationProvider extends BaseRegulationProvider {
   protected async updateTypeSpecificConfig(
     tx: any,
     regulationConfigId: string,
-    specificConfig: unknown
-  ): Promise<void> {
-    const micaConfig = specificConfig as Partial<
+    specificConfig: Partial<
       Omit<NewMicaRegulationConfig, "id" | "regulationConfigId">
-    >;
-
+    >
+  ): Promise<void> {
     // First check if the MICA config exists
     const existingMicaConfig = await tx
       .select({ configId: micaRegulationConfigs.id })
@@ -80,69 +65,27 @@ export class MicaRegulationProvider extends BaseRegulationProvider {
       .where(eq(micaRegulationConfigs.regulationConfigId, regulationConfigId))
       .execute();
 
-    if (existingMicaConfig.length > 0) {
-      // Update existing MICA config
-      await tx
-        .update(micaRegulationConfigs)
-        .set(micaConfig)
-        .where(
-          eq(micaRegulationConfigs.regulationConfigId, regulationConfigId)
-        );
-    } else {
-      // Insert new MICA config
-      const micaId = randomUUID();
-
-      // We need to create a complete MICA config for insertion
-      // This would typically require additional data, so this should be handled
-      // at a higher level by requiring a complete config to be passed in
-      if (
-        !(
-          "documents" in micaConfig ||
-          "reserveComposition" in micaConfig ||
-          "tokenType" in micaConfig
-        )
-      ) {
-        throw new Error(
-          "Cannot create a new MICA config with partial data. A complete config is required."
-        );
-      }
-
-      // Create a new object with id and regulationConfigId explicitly to avoid property overwriting
-      const completeConfig = {
-        id: micaId,
-        regulationConfigId,
-      };
-
-      // Add remaining properties from micaConfig
-      Object.entries(micaConfig).forEach(([key, value]) => {
-        if (key !== "id" && key !== "regulationConfigId") {
-          // @ts-ignore - Dynamic property assignment
-          completeConfig[key] = value;
-        }
-      });
-
-      await tx
-        .insert(micaRegulationConfigs)
-        .values(completeConfig as NewMicaRegulationConfig);
+    if (existingMicaConfig.length === 0) {
+      throw new Error(
+        "MICA config not found for regulation config ID: " + regulationConfigId
+      );
     }
+
+    await tx
+      .update(micaRegulationConfigs)
+      .set(specificConfig)
+      .where(eq(micaRegulationConfigs.regulationConfigId, regulationConfigId));
   }
 
   /**
    * Get MICA-specific configuration
    *
    * @param regulationConfigId ID of the regulation
-   * @param baseConfig Base regulation config
    * @returns MICA-specific configuration if exists
    */
   protected async getTypeSpecificConfig(
-    regulationConfigId: string,
-    baseConfig: RegulationConfig
+    regulationConfigId: string
   ): Promise<MicaRegulationConfig | undefined> {
-    // Only fetch MICA config if the regulation type is MICA
-    if (baseConfig.regulationType !== "mica") {
-      return undefined;
-    }
-
     const micaResult = await db
       .select()
       .from(micaRegulationConfigs)
