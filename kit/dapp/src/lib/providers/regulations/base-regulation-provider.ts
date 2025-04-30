@@ -134,20 +134,19 @@ export abstract class BaseRegulationProvider {
     }
 
     // For each baseConfig, get its type-specific config
-    const result = await Promise.all(
-      baseConfigs.map(async (baseConfig) => {
-        const specificConfig = await this.getTypeSpecificConfig(
-          baseConfig.id,
-          baseConfig
+    return await Promise.all(
+          baseConfigs.map(async (baseConfig) => {
+            const specificConfig = await this.getTypeSpecificConfig(
+              baseConfig.id,
+              baseConfig
+            );
+            return {
+              baseConfig,
+              specificConfig,
+            };
+          })
         );
-        return {
-          baseConfig,
-          specificConfig,
-        };
-      })
-    );
 
-    return result;
   }
 
   /**
