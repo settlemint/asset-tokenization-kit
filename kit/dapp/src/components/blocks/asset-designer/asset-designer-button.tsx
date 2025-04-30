@@ -18,7 +18,7 @@ export function AssetDesignerButton() {
         onClick={() => setIsOpen(true)}
       >
         <PlusIcon className="mr-2 h-4 w-4" />
-        {t("asset-designer")} (New)
+        {t("asset-designer")}
       </Button>
 
       <AssetDesignerDialog open={isOpen} onOpenChange={setIsOpen} />
