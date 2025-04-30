@@ -170,12 +170,12 @@ contract SMARTStableCoin is
 
     /// @dev Resolves msgSender across Context and SMARTPausable.
     function _msgSender() internal view virtual override(Context, ERC2771Context, SMARTPausable) returns (address) {
-        return super._msgSender();
+        return ERC2771Context._msgSender();
     }
 
     /// @dev Resolves msgData across Context and ERC2771Context.
     function _msgData() internal view virtual override(Context, ERC2771Context) returns (bytes calldata) {
-        return super._msgData();
+        return ERC2771Context._msgData();
     }
 
     /// @dev Hook defining the length of the trusted forwarder address suffix in `msg.data`.

@@ -22,7 +22,7 @@ integrity = "498747bedc3f757976da0b6125d26a63e79bb2b4dbabd8ecd2547e809a2fa27e"
 name = "@smartprotocol"
 version = "v0.0.1"
 git = "https://github.com/settlemint/solidity-smart-protocol.git"
-rev = "ec798f8cdc92489a5306f75b04fba22a0b825cf5"
+rev = "07d74b227eab3b76e5c284f1e4c14f996e32c6bb"
 
 [[dependencies]]
 name = "forge-std"
