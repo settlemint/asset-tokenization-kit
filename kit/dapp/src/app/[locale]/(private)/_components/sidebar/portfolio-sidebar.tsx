@@ -22,7 +22,7 @@ export async function PortfolioSidebar() {
         <PortfolioManagement />
         <TradeManagement />
       </SidebarContent>
-      <RoleGuard requiredRoles={["admin", "issuer"]}>
+      <RoleGuard allowedRoles={["admin", "issuer"]}>
         <SidebarFooter>
           <Separator />
           <NavMode />
