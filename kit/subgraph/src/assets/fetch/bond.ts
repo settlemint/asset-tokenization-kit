@@ -46,7 +46,7 @@ export function fetchBond(
     bond.creator = Address.zero();
     bond.totalBurned = BigDecimal.zero();
     bond.totalBurnedExact = BigInt.zero();
-    bond.totalHolders = 0;
+    bond.totalHolders = BigInt.zero();
     bond.concentration = BigDecimal.zero();
     bond.deployedOn = timestamp;
 

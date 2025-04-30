@@ -11,7 +11,7 @@ export function collateralCalculatedFields(stableCoin: StableCoin): StableCoin {
 
   setValueWithDecimals(
     stableCoin,
-    "freeCollateralExact",
+    "freeCollateral",
     stableCoin.collateralExact.minus(stableCoin.totalSupplyExact),
     stableCoin.decimals
   );
@@ -28,7 +28,7 @@ export function depositCollateralCalculatedFields(deposit: Deposit): Deposit {
 
   setValueWithDecimals(
     deposit,
-    "freeCollateralExact",
+    "freeCollateral",
     deposit.collateralExact.minus(deposit.totalSupplyExact),
     deposit.decimals
   );

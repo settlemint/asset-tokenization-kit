@@ -32,7 +32,7 @@ export function fetchEquity(address: Address): Equity {
     equity.creator = Address.zero();
     equity.totalBurned = BigDecimal.zero();
     equity.totalBurnedExact = BigInt.zero();
-    equity.totalHolders = 0;
+    equity.totalHolders = BigInt.zero();
     equity.concentration = BigDecimal.zero();
 
     // Equity-specific fields

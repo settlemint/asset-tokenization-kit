@@ -8,7 +8,7 @@ export function fetchAccount(address: Address): Account {
   if (!account) {
     account = new Account(address);
     account.lastActivity = BigInt.zero();
-    account.balancesCount = 0;
+    account.balancesCount = BigInt.zero();
     account.totalBalanceExact = BigInt.zero();
     account.totalBalance = toDecimals(account.totalBalanceExact, 18);
     account.pausedBalancesCount = 0;

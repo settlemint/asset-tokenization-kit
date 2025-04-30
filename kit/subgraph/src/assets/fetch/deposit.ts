@@ -36,7 +36,7 @@ export function fetchDeposit(address: Address): Deposit {
     deposit.creator = Address.zero();
     deposit.totalBurnedExact = BigInt.zero();
     deposit.totalBurned = BigDecimal.zero();
-    deposit.totalHolders = 0;
+    deposit.totalHolders = BigInt.zero();
     deposit.concentration = BigDecimal.zero();
     deposit.deployedOn = BigInt.zero();
     deposit.paused = paused.reverted ? false : paused.value;

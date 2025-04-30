@@ -26,6 +26,7 @@ import { fetchAccount } from "../fetch/account";
 import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { allowUser, disallowUser } from "../fetch/allow-user";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
+import { decrease, increase } from "../utils/counters";
 import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
@@ -44,7 +45,6 @@ import { fetchDeposit } from "./fetch/deposit";
 import { handleMint } from "./handlers/mint";
 import { newAssetStatsData, updateDepositCollateralData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
-
 export function handleTransfer(event: Transfer): void {
   const deposit = fetchDeposit(event.address);
   const assetActivity = fetchAssetActivity(AssetType.deposit);
@@ -121,9 +121,9 @@ export function handleTransfer(event: Transfer): void {
     from.save();
 
     if (balance.valueExact.equals(BigInt.zero())) {
-      deposit.totalHolders = deposit.totalHolders - 1;
+      decrease(deposit, "totalHolders");
       store.remove("AssetBalance", balance.id.toHexString());
-      from.balancesCount = from.balancesCount - 1;
+      decrease(from, "balancesCount");
       from.save();
     }
 
@@ -141,7 +141,7 @@ export function handleTransfer(event: Transfer): void {
     // Update collateral data in asset stats
     updateDepositCollateralData(assetStats, deposit);
 
-    assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
+    increase(assetActivity, "burnEventCount");
   } else {
     const from = fetchAccount(event.params.from);
     const to = fetchAccount(event.params.to);
@@ -152,8 +152,8 @@ export function handleTransfer(event: Transfer): void {
     ]);
 
     if (!hasBalance(deposit.id, to.id, deposit.decimals, false)) {
-      deposit.totalHolders = deposit.totalHolders + 1;
-      to.balancesCount = to.balancesCount + 1;
+      increase(deposit, "totalHolders");
+      increase(to, "balancesCount");
     }
 
     const fromBalance = fetchAssetBalance(
@@ -172,9 +172,9 @@ export function handleTransfer(event: Transfer): void {
     from.save();
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
-      deposit.totalHolders = deposit.totalHolders - 1;
+      decrease(deposit, "totalHolders");
       store.remove("AssetBalance", fromBalance.id.toHexString());
-      from.balancesCount = from.balancesCount - 1;
+      decrease(from, "balancesCount");
       from.save();
     }
 
@@ -217,7 +217,7 @@ export function handleTransfer(event: Transfer): void {
     // Update collateral data in asset stats
     updateDepositCollateralData(assetStats, deposit);
 
-    assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
+    increase(assetActivity, "transferEventCount");
   }
 
   deposit.lastActivity = event.block.timestamp;
@@ -402,7 +402,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.save();
 
   const assetActivity = fetchAssetActivity(AssetType.deposit);
-  assetActivity.frozenEventCount = assetActivity.frozenEventCount + 1;
+  increase(assetActivity, "frozenEventCount");
   assetActivity.save();
 
   deposit.lastActivity = event.block.timestamp;
@@ -740,8 +740,8 @@ export function handleClawback(event: Clawback): void {
   );
 
   if (!hasBalance(deposit.id, to.id, deposit.decimals, true)) {
-    deposit.totalHolders = deposit.totalHolders + 1;
-    to.balancesCount = to.balancesCount + 1;
+    increase(deposit, "totalHolders");
+    increase(to, "balancesCount");
   }
 
   to.totalBalanceExact = to.totalBalanceExact.plus(clawback.amountExact);
@@ -764,9 +764,9 @@ export function handleClawback(event: Clawback): void {
   fromBalance.save();
 
   if (fromBalance.valueExact.equals(BigInt.zero())) {
-    deposit.totalHolders = deposit.totalHolders - 1;
+    decrease(deposit, "totalHolders");
     store.remove("AssetBalance", fromBalance.id.toHexString());
-    from.balancesCount = from.balancesCount - 1;
+    decrease(from, "balancesCount");
     from.save();
   }
 
@@ -802,7 +802,7 @@ export function handleClawback(event: Clawback): void {
   // Update asset stats for clawback event
   assetStats.volume = clawback.amount;
   assetStats.volumeExact = clawback.amountExact;
-  assetActivity.clawbackEventCount = assetActivity.clawbackEventCount + 1;
+  increase(assetActivity, "clawbackEventCount");
 
   // Update deposit state
   deposit.lastActivity = event.block.timestamp;

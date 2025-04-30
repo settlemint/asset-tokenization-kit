@@ -30,6 +30,7 @@ import { fetchAccount } from "../fetch/account";
 import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { blockUser, unblockUser } from "../fetch/block-user";
+import { decrease, increase } from "../utils/counters";
 import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
@@ -105,9 +106,9 @@ export function handleTransfer(event: Transfer): void {
     from.save();
 
     if (balance.valueExact.equals(BigInt.zero())) {
-      bond.totalHolders = bond.totalHolders - 1;
+      decrease(bond, "totalHolders");
       store.remove("AssetBalance", balance.id.toHexString());
-      from.balancesCount = from.balancesCount - 1;
+      decrease(from, "balancesCount");
       from.save();
     }
 
@@ -122,7 +123,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, bond.decimals);
     assetStats.burnedExact = event.params.value;
-    assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
+    increase(assetActivity, "burnEventCount");
 
     updateAssociatedFixedYield(bond, event.block.timestamp);
   } else {
@@ -136,8 +137,8 @@ export function handleTransfer(event: Transfer): void {
     ]);
 
     if (!hasBalance(bond.id, to.id, bond.decimals, false)) {
-      bond.totalHolders = bond.totalHolders + 1;
-      to.balancesCount = to.balancesCount + 1;
+      increase(bond, "totalHolders");
+      increase(to, "balancesCount");
     }
 
     to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
@@ -160,9 +161,9 @@ export function handleTransfer(event: Transfer): void {
     fromBalance.save();
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
-      bond.totalHolders = bond.totalHolders - 1;
+      decrease(bond, "totalHolders");
       store.remove("AssetBalance", fromBalance.id.toHexString());
-      from.balancesCount = from.balancesCount - 1;
+      decrease(from, "balancesCount");
       from.save();
     }
 
@@ -193,7 +194,7 @@ export function handleTransfer(event: Transfer): void {
     assetStats.transfers = assetStats.transfers + 1;
     assetStats.volumeExact = event.params.value;
     assetStats.volume = toDecimals(event.params.value, bond.decimals);
-    assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
+    increase(assetActivity, "transferEventCount");
   }
 
   bond.lastActivity = event.block.timestamp;
@@ -543,7 +544,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.save();
 
   const assetActivity = fetchAssetActivity(AssetType.bond);
-  assetActivity.frozenEventCount = assetActivity.frozenEventCount + 1;
+  increase(assetActivity, "frozenEventCount");
   assetActivity.save();
 
   const balance = fetchAssetBalance(bond.id, user.id, bond.decimals, false);
@@ -776,8 +777,8 @@ export function handleClawback(event: Clawback): void {
   );
 
   if (!hasBalance(bond.id, to.id, bond.decimals, false)) {
-    bond.totalHolders = bond.totalHolders + 1;
-    to.balancesCount = to.balancesCount + 1;
+    increase(bond, "totalHolders");
+    increase(to, "balancesCount");
   }
 
   to.totalBalanceExact = to.totalBalanceExact.plus(clawback.amountExact);
@@ -795,9 +796,9 @@ export function handleClawback(event: Clawback): void {
   fromBalance.save();
 
   if (fromBalance.valueExact.equals(BigInt.zero())) {
-    bond.totalHolders = bond.totalHolders - 1;
+    decrease(bond, "totalHolders");
     store.remove("AssetBalance", fromBalance.id.toHexString());
-    from.balancesCount = from.balancesCount - 1;
+    decrease(from, "balancesCount");
     from.save();
   }
 
@@ -828,7 +829,7 @@ export function handleClawback(event: Clawback): void {
   // Update asset stats for clawback event
   assetStats.volume = clawback.amount;
   assetStats.volumeExact = clawback.amountExact;
-  assetActivity.clawbackEventCount = assetActivity.clawbackEventCount + 1;
+  increase(assetActivity, "clawbackEventCount");
 
   bond.lastActivity = event.block.timestamp;
   updateDerivedFields(bond);

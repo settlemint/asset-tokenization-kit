@@ -16,7 +16,7 @@ interface Asset {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -52,7 +52,7 @@ type Bond implements Asset @entity(immutable: false) {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -94,7 +94,7 @@ type Equity implements Asset @entity(immutable: false) {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -124,7 +124,7 @@ type Fund implements Asset @entity(immutable: false) {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -156,7 +156,7 @@ type StableCoin implements Asset @entity(immutable: false) {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -192,7 +192,7 @@ type CryptoCurrency implements Asset @entity(immutable: false) {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -219,7 +219,7 @@ type Deposit implements Asset @entity(immutable: false) {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -250,7 +250,7 @@ type Account @entity(immutable: false) {
   id: Bytes!
   isContract: Boolean!
   asAsset: Asset
-  balancesCount: Int!
+  balancesCount: BigInt!
   totalBalanceExact: BigInt!
   totalBalance: BigDecimal!
   pausedBalancesCount: Int!
@@ -849,12 +849,12 @@ type AssetActivityData @entity(immutable: false) {
   assetType: String! @unique
 
   ## Activity
-  transferEventCount: Int!
-  mintEventCount: Int!
-  burnEventCount: Int!
-  frozenEventCount: Int!
-  unfrozenEventCount: Int!
-  clawbackEventCount: Int!
+  transferEventCount: BigInt!
+  mintEventCount: BigInt!
+  burnEventCount: BigInt!
+  frozenEventCount: BigInt!
+  unfrozenEventCount: BigInt!
+  clawbackEventCount: BigInt!
 
   ## Supply
   totalSupply: BigDecimal!

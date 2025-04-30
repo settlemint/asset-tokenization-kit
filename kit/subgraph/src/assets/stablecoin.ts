@@ -25,6 +25,7 @@ import { fetchAccount } from "../fetch/account";
 import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { blockUser, unblockUser } from "../fetch/block-user";
+import { decrease, increase } from "../utils/counters";
 import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
@@ -123,9 +124,9 @@ export function handleTransfer(event: Transfer): void {
     from.save();
 
     if (balance.valueExact.equals(BigInt.zero())) {
-      stableCoin.totalHolders = stableCoin.totalHolders - 1;
+      decrease(stableCoin, "totalHolders");
       store.remove("AssetBalance", balance.id.toHexString());
-      from.balancesCount = from.balancesCount - 1;
+      decrease(from, "balancesCount");
       from.save();
     }
 
@@ -142,7 +143,7 @@ export function handleTransfer(event: Transfer): void {
     assetStats.burnedExact = event.params.value;
     updateStableCoinCollateralData(assetStats, stableCoin);
 
-    assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
+    increase(assetActivity, "burnEventCount");
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -154,8 +155,8 @@ export function handleTransfer(event: Transfer): void {
     ]);
 
     if (!hasBalance(stableCoin.id, to.id, stableCoin.decimals, false)) {
-      stableCoin.totalHolders = stableCoin.totalHolders + 1;
-      to.balancesCount = to.balancesCount + 1;
+      increase(stableCoin, "totalHolders");
+      increase(to, "balancesCount");
     }
 
     to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
@@ -178,9 +179,9 @@ export function handleTransfer(event: Transfer): void {
     fromBalance.save();
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
-      stableCoin.totalHolders = stableCoin.totalHolders - 1;
+      decrease(stableCoin, "totalHolders");
       store.remove("AssetBalance", fromBalance.id.toHexString());
-      from.balancesCount = from.balancesCount - 1;
+      decrease(from, "balancesCount");
       from.save();
     }
 
@@ -218,7 +219,7 @@ export function handleTransfer(event: Transfer): void {
     assetStats.volumeExact = event.params.value;
     updateStableCoinCollateralData(assetStats, stableCoin);
 
-    assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
+    increase(assetActivity, "transferEventCount");
   }
 
   stableCoin.lastActivity = event.block.timestamp;
@@ -561,7 +562,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.save();
 
   const assetActivity = fetchAssetActivity(AssetType.stablecoin);
-  assetActivity.frozenEventCount = assetActivity.frozenEventCount + 1;
+  increase(assetActivity, "frozenEventCount");
   assetActivity.save();
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
@@ -728,8 +729,8 @@ export function handleClawback(event: Clawback): void {
   );
 
   if (!hasBalance(stableCoin.id, to.id, stableCoin.decimals, false)) {
-    stableCoin.totalHolders = stableCoin.totalHolders + 1;
-    to.balancesCount = to.balancesCount + 1;
+    increase(stableCoin, "totalHolders");
+    increase(to, "balancesCount");
   }
 
   to.totalBalanceExact = to.totalBalanceExact.plus(clawback.amountExact);
@@ -752,9 +753,9 @@ export function handleClawback(event: Clawback): void {
   fromBalance.save();
 
   if (fromBalance.valueExact.equals(BigInt.zero())) {
-    stableCoin.totalHolders = stableCoin.totalHolders - 1;
+    decrease(stableCoin, "totalHolders");
     store.remove("AssetBalance", fromBalance.id.toHexString());
-    from.balancesCount = from.balancesCount - 1;
+    decrease(from, "balancesCount");
     from.save();
   }
 
@@ -790,7 +791,7 @@ export function handleClawback(event: Clawback): void {
   // Update asset stats for clawback event
   assetStats.volume = clawback.amount;
   assetStats.volumeExact = clawback.amountExact;
-  assetActivity.clawbackEventCount = assetActivity.clawbackEventCount + 1;
+  increase(assetActivity, "clawbackEventCount");
 
   // Update stablecoin state
   stableCoin.lastActivity = event.block.timestamp;
