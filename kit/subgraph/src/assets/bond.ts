@@ -49,8 +49,9 @@ import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
 import { fetchFixedYield, fetchFixedYieldPeriod } from "./fetch/fixed-yield";
-import { handleBurn } from "./handlers/burn";
-import { handleMint } from "./handlers/mint";
+import { burnHandler } from "./handlers/burn";
+import { mintHandler } from "./handlers/mint";
+import { transferHandler } from "./handlers/transfer";
 import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
@@ -66,7 +67,7 @@ export function handleTransfer(event: Transfer): void {
 
   if (from.equals(Address.zero())) {
     createActivityLogEntry(event, EventType.Mint, [to]);
-    handleMint(
+    mintHandler(
       bond,
       bond.id,
       AssetType.bond,
@@ -79,7 +80,7 @@ export function handleTransfer(event: Transfer): void {
     updateAssociatedFixedYield(bond, event.block.timestamp);
   } else if (to.equals(Address.zero())) {
     createActivityLogEntry(event, EventType.Burn, [event.params.from]);
-    handleBurn(
+    burnHandler(
       bond,
       bond.id,
       AssetType.bond,
@@ -91,74 +92,21 @@ export function handleTransfer(event: Transfer): void {
     );
     updateAssociatedFixedYield(bond, event.block.timestamp);
   } else {
-    // This will only execute for regular transfers (both addresses non-zero)
-    const from = fetchAccount(event.params.from);
-    const to = fetchAccount(event.params.to);
-
     createActivityLogEntry(event, EventType.Transfer, [
       event.params.from,
       event.params.to,
     ]);
-
-    if (!hasBalance(bond.id, to.id, bond.decimals, false)) {
-      increase(bond, "totalHolders");
-      increase(to, "balancesCount");
-    }
-
-    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
-    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-    to.save();
-
-    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
-    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
-    from.save();
-
-    const fromBalance = fetchAssetBalance(
+    transferHandler(
+      bond,
       bond.id,
-      from.id,
-      bond.decimals,
+      AssetType.bond,
+      event.block.timestamp,
+      event.params.from,
+      event.params.to,
+      event.params.value,
+      decimals,
       false
     );
-    fromBalance.valueExact = fromBalance.valueExact.minus(event.params.value);
-    fromBalance.value = toDecimals(fromBalance.valueExact, bond.decimals);
-    fromBalance.lastActivity = event.block.timestamp;
-    fromBalance.save();
-
-    if (fromBalance.valueExact.equals(BigInt.zero())) {
-      decrease(bond, "totalHolders");
-      store.remove("AssetBalance", fromBalance.id.toHexString());
-      decrease(from, "balancesCount");
-      from.save();
-    }
-
-    const fromPortfolioStats = newPortfolioStatsData(
-      from.id,
-      bond.id,
-      AssetType.bond
-    );
-    fromPortfolioStats.balance = fromBalance.value;
-    fromPortfolioStats.balanceExact = fromBalance.valueExact;
-    fromPortfolioStats.save();
-
-    const toBalance = fetchAssetBalance(bond.id, to.id, bond.decimals, false);
-    toBalance.valueExact = toBalance.valueExact.plus(event.params.value);
-    toBalance.value = toDecimals(toBalance.valueExact, bond.decimals);
-    toBalance.lastActivity = event.block.timestamp;
-    toBalance.save();
-
-    const toPortfolioStats = newPortfolioStatsData(
-      to.id,
-      bond.id,
-      AssetType.bond
-    );
-    toPortfolioStats.balance = toBalance.value;
-    toPortfolioStats.balanceExact = toBalance.valueExact;
-    toPortfolioStats.save();
-
-    assetStats.transfers = assetStats.transfers + 1;
-    assetStats.volumeExact = event.params.value;
-    assetStats.volume = toDecimals(event.params.value, bond.decimals);
-    increase(assetActivity, "transferEventCount");
   }
 
   bond.lastActivity = event.block.timestamp;

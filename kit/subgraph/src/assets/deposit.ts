@@ -42,8 +42,9 @@ import { userDisallowedEvent } from "./events/userdisallowed";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchDeposit } from "./fetch/deposit";
-import { handleBurn } from "./handlers/burn";
-import { handleMint } from "./handlers/mint";
+import { burnHandler } from "./handlers/burn";
+import { mintHandler } from "./handlers/mint";
+import { transferHandler } from "./handlers/transfer";
 import { newAssetStatsData, updateDepositCollateralData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 export function handleTransfer(event: Transfer): void {
@@ -59,7 +60,7 @@ export function handleTransfer(event: Transfer): void {
 
   if (from.equals(Address.zero())) {
     createActivityLogEntry(event, EventType.Mint, [to]);
-    handleMint(
+    mintHandler(
       deposit,
       deposit.id,
       AssetType.deposit,
@@ -73,7 +74,7 @@ export function handleTransfer(event: Transfer): void {
     updateDepositCollateralData(assetStats, deposit);
   } else if (to.equals(Address.zero())) {
     createActivityLogEntry(event, EventType.Burn, [event.params.from]);
-    handleBurn(
+    burnHandler(
       deposit,
       deposit.id,
       AssetType.deposit,
@@ -81,86 +82,26 @@ export function handleTransfer(event: Transfer): void {
       event.params.from,
       event.params.value,
       decimals,
-      false
+      true
     );
     depositCollateralCalculatedFields(deposit);
     updateDepositCollateralData(assetStats, deposit);
   } else {
-    const from = fetchAccount(event.params.from);
-    const to = fetchAccount(event.params.to);
-
     createActivityLogEntry(event, EventType.Transfer, [
       event.params.from,
       event.params.to,
     ]);
-
-    if (!hasBalance(deposit.id, to.id, deposit.decimals, false)) {
-      increase(deposit, "totalHolders");
-      increase(to, "balancesCount");
-    }
-
-    const fromBalance = fetchAssetBalance(
+    transferHandler(
+      deposit,
       deposit.id,
-      from.id,
-      deposit.decimals,
-      true
+      AssetType.deposit,
+      event.block.timestamp,
+      event.params.from,
+      event.params.to,
+      event.params.value,
+      decimals,
+      false
     );
-    fromBalance.valueExact = fromBalance.valueExact.minus(event.params.value);
-    fromBalance.value = toDecimals(fromBalance.valueExact, deposit.decimals);
-    fromBalance.lastActivity = event.block.timestamp;
-    fromBalance.save();
-
-    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
-    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
-    from.save();
-
-    if (fromBalance.valueExact.equals(BigInt.zero())) {
-      decrease(deposit, "totalHolders");
-      store.remove("AssetBalance", fromBalance.id.toHexString());
-      decrease(from, "balancesCount");
-      from.save();
-    }
-
-    const toBalance = fetchAssetBalance(
-      deposit.id,
-      to.id,
-      deposit.decimals,
-      true
-    );
-    toBalance.valueExact = toBalance.valueExact.plus(event.params.value);
-    toBalance.value = toDecimals(toBalance.valueExact, deposit.decimals);
-    toBalance.lastActivity = event.block.timestamp;
-    toBalance.save();
-
-    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
-    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-    to.save();
-
-    const fromPortfolioStats = newPortfolioStatsData(
-      from.id,
-      deposit.id,
-      AssetType.deposit
-    );
-    fromPortfolioStats.balance = fromBalance.value;
-    fromPortfolioStats.balanceExact = fromBalance.valueExact;
-    fromPortfolioStats.save();
-
-    const toPortfolioStats = newPortfolioStatsData(
-      to.id,
-      deposit.id,
-      AssetType.deposit
-    );
-    toPortfolioStats.balance = toBalance.value;
-    toPortfolioStats.balanceExact = toBalance.valueExact;
-    toPortfolioStats.save();
-
-    assetStats.transfers = 1;
-    assetStats.volume = toDecimals(event.params.value, deposit.decimals);
-    assetStats.volumeExact = event.params.value;
-    // Update collateral data in asset stats
-    updateDepositCollateralData(assetStats, deposit);
-
-    increase(assetActivity, "transferEventCount");
   }
 
   deposit.lastActivity = event.block.timestamp;

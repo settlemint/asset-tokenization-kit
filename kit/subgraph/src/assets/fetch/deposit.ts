@@ -38,6 +38,8 @@ export function fetchDeposit(address: Address): Deposit {
     deposit.totalMintedExact = BigInt.zero();
     deposit.totalBurned = BigDecimal.zero();
     deposit.totalBurnedExact = BigInt.zero();
+    deposit.totalTransferred = BigDecimal.zero();
+    deposit.totalTransferredExact = BigInt.zero();
     deposit.totalHolders = BigInt.zero();
     deposit.concentration = BigDecimal.zero();
     deposit.deployedOn = BigInt.zero();

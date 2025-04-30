@@ -18,6 +18,8 @@ interface Asset {
   totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
   totalHolders: BigInt!
   # Access Control
   admins: [Account!]!
@@ -56,6 +58,8 @@ type Bond implements Asset @entity(immutable: false) {
   totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
   totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
@@ -100,6 +104,8 @@ type Equity implements Asset @entity(immutable: false) {
   totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
   totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
@@ -132,6 +138,8 @@ type Fund implements Asset @entity(immutable: false) {
   totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
   totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
@@ -166,6 +174,8 @@ type StableCoin implements Asset @entity(immutable: false) {
   totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
   totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
@@ -204,6 +214,8 @@ type CryptoCurrency implements Asset @entity(immutable: false) {
   totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
   totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
@@ -231,6 +243,8 @@ type Deposit implements Asset @entity(immutable: false) {
   creator: Account!
   totalMinted: BigDecimal!
   totalMintedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: BigInt!

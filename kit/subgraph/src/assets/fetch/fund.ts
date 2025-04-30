@@ -35,6 +35,8 @@ export function fetchFund(address: Address): Fund {
     fund.totalMintedExact = BigInt.zero();
     fund.totalBurned = BigDecimal.zero();
     fund.totalBurnedExact = BigInt.zero();
+    fund.totalTransferred = BigDecimal.zero();
+    fund.totalTransferredExact = BigInt.zero();
     fund.totalHolders = BigInt.zero();
     fund.concentration = BigDecimal.zero();
 

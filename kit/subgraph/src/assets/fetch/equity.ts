@@ -34,6 +34,8 @@ export function fetchEquity(address: Address): Equity {
     equity.totalMintedExact = BigInt.zero();
     equity.totalBurned = BigDecimal.zero();
     equity.totalBurnedExact = BigInt.zero();
+    equity.totalTransferred = BigDecimal.zero();
+    equity.totalTransferredExact = BigInt.zero();
     equity.totalHolders = BigInt.zero();
     equity.concentration = BigDecimal.zero();
 

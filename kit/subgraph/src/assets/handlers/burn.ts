@@ -9,7 +9,7 @@ import { fetchAssetActivity } from "../fetch/assets";
 import { newAssetStatsData } from "../stats/assets";
 import { newPortfolioStatsData } from "../stats/portfolio";
 
-export function handleBurn(
+export function burnHandler(
   asset: Entity,
   assetAddress: Bytes,
   assetType: string,
@@ -25,7 +25,7 @@ export function handleBurn(
   handleTotalBurned(asset, value, decimals);
   // update asset activity
   handleAssetActivity(assetType, newTotalSupply, decimals);
-  // update to account
+  // update from account
   const fromAccount = handleFromAccount(from, value, decimals);
   // update balance
   const balance = handleBalance(
