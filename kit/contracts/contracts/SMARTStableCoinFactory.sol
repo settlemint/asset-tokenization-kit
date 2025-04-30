@@ -4,7 +4,8 @@ pragma solidity ^0.8.27;
 import { SMARTStableCoin } from "./SMARTStableCoin.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import { ISMART } from "@smartprotocol/contracts/interface/ISMART.sol"; // For ComplianceModuleParamPair type
+import { SMARTComplianceModuleParamPair } from
+    "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title SMARTStableCoinFactory - A factory contract for creating SMARTStableCoin tokens
 /// @notice This contract allows the creation of new SMARTStableCoin tokens with deterministic addresses using CREATE2.
@@ -54,7 +55,7 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
         address identityRegistry,
         address compliance,
         uint256[] memory requiredClaimTopics,
-        ISMART.ComplianceModuleParamPair[] memory initialModulePairs
+        SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
         external
         nonReentrant
@@ -119,7 +120,7 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
         address identityRegistry,
         address compliance,
         uint256[] memory requiredClaimTopics,
-        ISMART.ComplianceModuleParamPair[] memory initialModulePairs
+        SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
         public
         view

@@ -12,7 +12,8 @@ import { SMARTConstants } from "./SMARTConstants.sol";
 
 // Interface imports
 import { ISMART } from "@smartprotocol/contracts/interface/ISMART.sol";
-
+import { SMARTComplianceModuleParamPair } from
+    "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 // Core extensions
 import { SMART } from "@smartprotocol/contracts/extensions/core/SMART.sol"; // Base SMART logic + ERC20
 import { SMARTExtension } from "@smartprotocol/contracts/extensions/common/SMARTExtension.sol";
@@ -60,7 +61,7 @@ contract SMARTStableCoin is
         address identityRegistry_,
         address compliance_,
         uint256[] memory requiredClaimTopics_,
-        ISMART.ComplianceModuleParamPair[] memory initialModulePairs_,
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address initialOwner_,
         address forwarder
     )
