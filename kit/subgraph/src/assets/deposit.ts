@@ -23,25 +23,22 @@ import {
   UserDisallowed,
 } from "../../generated/templates/Deposit/Deposit";
 import { fetchAccount } from "../fetch/account";
+import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { allowUser, disallowUser } from "../fetch/allow-user";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { toDecimals } from "../utils/decimals";
-import { AssetType, EventName } from "../utils/enums";
+import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { depositCollateralCalculatedFields } from "./calculations/collateral";
 import { calculateConcentration } from "./calculations/concentration";
-import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
-import { burnEvent } from "./events/burn";
 import { clawbackEvent } from "./events/clawback";
 import { collateralUpdatedEvent } from "./events/collateralupdated";
-import { mintEvent } from "./events/mint";
 import { pausedEvent } from "./events/paused";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
 import { roleGrantedEvent } from "./events/rolegranted";
 import { roleRevokedEvent } from "./events/rolerevoked";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
-import { transferEvent } from "./events/transfer";
 import { unpausedEvent } from "./events/unpaused";
 import { userAllowedEvent } from "./events/userallowed";
 import { userDisallowedEvent } from "./events/userdisallowed";
@@ -60,34 +57,24 @@ export function handleTransfer(event: Transfer): void {
 
   if (event.params.from.equals(Address.zero())) {
     const to = fetchAccount(event.params.to);
-    const mint = mintEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.deposit,
-      to.id,
-      event.params.value,
-      deposit.decimals
-    );
 
-    log.info("Deposit mint event: amount={}, to={}, sender={}, token={}", [
-      mint.value.toString(),
-      mint.to.toHexString(),
-      mint.sender.toHexString(),
-      event.address.toHexString(),
-    ]);
+    createActivityLogEntry(event, EventType.Mint, [event.params.to]);
 
     // increase total supply
-    deposit.totalSupplyExact = deposit.totalSupplyExact.plus(mint.valueExact);
+    deposit.totalSupplyExact = deposit.totalSupplyExact.plus(
+      event.params.value
+    );
     deposit.totalSupply = toDecimals(
       deposit.totalSupplyExact,
       deposit.decimals
     );
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
-      mint.valueExact
+      event.params.value
     );
-    assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
+    assetActivity.totalSupply = toDecimals(
+      assetActivity.totalSupplyExact,
+      deposit.decimals
+    );
 
     // Update collateral calculated fields after supply change
     depositCollateralCalculatedFields(deposit);
@@ -101,7 +88,7 @@ export function handleTransfer(event: Transfer): void {
       to.balancesCount = to.balancesCount + 1;
     }
 
-    to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
     to.totalBalance = toDecimals(to.totalBalanceExact, 18);
     to.save();
 
@@ -111,7 +98,7 @@ export function handleTransfer(event: Transfer): void {
       deposit.decimals,
       true
     );
-    balance.valueExact = balance.valueExact.plus(mint.valueExact);
+    balance.valueExact = balance.valueExact.plus(event.params.value);
     balance.value = toDecimals(balance.valueExact, deposit.decimals);
     balance.lastActivity = event.block.timestamp;
     balance.save();
@@ -131,57 +118,33 @@ export function handleTransfer(event: Transfer): void {
     updateDepositCollateralData(assetStats, deposit);
 
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
-
-    accountActivityEvent(
-      sender,
-      EventName.Mint,
-      event.block.timestamp,
-      AssetType.deposit,
-      deposit.id
-    );
-    accountActivityEvent(
-      to,
-      EventName.Mint,
-      event.block.timestamp,
-      AssetType.deposit,
-      deposit.id
-    );
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
-    const burn = burnEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.deposit,
-      from.id,
-      event.params.value,
-      deposit.decimals
-    );
-
-    log.info("Deposit burn event: amount={}, from={}, sender={}, token={}", [
-      burn.value.toString(),
-      burn.from.toHexString(),
-      burn.sender.toHexString(),
-      event.address.toHexString(),
-    ]);
+    createActivityLogEntry(event, EventType.Burn, [event.params.from]);
 
     // decrease total supply
-    deposit.totalSupplyExact = deposit.totalSupplyExact.minus(burn.valueExact);
+    deposit.totalSupplyExact = deposit.totalSupplyExact.minus(
+      event.params.value
+    );
     deposit.totalSupply = toDecimals(
       deposit.totalSupplyExact,
       deposit.decimals
     );
-    deposit.totalBurnedExact = deposit.totalBurnedExact.plus(burn.valueExact);
+    deposit.totalBurnedExact = deposit.totalBurnedExact.plus(
+      event.params.value
+    );
     deposit.totalBurned = toDecimals(
       deposit.totalBurnedExact,
       deposit.decimals
     );
 
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
-      burn.valueExact
+      event.params.value
     );
-    assetActivity.totalSupply = assetActivity.totalSupply.minus(burn.value);
+    assetActivity.totalSupply = toDecimals(
+      assetActivity.totalSupplyExact,
+      deposit.decimals
+    );
 
     // Update collateral calculated fields after supply change
     depositCollateralCalculatedFields(deposit);
@@ -196,12 +159,12 @@ export function handleTransfer(event: Transfer): void {
       deposit.decimals,
       true
     );
-    balance.valueExact = balance.valueExact.minus(burn.valueExact);
+    balance.valueExact = balance.valueExact.minus(event.params.value);
     balance.value = toDecimals(balance.valueExact, deposit.decimals);
     balance.lastActivity = event.block.timestamp;
     balance.save();
 
-    from.totalBalanceExact = from.totalBalanceExact.minus(burn.valueExact);
+    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
     from.totalBalance = toDecimals(from.totalBalanceExact, 18);
     from.save();
 
@@ -227,46 +190,14 @@ export function handleTransfer(event: Transfer): void {
     updateDepositCollateralData(assetStats, deposit);
 
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
-
-    accountActivityEvent(
-      sender,
-      EventName.Burn,
-      event.block.timestamp,
-      AssetType.deposit,
-      deposit.id
-    );
-    accountActivityEvent(
-      from,
-      EventName.Burn,
-      event.block.timestamp,
-      AssetType.deposit,
-      deposit.id
-    );
   } else {
     const from = fetchAccount(event.params.from);
     const to = fetchAccount(event.params.to);
-    const transfer = transferEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.deposit,
-      from.id,
-      to.id,
-      event.params.value,
-      deposit.decimals
-    );
 
-    log.info(
-      "Deposit transfer event: amount={}, from={}, to={}, sender={}, token={}",
-      [
-        transfer.value.toString(),
-        transfer.from.toHexString(),
-        transfer.to.toHexString(),
-        transfer.sender.toHexString(),
-        event.address.toHexString(),
-      ]
-    );
+    createActivityLogEntry(event, EventType.Transfer, [
+      event.params.from,
+      event.params.to,
+    ]);
 
     if (!hasBalance(deposit.id, to.id, deposit.decimals, false)) {
       deposit.totalHolders = deposit.totalHolders + 1;
@@ -279,12 +210,12 @@ export function handleTransfer(event: Transfer): void {
       deposit.decimals,
       true
     );
-    fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
+    fromBalance.valueExact = fromBalance.valueExact.minus(event.params.value);
     fromBalance.value = toDecimals(fromBalance.valueExact, deposit.decimals);
     fromBalance.lastActivity = event.block.timestamp;
     fromBalance.save();
 
-    from.totalBalanceExact = from.totalBalanceExact.minus(transfer.valueExact);
+    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
     from.totalBalance = toDecimals(from.totalBalanceExact, 18);
     from.save();
 
@@ -301,12 +232,12 @@ export function handleTransfer(event: Transfer): void {
       deposit.decimals,
       true
     );
-    toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
+    toBalance.valueExact = toBalance.valueExact.plus(event.params.value);
     toBalance.value = toDecimals(toBalance.valueExact, deposit.decimals);
     toBalance.lastActivity = event.block.timestamp;
     toBalance.save();
 
-    to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
     to.totalBalance = toDecimals(to.totalBalanceExact, 18);
     to.save();
 
@@ -329,34 +260,12 @@ export function handleTransfer(event: Transfer): void {
     toPortfolioStats.save();
 
     assetStats.transfers = 1;
-    assetStats.volume = transfer.value;
-    assetStats.volumeExact = transfer.valueExact;
+    assetStats.volume = toDecimals(event.params.value, deposit.decimals);
+    assetStats.volumeExact = event.params.value;
     // Update collateral data in asset stats
     updateDepositCollateralData(assetStats, deposit);
 
     assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
-
-    accountActivityEvent(
-      sender,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.deposit,
-      deposit.id
-    );
-    accountActivityEvent(
-      from,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.deposit,
-      deposit.id
-    );
-    accountActivityEvent(
-      to,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.deposit,
-      deposit.id
-    );
   }
 
   deposit.lastActivity = event.block.timestamp;
@@ -413,28 +322,6 @@ export function handleApproval(event: Approval): void {
   balance.approved = toDecimals(balance.approvedExact, deposit.decimals);
   balance.lastActivity = event.block.timestamp;
   balance.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
-  accountActivityEvent(
-    owner,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
-  accountActivityEvent(
-    spender,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
 }
 
 export function handlePaused(event: Paused): void {
@@ -491,13 +378,6 @@ export function handlePaused(event: Paused): void {
     event.address,
     sender.id,
     AssetType.deposit
-  );
-  accountActivityEvent(
-    sender,
-    EventName.Paused,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
   );
 }
 
@@ -556,13 +436,6 @@ export function handleUnpaused(event: Unpaused): void {
     sender.id,
     AssetType.deposit
   );
-  accountActivityEvent(
-    sender,
-    EventName.Unpaused,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
@@ -613,20 +486,6 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.params.amount,
     deposit.decimals
   );
-  accountActivityEvent(
-    sender,
-    EventName.TokensFrozen,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
-  accountActivityEvent(
-    user,
-    EventName.TokensFrozen,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
 }
 
 export function handleUserAllowed(event: UserAllowed): void {
@@ -667,20 +526,6 @@ export function handleUserAllowed(event: UserAllowed): void {
     sender.id,
     AssetType.deposit,
     user.id
-  );
-  accountActivityEvent(
-    sender,
-    EventName.UserAllowed,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
-  accountActivityEvent(
-    user,
-    EventName.UserAllowed,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
   );
 }
 
@@ -723,20 +568,6 @@ export function handleUserDisallowed(event: UserDisallowed): void {
     AssetType.deposit,
     user.id
   );
-  accountActivityEvent(
-    sender,
-    EventName.UserDisallowed,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
-  accountActivityEvent(
-    user,
-    EventName.UserDisallowed,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
 }
 
 export function handleTokenWithdrawn(event: TokenWithdrawn): void {
@@ -758,21 +589,6 @@ export function handleTokenWithdrawn(event: TokenWithdrawn): void {
 
   deposit.lastActivity = event.block.timestamp;
   deposit.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.TokenWithdrawn,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
-  accountActivityEvent(
-    to,
-    EventName.TokenWithdrawn,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
 }
 
 export function handleRoleGranted(event: RoleGranted): void {
@@ -861,21 +677,6 @@ export function handleRoleGranted(event: RoleGranted): void {
 
   deposit.lastActivity = event.block.timestamp;
   deposit.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleGranted,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
-  accountActivityEvent(
-    account,
-    EventName.RoleGranted,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
@@ -952,21 +753,6 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 
   deposit.lastActivity = event.block.timestamp;
   deposit.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleRevoked,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
-  accountActivityEvent(
-    account,
-    EventName.RoleRevoked,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
@@ -996,14 +782,6 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
 
   deposit.lastActivity = event.block.timestamp;
   deposit.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleAdminChanged,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
 }
 
 export function handleCollateralUpdated(event: CollateralUpdated): void {
@@ -1043,13 +821,6 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     event.params.oldAmount,
     event.params.newAmount,
     deposit.decimals
-  );
-  accountActivityEvent(
-    sender,
-    EventName.CollateralUpdated,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
   );
 }
 
@@ -1169,27 +940,4 @@ export function handleClawback(event: Clawback): void {
   assetStats.save();
 
   assetActivity.save();
-
-  // Record account activity events for all involved parties
-  accountActivityEvent(
-    to,
-    EventName.Clawback,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
-  accountActivityEvent(
-    from,
-    EventName.Clawback,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
-  accountActivityEvent(
-    sender,
-    EventName.Clawback,
-    event.block.timestamp,
-    AssetType.deposit,
-    deposit.id
-  );
 }

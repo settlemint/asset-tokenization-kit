@@ -16,26 +16,24 @@ import {
   RoleAdminChanged,
   RoleGranted,
   RoleRevoked,
-  TokenWithdrawn,
   TokensFrozen,
+  TokenWithdrawn,
   Transfer,
   Unpaused,
   UserBlocked,
   UserUnblocked,
 } from "../../generated/templates/Fund/Fund";
 import { fetchAccount } from "../fetch/account";
+import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { blockUser, unblockUser } from "../fetch/block-user";
 import { toDecimals } from "../utils/decimals";
-import { AssetType, EventName } from "../utils/enums";
+import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { calculateConcentration } from "./calculations/concentration";
-import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
-import { burnEvent } from "./events/burn";
 import { clawbackEvent } from "./events/clawback";
 import { managementFeeCollectedEvent } from "./events/managementfeecollected";
-import { mintEvent } from "./events/mint";
 import { pausedEvent } from "./events/paused";
 import { performanceFeeCollectedEvent } from "./events/performancefeecollected";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
@@ -43,7 +41,6 @@ import { roleGrantedEvent } from "./events/rolegranted";
 import { roleRevokedEvent } from "./events/rolerevoked";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { tokenWithdrawnEvent } from "./events/tokenwithdrawn";
-import { transferEvent } from "./events/transfer";
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
 import { userUnblockedEvent } from "./events/userunblocked";
@@ -67,43 +64,31 @@ export function handleTransfer(event: Transfer): void {
 
   if (event.params.from.equals(Address.zero())) {
     const to = fetchAccount(event.params.to);
-    const mint = mintEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.fund,
-      to.id,
-      event.params.value,
-      fund.decimals
-    );
 
-    log.info("Fund mint event: amount={}, to={}, sender={}, fund={}", [
-      mint.value.toString(),
-      mint.to.toHexString(),
-      mint.sender.toHexString(),
-      event.address.toHexString(),
-    ]);
+    createActivityLogEntry(event, EventType.Mint, [event.params.to]);
 
     // increase total supply
-    fund.totalSupplyExact = fund.totalSupplyExact.plus(mint.valueExact);
+    fund.totalSupplyExact = fund.totalSupplyExact.plus(event.params.value);
     fund.totalSupply = toDecimals(fund.totalSupplyExact, fund.decimals);
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
-      mint.valueExact
+      event.params.value
     );
-    assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
+    assetActivity.totalSupply = toDecimals(
+      assetActivity.totalSupplyExact,
+      fund.decimals
+    );
 
     if (!hasBalance(fund.id, to.id, fund.decimals, false)) {
       fund.totalHolders = fund.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
 
-    to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
     to.totalBalance = toDecimals(to.totalBalanceExact, 18);
     to.save();
 
     const balance = fetchAssetBalance(fund.id, to.id, fund.decimals, false);
-    balance.valueExact = balance.valueExact.plus(mint.valueExact);
+    balance.valueExact = balance.valueExact.plus(event.params.value);
     balance.value = toDecimals(balance.valueExact, fund.decimals);
     balance.lastActivity = event.block.timestamp;
     balance.save();
@@ -120,54 +105,27 @@ export function handleTransfer(event: Transfer): void {
     assetStats.minted = toDecimals(event.params.value, fund.decimals);
     assetStats.mintedExact = event.params.value;
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
-
-    accountActivityEvent(
-      sender,
-      EventName.Mint,
-      event.block.timestamp,
-      AssetType.fund,
-      fund.id
-    );
-    accountActivityEvent(
-      to,
-      EventName.Mint,
-      event.block.timestamp,
-      AssetType.fund,
-      fund.id
-    );
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
-    const burn = burnEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.fund,
-      from.id,
-      event.params.value,
-      fund.decimals
-    );
 
-    log.info("Fund burn event: amount={}, from={}, sender={}, fund={}", [
-      burn.value.toString(),
-      burn.from.toHexString(),
-      burn.sender.toHexString(),
-      event.address.toHexString(),
-    ]);
+    createActivityLogEntry(event, EventType.Burn, [event.params.from]);
 
     // decrease total supply
-    fund.totalSupplyExact = fund.totalSupplyExact.minus(burn.valueExact);
+    fund.totalSupplyExact = fund.totalSupplyExact.minus(event.params.value);
     fund.totalSupply = toDecimals(fund.totalSupplyExact, fund.decimals);
-    fund.totalBurnedExact = fund.totalBurnedExact.plus(burn.valueExact);
+    fund.totalBurnedExact = fund.totalBurnedExact.plus(event.params.value);
     fund.totalBurned = toDecimals(fund.totalBurnedExact, fund.decimals);
 
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
-      burn.valueExact
+      event.params.value
     );
-    assetActivity.totalSupply = assetActivity.totalSupply.minus(burn.value);
+    assetActivity.totalSupply = toDecimals(
+      assetActivity.totalSupplyExact,
+      fund.decimals
+    );
 
     const balance = fetchAssetBalance(fund.id, from.id, fund.decimals, false);
-    balance.valueExact = balance.valueExact.minus(burn.valueExact);
+    balance.valueExact = balance.valueExact.minus(event.params.value);
     balance.value = toDecimals(balance.valueExact, fund.decimals);
     balance.lastActivity = event.block.timestamp;
     balance.save();
@@ -179,7 +137,7 @@ export function handleTransfer(event: Transfer): void {
       from.save();
     }
 
-    from.totalBalanceExact = from.totalBalanceExact.minus(burn.valueExact);
+    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
     from.totalBalance = toDecimals(from.totalBalanceExact, 18);
     from.save();
 
@@ -195,58 +153,26 @@ export function handleTransfer(event: Transfer): void {
     assetStats.burned = toDecimals(event.params.value, fund.decimals);
     assetStats.burnedExact = event.params.value;
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
-
-    accountActivityEvent(
-      sender,
-      EventName.Burn,
-      event.block.timestamp,
-      AssetType.fund,
-      fund.id
-    );
-    accountActivityEvent(
-      from,
-      EventName.Burn,
-      event.block.timestamp,
-      AssetType.fund,
-      fund.id
-    );
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
     const to = fetchAccount(event.params.to);
-    const transfer = transferEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.fund,
-      from.id,
-      to.id,
-      event.params.value,
-      fund.decimals
-    );
 
-    log.info(
-      "Fund transfer event: amount={}, from={}, to={}, sender={}, fund={}",
-      [
-        transfer.value.toString(),
-        transfer.from.toHexString(),
-        transfer.to.toHexString(),
-        transfer.sender.toHexString(),
-        event.address.toHexString(),
-      ]
-    );
+    createActivityLogEntry(event, EventType.Transfer, [
+      event.params.from,
+      event.params.to,
+    ]);
 
     if (!hasBalance(fund.id, to.id, fund.decimals, false)) {
       fund.totalHolders = fund.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
 
-    to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
     to.totalBalance = toDecimals(to.totalBalanceExact, 18);
     to.save();
 
-    from.totalBalanceExact = from.totalBalanceExact.minus(transfer.valueExact);
+    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
     from.totalBalance = toDecimals(from.totalBalanceExact, 18);
     from.save();
 
@@ -256,7 +182,7 @@ export function handleTransfer(event: Transfer): void {
       fund.decimals,
       false
     );
-    fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
+    fromBalance.valueExact = fromBalance.valueExact.minus(event.params.value);
     fromBalance.value = toDecimals(fromBalance.valueExact, fund.decimals);
     fromBalance.lastActivity = event.block.timestamp;
     fromBalance.save();
@@ -278,7 +204,7 @@ export function handleTransfer(event: Transfer): void {
     fromPortfolioStats.save();
 
     const toBalance = fetchAssetBalance(fund.id, to.id, fund.decimals, false);
-    toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
+    toBalance.valueExact = toBalance.valueExact.plus(event.params.value);
     toBalance.value = toDecimals(toBalance.valueExact, fund.decimals);
     toBalance.lastActivity = event.block.timestamp;
     toBalance.save();
@@ -293,31 +219,9 @@ export function handleTransfer(event: Transfer): void {
     toPortfolioStats.save();
 
     assetStats.transfers = assetStats.transfers + 1;
-    assetStats.volume = transfer.value;
-    assetStats.volumeExact = transfer.valueExact;
+    assetStats.volume = toDecimals(event.params.value, fund.decimals);
+    assetStats.volumeExact = event.params.value;
     assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
-
-    accountActivityEvent(
-      sender,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.fund,
-      fund.id
-    );
-    accountActivityEvent(
-      from,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.fund,
-      fund.id
-    );
-    accountActivityEvent(
-      to,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.fund,
-      fund.id
-    );
   }
 
   fund.lastActivity = event.block.timestamp;
@@ -405,21 +309,6 @@ export function handleRoleGranted(event: RoleGranted): void {
 
   fund.lastActivity = event.block.timestamp;
   fund.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleGranted,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
-  accountActivityEvent(
-    account,
-    EventName.RoleGranted,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
@@ -484,21 +373,6 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 
   fund.lastActivity = event.block.timestamp;
   fund.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleRevoked,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
-  accountActivityEvent(
-    account,
-    EventName.RoleRevoked,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
 }
 
 export function handleApproval(event: Approval): void {
@@ -539,28 +413,6 @@ export function handleApproval(event: Approval): void {
 
   fund.lastActivity = event.block.timestamp;
   fund.save();
-
-  accountActivityEvent(
-    owner,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
-  accountActivityEvent(
-    spender,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
-  accountActivityEvent(
-    sender,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
@@ -590,14 +442,6 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
 
   fund.lastActivity = event.block.timestamp;
   fund.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleAdminChanged,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
 }
 
 export function handlePaused(event: Paused): void {
@@ -651,13 +495,6 @@ export function handlePaused(event: Paused): void {
     event.address,
     sender.id,
     AssetType.fund
-  );
-  accountActivityEvent(
-    sender,
-    EventName.Paused,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
   );
 }
 
@@ -713,13 +550,6 @@ export function handleUnpaused(event: Unpaused): void {
     sender.id,
     AssetType.fund
   );
-  accountActivityEvent(
-    sender,
-    EventName.Unpaused,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
@@ -767,20 +597,6 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.params.amount,
     fund.decimals
   );
-  accountActivityEvent(
-    sender,
-    EventName.TokensFrozen,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
-  accountActivityEvent(
-    user,
-    EventName.TokensFrozen,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
 }
 
 export function handleUserBlocked(event: UserBlocked): void {
@@ -810,20 +626,6 @@ export function handleUserBlocked(event: UserBlocked): void {
     sender.id,
     AssetType.fund,
     user.id
-  );
-  accountActivityEvent(
-    sender,
-    EventName.UserBlocked,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
-  accountActivityEvent(
-    user,
-    EventName.UserBlocked,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
   );
 }
 
@@ -855,20 +657,6 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     AssetType.fund,
     user.id
   );
-  accountActivityEvent(
-    sender,
-    EventName.UserUnblocked,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
-  accountActivityEvent(
-    user,
-    EventName.UserUnblocked,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
 }
 
 export function handleManagementFeeCollected(
@@ -898,13 +686,6 @@ export function handleManagementFeeCollected(
     event.params.amount,
     fund.decimals
   );
-  accountActivityEvent(
-    sender,
-    EventName.ManagementFeeCollected,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
 }
 
 export function handlePerformanceFeeCollected(
@@ -933,13 +714,6 @@ export function handlePerformanceFeeCollected(
     sender.id,
     event.params.amount,
     fund.decimals
-  );
-  accountActivityEvent(
-    sender,
-    EventName.PerformanceFeeCollected,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
   );
 }
 
@@ -973,20 +747,6 @@ export function handleTokenWithdrawn(event: TokenWithdrawn): void {
     to.id,
     event.params.amount,
     fund.decimals
-  );
-  accountActivityEvent(
-    sender,
-    EventName.TokenWithdrawn,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
-  accountActivityEvent(
-    to,
-    EventName.TokenWithdrawn,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
   );
 }
 
@@ -1097,27 +857,4 @@ export function handleClawback(event: Clawback): void {
   assetStats.save();
 
   assetActivity.save();
-
-  // Record account activity events for all involved parties
-  accountActivityEvent(
-    to,
-    EventName.Clawback,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
-  accountActivityEvent(
-    from,
-    EventName.Clawback,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
-  accountActivityEvent(
-    sender,
-    EventName.Clawback,
-    event.block.timestamp,
-    AssetType.fund,
-    fund.id
-  );
 }

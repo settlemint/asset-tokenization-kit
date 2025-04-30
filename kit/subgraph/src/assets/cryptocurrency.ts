@@ -15,19 +15,16 @@ import {
   Transfer,
 } from "../../generated/templates/CryptoCurrency/CryptoCurrency";
 import { fetchAccount } from "../fetch/account";
+import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { toDecimals } from "../utils/decimals";
-import { AssetType, EventName } from "../utils/enums";
+import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { calculateConcentration } from "./calculations/concentration";
-import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
-import { burnEvent } from "./events/burn";
-import { mintEvent } from "./events/mint";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
 import { roleGrantedEvent } from "./events/rolegranted";
 import { roleRevokedEvent } from "./events/rolerevoked";
-import { transferEvent } from "./events/transfer";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchCryptoCurrency } from "./fetch/cryptocurrency";
 import { newAssetStatsData } from "./stats/assets";
@@ -45,46 +42,31 @@ export function handleTransfer(event: Transfer): void {
 
   if (event.params.from.equals(Address.zero())) {
     const to = fetchAccount(event.params.to);
-    const mint = mintEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.cryptocurrency,
-      to.id,
-      event.params.value,
-      cryptoCurrency.decimals
-    );
 
-    log.info(
-      "CryptoCurrency mint event: amount={}, to={}, sender={}, cryptocurrency={}",
-      [
-        mint.value.toString(),
-        mint.to.toHexString(),
-        mint.sender.toHexString(),
-        event.address.toHexString(),
-      ]
-    );
+    createActivityLogEntry(event, EventType.Mint, [event.params.to]);
 
     // increase total supply
     cryptoCurrency.totalSupplyExact = cryptoCurrency.totalSupplyExact.plus(
-      mint.valueExact
+      event.params.value
     );
     cryptoCurrency.totalSupply = toDecimals(
       cryptoCurrency.totalSupplyExact,
       cryptoCurrency.decimals
     );
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
-      mint.valueExact
+      event.params.value
     );
-    assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
+    assetActivity.totalSupply = toDecimals(
+      assetActivity.totalSupplyExact,
+      cryptoCurrency.decimals
+    );
 
     if (!hasBalance(cryptoCurrency.id, to.id, cryptoCurrency.decimals, false)) {
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
 
-    to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
     to.totalBalance = toDecimals(to.totalBalanceExact, 18);
     to.save();
 
@@ -94,7 +76,7 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.decimals,
       false
     );
-    balance.valueExact = balance.valueExact.plus(mint.valueExact);
+    balance.valueExact = balance.valueExact.plus(event.params.value);
     balance.value = toDecimals(balance.valueExact, cryptoCurrency.decimals);
     balance.lastActivity = event.block.timestamp;
     balance.save();
@@ -111,54 +93,21 @@ export function handleTransfer(event: Transfer): void {
     assetStats.minted = toDecimals(event.params.value, cryptoCurrency.decimals);
     assetStats.mintedExact = event.params.value;
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
-
-    accountActivityEvent(
-      sender,
-      EventName.Mint,
-      event.block.timestamp,
-      AssetType.cryptocurrency,
-      cryptoCurrency.id
-    );
-    accountActivityEvent(
-      to,
-      EventName.Mint,
-      event.block.timestamp,
-      AssetType.cryptocurrency,
-      cryptoCurrency.id
-    );
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
-    const burn = burnEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.cryptocurrency,
-      from.id,
-      event.params.value,
-      cryptoCurrency.decimals
-    );
 
-    log.info(
-      "CryptoCurrency burn event: amount={}, from={}, sender={}, cryptocurrency={}",
-      [
-        burn.value.toString(),
-        burn.from.toHexString(),
-        burn.sender.toHexString(),
-        event.address.toHexString(),
-      ]
-    );
+    createActivityLogEntry(event, EventType.Burn, [event.params.from]);
 
     // decrease total supply
     cryptoCurrency.totalSupplyExact = cryptoCurrency.totalSupplyExact.minus(
-      burn.valueExact
+      event.params.value
     );
     cryptoCurrency.totalSupply = toDecimals(
       cryptoCurrency.totalSupplyExact,
       cryptoCurrency.decimals
     );
     cryptoCurrency.totalBurnedExact = cryptoCurrency.totalBurnedExact.plus(
-      burn.valueExact
+      event.params.value
     );
     cryptoCurrency.totalBurned = toDecimals(
       cryptoCurrency.totalBurnedExact,
@@ -166,9 +115,12 @@ export function handleTransfer(event: Transfer): void {
     );
 
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
-      burn.valueExact
+      event.params.value
     );
-    assetActivity.totalSupply = assetActivity.totalSupply.minus(burn.value);
+    assetActivity.totalSupply = toDecimals(
+      assetActivity.totalSupplyExact,
+      cryptoCurrency.decimals
+    );
 
     const balance = fetchAssetBalance(
       cryptoCurrency.id,
@@ -176,12 +128,12 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.decimals,
       false
     );
-    balance.valueExact = balance.valueExact.minus(burn.valueExact);
+    balance.valueExact = balance.valueExact.minus(event.params.value);
     balance.value = toDecimals(balance.valueExact, cryptoCurrency.decimals);
     balance.lastActivity = event.block.timestamp;
     balance.save();
 
-    from.totalBalanceExact = from.totalBalanceExact.minus(burn.valueExact);
+    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
     from.totalBalance = toDecimals(from.totalBalanceExact, 18);
     from.save();
 
@@ -204,58 +156,26 @@ export function handleTransfer(event: Transfer): void {
     assetStats.burned = toDecimals(event.params.value, cryptoCurrency.decimals);
     assetStats.burnedExact = event.params.value;
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
-
-    accountActivityEvent(
-      sender,
-      EventName.Burn,
-      event.block.timestamp,
-      AssetType.cryptocurrency,
-      cryptoCurrency.id
-    );
-    accountActivityEvent(
-      from,
-      EventName.Burn,
-      event.block.timestamp,
-      AssetType.cryptocurrency,
-      cryptoCurrency.id
-    );
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
     const to = fetchAccount(event.params.to);
-    const transfer = transferEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.cryptocurrency,
-      from.id,
-      to.id,
-      event.params.value,
-      cryptoCurrency.decimals
-    );
 
-    log.info(
-      "CryptoCurrency transfer event: amount={}, from={}, to={}, sender={}, cryptocurrency={}",
-      [
-        transfer.value.toString(),
-        transfer.from.toHexString(),
-        transfer.to.toHexString(),
-        transfer.sender.toHexString(),
-        event.address.toHexString(),
-      ]
-    );
+    createActivityLogEntry(event, EventType.Transfer, [
+      event.params.from,
+      event.params.to,
+    ]);
 
     if (!hasBalance(cryptoCurrency.id, to.id, cryptoCurrency.decimals, false)) {
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
 
-    to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
     to.totalBalance = toDecimals(to.totalBalanceExact, 18);
     to.save();
 
-    from.totalBalanceExact = from.totalBalanceExact.minus(transfer.valueExact);
+    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
     from.totalBalance = toDecimals(from.totalBalanceExact, 18);
     from.save();
 
@@ -265,7 +185,7 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.decimals,
       false
     );
-    fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
+    fromBalance.valueExact = fromBalance.valueExact.minus(event.params.value);
     fromBalance.value = toDecimals(
       fromBalance.valueExact,
       cryptoCurrency.decimals
@@ -295,7 +215,7 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.decimals,
       false
     );
-    toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
+    toBalance.valueExact = toBalance.valueExact.plus(event.params.value);
     toBalance.value = toDecimals(toBalance.valueExact, cryptoCurrency.decimals);
     toBalance.lastActivity = event.block.timestamp;
     toBalance.save();
@@ -310,31 +230,9 @@ export function handleTransfer(event: Transfer): void {
     toPortfolioStats.save();
 
     assetStats.transfers = assetStats.transfers + 1;
-    assetStats.volume = transfer.value;
-    assetStats.volumeExact = transfer.valueExact;
+    assetStats.volume = toDecimals(event.params.value, cryptoCurrency.decimals);
+    assetStats.volumeExact = event.params.value;
     assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
-
-    accountActivityEvent(
-      sender,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.cryptocurrency,
-      cryptoCurrency.id
-    );
-    accountActivityEvent(
-      from,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.cryptocurrency,
-      cryptoCurrency.id
-    );
-    accountActivityEvent(
-      to,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.cryptocurrency,
-      cryptoCurrency.id
-    );
   }
 
   cryptoCurrency.lastActivity = event.block.timestamp;
@@ -429,21 +327,6 @@ export function handleRoleGranted(event: RoleGranted): void {
 
   cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleGranted,
-    event.block.timestamp,
-    AssetType.cryptocurrency,
-    cryptoCurrency.id
-  );
-  accountActivityEvent(
-    account,
-    EventName.RoleGranted,
-    event.block.timestamp,
-    AssetType.cryptocurrency,
-    cryptoCurrency.id
-  );
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
@@ -511,21 +394,6 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 
   cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleRevoked,
-    event.block.timestamp,
-    AssetType.cryptocurrency,
-    cryptoCurrency.id
-  );
-  accountActivityEvent(
-    account,
-    EventName.RoleRevoked,
-    event.block.timestamp,
-    AssetType.cryptocurrency,
-    cryptoCurrency.id
-  );
 }
 
 export function handleApproval(event: Approval): void {
@@ -573,28 +441,6 @@ export function handleApproval(event: Approval): void {
 
   cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.cryptocurrency,
-    cryptoCurrency.id
-  );
-  accountActivityEvent(
-    owner,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.cryptocurrency,
-    cryptoCurrency.id
-  );
-  accountActivityEvent(
-    spender,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.cryptocurrency,
-    cryptoCurrency.id
-  );
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
@@ -624,12 +470,4 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
 
   cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleAdminChanged,
-    event.block.timestamp,
-    AssetType.cryptocurrency,
-    cryptoCurrency.id
-  );
 }

@@ -1428,3 +1428,29 @@ type AirdropPerformanceSummary @entity(immutable: false) {
   peakClaimHour: Int! # Hour of day with most claims (0-23)
   lastUpdated: BigInt!
 }
+
+# --------------------------------------------------
+# Events
+# --------------------------------------------------
+
+type ActivityLogEntry @entity(immutable: true) {
+  id: Bytes!
+  # Identifying the event
+  eventName: String!
+  # Default event fields
+  txIndex: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+  # List of accounts involved in the event
+  involved: [Account!]!
+  # List of values involved in the event
+  values: [ActivityLogEntryValue!]! @derivedFrom(field: "entry")
+}
+
+type ActivityLogEntryValue @entity(immutable: true) {
+  id: Bytes!
+  name: String!
+  value: String!
+  entry: ActivityLogEntry!
+}

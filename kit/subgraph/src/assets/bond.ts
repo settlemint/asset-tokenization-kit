@@ -27,25 +27,22 @@ import {
 } from "../../generated/templates/Bond/Bond";
 import { FixedYield as FixedYieldContract } from "../../generated/templates/FixedYield/FixedYield";
 import { fetchAccount } from "../fetch/account";
+import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { blockUser, unblockUser } from "../fetch/block-user";
 import { toDecimals } from "../utils/decimals";
-import { AssetType, EventName } from "../utils/enums";
+import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { calculateConcentration } from "./calculations/concentration";
-import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { bondMaturedEvent } from "./events/bondmatured";
 import { bondRedeemedEvent } from "./events/bondredeemed";
-import { burnEvent } from "./events/burn";
 import { clawbackEvent } from "./events/clawback";
-import { mintEvent } from "./events/mint";
 import { pausedEvent } from "./events/paused";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
 import { roleGrantedEvent } from "./events/rolegranted";
 import { roleRevokedEvent } from "./events/rolerevoked";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
-import { transferEvent } from "./events/transfer";
 import { underlyingAssetTopUpEvent } from "./events/underlyingassettopup";
 import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn";
 import { unpausedEvent } from "./events/unpaused";
@@ -67,43 +64,31 @@ export function handleTransfer(event: Transfer): void {
 
   if (event.params.from.equals(Address.zero())) {
     const to = fetchAccount(event.params.to);
-    const mint = mintEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.bond,
-      to.id,
-      event.params.value,
-      bond.decimals
-    );
 
-    log.info("Bond mint event: amount={}, to={}, sender={}, bond={}", [
-      mint.value.toString(),
-      mint.to.toHexString(),
-      mint.sender.toHexString(),
-      event.address.toHexString(),
-    ]);
+    createActivityLogEntry(event, EventType.Mint, [event.params.to]);
 
     // increase total supply
-    bond.totalSupplyExact = bond.totalSupplyExact.plus(mint.valueExact);
+    bond.totalSupplyExact = bond.totalSupplyExact.plus(event.params.value);
     bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
-      mint.valueExact
+      event.params.value
     );
-    assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
+    assetActivity.totalSupply = toDecimals(
+      assetActivity.totalSupplyExact,
+      bond.decimals
+    );
 
     if (!hasBalance(bond.id, to.id, bond.decimals, false)) {
       bond.totalHolders = bond.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
 
-    to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
     to.totalBalance = toDecimals(to.totalBalanceExact, 18);
     to.save();
 
     const balance = fetchAssetBalance(bond.id, to.id, bond.decimals, false);
-    balance.valueExact = balance.valueExact.plus(mint.valueExact);
+    balance.valueExact = balance.valueExact.plus(event.params.value);
     balance.value = toDecimals(balance.valueExact, bond.decimals);
     balance.lastActivity = event.block.timestamp;
     balance.save();
@@ -122,59 +107,32 @@ export function handleTransfer(event: Transfer): void {
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
 
     updateAssociatedFixedYield(bond, event.block.timestamp);
-
-    accountActivityEvent(
-      to,
-      EventName.Mint,
-      event.block.timestamp,
-      AssetType.bond,
-      bond.id
-    );
-    accountActivityEvent(
-      sender,
-      EventName.Mint,
-      event.block.timestamp,
-      AssetType.bond,
-      bond.id
-    );
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
-    const burn = burnEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.bond,
-      from.id,
-      event.params.value,
-      bond.decimals
-    );
 
-    log.info("Bond burn event: amount={}, from={}, sender={}, bond={}", [
-      burn.value.toString(),
-      burn.from.toHexString(),
-      burn.sender.toHexString(),
-      event.address.toHexString(),
-    ]);
+    createActivityLogEntry(event, EventType.Burn, [event.params.from]);
 
     // decrease total supply
-    bond.totalSupplyExact = bond.totalSupplyExact.minus(burn.valueExact);
+    bond.totalSupplyExact = bond.totalSupplyExact.minus(event.params.value);
     bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
-    bond.totalBurnedExact = bond.totalBurnedExact.plus(burn.valueExact);
+    bond.totalBurnedExact = bond.totalBurnedExact.plus(event.params.value);
     bond.totalBurned = toDecimals(bond.totalBurnedExact, bond.decimals);
 
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
-      burn.valueExact
+      event.params.value
     );
-    assetActivity.totalSupply = assetActivity.totalSupply.minus(burn.value);
+    assetActivity.totalSupply = toDecimals(
+      assetActivity.totalSupplyExact,
+      bond.decimals
+    );
 
     const balance = fetchAssetBalance(bond.id, from.id, bond.decimals, false);
-    balance.valueExact = balance.valueExact.minus(burn.valueExact);
+    balance.valueExact = balance.valueExact.minus(event.params.value);
     balance.value = toDecimals(balance.valueExact, bond.decimals);
     balance.lastActivity = event.block.timestamp;
     balance.save();
 
-    from.totalBalanceExact = from.totalBalanceExact.minus(burn.valueExact);
+    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
     from.totalBalance = toDecimals(from.totalBalanceExact, 18);
     from.save();
 
@@ -199,58 +157,26 @@ export function handleTransfer(event: Transfer): void {
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
 
     updateAssociatedFixedYield(bond, event.block.timestamp);
-
-    accountActivityEvent(
-      from,
-      EventName.Burn,
-      event.block.timestamp,
-      AssetType.bond,
-      bond.id
-    );
-    accountActivityEvent(
-      sender,
-      EventName.Burn,
-      event.block.timestamp,
-      AssetType.bond,
-      bond.id
-    );
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
     const to = fetchAccount(event.params.to);
-    const transfer = transferEvent(
-      eventId(event),
-      event.block.timestamp,
-      event.address,
-      sender.id,
-      AssetType.bond,
-      from.id,
-      to.id,
-      event.params.value,
-      bond.decimals
-    );
 
-    log.info(
-      "Bond transfer event: amount={}, from={}, to={}, sender={}, bond={}",
-      [
-        transfer.value.toString(),
-        transfer.from.toHexString(),
-        transfer.to.toHexString(),
-        transfer.sender.toHexString(),
-        event.address.toHexString(),
-      ]
-    );
+    createActivityLogEntry(event, EventType.Transfer, [
+      event.params.from,
+      event.params.to,
+    ]);
 
     if (!hasBalance(bond.id, to.id, bond.decimals, false)) {
       bond.totalHolders = bond.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
     }
 
-    to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
     to.totalBalance = toDecimals(to.totalBalanceExact, 18);
     to.save();
 
-    from.totalBalanceExact = from.totalBalanceExact.minus(transfer.valueExact);
+    from.totalBalanceExact = from.totalBalanceExact.minus(event.params.value);
     from.totalBalance = toDecimals(from.totalBalanceExact, 18);
     from.save();
 
@@ -260,7 +186,7 @@ export function handleTransfer(event: Transfer): void {
       bond.decimals,
       false
     );
-    fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
+    fromBalance.valueExact = fromBalance.valueExact.minus(event.params.value);
     fromBalance.value = toDecimals(fromBalance.valueExact, bond.decimals);
     fromBalance.lastActivity = event.block.timestamp;
     fromBalance.save();
@@ -282,7 +208,7 @@ export function handleTransfer(event: Transfer): void {
     fromPortfolioStats.save();
 
     const toBalance = fetchAssetBalance(bond.id, to.id, bond.decimals, false);
-    toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
+    toBalance.valueExact = toBalance.valueExact.plus(event.params.value);
     toBalance.value = toDecimals(toBalance.valueExact, bond.decimals);
     toBalance.lastActivity = event.block.timestamp;
     toBalance.save();
@@ -297,31 +223,9 @@ export function handleTransfer(event: Transfer): void {
     toPortfolioStats.save();
 
     assetStats.transfers = assetStats.transfers + 1;
-    assetStats.volume = transfer.value;
-    assetStats.volumeExact = transfer.valueExact;
+    assetStats.volumeExact = event.params.value;
+    assetStats.volume = toDecimals(event.params.value, bond.decimals);
     assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
-
-    accountActivityEvent(
-      to,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.bond,
-      bond.id
-    );
-    accountActivityEvent(
-      from,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.bond,
-      bond.id
-    );
-    accountActivityEvent(
-      sender,
-      EventName.Transfer,
-      event.block.timestamp,
-      AssetType.bond,
-      bond.id
-    );
   }
 
   bond.lastActivity = event.block.timestamp;
@@ -407,21 +311,6 @@ export function handleRoleGranted(event: RoleGranted): void {
   bond.lastActivity = event.block.timestamp;
   updateDerivedFields(bond);
   bond.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleGranted,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    account,
-    EventName.RoleGranted,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
@@ -487,21 +376,6 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   bond.lastActivity = event.block.timestamp;
   updateDerivedFields(bond);
   bond.save();
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleRevoked,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    account,
-    EventName.RoleRevoked,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
 }
 
 export function handleApproval(event: Approval): void {
@@ -544,28 +418,6 @@ export function handleApproval(event: Approval): void {
     approval.spender.toHexString(),
     event.address.toHexString(),
   ]);
-
-  accountActivityEvent(
-    sender,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    owner,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    spender,
-    EventName.Approval,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
@@ -596,14 +448,6 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
       event.address.toHexString(),
     ]
   );
-
-  accountActivityEvent(
-    sender,
-    EventName.RoleAdminChanged,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
 }
 
 export function handleBondMatured(event: BondMatured): void {
@@ -625,13 +469,6 @@ export function handleBondMatured(event: BondMatured): void {
     event.block.timestamp,
     event.address,
     sender.id
-  );
-  accountActivityEvent(
-    sender,
-    EventName.BondMatured,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
   );
 }
 
@@ -672,21 +509,6 @@ export function handleBondRedeemed(event: BondRedeemed): void {
     event.params.bondAmount,
     event.params.underlyingAmount,
     bond.decimals
-  );
-
-  accountActivityEvent(
-    sender,
-    EventName.BondRedeemed,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    holder,
-    EventName.BondRedeemed,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
   );
 }
 
@@ -743,13 +565,6 @@ export function handlePaused(event: Paused): void {
     sender.id,
     AssetType.bond
   );
-  accountActivityEvent(
-    sender,
-    EventName.Paused,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
 }
 
 export function handleUnpaused(event: Unpaused): void {
@@ -805,13 +620,6 @@ export function handleUnpaused(event: Unpaused): void {
     sender.id,
     AssetType.bond
   );
-  accountActivityEvent(
-    sender,
-    EventName.Unpaused,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
@@ -855,21 +663,6 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.params.amount,
     bond.decimals
   );
-
-  accountActivityEvent(
-    sender,
-    EventName.TokensFrozen,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    user,
-    EventName.TokensFrozen,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
 }
 
 export function handleUserBlocked(event: UserBlocked): void {
@@ -901,20 +694,6 @@ export function handleUserBlocked(event: UserBlocked): void {
     AssetType.bond,
     user.id
   );
-  accountActivityEvent(
-    sender,
-    EventName.UserBlocked,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    user,
-    EventName.UserBlocked,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
 }
 
 export function handleUserUnblocked(event: UserUnblocked): void {
@@ -945,20 +724,6 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     sender.id,
     AssetType.bond,
     user.id
-  );
-  accountActivityEvent(
-    sender,
-    EventName.UserUnblocked,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    user,
-    EventName.UserUnblocked,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
   );
 }
 
@@ -999,20 +764,6 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
     from.id,
     event.params.amount,
     bond.decimals
-  );
-  accountActivityEvent(
-    sender,
-    EventName.UnderlyingAssetTopUp,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    from,
-    EventName.UnderlyingAssetTopUp,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
   );
 }
 
@@ -1055,20 +806,6 @@ export function handleUnderlyingAssetWithdrawn(
     to.id,
     event.params.amount,
     bond.decimals
-  );
-  accountActivityEvent(
-    sender,
-    EventName.UnderlyingAssetWithdrawn,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    to,
-    EventName.UnderlyingAssetWithdrawn,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
   );
 }
 
@@ -1199,29 +936,6 @@ export function handleClawback(event: Clawback): void {
   assetStats.save();
 
   assetActivity.save();
-
-  // Record account activity events for all involved parties
-  accountActivityEvent(
-    to,
-    EventName.Clawback,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    from,
-    EventName.Clawback,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
-  accountActivityEvent(
-    sender,
-    EventName.Clawback,
-    event.block.timestamp,
-    AssetType.bond,
-    bond.id
-  );
 }
 
 function updateAssociatedFixedYield(bond: Bond, timestamp: BigInt): void {
