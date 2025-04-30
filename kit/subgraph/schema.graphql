@@ -242,7 +242,6 @@ type Deposit implements Asset @entity(immutable: false) {
   lastCollateralUpdate: BigInt!
 }
 
-
 # --------------------------------------------------
 # Accounts
 # --------------------------------------------------
@@ -1241,165 +1240,89 @@ type AirdropPerformanceSummary @entity(immutable: false) {
 }
 
 # --------------------------------------------------
-# DvPSwap-Specific Types
+# XvPSettlement-Specific Types
 # --------------------------------------------------
 
-type DvPSwap implements Asset @entity(immutable: false) {
+type XvPSettlement @entity(immutable: false) {
   id: Bytes!
-  type: String!
-  asAccount: Account!
-  holders: [AssetBalance!]! @derivedFrom(field: "asset")
-  name: String!
-  symbol: String!
-  decimals: Int!
-  totalSupply: BigDecimal!
-  totalSupplyExact: BigInt!
-  lastActivity: BigInt!
-  creator: Account!
-  totalBurned: BigDecimal!
-  totalBurnedExact: BigInt!
-  totalHolders: Int!
-  deployedOn: BigInt!
-  # Access Control
-  admins: [Account!]!
-  supplyManagers: [Account!]!
-  userManagers: [Account!]!
-  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
-  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
-  # Concentration
-  concentration: BigDecimal!
-  # DvPSwap-Specific Fields
-  paused: Boolean!
-  transactionsCount: BigInt!
-  executedTransactionsCount: BigInt!
-  approvedTransactionsCount: BigInt!
-  cancelledTransactionsCount: BigInt!
-  expiredTransactionsCount: BigInt!
-  transactions: [DvPSwapTransaction!]! @derivedFrom(field: "dvpSwap")
-}
-
-type DvPSwapTransaction @entity(immutable: false) {
-  id: String!
-  dvpSwap: DvPSwap!
-  creator: Account!
-  status: String!
-  createdAt: BigInt!
-  lastUpdatedAt: BigInt
   cutoffDate: BigInt!
-  executedAt: BigInt
-  expiredAt: BigInt
-  executor: Account
-  flowsCount: BigInt!
-  flows: [Flow!]! @derivedFrom(field: "dvpSwapTransaction")
-  approvals: [DvPSwapApproval!]! @derivedFrom(field: "dvpSwapTransaction")
+  autoExecute: Boolean!
+  claimed: Boolean!
+  cancelled: Boolean!
+  flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")
+  approvals: [XvPSettlementApproval!]! @derivedFrom(field: "xvpSettlement")
 }
 
-type DvPSwapApproval @entity(immutable: false) {
-  id: String!
-  dvpSwapTransaction: DvPSwapTransaction!
-  party: Account!
-  approvedAt: BigInt!
-  revokedAt: BigInt
-  active: Boolean!
-}
-
-type Flow @entity(immutable: false) {
-  id: String!
-  dvpSwapTransaction: DvPSwapTransaction!
-  flowId: BigInt!
+type XvPSettlementFlow @entity(immutable: false) {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  asset: Asset!
   from: Account!
   to: Account!
-  token: Bytes!
   amount: BigInt!
-  createdAt: BigInt!
+}
+
+type XvPSettlementApproval @entity(immutable: false) {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  account: Account!
+  approved: Boolean!
+  timestamp: BigInt
 }
 
 # --------------------------------------------------
-# DvPSwap-Specific Events
+# XvPSettlement-Specific Events
 # --------------------------------------------------
 
-type DvPSwapCreatedEvent implements AssetEvent @entity(immutable: true) {
+type XvPSettlementCreatedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
-  emitter: Asset!
+  emitter: Bytes!
   sender: Account!
-  assetType: String!
   transaction: Bytes!
-  dvpSwapId: Bytes!
-  creator: Account!
-  status: String!
+  xvpSettlement: XvPSettlement!
   cutoffDate: BigInt!
+  autoExecute: Boolean!
 }
 
-type DvPSwapStatusChangedEvent implements AssetEvent @entity(immutable: true) {
+type XvPSettlementApprovedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
-  emitter: Asset!
+  emitter: Bytes!
   sender: Account!
-  assetType: String!
   transaction: Bytes!
-  dvpSwapId: Bytes!
-  status: String!
+  xvpSettlement: XvPSettlement!
 }
 
-type DvPSwapApprovedEvent implements AssetEvent @entity(immutable: true) {
+type XvPSettlementApprovalRevokedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
-  emitter: Asset!
+  emitter: Bytes!
   sender: Account!
-  assetType: String!
   transaction: Bytes!
-  dvpSwapId: Bytes!
-  party: Account!
+  xvpSettlement: XvPSettlement!
 }
 
-type DvPSwapApprovalRevokedEvent implements AssetEvent @entity(immutable: true) {
+type XvPSettlementExecutedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
-  emitter: Asset!
+  emitter: Bytes!
   sender: Account!
-  assetType: String!
   transaction: Bytes!
-  dvpSwapId: Bytes!
-  party: Account!
+  xvpSettlement: XvPSettlement!
 }
 
-type DvPSwapExecutedEvent implements AssetEvent @entity(immutable: true) {
+type XvPSettlementCancelledEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
-  emitter: Asset!
+  emitter: Bytes!
   sender: Account!
   assetType: String!
   transaction: Bytes!
-  dvpSwapId: Bytes!
-  executor: Account!
-}
-
-type DvPSwapExpiredEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  transaction: Bytes!
-  dvpSwapId: Bytes!
-}
-
-type DvPSwapAutoExecutionFailedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  transaction: Bytes!
-  dvpSwapId: Bytes!
-  executor: Account!
-  reason: String!
+  xvpSettlement: XvPSettlement!
 }

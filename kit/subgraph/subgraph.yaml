@@ -9,28 +9,6 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: DvPSwapFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000008"
-      abi: DvPSwapFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Factory
-        - DvPSwapCreatedEvent
-      abis:
-        - name: DvPSwapFactory
-          file: ../contracts/artifacts/contracts/DvPSwapFactory.sol/DvPSwapFactory.json
-        - name: DvPSwap
-          file: ../contracts/artifacts/contracts/DvPSwap.sol/DvPSwap.json
-      eventHandlers:
-        - event: DvPSwapCreated(indexed address,indexed address)
-          handler: handleDvPSwapCreated
-      file: ./src/factories/dvpswap-factory.ts
-  - kind: ethereum/contract
     name: BondFactory
     network: settlemint
     source:
@@ -218,55 +196,63 @@ dataSources:
       eventHandlers:
         - event: StandardAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handleStandardAirdropDeployed
-        - event: VestingAirdropDeployed(indexed address,indexed address,indexed address,address)
+        - event: VestingAirdropDeployed(indexed address,indexed address,indexed
+            address,address)
           handler: handleVestingAirdropDeployed
         - event: PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
       file: ./src/factories/airdrop-factory.ts
-templates:
   - kind: ethereum/contract
-    name: DvPSwap
+    name: XvPSettlementFactory
     network: settlemint
     source:
-      abi: DvPSwap
+      abi: XvPSettlementFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Factory
+        - XvPSettlementCreatedEvent
+      abis:
+        - name: XvPSettlementFactory
+          file: ../contracts/artifacts/contracts/XvPSettlementFactory.sol/XvPSettlementFactory.json
+      eventHandlers:
+        - event: XvPSettlementCreated(indexed address,indexed address)
+          handler: handleXvPSettlementCreated
+      file: ./src/factories/xvp-settlement-factory.ts
+templates:
+  - kind: ethereum/contract
+    name: XvPSettlement
+    network: settlemint
+    source:
+      abi: XvPSettlement
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
         - Account
-        - DvPSwap
-        - DvPSwapEntity
-        - DvPSwapCreatedEvent
-        - DvPSwapStatusChangedEvent
-        - DvPSwapApprovedEvent
-        - DvPSwapApprovalRevokedEvent
-        - DvPSwapExecutedEvent
-        - DvPSwapExpiredEvent
-        - DvPSwapStatsData
-        - DvPSwapStats
-        - DvPSwapAutoExecutionFailedEvent
+        - XvPSettlement
+        - XvPSettlementEntity
+        - XvPSettlementCreatedEvent
+        - XvPSettlementApprovedEvent
+        - XvPSettlementApprovalRevokedEvent
+        - XvPSettlementExecutedEvent
+        - XvPSettlementCancelledEvent
       abis:
-        - name: DvPSwap
-          file: ../contracts/artifacts/contracts/DvPSwap.sol/DvPSwap.json
+        - name: XvPSettlement
+          file: ../contracts/artifacts/contracts/XvPSettlement.sol/XvPSettlement.json
       eventHandlers:
-        - event: DvPSwapCreated(indexed bytes32,indexed address,string,uint256)
-          handler: handleDvPSwapCreated
-        - event: DvPSwapStatusChanged(indexed bytes32,uint8)
-          handler: handleDvPSwapStatusChanged
-        - event: DvPSwapApproved(indexed bytes32,indexed address)
-          handler: handleDvPSwapApproved
-        - event: DvPSwapApprovalRevoked(indexed bytes32,indexed address)
-          handler: handleDvPSwapApprovalRevoked
-        - event: DvPSwapExecuted(indexed bytes32,indexed address)
-          handler: handleDvPSwapExecuted
-        - event: DvPSwapExpiredEvent(indexed bytes32,uint256)
-          handler: handleDvPSwapExpired
-        - event: FlowAdded(indexed bytes32,indexed address,indexed address,address,uint256)
-          handler: handleFlowAdded
-        - event: DvPSwapAutoExecutionFailed(indexed bytes32,indexed address,string)
-          handler: handleDvPSwapAutoExecutionFailed
-      file: ./src/dvpswap/dvpswap.ts
+        - event: XvPSettlementApproved()
+          handler: handleXvPSettlementApproved
+        - event: XvPSettlementApprovalRevoked()
+          handler: handleXvPSettlementApprovalRevoked
+        - event: XvPSettlementClaimed()
+          handler: handleXvPSettlementClaimed
+        - event: XvPSettlementCancelled()
+          handler: handleXvPSettlementCancelled
+      file: ./src/xvp-settlement/xvp-settlement.ts
   - kind: ethereum/contract
     name: FixedYield
     network: settlemint
