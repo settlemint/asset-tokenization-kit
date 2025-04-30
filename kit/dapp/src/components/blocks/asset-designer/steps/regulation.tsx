@@ -199,11 +199,9 @@ export function AssetRegulationStep({
                   {selectedRegion === region && (
                     <Check className="absolute top-2 right-2 h-4 w-4 text-primary" />
                   )}
-                  <div className="flex flex-col items-center justify-center p-2">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full mb-2">
-                      <MapPin className="h-6 w-6" />
-                    </div>
-                    <div className="text-center">
+                  <div className="flex items-start p-1">
+                    <MapPin className="h-4 w-4 mr-2 flex-shrink-0 mt-0.5" />
+                    <div>
                       <div className="font-medium">{region}</div>
                       {region === "EU" && (
                         <div className="text-xs">European Union</div>
