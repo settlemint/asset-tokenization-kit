@@ -54,12 +54,4 @@ export class EventName {
   // Stablecoin specific events
   static CollateralUpdated: string = "Collateral Updated";
   // DvPSwap specific events
-  static DvPSwapCreated: string = "DvP Swap Created";
-  static DvPSwapStatusChanged: string = "DvP Swap Status Changed";
-  static DvPSwapApproved: string = "DvP Swap Approved";
-  static DvPSwapApprovalRevoked: string = "DvP Swap Approval Revoked";
-  static DvPSwapExecuted: string = "DvP Swap Executed";
-  static DvPSwapExpired: string = "DvP Swap Expired";
-  static FlowAdded: string = "Flow Added";
-  static DvPSwapAutoExecutionFailed: string = "DvP Swap Auto-Execution Failed";
 }
