@@ -4,40 +4,41 @@ pragma solidity ^0.8.27;
 import { SMARTStableCoin } from "./SMARTStableCoin.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { SMARTStableCoinRegistry } from "./SMARTStableCoinRegistry.sol";
 import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title SMARTStableCoinFactory - A factory contract for creating SMARTStableCoin tokens
 /// @notice This contract allows the creation of new SMARTStableCoin tokens with deterministic addresses using CREATE2.
-/// It provides functionality to create SMART-compliant stablecoins with specific parameters and predict their
-/// deployment addresses.
-/// @dev Inherits from ReentrancyGuard for protection against reentrancy attacks and ERC2771Context for
-/// meta-transaction support. Uses CREATE2 for deterministic deployment addresses and maintains a registry
-/// of deployed tokens.
+/// It relies on an external registry contract (`ISMARTRStableCoinRegistry`) to track deployed tokens.
+/// @dev Inherits from ReentrancyGuard and ERC2771Context. Uses CREATE2 for deployment.
+/// Requires a registry address during deployment.
 /// @custom:security-contact support@settlemint.com
 contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
     /// @notice Custom errors for the SMARTStableCoinFactory contract
-    /// @dev These errors provide more gas-efficient and descriptive error handling
-    error AddressAlreadyDeployed();
+    error PredictedAddressNotEmpty(); // Changed error for CREATE2 collision check
 
-    /// @notice Mapping to track if an address was deployed by this factory
-    /// @dev Maps token addresses to a boolean indicating if they were created by this factory
-    mapping(address => bool) public isFactoryToken;
+    /// @notice The address of the SMARTStableCoinRegistry used by this factory.
+    SMARTStableCoinRegistry public immutable registry;
 
-    /// @notice Emitted when a new SMART stablecoin is created
+    /// @notice Emitted when a new SMART stablecoin is created and registered
     /// @param token The address of the newly created token
     /// @param creator The address that initiated the creation
-    event SMARTStableCoinCreated(address indexed token, address indexed creator);
+    /// @param registry The registry where the token was registered
+    event SMARTStableCoinCreated(address indexed token, address indexed creator, address indexed registry);
 
     /// @notice Deploys a new SMARTStableCoinFactory contract
-    /// @dev Sets up the factory with meta-transaction support
+    /// @dev Sets up the factory with meta-transaction support and links it to the registry.
     /// @param forwarder The address of the trusted forwarder for meta-transactions
-    constructor(address forwarder) ERC2771Context(forwarder) { }
+    /// @param _registry The address of the SMARTStableCoinRegistry contract
+    constructor(address forwarder, address _registry) ERC2771Context(forwarder) {
+        require(_registry != address(0), "Registry address cannot be zero");
+        registry = SMARTStableCoinRegistry(_registry);
+    }
 
-    /// @notice Creates a new SMART stablecoin token with the specified parameters
-    /// @dev Uses CREATE2 for deterministic addresses, includes reentrancy protection,
-    /// and validates that the predicted address hasn't been used before. The caller (`_msgSender()`) becomes the
-    /// initial owner.
+    /// @notice Creates a new SMART stablecoin token, registers it, and emits an event.
+    /// @dev Uses CREATE2, checks for address collisions using code length, includes reentrancy protection,
+    /// and registers the token with the configured registry. The caller (`_msgSender()`) becomes the initial owner.
     /// @param name The name of the token (e.g., "Compliant USD")
     /// @param symbol The symbol of the token (e.g., "CUSD")
     /// @param decimals The number of decimals for the token (e.g., 6)
@@ -58,12 +59,12 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
         SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
         external
-        nonReentrant
+        nonReentrant // Keep ReentrancyGuard due to external call to registry
         returns (address token)
     {
         address creator = _msgSender(); // Cache msgSender
 
-        // Check if address is already deployed
+        // Predict address
         address predicted = predictAddress(
             creator,
             name,
@@ -75,10 +76,18 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
             requiredClaimTopics,
             initialModulePairs
         );
-        if (isAddressDeployed(predicted)) revert AddressAlreadyDeployed();
 
+        // Check if address already has code (CREATE2 collision prevention)
+        uint256 codeSize;
+        assembly {
+            codeSize := extcodesize(predicted)
+        }
+        if (codeSize > 0) revert PredictedAddressNotEmpty();
+
+        // Calculate salt
         bytes32 salt = _calculateSalt(name, symbol, decimals);
 
+        // Deploy using CREATE2
         SMARTStableCoin newToken = new SMARTStableCoin{ salt: salt }(
             name,
             symbol,
@@ -88,20 +97,22 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
             compliance,
             requiredClaimTopics,
             initialModulePairs,
-            creator,
-            trustedForwarder()
+            creator, // Initial owner
+            trustedForwarder() // ERC2771 forwarder
         );
 
         token = address(newToken);
-        isFactoryToken[token] = true;
 
-        emit SMARTStableCoinCreated(token, creator);
+        // Register the token in the registry
+        registry.registerToken(token); // External call to registry
+
+        emit SMARTStableCoinCreated(token, creator, address(registry));
     }
 
     /// @notice Predicts the address where a SMART stablecoin token would be deployed
     /// @dev Calculates the deterministic address using CREATE2 with the same parameters and salt
-    /// computation as the create function. This allows users to know the token's address before deployment.
-    /// @param sender The address that would create the token
+    /// computation as the create function.
+    /// @param sender The address that would create the token (used as predicted initialOwner)
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
@@ -127,6 +138,10 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
         returns (address predicted)
     {
         bytes32 salt = _calculateSalt(name, symbol, decimals);
+        // Encode constructor arguments for SMARTStableCoin
+        // Note: The `sender` argument is passed as the `initialOwner` for the prediction.
+        // The `trustedForwarder()` argument is implicitly handled by ERC2771Context in the actual constructor.
+        // For prediction, we pass the factory's known forwarder address.
         bytes memory constructorArgs = abi.encode(
             name,
             symbol,
@@ -136,18 +151,24 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
             compliance,
             requiredClaimTopics,
             initialModulePairs,
-            sender // The sender passed to predictAddress is used as initialOwner for prediction
+            sender, // Use the provided sender as the initial owner for prediction
+            trustedForwarder() // Use the factory's trusted forwarder for prediction
         );
 
+        // Combine creation code and arguments
+        bytes memory bytecode = abi.encodePacked(type(SMARTStableCoin).creationCode, constructorArgs);
+
+        // Calculate CREATE2 address
+        bytes32 bytecodeHash = keccak256(bytecode);
         predicted = address(
             uint160(
                 uint256(
                     keccak256(
                         abi.encodePacked(
-                            bytes1(0xff),
-                            address(this),
-                            salt,
-                            keccak256(abi.encodePacked(type(SMARTStableCoin).creationCode, constructorArgs))
+                            bytes1(0xff), // CREATE2 prefix
+                            address(this), // Factory address
+                            salt, // Deployment salt
+                            bytecodeHash // Hash of bytecode + constructor args
                         )
                     )
                 )
@@ -156,21 +177,12 @@ contract SMARTStableCoinFactory is ReentrancyGuard, ERC2771Context {
     }
 
     /// @notice Calculates the salt for CREATE2 deployment based on basic token info
-    /// @dev Combines the basic token parameters into a unique salt value. Used by both create and
-    /// predictAddress functions to ensure consistent address calculation.
+    /// @dev Combines the basic token parameters into a unique salt value.
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
     /// @return The calculated salt for CREATE2 deployment
     function _calculateSalt(string memory name, string memory symbol, uint8 decimals) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(name, symbol, decimals));
-    }
-
-    /// @notice Checks if an address was deployed by this factory
-    /// @dev Returns true if the address was created by this factory, false otherwise
-    /// @param token The address to check
-    /// @return True if the address was created by this factory, false otherwise
-    function isAddressDeployed(address token) public view returns (bool) {
-        return isFactoryToken[token];
     }
 }
