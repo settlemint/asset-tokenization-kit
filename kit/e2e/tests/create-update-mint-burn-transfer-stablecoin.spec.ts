@@ -1,9 +1,11 @@
 import { type BrowserContext, test } from "@playwright/test";
 import { Pages } from "../pages/pages";
 import {
-  equityData,
-  equityMintTokenData,
-  equityTransferData,
+  stableCoinBurnData,
+  stableCoinMintData,
+  stableCoinTransferData,
+  stableCoinUpdateCollateralData,
+  stablecoinData,
 } from "../test-data/asset-data";
 import { assetMessage } from "../test-data/success-msg-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
@@ -13,16 +15,16 @@ const testData = {
   transferUserEmail: "",
   transferUserWalletAddress: "",
   transferUserName: "",
-  equityName: "",
+  stablecoinName: "",
+  currentTotalSupply: 0,
 };
 
-test.describe("Create, mint and transfer equity", () => {
+test.describe("Create, update collateral, mint, burn and transfer stablecoin", () => {
   test.describe.configure({ mode: "serial" });
   let transferUserContext: BrowserContext | undefined;
-  let adminContext: BrowserContext | undefined;
   let transferUserPages: ReturnType<typeof Pages>;
+  let adminContext: BrowserContext | undefined;
   let adminPages: ReturnType<typeof Pages>;
-
   test.beforeAll(async ({ browser }) => {
     try {
       transferUserContext = await browser.newContext();
@@ -36,7 +38,6 @@ test.describe("Create, mint and transfer equity", () => {
         signUpTransferUserData.email
       );
       testData.transferUserWalletAddress = transferUserWalletAddress;
-
       await ensureUserIsAdmin(adminUser.email);
       adminContext = await browser.newContext();
       const adminPage = await adminContext.newPage();
@@ -54,7 +55,6 @@ test.describe("Create, mint and transfer equity", () => {
       throw error;
     }
   });
-
   test.afterAll(async () => {
     if (transferUserContext) {
       await transferUserContext.close();
@@ -63,54 +63,75 @@ test.describe("Create, mint and transfer equity", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates and mint equity", async ({ browser }) => {
-    await adminPages.adminPage.createEquity(equityData);
-    testData.equityName = equityData.name;
+  test("Admin user creates stablecoin, updates proven collateral, mints and burns stablecoins", async ({
+    browser,
+  }) => {
+    await adminPages.adminPage.createStablecoin(stablecoinData);
+    testData.stablecoinName = stablecoinData.name;
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
     await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: equityData.sidebarAssetTypes,
-      name: testData.equityName,
-      totalSupply: equityData.initialSupply,
+      sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
+      name: testData.stablecoinName,
+      totalSupply: stablecoinData.initialSupply,
     });
-    await adminPages.adminPage.clickAssetDetails(testData.equityName);
-    await adminPages.adminPage.mintAsset({
-      user: adminUser.name,
-      ...equityMintTokenData,
+    await adminPages.adminPage.clickAssetDetails(testData.stablecoinName);
+    await adminPages.adminPage.updateCollateral({
+      ...stableCoinUpdateCollateralData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
-    await adminPages.adminPage.verifyTotalSupply(equityMintTokenData.amount);
+    await adminPages.adminPage.verifyCollateral(
+      stableCoinUpdateCollateralData.amount
+    );
+    await adminPages.adminPage.mintAsset({
+      user: adminUser.name,
+      ...stableCoinMintData,
+    });
+    await adminPages.adminPage.verifySuccessMessage(
+      assetMessage.successMessage
+    );
+    await adminPages.adminPage.verifyTotalSupply(stableCoinMintData.amount);
+    await adminPages.adminPage.redeemBurnAsset({
+      ...stableCoinBurnData,
+    });
+    const mintAmount = Number.parseFloat(stableCoinMintData.amount);
+    const burnAmount = Number.parseFloat(stableCoinBurnData.amount);
+    const newTotal = mintAmount - burnAmount;
+    testData.currentTotalSupply = newTotal;
+    await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
   });
-  test("Admin user transfer equity to regular transfer user", async () => {
+  test("Admin user transfers stablecoin to regular transfer user", async () => {
     await adminPages.portfolioPage.transferAsset({
-      asset: testData.equityName,
+      asset: testData.stablecoinName,
       walletAddress: testData.transferUserWalletAddress,
       user: testData.transferUserName,
-      ...equityTransferData,
+      ...stableCoinTransferData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
 
-    const mintAmount = Number.parseFloat(equityMintTokenData.amount);
-    const transferAmount = Number.parseFloat(equityTransferData.transferAmount);
-    const expectedBalance = (mintAmount - transferAmount).toString();
+    const transferAmount = Number.parseFloat(
+      stableCoinTransferData.transferAmount
+    );
+    const expectedBalance = (
+      testData.currentTotalSupply - transferAmount
+    ).toString();
     await adminPages.adminPage.clickSidebarMenuItem("My assets");
 
     await adminPages.adminPage.filterAssetByName({
-      name: testData.equityName,
+      name: testData.stablecoinName,
       totalSupply: expectedBalance,
     });
   });
-
-  test("Verify regular transfer user received equity", async () => {
+  test("Verify regular transfer user received stablecoins", async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
-      expectedAmount: equityTransferData.transferAmount,
-      price: equityData.price,
+      expectedAmount: stableCoinTransferData.transferAmount,
+      price: stablecoinData.price,
     });
   });
 });

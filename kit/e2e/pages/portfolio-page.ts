@@ -68,6 +68,7 @@ export class PortfolioPage extends BasePage {
     user: string;
     pincode: string;
   }): Promise<void> {
+    await this.page.goto("/portfolio");
     await this.page.getByRole("link", { name: "Dashboard" }).first().click();
     await this.page.getByRole("button", { name: "Transfer" }).click();
     const assetButton = this.page.locator('#asset, [id="asset"]');
