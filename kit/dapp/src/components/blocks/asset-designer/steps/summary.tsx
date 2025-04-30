@@ -70,7 +70,11 @@ export function AssetSummaryStep({
       onNext={onSubmit}
       onBack={onBack}
       isNextDisabled={isSubmitting}
-      nextLabel={isSubmitting ? "Creating..." : "Create Asset"}
+      nextLabel={
+        isSubmitting
+          ? "Creating..."
+          : `Issue new ${assetType.charAt(0).toUpperCase() + assetType.slice(1)}`
+      }
       className="max-w-3xl w-full mx-auto"
       fixedButtons={true}
     >
