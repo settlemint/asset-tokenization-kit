@@ -6,10 +6,10 @@ const EASModule = buildModule("EASModule", (m) => {
   const { forwarder } = m.useModule(ForwarderModule);
 
   // Deploy the EASSchemaRegistry first since EAS depends on it
-  const schemaRegistry = m.contract("EASSchemaRegistry", [forwarder]);
+  const schemaRegistry = m.contract("contracts/EASSchemaRegistry.sol:EASSchemaRegistry", [forwarder]);
 
   // Deploy the EAS contract with the schema registry address and forwarder
-  const eas = m.contract("EAS", [schemaRegistry, forwarder]);
+  const eas = m.contract("contracts/EAS.sol:EAS", [schemaRegistry, forwarder]);
 
   return { schemaRegistry, eas };
 });
