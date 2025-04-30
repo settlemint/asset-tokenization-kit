@@ -48,59 +48,32 @@ import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
 import { fetchFixedYield, fetchFixedYieldPeriod } from "./fetch/fixed-yield";
+import { handleMint } from "./handlers/mint";
 import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
   const bond = fetchBond(event.address);
   const assetActivity = fetchAssetActivity(AssetType.bond);
-
   const assetStats = newAssetStatsData(bond.id, AssetType.bond);
 
-  if (event.params.from.equals(Address.zero())) {
-    const to = fetchAccount(event.params.to);
+  const from = event.params.from;
+  const to = event.params.to;
+  const value = event.params.value;
+  const decimals = bond.decimals;
 
-    createActivityLogEntry(event, EventType.Mint, [event.params.to]);
-
-    // increase total supply
-    bond.totalSupplyExact = bond.totalSupplyExact.plus(event.params.value);
-    bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
-    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
-      event.params.value
-    );
-    assetActivity.totalSupply = toDecimals(
-      assetActivity.totalSupplyExact,
-      bond.decimals
-    );
-
-    if (!hasBalance(bond.id, to.id, bond.decimals, false)) {
-      bond.totalHolders = bond.totalHolders + 1;
-      to.balancesCount = to.balancesCount + 1;
-    }
-
-    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
-    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-    to.save();
-
-    const balance = fetchAssetBalance(bond.id, to.id, bond.decimals, false);
-    balance.valueExact = balance.valueExact.plus(event.params.value);
-    balance.value = toDecimals(balance.valueExact, bond.decimals);
-    balance.lastActivity = event.block.timestamp;
-    balance.save();
-
-    const portfolioStats = newPortfolioStatsData(
-      to.id,
+  if (from.equals(Address.zero())) {
+    createActivityLogEntry(event, EventType.Mint, [to]);
+    handleMint(
+      bond,
       bond.id,
-      AssetType.bond
+      AssetType.bond,
+      event.block.timestamp,
+      to,
+      value,
+      decimals,
+      false
     );
-    portfolioStats.balance = balance.value;
-    portfolioStats.balanceExact = balance.valueExact;
-    portfolioStats.save();
-
-    assetStats.minted = toDecimals(event.params.value, bond.decimals);
-    assetStats.mintedExact = event.params.value;
-    assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
-
     updateAssociatedFixedYield(bond, event.block.timestamp);
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);

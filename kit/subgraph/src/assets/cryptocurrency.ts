@@ -21,6 +21,7 @@ import { AssetType } from "../utils/enums";
 import { calculateConcentration } from "./calculations/concentration";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchCryptoCurrency } from "./fetch/cryptocurrency";
+import { handleMint } from "./handlers/mint";
 import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
@@ -34,59 +35,23 @@ export function handleTransfer(event: Transfer): void {
     AssetType.cryptocurrency
   );
 
-  if (event.params.from.equals(Address.zero())) {
-    const to = fetchAccount(event.params.to);
+  const from = event.params.from;
+  const to = event.params.to;
+  const value = event.params.value;
+  const decimals = cryptoCurrency.decimals;
 
-    createActivityLogEntry(event, EventType.Mint, [event.params.to]);
-
-    // increase total supply
-    cryptoCurrency.totalSupplyExact = cryptoCurrency.totalSupplyExact.plus(
-      event.params.value
-    );
-    cryptoCurrency.totalSupply = toDecimals(
-      cryptoCurrency.totalSupplyExact,
-      cryptoCurrency.decimals
-    );
-    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
-      event.params.value
-    );
-    assetActivity.totalSupply = toDecimals(
-      assetActivity.totalSupplyExact,
-      cryptoCurrency.decimals
-    );
-
-    if (!hasBalance(cryptoCurrency.id, to.id, cryptoCurrency.decimals, false)) {
-      cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
-      to.balancesCount = to.balancesCount + 1;
-    }
-
-    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
-    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-    to.save();
-
-    const balance = fetchAssetBalance(
+  if (from.equals(Address.zero())) {
+    createActivityLogEntry(event, EventType.Mint, [to]);
+    handleMint(
+      cryptoCurrency,
       cryptoCurrency.id,
-      to.id,
-      cryptoCurrency.decimals,
+      AssetType.bond,
+      event.block.timestamp,
+      to,
+      value,
+      decimals,
       false
     );
-    balance.valueExact = balance.valueExact.plus(event.params.value);
-    balance.value = toDecimals(balance.valueExact, cryptoCurrency.decimals);
-    balance.lastActivity = event.block.timestamp;
-    balance.save();
-
-    const portfolioStats = newPortfolioStatsData(
-      to.id,
-      cryptoCurrency.id,
-      AssetType.cryptocurrency
-    );
-    portfolioStats.balance = balance.value;
-    portfolioStats.balanceExact = balance.valueExact;
-    portfolioStats.save();
-
-    assetStats.minted = toDecimals(event.params.value, cryptoCurrency.decimals);
-    assetStats.mintedExact = event.params.value;
-    assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
 

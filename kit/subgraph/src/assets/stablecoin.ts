@@ -40,6 +40,7 @@ import { userUnblockedEvent } from "./events/userunblocked";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchStableCoin } from "./fetch/stablecoin";
+import { handleMint } from "./handlers/mint";
 import {
   newAssetStatsData,
   updateStableCoinCollateralData,
@@ -53,68 +54,25 @@ export function handleTransfer(event: Transfer): void {
 
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
 
-  if (event.params.from.equals(Address.zero())) {
-    const to = fetchAccount(event.params.to);
+  const from = event.params.from;
+  const to = event.params.to;
+  const value = event.params.value;
+  const decimals = stableCoin.decimals;
 
-    createActivityLogEntry(event, EventType.Mint, [event.params.to]);
-
-    // increase total supply
-    stableCoin.totalSupplyExact = stableCoin.totalSupplyExact.plus(
-      event.params.value
-    );
-    stableCoin.totalSupply = toDecimals(
-      stableCoin.totalSupplyExact,
-      stableCoin.decimals
-    );
-
-    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
-      event.params.value
-    );
-    assetActivity.totalSupply = toDecimals(
-      assetActivity.totalSupplyExact,
-      stableCoin.decimals
-    );
-
-    collateralCalculatedFields(stableCoin);
-    stableCoin.concentration = calculateConcentration(
-      stableCoin.holders.load(),
-      stableCoin.totalSupplyExact
-    );
-
-    if (!hasBalance(stableCoin.id, to.id, stableCoin.decimals, false)) {
-      stableCoin.totalHolders = stableCoin.totalHolders + 1;
-      to.balancesCount = to.balancesCount + 1;
-    }
-
-    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
-    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-    to.save();
-
-    const balance = fetchAssetBalance(
+  if (from.equals(Address.zero())) {
+    createActivityLogEntry(event, EventType.Mint, [to]);
+    handleMint(
+      stableCoin,
       stableCoin.id,
-      to.id,
-      stableCoin.decimals,
+      AssetType.stablecoin,
+      event.block.timestamp,
+      to,
+      value,
+      decimals,
       false
     );
-    balance.valueExact = balance.valueExact.plus(event.params.value);
-    balance.value = toDecimals(balance.valueExact, stableCoin.decimals);
-    balance.lastActivity = event.block.timestamp;
-    balance.save();
-
-    const portfolioStats = newPortfolioStatsData(
-      to.id,
-      stableCoin.id,
-      AssetType.stablecoin
-    );
-    portfolioStats.balance = balance.value;
-    portfolioStats.balanceExact = balance.valueExact;
-    portfolioStats.save();
-
-    assetStats.minted = toDecimals(event.params.value, stableCoin.decimals);
-    assetStats.mintedExact = event.params.value;
+    collateralCalculatedFields(stableCoin);
     updateStableCoinCollateralData(assetStats, stableCoin);
-
-    assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
 

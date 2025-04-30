@@ -6,7 +6,7 @@ import {
   YieldClaimed as YieldClaimedEvent,
 } from "../../generated/templates/FixedYield/FixedYield";
 import { fetchAccount } from "../fetch/account";
-import { toDecimals } from "../utils/decimals";
+import { setValueWithDecimals } from "../utils/decimals";
 import { eventId } from "../utils/events";
 import { underlyingAssetTopUpEvent } from "./events/underlyingassettopup";
 import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn";
@@ -52,21 +52,20 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     token.decimals
   );
 
-  schedule.totalClaimedExact = schedule.totalClaimedExact.plus(
-    event.params.totalAmount
-  );
-  schedule.totalClaimed = toDecimals(
-    schedule.totalClaimedExact,
+  setValueWithDecimals(
+    schedule,
+    "totalClaimed",
+    event.params.totalAmount,
     token.decimals
   );
-  schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.minus(
-    event.params.totalAmount
+
+  setValueWithDecimals(
+    schedule,
+    "underlyingBalance",
+    event.params.totalAmount,
+    schedule.underlyingAssetDecimals
   );
-  const underlyingDecimals = schedule.underlyingAssetDecimals;
-  schedule.underlyingBalance = toDecimals(
-    schedule.underlyingBalanceExact,
-    underlyingDecimals
-  );
+
   schedule.save();
 
   for (let i = 0; i < event.params.periodAmounts.length; i++) {
@@ -76,11 +75,13 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     // Update total claimed for the period if amount > 0
     const claimedAmount = event.params.periodAmounts[i];
     if (claimedAmount.gt(BigInt.zero())) {
-      period.totalClaimedExact = period.totalClaimedExact.plus(claimedAmount);
-      period.totalClaimed = toDecimals(
-        period.totalClaimedExact,
-        underlyingDecimals
+      setValueWithDecimals(
+        period,
+        "totalClaimed",
+        claimedAmount,
+        schedule.underlyingAssetDecimals
       );
+
       period.save();
     }
   }
@@ -118,14 +119,14 @@ export function handleUnderlyingAssetTopUp(
   );
 
   // Update schedule's underlying balance
-  schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.plus(
-    event.params.amount
+
+  setValueWithDecimals(
+    schedule,
+    "underlyingBalance",
+    event.params.amount,
+    schedule.underlyingAssetDecimals
   );
-  const underlyingDecimals = schedule.underlyingAssetDecimals;
-  schedule.underlyingBalance = toDecimals(
-    schedule.underlyingBalanceExact,
-    underlyingDecimals
-  );
+
   schedule.save();
 }
 
@@ -137,17 +138,6 @@ export function handleUnderlyingAssetWithdrawn(
   const to = fetchAccount(event.params.to);
   const token = Bond.load(schedule.token);
   if (!token) return;
-
-  log.info(
-    "Fixed yield underlying asset withdrawn event: amount={}, to={}, sender={}, schedule={}, bond={}",
-    [
-      event.params.amount.toString(),
-      to.id.toHexString(),
-      sender.id.toHexString(),
-      event.address.toHexString(),
-      token.id.toHexString(),
-    ]
-  );
 
   // Create event record
   underlyingAssetWithdrawnEvent(
@@ -161,13 +151,12 @@ export function handleUnderlyingAssetWithdrawn(
   );
 
   // Update schedule's underlying balance
-  schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.minus(
-    event.params.amount
+  setValueWithDecimals(
+    schedule,
+    "underlyingBalance",
+    event.params.amount,
+    schedule.underlyingAssetDecimals
   );
-  const underlyingDecimals = schedule.underlyingAssetDecimals;
-  schedule.underlyingBalance = toDecimals(
-    schedule.underlyingBalanceExact,
-    underlyingDecimals
-  );
+
   schedule.save();
 }

@@ -37,12 +37,12 @@ import { userUnblockedEvent } from "./events/userunblocked";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchEquity } from "./fetch/equity";
+import { handleMint } from "./handlers/mint";
 import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
   const equity = fetchEquity(event.address);
-  const sender = fetchAccount(event.transaction.from);
   const assetActivity = fetchAssetActivity(AssetType.equity);
 
   const assetStats = newAssetStatsData(
@@ -52,49 +52,23 @@ export function handleTransfer(event: Transfer): void {
     equity.equityClass
   );
 
-  if (event.params.from.equals(Address.zero())) {
-    const to = fetchAccount(event.params.to);
+  const from = event.params.from;
+  const to = event.params.to;
+  const value = event.params.value;
+  const decimals = equity.decimals;
 
-    createActivityLogEntry(event, EventType.Mint, [event.params.to]);
-
-    // increase total supply
-    equity.totalSupplyExact = equity.totalSupplyExact.plus(event.params.value);
-    equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
-    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
-      event.params.value
-    );
-    assetActivity.totalSupply = toDecimals(
-      assetActivity.totalSupplyExact,
-      equity.decimals
-    );
-
-    if (!hasBalance(equity.id, to.id, equity.decimals, false)) {
-      equity.totalHolders = equity.totalHolders + 1;
-      to.balancesCount = to.balancesCount + 1;
-    }
-
-    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
-    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-    to.save();
-
-    const balance = fetchAssetBalance(equity.id, to.id, equity.decimals, false);
-    balance.valueExact = balance.valueExact.plus(event.params.value);
-    balance.value = toDecimals(balance.valueExact, equity.decimals);
-    balance.lastActivity = event.block.timestamp;
-    balance.save();
-
-    const portfolioStats = newPortfolioStatsData(
-      to.id,
+  if (from.equals(Address.zero())) {
+    createActivityLogEntry(event, EventType.Mint, [to]);
+    handleMint(
+      equity,
       equity.id,
-      AssetType.equity
+      AssetType.equity,
+      event.block.timestamp,
+      to,
+      value,
+      decimals,
+      false
     );
-    portfolioStats.balance = balance.value;
-    portfolioStats.balanceExact = balance.valueExact;
-    portfolioStats.save();
-
-    assetStats.minted = toDecimals(event.params.value, equity.decimals);
-    assetStats.mintedExact = event.params.value;
-    assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
     createActivityLogEntry(event, EventType.Burn, [event.params.from]);

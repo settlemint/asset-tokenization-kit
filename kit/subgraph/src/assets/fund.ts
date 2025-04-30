@@ -43,6 +43,7 @@ import { userUnblockedEvent } from "./events/userunblocked";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchFund } from "./fetch/fund";
+import { handleMint } from "./handlers/mint";
 import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
@@ -58,49 +59,23 @@ export function handleTransfer(event: Transfer): void {
     fund.fundClass
   );
 
-  if (event.params.from.equals(Address.zero())) {
-    const to = fetchAccount(event.params.to);
+  const from = event.params.from;
+  const to = event.params.to;
+  const value = event.params.value;
+  const decimals = fund.decimals;
 
-    createActivityLogEntry(event, EventType.Mint, [event.params.to]);
-
-    // increase total supply
-    fund.totalSupplyExact = fund.totalSupplyExact.plus(event.params.value);
-    fund.totalSupply = toDecimals(fund.totalSupplyExact, fund.decimals);
-    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
-      event.params.value
-    );
-    assetActivity.totalSupply = toDecimals(
-      assetActivity.totalSupplyExact,
-      fund.decimals
-    );
-
-    if (!hasBalance(fund.id, to.id, fund.decimals, false)) {
-      fund.totalHolders = fund.totalHolders + 1;
-      to.balancesCount = to.balancesCount + 1;
-    }
-
-    to.totalBalanceExact = to.totalBalanceExact.plus(event.params.value);
-    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-    to.save();
-
-    const balance = fetchAssetBalance(fund.id, to.id, fund.decimals, false);
-    balance.valueExact = balance.valueExact.plus(event.params.value);
-    balance.value = toDecimals(balance.valueExact, fund.decimals);
-    balance.lastActivity = event.block.timestamp;
-    balance.save();
-
-    const portfolioStats = newPortfolioStatsData(
-      to.id,
+  if (from.equals(Address.zero())) {
+    createActivityLogEntry(event, EventType.Mint, [to]);
+    handleMint(
+      fund,
       fund.id,
-      AssetType.fund
+      AssetType.fund,
+      event.block.timestamp,
+      to,
+      value,
+      decimals,
+      false
     );
-    portfolioStats.balance = balance.value;
-    portfolioStats.balanceExact = balance.valueExact;
-    portfolioStats.save();
-
-    assetStats.minted = toDecimals(event.params.value, fund.decimals);
-    assetStats.mintedExact = event.params.value;
-    assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
 
