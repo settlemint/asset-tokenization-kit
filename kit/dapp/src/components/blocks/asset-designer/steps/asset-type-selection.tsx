@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import type { AssetType } from "../asset-designer-dialog";
 
 interface AssetTypeCardProps {
-  type: AssetType;
+  _type: AssetType;
   title: string;
   description: string;
   features: string[];
@@ -15,7 +15,7 @@ interface AssetTypeCardProps {
 }
 
 function AssetTypeCard({
-  type,
+  _type,
   title,
   description,
   features,
@@ -71,7 +71,7 @@ export function AssetTypeSelection({
   selectedType,
   onSelect,
 }: AssetTypeSelectionProps) {
-  const t = useTranslations("admin.sidebar.asset-types");
+  const _t = useTranslations("admin.sidebar.asset-types");
 
   const assetTypes = [
     {
@@ -153,7 +153,7 @@ export function AssetTypeSelection({
         {assetTypes.map((assetType) => (
           <AssetTypeCard
             key={assetType.type}
-            type={assetType.type}
+            _type={assetType.type}
             title={assetType.title}
             description={assetType.description}
             features={assetType.features}

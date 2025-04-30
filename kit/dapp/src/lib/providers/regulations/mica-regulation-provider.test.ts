@@ -1,9 +1,9 @@
 /**
  * Tests for MICA regulation provider implementation
  */
-import {
-  type MicaDocument,
-  type MicaRegulationConfig,
+import type {
+  MicaDocument,
+  MicaRegulationConfig,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { MicaRegulationProvider } from "./mica-regulation-provider";

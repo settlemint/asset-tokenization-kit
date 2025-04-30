@@ -11,7 +11,7 @@ import {
 import { uploadToStorage } from "@/lib/upload";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 // Import form steps for each asset type
@@ -60,7 +60,7 @@ import { getPredictedAddress as getCryptocurrencyPredictedAddress } from "@/lib/
 import { getPredictedAddress as getStablecoinPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
 
 // Define a base form type that contains all possible fields
-interface BaseFormValues {
+interface _BaseFormValues {
   assetName: string;
   symbol: string;
   decimals?: number;
@@ -97,18 +97,18 @@ export function AssetDesignerDialog({
   open,
   onOpenChange,
 }: AssetDesignerDialogProps) {
-  const t = useTranslations("admin.sidebar");
+  const _t = useTranslations("admin.sidebar");
   const [currentStep, setCurrentStep] = useState<AssetDesignerStep>("type");
   const [selectedAssetType, setSelectedAssetType] = useState<AssetType>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { data: session } = authClient.useSession();
+  const { data: _session } = authClient.useSession();
 
   // Form state tracking
   const [isBasicInfoValid, setIsBasicInfoValid] = useState(false);
   const [isConfigurationValid, setIsConfigurationValid] = useState(false);
-  const [isPermissionsValid, setIsPermissionsValid] = useState(false);
-  const [isRegulationValid, setIsRegulationValid] = useState(true); // Default to true since it's optional
+  const [_isPermissionsValid, setIsPermissionsValid] = useState(false);
+  const [_isRegulationValid, _setIsRegulationValid] = useState(true); // Default to true since it's optional
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
 
   // Document upload state
@@ -218,7 +218,7 @@ export function AssetDesignerDialog({
   });
 
   // Get the appropriate form based on asset type
-  const getFormForAssetType = () => {
+  const getFormForAssetType = useCallback(() => {
     switch (selectedAssetType) {
       case "bond":
         return bondForm;
@@ -235,7 +235,15 @@ export function AssetDesignerDialog({
       default:
         return bondForm; // Fallback
     }
-  };
+  }, [
+    selectedAssetType,
+    bondForm,
+    cryptocurrencyForm,
+    equityForm,
+    fundForm,
+    stablecoinForm,
+    depositForm,
+  ]);
 
   // Check if all required fields are filled and valid for the current step
   useEffect(() => {
@@ -245,7 +253,7 @@ export function AssetDesignerDialog({
       const form = getFormForAssetType();
 
       // Get form state
-      const { errors, touchedFields, dirtyFields } = form.formState;
+      const { errors } = form.formState;
 
       if (currentStep === "details") {
         // Mark all fields as touched to force validation
@@ -327,10 +335,6 @@ export function AssetDesignerDialog({
         // we'll just validate that the user has made any selections
         // and there are no form validation errors
 
-        // For the permissions step, we'll validate that at least the current user is assigned as admin
-        const formValues = form.getValues();
-        const assetAdmins = formValues.assetAdmins || [];
-
         // Always consider permissions valid since the current user is added by default
         setIsPermissionsValid(true);
       }
@@ -355,7 +359,7 @@ export function AssetDesignerDialog({
         }
       }
     };
-  }, [currentStep, selectedAssetType]);
+  }, [currentStep, selectedAssetType, getFormForAssetType]);
 
   const handleAssetTypeSelect = (type: AssetType) => {
     setSelectedAssetType(type);

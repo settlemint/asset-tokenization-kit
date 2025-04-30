@@ -20,7 +20,7 @@ const UploadResponseSchema = t.Object({
 // Define the upload action function separately
 const uploadDocumentFunction = async ({
   parsedInput: formData,
-  ctx: { user },
+  ctx: { user: _user },
 }: {
   parsedInput: FormData;
   ctx: { user: User };

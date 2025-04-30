@@ -103,8 +103,8 @@ export function FormDocumentUpload<T extends FieldValues>({
   const [documents, setDocuments] = useState<Document[]>([]);
   const [activeUpload, setActiveUpload] = useState<Document | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [progressInterval, setProgressInterval] =
+  const [_uploadProgress, setUploadProgress] = useState(0);
+  const [_progressInterval, setProgressInterval] =
     useState<NodeJS.Timeout | null>(null);
 
   const parentForm = useFormContext<T>();

@@ -42,7 +42,7 @@ export const getFilesList = withTracing(
   "getFilesList",
   async (
     prefix: string = "",
-    skipCache: boolean = false
+    _skipCache: boolean = false
   ): Promise<FileMetadata[]> => {
     console.log(`Listing files with prefix: "${prefix}"`);
 
@@ -218,7 +218,7 @@ export const createPresignedUploadUrl = withTracing(
   "createPresignedUploadUrl",
   async (
     fileName: string,
-    contentType: string,
+    _contentType: string,
     path: string = "",
     expirySeconds: number = 3600
   ): Promise<string | null> => {

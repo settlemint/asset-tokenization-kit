@@ -14,7 +14,7 @@ export async function generateMetadata({
   params,
 }: LayoutProps): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({
+  const _t = await getTranslations({
     locale,
     namespace: "layout.navigation",
   });
