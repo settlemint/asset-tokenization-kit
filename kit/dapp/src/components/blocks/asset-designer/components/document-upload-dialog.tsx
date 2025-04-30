@@ -63,6 +63,10 @@ export function DocumentUploadDialog({
       // Create form data for upload
       const formData = new FormData();
       formData.append("file", selectedFile);
+      // Add required fields that uploadDocument expects
+      formData.append("title", documentTitle);
+      formData.append("type", documentType || "Other");
+      formData.append("description", documentDescription || "");
 
       // Use the server action to upload the file with the regulation ID as path
       const path = `regulations/${regulationId}`;

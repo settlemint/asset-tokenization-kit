@@ -34,7 +34,7 @@ export function StepWizard({
   const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-[75vh] flex-col">
       <div className="flex flex-1 overflow-hidden p-6">
         {/* Sidebar / Steps */}
         <div
@@ -196,7 +196,7 @@ export function StepWizard({
         </div>
 
         {/* Content area */}
-        <div className="flex flex-col flex-1 overflow-auto bg-background ml-6 rounded-lg p-10">
+        <div className="flex flex-col flex-1 overflow-hidden bg-background ml-6 rounded-lg p-10">
           {children}
         </div>
       </div>

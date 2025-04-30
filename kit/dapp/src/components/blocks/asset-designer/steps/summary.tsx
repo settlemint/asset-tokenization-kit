@@ -144,7 +144,8 @@ export function AssetSummaryStep({
       onBack={onBack}
       isNextDisabled={isSubmitting}
       nextLabel={isSubmitting ? "Creating..." : "Create Asset"}
-      className="max-w-3xl mx-auto"
+      className="max-w-3xl w-full mx-auto"
+      fixedButtons={true}
     >
       <div className="bg-muted p-6 rounded-lg">
         <h3 className="text-xl font-medium mb-6">Asset Summary</h3>
@@ -226,11 +227,45 @@ function SummarySection({
 }
 
 // Helper component for individual summary items
-function SummaryItem({ label, value }: { label: string; value?: string }) {
+function SummaryItem({ label, value }: { label: string; value?: any }) {
+  // Convert object values to string representation
+  const displayValue = (): string => {
+    if (value === undefined || value === null) {
+      return "Not specified";
+    }
+
+    if (typeof value === "object") {
+      // For complex objects (like the underlying asset),
+      // display in a more structured way
+      try {
+        // Format the JSON with indentation
+        const formatted = JSON.stringify(value, null, 2);
+
+        // Return the formatted JSON, but truncate if too long
+        if (formatted.length > 100) {
+          return formatted.substring(0, 100) + "... (complex object)";
+        }
+        return formatted;
+      } catch (e) {
+        return "Complex object";
+      }
+    }
+
+    return String(value);
+  };
+
   return (
     <div className="grid grid-cols-2 gap-4">
       <div className="text-sm font-medium">{label}:</div>
-      <div className="text-sm break-words">{value || "Not specified"}</div>
+      <div className="text-sm break-words overflow-hidden">
+        {typeof value === "object" && value !== null ? (
+          <div className="max-h-[150px] overflow-y-auto bg-muted/50 p-2 rounded text-xs">
+            <pre>{JSON.stringify(value, null, 2)}</pre>
+          </div>
+        ) : (
+          displayValue()
+        )}
+      </div>
     </div>
   );
 }
