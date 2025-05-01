@@ -3,7 +3,7 @@ import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { CreateDvpSwapForm } from "./_components/create-dvp-swap-form/form";
+import { CreateXvPForm } from "./_components/create-xvp-form/form";
 
 export async function generateMetadata({
   params,
@@ -19,13 +19,13 @@ export async function generateMetadata({
   return {
     title: {
       ...metadata.title,
-      default: t("dvp-swap"),
+      default: t("xvp"),
     },
-    description: t("dvp-swap"),
+    description: t("xvp"),
   };
 }
 
-export default async function DvpSwapPage({
+export default async function XvpPage({
   params,
 }: {
   params: Promise<{ locale: Locale }>;
@@ -38,10 +38,7 @@ export default async function DvpSwapPage({
 
   return (
     <>
-      <PageHeader
-        title={t("dvp-swap")}
-        button={<CreateDvpSwapForm asButton />}
-      />
+      <PageHeader title={t("xvp")} button={<CreateXvPForm asButton />} />
     </>
   );
 }
