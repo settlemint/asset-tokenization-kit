@@ -1,0 +1,64 @@
+import { Address, Entity, Value } from "@graphprotocol/graph-ts";
+import { fetchAccount } from "../../fetch/account";
+import { Role } from "../../utils/enums";
+
+export function roleRevokedHandler(
+  asset: Entity,
+  role: string,
+  roleHolder: Address
+): void {
+  const roleHolderAccount = fetchAccount(roleHolder);
+
+  if (role == Role.DEFAULT_ADMIN_ROLE) {
+    let found = false;
+    const adminsValue = asset.get("admins");
+    let admins = adminsValue?.toBytesArray();
+    if (!admins) {
+      admins = [];
+    }
+    const newAdmins: Address[] = [];
+    for (let i = 0; i < admins.length; i++) {
+      if (!admins[i].equals(roleHolderAccount.id)) {
+        newAdmins.push(admins[i]);
+      }
+    }
+    asset.set("admins", Value.fromAddressArray(newAdmins));
+    return;
+  }
+
+  if (role == Role.SUPPLY_MANAGEMENT_ROLE) {
+    let found = false;
+    const supplyManagersValue = asset.get("supplyManagers");
+    let supplyManagers = supplyManagersValue?.toBytesArray();
+    if (!supplyManagers) {
+      supplyManagers = [];
+    }
+    const newSupplyManagers: Address[] = [];
+    for (let i = 0; i < supplyManagers.length; i++) {
+      if (!supplyManagers[i].equals(roleHolderAccount.id)) {
+        newSupplyManagers.push(supplyManagers[i]);
+      }
+    }
+    asset.set("supplyManagers", Value.fromAddressArray(newSupplyManagers));
+    return;
+  }
+
+  if (role == Role.USER_MANAGEMENT_ROLE) {
+    let found = false;
+    const userManagersValue = asset.get("userManagers");
+    let userManagers = userManagersValue?.toBytesArray();
+    if (!userManagers) {
+      userManagers = [];
+    }
+    const newUserManagers: Address[] = [];
+    for (let i = 0; i < userManagers.length; i++) {
+      if (!userManagers[i].equals(roleHolderAccount.id)) {
+        newUserManagers.push(userManagers[i]);
+      }
+    }
+    asset.set("userManagers", Value.fromAddressArray(newUserManagers));
+    return;
+  }
+
+  return;
+}

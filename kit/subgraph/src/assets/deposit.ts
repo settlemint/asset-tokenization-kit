@@ -1,12 +1,5 @@
-import {
-  Address,
-  BigInt,
-  ByteArray,
-  Bytes,
-  crypto,
-  log,
-  store,
-} from "@graphprotocol/graph-ts";
+import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Deposit } from "../../generated/schema";
 import {
   Approval,
   Clawback,
@@ -30,7 +23,7 @@ import { decrease, increase } from "../utils/counters";
 import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
-import { depositCollateralCalculatedFields } from "./calculations/collateral";
+import { calculateCollateral } from "./calculations/collateral";
 import { calculateConcentration } from "./calculations/concentration";
 import { clawbackEvent } from "./events/clawback";
 import { collateralUpdatedEvent } from "./events/collateralupdated";
@@ -42,17 +35,17 @@ import { userDisallowedEvent } from "./events/userdisallowed";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchDeposit } from "./fetch/deposit";
+import { approvalHandler } from "./handlers/approval";
 import { burnHandler } from "./handlers/burn";
 import { mintHandler } from "./handlers/mint";
+import { roleGrantedHandler } from "./handlers/role-granted";
+import { roleRevokedHandler } from "./handlers/role-revoked";
 import { transferHandler } from "./handlers/transfer";
-import { newAssetStatsData, updateDepositCollateralData } from "./stats/assets";
+import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
+
 export function handleTransfer(event: Transfer): void {
   const deposit = fetchDeposit(event.address);
-  const assetActivity = fetchAssetActivity(AssetType.deposit);
-
-  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
-
   const from = event.params.from;
   const to = event.params.to;
   const value = event.params.value;
@@ -70,8 +63,6 @@ export function handleTransfer(event: Transfer): void {
       decimals,
       true
     );
-    depositCollateralCalculatedFields(deposit);
-    updateDepositCollateralData(assetStats, deposit);
   } else if (to.equals(Address.zero())) {
     createActivityLogEntry(event, EventType.Burn, [event.params.from]);
     burnHandler(
@@ -84,8 +75,6 @@ export function handleTransfer(event: Transfer): void {
       decimals,
       true
     );
-    depositCollateralCalculatedFields(deposit);
-    updateDepositCollateralData(assetStats, deposit);
   } else {
     createActivityLogEntry(event, EventType.Transfer, [
       event.params.from,
@@ -103,41 +92,78 @@ export function handleTransfer(event: Transfer): void {
       false
     );
   }
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
+  deposit.save();
+}
 
-  deposit.lastActivity = event.block.timestamp;
-  deposit.concentration = calculateConcentration(
+export function updateDerivedFieldsAndSave(
+  deposit: Deposit,
+  timestamp: BigInt
+): void {
+  calculateCollateral(
+    deposit,
+    deposit.collateralExact,
+    deposit.totalSupplyExact,
+    deposit.decimals
+  );
+  calculateConcentration(
+    deposit,
     deposit.holders.load(),
     deposit.totalSupplyExact
   );
+
+  deposit.lastActivity = timestamp;
   deposit.save();
+}
 
-  // Update supply in asset stats
-  assetStats.supply = deposit.totalSupply;
-  assetStats.supplyExact = deposit.totalSupplyExact;
-  assetStats.save();
+export function handleRoleGranted(event: RoleGranted): void {
+  const deposit = fetchDeposit(event.address);
+  const role = event.params.role.toHexString();
+  const roleHolder = event.params.account;
 
-  assetActivity.save();
+  createActivityLogEntry(event, EventType.RoleGranted, [
+    roleHolder,
+    event.params.sender,
+  ]);
+  roleGrantedHandler(deposit, role, roleHolder);
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
+}
+
+export function handleRoleRevoked(event: RoleRevoked): void {
+  const deposit = fetchDeposit(event.address);
+  const role = event.params.role.toHexString();
+  const roleHolder = event.params.account;
+
+  createActivityLogEntry(event, EventType.RoleRevoked, [
+    roleHolder,
+    event.params.sender,
+  ]);
+  roleRevokedHandler(deposit, role, roleHolder);
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
+}
+
+export function handleRoleAdminChanged(event: RoleAdminChanged): void {
+  // Not really tracking anything here except the event, if you do this you'll need to change the frontend as well
+  const deposit = fetchDeposit(event.address);
+  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handleApproval(event: Approval): void {
   const deposit = fetchDeposit(event.address);
-  const owner = fetchAccount(event.params.owner);
-
   createActivityLogEntry(event, EventType.Approval, [
     event.params.owner,
     event.params.spender,
   ]);
-
-  const balance = fetchAssetBalance(
+  approvalHandler(
     deposit.id,
-    owner.id,
+    event.params.value,
     deposit.decimals,
-    true
+    false,
+    event.block.timestamp,
+    event.params.owner
   );
-  balance.approvedExact = event.params.value;
-  balance.approved = toDecimals(balance.approvedExact, deposit.decimals);
-  balance.lastActivity = event.block.timestamp;
-  balance.save();
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handlePaused(event: Paused): void {
@@ -402,149 +428,6 @@ export function handleTokenWithdrawn(event: TokenWithdrawn): void {
       event.address.toHexString(),
     ]
   );
-
-  deposit.lastActivity = event.block.timestamp;
-  deposit.save();
-}
-
-export function handleRoleGranted(event: RoleGranted): void {
-  const deposit = fetchDeposit(event.address);
-  const account = fetchAccount(event.params.account);
-
-  createActivityLogEntry(event, EventType.RoleGranted, [event.params.account]);
-
-  // Handle different roles
-  if (
-    event.params.role.toHexString() ==
-    "0x0000000000000000000000000000000000000000000000000000000000000000"
-  ) {
-    // DEFAULT_ADMIN_ROLE
-    let found = false;
-    for (let i = 0; i < deposit.admins.length; i++) {
-      if (deposit.admins[i].equals(account.id)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      deposit.admins = deposit.admins.concat([account.id]);
-    }
-  } else if (
-    event.params.role.toHexString() ==
-    crypto.keccak256(ByteArray.fromUTF8("SUPPLY_MANAGEMENT_ROLE")).toHexString()
-  ) {
-    // SUPPLY_MANAGEMENT_ROLE
-    let found = false;
-    for (let i = 0; i < deposit.supplyManagers.length; i++) {
-      if (deposit.supplyManagers[i].equals(account.id)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      deposit.supplyManagers = deposit.supplyManagers.concat([account.id]);
-    }
-  } else if (
-    event.params.role.toHexString() ==
-    crypto.keccak256(ByteArray.fromUTF8("USER_MANAGEMENT_ROLE")).toHexString()
-  ) {
-    // USER_MANAGEMENT_ROLE
-    let found = false;
-    for (let i = 0; i < deposit.userManagers.length; i++) {
-      if (deposit.userManagers[i].equals(account.id)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      deposit.userManagers = deposit.userManagers.concat([account.id]);
-    }
-  } else if (
-    event.params.role.toHexString() ==
-    crypto.keccak256(ByteArray.fromUTF8("AUDITOR_ROLE")).toHexString()
-  ) {
-    // AUDITOR_ROLE
-    let found = false;
-    for (let i = 0; i < deposit.auditors.length; i++) {
-      if (deposit.auditors[i].equals(account.id)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      deposit.auditors = deposit.auditors.concat([account.id]);
-    }
-  }
-
-  deposit.lastActivity = event.block.timestamp;
-  deposit.save();
-}
-
-export function handleRoleRevoked(event: RoleRevoked): void {
-  const deposit = fetchDeposit(event.address);
-  const account = fetchAccount(event.params.account);
-
-  createActivityLogEntry(event, EventType.RoleRevoked, [event.params.account]);
-
-  // Handle different roles
-  if (
-    event.params.role.toHexString() ==
-    "0x0000000000000000000000000000000000000000000000000000000000000000"
-  ) {
-    // DEFAULT_ADMIN_ROLE
-    const newAdmins: Bytes[] = [];
-    for (let i = 0; i < deposit.admins.length; i++) {
-      if (!deposit.admins[i].equals(account.id)) {
-        newAdmins.push(deposit.admins[i]);
-      }
-    }
-    deposit.admins = newAdmins;
-  } else if (
-    event.params.role.toHexString() ==
-    crypto.keccak256(ByteArray.fromUTF8("SUPPLY_MANAGEMENT_ROLE")).toHexString()
-  ) {
-    // SUPPLY_MANAGEMENT_ROLE
-    const newSupplyManagers: Bytes[] = [];
-    for (let i = 0; i < deposit.supplyManagers.length; i++) {
-      if (!deposit.supplyManagers[i].equals(account.id)) {
-        newSupplyManagers.push(deposit.supplyManagers[i]);
-      }
-    }
-    deposit.supplyManagers = newSupplyManagers;
-  } else if (
-    event.params.role.toHexString() ==
-    crypto.keccak256(ByteArray.fromUTF8("USER_MANAGEMENT_ROLE")).toHexString()
-  ) {
-    // USER_MANAGEMENT_ROLE
-    const newUserManagers: Bytes[] = [];
-    for (let i = 0; i < deposit.userManagers.length; i++) {
-      if (!deposit.userManagers[i].equals(account.id)) {
-        newUserManagers.push(deposit.userManagers[i]);
-      }
-    }
-    deposit.userManagers = newUserManagers;
-  } else if (
-    event.params.role.toHexString() ==
-    crypto.keccak256(ByteArray.fromUTF8("AUDITOR_ROLE")).toHexString()
-  ) {
-    // AUDITOR_ROLE
-    const newAuditors: Bytes[] = [];
-    for (let i = 0; i < deposit.auditors.length; i++) {
-      if (!deposit.auditors[i].equals(account.id)) {
-        newAuditors.push(deposit.auditors[i]);
-      }
-    }
-    deposit.auditors = newAuditors;
-  }
-
-  deposit.lastActivity = event.block.timestamp;
-  deposit.save();
-}
-
-export function handleRoleAdminChanged(event: RoleAdminChanged): void {
-  const deposit = fetchDeposit(event.address);
-
-  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
 
   deposit.lastActivity = event.block.timestamp;
   deposit.save();

@@ -52,7 +52,6 @@ import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
   const stableCoin = fetchStableCoin(event.address);
-  const sender = fetchAccount(event.transaction.from);
   const assetActivity = fetchAssetActivity(AssetType.stablecoin);
 
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);

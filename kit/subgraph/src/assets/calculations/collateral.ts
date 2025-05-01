@@ -1,37 +1,25 @@
-import { BigDecimal } from "@graphprotocol/graph-ts";
-import { Deposit, StableCoin } from "../../../generated/schema";
+import { BigDecimal, BigInt, Entity } from "@graphprotocol/graph-ts";
 import { setValueWithDecimals } from "../../utils/decimals";
 
-export function collateralCalculatedFields(stableCoin: StableCoin): StableCoin {
-  stableCoin.collateralRatio = stableCoin.collateral.equals(BigDecimal.zero())
-    ? BigDecimal.fromString("100")
-    : stableCoin.totalSupply
-        .div(stableCoin.collateral)
-        .times(BigDecimal.fromString("100"));
+export function calculateCollateral(
+  asset: Entity,
+  collateralExact: BigInt,
+  totalSupplyExact: BigInt,
+  decimals: number
+): void {
+  const collateralRatio = collateralExact.equals(BigInt.zero())
+    ? BigInt.fromString("100")
+    : totalSupplyExact.div(collateralExact).times(BigInt.fromString("100"));
 
-  setValueWithDecimals(
-    stableCoin,
-    "freeCollateral",
-    stableCoin.collateralExact.minus(stableCoin.totalSupplyExact),
-    stableCoin.decimals
+  asset.setBigDecimal(
+    "collateralRatio",
+    BigDecimal.fromString(collateralRatio.toString())
   );
 
-  return stableCoin;
-}
-
-export function depositCollateralCalculatedFields(deposit: Deposit): Deposit {
-  deposit.collateralRatio = deposit.collateral.equals(BigDecimal.zero())
-    ? BigDecimal.fromString("100")
-    : deposit.totalSupply
-        .div(deposit.collateral)
-        .times(BigDecimal.fromString("100"));
-
   setValueWithDecimals(
-    deposit,
+    asset,
     "freeCollateral",
-    deposit.collateralExact.minus(deposit.totalSupplyExact),
-    deposit.decimals
+    collateralExact.minus(totalSupplyExact),
+    decimals
   );
-
-  return deposit;
 }

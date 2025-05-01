@@ -1,12 +1,4 @@
-import {
-  Address,
-  BigInt,
-  ByteArray,
-  Bytes,
-  crypto,
-  log,
-  store,
-} from "@graphprotocol/graph-ts";
+import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
 import { Bond } from "../../generated/schema";
 import {
   Approval,
@@ -25,7 +17,6 @@ import {
   UserBlocked,
   UserUnblocked,
 } from "../../generated/templates/Bond/Bond";
-import { FixedYield as FixedYieldContract } from "../../generated/templates/FixedYield/FixedYield";
 import { fetchAccount } from "../fetch/account";
 import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
@@ -35,6 +26,8 @@ import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { calculateConcentration } from "./calculations/concentration";
+import { updateFixedYield } from "./calculations/fixed-yield";
+import { calculateTotalUnderlyingNeeded } from "./calculations/needed-underlying";
 import { bondMaturedEvent } from "./events/bondmatured";
 import { bondRedeemedEvent } from "./events/bondredeemed";
 import { clawbackEvent } from "./events/clawback";
@@ -48,18 +41,17 @@ import { userUnblockedEvent } from "./events/userunblocked";
 import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
-import { fetchFixedYield, fetchFixedYieldPeriod } from "./fetch/fixed-yield";
+import { approvalHandler } from "./handlers/approval";
 import { burnHandler } from "./handlers/burn";
 import { mintHandler } from "./handlers/mint";
+import { roleGrantedHandler } from "./handlers/role-granted";
+import { roleRevokedHandler } from "./handlers/role-revoked";
 import { transferHandler } from "./handlers/transfer";
 import { newAssetStatsData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
   const bond = fetchBond(event.address);
-  const assetActivity = fetchAssetActivity(AssetType.bond);
-  const assetStats = newAssetStatsData(bond.id, AssetType.bond);
-
   const from = event.params.from;
   const to = event.params.to;
   const value = event.params.value;
@@ -77,7 +69,6 @@ export function handleTransfer(event: Transfer): void {
       decimals,
       false
     );
-    updateAssociatedFixedYield(bond, event.block.timestamp);
   } else if (to.equals(Address.zero())) {
     createActivityLogEntry(event, EventType.Burn, [event.params.from]);
     burnHandler(
@@ -90,7 +81,6 @@ export function handleTransfer(event: Transfer): void {
       decimals,
       false
     );
-    updateAssociatedFixedYield(bond, event.block.timestamp);
   } else {
     createActivityLogEntry(event, EventType.Transfer, [
       event.params.from,
@@ -108,162 +98,68 @@ export function handleTransfer(event: Transfer): void {
       false
     );
   }
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
+}
 
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
+export function updateDerivedFieldsAndSave(
+  bond: Bond,
+  timestamp: BigInt
+): void {
+  updateFixedYield(bond);
+  calculateTotalUnderlyingNeeded(bond);
+  calculateConcentration(bond, bond.holders.load(), bond.totalSupplyExact);
+  bond.lastActivity = timestamp;
   bond.save();
-
-  assetStats.supply = bond.totalSupply;
-  assetStats.supplyExact = bond.totalSupplyExact;
-  assetStats.save();
-
-  assetActivity.save();
 }
 
 export function handleRoleGranted(event: RoleGranted): void {
   const bond = fetchBond(event.address);
-  const account = fetchAccount(event.params.account);
+  const role = event.params.role.toHexString();
+  const roleHolder = event.params.account;
 
-  createActivityLogEntry(event, EventType.RoleGranted, [event.params.account]);
-
-  // Handle different roles
-  if (
-    event.params.role.toHexString() ==
-    "0x0000000000000000000000000000000000000000000000000000000000000000"
-  ) {
-    // DEFAULT_ADMIN_ROLE
-    let found = false;
-    for (let i = 0; i < bond.admins.length; i++) {
-      if (bond.admins[i].equals(account.id)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      bond.admins = bond.admins.concat([account.id]);
-    }
-  } else if (
-    event.params.role.toHexString() ==
-    crypto.keccak256(ByteArray.fromUTF8("SUPPLY_MANAGEMENT_ROLE")).toHexString()
-  ) {
-    // SUPPLY_MANAGEMENT_ROLE
-    let found = false;
-    for (let i = 0; i < bond.supplyManagers.length; i++) {
-      if (bond.supplyManagers[i].equals(account.id)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      bond.supplyManagers = bond.supplyManagers.concat([account.id]);
-    }
-  } else if (
-    event.params.role.toHexString() ==
-    crypto.keccak256(ByteArray.fromUTF8("USER_MANAGEMENT_ROLE")).toHexString()
-  ) {
-    // USER_MANAGEMENT_ROLE
-    let found = false;
-    for (let i = 0; i < bond.userManagers.length; i++) {
-      if (bond.userManagers[i].equals(account.id)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      bond.userManagers = bond.userManagers.concat([account.id]);
-    }
-  }
-
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
-  bond.save();
+  createActivityLogEntry(event, EventType.RoleGranted, [
+    roleHolder,
+    event.params.sender,
+  ]);
+  roleGrantedHandler(bond, role, roleHolder);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
   const bond = fetchBond(event.address);
-  const account = fetchAccount(event.params.account);
+  const role = event.params.role.toHexString();
+  const roleHolder = event.params.account;
 
-  createActivityLogEntry(event, EventType.RoleRevoked, [event.params.account]);
+  createActivityLogEntry(event, EventType.RoleRevoked, [
+    roleHolder,
+    event.params.sender,
+  ]);
+  roleRevokedHandler(bond, role, roleHolder);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
+}
 
-  // Handle different roles
-  if (
-    event.params.role.toHexString() ==
-    "0x0000000000000000000000000000000000000000000000000000000000000000"
-  ) {
-    // DEFAULT_ADMIN_ROLE
-    const newAdmins: Bytes[] = [];
-    for (let i = 0; i < bond.admins.length; i++) {
-      if (!bond.admins[i].equals(account.id)) {
-        newAdmins.push(bond.admins[i]);
-      }
-    }
-    bond.admins = newAdmins;
-  } else if (
-    event.params.role.toHexString() ==
-    crypto.keccak256(ByteArray.fromUTF8("SUPPLY_MANAGEMENT_ROLE")).toHexString()
-  ) {
-    // SUPPLY_MANAGEMENT_ROLE
-    const newSupplyManagers: Bytes[] = [];
-    for (let i = 0; i < bond.supplyManagers.length; i++) {
-      if (!bond.supplyManagers[i].equals(account.id)) {
-        newSupplyManagers.push(bond.supplyManagers[i]);
-      }
-    }
-    bond.supplyManagers = newSupplyManagers;
-  } else if (
-    event.params.role.toHexString() ==
-    crypto.keccak256(ByteArray.fromUTF8("USER_MANAGEMENT_ROLE")).toHexString()
-  ) {
-    // USER_MANAGEMENT_ROLE
-    const newUserManagers: Bytes[] = [];
-    for (let i = 0; i < bond.userManagers.length; i++) {
-      if (!bond.userManagers[i].equals(account.id)) {
-        newUserManagers.push(bond.userManagers[i]);
-      }
-    }
-    bond.userManagers = newUserManagers;
-  }
-
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
-  bond.save();
+export function handleRoleAdminChanged(event: RoleAdminChanged): void {
+  // Not really tracking anything here except the event, if you do this you'll need to change the frontend as well
+  const bond = fetchBond(event.address);
+  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
 export function handleApproval(event: Approval): void {
   const bond = fetchBond(event.address);
-  const owner = fetchAccount(event.params.owner);
-
-  // Update the owner's balance approved amount
-  const ownerBalance = fetchAssetBalance(
-    bond.id,
-    owner.id,
-    bond.decimals,
-    false
-  );
-  ownerBalance.approvedExact = event.params.value;
-  ownerBalance.approved = toDecimals(event.params.value, bond.decimals);
-  ownerBalance.lastActivity = event.block.timestamp;
-  ownerBalance.save();
-
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
-  bond.save();
-
   createActivityLogEntry(event, EventType.Approval, [
     event.params.owner,
     event.params.spender,
   ]);
-}
-
-export function handleRoleAdminChanged(event: RoleAdminChanged): void {
-  const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
-  bond.save();
-
-  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
+  approvalHandler(
+    bond.id,
+    event.params.value,
+    bond.decimals,
+    false,
+    event.block.timestamp,
+    event.params.owner
+  );
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
 export function handleBondMatured(event: BondMatured): void {
@@ -277,7 +173,7 @@ export function handleBondMatured(event: BondMatured): void {
 
   bond.isMatured = true;
   bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
   bond.save();
 
   bondMaturedEvent(
@@ -313,7 +209,7 @@ export function handleBondRedeemed(event: BondRedeemed): void {
   );
 
   bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
   bond.save();
 
   bondRedeemedEvent(
@@ -339,7 +235,7 @@ export function handlePaused(event: Paused): void {
 
   bond.paused = true;
   bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
   bond.save();
 
   const assetCount = fetchAssetCount(AssetType.bond);
@@ -394,7 +290,7 @@ export function handleUnpaused(event: Unpaused): void {
 
   bond.paused = false;
   bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
   bond.save();
 
   const assetCount = fetchAssetCount(AssetType.bond);
@@ -466,7 +362,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   balance.save();
 
   bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
   bond.save();
 
   tokensFrozenEvent(
@@ -488,7 +384,7 @@ export function handleUserBlocked(event: UserBlocked): void {
 
   bond.lastActivity = event.block.timestamp;
   blockUser(bond.id, user.id, event.block.timestamp);
-  updateDerivedFields(bond);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
   bond.save();
 
   const balance = fetchAssetBalance(bond.id, user.id, bond.decimals, false);
@@ -518,7 +414,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   const user = fetchAccount(event.params.user);
 
   bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
   unblockUser(bond.id, user.id);
   bond.save();
 
@@ -569,7 +465,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
   );
 
   bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
   bond.save();
 
   underlyingAssetTopUpEvent(
@@ -611,7 +507,7 @@ export function handleUnderlyingAssetWithdrawn(
   );
 
   bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
   bond.save();
 
   underlyingAssetWithdrawnEvent(
@@ -622,36 +518,6 @@ export function handleUnderlyingAssetWithdrawn(
     to.id,
     event.params.amount,
     bond.decimals
-  );
-}
-
-function calculateTotalUnderlyingNeeded(bond: Bond): void {
-  // Get underlying asset decimals
-  const underlyingDecimals = bond.underlyingAssetDecimals;
-
-  // Calculate exact value in underlying asset's decimals
-  bond.totalUnderlyingNeededExact = bond.totalSupplyExact
-    .times(bond.faceValue)
-    .div(BigInt.fromI32(10).pow(bond.decimals as u8))
-    .times(BigInt.fromI32(10).pow(underlyingDecimals as u8));
-
-  // Convert to decimal for display
-  bond.totalUnderlyingNeeded = toDecimals(
-    bond.totalUnderlyingNeededExact,
-    underlyingDecimals
-  );
-}
-
-export function updateDerivedFields(bond: Bond): void {
-  calculateTotalUnderlyingNeeded(bond);
-  // Compare using exact values
-  bond.hasSufficientUnderlying = bond.underlyingBalanceExact.ge(
-    bond.totalUnderlyingNeededExact
-  );
-  // Calculate concentration
-  bond.concentration = calculateConcentration(
-    bond.holders.load(),
-    bond.totalSupplyExact
   );
 }
 
@@ -744,7 +610,7 @@ export function handleClawback(event: Clawback): void {
   increase(assetActivity, "clawbackEventCount");
 
   bond.lastActivity = event.block.timestamp;
-  updateDerivedFields(bond);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
   bond.save();
 
   assetStats.supply = bond.totalSupply;
@@ -752,45 +618,4 @@ export function handleClawback(event: Clawback): void {
   assetStats.save();
 
   assetActivity.save();
-}
-
-function updateAssociatedFixedYield(bond: Bond, timestamp: BigInt): void {
-  if (!bond.yieldSchedule) {
-    return;
-  }
-
-  let fixedYield = fetchFixedYield(Address.fromBytes(bond.yieldSchedule!));
-
-  let fixedYieldContract = FixedYieldContract.bind(
-    Address.fromBytes(fixedYield.id)
-  );
-  let underlyingDecimals = fixedYield.underlyingAssetDecimals;
-
-  let nextPeriodYieldResult = fixedYieldContract.try_totalYieldForNextPeriod();
-  fixedYield.yieldForNextPeriodExact = nextPeriodYieldResult.reverted
-    ? BigInt.zero()
-    : nextPeriodYieldResult.value;
-  fixedYield.yieldForNextPeriod = toDecimals(
-    fixedYield.yieldForNextPeriodExact,
-    underlyingDecimals
-  );
-  fixedYield.save();
-  log.info("Updated FixedYield {} yieldForNextPeriod: {}", [
-    fixedYield.id.toHexString(),
-    fixedYield.yieldForNextPeriod.toString(),
-  ]);
-
-  let currentPeriodResult = fixedYieldContract.try_currentPeriod();
-  let fixedYieldPeriodId = currentPeriodResult.reverted
-    ? BigInt.zero()
-    : currentPeriodResult.value;
-  let fixedYieldPeriod = fetchFixedYieldPeriod(fixedYield, fixedYieldPeriodId);
-  fixedYieldPeriod.totalYield = fixedYield.yieldForNextPeriod;
-  fixedYieldPeriod.totalYieldExact = fixedYield.yieldForNextPeriodExact;
-  fixedYieldPeriod.save();
-  log.info("Updated FixedYieldPeriod {} totalYield: {}, totalYieldExact: {}", [
-    fixedYieldPeriod.id.toHexString(),
-    fixedYieldPeriod.totalYield.toString(),
-    fixedYieldPeriod.totalYieldExact.toString(),
-  ]);
 }

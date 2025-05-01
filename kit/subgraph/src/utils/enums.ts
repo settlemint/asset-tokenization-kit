@@ -1,3 +1,4 @@
+import { ByteArray, crypto } from "@graphprotocol/graph-ts";
 // These need to match the keys of the assetConfig object in the dapp
 export class AssetType {
   static bond: string = "bond";
@@ -53,4 +54,15 @@ export class EventName {
   static UnderlyingAssetWithdrawn: string = "Underlying Asset Withdrawn";
   // Stablecoin specific events
   static CollateralUpdated: string = "Collateral Updated";
+}
+
+export class Role {
+  static DEFAULT_ADMIN_ROLE: string =
+    "0x0000000000000000000000000000000000000000000000000000000000000000";
+  static SUPPLY_MANAGEMENT_ROLE: string = crypto
+    .keccak256(ByteArray.fromUTF8("SUPPLY_MANAGEMENT_ROLE"))
+    .toHexString();
+  static USER_MANAGEMENT_ROLE: string = crypto
+    .keccak256(ByteArray.fromUTF8("USER_MANAGEMENT_ROLE"))
+    .toHexString();
 }

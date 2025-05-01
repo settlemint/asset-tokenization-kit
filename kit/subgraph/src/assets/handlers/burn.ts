@@ -40,7 +40,7 @@ export function burnHandler(
   // update portfolio stats
   handlePortfolioStats(fromAccount, assetAddress, balance, decimals);
   // update asset stats
-  handleAssetStats(assetAddress, assetType, value, decimals);
+  handleAssetStats(asset, assetAddress, assetType, value, decimals);
 }
 
 function handleTotalSupply(
@@ -143,6 +143,7 @@ function handlePortfolioStats(
 }
 
 function handleAssetStats(
+  asset: Entity,
   assetAddress: Bytes,
   assetType: string,
   value: BigInt,
@@ -150,5 +151,16 @@ function handleAssetStats(
 ): void {
   const assetStats = newAssetStatsData(assetAddress, assetType);
   setValueWithDecimals(assetStats, "burned", value, decimals);
+  let supply = assetStats.supplyExact.minus(value);
+  setValueWithDecimals(assetStats, "supply", supply, decimals);
+
+  if (assetType === AssetType.deposit || assetType === AssetType.stablecoin) {
+    assetStats.collateral = asset.getBigDecimal("collateral");
+    assetStats.collateralExact = asset.getBigInt("collateralExact");
+    assetStats.freeCollateral = asset.getBigDecimal("freeCollateral");
+    assetStats.freeCollateralExact = asset.getBigInt("freeCollateralExact");
+    assetStats.collateralRatio = asset.getBigDecimal("collateralRatio");
+  }
+
   assetStats.save();
 }
