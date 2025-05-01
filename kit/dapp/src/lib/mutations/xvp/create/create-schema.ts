@@ -54,8 +54,12 @@ export const CreateXvpSchema = t.Object(
     ),
     expiry: t.String({
       description:
-        "The time until which assets cannot be refunded from the swap.",
+        "The time until which assets cannot be refunded from the settlement.",
       error: "Expiry is required",
+    }),
+    autoExecute: t.Boolean({
+      description:
+        "Whether to automatically execute the settlement on last approval",
     }),
   },
   {

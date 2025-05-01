@@ -231,8 +231,8 @@
         "settings": "Settings"
       },
       "trade-management": {
-        "dvp-swap": "DvP Swap",
-        "group-title": "Trade management"
+        "group-title": "Trade management",
+        "xvp-settlement": "XvP"
       }
     }
   },
@@ -886,7 +886,7 @@
       "portfolio": "My portfolio",
       "title": "Private",
       "trade-management": "Trade management",
-      "dvp-swap": "DvP Swap",
+      "xvp-settlement": "XvP",
       "actions": "Actions"
     },
     "user-dropdown": {
@@ -2361,9 +2361,10 @@
         "expiry-description": "The time until which you will not be able to refund assets from the settlement. If the settlement is not executed, you can refund your assets after this time.",
         "expiry-required": "Expiry is required",
         "past-expiry-error": "Expiry must be in the future.",
-        "secret": "Secret",
         "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the settlement.",
-        "title": "Configuration"
+        "title": "Configuration",
+        "auto-execute": "Auto execute",
+        "auto-execute-description": "Automatically execute the settlement on last approval."
       },
       "description": {
         "xvp": "An XvP (Delivery vs Payment or Payment vs Payment) Settlement enables an atomic exchange of assets between parties. It allows you to reliably exchange assets with other users without the need for a third party."

@@ -1,8 +1,10 @@
+import NavInset from "@/components/layout/nav-inset";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
+import { PortfolioSidebar } from "../../_components/sidebar/portfolio-sidebar";
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{ locale: Locale }>;
@@ -20,11 +22,16 @@ export async function generateMetadata({
   return {
     title: {
       ...metadata.title,
-      default: t("dvp-swap"),
+      default: t("xvp-settlement"),
     },
   };
 }
 
-export default function DvpSwapLayout({ children }: LayoutProps) {
-  return <>{children}</>;
+export default function XvpLayout({ children }: LayoutProps) {
+  return (
+    <>
+      <PortfolioSidebar />
+      <NavInset>{children}</NavInset>
+    </>
+  );
 }

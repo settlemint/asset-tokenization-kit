@@ -1,4 +1,5 @@
 import { FormStep } from "@/components/blocks/form/form-step";
+import { FormCheckbox } from "@/components/blocks/form/inputs/form-checkbox";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateXvpInput } from "@/lib/mutations/xvp/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
@@ -23,11 +24,21 @@ export function Configuration() {
         description={t("expiry-description")}
         required
       />
+
+      <FormCheckbox
+        name="autoExecute"
+        control={control}
+        label={t("auto-execute")}
+        description={t("auto-execute-description")}
+      />
     </FormStep>
   );
 }
 
-Configuration.validatedFields = ["expiry"] as (keyof CreateXvpInput)[];
+Configuration.validatedFields = [
+  "expiry",
+  "autoExecute",
+] as (keyof CreateXvpInput)[];
 
 const validateExpiry = async (form: UseFormReturn<CreateXvpInput>) => {
   const expiry = form.getValues("expiry");

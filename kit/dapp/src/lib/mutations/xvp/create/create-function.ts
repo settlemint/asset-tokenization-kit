@@ -29,6 +29,7 @@ export const createXvpFunction = async ({
     requestAmount,
     user: receiver,
     expiry,
+    autoExecute,
   } = parsedInput;
 
   const offerAssetId = offerAsset.id;
@@ -40,7 +41,7 @@ export const createXvpFunction = async ({
     address: "",
     from: user.wallet,
     input: {
-      autoExecute: true,
+      autoExecute,
       cutoffDate: expiry,
       flows: [
         {
