@@ -2,8 +2,8 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { createDvpSwap } from "@/lib/mutations/dvp/create/create-action";
-import { CreateDvpSwapSchema } from "@/lib/mutations/dvp/create/create-schema";
+import { createXvp } from "@/lib/mutations/xvp/create/create-action";
+import { CreateXvpSchema } from "@/lib/mutations/xvp/create/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -12,19 +12,19 @@ import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
 import { User } from "./steps/user";
 
-interface CreateDvpSwapFormProps {
+interface CreateXvPSettlementFormProps {
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   disabled?: boolean;
 }
 
-export function CreateDvpSwapForm({
+export function CreateXvPForm({
   open,
   onOpenChange,
   disabled = false,
   asButton = false,
-}: CreateDvpSwapFormProps) {
+}: CreateXvPSettlementFormProps) {
   const t = useTranslations("trade-management.forms");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
@@ -36,20 +36,20 @@ export function CreateDvpSwapForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t("button.dvp-swap")}
-      title={t("title.dvp-swap")}
-      description={t("description.dvp-swap")}
+      triggerLabel={isExternallyControlled ? undefined : t("button.xvp")}
+      title={t("title.xvp")}
+      description={t("description.xvp")}
       asButton={asButton}
       disabled={disabled}
     >
       <Form
-        action={createDvpSwap}
-        resolver={typeboxResolver(CreateDvpSwapSchema)}
+        action={createXvp}
+        resolver={typeboxResolver(CreateXvpSchema)}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t("button.dvp-swap"),
+          label: t("button.xvp"),
         }}
       >
         <User />

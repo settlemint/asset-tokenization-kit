@@ -1,7 +1,7 @@
 import { HolderSchema } from "@/lib/queries/asset/asset-users-schema";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 
-export const CreateDvpSwapSchema = t.Object(
+export const CreateXvpSchema = t.Object(
   {
     offerAmount: t.Amount({
       error: "Amount to send is required",
@@ -59,9 +59,9 @@ export const CreateDvpSwapSchema = t.Object(
     }),
   },
   {
-    $id: "CreateDvpSwapForm",
+    $id: "CreateXvpForm",
     additionalProperties: false,
   }
 );
 
-export type CreateDvpSwapInput = StaticDecode<typeof CreateDvpSwapSchema>;
+export type CreateXvpInput = StaticDecode<typeof CreateXvpSchema>;

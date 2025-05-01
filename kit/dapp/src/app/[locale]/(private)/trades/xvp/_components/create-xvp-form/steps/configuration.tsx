@@ -1,13 +1,13 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
-import type { CreateDvpSwapInput } from "@/lib/mutations/dvp/create/create-schema";
+import type { CreateXvpInput } from "@/lib/mutations/xvp/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Configuration() {
   const t = useTranslations("trade-management.forms.configuration");
-  const { control } = useFormContext<CreateDvpSwapInput>();
+  const { control } = useFormContext<CreateXvpInput>();
   return (
     <FormStep
       title={t("title")}
@@ -27,9 +27,9 @@ export function Configuration() {
   );
 }
 
-Configuration.validatedFields = ["expiry"] as (keyof CreateDvpSwapInput)[];
+Configuration.validatedFields = ["expiry"] as (keyof CreateXvpInput)[];
 
-const validateExpiry = async (form: UseFormReturn<CreateDvpSwapInput>) => {
+const validateExpiry = async (form: UseFormReturn<CreateXvpInput>) => {
   const expiry = form.getValues("expiry");
 
   if (!expiry) {
