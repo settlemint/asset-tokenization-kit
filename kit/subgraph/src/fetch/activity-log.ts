@@ -13,6 +13,9 @@ export class EventType {
   static RoleRevoked: string = "RoleRevoked";
   static RoleAdminChanged: string = "RoleAdminChanged";
   static Approval: string = "Approval";
+  static Pause: string = "Pause";
+  static Unpause: string = "Unpause";
+  static Clawback: string = "Clawback";
 }
 
 function activityLogEntryId(event: ethereum.Event): Bytes {

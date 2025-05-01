@@ -119,7 +119,7 @@ contract Bond is
     /// @param from The address tokens are taken from
     /// @param to The address tokens are sent to
     /// @param amount The amount of tokens transferred
-    event Clawback(address indexed from, address indexed to, uint256 amount);
+    event Clawback(address indexed from, address indexed to, uint256 amount, address indexed sender);
 
     /// @notice Modifier to prevent operations after bond maturity
     /// @dev Reverts with BondAlreadyMatured if the bond has matured
@@ -536,6 +536,6 @@ contract Bond is
 
         /// @dev using _transfer to bypass allowance checks
         _transfer(from, to, amount);
-        emit Clawback(from, to, amount);
+        emit Clawback(from, to, amount, _msgSender());
     }
 }

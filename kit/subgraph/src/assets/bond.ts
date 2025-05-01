@@ -1,4 +1,4 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { Bond } from "../../generated/schema";
 import {
   Approval,
@@ -19,9 +19,9 @@ import {
 } from "../../generated/templates/Bond/Bond";
 import { fetchAccount } from "../fetch/account";
 import { createActivityLogEntry, EventType } from "../fetch/activity-log";
-import { fetchAssetBalance, hasBalance } from "../fetch/balance";
+import { fetchAssetBalance } from "../fetch/balance";
 import { blockUser, unblockUser } from "../fetch/block-user";
-import { decrease, increase } from "../utils/counters";
+import { increase } from "../utils/counters";
 import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
@@ -30,25 +30,22 @@ import { updateFixedYield } from "./calculations/fixed-yield";
 import { calculateTotalUnderlyingNeeded } from "./calculations/needed-underlying";
 import { bondMaturedEvent } from "./events/bondmatured";
 import { bondRedeemedEvent } from "./events/bondredeemed";
-import { clawbackEvent } from "./events/clawback";
-import { pausedEvent } from "./events/paused";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { underlyingAssetTopUpEvent } from "./events/underlyingassettopup";
 import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn";
-import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
 import { userUnblockedEvent } from "./events/userunblocked";
-import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
 import { approvalHandler } from "./handlers/approval";
 import { burnHandler } from "./handlers/burn";
 import { mintHandler } from "./handlers/mint";
+import { pauseHandler } from "./handlers/pause";
 import { roleGrantedHandler } from "./handlers/role-granted";
 import { roleRevokedHandler } from "./handlers/role-revoked";
 import { transferHandler } from "./handlers/transfer";
+import { unPauseHandler } from "./handlers/unpause";
 import { newAssetStatsData } from "./stats/assets";
-import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
   const bond = fetchBond(event.address);
@@ -162,14 +159,36 @@ export function handleApproval(event: Approval): void {
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
+export function handlePaused(event: Paused): void {
+  const bond = fetchBond(event.address);
+  createActivityLogEntry(event, EventType.Pause, [event.params.account]);
+  const holders = bond.holders.load();
+  pauseHandler(bond, bond.id, AssetType.bond, bond.decimals, false, holders);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
+}
+
+export function handleUnpaused(event: Unpaused): void {
+  const bond = fetchBond(event.address);
+  createActivityLogEntry(event, EventType.Pause, [event.params.account]);
+  const holders = bond.holders.load();
+  unPauseHandler(bond, bond.id, AssetType.bond, bond.decimals, false, holders);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
+}
+
+export function handleClawback(event: Clawback): void {
+  // This event is sent together with a transfer event, so we do not need to handle balances
+  const bond = fetchBond(event.address);
+  createActivityLogEntry(event, EventType.Clawback, [
+    event.params.from,
+    event.params.to,
+    event.params.sender,
+  ]);
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
+}
+
 export function handleBondMatured(event: BondMatured): void {
   const bond = fetchBond(event.address);
   const sender = fetchAccount(event.transaction.from);
-
-  log.info("Bond matured event: bond={}, sender={}", [
-    event.address.toHexString(),
-    sender.id.toHexString(),
-  ]);
 
   bond.isMatured = true;
   bond.lastActivity = event.block.timestamp;
@@ -188,13 +207,6 @@ export function handleBondRedeemed(event: BondRedeemed): void {
   const bond = fetchBond(event.address);
   const sender = fetchAccount(event.transaction.from);
   const holder = fetchAccount(event.params.holder);
-
-  log.info("Bond redeemed event: amount={}, holder={}, sender={}, bond={}", [
-    event.params.bondAmount.toString(),
-    holder.id.toHexString(),
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
 
   // Update bond's redeemed amount
   bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
@@ -221,116 +233,6 @@ export function handleBondRedeemed(event: BondRedeemed): void {
     event.params.bondAmount,
     event.params.underlyingAmount,
     bond.decimals
-  );
-}
-
-export function handlePaused(event: Paused): void {
-  const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-
-  log.info("Bond paused event: sender={}, bond={}", [
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  bond.paused = true;
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFieldsAndSave(bond, event.block.timestamp);
-  bond.save();
-
-  const assetCount = fetchAssetCount(AssetType.bond);
-  assetCount.countPaused = assetCount.countPaused + 1;
-  assetCount.save();
-
-  const holders = bond.holders.load();
-  for (let i = 0; i < holders.length; i++) {
-    const assetBalance = holders[i];
-    if (hasBalance(bond.id, assetBalance.account, bond.decimals, false)) {
-      const holderAccount =
-        sender.id == assetBalance.account
-          ? sender
-          : fetchAccount(Address.fromBytes(assetBalance.account));
-      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount + 1;
-      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.plus(
-        assetBalance.valueExact
-      );
-      holderAccount.pausedBalance = toDecimals(
-        holderAccount.pausedBalanceExact,
-        18
-      );
-      log.info(
-        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
-        [
-          holderAccount.id.toHexString(),
-          holderAccount.pausedBalancesCount.toString(),
-          holderAccount.pausedBalance.toString(),
-        ]
-      );
-      holderAccount.save();
-    }
-  }
-
-  pausedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.bond
-  );
-}
-
-export function handleUnpaused(event: Unpaused): void {
-  const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-
-  log.info("Bond unpaused event: sender={}, bond={}", [
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  bond.paused = false;
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFieldsAndSave(bond, event.block.timestamp);
-  bond.save();
-
-  const assetCount = fetchAssetCount(AssetType.bond);
-  assetCount.countPaused = assetCount.countPaused - 1;
-  assetCount.save();
-
-  const holders = bond.holders.load();
-  for (let i = 0; i < holders.length; i++) {
-    const assetBalance = holders[i];
-    if (hasBalance(bond.id, assetBalance.account, bond.decimals, false)) {
-      const holderAccount =
-        sender.id == assetBalance.account
-          ? sender
-          : fetchAccount(Address.fromBytes(assetBalance.account));
-      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount - 1;
-      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.minus(
-        assetBalance.valueExact
-      );
-      holderAccount.pausedBalance = toDecimals(
-        holderAccount.pausedBalanceExact,
-        18
-      );
-      log.info(
-        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
-        [
-          holderAccount.id.toHexString(),
-          holderAccount.pausedBalancesCount.toString(),
-          holderAccount.pausedBalance.toString(),
-        ]
-      );
-      holderAccount.save();
-    }
-  }
-
-  unpausedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.bond
   );
 }
 
@@ -519,103 +421,4 @@ export function handleUnderlyingAssetWithdrawn(
     event.params.amount,
     bond.decimals
   );
-}
-
-export function handleClawback(event: Clawback): void {
-  const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const from = fetchAccount(event.params.from);
-  const to = fetchAccount(event.params.to);
-  const assetActivity = fetchAssetActivity(AssetType.bond);
-
-  const assetStats = newAssetStatsData(bond.id, AssetType.bond);
-
-  // Create clawback event record
-  const clawback = clawbackEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.bond,
-    from.id,
-    to.id,
-    event.params.amount,
-    bond.decimals
-  );
-
-  log.info(
-    "Bond clawback event: amount={}, from={}, to={}, sender={}, bond={}",
-    [
-      clawback.amount.toString(),
-      clawback.from.toHexString(),
-      clawback.to.toHexString(),
-      clawback.sender.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
-
-  if (!hasBalance(bond.id, to.id, bond.decimals, false)) {
-    increase(bond, "totalHolders");
-    increase(to, "balancesCount");
-  }
-
-  to.totalBalanceExact = to.totalBalanceExact.plus(clawback.amountExact);
-  to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-  to.save();
-
-  from.totalBalanceExact = from.totalBalanceExact.minus(clawback.amountExact);
-  from.totalBalance = toDecimals(from.totalBalanceExact, 18);
-  from.save();
-
-  const fromBalance = fetchAssetBalance(bond.id, from.id, bond.decimals, false);
-  fromBalance.valueExact = fromBalance.valueExact.minus(clawback.amountExact);
-  fromBalance.value = toDecimals(fromBalance.valueExact, bond.decimals);
-  fromBalance.lastActivity = event.block.timestamp;
-  fromBalance.save();
-
-  if (fromBalance.valueExact.equals(BigInt.zero())) {
-    decrease(bond, "totalHolders");
-    store.remove("AssetBalance", fromBalance.id.toHexString());
-    decrease(from, "balancesCount");
-    from.save();
-  }
-
-  const fromPortfolioStats = newPortfolioStatsData(
-    from.id,
-    bond.id,
-    AssetType.bond
-  );
-  fromPortfolioStats.balance = fromBalance.value;
-  fromPortfolioStats.balanceExact = fromBalance.valueExact;
-  fromPortfolioStats.save();
-
-  const toBalance = fetchAssetBalance(bond.id, to.id, bond.decimals, false);
-  toBalance.valueExact = toBalance.valueExact.plus(clawback.amountExact);
-  toBalance.value = toDecimals(toBalance.valueExact, bond.decimals);
-  toBalance.lastActivity = event.block.timestamp;
-  toBalance.save();
-
-  const toPortfolioStats = newPortfolioStatsData(
-    to.id,
-    bond.id,
-    AssetType.bond
-  );
-  toPortfolioStats.balance = toBalance.value;
-  toPortfolioStats.balanceExact = toBalance.valueExact;
-  toPortfolioStats.save();
-
-  // Update asset stats for clawback event
-  assetStats.volume = clawback.amount;
-  assetStats.volumeExact = clawback.amountExact;
-  increase(assetActivity, "clawbackEventCount");
-
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFieldsAndSave(bond, event.block.timestamp);
-  bond.save();
-
-  assetStats.supply = bond.totalSupply;
-  assetStats.supplyExact = bond.totalSupplyExact;
-  assetStats.save();
-
-  assetActivity.save();
 }

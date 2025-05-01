@@ -196,7 +196,8 @@ dataSources:
       eventHandlers:
         - event: StandardAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handleStandardAirdropDeployed
-        - event: VestingAirdropDeployed(indexed address,indexed address,indexed address,address)
+        - event: VestingAirdropDeployed(indexed address,indexed address,indexed
+            address,address)
           handler: handleVestingAirdropDeployed
         - event: PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
@@ -363,7 +364,7 @@ templates:
           handler: handleUnderlyingAssetTopUp
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
-        - event: Clawback(indexed address,indexed address,uint256)
+        - event: Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/assets/bond.ts
   - kind: ethereum/contract
@@ -502,7 +503,7 @@ templates:
           handler: handleRoleRevoked
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-        - event: Clawback(indexed address,indexed address,uint256)
+        - event: Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/assets/equity.ts
   - kind: ethereum/contract
@@ -581,7 +582,7 @@ templates:
           handler: handleRoleAdminChanged
         - event: CollateralUpdated(uint256,uint256,uint256)
           handler: handleCollateralUpdated
-        - event: Clawback(indexed address,indexed address,uint256)
+        - event: Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/assets/stablecoin.ts
   - kind: ethereum/contract
@@ -663,7 +664,7 @@ templates:
           handler: handlePerformanceFeeCollected
         - event: TokenWithdrawn(indexed address,indexed address,uint256)
           handler: handleTokenWithdrawn
-        - event: Clawback(indexed address,indexed address,uint256)
+        - event: Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/assets/fund.ts
   - kind: ethereum/contract
@@ -736,7 +737,7 @@ templates:
           handler: handleTokenWithdrawn
         - event: CollateralUpdated(uint256,uint256,uint256)
           handler: handleCollateralUpdated
-        - event: Clawback(indexed address,indexed address,uint256)
+        - event: Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/assets/deposit.ts
   - kind: ethereum/contract

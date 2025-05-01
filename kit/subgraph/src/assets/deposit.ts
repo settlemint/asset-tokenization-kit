@@ -1,4 +1,4 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { Deposit } from "../../generated/schema";
 import {
   Approval,
@@ -18,31 +18,28 @@ import {
 import { fetchAccount } from "../fetch/account";
 import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { allowUser, disallowUser } from "../fetch/allow-user";
-import { fetchAssetBalance, hasBalance } from "../fetch/balance";
-import { decrease, increase } from "../utils/counters";
+import { fetchAssetBalance } from "../fetch/balance";
+import { increase } from "../utils/counters";
 import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { eventId } from "../utils/events";
 import { calculateCollateral } from "./calculations/collateral";
 import { calculateConcentration } from "./calculations/concentration";
-import { clawbackEvent } from "./events/clawback";
 import { collateralUpdatedEvent } from "./events/collateralupdated";
-import { pausedEvent } from "./events/paused";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
-import { unpausedEvent } from "./events/unpaused";
 import { userAllowedEvent } from "./events/userallowed";
 import { userDisallowedEvent } from "./events/userdisallowed";
-import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchDeposit } from "./fetch/deposit";
 import { approvalHandler } from "./handlers/approval";
 import { burnHandler } from "./handlers/burn";
 import { mintHandler } from "./handlers/mint";
+import { pauseHandler } from "./handlers/pause";
 import { roleGrantedHandler } from "./handlers/role-granted";
 import { roleRevokedHandler } from "./handlers/role-revoked";
 import { transferHandler } from "./handlers/transfer";
+import { unPauseHandler } from "./handlers/unpause";
 import { newAssetStatsData } from "./stats/assets";
-import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
   const deposit = fetchDeposit(event.address);
@@ -168,116 +165,43 @@ export function handleApproval(event: Approval): void {
 
 export function handlePaused(event: Paused): void {
   const deposit = fetchDeposit(event.address);
-  const sender = fetchAccount(event.transaction.from);
-
-  log.info("Deposit paused event: sender={}, token={}", [
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  deposit.paused = true;
-  deposit.lastActivity = event.block.timestamp;
-  deposit.save();
-
-  const assetCount = fetchAssetCount(AssetType.deposit);
-  assetCount.countPaused = assetCount.countPaused + 1;
-  assetCount.save();
-
+  createActivityLogEntry(event, EventType.Pause, [event.params.account]);
   const holders = deposit.holders.load();
-  for (let i = 0; i < holders.length; i++) {
-    const assetBalance = holders[i];
-    if (hasBalance(deposit.id, assetBalance.account, deposit.decimals, true)) {
-      const holderAccount =
-        sender.id == assetBalance.account
-          ? sender
-          : fetchAccount(Address.fromBytes(assetBalance.account));
-      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount + 1;
-      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.plus(
-        assetBalance.valueExact
-      );
-      holderAccount.pausedBalance = toDecimals(
-        holderAccount.pausedBalanceExact,
-        18
-      );
-      log.info(
-        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
-        [
-          holderAccount.id.toHexString(),
-          holderAccount.pausedBalancesCount.toString(),
-          holderAccount.pausedBalance.toString(),
-        ]
-      );
-      holderAccount.save();
-    }
-  }
-
-  const assetActivity = fetchAssetActivity(AssetType.deposit);
-  assetActivity.save();
-
-  pausedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.deposit
+  pauseHandler(
+    deposit,
+    deposit.id,
+    AssetType.deposit,
+    deposit.decimals,
+    false,
+    holders
   );
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handleUnpaused(event: Unpaused): void {
   const deposit = fetchDeposit(event.address);
-  const sender = fetchAccount(event.transaction.from);
-
-  log.info("Deposit unpaused event: sender={}, token={}", [
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  deposit.paused = false;
-  deposit.lastActivity = event.block.timestamp;
-  deposit.save();
-
-  const assetCount = fetchAssetCount(AssetType.deposit);
-  assetCount.countPaused = assetCount.countPaused - 1;
-  assetCount.save();
-
+  createActivityLogEntry(event, EventType.Pause, [event.params.account]);
   const holders = deposit.holders.load();
-  for (let i = 0; i < holders.length; i++) {
-    const assetBalance = holders[i];
-    if (hasBalance(deposit.id, assetBalance.account, deposit.decimals, true)) {
-      const holderAccount =
-        sender.id == assetBalance.account
-          ? sender
-          : fetchAccount(Address.fromBytes(assetBalance.account));
-      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount - 1;
-      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.minus(
-        assetBalance.valueExact
-      );
-      holderAccount.pausedBalance = toDecimals(
-        holderAccount.pausedBalanceExact,
-        18
-      );
-      log.info(
-        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
-        [
-          holderAccount.id.toHexString(),
-          holderAccount.pausedBalancesCount.toString(),
-          holderAccount.pausedBalance.toString(),
-        ]
-      );
-      holderAccount.save();
-    }
-  }
-
-  const assetActivity = fetchAssetActivity(AssetType.deposit);
-  assetActivity.save();
-
-  unpausedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.deposit
+  unPauseHandler(
+    deposit,
+    deposit.id,
+    AssetType.deposit,
+    deposit.decimals,
+    false,
+    holders
   );
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
+}
+
+export function handleClawback(event: Clawback): void {
+  // This event is sent together with a transfer event, so we do not need to handle balances
+  const deposit = fetchDeposit(event.address);
+  createActivityLogEntry(event, EventType.Clawback, [
+    event.params.from,
+    event.params.to,
+    event.params.sender,
+  ]);
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
@@ -471,122 +395,4 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     event.params.newAmount,
     deposit.decimals
   );
-}
-
-export function handleClawback(event: Clawback): void {
-  const deposit = fetchDeposit(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const from = fetchAccount(event.params.from);
-  const to = fetchAccount(event.params.to);
-  const assetActivity = fetchAssetActivity(AssetType.deposit);
-
-  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
-
-  // Create clawback event record
-  const clawback = clawbackEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.deposit,
-    from.id,
-    to.id,
-    event.params.amount,
-    deposit.decimals
-  );
-
-  log.info(
-    "Deposit clawback event: amount={}, from={}, to={}, sender={}, deposit={}",
-    [
-      clawback.amount.toString(),
-      clawback.from.toHexString(),
-      clawback.to.toHexString(),
-      clawback.sender.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
-
-  if (!hasBalance(deposit.id, to.id, deposit.decimals, true)) {
-    increase(deposit, "totalHolders");
-    increase(to, "balancesCount");
-  }
-
-  to.totalBalanceExact = to.totalBalanceExact.plus(clawback.amountExact);
-  to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-  to.save();
-
-  from.totalBalanceExact = from.totalBalanceExact.minus(clawback.amountExact);
-  from.totalBalance = toDecimals(from.totalBalanceExact, 18);
-  from.save();
-
-  const fromBalance = fetchAssetBalance(
-    deposit.id,
-    from.id,
-    deposit.decimals,
-    true
-  );
-  fromBalance.valueExact = fromBalance.valueExact.minus(clawback.amountExact);
-  fromBalance.value = toDecimals(fromBalance.valueExact, deposit.decimals);
-  fromBalance.lastActivity = event.block.timestamp;
-  fromBalance.save();
-
-  if (fromBalance.valueExact.equals(BigInt.zero())) {
-    decrease(deposit, "totalHolders");
-    store.remove("AssetBalance", fromBalance.id.toHexString());
-    decrease(from, "balancesCount");
-    from.save();
-  }
-
-  const fromPortfolioStats = newPortfolioStatsData(
-    from.id,
-    deposit.id,
-    AssetType.deposit
-  );
-  fromPortfolioStats.balance = fromBalance.value;
-  fromPortfolioStats.balanceExact = fromBalance.valueExact;
-  fromPortfolioStats.save();
-
-  const toBalance = fetchAssetBalance(
-    deposit.id,
-    to.id,
-    deposit.decimals,
-    true
-  );
-  toBalance.valueExact = toBalance.valueExact.plus(clawback.amountExact);
-  toBalance.value = toDecimals(toBalance.valueExact, deposit.decimals);
-  toBalance.lastActivity = event.block.timestamp;
-  toBalance.save();
-
-  const toPortfolioStats = newPortfolioStatsData(
-    to.id,
-    deposit.id,
-    AssetType.deposit
-  );
-  toPortfolioStats.balance = toBalance.value;
-  toPortfolioStats.balanceExact = toBalance.valueExact;
-  toPortfolioStats.save();
-
-  // Update asset stats for clawback event
-  assetStats.volume = clawback.amount;
-  assetStats.volumeExact = clawback.amountExact;
-  increase(assetActivity, "clawbackEventCount");
-
-  // Update deposit state
-  deposit.lastActivity = event.block.timestamp;
-  deposit.concentration = calculateConcentration(
-    deposit.holders.load(),
-    deposit.totalSupplyExact
-  );
-
-  // Update collateral calculated fields
-  depositCollateralCalculatedFields(deposit);
-  deposit.save();
-
-  // Update asset stats
-  assetStats.supply = deposit.totalSupply;
-  assetStats.supplyExact = deposit.totalSupplyExact;
-  updateDepositCollateralData(assetStats, deposit);
-  assetStats.save();
-
-  assetActivity.save();
 }

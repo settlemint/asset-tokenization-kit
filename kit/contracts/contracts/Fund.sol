@@ -92,7 +92,7 @@ contract Fund is
     /// @param from The address tokens are taken from
     /// @param to The address tokens are sent to
     /// @param amount The amount of tokens transferred
-    event Clawback(address indexed from, address indexed to, uint256 amount);
+    event Clawback(address indexed from, address indexed to, uint256 amount, address indexed sender);
 
     /// @notice Deploys a new Fund token contract
     /// @dev Sets up the token with specified parameters and initializes governance capabilities.
@@ -325,6 +325,6 @@ contract Fund is
 
         /// @dev using _transfer to bypass allowance checks
         _transfer(from, to, amount);
-        emit Clawback(from, to, amount);
+        emit Clawback(from, to, amount, _msgSender());
     }
 }
