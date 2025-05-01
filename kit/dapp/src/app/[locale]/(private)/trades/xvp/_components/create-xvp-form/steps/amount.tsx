@@ -60,7 +60,6 @@ export function Amount() {
         label={t("asset-to-request")}
         placeholder={t("asset-to-request")}
         required
-        userWallet={user}
       />
       <FormInput
         control={control}
