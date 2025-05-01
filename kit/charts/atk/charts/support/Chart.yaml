@@ -11,7 +11,7 @@ maintainers:
     url: https://settlemint.com
 dependencies:
   - name: ingress-nginx
-    version: 4.12.1
+    version: 4.12.2
     repository: https://kubernetes.github.io/ingress-nginx
   - name: postgresql-ha
     version: "15.3.15"
