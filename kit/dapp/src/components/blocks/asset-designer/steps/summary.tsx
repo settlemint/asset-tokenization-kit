@@ -249,7 +249,7 @@ export function AssetSummaryStep({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <EvmAddress address={session.user.wallet} />
+                  <EvmAddress address={session.user.wallet} name={session.user.name} />
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Badge
