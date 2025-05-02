@@ -1,11 +1,10 @@
 import { DepositCreated } from "../../generated/DepositFactory/DepositFactory";
 import { Deposit } from "../../generated/templates";
-import { assetCreatedEvent } from "../assets/events/assetcreated";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchDeposit } from "../assets/fetch/deposit";
 import { fetchAccount } from "../fetch/account";
+import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { AssetType, FactoryType } from "../utils/enums";
-import { eventId } from "../utils/events";
 import { fetchFactory } from "./fetch/factory";
 
 export function handleDepositCreated(event: DepositCreated): void {
@@ -20,13 +19,10 @@ export function handleDepositCreated(event: DepositCreated): void {
   assetCount.count = assetCount.count + 1;
   assetCount.save();
 
-  assetCreatedEvent(
-    eventId(event),
-    event.block.timestamp,
-    asset.id,
-    creator.id,
-    AssetType.deposit
-  );
+  createActivityLogEntry(event, EventType.AssetCreated, [
+    event.params.token,
+    event.params.creator,
+  ]);
 
   Deposit.create(event.params.token);
 }

@@ -29,6 +29,9 @@ export class EventType {
   static UnderlyingAssetWithdrawn: string = "UnderlyingAssetWithdrawn";
   static ManagementFeeCollected: string = "ManagementFeeCollected";
   static PerformanceFeeCollected: string = "PerformanceFeeCollected";
+  static YieldClaimed: string = "YieldClaimed";
+  static AssetCreated: string = "AssetCreated";
+  static FixedYieldCreated: string = "FixedYieldCreated";
 }
 
 function activityLogEntryId(event: ethereum.Event): Bytes {

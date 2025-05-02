@@ -1,11 +1,10 @@
 import { StableCoinCreated } from "../../generated/StableCoinFactory/StableCoinFactory";
 import { StableCoin } from "../../generated/templates";
-import { assetCreatedEvent } from "../assets/events/assetcreated";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchStableCoin } from "../assets/fetch/stablecoin";
 import { fetchAccount } from "../fetch/account";
+import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { AssetType, FactoryType } from "../utils/enums";
-import { eventId } from "../utils/events";
 import { fetchFactory } from "./fetch/factory";
 
 export function handleStableCoinCreated(event: StableCoinCreated): void {
@@ -20,13 +19,10 @@ export function handleStableCoinCreated(event: StableCoinCreated): void {
   assetCount.count = assetCount.count + 1;
   assetCount.save();
 
-  assetCreatedEvent(
-    eventId(event),
-    event.block.timestamp,
-    asset.id,
-    creator.id,
-    AssetType.stablecoin
-  );
+  createActivityLogEntry(event, EventType.AssetCreated, [
+    event.params.token,
+    event.params.creator,
+  ]);
 
   StableCoin.create(event.params.token);
 }
