@@ -146,7 +146,19 @@ export function isConfigurationValid(
       break;
 
     case "stablecoin":
-      requiredFieldsValid = !!formValues.collateralType;
+      const hasCollateralLivenessValue = !!formValues.collateralLivenessValue;
+      const hasCollateralLivenessTimeUnit =
+        !!formValues.collateralLivenessTimeUnit;
+      const hasPriceAmount = !!(formValues.price && formValues.price.amount);
+      const hasPriceCurrency = !!(
+        formValues.price && formValues.price.currency
+      );
+
+      requiredFieldsValid =
+        hasCollateralLivenessValue &&
+        hasCollateralLivenessTimeUnit &&
+        hasPriceAmount &&
+        hasPriceCurrency;
       break;
 
     case "deposit":
