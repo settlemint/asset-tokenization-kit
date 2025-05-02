@@ -1,4 +1,4 @@
-import { DesignerButton } from "@/components/blocks/create-forms/designer-button";
+import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { NavHeader } from "@/components/layout/nav-header";
 import { NavMode } from "@/components/layout/nav-mode";
 import NavSidebar from "@/components/layout/nav-sidebar";
@@ -18,7 +18,7 @@ export async function AssetsSidebar() {
         <NavHeader />
       </SidebarHeader>
       <SidebarContent className="pt-4">
-        <DesignerButton />
+        <AssetDesignerButton />
         <AssetManagement />
       </SidebarContent>
       <SidebarFooter>
