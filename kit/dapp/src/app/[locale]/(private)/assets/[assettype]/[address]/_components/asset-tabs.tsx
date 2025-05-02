@@ -133,6 +133,10 @@ const tabs = async ({
           },
         ]
       : []),
+    {
+      name: t("tabs.mica"),
+      href: `/assets/${assettype}/${address}/regulations/mica`,
+    },
   ];
 };
 

@@ -1641,7 +1641,8 @@
           "holders": "Holders",
           "permissions": "Permissions",
           "underlying-assets": "Underlying assets",
-          "yield": "Yield"
+          "yield": "Yield",
+          "mica": "MiCA compliance"
         }
       },
       "fields": {
