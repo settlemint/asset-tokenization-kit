@@ -1,11 +1,15 @@
 import type { User } from "@/lib/auth/types";
+import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { CreateXvpInput } from "./create-schema";
 
 const XvpFactoryCreate = portalGraphql(`
-  mutation XvPSettlementFactoryCreate($address: String!, $from: String!, $input: XvPSettlementFactoryCreateInput!) {
+  mutation XvPSettlementFactoryCreate($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: XvPSettlementFactoryCreateInput!) {
     XvPSettlementFactoryCreate(
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
       address: $address
       from: $from
       input: $input
@@ -16,13 +20,7 @@ const XvpFactoryCreate = portalGraphql(`
 `);
 
 export const createXvpFunction = async ({
-  parsedInput,
-  ctx: { user },
-}: {
-  parsedInput: CreateXvpInput;
-  ctx: { user: User };
-}) => {
-  const {
+  parsedInput: {
     offerAsset,
     offerAmount,
     requestAsset,
@@ -30,19 +28,27 @@ export const createXvpFunction = async ({
     user: receiver,
     expiry,
     autoExecute,
-  } = parsedInput;
-
+    verificationCode,
+    verificationType,
+  },
+  ctx: { user },
+}: {
+  parsedInput: CreateXvpInput;
+  ctx: { user: User };
+}) => {
   const offerAssetId = offerAsset.id;
   const offerAssetDecimals = offerAsset.decimals;
   const requestAssetId = requestAsset.id;
   const requestAssetDecimals = requestAsset.decimals;
 
   const result = await portalClient.request(XvpFactoryCreate, {
-    address: "",
+    address: "0x875204C0Ce28dB91FF638F536d1185831ed7ae9B",
     from: user.wallet,
     input: {
       autoExecute,
-      cutoffDate: expiry,
+      cutoffDate: formatDate(expiry, {
+        type: "unixSeconds",
+      }),
       flows: [
         {
           from: user.wallet,
@@ -62,12 +68,17 @@ export const createXvpFunction = async ({
         },
       ],
     },
+    ...(await handleChallenge(
+      user,
+      user.wallet,
+      verificationCode,
+      verificationType
+    )),
   });
 
   const createTxHash = result.XvPSettlementFactoryCreate?.transactionHash;
   if (!createTxHash) {
     throw new Error("Failed to create XVP: no transaction hash received");
   }
-
   return safeParse(t.Hashes(), [createTxHash]);
 };
