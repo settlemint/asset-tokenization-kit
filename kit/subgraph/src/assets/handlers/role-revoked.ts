@@ -1,4 +1,10 @@
-import { Address, Entity, ethereum, Value } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  Bytes,
+  Entity,
+  ethereum,
+  Value,
+} from "@graphprotocol/graph-ts";
 import { fetchAccount } from "../../fetch/account";
 import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
 import { Role } from "../../utils/enums";
@@ -16,9 +22,11 @@ export function roleRevokedHandler(
   if (role == Role.DEFAULT_ADMIN_ROLE) {
     let found = false;
     const adminsValue = asset.get("admins");
-    let admins = adminsValue?.toBytesArray();
-    if (!admins) {
+    let admins: Bytes[] = [];
+    if (!adminsValue) {
       admins = [];
+    } else {
+      admins = adminsValue.toBytesArray();
     }
     const newAdmins: Address[] = [];
     for (let i = 0; i < admins.length; i++) {
