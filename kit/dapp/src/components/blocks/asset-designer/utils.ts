@@ -156,8 +156,8 @@ export function isConfigurationValid(
       const hasFundClass = !!formValues.fundClass;
       const hasManagementFeeBps = !!formValues.managementFeeBps;
 
-      requiredFieldsValid = hasFundCategory && hasFundClass && hasPrice;
-      hasManagementFeeBps;
+      requiredFieldsValid =
+        hasFundCategory && hasFundClass && hasManagementFeeBps && hasPrice;
       break;
 
     case "stablecoin":
