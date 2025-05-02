@@ -18,7 +18,6 @@ import { AssetTypeSelection } from "./steps/asset-type-selection";
 import { AssetBasicsStep } from "./steps/basics";
 import { AssetConfigurationStep } from "./steps/configuration";
 import { AssetPermissionsStep } from "./steps/permissions";
-import { AssetRegulationStep } from "./steps/regulation";
 import { AssetSummaryStep } from "./steps/summary";
 
 // Import utility functions
@@ -214,7 +213,6 @@ export function AssetDesignerDialog({
             predictedAddress = `0x${Math.random().toString(16).substring(2).padStart(40, "0")}`;
         }
       } catch (error) {
-        console.error("Error predicting address:", error);
         // Generate a fallback random address in case of prediction failure
         predictedAddress = `0x${Math.random().toString(16).substring(2).padStart(40, "0")}`;
       }
@@ -351,7 +349,6 @@ export function AssetDesignerDialog({
         });
       }
     } catch (error) {
-      console.error("Error creating asset:", error);
       // Show error toast
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
@@ -446,19 +443,20 @@ export function AssetDesignerDialog({
                 form={getFormForAssetType()}
                 isValid={isPermissionsFormValid}
                 onBack={() => setCurrentStep("configuration")}
-                onNext={() => setCurrentStep("regulation")}
+                onNext={() => setCurrentStep("summary")}
               />
             )}
 
+            {/* TODO: bring back later */}
             {/* Regulation Step */}
-            {currentStep === "regulation" && selectedAssetType && (
+            {/* {currentStep === "regulation" && selectedAssetType && (
               <AssetRegulationStep
                 assetType={selectedAssetType}
                 form={getFormForAssetType()}
                 onBack={() => setCurrentStep("permissions")}
                 onNext={() => setCurrentStep("summary")}
               />
-            )}
+            )} */}
 
             {/* Summary Step */}
             {currentStep === "summary" && selectedAssetType && (
@@ -466,7 +464,7 @@ export function AssetDesignerDialog({
                 assetType={selectedAssetType}
                 form={getFormForAssetType()}
                 isSubmitting={isSubmitting}
-                onBack={() => setCurrentStep("regulation")}
+                onBack={() => setCurrentStep("permissions")}
                 onSubmit={handleCreateAsset}
               />
             )}
