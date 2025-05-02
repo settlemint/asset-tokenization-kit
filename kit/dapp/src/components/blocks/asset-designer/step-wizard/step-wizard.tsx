@@ -49,7 +49,9 @@ export function StepWizard({
             <h2 className="text-xl font-semibold text-primary-foreground">
               {title}
             </h2>
-            <p className="text-sm text-primary-foreground">{description}</p>
+            <p className="text-sm text-primary-foreground pt-2">
+              {description}
+            </p>
           </div>
 
           {/* Steps */}
@@ -201,7 +203,7 @@ export function StepWizard({
         </div>
 
         {/* Content area - REMOVED FOCUS SCOPE */}
-        <div className="flex flex-col flex-1 overflow-hidden bg-background ml-6 rounded-lg p-10 pr-14">
+        <div className="flex flex-col flex-1 overflow-hidden bg-background ml-6 rounded-lg p-10 pt-6 pr-14">
           {children}
         </div>
       </div>

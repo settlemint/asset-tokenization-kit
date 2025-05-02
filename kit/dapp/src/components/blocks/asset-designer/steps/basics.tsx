@@ -56,11 +56,13 @@ export function AssetBasicsStep({
       centerContent={true}
     >
       <FormProvider {...form}>
-        <div className="flex flex-col space-y-6">
-          <h3 className="text-lg font-medium">Basic information</h3>
-          <p className="text-sm text-muted-foreground">
-            Specify the basic information for this {assetType}.
-          </p>
+        <div className="flex flex-col">
+          <div className="mb-6">
+            <h3 className="text-lg font-medium">Basic information</h3>
+            <p className="text-sm text-muted-foreground mt-2">
+              Specify the basic information for this {assetType}.
+            </p>
+          </div>
           {renderBasicsComponent()}
         </div>
       </FormProvider>

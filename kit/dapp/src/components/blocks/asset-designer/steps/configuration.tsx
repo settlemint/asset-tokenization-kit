@@ -56,16 +56,18 @@ export function AssetConfigurationStep({
       centerContent={true}
     >
       <FormProvider {...form}>
-        <div className="flex flex-col space-y-6">
-          <h3 className="text-lg font-medium">
-            {assetType
-              ? assetType.charAt(0).toUpperCase() + assetType?.slice(1)
-              : "Asset"}{" "}
-            configuration
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Configure specific parameters for this {assetType}.
-          </p>
+        <div className="flex flex-col">
+          <div className="mb-6">
+            <h3 className="text-lg font-medium">
+              {assetType
+                ? assetType.charAt(0).toUpperCase() + assetType?.slice(1)
+                : "Asset"}{" "}
+              configuration
+            </h3>
+            <p className="text-sm text-muted-foreground mt-2">
+              Configure specific parameters for this {assetType}.
+            </p>
+          </div>
           {renderConfigurationComponent()}
         </div>
       </FormProvider>

@@ -79,9 +79,9 @@ export function AssetSummaryStep({
       fixedButtons={true}
     >
       <div className="space-y-6 pr-4">
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold mb-2">Summary</h2>
-          <p className="text-sm text-muted-foreground">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold">Summary</h2>
+          <p className="text-sm text-muted-foreground mt-2">
             This is the final step before creating your asset. Please review all
             the details you have entered.
           </p>

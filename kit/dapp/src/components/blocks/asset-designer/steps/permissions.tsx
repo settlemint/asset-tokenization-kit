@@ -31,10 +31,10 @@ export function AssetPermissionsStep({
       centerContent={true}
     >
       <FormProvider {...form}>
-        <div className="flex flex-col space-y-6">
-          <div>
-            <h3 className="text-lg font-medium mb-2">Asset Administrators</h3>
-            <p className="text-sm text-muted-foreground mb-6">
+        <div className="flex flex-col">
+          <div className="mb-6">
+            <h3 className="text-lg font-medium">Asset Administrators</h3>
+            <p className="text-sm text-muted-foreground mt-2">
               Specify administrators that can manage this {assetType}. These
               addresses will be granted admin roles.
             </p>
