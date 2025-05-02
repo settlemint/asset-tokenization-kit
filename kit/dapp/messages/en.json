@@ -2400,5 +2400,11 @@
     "sending": "Sending",
     "success": "Success",
     "validation-errors": "Validation error"
+  },
+  "regulations": {
+    "mica": {
+      "name": "MiCA",
+      "description": "Markets in Crypto-Assets (MiCA) is the EU's comprehensive regulatory framework designed to regulate cryptocurrencies, stablecoins, and other digital assets, providing legal certainty for crypto-asset issuers and service providers."
+    }
   }
 }

@@ -38,7 +38,7 @@ export function usePendingTransactions() {
         const transactions = Array.isArray(response.data) ? response.data : [];
 
         // Filter out transactions that have a receipt (they're already processed)
-        return transactions.filter((tx) => !tx.receipt);
+        return transactions.filter((tx: Transaction) => !tx.receipt);
       } catch (error) {
         console.error("Error fetching pending transactions:", error);
         return [];

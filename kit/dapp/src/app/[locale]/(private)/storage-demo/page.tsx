@@ -6,7 +6,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const resolvedParams = await params;
+  const _resolvedParams = await params;
 
   return {
     title: "Storage Demo",
