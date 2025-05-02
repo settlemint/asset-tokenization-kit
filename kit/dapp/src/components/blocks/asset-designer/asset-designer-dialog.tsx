@@ -386,14 +386,14 @@ export function AssetDesignerDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="max-h-screen h-[75vh] w-[75vw] p-0 overflow-hidden border-none right-0 !max-w-screen rounded-2xl"
+        className="max-h-[95vh] min-h-[70vh] h-auto w-[90vw] lg:w-[75vw] p-0 overflow-auto border-none right-0 !max-w-screen rounded-2xl"
         onInteractOutside={(e) => {
           e.preventDefault();
         }}
         onOpenAutoFocus={(e) => e.preventDefault()}
         onFocusOutside={(e) => e.preventDefault()}
       >
-        <div className="relative h-full">
+        <div className="relative">
           <DialogTitle className="sr-only">
             {getAssetTitle(selectedAssetType)}
           </DialogTitle>
