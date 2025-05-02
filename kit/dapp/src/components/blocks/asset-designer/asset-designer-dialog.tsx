@@ -350,6 +350,7 @@ export function AssetDesignerDialog({
         });
       }
     } catch (error) {
+      console.error("Error creating asset:", error);
       // Show error toast
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
