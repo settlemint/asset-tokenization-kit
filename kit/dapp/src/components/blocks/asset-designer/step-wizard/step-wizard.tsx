@@ -200,9 +200,9 @@ export function StepWizard({
           )}
         </div>
 
-        {/* Content area - REMOVED FOCUS SCOPE */}
+        {/* Content area - With overflow for scrollability */}
         <div className="flex flex-col flex-1 overflow-hidden bg-background ml-6 rounded-lg p-10">
-          {children}
+          <div className="overflow-y-auto h-full">{children}</div>
         </div>
       </div>
     </div>
