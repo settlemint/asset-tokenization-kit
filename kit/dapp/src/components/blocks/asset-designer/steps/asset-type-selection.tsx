@@ -99,7 +99,7 @@ export function AssetTypeSelection({
         <h2 className="text-xl font-semibold">
           {t("asset-designer.type-selection.title")}
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground pt-2">
           {t("asset-designer.type-selection.description")}
         </p>
       </div>
