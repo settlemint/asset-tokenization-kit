@@ -41,9 +41,11 @@ export function roleRevokedHandler(
   if (role == Role.SUPPLY_MANAGEMENT_ROLE) {
     let found = false;
     const supplyManagersValue = asset.get("supplyManagers");
-    let supplyManagers = supplyManagersValue?.toBytesArray();
-    if (!supplyManagers) {
+    let supplyManagers: Bytes[] = [];
+    if (!supplyManagersValue) {
       supplyManagers = [];
+    } else {
+      supplyManagers = supplyManagersValue.toBytesArray();
     }
     const newSupplyManagers: Address[] = [];
     for (let i = 0; i < supplyManagers.length; i++) {
@@ -58,9 +60,11 @@ export function roleRevokedHandler(
   if (role == Role.USER_MANAGEMENT_ROLE) {
     let found = false;
     const userManagersValue = asset.get("userManagers");
-    let userManagers = userManagersValue?.toBytesArray();
-    if (!userManagers) {
+    let userManagers: Bytes[] = [];
+    if (!userManagersValue) {
       userManagers = [];
+    } else {
+      userManagers = userManagersValue.toBytesArray();
     }
     const newUserManagers: Address[] = [];
     for (let i = 0; i < userManagers.length; i++) {
