@@ -51,6 +51,9 @@ export function CreateXvPForm({
         buttonLabels={{
           label: t("button.xvp"),
         }}
+        defaultValues={{
+          autoExecute: true,
+        }}
       >
         <User />
         <Amount />
