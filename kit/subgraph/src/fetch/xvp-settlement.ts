@@ -51,6 +51,7 @@ export function fetchApproval(
   approval = new XvPSettlementApproval(id);
   approval.xvpSettlement = contract;
   approval.account = fetchAccount(sender).id;
+
   approval.save();
   return approval;
 }

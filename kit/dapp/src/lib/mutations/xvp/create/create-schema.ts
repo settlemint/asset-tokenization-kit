@@ -61,6 +61,13 @@ export const CreateXvpSchema = t.Object(
       description:
         "Whether to automatically execute the settlement on last approval",
     }),
+    verificationCode: t.VerificationCode({
+      description:
+        "The verification code (PIN, 2FA, or secret code) for signing the transaction",
+    }),
+    verificationType: t.VerificationType({
+      description: "The type of verification",
+    }),
   },
   {
     $id: "CreateXvpForm",

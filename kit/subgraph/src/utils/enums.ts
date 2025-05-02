@@ -6,7 +6,6 @@ export class AssetType {
   static cryptocurrency: string = "cryptocurrency";
   static fund: string = "fund";
   static deposit: string = "deposit";
-  static dvpswap: string = "dvpswap";
 }
 
 export class FactoryType {
@@ -17,7 +16,7 @@ export class FactoryType {
   static fund: string = "fund";
   static fixedyield: string = "fixedyield";
   static deposit: string = "deposit";
-  static dvpswap: string = "dvpswap";
+  static xvpSettlement: string = "xvpSettlement";
 }
 
 export class EventName {
@@ -53,4 +52,5 @@ export class EventName {
   static UnderlyingAssetWithdrawn: string = "Underlying Asset Withdrawn";
   // Stablecoin specific events
   static CollateralUpdated: string = "Collateral Updated";
+  static XvPSettlementCreated: string = "XvP Settlement Created";
 }
