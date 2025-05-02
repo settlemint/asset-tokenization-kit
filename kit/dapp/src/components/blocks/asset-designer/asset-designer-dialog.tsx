@@ -1,46 +1,9 @@
 "use client";
 
-<<<<<<< HEAD
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { uploadToStorage } from "@/lib/upload";
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
-
-// Import form steps for each asset type
-import { Basics as BondBasics } from "@/components/blocks/create-forms/bond/steps/basics";
-import { Basics as CryptocurrencyBasics } from "@/components/blocks/create-forms/cryptocurrency/steps/basics";
-import { Basics as DepositBasics } from "@/components/blocks/create-forms/deposit/steps/basics";
-import { Basics as EquityBasics } from "@/components/blocks/create-forms/equity/steps/basics";
-import { Basics as FundBasics } from "@/components/blocks/create-forms/fund/steps/basics";
-import { Basics as StablecoinBasics } from "@/components/blocks/create-forms/stablecoin/steps/basics";
-
-// Import configuration components
-import { Configuration as BondConfiguration } from "@/components/blocks/create-forms/bond/steps/configuration";
-import { Configuration as CryptocurrencyConfiguration } from "@/components/blocks/create-forms/cryptocurrency/steps/configuration";
-import { Configuration as DepositConfiguration } from "@/components/blocks/create-forms/deposit/steps/configuration";
-import { Configuration as EquityConfiguration } from "@/components/blocks/create-forms/equity/steps/configuration";
-import { Configuration as FundConfiguration } from "@/components/blocks/create-forms/fund/steps/configuration";
-import { Configuration as StablecoinConfiguration } from "@/components/blocks/create-forms/stablecoin/steps/configuration";
-
-// Import Permission components
-import { AssetAdmins } from "@/components/blocks/create-forms/common/asset-admins/asset-admins";
-
-// Import Form Provider
-=======
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/routing";
 import { useTheme } from "next-themes";
 import { useState } from "react";
->>>>>>> d02f46f1 (feat: new asset design UI iteration 2 (#1744))
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { AssetDesignerStep, AssetType, VerificationData } from "./types";
@@ -78,22 +41,8 @@ import { getPredictedAddress as getCryptocurrencyPredictedAddress } from "@/lib/
 import { getPredictedAddress as getStablecoinPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
 import { getTomorrowMidnight } from "@/lib/utils/date";
 
-<<<<<<< HEAD
-// Define a base form type that contains all possible fields
-interface _BaseFormValues {
-  assetName: string;
-  symbol: string;
-  decimals?: number;
-  isin?: string;
-  cusip?: string;
-  assetAdmins: string[];
-  selectedRegulations: string[];
-  // Add other possible fields here
-}
-=======
 // Import FormOtpDialog
 import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
->>>>>>> d02f46f1 (feat: new asset design UI iteration 2 (#1744))
 
 // Import the waitForTransactions function
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
@@ -133,44 +82,9 @@ export function AssetDesignerDialog({
   open,
   onOpenChange,
 }: AssetDesignerDialogProps) {
-<<<<<<< HEAD
-  const _t = useTranslations("admin.sidebar");
-=======
->>>>>>> d02f46f1 (feat: new asset design UI iteration 2 (#1744))
   const [currentStep, setCurrentStep] = useState<AssetDesignerStep>("type");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-<<<<<<< HEAD
-  const { data: _session } = authClient.useSession();
-
-  // Form state tracking
-  const [isBasicInfoValid, setIsBasicInfoValid] = useState(false);
-  const [isConfigurationValid, setIsConfigurationValid] = useState(false);
-  const [_isPermissionsValid, setIsPermissionsValid] = useState(false);
-  const [_isRegulationValid, _setIsRegulationValid] = useState(true); // Default to true since it's optional
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-
-  // Document upload state
-  const [dialogOpen, setDialogOpen] = useState<string | null>(null); // Stores regulation ID for which dialog is open
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [documentTitle, setDocumentTitle] = useState<string>("");
-  const [documentType, setDocumentType] = useState<string>("");
-  const [documentDescription, setDocumentDescription] = useState<string>("");
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadedDocuments, setUploadedDocuments] = useState<
-    Record<
-      string,
-      {
-        id: string;
-        name: string;
-        title: string;
-        type: string;
-        description: string;
-        url?: string;
-      }[]
-    >
-  >({});
-=======
   const { theme } = useTheme();
 
   // Use the custom hook for form management
@@ -183,7 +97,6 @@ export function AssetDesignerDialog({
     isConfigurationFormValid,
     isPermissionsFormValid,
   } = useAssetDesignerForms();
->>>>>>> d02f46f1 (feat: new asset design UI iteration 2 (#1744))
 
   // State for verification dialog
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
@@ -198,223 +111,6 @@ export function AssetDesignerDialog({
     },
   });
 
-<<<<<<< HEAD
-  // Create forms for each asset type with mode set to run validation always
-  const bondForm = useForm({
-    defaultValues: {
-      assetName: "",
-      symbol: "",
-      decimals: 18,
-      isin: "",
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
-    },
-    mode: "all", // Validate on all events
-  });
-
-  const cryptocurrencyForm = useForm({
-    defaultValues: {
-      assetName: "",
-      symbol: "",
-      decimals: 18,
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
-    },
-    mode: "all",
-  });
-
-  const equityForm = useForm({
-    defaultValues: {
-      assetName: "",
-      symbol: "",
-      isin: "",
-      cusip: "",
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
-    },
-    mode: "all",
-  });
-
-  const fundForm = useForm({
-    defaultValues: {
-      assetName: "",
-      symbol: "",
-      isin: "",
-      decimals: 18,
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
-    },
-    mode: "all",
-  });
-
-  const stablecoinForm = useForm({
-    defaultValues: {
-      assetName: "",
-      symbol: "",
-      decimals: 18,
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
-    },
-    mode: "all",
-  });
-
-  const depositForm = useForm({
-    defaultValues: {
-      assetName: "",
-      symbol: "",
-      decimals: 18,
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
-    },
-    mode: "all",
-  });
-
-  // Get the appropriate form based on asset type
-  const getFormForAssetType = useCallback(() => {
-    switch (selectedAssetType) {
-      case "bond":
-        return bondForm;
-      case "cryptocurrency":
-        return cryptocurrencyForm;
-      case "equity":
-        return equityForm;
-      case "fund":
-        return fundForm;
-      case "stablecoin":
-        return stablecoinForm;
-      case "deposit":
-        return depositForm;
-      default:
-        return bondForm; // Fallback
-    }
-  }, [
-    selectedAssetType,
-    bondForm,
-    cryptocurrencyForm,
-    equityForm,
-    fundForm,
-    stablecoinForm,
-    depositForm,
-  ]);
-
-  // Check if all required fields are filled and valid for the current step
-  useEffect(() => {
-    if (!selectedAssetType) return;
-
-    const checkFormValidity = async () => {
-      const form = getFormForAssetType();
-
-      // Get form state
-      const { errors } = form.formState;
-
-      if (currentStep === "details") {
-        // Mark all fields as touched to force validation
-        form.trigger();
-
-        // For the details step, check specific required fields
-        const formValues = form.getValues();
-        const hasAssetName = !!(formValues as any).assetName;
-        const hasSymbol = !!(formValues as any).symbol;
-        const hasValidDecimals =
-          typeof (formValues as any).decimals === "number" &&
-          (formValues as any).decimals > 0;
-
-        // Check if any fields have errors
-        const hasErrors = Object.keys(errors).length > 0;
-
-        // Form is valid only if all required fields have values and there are no errors
-        const isValid =
-          hasAssetName && hasSymbol && hasValidDecimals && !hasErrors;
-        setIsBasicInfoValid(isValid);
-      }
-
-      if (currentStep === "configuration") {
-        // Mark all fields as touched to force validation
-        form.trigger();
-
-        // Get form values and check specific required fields for configuration
-        const formValues = form.getValues();
-        let requiredFieldsValid = false;
-
-        // Get errors from form state explicitly (like in the details step)
-        const formErrors = form.formState.errors;
-        const hasErrors = Object.keys(formErrors).length > 0;
-
-        // Check asset-specific required fields
-        switch (selectedAssetType) {
-          case "bond":
-            // Check if required fields are filled
-            const hasCap = !!(formValues as any).cap;
-            const hasFaceValue = !!(formValues as any).faceValue;
-            const hasMaturityDate = !!(formValues as any).maturityDate;
-            const hasUnderlyingAsset = !!(formValues as any).underlyingAsset;
-
-            requiredFieldsValid =
-              hasCap && hasFaceValue && hasMaturityDate && hasUnderlyingAsset;
-            break;
-
-          case "cryptocurrency":
-            requiredFieldsValid = !!(formValues as any).maxSupply;
-            break;
-
-          case "equity":
-            requiredFieldsValid = !!(formValues as any).sharesOutstanding;
-            break;
-
-          case "fund":
-            requiredFieldsValid = !!(formValues as any).managementFeeBps;
-            break;
-
-          case "stablecoin":
-            requiredFieldsValid = !!(formValues as any).collateralType;
-            break;
-
-          case "deposit":
-            requiredFieldsValid = !!(formValues as any).depositType;
-            break;
-
-          default:
-            requiredFieldsValid = true;
-        }
-
-        // Form is valid if required fields are filled and there are no errors
-        const isValid = requiredFieldsValid && !hasErrors;
-        setIsConfigurationValid(isValid);
-      }
-
-      if (currentStep === "permissions") {
-        // Since permissions are optional in this step (they will be configurable later),
-        // we'll just validate that the user has made any selections
-        // and there are no form validation errors
-
-        // Always consider permissions valid since the current user is added by default
-        setIsPermissionsValid(true);
-      }
-    };
-
-    // Check validity immediately and set up a subscription to form changes
-    checkFormValidity();
-
-    // Subscribe to form state changes
-    const form = getFormForAssetType();
-    const subscription = form.watch(() => {
-      checkFormValidity();
-    });
-
-    return () => {
-      if (subscription && typeof subscription === "object") {
-        try {
-          // @ts-expect-error - The subscription object has an unsubscribe method
-          subscription.unsubscribe?.();
-        } catch (error) {
-          console.error("Error unsubscribing from form watch:", error);
-        }
-      }
-    };
-  }, [currentStep, selectedAssetType, getFormForAssetType]);
-
-=======
->>>>>>> d02f46f1 (feat: new asset design UI iteration 2 (#1744))
   const handleAssetTypeSelect = (type: AssetType) => {
     setSelectedAssetType(type);
 

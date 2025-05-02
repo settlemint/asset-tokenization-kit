@@ -20,27 +20,6 @@ const UploadResponseSchema = t.Object({
   objectName: t.String(),
 });
 
-<<<<<<< HEAD
-// Define the upload action function separately
-const uploadDocumentFunction = async ({
-  parsedInput: formData,
-  ctx: { user: _user },
-}: {
-  parsedInput: FormData;
-  ctx: { user: User };
-}) => {
-  console.log("Server Action: Received FormData");
-
-  // --- Manual Validation ---
-  const file = formData.get("file") as File | null;
-  const title = formData.get("title") as string | null;
-  const description = formData.get("description") as string | null;
-  const type = formData.get("type") as string | null;
-
-  if (!file || typeof file === "string") {
-    console.error("Server Action Error: No file provided or invalid file type");
-    throw new Error("No file provided or invalid file type.");
-=======
 /**
  * Direct server action for document upload
  * This is the main entry point from form submissions that don't use safe-action
@@ -51,7 +30,6 @@ export async function uploadDocument(formData: FormData) {
   } catch (error) {
     console.error("Error in direct upload document call:", error);
     throw error;
->>>>>>> d02f46f1 (feat: new asset design UI iteration 2 (#1744))
   }
 }
 
