@@ -34,14 +34,21 @@ export async function waitForTransactions(
 
     while (attempts < maxAttempts) {
       try {
-        // Use Portal GraphQL API directly instead of the API route
         const result = await portalClient.request(GetTransaction, {
           transactionHash: hash,
         });
 
-        // If we have a receipt, the transaction is confirmed
         if (result.getTransaction?.receipt) {
-          return Promise.resolve();
+          const receipt = result.getTransaction.receipt;
+          if (receipt.status === "Success") {
+            return Promise.resolve();
+          } else {
+            return Promise.reject(
+              new Error(
+                `Transaction ${hash} failed with status ${receipt.status}. Revert reason: ${receipt.revertReasonDecoded || receipt.revertReason || "Unknown"}`
+              )
+            );
+          }
         }
 
         // If not confirmed yet, wait a bit and try again
