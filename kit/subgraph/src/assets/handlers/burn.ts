@@ -163,14 +163,5 @@ function handleAssetStats(
   setValueWithDecimals(assetStats, "burned", value, decimals);
   let supply = assetStats.supplyExact.minus(value);
   setValueWithDecimals(assetStats, "supply", supply, decimals);
-
-  if (assetType === AssetType.deposit || assetType === AssetType.stablecoin) {
-    assetStats.collateral = asset.getBigDecimal("collateral");
-    assetStats.collateralExact = asset.getBigInt("collateralExact");
-    assetStats.freeCollateral = asset.getBigDecimal("freeCollateral");
-    assetStats.freeCollateralExact = asset.getBigInt("freeCollateralExact");
-    assetStats.collateralRatio = asset.getBigDecimal("collateralRatio");
-  }
-
   assetStats.save();
 }

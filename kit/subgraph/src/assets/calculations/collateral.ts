@@ -1,8 +1,11 @@
-import { BigDecimal, BigInt, Entity } from "@graphprotocol/graph-ts";
+import { BigDecimal, BigInt, Bytes, Entity } from "@graphprotocol/graph-ts";
 import { setValueWithDecimals } from "../../utils/decimals";
+import { AssetType } from "../../utils/enums";
+import { newAssetStatsData } from "../stats/assets";
 
 export function calculateCollateral(
   asset: Entity,
+  assetId: Bytes,
   collateralExact: BigInt,
   totalSupplyExact: BigInt,
   decimals: number
@@ -22,4 +25,12 @@ export function calculateCollateral(
     collateralExact.minus(totalSupplyExact),
     decimals
   );
+
+  const assetStats = newAssetStatsData(assetId, AssetType.deposit);
+  assetStats.collateral = asset.getBigDecimal("collateral");
+  assetStats.collateralExact = asset.getBigInt("collateralExact");
+  assetStats.freeCollateral = asset.getBigDecimal("freeCollateral");
+  assetStats.freeCollateralExact = asset.getBigInt("freeCollateralExact");
+  assetStats.collateralRatio = asset.getBigDecimal("collateralRatio");
+  assetStats.save();
 }

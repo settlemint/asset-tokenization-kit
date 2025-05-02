@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { Deposit } from "../../generated/schema";
 import {
   Approval,
@@ -17,29 +17,21 @@ import {
 } from "../../generated/templates/Deposit/Deposit";
 import { fetchAccount } from "../fetch/account";
 import { createActivityLogEntry, EventType } from "../fetch/activity-log";
-import { allowUser, disallowUser } from "../fetch/allow-user";
-import { fetchAssetBalance } from "../fetch/balance";
-import { increase } from "../utils/counters";
-import { toDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
-import { eventId } from "../utils/events";
 import { calculateCollateral } from "./calculations/collateral";
 import { calculateConcentration } from "./calculations/concentration";
-import { collateralUpdatedEvent } from "./events/collateralupdated";
-import { tokensFrozenEvent } from "./events/tokensfrozen";
-import { userAllowedEvent } from "./events/userallowed";
-import { userDisallowedEvent } from "./events/userdisallowed";
-import { fetchAssetActivity } from "./fetch/assets";
 import { fetchDeposit } from "./fetch/deposit";
+import { allowUserHandler, disallowUserHandler } from "./handlers/allowlist";
 import { approvalHandler } from "./handlers/approval";
 import { burnHandler } from "./handlers/burn";
+import { collateralUpdatedHandler } from "./handlers/collateral";
+import { frozenHandler } from "./handlers/frozen";
 import { mintHandler } from "./handlers/mint";
 import { pauseHandler } from "./handlers/pause";
 import { roleGrantedHandler } from "./handlers/role-granted";
 import { roleRevokedHandler } from "./handlers/role-revoked";
 import { transferHandler } from "./handlers/transfer";
 import { unPauseHandler } from "./handlers/unpause";
-import { newAssetStatsData } from "./stats/assets";
 
 export function handleTransfer(event: Transfer): void {
   const deposit = fetchDeposit(event.address);
@@ -87,7 +79,6 @@ export function handleTransfer(event: Transfer): void {
     );
   }
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
-  deposit.save();
 }
 
 export function updateDerivedFieldsAndSave(
@@ -96,6 +87,7 @@ export function updateDerivedFieldsAndSave(
 ): void {
   calculateCollateral(
     deposit,
+    deposit.id,
     deposit.collateralExact,
     deposit.totalSupplyExact,
     deposit.decimals
@@ -199,193 +191,50 @@ export function handleClawback(event: Clawback): void {
 
 export function handleTokensFrozen(event: TokensFrozen): void {
   const deposit = fetchDeposit(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const user = fetchAccount(event.params.user);
-
-  log.info(
-    "Deposit tokens frozen event: amount={}, user={}, sender={}, token={}",
-    [
-      event.params.amount.toString(),
-      user.id.toHexString(),
-      sender.id.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
-
-  const balance = fetchAssetBalance(
+  const user = event.params.user;
+  const amount = event.params.amount;
+  frozenHandler(
+    event,
     deposit.id,
-    user.id,
-    deposit.decimals,
-    true
-  );
-  balance.frozenExact = event.params.amount;
-  balance.frozen = toDecimals(balance.frozenExact, deposit.decimals);
-  balance.lastActivity = event.block.timestamp;
-  balance.save();
-
-  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
-  assetStats.frozen = toDecimals(event.params.amount, deposit.decimals);
-  assetStats.frozenExact = event.params.amount;
-  assetStats.save();
-
-  const assetActivity = fetchAssetActivity(AssetType.deposit);
-  increase(assetActivity, "frozenEventCount");
-  assetActivity.save();
-
-  deposit.lastActivity = event.block.timestamp;
-  deposit.save();
-
-  tokensFrozenEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
     AssetType.deposit,
-    user.id,
-    event.params.amount,
-    deposit.decimals
+    user,
+    amount,
+    deposit.decimals,
+    false
   );
 }
 
 export function handleUserAllowed(event: UserAllowed): void {
   const deposit = fetchDeposit(event.address);
-  const sender = fetchAccount(event.transaction.from);
   const user = fetchAccount(event.params.user);
-
-  log.info("Deposit user allowed event: user={}, sender={}, token={}", [
-    user.id.toHexString(),
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  deposit.lastActivity = event.block.timestamp;
-  allowUser(deposit.id, user.id, event.block.timestamp);
-  deposit.save();
-
-  const balance = fetchAssetBalance(
-    deposit.id,
-    user.id,
-    deposit.decimals,
-    true
-  );
-  balance.blocked = false;
-  balance.lastActivity = event.block.timestamp;
-  balance.save();
-
-  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
-  assetStats.save();
-
-  const assetActivity = fetchAssetActivity(AssetType.deposit);
-  assetActivity.save();
-
-  userAllowedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.deposit,
-    user.id
-  );
+  allowUserHandler(event, deposit.id, user.id, deposit.decimals, true);
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handleUserDisallowed(event: UserDisallowed): void {
   const deposit = fetchDeposit(event.address);
-  const sender = fetchAccount(event.transaction.from);
   const user = fetchAccount(event.params.user);
-
-  log.info("Deposit user disallowed event: user={}, sender={}, token={}", [
-    user.id.toHexString(),
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  deposit.lastActivity = event.block.timestamp;
-  disallowUser(deposit.id, user.id);
-  deposit.save();
-
-  const balance = fetchAssetBalance(
-    deposit.id,
-    user.id,
-    deposit.decimals,
-    true
-  );
-  balance.blocked = true;
-  balance.lastActivity = event.block.timestamp;
-  balance.save();
-
-  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
-  assetStats.save();
-
-  const assetActivity = fetchAssetActivity(AssetType.deposit);
-  assetActivity.save();
-
-  userDisallowedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.deposit,
-    user.id
-  );
+  disallowUserHandler(event, deposit.id, user.id, deposit.decimals, true);
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handleTokenWithdrawn(event: TokenWithdrawn): void {
   const deposit = fetchDeposit(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const token = fetchAccount(event.params.token);
-  const to = fetchAccount(event.params.to);
-
-  log.info(
-    "Deposit token withdrawn event: amount={}, token={}, to={}, sender={}, deposit={}",
-    [
-      event.params.amount.toString(),
-      token.id.toHexString(),
-      to.id.toHexString(),
-      sender.id.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
-
-  deposit.lastActivity = event.block.timestamp;
-  deposit.save();
+  createActivityLogEntry(event, EventType.TokenWithdrawn, [
+    event.params.token,
+    event.params.to,
+  ]);
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handleCollateralUpdated(event: CollateralUpdated): void {
   const deposit = fetchDeposit(event.address);
-  const sender = fetchAccount(event.transaction.from);
-
-  log.info(
-    "Deposit collateral updated event: oldAmount={}, newAmount={}, sender={}, deposit={}",
-    [
-      event.params.oldAmount.toString(),
-      event.params.newAmount.toString(),
-      sender.id.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
-
-  deposit.collateral = toDecimals(event.params.newAmount, deposit.decimals);
-  deposit.collateralExact = event.params.newAmount;
-  deposit.lastActivity = event.block.timestamp;
-  deposit.lastCollateralUpdate = event.block.timestamp;
-  depositCollateralCalculatedFields(deposit);
-  deposit.concentration = calculateConcentration(
-    deposit.holders.load(),
-    deposit.totalSupplyExact
-  );
-  deposit.save();
-
-  const assetStats = newAssetStatsData(deposit.id, AssetType.deposit);
-  updateDepositCollateralData(assetStats, deposit);
-  assetStats.save();
-
-  collateralUpdatedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    event.params.oldAmount,
+  collateralUpdatedHandler(
+    event,
+    deposit,
     event.params.newAmount,
-    deposit.decimals
+    deposit.decimals,
+    event.block.timestamp
   );
+  updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }

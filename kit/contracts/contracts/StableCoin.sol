@@ -79,13 +79,13 @@ contract StableCoin is
     /// @param oldAmount The previous collateral amount
     /// @param newAmount The new collateral amount
     /// @param timestamp The timestamp when the update occurred
-    event CollateralUpdated(uint256 oldAmount, uint256 newAmount, uint256 timestamp);
+    event CollateralUpdated(uint256 oldAmount, uint256 newAmount, uint256 timestamp, address indexed sender);
 
     /// @notice Emitted when mistakenly sent tokens are withdrawn
     /// @param token The address of the token being withdrawn
     /// @param to The address receiving the tokens
     /// @param amount The amount of tokens withdrawn
-    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
+    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount, address indexed sender);
 
     /// @notice Emitted when tokens are forcibly transferred from one address to another
     /// @param from The address tokens are taken from
@@ -203,7 +203,7 @@ contract StableCoin is
         _collateralProof = CollateralProof({ amount: amount, timestamp: uint48(block.timestamp) });
         _lastCollateralUpdate = block.timestamp;
 
-        emit CollateralUpdated(oldAmount, amount, block.timestamp);
+        emit CollateralUpdated(oldAmount, amount, block.timestamp, _msgSender());
     }
 
     /// @notice Checks if an address is a custodian
@@ -278,7 +278,7 @@ contract StableCoin is
         if (balance < amount) revert InsufficientTokenBalance();
 
         IERC20(token).safeTransfer(to, amount);
-        emit TokenWithdrawn(token, to, amount);
+        emit TokenWithdrawn(token, to, amount, _msgSender());
     }
 
     /// @notice Forcibly transfers tokens from one address to another

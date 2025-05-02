@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { Bond } from "../../generated/schema";
 import {
   Approval,
@@ -17,35 +17,24 @@ import {
   UserBlocked,
   UserUnblocked,
 } from "../../generated/templates/Bond/Bond";
-import { fetchAccount } from "../fetch/account";
 import { createActivityLogEntry, EventType } from "../fetch/activity-log";
-import { fetchAssetBalance } from "../fetch/balance";
-import { blockUser, unblockUser } from "../fetch/block-user";
-import { increase } from "../utils/counters";
-import { toDecimals } from "../utils/decimals";
+import { setValueWithDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
-import { eventId } from "../utils/events";
 import { calculateConcentration } from "./calculations/concentration";
 import { updateFixedYield } from "./calculations/fixed-yield";
 import { calculateTotalUnderlyingNeeded } from "./calculations/needed-underlying";
-import { bondMaturedEvent } from "./events/bondmatured";
-import { bondRedeemedEvent } from "./events/bondredeemed";
-import { tokensFrozenEvent } from "./events/tokensfrozen";
-import { underlyingAssetTopUpEvent } from "./events/underlyingassettopup";
-import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn";
-import { userBlockedEvent } from "./events/userblocked";
-import { userUnblockedEvent } from "./events/userunblocked";
-import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
+import { fetchDeposit } from "./fetch/deposit";
 import { approvalHandler } from "./handlers/approval";
+import { blockUserHandler, unblockUserHandler } from "./handlers/blocklist";
 import { burnHandler } from "./handlers/burn";
+import { frozenHandler } from "./handlers/frozen";
 import { mintHandler } from "./handlers/mint";
 import { pauseHandler } from "./handlers/pause";
 import { roleGrantedHandler } from "./handlers/role-granted";
 import { roleRevokedHandler } from "./handlers/role-revoked";
 import { transferHandler } from "./handlers/transfer";
 import { unPauseHandler } from "./handlers/unpause";
-import { newAssetStatsData } from "./stats/assets";
 
 export function handleTransfer(event: Transfer): void {
   const bond = fetchBond(event.address);
@@ -193,239 +182,97 @@ export function handleClawback(event: Clawback): void {
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
-export function handleBondMatured(event: BondMatured): void {
-  const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-
-  bond.isMatured = true;
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFieldsAndSave(bond, event.block.timestamp);
-  bond.save();
-
-  bondMaturedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id
-  );
-}
-
-export function handleBondRedeemed(event: BondRedeemed): void {
-  const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const holder = fetchAccount(event.params.holder);
-
-  // Update bond's redeemed amount
-  bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
-  bond.underlyingBalanceExact = bond.underlyingBalanceExact.minus(
-    event.params.underlyingAmount
-  );
-
-  const underlyingDecimals = bond.underlyingAssetDecimals;
-  bond.underlyingBalance = toDecimals(
-    bond.underlyingBalanceExact,
-    underlyingDecimals
-  );
-
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFieldsAndSave(bond, event.block.timestamp);
-  bond.save();
-
-  bondRedeemedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    holder.id,
-    event.params.bondAmount,
-    event.params.underlyingAmount,
-    bond.decimals
-  );
-}
-
 export function handleTokensFrozen(event: TokensFrozen): void {
-  const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const user = fetchAccount(event.params.user);
-
-  log.info("Bond tokens frozen event: amount={}, user={}, sender={}, bond={}", [
-    event.params.amount.toString(),
-    user.id.toHexString(),
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  const assetStats = newAssetStatsData(bond.id, AssetType.bond);
-  assetStats.frozen = toDecimals(event.params.amount, bond.decimals);
-  assetStats.frozenExact = event.params.amount;
-  assetStats.save();
-
-  const assetActivity = fetchAssetActivity(AssetType.bond);
-  increase(assetActivity, "frozenEventCount");
-  assetActivity.save();
-
-  const balance = fetchAssetBalance(bond.id, user.id, bond.decimals, false);
-  balance.frozenExact = event.params.amount;
-  balance.frozen = toDecimals(event.params.amount, bond.decimals);
-  balance.lastActivity = event.block.timestamp;
-  balance.save();
-
-  bond.lastActivity = event.block.timestamp;
-  updateDerivedFieldsAndSave(bond, event.block.timestamp);
-  bond.save();
-
-  tokensFrozenEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.bond,
-    user.id,
-    event.params.amount,
-    bond.decimals
+  const deposit = fetchDeposit(event.address);
+  const user = event.params.user;
+  const amount = event.params.amount;
+  frozenHandler(
+    event,
+    deposit.id,
+    AssetType.deposit,
+    user,
+    amount,
+    deposit.decimals,
+    false
   );
 }
 
 export function handleUserBlocked(event: UserBlocked): void {
   const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const user = fetchAccount(event.params.user);
-
-  bond.lastActivity = event.block.timestamp;
-  blockUser(bond.id, user.id, event.block.timestamp);
+  const user = event.params.user;
+  blockUserHandler(event, bond.id, user, bond.decimals, false);
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
-  bond.save();
-
-  const balance = fetchAssetBalance(bond.id, user.id, bond.decimals, false);
-  balance.blocked = true;
-  balance.lastActivity = event.block.timestamp;
-  balance.save();
-
-  log.info("Bond user blocked event: user={}, sender={}, bond={}", [
-    user.id.toHexString(),
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  userBlockedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.bond,
-    user.id
-  );
 }
 
 export function handleUserUnblocked(event: UserUnblocked): void {
   const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const user = fetchAccount(event.params.user);
-
-  bond.lastActivity = event.block.timestamp;
+  const user = event.params.user;
+  unblockUserHandler(event, bond.id, user, bond.decimals, false);
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
-  unblockUser(bond.id, user.id);
-  bond.save();
+}
 
-  const balance = fetchAssetBalance(bond.id, user.id, bond.decimals, false);
-  balance.blocked = false;
-  balance.lastActivity = event.block.timestamp;
-  balance.save();
+export function handleBondMatured(event: BondMatured): void {
+  const bond = fetchBond(event.address);
+  createActivityLogEntry(event, EventType.Matured, [event.params.sender]);
+  bond.isMatured = true;
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
+}
 
-  log.info("Bond user unblocked event: user={}, sender={}, bond={}", [
-    user.id.toHexString(),
-    sender.id.toHexString(),
-    event.address.toHexString(),
+export function handleBondRedeemed(event: BondRedeemed): void {
+  const bond = fetchBond(event.address);
+  createActivityLogEntry(event, EventType.Redeemed, [
+    event.params.holder,
+    event.params.sender,
   ]);
-
-  userUnblockedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    AssetType.bond,
-    user.id
+  const redeemedAmount = bond.redeemedAmountExact.plus(event.params.bondAmount);
+  setValueWithDecimals(bond, "redeemedAmount", redeemedAmount, bond.decimals);
+  const underlyingAmount = bond.underlyingBalanceExact.minus(
+    event.params.underlyingAmount
   );
+  setValueWithDecimals(
+    bond,
+    "underlyingBalanceExact",
+    underlyingAmount,
+    bond.underlyingAssetDecimals
+  );
+  updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
 export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
   const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const from = fetchAccount(event.params.from);
-
-  log.info(
-    "Bond underlying asset top up event: amount={}, from={}, sender={}, bond={}",
-    [
-      event.params.amount.toString(),
-      from.id.toHexString(),
-      sender.id.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
-
-  bond.underlyingBalanceExact = bond.underlyingBalanceExact.plus(
+  createActivityLogEntry(event, EventType.UnderlyingAssetTopUp, [
+    event.params.from,
+  ]);
+  const underlyingBalanceExact = bond.underlyingBalanceExact.plus(
     event.params.amount
   );
-
-  const underlyingDecimals = bond.underlyingAssetDecimals;
-  bond.underlyingBalance = toDecimals(
-    bond.underlyingBalanceExact,
-    underlyingDecimals
+  setValueWithDecimals(
+    bond,
+    "underlyingBalanceExact",
+    underlyingBalanceExact,
+    bond.underlyingAssetDecimals
   );
-
-  bond.lastActivity = event.block.timestamp;
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
-  bond.save();
-
-  underlyingAssetTopUpEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    from.id,
-    event.params.amount,
-    bond.decimals
-  );
 }
 
 export function handleUnderlyingAssetWithdrawn(
   event: UnderlyingAssetWithdrawn
 ): void {
   const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const to = fetchAccount(event.params.to);
+  createActivityLogEntry(event, EventType.UnderlyingAssetWithdrawn, [
+    event.params.to,
+  ]);
 
-  log.info(
-    "Bond underlying asset withdrawn event: amount={}, to={}, sender={}, bond={}",
-    [
-      event.params.amount.toString(),
-      to.id.toHexString(),
-      sender.id.toHexString(),
-      event.address.toHexString(),
-    ]
-  );
-
-  bond.underlyingBalanceExact = bond.underlyingBalanceExact.minus(
+  const underlyingBalanceExact = bond.underlyingBalanceExact.minus(
     event.params.amount
   );
 
-  const underlyingDecimals = bond.underlyingAssetDecimals;
-  bond.underlyingBalance = toDecimals(
-    bond.underlyingBalanceExact,
-    underlyingDecimals
+  setValueWithDecimals(
+    bond,
+    "underlyingBalanceExact",
+    underlyingBalanceExact,
+    bond.underlyingAssetDecimals
   );
 
-  bond.lastActivity = event.block.timestamp;
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
-  bond.save();
-
-  underlyingAssetWithdrawnEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    to.id,
-    event.params.amount,
-    bond.decimals
-  );
 }

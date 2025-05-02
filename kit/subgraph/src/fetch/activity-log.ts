@@ -16,6 +16,19 @@ export class EventType {
   static Pause: string = "Pause";
   static Unpause: string = "Unpause";
   static Clawback: string = "Clawback";
+  static TokensFrozen: string = "TokensFrozen";
+  static UserBlocked: string = "UserBlocked";
+  static UserUnblocked: string = "UserUnblocked";
+  static UserAllowed: string = "UserAllowed";
+  static UserDisallowed: string = "UserDisallowed";
+  static TokenWithdrawn: string = "TokenWithdrawn";
+  static CollateralUpdated: string = "CollateralUpdated";
+  static Matured: string = "Matured";
+  static Redeemed: string = "Redeemed";
+  static UnderlyingAssetTopUp: string = "UnderlyingAssetTopUp";
+  static UnderlyingAssetWithdrawn: string = "UnderlyingAssetWithdrawn";
+  static ManagementFeeCollected: string = "ManagementFeeCollected";
+  static PerformanceFeeCollected: string = "PerformanceFeeCollected";
 }
 
 function activityLogEntryId(event: ethereum.Event): Bytes {

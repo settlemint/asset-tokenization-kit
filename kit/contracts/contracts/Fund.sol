@@ -86,7 +86,7 @@ contract Fund is
     /// @param token The address of the token being withdrawn
     /// @param to The address receiving the tokens
     /// @param amount The amount of tokens withdrawn
-    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
+    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount, address indexed sender);
 
     /// @notice Emitted when tokens are forcibly transferred from one address to another
     /// @param from The address tokens are taken from
@@ -307,7 +307,7 @@ contract Fund is
         if (balance < amount) revert InsufficientTokenBalance();
 
         IERC20(token).safeTransfer(to, amount);
-        emit TokenWithdrawn(token, to, amount);
+        emit TokenWithdrawn(token, to, amount, _msgSender());
     }
 
     /// @notice Forcibly transfers tokens from one address to another

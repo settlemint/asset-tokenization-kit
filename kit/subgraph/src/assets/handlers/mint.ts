@@ -55,7 +55,7 @@ export function mintHandler(
   // update portfolio stats
   handlePortfolioStats(toAccount, assetAddress, balance, decimals);
   // update asset stats
-  handleAssetStats(asset, assetAddress, assetType, value, decimals);
+  handleAssetStats(assetAddress, assetType, value, decimals);
 }
 
 function handleTotalSupply(
@@ -159,7 +159,6 @@ function handlePortfolioStats(
 }
 
 function handleAssetStats(
-  asset: Entity,
   assetAddress: Bytes,
   assetType: string,
   value: BigInt,
@@ -169,14 +168,5 @@ function handleAssetStats(
   setValueWithDecimals(assetStats, "minted", value, decimals);
   let supply = assetStats.supplyExact.plus(value);
   setValueWithDecimals(assetStats, "supply", supply, decimals);
-
-  if (assetType === AssetType.deposit || assetType === AssetType.stablecoin) {
-    assetStats.collateral = asset.getBigDecimal("collateral");
-    assetStats.collateralExact = asset.getBigInt("collateralExact");
-    assetStats.freeCollateral = asset.getBigDecimal("freeCollateral");
-    assetStats.freeCollateralExact = asset.getBigInt("freeCollateralExact");
-    assetStats.collateralRatio = asset.getBigDecimal("collateralRatio");
-  }
-
   assetStats.save();
 }

@@ -79,7 +79,8 @@ type Bond implements Asset @entity(immutable: false) {
   faceValue: BigInt!
   underlyingAsset: Asset!
   underlyingAssetDecimals: Int! # Storing decimals directly to avoid having to always query the underlying asset
-  redeemedAmount: BigInt!
+  redeemedAmount: BigDecimal!
+  redeemedAmountExact: BigInt!
   underlyingBalance: BigDecimal!
   underlyingBalanceExact: BigInt!
   yieldSchedule: FixedYield

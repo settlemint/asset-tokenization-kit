@@ -91,13 +91,13 @@ contract Bond is
 
     /// @notice Emitted when the bond reaches maturity and is closed
     /// @param timestamp The block timestamp when the bond matured
-    event BondMatured(uint256 timestamp);
+    event BondMatured(uint256 timestamp, address indexed sender);
 
     /// @notice Emitted when a bond is redeemed for underlying assets
     /// @param holder The address redeeming the bonds
     /// @param bondAmount The amount of bonds redeemed
     /// @param underlyingAmount The amount of underlying assets received
-    event BondRedeemed(address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
+    event BondRedeemed(address indexed holder, uint256 bondAmount, uint256 underlyingAmount, address indexed sender);
 
     /// @notice Emitted when underlying assets are topped up
     /// @param from The address providing the underlying assets
@@ -294,7 +294,7 @@ contract Bond is
         if (underlyingAssetBalance() < needed) revert InsufficientUnderlyingBalance();
 
         isMatured = true;
-        emit BondMatured(block.timestamp);
+        emit BondMatured(block.timestamp, _msgSender());
     }
 
     /// @notice Allows topping up the contract with underlying assets
@@ -492,7 +492,7 @@ contract Bond is
         bool success = underlyingAsset.transfer(holder, underlyingAmount);
         if (!success) revert InsufficientUnderlyingBalance();
 
-        emit BondRedeemed(holder, amount, underlyingAmount);
+        emit BondRedeemed(holder, amount, underlyingAmount, _msgSender());
     }
 
     /// @notice Calculates the underlying asset amount for a given bond amount
