@@ -213,7 +213,7 @@ export function AssetDesignerDialog({
             predictedAddress = `0x${Math.random().toString(16).substring(2).padStart(40, "0")}`;
         }
       } catch (error) {
-        console.error("Error creating asset:", error);
+        console.error("Error predicting address:", error);
         // Generate a fallback random address in case of prediction failure
         predictedAddress = `0x${Math.random().toString(16).substring(2).padStart(40, "0")}`;
       }
