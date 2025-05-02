@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { UseFormReturn } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
 import { StepContent } from "../step-wizard/step-content";
@@ -58,15 +57,11 @@ export function AssetBasicsStep({
     >
       <FormProvider {...form}>
         <div className="flex flex-col space-y-6">
-          <Card>
-            <CardHeader>
-              <h3 className="text-lg font-medium">Basic information</h3>
-              <p className="text-sm text-muted-foreground">
-                Specify the basic information for this {assetType}.
-              </p>
-            </CardHeader>
-            <CardContent>{renderBasicsComponent()}</CardContent>
-          </Card>
+          <h3 className="text-lg font-medium">Basic information</h3>
+          <p className="text-sm text-muted-foreground">
+            Specify the basic information for this {assetType}.
+          </p>
+          {renderBasicsComponent()}
         </div>
       </FormProvider>
     </StepContent>

@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { UseFormReturn } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
 import { StepContent } from "../step-wizard/step-content";
@@ -58,20 +57,16 @@ export function AssetConfigurationStep({
     >
       <FormProvider {...form}>
         <div className="flex flex-col space-y-6">
-          <Card>
-            <CardHeader>
-              <h3 className="text-lg font-medium">
-                {assetType
-                  ? assetType.charAt(0).toUpperCase() + assetType?.slice(1)
-                  : "Asset"}{" "}
-                configuration
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Configure specific parameters for this {assetType}.
-              </p>
-            </CardHeader>
-            <CardContent>{renderConfigurationComponent()}</CardContent>
-          </Card>
+          <h3 className="text-lg font-medium">
+            {assetType
+              ? assetType.charAt(0).toUpperCase() + assetType?.slice(1)
+              : "Asset"}{" "}
+            configuration
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Configure specific parameters for this {assetType}.
+          </p>
+          {renderConfigurationComponent()}
         </div>
       </FormProvider>
     </StepContent>
