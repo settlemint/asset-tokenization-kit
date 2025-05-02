@@ -45,6 +45,10 @@ const nextConfig: NextConfig = {
         source: "/ingest/decide",
         destination: "https://eu.i.posthog.com/decide",
       },
+      {
+        source: "/:locale/media/:path*",
+        destination: "/_next/static/media/:path*",
+      },
     ];
   },
   // This is required to support PostHog trailing slash API requests
