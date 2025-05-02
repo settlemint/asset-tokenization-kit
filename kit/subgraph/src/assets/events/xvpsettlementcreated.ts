@@ -6,15 +6,13 @@ export function xvpSettlementCreatedEvent(
   id: Bytes,
   timestamp: BigInt,
   emitter: Bytes,
-  sender: Bytes,
-  xvpSettlement: Bytes
+  sender: Bytes
 ): XvPSettlementCreatedEvent {
   const event = new XvPSettlementCreatedEvent(id);
   event.eventName = EventName.XvPSettlementCreated;
   event.timestamp = timestamp;
   event.emitter = emitter;
   event.sender = sender;
-  event.xvpSettlement = xvpSettlement;
   event.save();
 
   return event;

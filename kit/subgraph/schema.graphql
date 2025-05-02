@@ -1280,10 +1280,6 @@ type XvPSettlementCreatedEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Bytes!
   sender: Account!
-  transaction: Bytes!
-  xvpSettlement: XvPSettlement!
-  cutoffDate: BigInt!
-  autoExecute: Boolean!
 }
 
 type XvPSettlementApprovedEvent @entity(immutable: true) {
@@ -1292,8 +1288,6 @@ type XvPSettlementApprovedEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Bytes!
   sender: Account!
-  transaction: Bytes!
-  xvpSettlement: XvPSettlement!
 }
 
 type XvPSettlementApprovalRevokedEvent @entity(immutable: true) {
@@ -1302,8 +1296,6 @@ type XvPSettlementApprovalRevokedEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Bytes!
   sender: Account!
-  transaction: Bytes!
-  xvpSettlement: XvPSettlement!
 }
 
 type XvPSettlementExecutedEvent @entity(immutable: true) {
@@ -1312,8 +1304,6 @@ type XvPSettlementExecutedEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Bytes!
   sender: Account!
-  transaction: Bytes!
-  xvpSettlement: XvPSettlement!
 }
 
 type XvPSettlementCancelledEvent @entity(immutable: true) {
@@ -1322,7 +1312,4 @@ type XvPSettlementCancelledEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Bytes!
   sender: Account!
-  assetType: String!
-  transaction: Bytes!
-  xvpSettlement: XvPSettlement!
 }

@@ -12,6 +12,7 @@ import {
 } from "../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../fetch/account";
 import { fetchApproval, fetchXvPSettlement } from "../fetch/xvp-settlement";
+import { EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
 
 export function handleXvPSettlementApproved(
@@ -22,8 +23,11 @@ export function handleXvPSettlementApproved(
   const xvpSettlementApprovedEvent = new XvPSettlementApprovedEvent(
     eventId(event)
   );
-  xvpSettlementApprovedEvent.xvpSettlement = xvpSettlement.id;
+  xvpSettlementApprovedEvent.emitter = event.address;
   xvpSettlementApprovedEvent.sender = sender.id;
+  xvpSettlementApprovedEvent.timestamp = event.block.timestamp;
+  xvpSettlementApprovedEvent.eventName = EventName.XvPSettlementApproved;
+
   xvpSettlementApprovedEvent.save();
 }
 
@@ -34,8 +38,12 @@ export function handleXvPSettlementApprovalRevoked(
   const sender = fetchAccount(event.transaction.from);
   const xvpSettlementApprovalRevokedEvent =
     new XvPSettlementApprovalRevokedEvent(eventId(event));
-  xvpSettlementApprovalRevokedEvent.xvpSettlement = xvpSettlement.id;
+  xvpSettlementApprovalRevokedEvent.emitter = event.address;
   xvpSettlementApprovalRevokedEvent.sender = sender.id;
+  xvpSettlementApprovalRevokedEvent.timestamp = event.block.timestamp;
+  xvpSettlementApprovalRevokedEvent.eventName =
+    EventName.XvPSettlementApprovalRevoked;
+
   xvpSettlementApprovalRevokedEvent.save();
 
   const approval = fetchApproval(event.address, event.transaction.from);
@@ -48,9 +56,11 @@ export function handleXvPSettlementClaimed(event: XvPSettlementClaimed): void {
   const xvpSettlementExecutedEvent = new XvPSettlementExecutedEvent(
     eventId(event)
   );
-  xvpSettlementExecutedEvent.xvpSettlement = xvpSettlement.id;
   xvpSettlementExecutedEvent.sender = sender.id;
   xvpSettlementExecutedEvent.save();
+  xvpSettlementExecutedEvent.eventName = EventName.XvPSettlementClaimed;
+  xvpSettlementExecutedEvent.timestamp = event.block.timestamp;
+  xvpSettlementExecutedEvent.emitter = event.address;
 
   xvpSettlement.claimed = true;
   xvpSettlement.save();
@@ -64,9 +74,11 @@ export function handleXvPSettlementCancelled(
   const xvpSettlementCancelledEvent = new XvPSettlementCancelledEvent(
     eventId(event)
   );
-  xvpSettlementCancelledEvent.xvpSettlement = xvpSettlement.id;
   xvpSettlementCancelledEvent.sender = sender.id;
   xvpSettlementCancelledEvent.save();
+  xvpSettlementCancelledEvent.eventName = EventName.XvPSettlementCancelled;
+  xvpSettlementCancelledEvent.timestamp = event.block.timestamp;
+  xvpSettlementCancelledEvent.emitter = event.address;
 
   xvpSettlement.cancelled = true;
   xvpSettlement.save();

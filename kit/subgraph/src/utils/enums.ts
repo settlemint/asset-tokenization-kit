@@ -53,4 +53,9 @@ export class EventName {
   // Stablecoin specific events
   static CollateralUpdated: string = "Collateral Updated";
   static XvPSettlementCreated: string = "XvP Settlement Created";
+  static XvPSettlementApproved: string = "XvP Settlement Approved";
+  static XvPSettlementApprovalRevoked: string =
+    "XvP Settlement Approval Revoked";
+  static XvPSettlementCancelled: string = "XvP Settlement Cancelled";
+  static XvPSettlementClaimed: string = "XvP Settlement Claimed";
 }

@@ -166,7 +166,7 @@ dataSources:
     name: XvPSettlementFactory
     network: settlemint
     source:
-      address: "0x5e771e1417100000000000000000000000000008"
+      address: "0xc0F975b7B805b1b6f657dC8Fc973373323d3D671"
       abi: XvPSettlementFactory
     mapping:
       kind: ethereum/events
@@ -178,6 +178,8 @@ dataSources:
       abis:
         - name: XvPSettlementFactory
           file: ../contracts/artifacts/contracts/XvPSettlementFactory.sol/XvPSettlementFactory.json
+        - name: XvPSettlement
+          file: ../contracts/artifacts/contracts/XvPSettlement.sol/XvPSettlement.json
       eventHandlers:
         - event: XvPSettlementCreated(indexed address,indexed address)
           handler: handleXvPSettlementCreated
@@ -214,16 +216,12 @@ dataSources:
         - name: LinearVestingStrategy
           file: ../contracts/artifacts/contracts/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
       eventHandlers:
-        - event:
-            StandardAirdropDeployed(indexed address,indexed address,indexed
-            address)
+        - event: StandardAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handleStandardAirdropDeployed
-        - event:
-            VestingAirdropDeployed(indexed address,indexed address,indexed
+        - event: VestingAirdropDeployed(indexed address,indexed address,indexed
             address,address)
           handler: handleVestingAirdropDeployed
-        - event:
-            PushAirdropDeployed(indexed address,indexed address,indexed address)
+        - event: PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
       file: ./src/factories/airdrop-factory.ts
 templates:
@@ -276,9 +274,7 @@ templates:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
-        - event:
-            YieldClaimed(indexed
-            address,uint256,uint256,uint256,uint256[],uint256)
+        - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
@@ -365,8 +361,7 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
@@ -433,8 +428,7 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -510,8 +504,7 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: Clawback(indexed address,indexed address,uint256)
           handler: handleClawback
@@ -588,8 +581,7 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: CollateralUpdated(uint256,uint256,uint256)
           handler: handleCollateralUpdated
@@ -667,8 +659,7 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: ManagementFeeCollected(uint256,uint256)
           handler: handleManagementFeeCollected
@@ -743,8 +734,7 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: TokenWithdrawn(indexed address,indexed address,uint256)
           handler: handleTokenWithdrawn
