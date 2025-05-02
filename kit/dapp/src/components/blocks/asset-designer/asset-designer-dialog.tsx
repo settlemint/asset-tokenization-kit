@@ -18,7 +18,6 @@ import { AssetTypeSelection } from "./steps/asset-type-selection";
 import { AssetBasicsStep } from "./steps/basics";
 import { AssetConfigurationStep } from "./steps/configuration";
 import { AssetPermissionsStep } from "./steps/permissions";
-import { AssetRegulationStep } from "./steps/regulation";
 import { AssetSummaryStep } from "./steps/summary";
 
 // Import utility functions
@@ -387,14 +386,14 @@ export function AssetDesignerDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="max-h-screen h-[75vh] w-[75vw] p-0 overflow-hidden border-none right-0 !max-w-screen rounded-2xl"
+        className="max-h-[95vh] min-h-[70vh] h-auto w-[90vw] lg:w-[75vw] p-0 overflow-auto border-none right-0 !max-w-screen rounded-2xl"
         onInteractOutside={(e) => {
           e.preventDefault();
         }}
         onOpenAutoFocus={(e) => e.preventDefault()}
         onFocusOutside={(e) => e.preventDefault()}
       >
-        <div className="relative h-full">
+        <div className="relative">
           <DialogTitle className="sr-only">
             {getAssetTitle(selectedAssetType)}
           </DialogTitle>
@@ -446,19 +445,20 @@ export function AssetDesignerDialog({
                 form={getFormForAssetType()}
                 isValid={isPermissionsFormValid}
                 onBack={() => setCurrentStep("configuration")}
-                onNext={() => setCurrentStep("regulation")}
+                onNext={() => setCurrentStep("summary")}
               />
             )}
 
+            {/* TODO: bring back later */}
             {/* Regulation Step */}
-            {currentStep === "regulation" && selectedAssetType && (
+            {/* {currentStep === "regulation" && selectedAssetType && (
               <AssetRegulationStep
                 assetType={selectedAssetType}
                 form={getFormForAssetType()}
                 onBack={() => setCurrentStep("permissions")}
                 onNext={() => setCurrentStep("summary")}
               />
-            )}
+            )} */}
 
             {/* Summary Step */}
             {currentStep === "summary" && selectedAssetType && (
@@ -466,7 +466,7 @@ export function AssetDesignerDialog({
                 assetType={selectedAssetType}
                 form={getFormForAssetType()}
                 isSubmitting={isSubmitting}
-                onBack={() => setCurrentStep("regulation")}
+                onBack={() => setCurrentStep("permissions")}
                 onSubmit={handleCreateAsset}
               />
             )}

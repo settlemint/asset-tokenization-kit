@@ -120,6 +120,11 @@ export function isConfigurationValid(
   const formErrors = form.formState.errors;
   const hasErrors = Object.keys(formErrors).length > 0;
 
+  const hasPrice = !!formValues.price?.amount && !!formValues.price?.currency;
+  const hasCollateralLiveness =
+    !!formValues.collateralLivenessValue &&
+    !!formValues.collateralLivenessTimeUnit;
+
   // Check asset-specific required fields
   switch (assetType) {
     case "bond":
@@ -134,23 +139,33 @@ export function isConfigurationValid(
       break;
 
     case "cryptocurrency":
-      requiredFieldsValid = !!formValues.maxSupply;
+      const hasInitialSupply = !!formValues.initialSupply;
+
+      requiredFieldsValid = hasInitialSupply && hasPrice;
       break;
 
     case "equity":
-      requiredFieldsValid = !!formValues.sharesOutstanding;
+      const hasEquityClass = !!formValues.equityClass;
+      const hasEquityCategory = !!formValues.equityCategory;
+
+      requiredFieldsValid = hasEquityClass && hasEquityCategory && hasPrice;
       break;
 
     case "fund":
-      requiredFieldsValid = !!formValues.managementFeeBps;
+      const hasFundCategory = !!formValues.fundCategory;
+      const hasFundClass = !!formValues.fundClass;
+      const hasManagementFeeBps = !!formValues.managementFeeBps;
+
+      requiredFieldsValid =
+        hasFundCategory && hasFundClass && hasManagementFeeBps && hasPrice;
       break;
 
     case "stablecoin":
-      requiredFieldsValid = !!formValues.collateralType;
+      requiredFieldsValid = hasCollateralLiveness && hasPrice;
       break;
 
     case "deposit":
-      requiredFieldsValid = !!formValues.depositType;
+      requiredFieldsValid = hasCollateralLiveness && hasPrice;
       break;
 
     default:
