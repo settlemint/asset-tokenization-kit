@@ -26,8 +26,8 @@ export function handleTransfer(event: Transfer): void {
   const decimals = cryptoCurrency.decimals;
 
   if (from.equals(Address.zero())) {
-    createActivityLogEntry(event, EventType.Mint, [to]);
     mintHandler(
+      event,
       cryptoCurrency,
       cryptoCurrency.id,
       AssetType.bond,
@@ -38,8 +38,8 @@ export function handleTransfer(event: Transfer): void {
       false
     );
   } else if (to.equals(Address.zero())) {
-    createActivityLogEntry(event, EventType.Burn, [event.params.from]);
     burnHandler(
+      event,
       cryptoCurrency,
       cryptoCurrency.id,
       AssetType.cryptocurrency,
@@ -50,11 +50,8 @@ export function handleTransfer(event: Transfer): void {
       false
     );
   } else {
-    createActivityLogEntry(event, EventType.Transfer, [
-      event.params.from,
-      event.params.to,
-    ]);
     transferHandler(
+      event,
       cryptoCurrency,
       cryptoCurrency.id,
       AssetType.cryptocurrency,
@@ -87,12 +84,8 @@ export function handleRoleGranted(event: RoleGranted): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
   const role = event.params.role.toHexString();
   const roleHolder = event.params.account;
-
-  createActivityLogEntry(event, EventType.RoleGranted, [
-    roleHolder,
-    event.params.sender,
-  ]);
-  roleGrantedHandler(cryptoCurrency, role, roleHolder);
+  const sender = event.params.sender;
+  roleGrantedHandler(event, cryptoCurrency, role, roleHolder, sender);
   updateDerivedFieldsAndSave(cryptoCurrency, event.block.timestamp);
 }
 
@@ -100,12 +93,8 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
   const role = event.params.role.toHexString();
   const roleHolder = event.params.account;
-
-  createActivityLogEntry(event, EventType.RoleRevoked, [
-    roleHolder,
-    event.params.sender,
-  ]);
-  roleRevokedHandler(cryptoCurrency, role, roleHolder);
+  const sender = event.params.sender;
+  roleRevokedHandler(event, cryptoCurrency, role, roleHolder, sender);
   updateDerivedFieldsAndSave(cryptoCurrency, event.block.timestamp);
 }
 
@@ -118,17 +107,17 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
 
 export function handleApproval(event: Approval): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
-  createActivityLogEntry(event, EventType.Approval, [
-    event.params.owner,
-    event.params.spender,
-  ]);
+  const owner = event.params.owner;
+  const spender = event.params.spender;
   approvalHandler(
+    event,
     cryptoCurrency.id,
     event.params.value,
     cryptoCurrency.decimals,
     false,
     event.block.timestamp,
-    event.params.owner
+    owner,
+    spender
   );
   updateDerivedFieldsAndSave(cryptoCurrency, event.block.timestamp);
 }

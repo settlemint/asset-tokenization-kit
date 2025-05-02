@@ -1,18 +1,22 @@
-import { Address, Bytes, Entity } from "@graphprotocol/graph-ts";
+import { Address, Bytes, Entity, ethereum } from "@graphprotocol/graph-ts";
 import { AssetBalance } from "../../../generated/schema";
 import { fetchAccount } from "../../fetch/account";
+import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
 import { hasBalance } from "../../fetch/balance";
 import { setValueWithDecimals } from "../../utils/decimals";
 import { fetchAssetCount } from "../fetch/asset-count";
 
 export function pauseHandler(
+  event: ethereum.Event,
   asset: Entity,
   assetId: Bytes,
   assetType: string,
   decimals: number,
   initialBlockedState: boolean,
-  holders: AssetBalance[]
+  holders: AssetBalance[],
+  sender: Address
 ): void {
+  createActivityLogEntry(event, EventType.Pause, [sender]);
   asset.setBoolean("paused", true);
   handleAssetCount(assetType);
   for (let i = 0; i < holders.length; i++) {

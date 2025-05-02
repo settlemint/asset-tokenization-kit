@@ -49,8 +49,8 @@ export function handleTransfer(event: Transfer): void {
   const decimals = deposit.decimals;
 
   if (from.equals(Address.zero())) {
-    createActivityLogEntry(event, EventType.Mint, [to]);
     mintHandler(
+      event,
       deposit,
       deposit.id,
       AssetType.deposit,
@@ -61,8 +61,8 @@ export function handleTransfer(event: Transfer): void {
       true
     );
   } else if (to.equals(Address.zero())) {
-    createActivityLogEntry(event, EventType.Burn, [event.params.from]);
     burnHandler(
+      event,
       deposit,
       deposit.id,
       AssetType.deposit,
@@ -73,11 +73,8 @@ export function handleTransfer(event: Transfer): void {
       true
     );
   } else {
-    createActivityLogEntry(event, EventType.Transfer, [
-      event.params.from,
-      event.params.to,
-    ]);
     transferHandler(
+      event,
       deposit,
       deposit.id,
       AssetType.deposit,
@@ -117,12 +114,8 @@ export function handleRoleGranted(event: RoleGranted): void {
   const deposit = fetchDeposit(event.address);
   const role = event.params.role.toHexString();
   const roleHolder = event.params.account;
-
-  createActivityLogEntry(event, EventType.RoleGranted, [
-    roleHolder,
-    event.params.sender,
-  ]);
-  roleGrantedHandler(deposit, role, roleHolder);
+  const sender = event.params.sender;
+  roleGrantedHandler(event, deposit, role, roleHolder, sender);
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
@@ -130,12 +123,8 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   const deposit = fetchDeposit(event.address);
   const role = event.params.role.toHexString();
   const roleHolder = event.params.account;
-
-  createActivityLogEntry(event, EventType.RoleRevoked, [
-    roleHolder,
-    event.params.sender,
-  ]);
-  roleRevokedHandler(deposit, role, roleHolder);
+  const sender = event.params.sender;
+  roleRevokedHandler(event, deposit, role, roleHolder, sender);
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
@@ -148,47 +137,51 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
 
 export function handleApproval(event: Approval): void {
   const deposit = fetchDeposit(event.address);
-  createActivityLogEntry(event, EventType.Approval, [
-    event.params.owner,
-    event.params.spender,
-  ]);
+  const owner = event.params.owner;
+  const spender = event.params.spender;
   approvalHandler(
+    event,
     deposit.id,
     event.params.value,
     deposit.decimals,
     false,
     event.block.timestamp,
-    event.params.owner
+    owner,
+    spender
   );
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handlePaused(event: Paused): void {
   const deposit = fetchDeposit(event.address);
-  createActivityLogEntry(event, EventType.Pause, [event.params.account]);
+  const sender = event.params.account;
   const holders = deposit.holders.load();
   pauseHandler(
+    event,
     deposit,
     deposit.id,
     AssetType.deposit,
     deposit.decimals,
     false,
-    holders
+    holders,
+    sender
   );
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handleUnpaused(event: Unpaused): void {
   const deposit = fetchDeposit(event.address);
-  createActivityLogEntry(event, EventType.Pause, [event.params.account]);
+  const sender = event.params.account;
   const holders = deposit.holders.load();
   unPauseHandler(
+    event,
     deposit,
     deposit.id,
     AssetType.deposit,
     deposit.decimals,
     false,
-    holders
+    holders,
+    sender
   );
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }

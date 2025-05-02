@@ -1,6 +1,14 @@
-import { Address, BigInt, Bytes, Entity, store } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  Bytes,
+  Entity,
+  ethereum,
+  store,
+} from "@graphprotocol/graph-ts";
 import { Account, AssetBalance } from "../../../generated/schema";
 import { fetchAccount } from "../../fetch/account";
+import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
 import { fetchAssetBalance, hasBalance } from "../../fetch/balance";
 import { decrease, increase } from "../../utils/counters";
 import { setValueWithDecimals } from "../../utils/decimals";
@@ -10,6 +18,7 @@ import { newAssetStatsData } from "../stats/assets";
 import { newPortfolioStatsData } from "../stats/portfolio";
 
 export function transferHandler(
+  event: ethereum.Event,
   asset: Entity,
   assetAddress: Bytes,
   assetType: string,
@@ -20,6 +29,7 @@ export function transferHandler(
   decimals: number,
   initialBlockedState: boolean
 ): void {
+  createActivityLogEntry(event, EventType.Transfer, [from, to]);
   // increase total minted
   handleTotalTransferred(asset, value, decimals);
   // update asset activity

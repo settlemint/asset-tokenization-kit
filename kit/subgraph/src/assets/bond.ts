@@ -55,8 +55,8 @@ export function handleTransfer(event: Transfer): void {
   const decimals = bond.decimals;
 
   if (from.equals(Address.zero())) {
-    createActivityLogEntry(event, EventType.Mint, [to]);
     mintHandler(
+      event,
       bond,
       bond.id,
       AssetType.bond,
@@ -67,8 +67,8 @@ export function handleTransfer(event: Transfer): void {
       false
     );
   } else if (to.equals(Address.zero())) {
-    createActivityLogEntry(event, EventType.Burn, [event.params.from]);
     burnHandler(
+      event,
       bond,
       bond.id,
       AssetType.bond,
@@ -79,11 +79,8 @@ export function handleTransfer(event: Transfer): void {
       false
     );
   } else {
-    createActivityLogEntry(event, EventType.Transfer, [
-      event.params.from,
-      event.params.to,
-    ]);
     transferHandler(
+      event,
       bond,
       bond.id,
       AssetType.bond,
@@ -113,12 +110,8 @@ export function handleRoleGranted(event: RoleGranted): void {
   const bond = fetchBond(event.address);
   const role = event.params.role.toHexString();
   const roleHolder = event.params.account;
-
-  createActivityLogEntry(event, EventType.RoleGranted, [
-    roleHolder,
-    event.params.sender,
-  ]);
-  roleGrantedHandler(bond, role, roleHolder);
+  const sender = event.params.sender;
+  roleGrantedHandler(event, bond, role, roleHolder, sender);
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
@@ -126,12 +119,8 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   const bond = fetchBond(event.address);
   const role = event.params.role.toHexString();
   const roleHolder = event.params.account;
-
-  createActivityLogEntry(event, EventType.RoleRevoked, [
-    roleHolder,
-    event.params.sender,
-  ]);
-  roleRevokedHandler(bond, role, roleHolder);
+  const sender = event.params.sender;
+  roleRevokedHandler(event, bond, role, roleHolder, sender);
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
@@ -144,34 +133,52 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
 
 export function handleApproval(event: Approval): void {
   const bond = fetchBond(event.address);
-  createActivityLogEntry(event, EventType.Approval, [
-    event.params.owner,
-    event.params.spender,
-  ]);
+  const owner = event.params.owner;
+  const spender = event.params.spender;
   approvalHandler(
+    event,
     bond.id,
     event.params.value,
     bond.decimals,
     false,
     event.block.timestamp,
-    event.params.owner
+    owner,
+    spender
   );
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
 export function handlePaused(event: Paused): void {
   const bond = fetchBond(event.address);
-  createActivityLogEntry(event, EventType.Pause, [event.params.account]);
+  const sender = event.params.account;
   const holders = bond.holders.load();
-  pauseHandler(bond, bond.id, AssetType.bond, bond.decimals, false, holders);
+  pauseHandler(
+    event,
+    bond,
+    bond.id,
+    AssetType.bond,
+    bond.decimals,
+    false,
+    holders,
+    sender
+  );
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
 export function handleUnpaused(event: Unpaused): void {
   const bond = fetchBond(event.address);
-  createActivityLogEntry(event, EventType.Pause, [event.params.account]);
+  const sender = event.params.account;
   const holders = bond.holders.load();
-  unPauseHandler(bond, bond.id, AssetType.bond, bond.decimals, false, holders);
+  unPauseHandler(
+    event,
+    bond,
+    bond.id,
+    AssetType.bond,
+    bond.decimals,
+    false,
+    holders,
+    sender
+  );
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 

@@ -1,6 +1,13 @@
-import { Address, BigInt, Bytes, Entity } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  Bytes,
+  Entity,
+  ethereum,
+} from "@graphprotocol/graph-ts";
 import { Account, AssetBalance } from "../../../generated/schema";
 import { fetchAccount } from "../../fetch/account";
+import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
 import { fetchAssetBalance, hasBalance } from "../../fetch/balance";
 import { increase } from "../../utils/counters";
 import { setValueWithDecimals } from "../../utils/decimals";
@@ -10,6 +17,7 @@ import { newAssetStatsData } from "../stats/assets";
 import { newPortfolioStatsData } from "../stats/portfolio";
 
 export function mintHandler(
+  event: ethereum.Event,
   asset: Entity,
   assetAddress: Bytes,
   assetType: string,
@@ -19,6 +27,7 @@ export function mintHandler(
   decimals: number,
   initialBlockedState: boolean
 ): void {
+  createActivityLogEntry(event, EventType.Mint, [to]);
   // increase total supply
   const newTotalSupply = handleTotalSupply(asset, value, decimals);
   // increase total minted

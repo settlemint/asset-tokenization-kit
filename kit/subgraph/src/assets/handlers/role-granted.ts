@@ -1,12 +1,16 @@
-import { Address, Entity, Value } from "@graphprotocol/graph-ts";
+import { Address, Entity, ethereum, Value } from "@graphprotocol/graph-ts";
 import { fetchAccount } from "../../fetch/account";
+import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
 import { Role } from "../../utils/enums";
 
 export function roleGrantedHandler(
+  event: ethereum.Event,
   asset: Entity,
   role: string,
-  roleHolder: Address
+  roleHolder: Address,
+  sender: Address
 ): void {
+  createActivityLogEntry(event, EventType.RoleGranted, [roleHolder, sender]);
   const roleHolderAccount = fetchAccount(roleHolder);
 
   if (role == Role.DEFAULT_ADMIN_ROLE) {
