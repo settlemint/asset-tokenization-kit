@@ -120,6 +120,11 @@ export function isConfigurationValid(
   const formErrors = form.formState.errors;
   const hasErrors = Object.keys(formErrors).length > 0;
 
+  const hasPrice = !!formValues.price?.amount && !!formValues.price?.currency;
+  const hasCollateralLiveness =
+    !!formValues.collateralLivenessValue &&
+    !!formValues.collateralLivenessTimeUnit;
+
   // Check asset-specific required fields
   switch (assetType) {
     case "bond":
@@ -135,40 +140,32 @@ export function isConfigurationValid(
 
     case "cryptocurrency":
       const hasInitialSupply = !!formValues.initialSupply;
-      const hasPrice = !!formValues.price;
-
-      console.log("hasInitialSupply", hasInitialSupply);
-      console.log("hasPrice", hasPrice);
 
       requiredFieldsValid = hasInitialSupply && hasPrice;
       break;
 
     case "equity":
-      requiredFieldsValid = !!formValues.sharesOutstanding;
+      const hasEquityClass = !!formValues.equityClass;
+      const hasEquityCategory = !!formValues.equityCategory;
+
+      requiredFieldsValid = hasEquityClass && hasEquityCategory && hasPrice;
       break;
 
     case "fund":
-      requiredFieldsValid = !!formValues.managementFeeBps;
+      const hasFundCategory = !!formValues.fundCategory;
+      const hasFundClass = !!formValues.fundClass;
+      const hasManagementFeeBps = !!formValues.managementFeeBps;
+
+      requiredFieldsValid = hasFundCategory && hasFundClass && hasPrice;
+      hasManagementFeeBps;
       break;
 
     case "stablecoin":
-      const hasCollateralLivenessValue = !!formValues.collateralLivenessValue;
-      const hasCollateralLivenessTimeUnit =
-        !!formValues.collateralLivenessTimeUnit;
-      const hasPriceAmount = !!(formValues.price && formValues.price.amount);
-      const hasPriceCurrency = !!(
-        formValues.price && formValues.price.currency
-      );
-
-      requiredFieldsValid =
-        hasCollateralLivenessValue &&
-        hasCollateralLivenessTimeUnit &&
-        hasPriceAmount &&
-        hasPriceCurrency;
+      requiredFieldsValid = hasCollateralLiveness && hasPrice;
       break;
 
     case "deposit":
-      requiredFieldsValid = !!formValues.depositType;
+      requiredFieldsValid = hasCollateralLiveness && hasPrice;
       break;
 
     default:
