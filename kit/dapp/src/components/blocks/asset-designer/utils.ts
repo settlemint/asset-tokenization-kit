@@ -134,7 +134,13 @@ export function isConfigurationValid(
       break;
 
     case "cryptocurrency":
-      requiredFieldsValid = !!formValues.maxSupply;
+      const hasInitialSupply = !!formValues.initialSupply;
+      const hasPrice = !!formValues.price;
+
+      console.log("hasInitialSupply", hasInitialSupply);
+      console.log("hasPrice", hasPrice);
+
+      requiredFieldsValid = hasInitialSupply && hasPrice;
       break;
 
     case "equity":
