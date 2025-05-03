@@ -121,7 +121,7 @@
     "@types/rtl-detect": "1.0.3",
     "babel-plugin-react-compiler": "19.1.0-rc.1",
     "dotenv": "16.5.0",
-    "drizzle-kit": "0.31.0",
+    "drizzle-kit": "0.31.1",
     "eslint": "9.26.0",
     "eslint-config-next": "15.3.1",
     "languine": "3.1.4",
