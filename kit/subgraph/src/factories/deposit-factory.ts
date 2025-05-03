@@ -2,8 +2,8 @@ import { DepositCreated } from "../../generated/DepositFactory/DepositFactory";
 import { Deposit } from "../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchDeposit } from "../assets/fetch/deposit";
-import { fetchAccount } from "../fetch/account";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { fetchAccount } from "../utils/account";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType, FactoryType } from "../utils/enums";
 import { fetchFactory } from "./fetch/factory";
 

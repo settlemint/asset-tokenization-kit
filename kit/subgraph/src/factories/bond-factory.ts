@@ -2,8 +2,8 @@ import { BondCreated } from "../../generated/BondFactory/BondFactory";
 import { Bond } from "../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchBond } from "../assets/fetch/bond";
-import { fetchAccount } from "../fetch/account";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { fetchAccount } from "../utils/account";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType, FactoryType } from "../utils/enums";
 import { fetchFactory } from "./fetch/factory";
 

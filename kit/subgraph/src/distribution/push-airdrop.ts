@@ -28,7 +28,7 @@ import {
 } from "../../generated/templates/PushAirdropTemplate/PushAirdrop";
 
 // Use fetchAccount for consistent account entity creation
-import { fetchAccount } from "../fetch/account";
+import { fetchAccount } from "../utils/account";
 import { toDecimals } from "../utils/decimals";
 
 // Helper function to get token decimals from any asset type

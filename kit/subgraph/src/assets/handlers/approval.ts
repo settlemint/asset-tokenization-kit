@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { fetchAccount } from "../../fetch/account";
-import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
-import { fetchAssetBalance } from "../../fetch/balance";
+import { fetchAccount } from "../../utils/account";
+import { createActivityLogEntry, EventType } from "../../utils/activity-log";
+import { fetchAssetBalance } from "../../utils/balance";
 import { setValueWithDecimals } from "../../utils/decimals";
 
 export function approvalHandler(

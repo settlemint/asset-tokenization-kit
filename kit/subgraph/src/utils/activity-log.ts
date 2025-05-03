@@ -32,6 +32,11 @@ export class EventType {
   static YieldClaimed: string = "YieldClaimed";
   static AssetCreated: string = "AssetCreated";
   static FixedYieldCreated: string = "FixedYieldCreated";
+  static XvPSettlementApproved: string = "XvPSettlementApproved";
+  static XvPSettlementApprovalRevoked: string = "XvPSettlementApprovalRevoked";
+  static XvPSettlementClaimed: string = "XvPSettlementClaimed";
+  static XvPSettlementExecuted: string = "XvPSettlementExecuted";
+  static XvPSettlementCancelled: string = "XvPSettlementCancelled";
 }
 
 function activityLogEntryId(event: ethereum.Event): Bytes {

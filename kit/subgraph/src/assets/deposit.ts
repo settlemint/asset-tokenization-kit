@@ -15,7 +15,7 @@ import {
   UserAllowed,
   UserDisallowed,
 } from "../../generated/templates/Deposit/Deposit";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType } from "../utils/enums";
 import { calculateCollateral } from "./calculations/collateral";
 import { calculateConcentration } from "./calculations/concentration";

@@ -1,7 +1,7 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { Deposit } from "../../../generated/schema";
 import { Deposit as DepositContract } from "../../../generated/templates/Deposit/Deposit";
-import { fetchAccount } from "../../fetch/account";
+import { fetchAccount } from "../../utils/account";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
 

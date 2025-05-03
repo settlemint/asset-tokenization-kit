@@ -3,9 +3,9 @@ import {
   XvPSettlement,
   XvPSettlementApproval,
   XvPSettlementFlow,
-} from "../../generated/schema";
-import { XvPSettlement as XvPSettlementContract } from "../../generated/templates/XvPSettlement/XvPSettlement";
-import { fetchAccount } from "./account";
+} from "../../../generated/schema";
+import { XvPSettlement as XvPSettlementContract } from "../../../generated/templates/XvPSettlement/XvPSettlement";
+import { fetchAccount } from "../../utils/account";
 
 /**
  * Fetches or creates a Flow entity

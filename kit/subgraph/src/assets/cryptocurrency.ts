@@ -7,7 +7,7 @@ import {
   RoleRevoked,
   Transfer,
 } from "../../generated/templates/CryptoCurrency/CryptoCurrency";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType } from "../utils/enums";
 import { calculateConcentration } from "./calculations/concentration";
 import { fetchCryptoCurrency } from "./fetch/cryptocurrency";

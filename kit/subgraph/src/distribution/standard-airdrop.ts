@@ -26,7 +26,7 @@ import {
 } from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
 
 // Use fetchAccount and direct constants
-import { fetchAccount } from "../fetch/account";
+import { fetchAccount } from "../utils/account";
 import { toDecimals } from "../utils/decimals";
 
 // Helper function to get token decimals from any asset type

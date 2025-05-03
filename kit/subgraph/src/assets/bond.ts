@@ -17,7 +17,7 @@ import {
   UserBlocked,
   UserUnblocked,
 } from "../../generated/templates/Bond/Bond";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { setValueWithDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
 import { calculateConcentration } from "./calculations/concentration";

@@ -6,9 +6,9 @@ import {
   ethereum,
 } from "@graphprotocol/graph-ts";
 import { Account, AssetBalance } from "../../../generated/schema";
-import { fetchAccount } from "../../fetch/account";
-import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
-import { fetchAssetBalance, hasBalance } from "../../fetch/balance";
+import { fetchAccount } from "../../utils/account";
+import { createActivityLogEntry, EventType } from "../../utils/activity-log";
+import { fetchAssetBalance, hasBalance } from "../../utils/balance";
 import { increase } from "../../utils/counters";
 import { setValueWithDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";

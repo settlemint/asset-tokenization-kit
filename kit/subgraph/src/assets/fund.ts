@@ -16,7 +16,7 @@ import {
   UserBlocked,
   UserUnblocked,
 } from "../../generated/templates/Fund/Fund";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType } from "../utils/enums";
 import { calculateConcentration } from "./calculations/concentration";
 import { fetchFund } from "./fetch/fund";

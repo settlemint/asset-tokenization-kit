@@ -1,8 +1,8 @@
 import { Address, Bytes, Entity, ethereum } from "@graphprotocol/graph-ts";
 import { AssetBalance } from "../../../generated/schema";
-import { fetchAccount } from "../../fetch/account";
-import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
-import { hasBalance } from "../../fetch/balance";
+import { fetchAccount } from "../../utils/account";
+import { createActivityLogEntry, EventType } from "../../utils/activity-log";
+import { hasBalance } from "../../utils/balance";
 import { setValueWithDecimals } from "../../utils/decimals";
 import { fetchAssetCount } from "../fetch/asset-count";
 

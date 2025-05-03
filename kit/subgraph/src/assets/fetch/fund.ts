@@ -1,7 +1,7 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { Fund } from "../../../generated/schema";
 import { Fund as FundContract } from "../../../generated/templates/Fund/Fund";
-import { fetchAccount } from "../../fetch/account";
+import { fetchAccount } from "../../utils/account";
 import { AssetType } from "../../utils/enums";
 
 export function fetchFund(address: Address): Fund {

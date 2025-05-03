@@ -6,9 +6,9 @@ import {
   store,
 } from "@graphprotocol/graph-ts";
 import { AllowedUser } from "../../../generated/schema";
-import { fetchAccount } from "../../fetch/account";
-import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
-import { fetchAssetBalance } from "../../fetch/balance";
+import { fetchAccount } from "../../utils/account";
+import { createActivityLogEntry, EventType } from "../../utils/activity-log";
+import { fetchAssetBalance } from "../../utils/balance";
 
 export function allowUserHandler(
   event: ethereum.Event,

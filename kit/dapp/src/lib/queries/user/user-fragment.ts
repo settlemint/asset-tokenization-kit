@@ -6,7 +6,6 @@ export const AccountFragment = theGraphGraphqlKit(`
     id
     lastActivity
     balancesCount
-    activityEventsCount
   }
 `);
 

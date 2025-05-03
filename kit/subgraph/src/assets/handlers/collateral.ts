@@ -1,5 +1,5 @@
 import { BigInt, Bytes, Entity, ethereum } from "@graphprotocol/graph-ts";
-import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
+import { createActivityLogEntry, EventType } from "../../utils/activity-log";
 import { setValueWithDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
 import { newAssetStatsData } from "../stats/assets";

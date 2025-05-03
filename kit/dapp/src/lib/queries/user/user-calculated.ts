@@ -17,7 +17,7 @@ export function userCalculateFields(
   const assetCount = account?.balancesCount ?? 0;
 
   // Calculate transaction count from account data
-  const transactionCount = account?.activityEventsCount ?? 0;
+  const transactionCount = 0;
 
   return safeParse(CalculatedUserSchema, {
     assetCount,

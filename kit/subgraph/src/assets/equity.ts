@@ -13,7 +13,7 @@ import {
   UserBlocked,
   UserUnblocked,
 } from "../../generated/templates/Equity/Equity";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType } from "../utils/enums";
 import { calculateConcentration } from "./calculations/concentration";
 import { fetchEquity } from "./fetch/equity";

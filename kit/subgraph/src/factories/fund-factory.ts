@@ -2,8 +2,8 @@ import { FundCreated } from "../../generated/FundFactory/FundFactory";
 import { Fund } from "../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchFund } from "../assets/fetch/fund";
-import { fetchAccount } from "../fetch/account";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { fetchAccount } from "../utils/account";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType, FactoryType } from "../utils/enums";
 import { fetchFactory } from "./fetch/factory";
 

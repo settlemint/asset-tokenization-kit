@@ -5,7 +5,7 @@ import {
   UnderlyingAssetWithdrawn as UnderlyingAssetWithdrawnEvent,
   YieldClaimed as YieldClaimedEvent,
 } from "../../generated/templates/FixedYield/FixedYield";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { setValueWithDecimals } from "../utils/decimals";
 import { fetchFixedYield, fetchFixedYieldPeriod } from "./fetch/fixed-yield";
 

@@ -87,12 +87,6 @@ export const AccountSchema = t.Object(
           "The number of token balances associated with this account",
       })
     ),
-    activityEventsCount: t.Optional(
-      t.Number({
-        description:
-          "The number of activity events associated with this account",
-      })
-    ),
     lastActivity: t.String({
       description: "The timestamp of the user's last activity",
     }),

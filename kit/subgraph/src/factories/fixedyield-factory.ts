@@ -3,8 +3,8 @@ import { Bond as BondEntity } from "../../generated/schema";
 import { FixedYield } from "../../generated/templates";
 import { FixedYield as FixedYieldContract } from "../../generated/templates/FixedYield/FixedYield";
 import { fetchFixedYield } from "../assets/fetch/fixed-yield";
-import { fetchAccount } from "../fetch/account";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { fetchAccount } from "../utils/account";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { FactoryType } from "../utils/enums";
 import { fetchFactory } from "./fetch/factory";
 

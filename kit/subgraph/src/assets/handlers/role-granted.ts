@@ -5,8 +5,8 @@ import {
   ethereum,
   Value,
 } from "@graphprotocol/graph-ts";
-import { fetchAccount } from "../../fetch/account";
-import { createActivityLogEntry, EventType } from "../../fetch/activity-log";
+import { fetchAccount } from "../../utils/account";
+import { createActivityLogEntry, EventType } from "../../utils/activity-log";
 import { Role } from "../../utils/enums";
 
 export function roleGrantedHandler(

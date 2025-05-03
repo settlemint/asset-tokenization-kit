@@ -20,7 +20,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Factory
-        - BondCreatedEvent
       abis:
         - name: BondFactory
           file: ../contracts/artifacts/contracts/BondFactory.sol/BondFactory.json
@@ -42,7 +41,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Factory
-        - CryptoCurrencyCreatedEvent
       abis:
         - name: CryptoCurrencyFactory
           file: ../contracts/artifacts/contracts/CryptoCurrencyFactory.sol/CryptoCurrencyFactory.json
@@ -64,7 +62,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Factory
-        - EquityCreatedEvent
       abis:
         - name: EquityFactory
           file: ../contracts/artifacts/contracts/EquityFactory.sol/EquityFactory.json
@@ -86,7 +83,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Factory
-        - StableCoinCreatedEvent
       abis:
         - name: StableCoinFactory
           file: ../contracts/artifacts/contracts/StableCoinFactory.sol/StableCoinFactory.json
@@ -108,7 +104,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Factory
-        - FundCreatedEvent
       abis:
         - name: FundFactory
           file: ../contracts/artifacts/contracts/FundFactory.sol/FundFactory.json
@@ -130,7 +125,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Factory
-        - FixedYieldCreatedEvent
       abis:
         - name: FixedYieldFactory
           file: ../contracts/artifacts/contracts/FixedYieldFactory.sol/FixedYieldFactory.json
@@ -152,7 +146,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Factory
-        - DepositCreatedEvent
       abis:
         - name: DepositFactory
           file: ../contracts/artifacts/contracts/DepositFactory.sol/DepositFactory.json
@@ -174,7 +167,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Factory
-        - XvPSettlementCreatedEvent
       abis:
         - name: XvPSettlementFactory
           file: ../contracts/artifacts/contracts/XvPSettlementFactory.sol/XvPSettlementFactory.json
@@ -216,8 +208,7 @@ dataSources:
       eventHandlers:
         - event: StandardAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handleStandardAirdropDeployed
-        - event: VestingAirdropDeployed(indexed address,indexed address,indexed
-            address,address)
+        - event: VestingAirdropDeployed(indexed address,indexed address,indexed address,address)
           handler: handleVestingAirdropDeployed
         - event: PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
@@ -236,11 +227,6 @@ templates:
         - Account
         - XvPSettlement
         - XvPSettlementEntity
-        - XvPSettlementCreatedEvent
-        - XvPSettlementApprovedEvent
-        - XvPSettlementApprovalRevokedEvent
-        - XvPSettlementExecutedEvent
-        - XvPSettlementCancelledEvent
       abis:
         - name: XvPSettlement
           file: ../contracts/artifacts/contracts/XvPSettlement.sol/XvPSettlement.json
@@ -253,7 +239,7 @@ templates:
           handler: handleXvPSettlementClaimed
         - event: XvPSettlementCancelled()
           handler: handleXvPSettlementCancelled
-      file: ./src/xvp-settlement/xvp-settlement.ts
+      file: ./src/trading/xvp-settlement.ts
   - kind: ethereum/contract
     name: FixedYield
     network: settlemint
@@ -264,7 +250,6 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Event_YieldClaimed
         - YieldPeriod
         - YieldMetricsData
         - YieldMetricsStats
@@ -298,25 +283,6 @@ templates:
         - StableCoin
         - Fund
         - Deposit
-        - AssetEvent
-        - FactoryEvent
-        - BondCreatedEvent
-        - ApprovalEvent
-        - BondMaturedEvent
-        - BondRedeemedEvent
-        - PausedEvent
-        - TokensFrozenEvent
-        - TransferEvent
-        - UnpausedEvent
-        - UserBlockedEvent
-        - UserUnblockedEvent
-        - UserAllowedEvent
-        - UserDisallowedEvent
-        - RoleGrantedEvent
-        - RoleRevokedEvent
-        - RoleAdminChangedEvent
-        - UnderlyingAssetTopUpEvent
-        - UnderlyingAssetWithdrawnEvent
         - AssetStats
         - AssetStatsData
         - PortfolioStats
@@ -387,21 +353,6 @@ templates:
         - StableCoin
         - Fund
         - Deposit
-        - AssetEvent
-        - FactoryEvent
-        - CryptoCurrencyCreatedEvent
-        - ApprovalEvent
-        - PausedEvent
-        - TokensFrozenEvent
-        - TransferEvent
-        - UnpausedEvent
-        - UserBlockedEvent
-        - UserUnblockedEvent
-        - UserAllowedEvent
-        - UserDisallowedEvent
-        - RoleGrantedEvent
-        - RoleRevokedEvent
-        - RoleAdminChangedEvent
         - AssetStats
         - AssetStatsData
         - PortfolioStats
@@ -450,21 +401,6 @@ templates:
         - StableCoin
         - Fund
         - Deposit
-        - AssetEvent
-        - FactoryEvent
-        - EquityCreatedEvent
-        - ApprovalEvent
-        - PausedEvent
-        - TokensFrozenEvent
-        - TransferEvent
-        - UnpausedEvent
-        - UserBlockedEvent
-        - UserUnblockedEvent
-        - UserAllowedEvent
-        - UserDisallowedEvent
-        - RoleGrantedEvent
-        - RoleRevokedEvent
-        - RoleAdminChangedEvent
         - AssetStats
         - AssetStatsData
         - PortfolioStats
@@ -479,7 +415,6 @@ templates:
         - AccountActivityStats
         - RoleActivityStats
         - EquityActivityStats
-        - ClawbackEvent
       abis:
         - name: Equity
           file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
@@ -526,23 +461,6 @@ templates:
         - Equity
         - Fund
         - Deposit
-        - AssetEvent
-        - FactoryEvent
-        - StableCoinCreatedEvent
-        - ApprovalEvent
-        - PausedEvent
-        - TokensFrozenEvent
-        - TransferEvent
-        - UnpausedEvent
-        - UserBlockedEvent
-        - UserUnblockedEvent
-        - UserAllowedEvent
-        - UserDisallowedEvent
-        - RoleGrantedEvent
-        - RoleRevokedEvent
-        - RoleAdminChangedEvent
-        - CollateralTopUpEvent
-        - CollateralWithdrawnEvent
         - AssetStats
         - AssetStatsData
         - PortfolioStats
@@ -605,22 +523,6 @@ templates:
         - Equity
         - StableCoin
         - Deposit
-        - AssetEvent
-        - FactoryEvent
-        - FundCreatedEvent
-        - ApprovalEvent
-        - PausedEvent
-        - TokensFrozenEvent
-        - TransferEvent
-        - UnpausedEvent
-        - UserBlockedEvent
-        - UserUnblockedEvent
-        - UserAllowedEvent
-        - UserDisallowedEvent
-        - RoleGrantedEvent
-        - RoleRevokedEvent
-        - RoleAdminChangedEvent
-        - FeeCollectedEvent
         - AssetStats
         - AssetStatsData
         - PortfolioStats
@@ -682,19 +584,6 @@ templates:
         - Account
         - Factory
         - Deposit
-        - AssetEvent
-        - FactoryEvent
-        - DepositCreatedEvent
-        - ApprovalEvent
-        - PausedEvent
-        - TokensFrozenEvent
-        - TransferEvent
-        - UnpausedEvent
-        - UserAllowedEvent
-        - UserDisallowedEvent
-        - RoleGrantedEvent
-        - RoleRevokedEvent
-        - RoleAdminChangedEvent
         - AssetStats
         - AssetStatsData
         - PortfolioStats
@@ -709,7 +598,6 @@ templates:
         - AccountActivityStats
         - RoleActivityStats
         - DepositActivityStats
-        - CollateralUpdatedEvent
       abis:
         - name: Deposit
           file: ../contracts/artifacts/contracts/Deposit.sol/Deposit.json
@@ -770,7 +658,7 @@ templates:
           handler: handleBatchClaimed
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
-      file: ./src/assets/standard-airdrop.ts
+      file: ./src/distribution/standard-airdrop.ts
   - kind: ethereum/contract
     name: VestingAirdropTemplate
     network: settlemint
@@ -808,7 +696,7 @@ templates:
           handler: handleTokensWithdrawn
         - event: ClaimInitialized(indexed address,uint256)
           handler: handleClaimInitialized
-      file: ./src/assets/vesting-airdrop.ts
+      file: ./src/distribution/vesting-airdrop.ts
   - kind: ethereum/contract
     name: PushAirdropTemplate
     network: settlemint
@@ -840,4 +728,4 @@ templates:
           handler: handleMerkleRootUpdated
         - event: DistributionCapUpdated(uint256,uint256)
           handler: handleDistributionCapUpdated
-      file: ./src/assets/push-airdrop.ts
+      file: ./src/distribution/push-airdrop.ts

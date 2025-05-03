@@ -2,8 +2,8 @@ import { CryptoCurrencyCreated } from "../../generated/CryptoCurrencyFactory/Cry
 import { CryptoCurrency } from "../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchCryptoCurrency } from "../assets/fetch/cryptocurrency";
-import { fetchAccount } from "../fetch/account";
-import { createActivityLogEntry, EventType } from "../fetch/activity-log";
+import { fetchAccount } from "../utils/account";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType, FactoryType } from "../utils/enums";
 import { fetchFactory } from "./fetch/factory";
 

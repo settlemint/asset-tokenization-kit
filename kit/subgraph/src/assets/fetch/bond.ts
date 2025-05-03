@@ -1,7 +1,7 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { Bond } from "../../../generated/schema";
 import { Bond as BondContract } from "../../../generated/templates/Bond/Bond";
-import { fetchAccount } from "../../fetch/account";
+import { fetchAccount } from "../../utils/account";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
 import { fetchAssetDecimals } from "./asset";
