@@ -13,10 +13,7 @@ import {
   Deposit,
   Equity,
   Fund,
-  MerkleRootUpdate,
   PushAirdrop,
-  PushBatchDistribution,
-  PushDistribution,
   StableCoin,
 } from "../../generated/schema";
 import {
@@ -29,6 +26,7 @@ import {
 
 // Use fetchAccount for consistent account entity creation
 import { fetchAccount } from "../utils/account";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { toDecimals } from "../utils/decimals";
 
 // Helper function to get token decimals from any asset type
@@ -129,21 +127,9 @@ export function handleTokensDistributed(event: TokensDistributed): void {
   let amountBD = toDecimals(amount, decimals);
 
   // Create PushDistribution entity
-  let distributionId = event.transaction.hash
-    .concatI32(event.logIndex.toI32())
-    .toHex();
-  let distribution = new PushDistribution(distributionId);
-  distribution.airdrop = airdrop.id;
-  distribution.distributor = distributor.id;
-  distribution.recipient = recipient.id;
-  distribution.amount = amountBD;
-  distribution.amountExact = amount;
-  distribution.timestamp = event.block.timestamp;
-  distribution.txHash = event.transaction.hash;
-  distribution.blockNumber = event.block.number;
-  distribution.logIndex = event.logIndex;
-  // batch distribution field is optional, will be null by default
-  distribution.save();
+  createActivityLogEntry(event, EventType.Distribution, [
+    event.params.recipient,
+  ]);
 
   // Update airdrop metadata
   airdrop.totalDistributed = airdrop.totalDistributed.plus(amount);
@@ -188,20 +174,7 @@ export function handleBatchDistributed(event: BatchDistributed): void {
   let totalAmountBD = toDecimals(totalAmount, decimals);
 
   // Create PushBatchDistribution entity
-  let batchId = event.transaction.hash
-    .concatI32(event.logIndex.toI32())
-    .toHex();
-  let batchDistribution = new PushBatchDistribution(batchId);
-  batchDistribution.airdrop = airdrop.id;
-  batchDistribution.distributor = distributor.id;
-  batchDistribution.recipientCount = recipientCount;
-  batchDistribution.totalAmount = totalAmountBD;
-  batchDistribution.totalAmountExact = totalAmount;
-  batchDistribution.timestamp = event.block.timestamp;
-  batchDistribution.txHash = event.transaction.hash;
-  batchDistribution.blockNumber = event.block.number;
-  batchDistribution.logIndex = event.logIndex;
-  batchDistribution.save();
+  createActivityLogEntry(event, EventType.BatchDistribution, []);
 
   // Update airdrop data
   // Note: Individual distributions within the batch will already have updated
@@ -273,20 +246,7 @@ export function handleMerkleRootUpdated(event: MerkleRootUpdated): void {
   );
 
   // Create MerkleRootUpdate entity to track the change
-  let updateId = event.transaction.hash
-    .concatI32(event.logIndex.toI32())
-    .toHex();
-
-  let merkleRootUpdate = new MerkleRootUpdate(updateId);
-  merkleRootUpdate.airdrop = airdrop.id;
-  merkleRootUpdate.updater = fetchAccount(event.transaction.from).id;
-  merkleRootUpdate.oldRoot = oldRoot;
-  merkleRootUpdate.newRoot = newRoot;
-  merkleRootUpdate.timestamp = event.block.timestamp;
-  merkleRootUpdate.txHash = event.transaction.hash;
-  merkleRootUpdate.blockNumber = event.block.number;
-  merkleRootUpdate.logIndex = event.logIndex;
-  merkleRootUpdate.save();
+  createActivityLogEntry(event, EventType.MerkleRootUpdated, []);
 
   // Update airdrop with new merkle root
   airdrop.merkleRoot = newRoot;

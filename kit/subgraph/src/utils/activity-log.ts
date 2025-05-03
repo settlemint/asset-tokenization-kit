@@ -37,6 +37,10 @@ export class EventType {
   static XvPSettlementClaimed: string = "XvPSettlementClaimed";
   static XvPSettlementExecuted: string = "XvPSettlementExecuted";
   static XvPSettlementCancelled: string = "XvPSettlementCancelled";
+  static Claimed: string = "Claimed";
+  static Distribution: string = "Distribution";
+  static BatchDistribution: string = "BatchDistribution";
+  static MerkleRootUpdated: string = "MerkleRootUpdated";
 }
 
 function activityLogEntryId(event: ethereum.Event): Bytes {

@@ -6,7 +6,6 @@ import {
   log,
 } from "@graphprotocol/graph-ts";
 import {
-  AirdropClaim,
   AirdropClaimIndex,
   AirdropRecipient,
   AirdropStatsData,
@@ -27,6 +26,7 @@ import {
 
 // Use fetchAccount and direct constants
 import { fetchAccount } from "../utils/account";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { toDecimals } from "../utils/decimals";
 
 // Helper function to get token decimals from any asset type
@@ -92,21 +92,7 @@ export function handleClaimed(event: Claimed): void {
   let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
   let amountBD = toDecimals(amount, decimals);
 
-  // Create AirdropClaim entity
-  let claimId = event.transaction.hash
-    .concatI32(event.logIndex.toI32())
-    .toHex();
-  let claim = new AirdropClaim(claimId);
-  claim.airdrop = airdrop.id;
-  claim.claimant = claimantAccount.id;
-  claim.totalAmount = amountBD;
-  claim.totalAmountExact = amount;
-  // claim.indices = []; // Cannot populate from this event
-  claim.timestamp = event.block.timestamp;
-  claim.txHash = event.transaction.hash;
-  claim.blockNumber = event.block.number;
-  claim.logIndex = event.logIndex;
-  claim.save();
+  createActivityLogEntry(event, EventType.Claimed, [event.params.claimant]);
 
   // Check if this is a new recipient
   let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
@@ -172,20 +158,7 @@ function processBatchClaim(
   const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
   const totalAmountBD = toDecimals(totalAmount, decimals);
 
-  // Create AirdropClaim entity
-  const claimId = event.transaction.hash
-    .concatI32(event.logIndex.toI32())
-    .toHex();
-  const claim = new AirdropClaim(claimId);
-  claim.airdrop = airdrop.id;
-  claim.claimant = claimantAccount.id;
-  claim.totalAmount = totalAmountBD;
-  claim.totalAmountExact = totalAmount;
-  claim.timestamp = event.block.timestamp;
-  claim.txHash = event.transaction.hash;
-  claim.blockNumber = event.block.number;
-  claim.logIndex = event.logIndex;
-  claim.save();
+  createActivityLogEntry(event, EventType.Claimed, [claimantAddress]);
 
   // Check if this is a new recipient
   const recipientId = airdrop.id.concat(claimantAccount.id).toHex();
@@ -225,12 +198,10 @@ function processBatchClaim(
       claimIndex.recipient = recipient.id;
       claimIndex.amount = amountBD;
       claimIndex.amountExact = amount;
-      claimIndex.claim = claim.id;
       claimIndex.timestamp = event.block.timestamp;
       claimIndex.save();
     } else {
       // If index was somehow claimed before (shouldn't happen)
-      claimIndex.claim = claim.id;
       claimIndex.timestamp = event.block.timestamp;
       claimIndex.amount = amountBD;
       claimIndex.amountExact = amount;
