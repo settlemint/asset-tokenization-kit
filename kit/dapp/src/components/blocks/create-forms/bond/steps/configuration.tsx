@@ -4,8 +4,8 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { usePostHog } from "posthog-js/react";
+import { useEffect, useState } from "react";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Configuration() {
@@ -20,7 +20,7 @@ export function Configuration() {
   }, [posthog]);
 
   // Get default maturity date (current date + 1 day)
-  const [defaultMaturityDate, setDefaultMaturityDate] = useState<string>("");
+  const [_defaultMaturityDate, setDefaultMaturityDate] = useState<string>("");
 
   useEffect(() => {
     // Set default maturity date to tomorrow

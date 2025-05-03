@@ -3,6 +3,7 @@
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { authClient } from "@/lib/auth/client";
 import { DollarSign, Scale, Settings, Users } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import type { Address } from "viem";
@@ -32,6 +33,9 @@ export function AssetSummaryStep({
   onSubmit,
 }: AssetSummaryStepProps) {
   const formValues = form.getValues();
+
+  // Get current user's session
+  const { data: session } = authClient.useSession();
 
   // Get labels for regulations
   const getRegulationLabels = () => {
@@ -79,9 +83,9 @@ export function AssetSummaryStep({
       fixedButtons={true}
     >
       <div className="space-y-6 pr-4">
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold mb-2">Summary</h2>
-          <p className="text-sm text-muted-foreground">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold">Summary</h2>
+          <p className="text-sm text-muted-foreground mt-2">
             This is the final step before creating your asset. Please review all
             the details you have entered.
           </p>
@@ -241,48 +245,11 @@ export function AssetSummaryStep({
             </div>
           </CardHeader>
           <CardContent>
-            {assetAdmins.length > 0 ? (
-              <div className="space-y-3">
-                {assetAdmins.map((admin: AssetAdmin, index: number) => (
-                  <div
-                    key={`admin-${index}`}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center">
-                      <EvmAddress
-                        name={admin.name}
-                        hoverCard={false}
-                        address={admin.wallet}
-                      />
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {(admin.roles || ["admin"]).map(
-                        (role: string, roleIndex: number) => (
-                          <Badge
-                            key={roleIndex}
-                            variant="secondary"
-                            className="font-normal text-xs px-3 py-1 rounded-full"
-                          >
-                            {role === "issuer"
-                              ? "Supply manager"
-                              : role === "user-manager"
-                                ? "User manager"
-                                : "Admin"}
-                          </Badge>
-                        )
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
+            {/* Always show the current user, which will become the default admin */}
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <EvmAddress
-                    name="Patrick Mualaba"
-                    hoverCard={false}
-                    address="0x0000000000000000000000000000000000000001"
-                  />
+                  <EvmAddress address={session.user.wallet} name={session.user.name} />
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Badge
@@ -305,7 +272,39 @@ export function AssetSummaryStep({
                   </Badge>
                 </div>
               </div>
-            )}
+
+              {assetAdmins.map((admin: AssetAdmin, index: number) => (
+                <div
+                  key={`admin-${index}`}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center">
+                    <EvmAddress
+                      name={admin.name}
+                      hoverCard={false}
+                      address={admin.wallet}
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(admin.roles || ["admin"]).map(
+                      (role: string, roleIndex: number) => (
+                        <Badge
+                          key={roleIndex}
+                          variant="secondary"
+                          className="font-normal text-xs px-3 py-1 rounded-full"
+                        >
+                          {role === "issuer"
+                            ? "Supply manager"
+                            : role === "user-manager"
+                              ? "User manager"
+                              : "Admin"}
+                        </Badge>
+                      )
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
