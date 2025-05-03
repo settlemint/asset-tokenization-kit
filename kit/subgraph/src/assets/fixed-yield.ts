@@ -1,4 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
+import { Bond } from "../../generated/schema";
 import {
   UnderlyingAssetTopUp as UnderlyingAssetTopUpEvent,
   UnderlyingAssetWithdrawn as UnderlyingAssetWithdrawnEvent,
@@ -6,12 +7,14 @@ import {
 } from "../../generated/templates/FixedYield/FixedYield";
 import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { setValueWithDecimals } from "../utils/decimals";
-import { fetchBond } from "./fetch/bond";
 import { fetchFixedYield, fetchFixedYieldPeriod } from "./fetch/fixed-yield";
 
 export function handleYieldClaimed(event: YieldClaimedEvent): void {
   const schedule = fetchFixedYield(event.address);
-  const token = fetchBond(schedule.token);
+  const token = Bond.load(schedule.token);
+  if (!token) {
+    return;
+  }
 
   createActivityLogEntry(event, EventType.YieldClaimed, [event.params.holder]);
 

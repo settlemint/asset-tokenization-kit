@@ -37,7 +37,7 @@ export function roleGrantedHandler(
     if (!found) {
       asset.set(
         "admins",
-        Value.fromAddressArray(admins.concat([roleHolderAccount.id]))
+        Value.fromBytesArray(admins.concat([roleHolderAccount.id]))
       );
     }
     return;
@@ -61,7 +61,7 @@ export function roleGrantedHandler(
     if (!found) {
       asset.set(
         "supplyManagers",
-        Value.fromAddressArray(supplyManagers.concat([roleHolderAccount.id]))
+        Value.fromBytesArray(supplyManagers.concat([roleHolderAccount.id]))
       );
     }
     return;
@@ -85,7 +85,7 @@ export function roleGrantedHandler(
     if (!found) {
       asset.set(
         "userManagers",
-        Value.fromAddressArray(userManagers.concat([roleHolderAccount.id]))
+        Value.fromBytesArray(userManagers.concat([roleHolderAccount.id]))
       );
     }
     return;

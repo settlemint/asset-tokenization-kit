@@ -15,7 +15,6 @@ import {
   UserAllowed,
   UserDisallowed,
 } from "../../generated/templates/Deposit/Deposit";
-import { fetchAccount } from "../fetch/account";
 import { createActivityLogEntry, EventType } from "../fetch/activity-log";
 import { AssetType } from "../utils/enums";
 import { calculateCollateral } from "./calculations/collateral";
@@ -206,15 +205,25 @@ export function handleTokensFrozen(event: TokensFrozen): void {
 
 export function handleUserAllowed(event: UserAllowed): void {
   const deposit = fetchDeposit(event.address);
-  const user = fetchAccount(event.params.user);
-  allowUserHandler(event, deposit.id, user.id, deposit.decimals, true);
+  allowUserHandler(
+    event,
+    deposit.id,
+    event.params.user,
+    deposit.decimals,
+    true
+  );
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handleUserDisallowed(event: UserDisallowed): void {
   const deposit = fetchDeposit(event.address);
-  const user = fetchAccount(event.params.user);
-  disallowUserHandler(event, deposit.id, user.id, deposit.decimals, true);
+  disallowUserHandler(
+    event,
+    deposit.id,
+    event.params.user,
+    deposit.decimals,
+    true
+  );
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 

@@ -4,7 +4,6 @@ import { Bond as BondContract } from "../../../generated/templates/Bond/Bond";
 import { fetchAccount } from "../../fetch/account";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
-import { updateDerivedFields } from "../bond";
 import { fetchAssetDecimals } from "./asset";
 
 export function fetchBond(
@@ -68,7 +67,8 @@ export function fetchBond(
       ? Address.zero()
       : underlyingAsset.value;
     bond.underlyingAssetDecimals = underlyingAssetDecimals;
-    bond.redeemedAmount = BigInt.zero();
+    bond.redeemedAmount = BigDecimal.zero();
+    bond.redeemedAmountExact = BigInt.zero();
     bond.underlyingBalanceExact = BigInt.zero();
     bond.underlyingBalance = BigDecimal.zero();
     bond.yieldSchedule =
@@ -78,7 +78,6 @@ export function fetchBond(
     bond.totalUnderlyingNeededExact = BigInt.zero();
     bond.totalUnderlyingNeeded = BigDecimal.zero();
     bond.hasSufficientUnderlying = false;
-    updateDerivedFields(bond);
     bond.save();
 
     account.asAsset = bond.id;

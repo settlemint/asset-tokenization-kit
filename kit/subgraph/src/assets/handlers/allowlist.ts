@@ -57,7 +57,7 @@ function handleBalance(
   initialBlockedState: boolean,
   timestamp: BigInt,
   blocked: boolean
-) {
+): void {
   const userAccount = fetchAccount(user);
   const balance = fetchAssetBalance(
     assetId,

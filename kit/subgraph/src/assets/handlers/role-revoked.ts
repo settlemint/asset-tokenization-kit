@@ -28,13 +28,13 @@ export function roleRevokedHandler(
     } else {
       admins = adminsValue.toBytesArray();
     }
-    const newAdmins: Address[] = [];
+    const newAdmins: Bytes[] = [];
     for (let i = 0; i < admins.length; i++) {
       if (!admins[i].equals(roleHolderAccount.id)) {
         newAdmins.push(admins[i]);
       }
     }
-    asset.set("admins", Value.fromAddressArray(newAdmins));
+    asset.set("admins", Value.fromBytesArray(newAdmins));
     return;
   }
 
@@ -47,13 +47,13 @@ export function roleRevokedHandler(
     } else {
       supplyManagers = supplyManagersValue.toBytesArray();
     }
-    const newSupplyManagers: Address[] = [];
+    const newSupplyManagers: Bytes[] = [];
     for (let i = 0; i < supplyManagers.length; i++) {
       if (!supplyManagers[i].equals(roleHolderAccount.id)) {
         newSupplyManagers.push(supplyManagers[i]);
       }
     }
-    asset.set("supplyManagers", Value.fromAddressArray(newSupplyManagers));
+    asset.set("supplyManagers", Value.fromBytesArray(newSupplyManagers));
     return;
   }
 
@@ -66,13 +66,13 @@ export function roleRevokedHandler(
     } else {
       userManagers = userManagersValue.toBytesArray();
     }
-    const newUserManagers: Address[] = [];
+    const newUserManagers: Bytes[] = [];
     for (let i = 0; i < userManagers.length; i++) {
       if (!userManagers[i].equals(roleHolderAccount.id)) {
         newUserManagers.push(userManagers[i]);
       }
     }
-    asset.set("userManagers", Value.fromAddressArray(newUserManagers));
+    asset.set("userManagers", Value.fromBytesArray(newUserManagers));
     return;
   }
 
