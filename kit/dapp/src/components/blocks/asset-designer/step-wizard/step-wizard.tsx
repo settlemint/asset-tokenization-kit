@@ -81,9 +81,6 @@ export function StepWizard({
                     tabIndex={-1}
                     className={cn(
                       "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-20",
-                      isCurrent
-                        ? "hover:bg-primary hover:text-primary-foreground"
-                        : "text-primary-foreground hover:bg-primary hover:text-primary-foreground",
                       finalDisabled && "cursor-not-allowed",
                       !isCurrent && "text-muted-foreground"
                     )}
