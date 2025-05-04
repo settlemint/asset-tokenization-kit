@@ -127,9 +127,12 @@ export function handleTokensDistributed(event: TokensDistributed): void {
   let amountBD = toDecimals(amount, decimals);
 
   // Create PushDistribution entity
-  createActivityLogEntry(event, EventType.Distribution, [
-    event.params.recipient,
-  ]);
+  createActivityLogEntry(
+    event,
+    EventType.Distribution,
+    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
+    [event.params.recipient]
+  );
 
   // Update airdrop metadata
   airdrop.totalDistributed = airdrop.totalDistributed.plus(amount);
@@ -174,7 +177,12 @@ export function handleBatchDistributed(event: BatchDistributed): void {
   let totalAmountBD = toDecimals(totalAmount, decimals);
 
   // Create PushBatchDistribution entity
-  createActivityLogEntry(event, EventType.BatchDistribution, []);
+  createActivityLogEntry(
+    event,
+    EventType.BatchDistribution,
+    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
+    []
+  );
 
   // Update airdrop data
   // Note: Individual distributions within the batch will already have updated
@@ -246,7 +254,12 @@ export function handleMerkleRootUpdated(event: MerkleRootUpdated): void {
   );
 
   // Create MerkleRootUpdate entity to track the change
-  createActivityLogEntry(event, EventType.MerkleRootUpdated, []);
+  createActivityLogEntry(
+    event,
+    EventType.MerkleRootUpdated,
+    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
+    []
+  );
 
   // Update airdrop with new merkle root
   airdrop.merkleRoot = newRoot;

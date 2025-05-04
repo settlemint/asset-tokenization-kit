@@ -56,6 +56,7 @@ function activityLogEntryValueId(event: ethereum.Event, name: string): Bytes {
 export function createActivityLogEntry(
   event: ethereum.Event,
   eventType: string,
+  sender: Address,
   involved: Address[]
 ): ActivityLogEntry {
   const entry = new ActivityLogEntry(activityLogEntryId(event));
@@ -64,6 +65,8 @@ export function createActivityLogEntry(
   entry.blockTimestamp = event.block.timestamp;
   entry.txIndex = event.transaction.index;
   entry.transactionHash = event.transaction.hash;
+  entry.emitter = fetchAccount(event.address).id;
+  entry.sender = fetchAccount(sender).id;
 
   const involvedAccounts = [
     fetchAccount(event.transaction.from).id,

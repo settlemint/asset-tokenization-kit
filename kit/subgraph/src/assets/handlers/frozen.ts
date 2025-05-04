@@ -14,9 +14,10 @@ export function frozenHandler(
   user: Address,
   amount: BigInt,
   decimals: number,
-  initialBlockedState: boolean
+  initialBlockedState: boolean,
+  sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.TokensFrozen, [user]);
+  createActivityLogEntry(event, EventType.TokensFrozen, sender, [user]);
   handleBalance(
     assetId,
     user,

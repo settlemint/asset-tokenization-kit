@@ -49,7 +49,8 @@ export function handleTransfer(event: Transfer): void {
       to,
       value,
       decimals,
-      true
+      true,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   } else if (to.equals(Address.zero())) {
     burnHandler(
@@ -61,7 +62,8 @@ export function handleTransfer(event: Transfer): void {
       event.params.from,
       event.params.value,
       decimals,
-      true
+      true,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   } else {
     transferHandler(
@@ -74,7 +76,8 @@ export function handleTransfer(event: Transfer): void {
       event.params.to,
       event.params.value,
       decimals,
-      false
+      false,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   }
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
@@ -122,7 +125,12 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   // Not really tracking anything here except the event, if you do this you'll need to change the frontend as well
   const deposit = fetchDeposit(event.address);
-  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
+  createActivityLogEntry(
+    event,
+    EventType.RoleAdminChanged,
+    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
+    []
+  );
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
@@ -180,7 +188,7 @@ export function handleUnpaused(event: Unpaused): void {
 export function handleClawback(event: Clawback): void {
   // This event is sent together with a transfer event, so we do not need to handle balances
   const deposit = fetchDeposit(event.address);
-  createActivityLogEntry(event, EventType.Clawback, [
+  createActivityLogEntry(event, EventType.Clawback, event.params.sender, [
     event.params.from,
     event.params.to,
     event.params.sender,
@@ -199,7 +207,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     user,
     amount,
     deposit.decimals,
-    false
+    false,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
   );
 }
 
@@ -210,7 +219,8 @@ export function handleUserAllowed(event: UserAllowed): void {
     deposit.id,
     event.params.user,
     deposit.decimals,
-    true
+    true,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
   );
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
@@ -222,17 +232,20 @@ export function handleUserDisallowed(event: UserDisallowed): void {
     deposit.id,
     event.params.user,
     deposit.decimals,
-    true
+    true,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
   );
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
 export function handleTokenWithdrawn(event: TokenWithdrawn): void {
   const deposit = fetchDeposit(event.address);
-  createActivityLogEntry(event, EventType.TokenWithdrawn, [
-    event.params.token,
-    event.params.to,
-  ]);
+  createActivityLogEntry(
+    event,
+    EventType.TokenWithdrawn,
+    event.params.to, // not perfect but the event does not have an ERC2771 sender parameter
+    [event.params.token, event.params.to]
+  );
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }
 
@@ -243,7 +256,8 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     deposit,
     event.params.newAmount,
     deposit.decimals,
-    event.block.timestamp
+    event.block.timestamp,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
   );
   updateDerivedFieldsAndSave(deposit, event.block.timestamp);
 }

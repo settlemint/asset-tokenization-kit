@@ -187,7 +187,12 @@ export function handleClaimed(event: Claimed): void {
   let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
   let amountBD = toDecimals(amount, decimals);
 
-  createActivityLogEntry(event, EventType.Claimed, [event.params.claimant]);
+  createActivityLogEntry(
+    event,
+    EventType.Claimed,
+    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
+    [event.params.claimant]
+  );
 
   // Check if this is a new recipient
   let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
@@ -454,7 +459,12 @@ function processBatchClaim(
 
   // Create AirdropClaim entity
 
-  createActivityLogEntry(event, EventType.Claimed, [claimantAddress]);
+  createActivityLogEntry(
+    event,
+    EventType.Claimed,
+    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
+    [claimantAddress]
+  );
 
   // Update or create AirdropRecipient
   const recipientId = airdrop.id.concat(claimantAccount.id).toHex();

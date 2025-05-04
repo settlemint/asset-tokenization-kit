@@ -16,7 +16,12 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     return;
   }
 
-  createActivityLogEntry(event, EventType.YieldClaimed, [event.params.holder]);
+  createActivityLogEntry(
+    event,
+    EventType.YieldClaimed,
+    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
+    [event.params.holder]
+  );
 
   setValueWithDecimals(
     schedule,
@@ -57,9 +62,12 @@ export function handleUnderlyingAssetTopUp(
   event: UnderlyingAssetTopUpEvent
 ): void {
   const schedule = fetchFixedYield(event.address);
-  createActivityLogEntry(event, EventType.UnderlyingAssetTopUp, [
-    event.params.from,
-  ]);
+  createActivityLogEntry(
+    event,
+    EventType.UnderlyingAssetTopUp,
+    event.params.from, // not perfect but the event does not have an ERC2771 sender parameter
+    [event.params.from]
+  );
   setValueWithDecimals(
     schedule,
     "underlyingBalance",
@@ -74,9 +82,12 @@ export function handleUnderlyingAssetWithdrawn(
   event: UnderlyingAssetWithdrawnEvent
 ): void {
   const schedule = fetchFixedYield(event.address);
-  createActivityLogEntry(event, EventType.UnderlyingAssetWithdrawn, [
-    event.params.to,
-  ]);
+  createActivityLogEntry(
+    event,
+    EventType.UnderlyingAssetWithdrawn,
+    event.params.to, // not perfect but the event does not have an ERC2771 sender parameter
+    [event.params.to]
+  );
   setValueWithDecimals(
     schedule,
     "underlyingBalance",

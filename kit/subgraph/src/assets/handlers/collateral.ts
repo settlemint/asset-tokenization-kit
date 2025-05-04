@@ -1,4 +1,10 @@
-import { BigInt, Bytes, Entity, ethereum } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  Bytes,
+  Entity,
+  ethereum,
+} from "@graphprotocol/graph-ts";
 import { createActivityLogEntry, EventType } from "../../utils/activity-log";
 import { setValueWithDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
@@ -9,9 +15,10 @@ export function collateralUpdatedHandler(
   asset: Entity,
   amount: BigInt,
   decimals: number,
-  timestamp: BigInt
+  timestamp: BigInt,
+  sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.CollateralUpdated, []);
+  createActivityLogEntry(event, EventType.CollateralUpdated, sender, []);
   setValueWithDecimals(asset, "collateral", amount, decimals);
   asset.setBigInt("lastCollateralUpdate", timestamp);
 }

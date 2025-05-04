@@ -27,9 +27,10 @@ export function transferHandler(
   to: Address,
   value: BigInt,
   decimals: number,
-  initialBlockedState: boolean
+  initialBlockedState: boolean,
+  sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.Transfer, [from, to]);
+  createActivityLogEntry(event, EventType.Transfer, sender, [from, to]);
   // increase total minted
   handleTotalTransferred(asset, value, decimals);
   // update asset activity

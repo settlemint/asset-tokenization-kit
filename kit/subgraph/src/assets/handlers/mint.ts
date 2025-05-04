@@ -25,9 +25,10 @@ export function mintHandler(
   to: Address,
   value: BigInt,
   decimals: number,
-  initialBlockedState: boolean
+  initialBlockedState: boolean,
+  sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.Mint, [to]);
+  createActivityLogEntry(event, EventType.Mint, sender, [to]);
   // increase total supply
   const newTotalSupply = handleTotalSupply(asset, value, decimals);
   // increase total minted

@@ -16,7 +16,7 @@ export function unPauseHandler(
   holders: AssetBalance[],
   sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.Unpause, [sender]);
+  createActivityLogEntry(event, EventType.Unpause, sender, [sender]);
 
   asset.setBoolean("paused", false);
   handleAssetCount(assetType);
