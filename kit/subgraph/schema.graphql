@@ -14,9 +14,13 @@ interface Asset {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -50,9 +54,13 @@ type Bond implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -71,7 +79,8 @@ type Bond implements Asset @entity(immutable: false) {
   faceValue: BigInt!
   underlyingAsset: Asset!
   underlyingAssetDecimals: Int! # Storing decimals directly to avoid having to always query the underlying asset
-  redeemedAmount: BigInt!
+  redeemedAmount: BigDecimal!
+  redeemedAmountExact: BigInt!
   underlyingBalance: BigDecimal!
   underlyingBalanceExact: BigInt!
   yieldSchedule: FixedYield
@@ -92,9 +101,13 @@ type Equity implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -122,9 +135,13 @@ type Fund implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -154,9 +171,13 @@ type StableCoin implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -190,9 +211,13 @@ type CryptoCurrency implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -217,9 +242,13 @@ type Deposit implements Asset @entity(immutable: false) {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalHolders: Int!
+  totalHolders: BigInt!
   deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
@@ -250,7 +279,7 @@ type Account @entity(immutable: false) {
   id: Bytes!
   isContract: Boolean!
   asAsset: Asset
-  balancesCount: Int!
+  balancesCount: BigInt!
   totalBalanceExact: BigInt!
   totalBalance: BigDecimal!
   pausedBalancesCount: Int!
@@ -260,8 +289,6 @@ type Account @entity(immutable: false) {
   nativeBalance: BigDecimal!
   nativeBalanceExact: BigInt!
   lastActivity: BigInt!
-  activityEvents: [AccountActivityEvent!]! @derivedFrom(field: "account")
-  activityEventsCount: Int!
 }
 
 type AssetBalance @entity(immutable: false) {
@@ -312,462 +339,6 @@ type YieldPeriod @entity(immutable: false) {
   totalYieldExact: BigInt!
 }
 
-# --------------------------------------------------
-# Grouping Events by Contract Type
-# --------------------------------------------------
-
-interface AssetEvent {
-  id: Bytes! # Unique identifier for the event
-  eventName: String! # Name of the event
-  timestamp: BigInt! # Timestamp of the event
-  emitter: Asset! # The contract that emitted the event
-  sender: Account! # The account that sent the transaction
-  assetType: String! # The type of asset that was affected
-}
-
-# --------------------------------------------------
-# Activity Events
-# --------------------------------------------------
-
-type AccountActivityEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  assetType: String!
-  timestamp: BigInt!
-  asset: Asset
-  account: Account!
-}
-
-# --------------------------------------------------
-# Common Events for All Tokens (StableCoin, Fund, Equity, CryptoCurrency, Bond)
-# --------------------------------------------------
-
-"""
-Entity for ERC20 Transfer events.
-Emitted on every token transfer (excluding minting and burning).
-"""
-type TransferEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  from: Account! # Sender address
-  to: Account! # Recipient address
-  value: BigDecimal! # Amount transferred
-  valueExact: BigInt! # Amount transferred in exact precision
-}
-
-"""
-Entity for ERC20 Mint events.
-Emitted on every token mint (transfer from zero address).
-"""
-type MintEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  to: Account! # Recipient address
-  value: BigDecimal! # Amount transferred
-  valueExact: BigInt! # Amount transferred in exact precision
-}
-
-"""
-Entity for ERC20 Burn events.
-Emitted on every token burn (transfer to zero address).
-"""
-type BurnEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  from: Account!
-  value: BigDecimal! # Amount transferred
-  valueExact: BigInt! # Amount transferred in exact precision
-}
-
-"""
-Entity for ERC20 Approval events.
-Emitted when an approval is set for a spender.
-"""
-type ApprovalEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  owner: Account! # Token owner
-  spender: Account! # Approved spender
-  value: BigDecimal! # Approved amount
-  valueExact: BigInt! # Approved amount in exact precision
-}
-
-"""
-Entity for pause events.
-Emitted when a token is paused.
-"""
-type PausedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-}
-
-"""
-Entity for unpause events.
-Emitted when a token is unpaused.
-"""
-type UnpausedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-}
-
-"""
-Entity for tokens frozen events.
-Emitted when tokens are frozen (a custodian operation).
-"""
-type TokensFrozenEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  user: Account! # The user whose tokens were frozen
-  amount: BigDecimal! # The amount frozen
-  amountExact: BigInt! # The amount frozen in exact precision
-}
-
-"""
-Entity for role granted events.
-Emitted when a role is granted.
-"""
-type RoleGrantedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  role: Bytes! # Role identifier (e.g. SUPPLY_MANAGEMENT_ROLE)
-  account: Account! # The account that received the role
-}
-
-"""
-Entity for role revoked events.
-Emitted when a role is revoked.
-"""
-type RoleRevokedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  role: Bytes!
-  account: Account! # The account that lost the role
-}
-
-"""
-Entity for role admin changed events.
-Emitted when a role's admin role is changed.
-"""
-type RoleAdminChangedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  role: Bytes! # The role being modified
-  previousAdminRole: Bytes! # The old admin role
-  newAdminRole: Bytes! # The new admin role
-}
-
-"""
-Entity for blocklist events.
-Emitted when a user is blocked from token operations.
-"""
-type UserBlockedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  user: Account! # The blocked user's address
-}
-
-"""
-Entity for blocklist events.
-Emitted when a user is unblocked from token operations.
-"""
-type UserUnblockedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  user: Account! # The unblocked user's address
-}
-
-"""
-Entity for allowlist events.
-Emitted when a user is allowed for token operations.
-"""
-type UserAllowedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  user: Account! # The allowed user's address
-}
-
-"""
-Entity for allowlist events.
-Emitted when a user is disallowed from token operations.
-"""
-type UserDisallowedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  user: Account! # The disallowed user's address
-}
-
-"""
-Entity for blocklist events.
-Emitted when a user is unblocked from token operations.
-"""
-type AssetCreatedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-}
-
-"""
-Entity for clawback events.
-Emitted when tokens are forcibly transferred from one address to another.
-"""
-type ClawbackEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  from: Account! # The address tokens are taken from
-  to: Account! # The address tokens are sent to
-  amount: BigDecimal! # The amount of tokens transferred
-  amountExact: BigInt! # The amount of tokens transferred in exact precision
-}
-
-# --------------------------------------------------
-# StableCoin-Specific Custom Event
-# --------------------------------------------------
-
-"""
-Entity for collateral update events in StableCoin.
-Emitted when the collateral is updated via updateCollateral.
-"""
-type CollateralUpdatedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  oldAmount: BigDecimal! # Previous collateral amount
-  oldAmountExact: BigInt! # Previous collateral amount in exact precision
-  newAmount: BigDecimal! # New collateral amount
-  newAmountExact: BigInt! # New collateral amount in exact precision
-}
-
-# --------------------------------------------------
-# Fund-Specific Custom Events
-# --------------------------------------------------
-
-"""
-Entity for management fee collection events in Fund.
-Emitted when the management fee is collected.
-"""
-type ManagementFeeCollectedEvent implements AssetEvent
-  @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  amount: BigDecimal! # Fee amount collected
-  amountExact: BigInt! # Fee amount collected in exact precision
-}
-
-"""
-Entity for performance fee collection events in Fund.
-Emitted when the performance fee is collected.
-"""
-type PerformanceFeeCollectedEvent implements AssetEvent
-  @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  amount: BigDecimal! # Fee amount collected
-  amountExact: BigInt! # Fee amount collected in exact precision
-}
-
-"""
-Entity for token withdrawal events in Fund.
-Emitted when tokens are withdrawn from the fund.
-"""
-type TokenWithdrawnEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  token: Asset!
-  to: Account! # Recipient address
-  amount: BigDecimal! # Amount withdrawn
-  amountExact: BigInt! # Amount withdrawn in exact precision
-}
-
-# --------------------------------------------------
-# CryptoCurrency-Specific Custom Events
-# --------------------------------------------------
-
-# --------------------------------------------------
-# Equity-Specific Custom Events
-# --------------------------------------------------
-
-# --------------------------------------------------
-# Bond-Specific Custom Events
-# --------------------------------------------------
-
-"""
-Entity for bond maturity events.
-Emitted when the bond reaches maturity and is closed.
-"""
-type BondMaturedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-}
-
-"""
-Entity for bond redemption events.
-Emitted when a bond is redeemed for underlying assets.
-"""
-type BondRedeemedEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  holder: Account! # The address redeeming the bond
-  bondAmount: BigDecimal! # The number of bonds redeemed
-  bondAmountExact: BigInt! # The number of bonds redeemed in exact precision
-  underlyingAmount: BigDecimal! # The amount of underlying assets received
-  underlyingAmountExact: BigInt! # The amount of underlying assets received in exact precision
-}
-
-# --------------------------------------------------
-# Bond/Yield-Specific Custom Events
-# --------------------------------------------------
-
-"""
-Entity for underlying asset top-up events.
-Emitted when underlying assets are added (topped up) to the Bond contract.
-"""
-type UnderlyingAssetTopUpEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  from: Account! # The address providing the top-up
-  amount: BigDecimal! # The amount of underlying assets added
-  amountExact: BigInt! # The amount of underlying assets added in exact precision
-}
-
-"""
-Entity for underlying asset withdrawal events.
-Emitted when underlying assets are withdrawn from the Bond contract.
-"""
-type UnderlyingAssetWithdrawnEvent implements AssetEvent
-  @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  assetType: String!
-  to: Account! # The recipient address for the withdrawn assets
-  amount: BigDecimal! # The amount withdrawn
-  amountExact: BigInt! # The amount withdrawn in exact precision
-}
-
-# --------------------------------------------------
-# FixedYield-Specific Custom Event
-# --------------------------------------------------
-
-type FixedYieldCreatedEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Factory!
-  sender: Account!
-  fixedYield: FixedYield!
-}
-
-"""
-Entity for yield claimed events in FixedYield.
-Emitted when yield is claimed.
-"""
-type YieldClaimedEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  holder: Account! # The address claiming the yield
-  totalAmount: BigDecimal! # The total yield claimed
-  totalAmountExact: BigInt! # The total yield claimed in exact precision
-  fromPeriod: BigInt! # The first period being claimed
-  toPeriod: BigInt! # The last period being claimed
-  periodAmounts: [BigInt!]! # Array of yield amounts claimed for each period
-  unclaimedYield: BigDecimal! # Total unclaimed yield remaining after this claim
-  unclaimedYieldExact: BigInt! # Total unclaimed yield remaining after this claim in exact precision
-}
 # --------------------------------------------------
 # Asset Statistics
 # --------------------------------------------------
@@ -849,12 +420,12 @@ type AssetActivityData @entity(immutable: false) {
   assetType: String! @unique
 
   ## Activity
-  transferEventCount: Int!
-  mintEventCount: Int!
-  burnEventCount: Int!
-  frozenEventCount: Int!
-  unfrozenEventCount: Int!
-  clawbackEventCount: Int!
+  transferEventCount: BigInt!
+  mintEventCount: BigInt!
+  burnEventCount: BigInt!
+  frozenEventCount: BigInt!
+  unfrozenEventCount: BigInt!
+  clawbackEventCount: BigInt!
 
   ## Supply
   totalSupply: BigDecimal!
@@ -949,7 +520,6 @@ interface Airdrop {
   totalClaims: Int! # Count of claim events
   isWithdrawn: Boolean!
   trustedForwarder: Account!
-  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
 }
 
 type StandardAirdrop implements Airdrop @entity(immutable: false) {
@@ -966,7 +536,6 @@ type StandardAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
-  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
   # Standard specific
   startTime: BigInt!
   endTime: BigInt!
@@ -986,7 +555,6 @@ type VestingAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
-  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
   # Vesting specific
   claimPeriodEnd: BigInt!
   strategy: VestingStrategy!
@@ -1006,12 +574,9 @@ type PushAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
-  claims: [AirdropClaim!]! @derivedFrom(field: "airdrop")
   # PushAirdrop specific
   distributionCap: BigInt!
   totalDistributed: BigInt!
-  distributions: [PushDistribution!]! @derivedFrom(field: "airdrop")
-  merkleRootUpdates: [MerkleRootUpdate!]! @derivedFrom(field: "airdrop")
 }
 
 interface VestingStrategy {
@@ -1055,22 +620,7 @@ type AirdropClaimIndex @entity(immutable: true) {
   recipient: AirdropRecipient! # Who claimed this index
   amount: BigDecimal! # Amount associated with this index (from claim event)
   amountExact: BigInt!
-  claim: AirdropClaim! # The claim event that processed this index
   timestamp: BigInt!
-}
-
-# Records an individual claim event (can be single or batch)
-type AirdropClaim @entity(immutable: true) {
-  id: String! # txHash-logIndex
-  airdrop: Airdrop!
-  claimant: Account! # The _msgSender() who initiated the claim
-  totalAmount: BigDecimal! # Total amount in this claim event
-  totalAmountExact: BigInt!
-  indices: [AirdropClaimIndex!]! @derivedFrom(field: "claim") # Link to specific indices claimed
-  timestamp: BigInt!
-  txHash: Bytes!
-  blockNumber: BigInt!
-  logIndex: BigInt!
 }
 
 # Specific vesting data per user for a LinearVestingStrategy
@@ -1085,49 +635,6 @@ type UserVestingData @entity(immutable: false) {
   vestingStart: BigInt!
   initialized: Boolean!
   lastUpdated: BigInt!
-}
-
-# Records a distribution event from PushAirdrop
-type PushDistribution @entity(immutable: true) {
-  id: String! # txHash-logIndex
-  airdrop: PushAirdrop!
-  distributor: Account! # The admin who performed the distribution
-  recipient: Account! # The recipient who received tokens
-  amount: BigDecimal! # Amount distributed
-  amountExact: BigInt!
-  batchDistribution: PushBatchDistribution
-  timestamp: BigInt!
-  txHash: Bytes!
-  blockNumber: BigInt!
-  logIndex: BigInt!
-}
-
-# Records a batch distribution event from PushAirdrop
-type PushBatchDistribution @entity(immutable: true) {
-  id: String! # txHash-logIndex
-  airdrop: PushAirdrop!
-  distributor: Account! # The admin who performed the distribution
-  recipientCount: Int! # Number of recipients in this batch
-  totalAmount: BigDecimal! # Total amount distributed in this batch
-  totalAmountExact: BigInt!
-  timestamp: BigInt!
-  txHash: Bytes!
-  blockNumber: BigInt!
-  logIndex: BigInt!
-  distributions: [PushDistribution!]! @derivedFrom(field: "batchDistribution")
-}
-
-# Records a merkle root update event from PushAirdrop
-type MerkleRootUpdate @entity(immutable: true) {
-  id: String! # txHash-logIndex
-  airdrop: PushAirdrop!
-  updater: Account! # The admin who updated the merkle root
-  oldRoot: Bytes! # The previous merkle root (indexed in contract)
-  newRoot: Bytes! # The new merkle root (indexed in contract)
-  timestamp: BigInt!
-  txHash: Bytes!
-  blockNumber: BigInt!
-  logIndex: BigInt!
 }
 
 # --------------------------------------------------
@@ -1271,58 +778,27 @@ type XvPSettlementApproval @entity(immutable: false) {
 }
 
 # --------------------------------------------------
-# XvPSettlement-Specific Events
+# Events
 # --------------------------------------------------
 
-type XvPSettlementCreatedEvent @entity(immutable: true) {
+type ActivityLogEntry @entity(immutable: true) {
   id: Bytes!
+  # Identifying the event
   eventName: String!
-  timestamp: BigInt!
-  emitter: Bytes!
-  sender: Account!
-  transaction: Bytes!
-  xvpSettlement: XvPSettlement!
-  cutoffDate: BigInt!
-  autoExecute: Boolean!
+  # Default event fields
+  txIndex: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+  # List of accounts involved in the event
+  involved: [Account!]!
+  # List of values involved in the event
+  values: [ActivityLogEntryValue!]! @derivedFrom(field: "entry")
 }
 
-type XvPSettlementApprovedEvent @entity(immutable: true) {
+type ActivityLogEntryValue @entity(immutable: true) {
   id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Bytes!
-  sender: Account!
-  transaction: Bytes!
-  xvpSettlement: XvPSettlement!
-}
-
-type XvPSettlementApprovalRevokedEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Bytes!
-  sender: Account!
-  transaction: Bytes!
-  xvpSettlement: XvPSettlement!
-}
-
-type XvPSettlementExecutedEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Bytes!
-  sender: Account!
-  transaction: Bytes!
-  xvpSettlement: XvPSettlement!
-}
-
-type XvPSettlementCancelledEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Bytes!
-  sender: Account!
-  assetType: String!
-  transaction: Bytes!
-  xvpSettlement: XvPSettlement!
+  name: String!
+  value: String!
+  entry: ActivityLogEntry!
 }
