@@ -1,10 +1,10 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
-import { NormalizedEventsListItemSchema } from "@/lib/queries/asset-events/asset-events-schema";
 import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
+import { AssetEventListSchema } from "../queries/asset-events/asset-events-schema";
 
 export const AssetEventsApi = new Elysia({
   detail: {
@@ -55,7 +55,7 @@ export const AssetEventsApi = new Elysia({
         ),
       }),
       response: {
-        200: t.Array(NormalizedEventsListItemSchema),
+        200: t.Array(t.Array(AssetEventListSchema)),
         ...defaultErrorSchema,
       },
     }
@@ -81,7 +81,7 @@ export const AssetEventsApi = new Elysia({
         }),
       }),
       response: {
-        200: t.Array(NormalizedEventsListItemSchema),
+        200: t.Array(AssetEventListSchema),
         ...defaultErrorSchema,
       },
     }

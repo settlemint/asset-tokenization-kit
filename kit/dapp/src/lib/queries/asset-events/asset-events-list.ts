@@ -124,7 +124,7 @@ export const getAssetEventsList = withTracing(
 
     return validatedEvents.map((validatedEvent) => {
       return {
-        validatedEvent,
+        ...validatedEvent,
         eventName: t(validatedEvent.eventName as any),
       };
     });
