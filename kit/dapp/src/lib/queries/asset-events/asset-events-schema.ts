@@ -1,4 +1,4 @@
-import { t } from "@/lib/utils/typebox";
+import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
  * Base TypeBox schema for asset events
@@ -39,3 +39,5 @@ export const AssetEventListSchema = t.Object(
     description: "Asset event data",
   }
 );
+
+export type AssetEventListItem = StaticDecode<typeof AssetEventListSchema>;

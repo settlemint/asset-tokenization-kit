@@ -55,7 +55,7 @@ export const AssetEventsApi = new Elysia({
         ),
       }),
       response: {
-        200: t.Array(t.Array(AssetEventListSchema)),
+        200: t.Array(AssetEventListSchema),
         ...defaultErrorSchema,
       },
     }
