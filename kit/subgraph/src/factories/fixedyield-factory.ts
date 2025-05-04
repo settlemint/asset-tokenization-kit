@@ -21,10 +21,12 @@ export function handleFixedYieldCreated(event: FixedYieldCreatedEvent): void {
   // Record event
   const sender = fetchAccount(event.transaction.from);
 
-  createActivityLogEntry(event, EventType.FixedYieldCreated, [
-    event.params.schedule,
+  createActivityLogEntry(
+    event,
+    EventType.FixedYieldCreated,
     event.params.creator,
-  ]);
+    [event.params.schedule, event.params.creator]
+  );
 
   // Check contract data
   const fixedYieldContract = FixedYieldContract.bind(event.params.schedule);

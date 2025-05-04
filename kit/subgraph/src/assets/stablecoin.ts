@@ -48,7 +48,8 @@ export function handleTransfer(event: Transfer): void {
       to,
       value,
       decimals,
-      false
+      false,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   } else if (to.equals(Address.zero())) {
     burnHandler(
@@ -60,7 +61,8 @@ export function handleTransfer(event: Transfer): void {
       event.params.from,
       event.params.value,
       decimals,
-      false
+      false,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   } else {
     transferHandler(
@@ -73,7 +75,8 @@ export function handleTransfer(event: Transfer): void {
       event.params.to,
       event.params.value,
       decimals,
-      false
+      false,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   }
   updateDerivedFieldsAndSave(stableCoin, event.block.timestamp);
@@ -121,7 +124,12 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   // Not really tracking anything here except the event, if you do this you'll need to change the frontend as well
   const stableCoin = fetchStableCoin(event.address);
-  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
+  createActivityLogEntry(
+    event,
+    EventType.RoleAdminChanged,
+    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
+    []
+  );
   updateDerivedFieldsAndSave(stableCoin, event.block.timestamp);
 }
 
@@ -179,7 +187,7 @@ export function handleUnpaused(event: Unpaused): void {
 export function handleClawback(event: Clawback): void {
   // This event is sent together with a transfer event, so we do not need to handle balances
   const stableCoin = fetchStableCoin(event.address);
-  createActivityLogEntry(event, EventType.Clawback, [
+  createActivityLogEntry(event, EventType.Clawback, event.params.sender, [
     event.params.from,
     event.params.to,
     event.params.sender,
@@ -198,20 +206,35 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     user,
     amount,
     stableCoin.decimals,
-    false
+    false,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
   );
 }
 export function handleUserBlocked(event: UserBlocked): void {
   const stableCoin = fetchStableCoin(event.address);
   const user = event.params.user;
-  blockUserHandler(event, stableCoin.id, user, stableCoin.decimals, false);
+  blockUserHandler(
+    event,
+    stableCoin.id,
+    user,
+    stableCoin.decimals,
+    false,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
+  );
   updateDerivedFieldsAndSave(stableCoin, event.block.timestamp);
 }
 
 export function handleUserUnblocked(event: UserUnblocked): void {
   const stableCoin = fetchStableCoin(event.address);
   const user = event.params.user;
-  unblockUserHandler(event, stableCoin.id, user, stableCoin.decimals, false);
+  unblockUserHandler(
+    event,
+    stableCoin.id,
+    user,
+    stableCoin.decimals,
+    false,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
+  );
   updateDerivedFieldsAndSave(stableCoin, event.block.timestamp);
 }
 
@@ -222,7 +245,8 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     stableCoin,
     event.params.newAmount,
     stableCoin.decimals,
-    event.block.timestamp
+    event.block.timestamp,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
   );
   updateDerivedFieldsAndSave(stableCoin, event.block.timestamp);
 }

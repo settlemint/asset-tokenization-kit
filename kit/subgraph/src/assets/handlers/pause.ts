@@ -16,7 +16,7 @@ export function pauseHandler(
   holders: AssetBalance[],
   sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.Pause, [sender]);
+  createActivityLogEntry(event, EventType.Pause, sender, [sender]);
   asset.setBoolean("paused", true);
   handleAssetCount(assetType);
   for (let i = 0; i < holders.length; i++) {

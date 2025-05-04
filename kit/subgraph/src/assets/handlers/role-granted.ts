@@ -16,7 +16,7 @@ export function roleGrantedHandler(
   roleHolder: Address,
   sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.RoleGranted, [roleHolder, sender]);
+  createActivityLogEntry(event, EventType.RoleGranted, sender, [roleHolder]);
   const roleHolderAccount = fetchAccount(roleHolder);
 
   if (role == Role.DEFAULT_ADMIN_ROLE) {

@@ -53,7 +53,8 @@ export function handleTransfer(event: Transfer): void {
       to,
       value,
       decimals,
-      false
+      false,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   } else if (to.equals(Address.zero())) {
     burnHandler(
@@ -65,7 +66,8 @@ export function handleTransfer(event: Transfer): void {
       event.params.from,
       event.params.value,
       decimals,
-      false
+      false,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   } else {
     transferHandler(
@@ -78,7 +80,8 @@ export function handleTransfer(event: Transfer): void {
       event.params.to,
       event.params.value,
       decimals,
-      false
+      false,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   }
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
@@ -116,7 +119,12 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   // Not really tracking anything here except the event, if you do this you'll need to change the frontend as well
   const bond = fetchBond(event.address);
-  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
+  createActivityLogEntry(
+    event,
+    EventType.RoleAdminChanged,
+    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
+    []
+  );
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
@@ -174,7 +182,7 @@ export function handleUnpaused(event: Unpaused): void {
 export function handleClawback(event: Clawback): void {
   // This event is sent together with a transfer event, so we do not need to handle balances
   const bond = fetchBond(event.address);
-  createActivityLogEntry(event, EventType.Clawback, [
+  createActivityLogEntry(event, EventType.Clawback, event.params.sender, [
     event.params.from,
     event.params.to,
     event.params.sender,
@@ -193,34 +201,51 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     user,
     amount,
     deposit.decimals,
-    false
+    false,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
   );
 }
 
 export function handleUserBlocked(event: UserBlocked): void {
   const bond = fetchBond(event.address);
   const user = event.params.user;
-  blockUserHandler(event, bond.id, user, bond.decimals, false);
+  blockUserHandler(
+    event,
+    bond.id,
+    user,
+    bond.decimals,
+    false,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
+  );
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
 export function handleUserUnblocked(event: UserUnblocked): void {
   const bond = fetchBond(event.address);
   const user = event.params.user;
-  unblockUserHandler(event, bond.id, user, bond.decimals, false);
+  unblockUserHandler(
+    event,
+    bond.id,
+    user,
+    bond.decimals,
+    false,
+    event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
+  );
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
 export function handleBondMatured(event: BondMatured): void {
   const bond = fetchBond(event.address);
-  createActivityLogEntry(event, EventType.Matured, [event.params.sender]);
+  createActivityLogEntry(event, EventType.Matured, event.params.sender, [
+    event.params.sender,
+  ]);
   bond.isMatured = true;
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
 }
 
 export function handleBondRedeemed(event: BondRedeemed): void {
   const bond = fetchBond(event.address);
-  createActivityLogEntry(event, EventType.Redeemed, [
+  createActivityLogEntry(event, EventType.Redeemed, event.params.sender, [
     event.params.holder,
     event.params.sender,
   ]);
@@ -240,9 +265,12 @@ export function handleBondRedeemed(event: BondRedeemed): void {
 
 export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
   const bond = fetchBond(event.address);
-  createActivityLogEntry(event, EventType.UnderlyingAssetTopUp, [
-    event.params.from,
-  ]);
+  createActivityLogEntry(
+    event,
+    EventType.UnderlyingAssetTopUp,
+    event.params.from, // not perfect but the event does not have an ERC2771 sender parameter
+    [event.params.from]
+  );
   const underlyingBalanceExact = bond.underlyingBalanceExact.plus(
     event.params.amount
   );
@@ -259,9 +287,12 @@ export function handleUnderlyingAssetWithdrawn(
   event: UnderlyingAssetWithdrawn
 ): void {
   const bond = fetchBond(event.address);
-  createActivityLogEntry(event, EventType.UnderlyingAssetWithdrawn, [
-    event.params.to,
-  ]);
+  createActivityLogEntry(
+    event,
+    EventType.UnderlyingAssetWithdrawn,
+    event.params.to, // not perfect but the event does not have an ERC2771 sender parameter
+    [event.params.to]
+  );
 
   const underlyingBalanceExact = bond.underlyingBalanceExact.minus(
     event.params.amount

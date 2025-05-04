@@ -791,6 +791,8 @@ type ActivityLogEntry @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
   # List of accounts involved in the event
+  emitter: Account!
+  sender: Account!
   involved: [Account!]!
   # List of values involved in the event
   values: [ActivityLogEntryValue!]! @derivedFrom(field: "entry")
