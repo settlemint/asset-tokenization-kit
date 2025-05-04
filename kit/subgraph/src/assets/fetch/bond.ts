@@ -1,10 +1,9 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { Bond } from "../../../generated/schema";
 import { Bond as BondContract } from "../../../generated/templates/Bond/Bond";
-import { fetchAccount } from "../../fetch/account";
+import { fetchAccount } from "../../utils/account";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
-import { updateDerivedFields } from "../bond";
 import { fetchAssetDecimals } from "./asset";
 
 export function fetchBond(
@@ -44,9 +43,13 @@ export function fetchBond(
     bond.userManagers = [];
     bond.lastActivity = BigInt.zero();
     bond.creator = Address.zero();
+    bond.totalMinted = BigDecimal.zero();
+    bond.totalMintedExact = BigInt.zero();
     bond.totalBurned = BigDecimal.zero();
     bond.totalBurnedExact = BigInt.zero();
-    bond.totalHolders = 0;
+    bond.totalTransferred = BigDecimal.zero();
+    bond.totalTransferredExact = BigInt.zero();
+    bond.totalHolders = BigInt.zero();
     bond.concentration = BigDecimal.zero();
     bond.deployedOn = timestamp;
 
@@ -64,7 +67,8 @@ export function fetchBond(
       ? Address.zero()
       : underlyingAsset.value;
     bond.underlyingAssetDecimals = underlyingAssetDecimals;
-    bond.redeemedAmount = BigInt.zero();
+    bond.redeemedAmount = BigDecimal.zero();
+    bond.redeemedAmountExact = BigInt.zero();
     bond.underlyingBalanceExact = BigInt.zero();
     bond.underlyingBalance = BigDecimal.zero();
     bond.yieldSchedule =
@@ -74,7 +78,6 @@ export function fetchBond(
     bond.totalUnderlyingNeededExact = BigInt.zero();
     bond.totalUnderlyingNeeded = BigDecimal.zero();
     bond.hasSufficientUnderlying = false;
-    updateDerivedFields(bond);
     bond.save();
 
     account.asAsset = bond.id;

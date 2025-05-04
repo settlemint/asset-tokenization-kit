@@ -34,7 +34,7 @@ import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../ge
 import { VestingAirdrop as VestingAirdropContract } from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
 
 // Use fetchAccount instead of loadOrCreateAccount
-import { fetchAccount } from "../fetch/account";
+import { fetchAccount } from "../utils/account";
 
 export function handleStandardAirdropDeployed(
   event: StandardAirdropDeployed
