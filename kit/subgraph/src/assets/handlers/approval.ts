@@ -14,7 +14,7 @@ export function approvalHandler(
   owner: Address,
   spender: Address
 ): void {
-  createActivityLogEntry(event, EventType.Approval, [owner, spender]);
+  createActivityLogEntry(event, EventType.Approval, owner, [owner, spender]);
 
   const ownerAccount = fetchAccount(owner);
   const ownerBalance = fetchAssetBalance(

@@ -26,9 +26,10 @@ export function burnHandler(
   from: Address,
   value: BigInt,
   decimals: number,
-  initialBlockedState: boolean
+  initialBlockedState: boolean,
+  sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.Burn, [from]);
+  createActivityLogEntry(event, EventType.Burn, sender, [from]);
   // increase total supply
   const newTotalSupply = handleTotalSupply(asset, value, decimals);
   // increase total minted

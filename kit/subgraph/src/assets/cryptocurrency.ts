@@ -35,7 +35,8 @@ export function handleTransfer(event: Transfer): void {
       to,
       value,
       decimals,
-      false
+      false,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   } else if (to.equals(Address.zero())) {
     burnHandler(
@@ -47,7 +48,8 @@ export function handleTransfer(event: Transfer): void {
       event.params.from,
       event.params.value,
       decimals,
-      false
+      false,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   } else {
     transferHandler(
@@ -60,7 +62,8 @@ export function handleTransfer(event: Transfer): void {
       event.params.to,
       event.params.value,
       decimals,
-      false
+      false,
+      event.transaction.from // not perfect but the event does not have an ERC2771 sender parameter
     );
   }
   updateDerivedFieldsAndSave(cryptoCurrency, event.block.timestamp);
@@ -101,7 +104,12 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   // Not really tracking anything here except the event, if you do this you'll need to change the frontend as well
   const cryptoCurrency = fetchCryptoCurrency(event.address);
-  createActivityLogEntry(event, EventType.RoleAdminChanged, []);
+  createActivityLogEntry(
+    event,
+    EventType.RoleAdminChanged,
+    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
+    []
+  );
   updateDerivedFieldsAndSave(cryptoCurrency, event.block.timestamp);
 }
 

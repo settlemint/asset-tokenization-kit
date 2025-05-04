@@ -19,7 +19,7 @@ export function handleDepositCreated(event: DepositCreated): void {
   assetCount.count = assetCount.count + 1;
   assetCount.save();
 
-  createActivityLogEntry(event, EventType.AssetCreated, [
+  createActivityLogEntry(event, EventType.AssetCreated, event.params.creator, [
     event.params.token,
     event.params.creator,
   ]);

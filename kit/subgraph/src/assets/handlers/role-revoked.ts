@@ -16,7 +16,10 @@ export function roleRevokedHandler(
   roleHolder: Address,
   sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.RoleRevoked, [roleHolder, sender]);
+  createActivityLogEntry(event, EventType.RoleRevoked, sender, [
+    roleHolder,
+    sender,
+  ]);
   const roleHolderAccount = fetchAccount(roleHolder);
 
   if (role == Role.DEFAULT_ADMIN_ROLE) {

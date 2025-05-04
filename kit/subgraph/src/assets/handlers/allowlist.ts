@@ -15,9 +15,10 @@ export function allowUserHandler(
   assetId: Bytes,
   user: Address,
   decimals: number,
-  initialBlockedState: boolean
+  initialBlockedState: boolean,
+  sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.UserBlocked, [user]);
+  createActivityLogEntry(event, EventType.UserBlocked, sender, [user]);
   const userAccount = fetchAccount(user);
   allowUser(assetId, userAccount.id, event.block.timestamp);
   handleBalance(
@@ -35,9 +36,10 @@ export function disallowUserHandler(
   assetId: Bytes,
   user: Address,
   decimals: number,
-  initialBlockedState: boolean
+  initialBlockedState: boolean,
+  sender: Address
 ): void {
-  createActivityLogEntry(event, EventType.UserUnblocked, [user]);
+  createActivityLogEntry(event, EventType.UserUnblocked, sender, [user]);
   const userAccount = fetchAccount(user);
   disallowUser(assetId, userAccount.id);
   handleBalance(
