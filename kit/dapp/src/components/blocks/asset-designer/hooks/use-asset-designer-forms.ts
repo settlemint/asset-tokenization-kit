@@ -1,5 +1,12 @@
 "use client";
 
+import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
+import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
+import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
+import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
+import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
+import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
+import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { AssetType } from "../types";
@@ -17,71 +24,71 @@ export function useAssetDesignerForms() {
   const [selectedAssetType, setSelectedAssetType] = useState<AssetType>(null);
 
   // Create forms for each asset type with mode set to run validation always
-  const bondForm = useForm({
+  const bondForm = useForm<CreateBondInput>({
     defaultValues: {
       assetName: "",
       symbol: "",
       decimals: 18,
       isin: "",
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all", // Validate on all events
   });
 
-  const cryptocurrencyForm = useForm({
+  const cryptocurrencyForm = useForm<CreateCryptoCurrencyInput>({
     defaultValues: {
       assetName: "",
       symbol: "",
       decimals: 18,
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all",
   });
 
-  const equityForm = useForm({
+  const equityForm = useForm<CreateEquityInput>({
     defaultValues: {
       assetName: "",
       symbol: "",
       isin: "",
       cusip: "",
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all",
   });
 
-  const fundForm = useForm({
+  const fundForm = useForm<CreateFundInput>({
     defaultValues: {
       assetName: "",
       symbol: "",
       isin: "",
       decimals: 18,
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all",
   });
 
-  const stablecoinForm = useForm({
+  const stablecoinForm = useForm<CreateStablecoinInput>({
     defaultValues: {
       assetName: "",
       symbol: "",
       decimals: 18,
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all",
   });
 
-  const depositForm = useForm({
+  const depositForm = useForm<CreateDepositInput>({
     defaultValues: {
       assetName: "",
       symbol: "",
       decimals: 18,
-      assetAdmins: [] as string[],
-      selectedRegulations: [] as string[],
+      assetAdmins: [],
+      selectedRegulations: [],
     },
     mode: "all",
   });
@@ -102,7 +109,7 @@ export function useAssetDesignerForms() {
       case "deposit":
         return depositForm;
       default:
-        return bondForm; // Fallback
+        exhaustiveGuard(selectedAssetType);
     }
   };
 
