@@ -28,8 +28,9 @@
       "matchPackageNames": ["/^@settlemint//"]
     },
     {
-      "matchPackageNames": ["react-hook-form"],
-      "enabled": false
+      "groupName": "Elysia",
+      "groupSlug": "elysia",
+      "matchPackageNames": ["elysia", "/^@elysia//"]
     }
   ],
   "hostRules": [
