@@ -4,8 +4,6 @@ services:
     restart: always
     ports:
       - "8545:8545" # Ethereum JSON-RPC
-    networks:
-      - atk
 
   postgres:
     image: postgres:17.4-bookworm
@@ -27,8 +25,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - atk
 
   graph-node:
     image: graphprotocol/graph-node:v0.38.0
@@ -54,8 +50,6 @@ services:
       GRAPH_IPFS_TIMEOUT: 60
       GRAPH_MAX_IPFS_FILE_BYTES: 52428800
       GRAPH_IPFS_REQUEST_RETRIES: 10
-    networks:
-      - atk
 
   # Jaeger
   jaeger-all-in-one:
@@ -70,8 +64,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - atk
 
   # Collector
   otel-collector:
@@ -90,8 +82,6 @@ services:
       - "55679:55679" # zpages extension
     depends_on:
       - jaeger-all-in-one
-    networks:
-      - atk
 
   victoriametrics:
     image: victoriametrics/victoria-metrics:v1.116.0-scratch
@@ -101,9 +91,3 @@ services:
       - "2003:2003" # Graphite protocol
       - "4242:4242" # OpenTSDB protocol
       - "8089:8089" # Prometheus remote write
-    networks:
-      - atk
-
-networks:
-  atk:
-    driver: bridge
