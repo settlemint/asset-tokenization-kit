@@ -34,7 +34,7 @@ test.describe("Fund Creation Validation", () => {
         symbol: "TFU",
         decimals: "18",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is empty", async () => {
@@ -44,7 +44,7 @@ test.describe("Fund Creation Validation", () => {
         decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is with lower case", async () => {
@@ -54,7 +54,7 @@ test.describe("Fund Creation Validation", () => {
         decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct asset-symbol format"
       );
@@ -67,7 +67,7 @@ test.describe("Fund Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         isin: "invalid-isin",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct isin format"
       );
@@ -76,7 +76,7 @@ test.describe("Fund Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         isin: "US0000000000000",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct isin format"
       );
@@ -87,7 +87,7 @@ test.describe("Fund Creation Validation", () => {
         symbol: "TFU",
         decimals: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates decimals range", async () => {
@@ -96,7 +96,7 @@ test.describe("Fund Creation Validation", () => {
         symbol: "TFU",
         decimals: "19",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("verifies default decimals field", async () => {
@@ -112,10 +112,10 @@ test.describe("Fund Creation Validation", () => {
         decimals: fundData.decimals,
         isin: fundData.isin,
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
     });
     test("validates required fields are empty", async () => {
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates fund class selection", async () => {
@@ -124,7 +124,7 @@ test.describe("Fund Creation Validation", () => {
         managementFeeBps: "1",
         price: "1",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates management fee is required", async () => {
@@ -135,7 +135,7 @@ test.describe("Fund Creation Validation", () => {
         managementFeeBps: "",
         price: "1",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates management fee maximum value", async () => {
@@ -145,7 +145,7 @@ test.describe("Fund Creation Validation", () => {
         managementFeeBps: "9007199254740992",
         price: "1",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates price is required", async () => {
@@ -156,7 +156,7 @@ test.describe("Fund Creation Validation", () => {
         managementFeeBps: "1",
         price: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
     test("validates price maximum value", async () => {
@@ -166,7 +166,7 @@ test.describe("Fund Creation Validation", () => {
         managementFeeBps: "1",
         price: "9007199254740992",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );

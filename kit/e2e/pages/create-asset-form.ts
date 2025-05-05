@@ -2,8 +2,12 @@ import { expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class CreateAssetForm extends BasePage {
-  async clickNext() {
-    await this.page.getByRole("button", { name: "Next" }).click();
+  async clickOnContinueButton() {
+    const continueButton = this.page.locator(
+      'button[data-slot="button"]:has-text("Continue")'
+    );
+    await continueButton.focus();
+    await continueButton.click();
   }
 
   async fillBasicFields(options: {
@@ -87,7 +91,11 @@ export class CreateAssetForm extends BasePage {
 
   async selectAssetType(assetType: string) {
     await this.page.getByRole("button", { name: "Asset Designer" }).click();
-    await this.page.getByRole("menuitem", { name: assetType }).click();
+    await this.page
+      .locator(
+        `[data-slot="card"] [data-slot="card-title"]:has-text("${assetType}")`
+      )
+      .click();
   }
 
   async fillCryptocurrencyDetails(options: {
