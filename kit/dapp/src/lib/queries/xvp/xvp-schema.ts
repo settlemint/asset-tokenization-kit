@@ -31,4 +31,5 @@ export const XvPSettlementSchema = t.Object({
   cancelled: t.Boolean(),
   approvals: t.Array(XvPSettlementApprovalSchema),
   flows: t.Array(XvPSettlementFlowSchema),
+  createdAt: t.StringifiedBigInt(),
 });

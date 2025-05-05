@@ -46,6 +46,7 @@ export const XvPSettlementFragment = theGraphGraphqlKit(
     autoExecute
     claimed
     cancelled
+    createdAt
     approvals {
       ...XvPSettlementApprovalFragment
     }
