@@ -203,6 +203,12 @@ export const getExchangeRatesForBase = withTracing(
   async (baseCurrency: CurrencyCode) => {
     const today = getTodayDateString();
 
+    const cacheKey = `${baseCurrency}-${today}`;
+    const cached = await cache.get<number>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const rates = await db.query.exchangeRate.findMany({
       where: and(
         eq(exchangeRate.baseCurrency, baseCurrency),
@@ -211,20 +217,26 @@ export const getExchangeRatesForBase = withTracing(
       orderBy: (exchangeRate, { asc }) => [asc(exchangeRate.id)],
     });
 
-    if (rates.length === 0) {
-      // If no rates exist, update all exchange rates
-      await updateExchangeRatesNoAuth(today);
-
-      // Try to get the rates again after update
-      return await db.query.exchangeRate.findMany({
-        where: and(
-          eq(exchangeRate.baseCurrency, baseCurrency),
-          eq(exchangeRate.day, today)
-        ),
-        orderBy: (exchangeRate, { asc }) => [asc(exchangeRate.id)],
-      });
+    if (rates.length > 0) {
+      const oneHourMs = 1 * 60 * 60 * 1000;
+      await cache.set(cacheKey, rates, oneHourMs);
+      return rates;
     }
 
-    return rates;
+    // If no rates exist, update all exchange rates
+    await updateExchangeRatesNoAuth(today);
+
+    // Try to get the rates again after update
+    const updatedRates = await db.query.exchangeRate.findMany({
+      where: and(
+        eq(exchangeRate.baseCurrency, baseCurrency),
+        eq(exchangeRate.day, today)
+      ),
+      orderBy: (exchangeRate, { asc }) => [asc(exchangeRate.id)],
+    });
+
+    const oneHourMs = 1 * 60 * 60 * 1000;
+    await cache.set(cacheKey, updatedRates, oneHourMs);
+    return updatedRates;
   }
 );
