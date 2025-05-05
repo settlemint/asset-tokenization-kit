@@ -9,6 +9,8 @@ import FixedYieldFactoryModule from "./fixed-yield-factory";
 import ForwarderModule from "./forwarder";
 import FundsModule from "./funds";
 import StableCoinsModule from "./stable-coins";
+import VaultFactoryModule from "./vault-factory";
+import VaultsModule from "./vaults";
 import XvPSettlementFactoryModule from "./xvp-settlement-factory";
 
 const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
@@ -23,6 +25,8 @@ const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
   const { xvpSettlementFactory } = m.useModule(XvPSettlementFactoryModule);
   const { airdropFactory } = m.useModule(AirdropFactoryModule);
   const { schemaRegistry, eas } = m.useModule(EASModule);
+  const { vaultFactory } = m.useModule(VaultFactoryModule);
+  const { vault } = m.useModule(VaultsModule);
 
   return {
     ustb,
@@ -36,6 +40,8 @@ const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
     airdropFactory,
     schemaRegistry,
     eas,
+    vaultFactory,
+    vault,
   };
 });
 
