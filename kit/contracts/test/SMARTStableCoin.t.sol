@@ -16,10 +16,12 @@ import { InsufficientCollateral } from "@smartprotocol/contracts/extensions/coll
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 import { console } from "forge-std/console.sol";
 
-/// Following tests are removed:
-/// - test_BurnFrom: doesn't exist in ERC3643
-/// - test_OnlyUserManagementCanBlock: will be managed by compliance
-/// - test_OnlyAdminCanUpdateCollateral: managed by trusted issuers and token identity
+/// Following tests are changed:
+/// - test_BurnFrom: removed because it doesn't exist in ERC3643
+/// - test_OnlyUserManagementCanBlock: removed because it will be managed by compliance modules
+/// - test_OnlyAdminCanUpdateCollateral: renamed to test_OnlyTrustedIssuerCanUpdateCollateral
+/// - test_StableCoinClawback: renamed to test_StableCoinForcedTransfer
+/// - test_onlySupplyManagementCanClawback: renamed to test_onlySupplyManagementCanForceTransfer
 contract SMARTStableCoinTest is Test {
     SMARTUtils internal smartUtils;
 
@@ -336,33 +338,23 @@ contract SMARTStableCoinTest is Test {
     //     assertEq(stableCoin.allowance(user1, spender), 50);
     // }
 
-    // function test_StableCoinClawback() public {
-    //     vm.startPrank(owner);
-    //     stableCoin.updateCollateral(INITIAL_SUPPLY);
-    //     stableCoin.mint(user1, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+    function test_StableCoinForcedTransfer() public {
+        _mintInitialSupply(user1);
 
-    //     vm.startPrank(owner);
-    //     stableCoin.clawback(user1, user2, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+        vm.startPrank(owner);
+        stableCoin.forcedTransfer(user1, user2, INITIAL_SUPPLY);
+        vm.stopPrank();
 
-    //     assertEq(stableCoin.balanceOf(user1), 0);
-    //     assertEq(stableCoin.balanceOf(user2), INITIAL_SUPPLY);
-    // }
+        assertEq(stableCoin.balanceOf(user1), 0);
+        assertEq(stableCoin.balanceOf(user2), INITIAL_SUPPLY);
+    }
 
-    // function test_onlySupplyManagementCanClawback() public {
-    //     vm.startPrank(owner);
-    //     stableCoin.updateCollateral(INITIAL_SUPPLY);
-    //     stableCoin.mint(user1, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+    function test_onlySupplyManagementCanForceTransfer() public {
+        _mintInitialSupply(user1);
 
-    //     vm.startPrank(user2);
-    //     vm.expectRevert(
-    //         abi.encodeWithSignature(
-    //             "AccessControlUnauthorizedAccount(address,bytes32)", user2, stableCoin.SUPPLY_MANAGEMENT_ROLE()
-    //         )
-    //     );
-    //     stableCoin.clawback(user1, user2, INITIAL_SUPPLY);
-    //     vm.stopPrank();
-    // }
+        vm.startPrank(user2);
+        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2));
+        stableCoin.forcedTransfer(user1, user2, INITIAL_SUPPLY);
+        vm.stopPrank();
+    }
 }
