@@ -56,16 +56,16 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     error InsufficientAllowance(address token, address owner, address spender, uint256 required, uint256 allowed);
 
     /// @notice Event emitted when an XvP settlement is approved by a party
-    event XvPSettlementApproved();
+    event XvPSettlementApproved(address indexed sender);
 
     /// @notice Event emitted when an XvP settlement approval is revoked
-    event XvPSettlementApprovalRevoked();
+    event XvPSettlementApprovalRevoked(address indexed sender);
 
     /// @notice Event emitted when an XvP settlement is claimed
-    event XvPSettlementClaimed();
+    event XvPSettlementClaimed(address indexed sender);
 
     /// @notice Event emitted when an XvP settlement is cancelled
-    event XvPSettlementCancelled();
+    event XvPSettlementCancelled(address indexed sender);
 
     /// @notice Deploys a new XvPSettlement contract
     /// @dev Sets up the contract with admin role and initializes meta-transaction support
@@ -144,7 +144,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
 
         // Mark as approved
         _approvals[_msgSender()] = true;
-        emit XvPSettlementApproved();
+        emit XvPSettlementApproved(_msgSender());
 
         // If auto-execution and all parties approved, execute swap directly
         if (_autoExecute && isFullyApproved()) {
@@ -171,7 +171,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
         }
 
         _claimed = true;
-        emit XvPSettlementClaimed();
+        emit XvPSettlementClaimed(_msgSender());
 
         return true;
     }
@@ -183,7 +183,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
         if (!_approvals[_msgSender()]) revert SenderNotApprovedSettlement();
 
         _approvals[_msgSender()] = false;
-        emit XvPSettlementApprovalRevoked();
+        emit XvPSettlementApprovalRevoked(_msgSender());
 
         return true;
     }
@@ -191,7 +191,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     function cancel() external nonReentrant onlyUnclaimed onlyInvolvedSender returns (bool) {
         _cancelled = true;
 
-        emit XvPSettlementCancelled();
+        emit XvPSettlementCancelled(_msgSender());
         return true;
     }
 
