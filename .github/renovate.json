@@ -30,7 +30,7 @@
     {
       "groupName": "Elysia",
       "groupSlug": "elysia",
-      "matchPackageNames": ["elysia", "/^@elysia//"]
+      "matchPackageNames": ["elysia", "/^@elysiajs//"]
     }
   ],
   "hostRules": [
