@@ -4,7 +4,6 @@ import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { getLocale } from "next-intl/server";
 import type { Address } from "viem";
 
 interface BadgeLoaderProps {
@@ -45,8 +44,7 @@ export async function BadgeLoader({
         count = details.totalHolders.toString();
         break;
       case "events":
-        const locale = await getLocale();
-        const events = await getAssetEventsList({ asset: address, locale });
+        const events = await getAssetEventsList({ asset: address });
         count = events.length;
         break;
       case "allowlist":
