@@ -1,8 +1,8 @@
 "use server";
 
-import { revalidateCaches } from "@/components/blocks/asset-designer/revalidate-cache";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { FragmentOf } from "gql.tada";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { ReceiptFragment } from "./transaction-fragment";
 import { waitForIndexing } from "./wait-for-indexing";
 
@@ -76,7 +76,16 @@ export async function waitForTransactions(
   const receipts = await Promise.all(promises);
   const lastReceipt = receipts.at(-1);
   await waitForIndexing(Number(lastReceipt!.blockNumber));
-  await revalidateCaches();
+
+  // Revalidate all cache tags
+  revalidateTag("asset");
+  revalidateTag("user-activity");
+  revalidateTag("trades");
+
+  // Now revalidate paths after clearing cache
+  revalidatePath("/[locale]/assets", "layout");
+  revalidatePath("/[locale]/portfolio", "layout");
+  revalidatePath("/[locale]/trades", "layout");
 
   return receipts;
 }
