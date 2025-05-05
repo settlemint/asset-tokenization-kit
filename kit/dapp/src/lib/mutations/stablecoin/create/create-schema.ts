@@ -56,6 +56,7 @@ export function CreateStablecoinSchema() {
           description: "Price of the stablecoin",
         }),
         assetAdmins: AssetAdminsSchemaFragment(),
+        selectedRegulations: t.Optional(t.Array(t.String())),
       },
       {
         description: "Schema for validating stablecoin creation inputs",

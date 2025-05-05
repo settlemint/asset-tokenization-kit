@@ -60,6 +60,12 @@ export function CreateEquitySchema() {
         description: "Price of the equity",
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
+      cusip: t.Optional(
+        t.String({
+          description: "CUSIP of the equity",
+        })
+      ),
     },
     {
       description: "Schema for validating equity creation inputs",

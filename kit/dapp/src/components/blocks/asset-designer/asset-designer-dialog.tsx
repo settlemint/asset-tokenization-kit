@@ -37,14 +37,19 @@ import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-actio
 // Import the predict address functions
 import { getPredictedAddress as getBondPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
 import { getPredictedAddress as getCryptocurrencyPredictedAddress } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-predict-address";
+import { getPredictedAddress as getDepositPredictedAddress } from "@/lib/queries/deposit-factory/deposit-factory-predict-address";
+import { getPredictedAddress as getEquityPredictedAddress } from "@/lib/queries/equity-factory/equity-factory-predict-address";
+import { getPredictedAddress as getFundPredictedAddress } from "@/lib/queries/fund-factory/fund-factory-predict-address";
 import { getPredictedAddress as getStablecoinPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
-import { getTomorrowMidnight } from "@/lib/utils/date";
 
 // Import FormOtpDialog
 import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 
 // Import the waitForTransactions function
+import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
+import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
+import { revalidateCaches } from "./revalidate-cache";
 
 interface AssetDesignerDialogProps {
   open: boolean;
@@ -95,6 +100,12 @@ export function AssetDesignerDialog({
     isBasicInfoFormValid,
     isConfigurationFormValid,
     isPermissionsFormValid,
+    bondForm,
+    cryptocurrencyForm,
+    equityForm,
+    fundForm,
+    stablecoinForm,
+    depositForm,
   } = useAssetDesignerForms();
 
   // State for verification dialog
@@ -152,65 +163,81 @@ export function AssetDesignerDialog({
       let predictedAddress = "0x0000000000000000000000000000000000000000";
 
       try {
-        const formValues = form.getValues();
-
         switch (selectedAssetType) {
           case "bond": {
-            // Only pass the required properties for bond prediction
-            const bondFormValues = formValues as any;
-            if (
-              bondFormValues.cap &&
-              bondFormValues.maturityDate &&
-              bondFormValues.underlyingAsset &&
-              bondFormValues.faceValue
-            ) {
-              predictedAddress = await getBondPredictedAddress({
-                assetName: bondFormValues.assetName,
-                symbol: bondFormValues.symbol,
-                decimals: bondFormValues.decimals,
-                cap: bondFormValues.cap,
-                maturityDate: bondFormValues.maturityDate,
-                underlyingAsset: bondFormValues.underlyingAsset,
-                faceValue: bondFormValues.faceValue,
-              });
-            }
+            const bondFormValues = bondForm.getValues();
+            predictedAddress = await getBondPredictedAddress({
+              assetName: bondFormValues.assetName,
+              symbol: bondFormValues.symbol,
+              decimals: bondFormValues.decimals,
+              cap: bondFormValues.cap,
+              maturityDate: bondFormValues.maturityDate,
+              underlyingAsset: bondFormValues.underlyingAsset,
+              faceValue: bondFormValues.faceValue,
+            });
             break;
           }
           case "cryptocurrency": {
-            // Only pass the required properties for cryptocurrency prediction
-            const cryptoFormValues = formValues as any;
-            if (cryptoFormValues.initialSupply) {
-              predictedAddress = await getCryptocurrencyPredictedAddress({
-                assetName: cryptoFormValues.assetName,
-                symbol: cryptoFormValues.symbol,
-                decimals: cryptoFormValues.decimals,
-                initialSupply: cryptoFormValues.initialSupply,
-              });
-            }
+            const cryptoFormValues = cryptocurrencyForm.getValues();
+            predictedAddress = await getCryptocurrencyPredictedAddress({
+              assetName: cryptoFormValues.assetName,
+              symbol: cryptoFormValues.symbol,
+              decimals: cryptoFormValues.decimals,
+              initialSupply: cryptoFormValues.initialSupply,
+            });
             break;
           }
           case "stablecoin": {
-            // Only pass the required properties for stablecoin prediction
-            const stablecoinFormValues = formValues as any;
-            if (
-              stablecoinFormValues.collateralLivenessValue &&
-              stablecoinFormValues.collateralLivenessTimeUnit
-            ) {
-              predictedAddress = await getStablecoinPredictedAddress({
-                assetName: stablecoinFormValues.assetName,
-                symbol: stablecoinFormValues.symbol,
-                decimals: stablecoinFormValues.decimals,
-                collateralLivenessValue:
-                  stablecoinFormValues.collateralLivenessValue,
-                collateralLivenessTimeUnit:
-                  stablecoinFormValues.collateralLivenessTimeUnit,
-              });
-            }
+            const stablecoinFormValues = stablecoinForm.getValues();
+            predictedAddress = await getStablecoinPredictedAddress({
+              assetName: stablecoinFormValues.assetName,
+              symbol: stablecoinFormValues.symbol,
+              decimals: stablecoinFormValues.decimals,
+              collateralLivenessValue:
+                stablecoinFormValues.collateralLivenessValue,
+              collateralLivenessTimeUnit:
+                stablecoinFormValues.collateralLivenessTimeUnit,
+            });
+            break;
+          }
+          case "deposit": {
+            const depositFormValues = depositForm.getValues();
+            predictedAddress = await getDepositPredictedAddress({
+              assetName: depositFormValues.assetName,
+              symbol: depositFormValues.symbol,
+              decimals: depositFormValues.decimals,
+              collateralLivenessValue:
+                depositFormValues.collateralLivenessValue,
+              collateralLivenessTimeUnit:
+                depositFormValues.collateralLivenessTimeUnit,
+            });
+            break;
+          }
+          case "equity": {
+            const equityFormValues = equityForm.getValues();
+            predictedAddress = await getEquityPredictedAddress({
+              assetName: equityFormValues.assetName,
+              symbol: equityFormValues.symbol,
+              decimals: equityFormValues.decimals,
+              equityCategory: equityFormValues.equityCategory,
+              equityClass: equityFormValues.equityClass,
+            });
+            break;
+          }
+          case "fund": {
+            const fundFormValues = fundForm.getValues();
+            predictedAddress = await getFundPredictedAddress({
+              assetName: fundFormValues.assetName,
+              symbol: fundFormValues.symbol,
+              decimals: fundFormValues.decimals,
+              fundCategory: fundFormValues.fundCategory,
+              fundClass: fundFormValues.fundClass,
+              managementFeeBps: fundFormValues.managementFeeBps,
+            });
             break;
           }
           default:
-            // Generate a fallback random address for asset types without a prediction function
-            predictedAddress = `0x${Math.random().toString(16).substring(2).padStart(40, "0")}`;
+            exhaustiveGuard(selectedAssetType);
         }
       } catch (error) {
         console.error("Error predicting address:", error);
@@ -220,10 +247,9 @@ export function AssetDesignerDialog({
 
       // Common values needed for asset creation
       const baseFormValues = {
-        ...form.getValues(),
         verificationType: "pincode",
         predictedAddress,
-      } as any;
+      };
 
       let formData;
       let action;
@@ -232,33 +258,54 @@ export function AssetDesignerDialog({
       switch (selectedAssetType) {
         case "bond":
           action = createBond;
+          const bondFormValues = bondForm.getValues();
           formData = {
             ...baseFormValues,
-            maturityDate: baseFormValues.maturityDate || getTomorrowMidnight(),
+            ...bondFormValues,
           };
           break;
         case "cryptocurrency":
           action = createCryptoCurrency;
-          formData = { ...baseFormValues };
+          const cryptoFormValues = cryptocurrencyForm.getValues();
+          formData = {
+            ...baseFormValues,
+            ...cryptoFormValues,
+          };
           break;
         case "equity":
           action = createEquity;
-          formData = { ...baseFormValues };
+          const equityFormValues = equityForm.getValues();
+          formData = {
+            ...baseFormValues,
+            ...equityFormValues,
+          };
           break;
         case "fund":
           action = createFund;
-          formData = { ...baseFormValues };
+          const fundFormValues = fundForm.getValues();
+          formData = {
+            ...baseFormValues,
+            ...fundFormValues,
+          };
           break;
         case "stablecoin":
           action = createStablecoin;
-          formData = { ...baseFormValues };
+          const stablecoinFormValues = stablecoinForm.getValues();
+          formData = {
+            ...baseFormValues,
+            ...stablecoinFormValues,
+          };
           break;
         case "deposit":
           action = createDeposit;
-          formData = { ...baseFormValues };
+          const depositFormValues = depositForm.getValues();
+          formData = {
+            ...baseFormValues,
+            ...depositFormValues,
+          };
           break;
         default:
-          throw new Error("Invalid asset type");
+          exhaustiveGuard(selectedAssetType);
       }
 
       // Store verification data and show pincode dialog
@@ -301,10 +348,14 @@ export function AssetDesignerDialog({
             : [result.data];
 
           // Wait for the transactions to be confirmed using the dedicated function
-          await waitForTransactions(hashes);
+          const transactions = await waitForTransactions(hashes);
+          const lastTransaction = transactions.at(-1);
 
-          // Add a small delay to allow indexing to complete
-          await new Promise((resolve) => setTimeout(resolve, 3000));
+          if (lastTransaction?.blockNumber) {
+            await waitForIndexing(Number(lastTransaction.blockNumber));
+          }
+
+          await revalidateCaches();
 
           // Update the toast with success message
           toast.success(
