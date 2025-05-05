@@ -65,7 +65,7 @@ test.describe("Create, mint, burn and transfer fund", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates, mints and burns fund", async ({ browser }) => {
+  test("Admin user creates, mints and burns fund", async () => {
     await adminPages.adminPage.createFund(fundData);
     testData.fundName = fundData.name;
     await adminPages.adminPage.verifySuccessMessage(

@@ -35,7 +35,7 @@ test.describe("Stablecoin Creation Validation", () => {
         symbol: "TSC",
         decimals: "18",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is empty", async () => {
@@ -44,7 +44,7 @@ test.describe("Stablecoin Creation Validation", () => {
         symbol: "",
         decimals: "18",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is with lower case", async () => {
@@ -53,7 +53,7 @@ test.describe("Stablecoin Creation Validation", () => {
         symbol: "tsc",
         decimals: "18",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct asset-symbol format"
       );
@@ -68,14 +68,14 @@ test.describe("Stablecoin Creation Validation", () => {
         symbol: "TSC",
         decimals: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates decimals range", async () => {
       await createAssetForm.fillBasicFields({
         decimals: "19",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
 
@@ -91,7 +91,7 @@ test.describe("Stablecoin Creation Validation", () => {
         symbol: stablecoinData.symbol,
         decimals: stablecoinData.decimals,
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
     });
 
     test("validates collateral proof validity field is empty", async () => {
@@ -102,7 +102,7 @@ test.describe("Stablecoin Creation Validation", () => {
         priceAmount: "1",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
     test("validates collateral proof validity field is less than 1", async () => {
@@ -112,7 +112,7 @@ test.describe("Stablecoin Creation Validation", () => {
         priceAmount: "1",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no less than 1"
       );
@@ -126,7 +126,7 @@ test.describe("Stablecoin Creation Validation", () => {
         priceAmount: "1",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );
@@ -138,7 +138,7 @@ test.describe("Stablecoin Creation Validation", () => {
         priceAmount: "",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
     test("validates large number for price amount field", async () => {
@@ -147,7 +147,7 @@ test.describe("Stablecoin Creation Validation", () => {
         priceAmount: "10000000000000000000",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );
