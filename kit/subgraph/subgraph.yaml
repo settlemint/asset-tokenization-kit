@@ -159,7 +159,7 @@ dataSources:
     name: XvPSettlementFactory
     network: settlemint
     source:
-      address: "0xc0F975b7B805b1b6f657dC8Fc973373323d3D671"
+      address: "0x202bdfdD1b4AC18fB5B68536f59CcAA693D00eF3"
       abi: XvPSettlementFactory
     mapping:
       kind: ethereum/events
@@ -234,13 +234,13 @@ templates:
         - name: XvPSettlement
           file: ../contracts/artifacts/contracts/XvPSettlement.sol/XvPSettlement.json
       eventHandlers:
-        - event: XvPSettlementApproved()
+        - event: XvPSettlementApproved(indexed address)
           handler: handleXvPSettlementApproved
-        - event: XvPSettlementApprovalRevoked()
+        - event: XvPSettlementApprovalRevoked(indexed address)
           handler: handleXvPSettlementApprovalRevoked
-        - event: XvPSettlementClaimed()
+        - event: XvPSettlementClaimed(indexed address)
           handler: handleXvPSettlementClaimed
-        - event: XvPSettlementCancelled()
+        - event: XvPSettlementCancelled(indexed address)
           handler: handleXvPSettlementCancelled
       file: ./src/trading/xvp-settlement.ts
   - kind: ethereum/contract

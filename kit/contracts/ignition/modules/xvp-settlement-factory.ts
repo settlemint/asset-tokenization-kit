@@ -8,7 +8,7 @@ const XvPSettlementFactoryModule = buildModule(
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
     const xvpSettlementFactory = m.contract("XvPSettlementFactory", [
-      forwarder,
+      "0x5e771e1417100000000000000000000000000099",
     ]);
 
     return { xvpSettlementFactory };
