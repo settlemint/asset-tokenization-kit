@@ -12,6 +12,7 @@ checksum = "6dbd0440446b2ed16ca25e9f1af08fc0c5c1e73e71fee86ae8a00daa774e3817"
 integrity = "4cb7f3777f67fdf4b7d0e2f94d2f93f198b2e5dce718b7062ac7c2c83e1183bd"
 
 [[dependencies]]
+<<<<<<< HEAD
 name = "@openzeppelin-contracts-upgradeable"
 version = "5.2.0"
 url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts-upgradeable/5_2_0_11-01-2025_09:30:25_contracts-upgradeable.zip"
@@ -23,6 +24,12 @@ name = "@smartprotocol"
 version = "v0.0.1"
 git = "https://github.com/settlemint/solidity-smart-protocol.git"
 rev = "514fe7ce457e88684fd9d716602877bc5aeadf39"
+=======
+name = "eas-contracts"
+version = "1.4.0"
+git = "https://github.com/ethereum-attestation-service/eas-contracts.git"
+rev = "v1.4.0"
+>>>>>>> 451642d5 (feat: add Ethereum Attestation Service (EAS) contracts and dependencies (#1761))
 
 [[dependencies]]
 name = "forge-std"

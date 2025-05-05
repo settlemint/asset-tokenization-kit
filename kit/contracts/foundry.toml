@@ -23,6 +23,7 @@ forge-std = "1.9.5"
 "@onchainid" = { version = "v2.2.1", git = "https://github.com/onchain-id/solidity.git", rev = "2.2.1" }
 "@smartprotocol" = { version="v0.0.1", git = "https://github.com/settlemint/solidity-smart-protocol.git"}
 openzeppelin-community-contracts = { version = "0.0.1", git = "https://github.com/OpenZeppelin/openzeppelin-community-contracts.git", rev = "e33f73d1957e46b9ed17c319ed607bb3c7137944" }
+eas-contracts = { version = "1.4.0", git = "https://github.com/ethereum-attestation-service/eas-contracts.git", rev = "v1.4.0" }
 
 [profile.default]
   src = 'contracts'
@@ -30,7 +31,7 @@ openzeppelin-community-contracts = { version = "0.0.1", git = "https://github.co
   libs = ["dependencies"]
   test = 'test'
   cache_path  = 'cache_forge'
-  solc = "0.8.27"
+  solc = "0.8.28"
   optimizer = true
   optimizer_runs = 200
   gas_reports = ["*"]
