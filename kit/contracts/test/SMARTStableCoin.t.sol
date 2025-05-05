@@ -7,13 +7,19 @@ import { Forwarder } from "../contracts/Forwarder.sol";
 import { SMARTConstants } from "../contracts/SMARTConstants.sol";
 import { TestConstants } from "./TestConstants.sol";
 import { InvalidDecimals } from "@smartprotocol/contracts/extensions/core/SMARTErrors.sol";
+import { ClaimUtils } from "@smartprotocol/test-utils/ClaimUtils.sol";
 
 import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
+import { InsufficientCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateralErrors.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 import { console } from "forge-std/console.sol";
 
+/// Following tests are removed:
+/// - test_BurnFrom: doesn't exist in ERC3643
+/// - test_OnlyUserManagementCanBlock: will be managed by compliance
+/// - test_OnlyAdminCanUpdateCollateral: managed by trusted issuers and token identity
 contract SMARTStableCoinTest is Test {
     SMARTUtils internal smartUtils;
 
@@ -187,23 +193,6 @@ contract SMARTStableCoinTest is Test {
         assertEq(stableCoin.balanceOf(user1), INITIAL_SUPPLY - 100);
     }
 
-    // function test_BurnFrom() public {
-    //     vm.startPrank(owner);
-    //     _updateCollateral(address(stableCoin), address(owner), INITIAL_SUPPLY);
-    //     stableCoin.mint(user1, INITIAL_SUPPLY);
-    //     vm.stopPrank();
-
-    //     vm.startPrank(user1);
-    //     stableCoin.approve(spender, 100);
-    //     vm.stopPrank();
-
-    //     vm.startPrank(spender);
-    //     stableCoin.burn(user1, 100);
-    //     vm.stopPrank();
-
-    //     assertEq(stableCoin.balanceOf(user1), INITIAL_SUPPLY - 100);
-    // }
-
     // ERC20Pausable tests
     function test_OnlyAdminCanPause() public {
         vm.startPrank(user1);
@@ -218,60 +207,45 @@ contract SMARTStableCoinTest is Test {
         assertTrue(stableCoin.paused());
     }
 
-    // // ERC20Blocklist tests
-    // function test_OnlyUserManagementCanBlock() public {
-    //     vm.startPrank(owner);
-    //     _updateCollateral(address(stableCoin), address(owner), INITIAL_SUPPLY);
-    //     stableCoin.mint(user1, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+    function test_OnlyTrustedIssuerCanUpdateCollateral() public {
+        uint256 collateralAmount = 1_000_000;
 
-    //     vm.startPrank(user2);
-    //     vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2, SMARTConstants.USER_MANAGEMENT_ROLE));
-    //     stableCoin.blockUser(user1);
-    //     vm.stopPrank();
+        // Setup an untrusted issuer
+        uint256 untrustedIssuerPK = 0xBAD155;
+        address untrustedIssuerWallet = vm.addr(untrustedIssuerPK);
+        vm.label(untrustedIssuerWallet, "Untrusted Issuer Wallet");
+        ClaimUtils untrustedClaimUtils = smartUtils.createClaimUtilsForIssuer(untrustedIssuerWallet, untrustedIssuerPK);
+        smartUtils.createIdentity(untrustedIssuerWallet);
 
-    //     vm.startPrank(owner);
-    //     stableCoin.blockUser(user1);
-    //     vm.stopPrank();
+        uint256 farFutureExpiry = block.timestamp + 3650 days; // ~10 years
 
-    //     assertTrue(stableCoin.blocked(user1));
+        vm.startPrank(untrustedIssuerWallet);
+        untrustedClaimUtils.issueCollateralClaim(address(stableCoin), owner, collateralAmount, farFutureExpiry);
+        vm.stopPrank();
 
-    //     vm.startPrank(user1);
-    //     vm.expectRevert();
-    //     stableCoin.transfer(user2, 100);
-    //     vm.stopPrank();
+        // Declare variables the first time
+        (uint256 amount, address claimIssuer, uint256 timestamp) = stableCoin.findValidCollateralClaim();
+        assertEq(amount, 0); // Check initial state (untrusted issuer)
 
-    //     vm.startPrank(owner);
-    //     stableCoin.unblockUser(user1);
-    //     vm.stopPrank();
+        // Expect mint to revert due to insufficient collateral
+        vm.startPrank(owner);
+        vm.expectRevert(abi.encodeWithSelector(InsufficientCollateral.selector, 100, 0)); // Assuming mint amount is 100
+        stableCoin.mint(user1, 100);
+        vm.stopPrank();
 
-    //     assertFalse(stableCoin.blocked(user1));
+        // Issue claim from the trusted issuer (owner)
+        vm.startPrank(owner);
+        smartUtils.issueCollateralClaim(address(stableCoin), owner, collateralAmount, farFutureExpiry);
+        vm.stopPrank();
 
-    //     vm.startPrank(user1);
-    //     stableCoin.transfer(user2, 100);
-    //     vm.stopPrank();
+        // Assign new values to existing variables (no type declaration)
+        (amount, claimIssuer, timestamp) = stableCoin.findValidCollateralClaim();
+        assertEq(amount, collateralAmount); // Check updated state (trusted issuer)
 
-    //     assertEq(stableCoin.balanceOf(user2), 100);
-    // }
-
-    // ERC20Collateral tests
-    // function test_OnlyAdminCanUpdateCollateral() public {
-    //     uint256 collateralAmount = 1_000_000;
-
-    //     bytes32 role = stableCoin.AUDITOR_ROLE();
-    //     vm.startPrank(user1);
-    //     vm.expectRevert(abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user1, role));
-    //     stableCoin.updateCollateral(collateralAmount);
-    //     vm.stopPrank();
-
-    //     vm.startPrank(owner);
-    //     stableCoin.updateCollateral(collateralAmount);
-    //     vm.stopPrank();
-
-    //     (uint256 amount, uint48 timestamp) = stableCoin.collateral();
-    //     assertEq(amount, collateralAmount);
-    //     assertEq(timestamp, uint48(block.timestamp));
-    // }
+        vm.startPrank(owner);
+        stableCoin.mint(user1, 100);
+        vm.stopPrank();
+    }
 
     // ERC20Custodian tests
     function test_OnlyUserManagementCanFreeze() public {
