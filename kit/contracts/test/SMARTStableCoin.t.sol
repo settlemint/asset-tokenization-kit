@@ -12,9 +12,14 @@ import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
+import { console } from "forge-std/console.sol";
 
 contract SMARTStableCoinTest is Test {
     SMARTUtils internal smartUtils;
+
+    // extract these so that these are not seen as an extra call to smartUtils contract when expecting a revert
+    address public identityRegistry;
+    address public compliance;
 
     SMARTStableCoin public stableCoin;
     Forwarder public forwarder;
@@ -33,6 +38,9 @@ contract SMARTStableCoinTest is Test {
 
     function setUp() public {
         smartUtils = new SMARTUtils();
+        identityRegistry = address(smartUtils.identityRegistry());
+        compliance = address(smartUtils.compliance());
+
         // Create identities
         owner = makeAddr("owner");
         user1 = makeAddr("user1");
@@ -51,7 +59,7 @@ contract SMARTStableCoinTest is Test {
         forwarder = new Forwarder();
 
         stableCoin = _createStableCoin(
-            "StableCoin", "STBL", DECIMALS, address(0), new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner
+            "StableCoin", "STBL", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner
         );
     }
 
@@ -59,7 +67,6 @@ contract SMARTStableCoinTest is Test {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        address onchainID,
         uint256[] memory requiredClaimTopics,
         SMARTComplianceModuleParamPair[] memory initialModulePairs,
         address owner_
@@ -72,11 +79,11 @@ contract SMARTStableCoinTest is Test {
             name,
             symbol,
             decimals,
-            onchainID,
+            address(0),
             requiredClaimTopics,
             initialModulePairs,
-            address(smartUtils.identityRegistry()),
-            address(smartUtils.compliance()),
+            identityRegistry,
+            compliance,
             owner_,
             address(forwarder)
         );
@@ -91,7 +98,16 @@ contract SMARTStableCoinTest is Test {
         // Use a very large amount and a long expiry
         uint256 farFutureExpiry = block.timestamp + 3650 days; // ~10 years
 
+        vm.startPrank(tokenIssuer);
         smartUtils.issueCollateralClaim(address(token), tokenIssuer, collateralAmount, farFutureExpiry);
+        vm.stopPrank();
+    }
+
+    function _mintInitialSupply(address recipient) internal {
+        _updateCollateral(address(stableCoin), address(owner), INITIAL_SUPPLY);
+        vm.startPrank(owner);
+        stableCoin.mint(recipient, INITIAL_SUPPLY);
+        vm.stopPrank();
     }
 
     // Basic ERC20 functionality tests
@@ -113,45 +129,40 @@ contract SMARTStableCoinTest is Test {
         decimalValues[3] = 18; // Test max decimals
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
-            vm.startPrank(owner);
             SMARTStableCoin newToken = _createStableCoin(
-                "StableCoin",
-                "STBL",
-                decimalValues[i],
-                address(0),
-                new uint256[](0),
-                new SMARTComplianceModuleParamPair[](0),
-                owner
+                "StableCoin", "STBL", decimalValues[i], new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner
             );
-            vm.stopPrank();
             assertEq(newToken.decimals(), decimalValues[i]);
         }
     }
 
     function test_RevertOnInvalidDecimals() public {
-        vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(InvalidDecimals.selector, 19));
-        _createStableCoin(
-            "StableCoin", "STBL", 19, address(0), new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner
+        new SMARTStableCoin(
+            "StableCoin",
+            "STBL",
+            19,
+            address(0),
+            new uint256[](0),
+            new SMARTComplianceModuleParamPair[](0),
+            identityRegistry,
+            compliance,
+            owner,
+            address(forwarder)
         );
-        vm.stopPrank();
     }
 
     function test_OnlySupplyManagementCanMint() public {
-        vm.startPrank(owner);
-        _updateCollateral(address(stableCoin), address(owner), INITIAL_SUPPLY);
-        stableCoin.mint(user1, INITIAL_SUPPLY);
+        _mintInitialSupply(user1);
+
         assertEq(stableCoin.balanceOf(user1), INITIAL_SUPPLY);
         assertEq(stableCoin.totalSupply(), INITIAL_SUPPLY);
-        vm.stopPrank();
+
+        _updateCollateral(address(stableCoin), address(owner), INITIAL_SUPPLY + 100);
 
         vm.startPrank(user1);
-        vm.expectRevert(
-            abi.encodeWithSignature(
-                "AccessControlUnauthorizedAccount(address,bytes32)", user1, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
-            )
-        );
-        stableCoin.mint(user1, INITIAL_SUPPLY);
+        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1));
+        stableCoin.mint(user1, 100);
         vm.stopPrank();
     }
 
@@ -167,10 +178,7 @@ contract SMARTStableCoinTest is Test {
 
     // ERC20Burnable tests
     function test_Burn() public {
-        vm.startPrank(owner);
-        _updateCollateral(address(stableCoin), address(owner), INITIAL_SUPPLY);
-        stableCoin.mint(user1, INITIAL_SUPPLY);
-        vm.stopPrank();
+        _mintInitialSupply(user1);
 
         vm.startPrank(owner);
         stableCoin.burn(user1, 100);
@@ -199,7 +207,7 @@ contract SMARTStableCoinTest is Test {
     // ERC20Pausable tests
     function test_OnlyAdminCanPause() public {
         vm.startPrank(user1);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1, stableCoin.DEFAULT_ADMIN_ROLE()));
+        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1));
         stableCoin.pause();
         vm.stopPrank();
 
@@ -267,13 +275,14 @@ contract SMARTStableCoinTest is Test {
 
     // ERC20Custodian tests
     function test_OnlyUserManagementCanFreeze() public {
-        vm.startPrank(owner);
         _updateCollateral(address(stableCoin), address(owner), INITIAL_SUPPLY);
+
+        vm.startPrank(owner);
         stableCoin.mint(user1, 100);
         vm.stopPrank();
 
         vm.startPrank(user2);
-        vm.expectRevert(abi.encodeWithSignature("ERC20NotCustodian()"));
+        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2));
         stableCoin.freezePartialTokens(user1, 100);
         vm.stopPrank();
 
@@ -281,15 +290,15 @@ contract SMARTStableCoinTest is Test {
         stableCoin.freezePartialTokens(user1, 100);
         vm.stopPrank();
 
-        assertEq(stableCoin.getFrozenTokens(user1), 200);
+        assertEq(stableCoin.getFrozenTokens(user1), 100);
 
         vm.startPrank(user1);
         vm.expectRevert();
-        stableCoin.freezePartialTokens(user2, 100);
+        stableCoin.transfer(user2, 100);
         vm.stopPrank();
 
         vm.startPrank(owner);
-        stableCoin.unfreezePartialTokens(user1, 200);
+        stableCoin.unfreezePartialTokens(user1, 100);
         vm.stopPrank();
 
         assertEq(stableCoin.getFrozenTokens(user1), 0);
