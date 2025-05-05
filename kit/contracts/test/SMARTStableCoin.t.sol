@@ -7,31 +7,22 @@ import { Forwarder } from "../contracts/Forwarder.sol";
 import { SMARTConstants } from "../contracts/SMARTConstants.sol";
 import { TestConstants } from "./TestConstants.sol";
 import { InvalidDecimals } from "@smartprotocol/contracts/extensions/core/SMARTErrors.sol";
-import { InfrastructureUtils } from "@smartprotocol/test-utils/InfrastructureUtils.sol";
-import { TokenUtils } from "@smartprotocol/test-utils/TokenUtils.sol";
-import { ClaimUtils } from "@smartprotocol/test-utils/ClaimUtils.sol";
-import { IdentityUtils } from "@smartprotocol/test-utils/IdentityUtils.sol";
+
 import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
+import { SMARTUtils } from "./utils/SMARTUtils.sol";
 
 contract SMARTStableCoinTest is Test {
-    InfrastructureUtils internal infrastructureUtils;
-    TokenUtils internal tokenUtils;
-    ClaimUtils internal claimUtils;
-    IdentityUtils internal identityUtils;
+    SMARTUtils internal smartUtils;
 
     SMARTStableCoin public stableCoin;
     Forwarder public forwarder;
 
-    uint256 internal claimIssuerPrivateKey = 0x12345;
-
-    address public platformAdmin;
     address public owner;
     address public user1;
     address public user2;
     address public spender;
-    address public claimIssuer;
 
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** 18;
     uint48 public constant COLLATERAL_LIVENESS = 7 days;
@@ -41,64 +32,27 @@ contract SMARTStableCoinTest is Test {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     function setUp() public {
-        // --- Setup platform admin ---
-        platformAdmin = makeAddr("Platform Admin");
-
-        infrastructureUtils = new InfrastructureUtils(platformAdmin);
-        tokenUtils = new TokenUtils(
-            platformAdmin,
-            infrastructureUtils.identityFactory(),
-            infrastructureUtils.identityRegistry(),
-            infrastructureUtils.compliance()
-        );
-        claimUtils = new ClaimUtils(
-            platformAdmin,
-            claimIssuer,
-            claimIssuerPrivateKey,
-            infrastructureUtils.identityRegistry(),
-            infrastructureUtils.identityFactory()
-        );
-        identityUtils = new IdentityUtils(
-            platformAdmin,
-            infrastructureUtils.identityFactory(),
-            infrastructureUtils.identityRegistry(),
-            infrastructureUtils.trustedIssuersRegistry()
-        );
-
+        smartUtils = new SMARTUtils();
         // Create identities
         owner = makeAddr("owner");
         user1 = makeAddr("user1");
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
-        claimIssuer = vm.addr(claimIssuerPrivateKey);
-
-        // Initialize the claim issuer
-        uint256[] memory claimTopics = new uint256[](2);
-        claimTopics[0] = TestConstants.CLAIM_TOPIC_KYC;
-        claimTopics[1] = SMARTConstants.CLAIM_TOPIC_COLLATERAL;
-        // Use claimIssuer address directly, createIssuerIdentity handles creating the on-chain identity
-        vm.label(claimIssuer, "Claim Issuer");
-        address claimIssuerIdentity = identityUtils.createIssuerIdentity(claimIssuer, claimTopics);
-        vm.label(claimIssuerIdentity, "Claim Issuer Identity");
 
         // Initialize identities
-        identityUtils.createClientIdentity(owner, TestConstants.COUNTRY_CODE_BE);
-        claimUtils.issueInvestorClaim(owner, TestConstants.CLAIM_TOPIC_KYC, "Verified KYC by Issuer");
-        identityUtils.createClientIdentity(user1, TestConstants.COUNTRY_CODE_BE);
-        claimUtils.issueInvestorClaim(user1, TestConstants.CLAIM_TOPIC_KYC, "Verified KYC by Issuer");
-        identityUtils.createClientIdentity(user2, TestConstants.COUNTRY_CODE_BE);
-        claimUtils.issueInvestorClaim(user2, TestConstants.CLAIM_TOPIC_KYC, "Verified KYC by Issuer");
-        identityUtils.createClientIdentity(spender, TestConstants.COUNTRY_CODE_BE);
-        claimUtils.issueInvestorClaim(spender, TestConstants.CLAIM_TOPIC_KYC, "Verified KYC by Issuer");
+        address[] memory identities = new address[](4);
+        identities[0] = owner;
+        identities[1] = user1;
+        identities[2] = user2;
+        identities[3] = spender;
+        smartUtils.setUpIdentities(identities);
 
         // Deploy forwarder first
         forwarder = new Forwarder();
 
-        vm.startPrank(owner);
         stableCoin = _createStableCoin(
             "StableCoin", "STBL", DECIMALS, address(0), new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner
         );
-        vm.stopPrank();
     }
 
     function _createStableCoin(
@@ -121,14 +75,14 @@ contract SMARTStableCoinTest is Test {
             onchainID,
             requiredClaimTopics,
             initialModulePairs,
-            address(infrastructureUtils.identityRegistry()),
-            address(infrastructureUtils.compliance()),
+            address(smartUtils.identityRegistry()),
+            address(smartUtils.compliance()),
             owner_,
             address(forwarder)
         );
         vm.stopPrank();
 
-        tokenUtils.createAndSetTokenOnchainID(address(stableCoin), owner_);
+        smartUtils.createAndSetTokenOnchainID(address(stableCoin_), owner_);
 
         return stableCoin_;
     }
@@ -137,7 +91,7 @@ contract SMARTStableCoinTest is Test {
         // Use a very large amount and a long expiry
         uint256 farFutureExpiry = block.timestamp + 3650 days; // ~10 years
 
-        claimUtils.issueCollateralClaim(address(token), tokenIssuer, collateralAmount, farFutureExpiry);
+        smartUtils.issueCollateralClaim(address(token), tokenIssuer, collateralAmount, farFutureExpiry);
     }
 
     // Basic ERC20 functionality tests
