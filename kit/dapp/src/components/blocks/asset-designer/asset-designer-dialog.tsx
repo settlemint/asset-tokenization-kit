@@ -159,78 +159,43 @@ export function AssetDesignerDialog({
       switch (selectedAssetType) {
         case "bond": {
           const bondFormValues = bondForm.getValues();
-          const predictedAddress = await getBondPredictedAddress({
-            assetName: bondFormValues.assetName,
-            symbol: bondFormValues.symbol,
-            decimals: bondFormValues.decimals,
-            cap: bondFormValues.cap,
-            maturityDate: bondFormValues.maturityDate,
-            underlyingAsset: bondFormValues.underlyingAsset,
-            faceValue: bondFormValues.faceValue,
-          });
+          const predictedAddress =
+            await getBondPredictedAddress(bondFormValues);
           bondForm.setValue("predictedAddress", predictedAddress);
           break;
         }
         case "cryptocurrency": {
           const cryptoFormValues = cryptocurrencyForm.getValues();
-          const predictedAddress = await getCryptocurrencyPredictedAddress({
-            assetName: cryptoFormValues.assetName,
-            symbol: cryptoFormValues.symbol,
-            decimals: cryptoFormValues.decimals,
-            initialSupply: cryptoFormValues.initialSupply,
-          });
+          const predictedAddress =
+            await getCryptocurrencyPredictedAddress(cryptoFormValues);
           cryptocurrencyForm.setValue("predictedAddress", predictedAddress);
           break;
         }
         case "stablecoin": {
           const stablecoinFormValues = stablecoinForm.getValues();
-          const predictedAddress = await getStablecoinPredictedAddress({
-            assetName: stablecoinFormValues.assetName,
-            symbol: stablecoinFormValues.symbol,
-            decimals: stablecoinFormValues.decimals,
-            collateralLivenessValue:
-              stablecoinFormValues.collateralLivenessValue,
-            collateralLivenessTimeUnit:
-              stablecoinFormValues.collateralLivenessTimeUnit,
-          });
+          const predictedAddress =
+            await getStablecoinPredictedAddress(stablecoinFormValues);
           stablecoinForm.setValue("predictedAddress", predictedAddress);
           break;
         }
         case "deposit": {
           const depositFormValues = depositForm.getValues();
-          const predictedAddress = await getDepositPredictedAddress({
-            assetName: depositFormValues.assetName,
-            symbol: depositFormValues.symbol,
-            decimals: depositFormValues.decimals,
-            collateralLivenessValue: depositFormValues.collateralLivenessValue,
-            collateralLivenessTimeUnit:
-              depositFormValues.collateralLivenessTimeUnit,
-          });
+          const predictedAddress =
+            await getDepositPredictedAddress(depositFormValues);
           depositForm.setValue("predictedAddress", predictedAddress);
           break;
         }
         case "equity": {
           const equityFormValues = equityForm.getValues();
-          const predictedAddress = await getEquityPredictedAddress({
-            assetName: equityFormValues.assetName,
-            symbol: equityFormValues.symbol,
-            decimals: equityFormValues.decimals,
-            equityCategory: equityFormValues.equityCategory,
-            equityClass: equityFormValues.equityClass,
-          });
+          const predictedAddress =
+            await getEquityPredictedAddress(equityFormValues);
           equityForm.setValue("predictedAddress", predictedAddress);
           break;
         }
         case "fund": {
           const fundFormValues = fundForm.getValues();
-          const predictedAddress = await getFundPredictedAddress({
-            assetName: fundFormValues.assetName,
-            symbol: fundFormValues.symbol,
-            decimals: fundFormValues.decimals,
-            fundCategory: fundFormValues.fundCategory,
-            fundClass: fundFormValues.fundClass,
-            managementFeeBps: fundFormValues.managementFeeBps,
-          });
+          const predictedAddress =
+            await getFundPredictedAddress(fundFormValues);
           fundForm.setValue("predictedAddress", predictedAddress);
           break;
         }
@@ -254,6 +219,8 @@ export function AssetDesignerDialog({
     try {
       // Get the verification code from the form
       const verificationCode = verificationForm.getValues().verificationCode;
+      const form = getFormForAssetType();
+      const assetId = form.getValues().predictedAddress;
 
       const createAsset = async () => {
         switch (selectedAssetType) {
@@ -344,9 +311,6 @@ export function AssetDesignerDialog({
       );
 
       handleOpenChange(false);
-
-      const form = getFormForAssetType();
-      const assetId = form.getValues().predictedAddress;
 
       router.push(`/assets/${selectedAssetType}/${assetId}`);
     } catch (error) {
