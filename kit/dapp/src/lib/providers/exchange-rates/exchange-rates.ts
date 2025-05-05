@@ -1,3 +1,4 @@
+import { cache } from "@/lib/cache";
 import { db } from "@/lib/db";
 import { exchangeRate } from "@/lib/db/schema-exchange-rates";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
@@ -148,6 +149,12 @@ export const getExchangeRate = withTracing(
 
     const today = getTodayDateString();
 
+    const cacheKey = `${baseCurrency}-${quoteCurrency}-${today}`;
+    const cached = await cache.get<number>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     // Try to get today's rate first
     const rate = await db.query.exchangeRate.findFirst({
       where: and(
@@ -156,24 +163,34 @@ export const getExchangeRate = withTracing(
       ),
     });
 
-    if (!rate) {
-      // If no rate exists, update all exchange rates using the non-auth version
-      await updateExchangeRatesNoAuth(today);
+    if (rate) {
+      const rateFloat = Number.parseFloat(rate.rate.toString());
+      const oneHourMs = 1 * 60 * 60 * 1000;
 
-      // Try to get the rate again after update
-      const updatedRate = await db.query.exchangeRate.findFirst({
-        where: and(
-          eq(exchangeRate.id, `${baseCurrency}-${quoteCurrency}`),
-          eq(exchangeRate.day, today)
-        ),
-      });
-
-      return updatedRate
-        ? Number.parseFloat(updatedRate.rate.toString())
-        : null;
+      await cache.set(cacheKey, rateFloat, oneHourMs);
+      return rateFloat;
     }
 
-    return Number.parseFloat(rate.rate.toString());
+    // If no rate exists, update all exchange rates using the non-auth version
+    await updateExchangeRatesNoAuth(today);
+
+    // Try to get the rate again after update
+    const updatedRate = await db.query.exchangeRate.findFirst({
+      where: and(
+        eq(exchangeRate.id, `${baseCurrency}-${quoteCurrency}`),
+        eq(exchangeRate.day, today)
+      ),
+    });
+
+    if (updatedRate) {
+      const rateFloat = Number.parseFloat(updatedRate.rate.toString());
+      const oneHourMs = 1 * 60 * 60 * 1000;
+
+      await cache.set(cacheKey, rateFloat, oneHourMs);
+      return rateFloat;
+    }
+
+    return null;
   }
 );
 
