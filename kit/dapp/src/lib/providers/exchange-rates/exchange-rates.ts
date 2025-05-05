@@ -7,7 +7,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { format } from "date-fns";
-import { and, eq } from "drizzle-orm";
+import { and, eq, type InferSelectModel } from "drizzle-orm";
 import { t } from "elysia/type-system";
 
 const ExchangeRateAPIResponseSchema = t.Object({
@@ -204,7 +204,8 @@ export const getExchangeRatesForBase = withTracing(
     const today = getTodayDateString();
 
     const cacheKey = `${baseCurrency}-${today}`;
-    const cached = await cache.get<number>(cacheKey);
+    const cached =
+      await cache.get<InferSelectModel<typeof exchangeRate>[]>(cacheKey);
     if (cached) {
       return cached;
     }
