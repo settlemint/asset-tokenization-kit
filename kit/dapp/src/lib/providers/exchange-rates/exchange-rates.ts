@@ -8,8 +8,6 @@ import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { format } from "date-fns";
 import { and, eq } from "drizzle-orm";
 import { t } from "elysia/type-system";
-import { revalidateTag } from "next/cache";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 
 const ExchangeRateAPIResponseSchema = t.Object({
   result: t.Literal("success"),
@@ -132,8 +130,6 @@ async function updateExchangeRatesNoAuth(today: string): Promise<void> {
         });
     }
   }
-
-  revalidateTag("exchange-rates");
 }
 
 /**
@@ -146,9 +142,6 @@ export const getExchangeRate = withTracing(
     baseCurrency: CurrencyCode,
     quoteCurrency: CurrencyCode
   ): Promise<number | null> => {
-    "use cache";
-    cacheTag("exchange-rates");
-
     if (baseCurrency === quoteCurrency) {
       return 1;
     }
@@ -191,9 +184,6 @@ export const getExchangeRatesForBase = withTracing(
   "queries",
   "getExchangeRatesForBase",
   async (baseCurrency: CurrencyCode) => {
-    "use cache";
-    cacheTag("exchange-rates");
-
     const today = getTodayDateString();
 
     const rates = await db.query.exchangeRate.findMany({
