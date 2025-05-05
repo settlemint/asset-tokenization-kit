@@ -122,7 +122,8 @@
         "group-title": "資産管理",
         "stablecoins": "ステーブルコイン",
         "tokenized-deposits": "預金",
-        "view-all": "すべて表示"
+        "view-all": "すべて表示",
+        "actions": "アクション"
       },
       "asset-types": {
         "bond": "債券",
@@ -479,7 +480,8 @@
         "valid-email": "有効なメールアドレスを入力してください",
         "max-value": "値は {max} より大きくすることはできません",
         "min-value": "値は {min} より小さくすることはできません",
-        "valid-number": "有効な数値を入力してください"
+        "valid-number": "有効な数値を入力してください",
+        "alphanumeric-only": "文字と数字のみを入力してください"
       },
       "pincode-dialog": {
         "description": "トランザクションに署名するには、確認と承認のためにピンコードを入力してください。",
@@ -528,6 +530,29 @@
           "use-secret-codes": "または、セキュアコードのいずれかを使用"
         },
         "switch-method": "方法を切り替え"
+      },
+      "document-upload": {
+        "add-document": "ドキュメントを追加",
+        "no-documents": "まだアップロードされたドキュメントはありません",
+        "delete-document": "ドキュメントを削除",
+        "uploading": "アップロード中",
+        "upload-document-title": "ドキュメントをアップロード",
+        "upload-document-description": "ホワイトペーパー、監査報告書、その他のコンプライアンス文書をアップロード",
+        "document-title": "ドキュメントタイトル",
+        "document-title-placeholder": "例: MiCAコンプライアンスホワイトペーパー",
+        "document-type": "ドキュメントタイプ",
+        "select-document-type": "ドキュメントタイプを選択",
+        "document-description": "説明",
+        "document-description-placeholder": "ドキュメントの簡単な説明",
+        "document-file": "ファイルをアップロード",
+        "choose-file": "ファイルを選択",
+        "no-file-chosen": "ファイルが選択されていません",
+        "accepted-format": "受け入れられる形式: {formats} (最大: {maxSize}MB)",
+        "invalid-file-format": "無効なファイル形式です。{formats}ファイルのみが受け入れられます。",
+        "file-too-large": "ファイルが大きすぎます。最大サイズは{maxSize}MBです。",
+        "cancel": "キャンセル",
+        "uploading-document": "アップロード中...",
+        "upload-document": "アップロード"
       }
     },
     "logo": {
@@ -695,7 +720,8 @@
       "portfolio": "マイポートフォリオ",
       "title": "プライベート",
       "trade-management": "取引管理",
-      "dvp-swap": "DvPスワップ"
+      "dvp-swap": "DvPスワップ",
+      "actions": "アクション"
     },
     "user-dropdown": {
       "documentation": "ドキュメント",
@@ -2493,7 +2519,42 @@
     "UserBlockedEvent": "ブロック",
     "UserUnblockedEvent": "ブロック解除",
     "UserAllowedEvent": "許可",
-    "UserDisallowedEvent": "不許可"
+    "UserDisallowedEvent": "不許可",
+    "Transfer": "転送",
+    "Mint": "ミント",
+    "Burn": "バーン",
+    "RoleGranted": "ロール付与",
+    "RoleRevoked": "ロール取り消し",
+    "RoleAdminChanged": "ロール管理者変更",
+    "Approval": "承認",
+    "Pause": "一時停止",
+    "Unpause": "再開",
+    "Clawback": "クローバック",
+    "TokensFrozen": "トークン凍結",
+    "UserBlocked": "ユーザーブロック",
+    "UserUnblocked": "ユーザー解除",
+    "UserAllowed": "ユーザー許可",
+    "UserDisallowed": "ユーザー不許可",
+    "TokenWithdrawn": "トークン引き出し",
+    "CollateralUpdated": "担保更新",
+    "Matured": "満期",
+    "Redeemed": "償還",
+    "UnderlyingAssetTopUp": "基礎資産の追加",
+    "UnderlyingAssetWithdrawn": "基礎資産の引き出し",
+    "ManagementFeeCollected": "管理手数料徴収",
+    "PerformanceFeeCollected": "パフォーマンス手数料徴収",
+    "YieldClaimed": "利回り請求",
+    "AssetCreated": "資産作成",
+    "FixedYieldCreated": "固定利回り作成",
+    "XvPSettlementApproved": "決済承認",
+    "XvPSettlementApprovalRevoked": "決済承認取り消し",
+    "XvPSettlementClaimed": "決済請求",
+    "XvPSettlementExecuted": "決済実行",
+    "XvPSettlementCancelled": "決済キャンセル",
+    "Claimed": "請求済み",
+    "Distribution": "配分",
+    "BatchDistribution": "バッチ配分",
+    "MerkleRootUpdated": "マークルルート更新"
   },
   "homepage": {
     "asset-tokenization": "資産トークン化",
@@ -2654,6 +2715,87 @@
         "configuration-description": "DvPスワップの設定",
         "expiry": "有効期限"
       }
+    }
+  },
+  "asset-designer": {
+    "type-selection": {
+      "title": "資産タイプを選択",
+      "description": "作成したいデジタル資産のタイプを選んでください",
+      "key-features": "主な特徴:",
+      "features": {
+        "bond": {
+          "fixed-interest": "固定利息支払い",
+          "maturity-management": "満期日管理",
+          "transferable-ownership": "譲渡可能な所有権",
+          "principal-repayment": "元本返済"
+        },
+        "cryptocurrency": {
+          "secure-transactions": "安全な取引",
+          "decentralized-ownership": "分散型所有権",
+          "global-payments": "グローバルな支払い",
+          "programmable-money": "プログラム可能なお金"
+        },
+        "equity": {
+          "voting-rights": "投票権",
+          "dividend-distribution": "配当分配",
+          "fractional-ownership": "分割所有権",
+          "liquidity": "流動性"
+        },
+        "fund": {
+          "portfolio-diversification": "ポートフォリオの多様化",
+          "performance-tracking": "パフォーマンス追跡",
+          "redemption-rights": "償還権",
+          "lower-investment": "投資障壁の低減"
+        },
+        "stablecoin": {
+          "price-stability": "価格安定性",
+          "collateral-backing": "担保支援",
+          "transparent-reserves": "透明な準備金",
+          "fast-settlements": "迅速な決済"
+        },
+        "deposit": {
+          "interest-earning": "利息獲得",
+          "redeemable": "償還可能",
+          "term-options": "期間オプション",
+          "institutional-backing": "機関投資家の支援"
+        }
+      }
+    }
+  },
+  "actions": {
+    "page": {
+      "actions": "アクション"
+    },
+    "tabs": {
+      "pending": "保留中",
+      "upcoming": "今後の予定",
+      "completed": "完了"
+    },
+    "all-tasks-complete": "すべてのタスクが完了しました！",
+    "all-tasks-complete-description": "保留中のアクションはありません。",
+    "subject": "件名",
+    "action-type-header": "アクションタイプ",
+    "description-header": "説明",
+    "active-on-header": "アクティブ日",
+    "sender-header": "送信者",
+    "completed-on-header": "完了日",
+    "action-type": {
+      "bond-mature": "満期債券"
+    },
+    "pending-description": {
+      "bond-mature": "債券を満期にするために取引を送信する必要があります。"
+    },
+    "upcoming-description": {
+      "bond-mature": "債券を満期にするために、取引を送信する必要があります。"
+    },
+    "completed-description": {
+      "bond-mature": "債券は正常に満期を迎えました。"
+    }
+  },
+  "regulations": {
+    "mica": {
+      "name": "MiCA",
+      "description": "暗号資産に関する市場（MiCA）は、暗号通貨、ステーブルコイン、その他のデジタル資産を規制するために設計されたEUの包括的な規制枠組みであり、暗号資産の発行者およびサービス提供者に法的確実性を提供します。"
     }
   }
 }
