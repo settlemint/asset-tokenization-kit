@@ -5,7 +5,9 @@ import {
   XvPSettlementFlow,
 } from "../../../generated/schema";
 import { XvPSettlement as XvPSettlementContract } from "../../../generated/templates/XvPSettlement/XvPSettlement";
+import { fetchAssetDecimals } from "../../assets/fetch/asset";
 import { fetchAccount } from "../../utils/account";
+import { toDecimals } from "../../utils/decimals";
 
 /**
  * Fetches or creates a Flow entity
@@ -34,7 +36,7 @@ export function fetchFlow(
   flow.from = fetchAccount(from).id;
   flow.to = fetchAccount(to).id;
   flow.amount = amount;
-
+  flow.amountExact = toDecimals(amount, fetchAssetDecimals(asset));
   flow.save();
   return flow;
 }
