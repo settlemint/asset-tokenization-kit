@@ -16,9 +16,11 @@ export function EventDetailContent({ eventId }: { eventId: string }) {
   const { data: event, isLoading } = useSWR(
     [`events-${eventId}`],
     async () => {
-      const { data } = await apiClient.api["asset-events"]({
-        id: eventId,
-      }).get();
+      const { data } = await apiClient.api
+        .events({
+          id: eventId,
+        })
+        .get();
       return data;
     },
     {
