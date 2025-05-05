@@ -60,7 +60,8 @@
         "description": "ダッシュボードへようこそ",
         "latest-events-heading": "最新のイベント",
         "stats-heading": "統計",
-        "title": "ダッシュボード"
+        "title": "ダッシュボード",
+        "platform-management": "プラットフォーム管理"
       },
       "table": {
         "latest-events": {
@@ -133,8 +134,9 @@
       },
       "platform-management": {
         "group-title": "プラットフォーム管理",
-        "settings": "プラットフォーム",
-        "user-management": "ユーザー管理"
+        "settings": "設定",
+        "user-management": "ユーザー管理",
+        "api": "API"
       },
       "portfolio-management": {
         "dashboard": "ダッシュボード",
@@ -699,6 +701,12 @@
       "documentation": "ドキュメント",
       "logout": "ログアウト",
       "pending-transactions": "保留中のトランザクション"
+    },
+    "modeswitch": {
+      "assets": "資産管理",
+      "label": "運用モード",
+      "platform": "プラットフォーム管理",
+      "portfolio": "マイポートフォリオ"
     }
   },
   "paused": "一時停止",
