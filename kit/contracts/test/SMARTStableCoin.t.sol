@@ -281,62 +281,59 @@ contract SMARTStableCoinTest is Test {
     }
 
     // ERC20Permit tests
-    // function test_Permit() public {
-    //     uint256 privateKey = 0xA11CE;
-    //     address signer = vm.addr(privateKey);
+    function test_Permit() public {
+        uint256 privateKey = 0xA11CE;
+        address signer = vm.addr(privateKey);
+        vm.label(signer, "Signer Wallet");
 
-    //     vm.startPrank(owner);
-    //     stableCoin.updateCollateral(INITIAL_SUPPLY);
-    //     stableCoin.mint(signer, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+        smartUtils.setUpIdentity(signer);
 
-    //     uint256 deadline = block.timestamp + 1 hours;
-    //     uint256 nonce = stableCoin.nonces(signer);
+        _mintInitialSupply(signer);
 
-    //     bytes32 DOMAIN_SEPARATOR = stableCoin.DOMAIN_SEPARATOR();
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = stableCoin.nonces(signer);
 
-    //     (uint8 v, bytes32 r, bytes32 s) = vm.sign(
-    //         privateKey,
-    //         keccak256(
-    //             abi.encodePacked(
-    //                 "\x19\x01",
-    //                 DOMAIN_SEPARATOR,
-    //                 keccak256(
-    //                     abi.encode(
-    //                         keccak256(
-    //                             "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
-    //                         ),
-    //                         signer,
-    //                         spender,
-    //                         100,
-    //                         nonce,
-    //                         deadline
-    //                     )
-    //                 )
-    //             )
-    //         )
-    //     );
+        bytes32 DOMAIN_SEPARATOR = stableCoin.DOMAIN_SEPARATOR();
 
-    //     stableCoin.permit(signer, spender, 100, deadline, v, r, s);
-    //     assertEq(stableCoin.allowance(signer, spender), 100);
-    // }
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            privateKey,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    DOMAIN_SEPARATOR,
+                    keccak256(
+                        abi.encode(
+                            keccak256(
+                                "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+                            ),
+                            signer,
+                            spender,
+                            100,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
 
-    // // Transfer and approval tests
-    // function test_TransferAndApproval() public {
-    //     vm.startPrank(owner);
-    //     stableCoin.updateCollateral(INITIAL_SUPPLY);
-    //     stableCoin.mint(user1, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+        stableCoin.permit(signer, spender, 100, deadline, v, r, s);
+        assertEq(stableCoin.allowance(signer, spender), 100);
+    }
 
-    //     vm.prank(user1);
-    //     stableCoin.approve(spender, 100);
-    //     assertEq(stableCoin.allowance(user1, spender), 100);
+    // Transfer and approval tests
+    function test_TransferAndApproval() public {
+        _mintInitialSupply(user1);
 
-    //     vm.prank(spender);
-    //     stableCoin.transferFrom(user1, user2, 50);
-    //     assertEq(stableCoin.balanceOf(user2), 50);
-    //     assertEq(stableCoin.allowance(user1, spender), 50);
-    // }
+        vm.prank(user1);
+        stableCoin.approve(spender, 100);
+        assertEq(stableCoin.allowance(user1, spender), 100);
+
+        vm.prank(spender);
+        stableCoin.transferFrom(user1, user2, 50);
+        assertEq(stableCoin.balanceOf(user2), 50);
+        assertEq(stableCoin.allowance(user1, spender), 50);
+    }
 
     function test_StableCoinForcedTransfer() public {
         _mintInitialSupply(user1);

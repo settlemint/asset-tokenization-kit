@@ -7,6 +7,8 @@ import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/exte
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+
 // Constants
 import { SMARTConstants } from "./SMARTConstants.sol";
 
@@ -40,6 +42,7 @@ contract SMARTStableCoin is
     SMARTCustodian,
     SMARTPausable,
     SMARTBurnable,
+    ERC20Permit,
     ERC2771Context
 {
     /// @notice Deploys a new SMARTStableCoin token contract.
@@ -77,6 +80,7 @@ contract SMARTStableCoin is
             requiredClaimTopics_,
             initialModulePairs_
         )
+        ERC20Permit(name_)
         ERC2771Context(forwarder)
         SMARTCollateral(SMARTConstants.CLAIM_TOPIC_COLLATERAL)
     {
