@@ -1,4 +1,3 @@
-import { RoleGuard } from "@/components/blocks/auth/role-guard";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
@@ -11,7 +10,6 @@ export default async function ApiLayout({ children }: PropsWithChildren) {
 
   return (
     <>
-      <RoleGuard allowedRoles={["admin"]} redirectTo="/assets" />
       <PageHeader
         title={t("title")}
         section={t("portfolio-management")}

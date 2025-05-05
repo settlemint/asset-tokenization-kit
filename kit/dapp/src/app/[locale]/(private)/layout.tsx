@@ -1,4 +1,3 @@
-import { RoleGuard } from "@/components/blocks/auth/role-guard";
 import { WalletSecurity } from "@/components/blocks/auth/wallet-security";
 import NavProvider from "@/components/layout/nav-provider";
 import { metadata } from "@/lib/config/metadata";
@@ -31,11 +30,10 @@ export async function generateMetadata({
   };
 }
 
-export default function AdminLayout({ children }: LayoutProps) {
+export default function Layout({ children }: LayoutProps) {
   return (
     <>
       <RedirectToSignIn />
-      <RoleGuard allowedRoles={["admin", "issuer"]} redirectTo="/portfolio" />
       <WalletSecurity>
         <NavProvider>{children}</NavProvider>
       </WalletSecurity>
