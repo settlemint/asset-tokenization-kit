@@ -1,7 +1,7 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { Deposit } from "../../../generated/schema";
 import { Deposit as DepositContract } from "../../../generated/templates/Deposit/Deposit";
-import { fetchAccount } from "../../fetch/account";
+import { fetchAccount } from "../../utils/account";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
 
@@ -34,9 +34,13 @@ export function fetchDeposit(address: Address): Deposit {
     );
     deposit.lastActivity = BigInt.zero();
     deposit.creator = Address.zero();
-    deposit.totalBurnedExact = BigInt.zero();
+    deposit.totalMinted = BigDecimal.zero();
+    deposit.totalMintedExact = BigInt.zero();
     deposit.totalBurned = BigDecimal.zero();
-    deposit.totalHolders = 0;
+    deposit.totalBurnedExact = BigInt.zero();
+    deposit.totalTransferred = BigDecimal.zero();
+    deposit.totalTransferredExact = BigInt.zero();
+    deposit.totalHolders = BigInt.zero();
     deposit.concentration = BigDecimal.zero();
     deposit.deployedOn = BigInt.zero();
     deposit.paused = paused.reverted ? false : paused.value;

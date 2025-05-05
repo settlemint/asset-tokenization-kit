@@ -42,7 +42,7 @@ export async function BadgeLoader({
     switch (badgeType) {
       case "holders":
         const details = await getAssetDetail({ address, assettype });
-        count = details.totalHolders;
+        count = details.totalHolders.toString();
         break;
       case "events":
         const locale = await getLocale();

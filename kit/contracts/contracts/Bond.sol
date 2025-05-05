@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
@@ -91,13 +91,13 @@ contract Bond is
 
     /// @notice Emitted when the bond reaches maturity and is closed
     /// @param timestamp The block timestamp when the bond matured
-    event BondMatured(uint256 timestamp);
+    event BondMatured(uint256 timestamp, address indexed sender);
 
     /// @notice Emitted when a bond is redeemed for underlying assets
     /// @param holder The address redeeming the bonds
     /// @param bondAmount The amount of bonds redeemed
     /// @param underlyingAmount The amount of underlying assets received
-    event BondRedeemed(address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
+    event BondRedeemed(address indexed holder, uint256 bondAmount, uint256 underlyingAmount, address indexed sender);
 
     /// @notice Emitted when underlying assets are topped up
     /// @param from The address providing the underlying assets
@@ -119,7 +119,7 @@ contract Bond is
     /// @param from The address tokens are taken from
     /// @param to The address tokens are sent to
     /// @param amount The amount of tokens transferred
-    event Clawback(address indexed from, address indexed to, uint256 amount);
+    event Clawback(address indexed from, address indexed to, uint256 amount, address indexed sender);
 
     /// @notice Modifier to prevent operations after bond maturity
     /// @dev Reverts with BondAlreadyMatured if the bond has matured
@@ -294,7 +294,7 @@ contract Bond is
         if (underlyingAssetBalance() < needed) revert InsufficientUnderlyingBalance();
 
         isMatured = true;
-        emit BondMatured(block.timestamp);
+        emit BondMatured(block.timestamp, _msgSender());
     }
 
     /// @notice Allows topping up the contract with underlying assets
@@ -492,7 +492,7 @@ contract Bond is
         bool success = underlyingAsset.transfer(holder, underlyingAmount);
         if (!success) revert InsufficientUnderlyingBalance();
 
-        emit BondRedeemed(holder, amount, underlyingAmount);
+        emit BondRedeemed(holder, amount, underlyingAmount, _msgSender());
     }
 
     /// @notice Calculates the underlying asset amount for a given bond amount
@@ -536,6 +536,6 @@ contract Bond is
 
         /// @dev using _transfer to bypass allowance checks
         _transfer(from, to, amount);
-        emit Clawback(from, to, amount);
+        emit Clawback(from, to, amount, _msgSender());
     }
 }

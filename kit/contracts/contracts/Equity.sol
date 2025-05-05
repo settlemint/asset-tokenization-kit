@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
@@ -60,7 +60,7 @@ contract Equity is
     /// @param from The address tokens are taken from
     /// @param to The address tokens are sent to
     /// @param amount The amount of tokens transferred
-    event Clawback(address indexed from, address indexed to, uint256 amount);
+    event Clawback(address indexed from, address indexed to, uint256 amount, address indexed sender);
 
     /// @notice The class of the equity (e.g., "Common", "Preferred")
     /// @dev Immutable after construction
@@ -283,6 +283,6 @@ contract Equity is
 
         /// @dev using _transfer to bypass allowance checks
         _transfer(from, to, amount);
-        emit Clawback(from, to, amount);
+        emit Clawback(from, to, amount, _msgSender());
     }
 }

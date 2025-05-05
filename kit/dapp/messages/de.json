@@ -122,7 +122,8 @@
         "group-title": "Vermögensverwaltung",
         "stablecoins": "Stablecoins",
         "tokenized-deposits": "Einzahlungen",
-        "view-all": "Alle anzeigen"
+        "view-all": "Alle anzeigen",
+        "actions": "Aktionen"
       },
       "asset-types": {
         "bond": "Anleihe",
@@ -479,7 +480,8 @@
         "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
         "max-value": "Der Wert darf nicht höher sein als {max}",
         "min-value": "Der Wert darf nicht niedriger sein als {min}",
-        "valid-number": "Bitte geben Sie eine gültige Zahl ein"
+        "valid-number": "Bitte geben Sie eine gültige Zahl ein",
+        "alphanumeric-only": "Bitte nur Buchstaben und Zahlen eingeben"
       },
       "pincode-dialog": {
         "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Verifizierung und Autorisierung ein.",
@@ -528,6 +530,29 @@
           "use-secret-codes": "Oder verwenden Sie einen Ihrer Sicherheitscodes"
         },
         "switch-method": "Methode wechseln"
+      },
+      "document-upload": {
+        "add-document": "Dokument hinzufügen",
+        "no-documents": "Es wurden noch keine Dokumente hochgeladen",
+        "delete-document": "Dokument löschen",
+        "uploading": "Hochladen",
+        "upload-document-title": "Dokument hochladen",
+        "upload-document-description": "Laden Sie Whitepapers, Prüfberichte und andere Compliance-Dokumente hoch",
+        "document-title": "Dokumenttitel",
+        "document-title-placeholder": "z.B. MiCA Compliance White Paper",
+        "document-type": "Dokumenttyp",
+        "select-document-type": "Dokumenttyp auswählen",
+        "document-description": "Beschreibung",
+        "document-description-placeholder": "Kurze Beschreibung des Dokuments",
+        "document-file": "Datei hochladen",
+        "choose-file": "Datei auswählen",
+        "no-file-chosen": "Keine Datei ausgewählt",
+        "accepted-format": "Akzeptierte Formate: {formats} (Max: {maxSize}MB)",
+        "invalid-file-format": "Ungültiges Dateiformat. Nur {formats} Dateien werden akzeptiert.",
+        "file-too-large": "Datei ist zu groß. Maximale Größe beträgt {maxSize}MB.",
+        "cancel": "Abbrechen",
+        "uploading-document": "Hochladen...",
+        "upload-document": "Hochladen"
       }
     },
     "logo": {
@@ -695,7 +720,8 @@
       "portfolio": "Mein Portfolio",
       "title": "Privat",
       "trade-management": "Handelsverwaltung",
-      "dvp-swap": "DvP Swap"
+      "dvp-swap": "DvP Swap",
+      "actions": "Aktionen"
     },
     "user-dropdown": {
       "documentation": "Dokumentation",
@@ -2493,7 +2519,42 @@
     "UserBlockedEvent": "Blockieren",
     "UserUnblockedEvent": "Entblockieren",
     "UserAllowedEvent": "Erlauben",
-    "UserDisallowedEvent": "Nicht erlauben"
+    "UserDisallowedEvent": "Nicht erlauben",
+    "Transfer": "Übertragung",
+    "Mint": "Prägung",
+    "Burn": "Verbrennung",
+    "RoleGranted": "Rolle gewährt",
+    "RoleRevoked": "Rolle widerrufen",
+    "RoleAdminChanged": "Rollenadministrator geändert",
+    "Approval": "Genehmigung",
+    "Pause": "Pause",
+    "Unpause": "Wiederaufnahme",
+    "Clawback": "Rückforderung",
+    "TokensFrozen": "Token eingefroren",
+    "UserBlocked": "Benutzer blockiert",
+    "UserUnblocked": "Benutzer entsperrt",
+    "UserAllowed": "Benutzer erlaubt",
+    "UserDisallowed": "Benutzer nicht erlaubt",
+    "TokenWithdrawn": "Token abgehoben",
+    "CollateralUpdated": "Sicherheit aktualisiert",
+    "Matured": "Fällig",
+    "Redeemed": "Eingelöst",
+    "UnderlyingAssetTopUp": "Unterliegendes Vermögen aufgeladen",
+    "UnderlyingAssetWithdrawn": "Unterliegendes Vermögen abgehoben",
+    "ManagementFeeCollected": "Verwaltungsgebühr erhoben",
+    "PerformanceFeeCollected": "Performancegebühr erhoben",
+    "YieldClaimed": "Ertrag beansprucht",
+    "AssetCreated": "Vermögen erstellt",
+    "FixedYieldCreated": "Festzins erstellt",
+    "XvPSettlementApproved": "Abrechnung genehmigt",
+    "XvPSettlementApprovalRevoked": "Abrechnungsgenehmigung widerrufen",
+    "XvPSettlementClaimed": "Abrechnung beansprucht",
+    "XvPSettlementExecuted": "Abrechnung ausgeführt",
+    "XvPSettlementCancelled": "Abrechnung storniert",
+    "Claimed": "Beansprucht",
+    "Distribution": "Verteilung",
+    "BatchDistribution": "Batch-Verteilung",
+    "MerkleRootUpdated": "Merkle-Wurzel aktualisiert"
   },
   "homepage": {
     "asset-tokenization": "Vermögens-Tokenisierung",
@@ -2654,6 +2715,87 @@
         "configuration-description": "Die Konfiguration für den DvP Swap",
         "expiry": "Ablauf"
       }
+    }
+  },
+  "asset-designer": {
+    "type-selection": {
+      "title": "Vermögensart auswählen",
+      "description": "Wählen Sie die Art des digitalen Vermögens, das Sie erstellen möchten",
+      "key-features": "Hauptmerkmale:",
+      "features": {
+        "bond": {
+          "fixed-interest": "Feste Zinszahlungen",
+          "maturity-management": "Fälligkeitsdatum-Management",
+          "transferable-ownership": "Übertragbares Eigentum",
+          "principal-repayment": "Kapitalrückzahlung"
+        },
+        "cryptocurrency": {
+          "secure-transactions": "Sichere Transaktionen",
+          "decentralized-ownership": "Dezentralisiertes Eigentum",
+          "global-payments": "Globale Zahlungen",
+          "programmable-money": "Programmierbares Geld"
+        },
+        "equity": {
+          "voting-rights": "Stimmrechte",
+          "dividend-distribution": "Dividendenverteilung",
+          "fractional-ownership": "Bruchteilseigentum",
+          "liquidity": "Liquidität"
+        },
+        "fund": {
+          "portfolio-diversification": "Portfolio-Diversifizierung",
+          "performance-tracking": "Leistungsüberwachung",
+          "redemption-rights": "Einlösungsrechte",
+          "lower-investment": "Niedrigere Investitionsbarrieren"
+        },
+        "stablecoin": {
+          "price-stability": "Preisstabilität",
+          "collateral-backing": "Sicherheitenunterstützung",
+          "transparent-reserves": "Transparente Reserven",
+          "fast-settlements": "Schnelle Abrechnungen"
+        },
+        "deposit": {
+          "interest-earning": "Zinsen verdienen",
+          "redeemable": "Einlösbar",
+          "term-options": "Laufzeitoptionen",
+          "institutional-backing": "Institutionelle Unterstützung"
+        }
+      }
+    }
+  },
+  "actions": {
+    "page": {
+      "actions": "Aktionen"
+    },
+    "tabs": {
+      "pending": "Ausstehend",
+      "upcoming": "Bevorstehend",
+      "completed": "Abgeschlossen"
+    },
+    "all-tasks-complete": "Alle Aufgaben abgeschlossen!",
+    "all-tasks-complete-description": "Sie haben keine ausstehenden Aktionen.",
+    "subject": "Betreff",
+    "action-type-header": "Aktionstyp",
+    "description-header": "Beschreibung",
+    "active-on-header": "Aktiv am",
+    "sender-header": "Absender",
+    "completed-on-header": "Abgeschlossen am",
+    "action-type": {
+      "bond-mature": "Fällige Anleihe"
+    },
+    "pending-description": {
+      "bond-mature": "Sie müssen die Transaktion senden, um die Anleihe fällig zu machen."
+    },
+    "upcoming-description": {
+      "bond-mature": "Sie müssen die Transaktion senden, um die Anleihe fällig zu machen."
+    },
+    "completed-description": {
+      "bond-mature": "Die Anleihe wurde erfolgreich fällig."
+    }
+  },
+  "regulations": {
+    "mica": {
+      "name": "MiCA",
+      "description": "Die Märkte für Krypto-Assets (MiCA) sind der umfassende regulatorische Rahmen der EU, der darauf abzielt, Kryptowährungen, Stablecoins und andere digitale Vermögenswerte zu regulieren und rechtliche Sicherheit für Emittenten von Krypto-Assets und Dienstleister zu bieten."
     }
   }
 }

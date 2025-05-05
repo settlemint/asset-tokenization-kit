@@ -8,12 +8,12 @@ export function fetchAssetActivity(assetType: string): AssetActivityData {
 
     assetActivity.assetType = assetType;
 
-    assetActivity.transferEventCount = 0;
-    assetActivity.mintEventCount = 0;
-    assetActivity.burnEventCount = 0;
-    assetActivity.frozenEventCount = 0;
-    assetActivity.unfrozenEventCount = 0;
-    assetActivity.clawbackEventCount = 0;
+    assetActivity.transferEventCount = BigInt.zero();
+    assetActivity.mintEventCount = BigInt.zero();
+    assetActivity.burnEventCount = BigInt.zero();
+    assetActivity.frozenEventCount = BigInt.zero();
+    assetActivity.unfrozenEventCount = BigInt.zero();
+    assetActivity.clawbackEventCount = BigInt.zero();
 
     assetActivity.totalSupply = BigDecimal.zero();
     assetActivity.totalSupplyExact = BigInt.zero();

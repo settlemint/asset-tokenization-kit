@@ -1,11 +1,8 @@
 "use server";
 
-import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 import type { FragmentOf } from "gql.tada";
-import { revalidatePath, revalidateTag } from "next/cache";
-import { ApiError } from "next/dist/server/api-utils";
 import { ReceiptFragment, ReceiptFragmentSchema } from "./transaction-fragment";
 
 /**
@@ -97,33 +94,46 @@ export async function waitForSingleTransaction(
  * @param options Configuration options for transaction monitoring
  */
 export async function waitForTransactions(
-  transactionHashes: string[],
-  options: TransactionMonitoringOptions = {}
-) {
-  if (!transactionHashes.length) {
-    throw new ApiError(500, "No transaction hashes provided");
+  hashes: string[] | undefined
+): Promise<void> {
+  if (!hashes || hashes.length === 0) {
+    return Promise.resolve();
   }
 
-  // Wait for all transactions to be mined in parallel
-  const results = await Promise.all(
-    transactionHashes.map((hash) => waitForSingleTransaction(hash, options))
-  );
+  const promises = hashes.map(async (hash) => {
+    let attempts = 0;
+    const maxAttempts = 30; // 30 attempts * 2 seconds = 60 seconds max wait time
 
-  const response = safeParse(WaitForTransactionsResponseSchema, {
-    receipts: results,
-    lastTransaction: results.at(-1),
+    while (attempts < maxAttempts) {
+      try {
+        // Use Portal GraphQL API directly instead of the API route
+        const result = await portalClient.request(GetTransaction, {
+          transactionHash: hash,
+        });
+
+        // If we have a receipt, the transaction is confirmed
+        if (result.getTransaction?.receipt) {
+          return Promise.resolve();
+        }
+
+        // If not confirmed yet, wait a bit and try again
+        console.log(
+          `Waiting for transaction ${hash} confirmation... (Attempt ${attempts + 1}/${maxAttempts})`
+        );
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        attempts++;
+      } catch (error) {
+        console.error(`Error checking transaction ${hash}:`, error);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        attempts++;
+      }
+    }
+
+    // If we've reached the maximum number of attempts, throw an error
+    throw new Error(`Transaction ${hash} took too long to confirm`);
   });
 
-  await waitForIndexing(Number(response.lastTransaction.blockNumber));
-
-  // Revalidate all cache tags
-  revalidateTag("asset");
-  revalidateTag("user-activity");
-  // Now revalidate paths after clearing cache
-  revalidatePath("/[locale]/assets", "layout");
-  revalidatePath("/[locale]/portfolio", "layout");
-
-  return response;
+  return Promise.all(promises).then(() => Promise.resolve());
 }
 
 const WaitForTransactionsResponseSchema = t.Object({

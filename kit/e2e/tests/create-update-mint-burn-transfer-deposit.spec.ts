@@ -3,7 +3,7 @@ import { Pages } from "../pages/pages";
 import {
   depositData,
   depositUpdateCollateralData,
-  depositMintTokenData,
+  depositMintData,
   depositBurnData,
   depositTransferData,
 } from "../test-data/asset-data";
@@ -68,7 +68,7 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates deposit, updates proven collateral, mints, burn deposits and allows user to transfer deposits", async ({
+  test("Admin user creates deposit, updates proven collateral, mints, burns and allows user to transfer deposits", async ({
     browser,
   }) => {
     await adminPages.adminPage.createDeposit(depositData);
@@ -93,16 +93,16 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
     );
     await adminPages.adminPage.mintAsset({
       user: adminUser.name,
-      ...depositMintTokenData,
+      ...depositMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
       assetMessage.successMessage
     );
-    await adminPages.adminPage.verifyTotalSupply(depositMintTokenData.amount);
+    await adminPages.adminPage.verifyTotalSupply(depositMintData.amount);
     await adminPages.adminPage.redeemBurnAsset({
       ...depositBurnData,
     });
-    const mintAmount = Number.parseFloat(depositMintTokenData.amount);
+    const mintAmount = Number.parseFloat(depositMintData.amount);
     const burnAmount = Number.parseFloat(depositBurnData.amount);
     const newTotal = mintAmount - burnAmount;
     testData.currentTotalSupply = newTotal;
@@ -116,7 +116,7 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       assetMessage.successMessage
     );
   });
-  test("Admin user transfer deposits to regular transfer user", async () => {
+  test("Admin user transfers deposits to regular transfer user", async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.depositName,
       walletAddress: testData.transferUserWalletAddress,

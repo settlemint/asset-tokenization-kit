@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
@@ -86,13 +86,13 @@ contract Fund is
     /// @param token The address of the token being withdrawn
     /// @param to The address receiving the tokens
     /// @param amount The amount of tokens withdrawn
-    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
+    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount, address indexed sender);
 
     /// @notice Emitted when tokens are forcibly transferred from one address to another
     /// @param from The address tokens are taken from
     /// @param to The address tokens are sent to
     /// @param amount The amount of tokens transferred
-    event Clawback(address indexed from, address indexed to, uint256 amount);
+    event Clawback(address indexed from, address indexed to, uint256 amount, address indexed sender);
 
     /// @notice Deploys a new Fund token contract
     /// @dev Sets up the token with specified parameters and initializes governance capabilities.
@@ -307,7 +307,7 @@ contract Fund is
         if (balance < amount) revert InsufficientTokenBalance();
 
         IERC20(token).safeTransfer(to, amount);
-        emit TokenWithdrawn(token, to, amount);
+        emit TokenWithdrawn(token, to, amount, _msgSender());
     }
 
     /// @notice Forcibly transfers tokens from one address to another
@@ -325,6 +325,6 @@ contract Fund is
 
         /// @dev using _transfer to bypass allowance checks
         _transfer(from, to, amount);
-        emit Clawback(from, to, amount);
+        emit Clawback(from, to, amount, _msgSender());
     }
 }

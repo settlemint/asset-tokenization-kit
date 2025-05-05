@@ -122,7 +122,8 @@
         "group-title": "إدارة الأصول",
         "stablecoins": "العملات المستقرة",
         "tokenized-deposits": "الودائع",
-        "view-all": "عرض الكل"
+        "view-all": "عرض الكل",
+        "actions": "الإجراءات"
       },
       "asset-types": {
         "bond": "سند",
@@ -479,7 +480,8 @@
         "valid-email": "يرجى إدخال عنوان بريد إلكتروني صالح",
         "max-value": "لا يمكن أن تكون القيمة أعلى من {max}",
         "min-value": "لا يمكن أن تكون القيمة أقل من {min}",
-        "valid-number": "يرجى إدخال رقم صالح"
+        "valid-number": "يرجى إدخال رقم صالح",
+        "alphanumeric-only": "يرجى إدخال الأحرف والأرقام فقط"
       },
       "pincode-dialog": {
         "description": "لتوقيع المعاملة، يرجى إدخال الرقم السري الخاص بك للتحقق والتفويض.",
@@ -528,6 +530,29 @@
           "use-secret-codes": "أو استخدم أحد رموز الأمان الخاصة بك"
         },
         "switch-method": "تبديل الطريقة"
+      },
+      "document-upload": {
+        "add-document": "إضافة مستند",
+        "no-documents": "لم يتم تحميل أي مستندات بعد",
+        "delete-document": "حذف مستند",
+        "uploading": "جارٍ التحميل",
+        "upload-document-title": "تحميل مستند",
+        "upload-document-description": "قم بتحميل الأوراق البيضاء، تقارير التدقيق، وغيرها من مستندات الامتثال",
+        "document-title": "عنوان المستند",
+        "document-title-placeholder": "مثل: ورقة بيضاء للامتثال لمعايير MiCA",
+        "document-type": "نوع المستند",
+        "select-document-type": "اختر نوع المستند",
+        "document-description": "الوصف",
+        "document-description-placeholder": "وصف موجز للمستند",
+        "document-file": "تحميل ملف",
+        "choose-file": "اختر ملف",
+        "no-file-chosen": "لم يتم اختيار أي ملف",
+        "accepted-format": "الصيغ المقبولة: {formats} (الحد الأقصى: {maxSize}MB)",
+        "invalid-file-format": "صيغة الملف غير صالحة. يتم قبول ملفات {formats} فقط.",
+        "file-too-large": "الملف كبير جدًا. الحد الأقصى للحجم هو {maxSize}MB.",
+        "cancel": "إلغاء",
+        "uploading-document": "جارٍ التحميل...",
+        "upload-document": "تحميل"
       }
     },
     "logo": {
@@ -695,7 +720,8 @@
       "portfolio": "محفظتي",
       "title": "خاص",
       "trade-management": "إدارة التجارة",
-      "dvp-swap": "مبادلة DvP"
+      "dvp-swap": "مبادلة DvP",
+      "actions": "الإجراءات"
     },
     "user-dropdown": {
       "documentation": "التوثيق",
@@ -2494,7 +2520,42 @@
     "UserBlockedEvent": "حظر",
     "UserUnblockedEvent": "إلغاء الحظر",
     "UserAllowedEvent": "السماح",
-    "UserDisallowedEvent": "عدم السماح"
+    "UserDisallowedEvent": "عدم السماح",
+    "Transfer": "نقل",
+    "Mint": "سك",
+    "Burn": "حرق",
+    "RoleGranted": "الدور الممنوح",
+    "RoleRevoked": "الدور الملغي",
+    "RoleAdminChanged": "تغيير مسؤول الدور",
+    "Approval": "الموافقة",
+    "Pause": "إيقاف مؤقت",
+    "Unpause": "استئناف",
+    "Clawback": "استرداد",
+    "TokensFrozen": "التوكنات المجمدة",
+    "UserBlocked": "المستخدم محظور",
+    "UserUnblocked": "المستخدم غير محظور",
+    "UserAllowed": "المستخدم مسموح",
+    "UserDisallowed": "المستخدم غير مسموح",
+    "TokenWithdrawn": "التوكن المسحوب",
+    "CollateralUpdated": "تحديث الضمان",
+    "Matured": "استحقاق",
+    "Redeemed": "استرداد",
+    "UnderlyingAssetTopUp": "زيادة الأصول الأساسية",
+    "UnderlyingAssetWithdrawn": "سحب الأصول الأساسية",
+    "ManagementFeeCollected": "رسوم الإدارة المحصلة",
+    "PerformanceFeeCollected": "رسوم الأداء المحصلة",
+    "YieldClaimed": "العائد المطالب به",
+    "AssetCreated": "الأصل المنشأ",
+    "FixedYieldCreated": "العائد الثابت المنشأ",
+    "XvPSettlementApproved": "الموافقة على التسوية",
+    "XvPSettlementApprovalRevoked": "إلغاء الموافقة على التسوية",
+    "XvPSettlementClaimed": "المطالبة بالتسوية",
+    "XvPSettlementExecuted": "تنفيذ التسوية",
+    "XvPSettlementCancelled": "إلغاء التسوية",
+    "Claimed": "مطالب به",
+    "Distribution": "التوزيع",
+    "BatchDistribution": "توزيع دفعة",
+    "MerkleRootUpdated": "تحديث جذر ميركل"
   },
   "homepage": {
     "asset-tokenization": "تشفير الأصول",
@@ -2655,6 +2716,87 @@
         "configuration-description": "الإعدادات لمبادلة DvP",
         "expiry": "تاريخ الانتهاء"
       }
+    }
+  },
+  "asset-designer": {
+    "type-selection": {
+      "title": "اختر نوع الأصل",
+      "description": "اختر نوع الأصل الرقمي الذي تريد إنشاؤه",
+      "key-features": "الميزات الرئيسية:",
+      "features": {
+        "bond": {
+          "fixed-interest": "مدفوعات فائدة ثابتة",
+          "maturity-management": "إدارة تاريخ الاستحقاق",
+          "transferable-ownership": "ملكية قابلة للنقل",
+          "principal-repayment": "سداد رأس المال"
+        },
+        "cryptocurrency": {
+          "secure-transactions": "معاملات آمنة",
+          "decentralized-ownership": "ملكية لامركزية",
+          "global-payments": "مدفوعات عالمية",
+          "programmable-money": "نقود قابلة للبرمجة"
+        },
+        "equity": {
+          "voting-rights": "حقوق التصويت",
+          "dividend-distribution": "توزيع الأرباح",
+          "fractional-ownership": "ملكية جزئية",
+          "liquidity": "سيولة"
+        },
+        "fund": {
+          "portfolio-diversification": "تنويع المحفظة",
+          "performance-tracking": "تتبع الأداء",
+          "redemption-rights": "حقوق الاسترداد",
+          "lower-investment": "خفض حواجز الاستثمار"
+        },
+        "stablecoin": {
+          "price-stability": "استقرار الأسعار",
+          "collateral-backing": "دعم الضمان",
+          "transparent-reserves": "احتياطيات شفافة",
+          "fast-settlements": "تسويات سريعة"
+        },
+        "deposit": {
+          "interest-earning": "كسب الفائدة",
+          "redeemable": "قابل للاسترداد",
+          "term-options": "خيارات المدة",
+          "institutional-backing": "دعم مؤسسي"
+        }
+      }
+    }
+  },
+  "actions": {
+    "page": {
+      "actions": "الإجراءات"
+    },
+    "tabs": {
+      "pending": "قيد الانتظار",
+      "upcoming": "قريبًا",
+      "completed": "مكتمل"
+    },
+    "all-tasks-complete": "تم إكمال جميع المهام!",
+    "all-tasks-complete-description": "ليس لديك أي إجراءات معلقة.",
+    "subject": "الموضوع",
+    "action-type-header": "نوع الإجراء",
+    "description-header": "الوصف",
+    "active-on-header": "نشط في",
+    "sender-header": "المرسل",
+    "completed-on-header": "اكتمل في",
+    "action-type": {
+      "bond-mature": "سند ناضج"
+    },
+    "pending-description": {
+      "bond-mature": "تحتاج إلى إرسال المعاملة لنضوج السند."
+    },
+    "upcoming-description": {
+      "bond-mature": "ستحتاج إلى إرسال المعاملة لتنضيج السند."
+    },
+    "completed-description": {
+      "bond-mature": "تم نضيج السند بنجاح."
+    }
+  },
+  "regulations": {
+    "mica": {
+      "name": "ميكا",
+      "description": "تعد الأسواق في الأصول المشفرة (ميكا) الإطار التنظيمي الشامل للاتحاد الأوروبي المصمم لتنظيم العملات المشفرة، والعملات المستقرة، والأصول الرقمية الأخرى، مما يوفر اليقين القانوني لمصدري الأصول المشفرة ومقدمي الخدمات."
     }
   }
 }
