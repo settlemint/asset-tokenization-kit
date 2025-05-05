@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { AssetDesignerStep, AssetType, VerificationData } from "./types";
+import type { AssetDesignerStep, AssetType } from "./types";
 import { stepDetailsMap, stepsOrder } from "./types";
 
 // Import step wizard components
@@ -110,8 +110,6 @@ export function AssetDesignerDialog({
 
   // State for verification dialog
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
-  const [pincodeVerificationData, setPincodeVerificationData] =
-    useState<VerificationData | null>(null);
 
   // Create a form for the verification code
   const verificationForm = useForm({
@@ -156,160 +154,90 @@ export function AssetDesignerDialog({
     if (!selectedAssetType) return;
 
     setIsSubmitting(true);
-    const form = getFormForAssetType();
 
     try {
-      // Try to get a predicted address based on the asset type
-      let predictedAddress = "0x0000000000000000000000000000000000000000";
-
-      try {
-        switch (selectedAssetType) {
-          case "bond": {
-            const bondFormValues = bondForm.getValues();
-            predictedAddress = await getBondPredictedAddress({
-              assetName: bondFormValues.assetName,
-              symbol: bondFormValues.symbol,
-              decimals: bondFormValues.decimals,
-              cap: bondFormValues.cap,
-              maturityDate: bondFormValues.maturityDate,
-              underlyingAsset: bondFormValues.underlyingAsset,
-              faceValue: bondFormValues.faceValue,
-            });
-            break;
-          }
-          case "cryptocurrency": {
-            const cryptoFormValues = cryptocurrencyForm.getValues();
-            predictedAddress = await getCryptocurrencyPredictedAddress({
-              assetName: cryptoFormValues.assetName,
-              symbol: cryptoFormValues.symbol,
-              decimals: cryptoFormValues.decimals,
-              initialSupply: cryptoFormValues.initialSupply,
-            });
-            break;
-          }
-          case "stablecoin": {
-            const stablecoinFormValues = stablecoinForm.getValues();
-            predictedAddress = await getStablecoinPredictedAddress({
-              assetName: stablecoinFormValues.assetName,
-              symbol: stablecoinFormValues.symbol,
-              decimals: stablecoinFormValues.decimals,
-              collateralLivenessValue:
-                stablecoinFormValues.collateralLivenessValue,
-              collateralLivenessTimeUnit:
-                stablecoinFormValues.collateralLivenessTimeUnit,
-            });
-            break;
-          }
-          case "deposit": {
-            const depositFormValues = depositForm.getValues();
-            predictedAddress = await getDepositPredictedAddress({
-              assetName: depositFormValues.assetName,
-              symbol: depositFormValues.symbol,
-              decimals: depositFormValues.decimals,
-              collateralLivenessValue:
-                depositFormValues.collateralLivenessValue,
-              collateralLivenessTimeUnit:
-                depositFormValues.collateralLivenessTimeUnit,
-            });
-            break;
-          }
-          case "equity": {
-            const equityFormValues = equityForm.getValues();
-            predictedAddress = await getEquityPredictedAddress({
-              assetName: equityFormValues.assetName,
-              symbol: equityFormValues.symbol,
-              decimals: equityFormValues.decimals,
-              equityCategory: equityFormValues.equityCategory,
-              equityClass: equityFormValues.equityClass,
-            });
-            break;
-          }
-          case "fund": {
-            const fundFormValues = fundForm.getValues();
-            predictedAddress = await getFundPredictedAddress({
-              assetName: fundFormValues.assetName,
-              symbol: fundFormValues.symbol,
-              decimals: fundFormValues.decimals,
-              fundCategory: fundFormValues.fundCategory,
-              fundClass: fundFormValues.fundClass,
-              managementFeeBps: fundFormValues.managementFeeBps,
-            });
-            break;
-          }
-          default:
-            exhaustiveGuard(selectedAssetType);
-        }
-      } catch (error) {
-        console.error("Error predicting address:", error);
-        // Generate a fallback random address in case of prediction failure
-        predictedAddress = `0x${Math.random().toString(16).substring(2).padStart(40, "0")}`;
-      }
-
-      // Common values needed for asset creation
-      const baseFormValues = {
-        verificationType: "pincode",
-        predictedAddress,
-      };
-
-      let formData;
-      let action;
-
-      // Prepare form data based on asset type
       switch (selectedAssetType) {
-        case "bond":
-          action = createBond;
+        case "bond": {
           const bondFormValues = bondForm.getValues();
-          formData = {
-            ...baseFormValues,
-            ...bondFormValues,
-          };
+          const predictedAddress = await getBondPredictedAddress({
+            assetName: bondFormValues.assetName,
+            symbol: bondFormValues.symbol,
+            decimals: bondFormValues.decimals,
+            cap: bondFormValues.cap,
+            maturityDate: bondFormValues.maturityDate,
+            underlyingAsset: bondFormValues.underlyingAsset,
+            faceValue: bondFormValues.faceValue,
+          });
+          bondForm.setValue("predictedAddress", predictedAddress);
           break;
-        case "cryptocurrency":
-          action = createCryptoCurrency;
+        }
+        case "cryptocurrency": {
           const cryptoFormValues = cryptocurrencyForm.getValues();
-          formData = {
-            ...baseFormValues,
-            ...cryptoFormValues,
-          };
+          const predictedAddress = await getCryptocurrencyPredictedAddress({
+            assetName: cryptoFormValues.assetName,
+            symbol: cryptoFormValues.symbol,
+            decimals: cryptoFormValues.decimals,
+            initialSupply: cryptoFormValues.initialSupply,
+          });
+          cryptocurrencyForm.setValue("predictedAddress", predictedAddress);
           break;
-        case "equity":
-          action = createEquity;
-          const equityFormValues = equityForm.getValues();
-          formData = {
-            ...baseFormValues,
-            ...equityFormValues,
-          };
-          break;
-        case "fund":
-          action = createFund;
-          const fundFormValues = fundForm.getValues();
-          formData = {
-            ...baseFormValues,
-            ...fundFormValues,
-          };
-          break;
-        case "stablecoin":
-          action = createStablecoin;
+        }
+        case "stablecoin": {
           const stablecoinFormValues = stablecoinForm.getValues();
-          formData = {
-            ...baseFormValues,
-            ...stablecoinFormValues,
-          };
+          const predictedAddress = await getStablecoinPredictedAddress({
+            assetName: stablecoinFormValues.assetName,
+            symbol: stablecoinFormValues.symbol,
+            decimals: stablecoinFormValues.decimals,
+            collateralLivenessValue:
+              stablecoinFormValues.collateralLivenessValue,
+            collateralLivenessTimeUnit:
+              stablecoinFormValues.collateralLivenessTimeUnit,
+          });
+          stablecoinForm.setValue("predictedAddress", predictedAddress);
           break;
-        case "deposit":
-          action = createDeposit;
+        }
+        case "deposit": {
           const depositFormValues = depositForm.getValues();
-          formData = {
-            ...baseFormValues,
-            ...depositFormValues,
-          };
+          const predictedAddress = await getDepositPredictedAddress({
+            assetName: depositFormValues.assetName,
+            symbol: depositFormValues.symbol,
+            decimals: depositFormValues.decimals,
+            collateralLivenessValue: depositFormValues.collateralLivenessValue,
+            collateralLivenessTimeUnit:
+              depositFormValues.collateralLivenessTimeUnit,
+          });
+          depositForm.setValue("predictedAddress", predictedAddress);
           break;
+        }
+        case "equity": {
+          const equityFormValues = equityForm.getValues();
+          const predictedAddress = await getEquityPredictedAddress({
+            assetName: equityFormValues.assetName,
+            symbol: equityFormValues.symbol,
+            decimals: equityFormValues.decimals,
+            equityCategory: equityFormValues.equityCategory,
+            equityClass: equityFormValues.equityClass,
+          });
+          equityForm.setValue("predictedAddress", predictedAddress);
+          break;
+        }
+        case "fund": {
+          const fundFormValues = fundForm.getValues();
+          const predictedAddress = await getFundPredictedAddress({
+            assetName: fundFormValues.assetName,
+            symbol: fundFormValues.symbol,
+            decimals: fundFormValues.decimals,
+            fundCategory: fundFormValues.fundCategory,
+            fundClass: fundFormValues.fundClass,
+            managementFeeBps: fundFormValues.managementFeeBps,
+          });
+          fundForm.setValue("predictedAddress", predictedAddress);
+          break;
+        }
         default:
           exhaustiveGuard(selectedAssetType);
       }
 
-      // Store verification data and show pincode dialog
-      setPincodeVerificationData({ action, formData });
       setShowVerificationDialog(true);
     } catch (error) {
       console.error("Error preparing asset creation:", error);
@@ -320,94 +248,115 @@ export function AssetDesignerDialog({
 
   // Handle verification submission
   const handleVerificationSubmit = async () => {
-    if (!pincodeVerificationData) return;
-
+    const toastId = toast.loading(
+      `Creating ${selectedAssetType}... This process may take a moment.`
+    );
     try {
       // Get the verification code from the form
       const verificationCode = verificationForm.getValues().verificationCode;
 
-      // Add the verification code to the form data
-      const formDataWithCode = {
-        ...pincodeVerificationData.formData,
-        verificationCode,
-      };
-
-      // Show the loading toast only after pin confirmation
-      const toastId = toast.loading(
-        `Creating ${selectedAssetType}... This process may take a moment.`
-      );
-
-      // Submit the form with the action
-      const result = await pincodeVerificationData.action(formDataWithCode);
-
-      if (result.data) {
-        try {
-          // Parse the transaction hashes from the response
-          const hashes = Array.isArray(result.data)
-            ? result.data
-            : [result.data];
-
-          // Wait for the transactions to be confirmed using the dedicated function
-          const transactions = await waitForTransactions(hashes);
-          const lastTransaction = transactions.at(-1);
-
-          if (lastTransaction?.blockNumber) {
-            await waitForIndexing(Number(lastTransaction.blockNumber));
-          }
-
-          await revalidateCaches();
-
-          // Update the toast with success message
-          toast.success(
-            `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,
-            { id: toastId }
-          );
-
-          // Close the dialog and reset state
-          handleOpenChange(false);
-
-          // Navigate to the asset page if we have a valid address
-          const assetId = formDataWithCode.predictedAddress;
-          if (
-            assetId &&
-            assetId !== "0x0000000000000000000000000000000000000000"
-          ) {
-            router.push(`/assets/${selectedAssetType}/${assetId}`);
-          } else {
-            // Refresh the current page
-            router.refresh();
-          }
-        } catch (error) {
-          console.error("Error waiting for transaction:", error);
-          toast.error(
-            "Transaction submitted but failed to confirm. Please check your activity history.",
-            {
-              id: toastId,
-            }
-          );
-          handleOpenChange(false);
+      const createAsset = async () => {
+        switch (selectedAssetType) {
+          case "bond":
+            const bondFormValues = bondForm.getValues();
+            return createBond({
+              ...bondFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          case "cryptocurrency":
+            const cryptoFormValues = cryptocurrencyForm.getValues();
+            return createCryptoCurrency({
+              ...cryptoFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          case "stablecoin":
+            const stablecoinFormValues = stablecoinForm.getValues();
+            return createStablecoin({
+              ...stablecoinFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          case "deposit":
+            const depositFormValues = depositForm.getValues();
+            return createDeposit({
+              ...depositFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          case "equity":
+            const equityFormValues = equityForm.getValues();
+            return createEquity({
+              ...equityFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          case "fund":
+            const fundFormValues = fundForm.getValues();
+            return createFund({
+              ...fundFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          default:
+            exhaustiveGuard(selectedAssetType);
         }
-      } else if (result.validationErrors) {
+      };
+      const result = await createAsset();
+
+      if (!result) {
+        toast.error("Failed to create asset. Please try again.", {
+          id: toastId,
+        });
+        return;
+      }
+
+      if (result.validationErrors) {
         // Update the toast with validation error message
         toast.error(
           "Please fix the validation errors before creating the asset.",
           { id: toastId }
         );
         console.error("Validation errors:", result.validationErrors);
-      } else {
-        // Update the toast with generic error message
-        toast.error("Failed to create asset. Please try again.", {
-          id: toastId,
-        });
       }
+
+      // Parse the transaction hashes from the response
+      const hashes = result.data
+        ? Array.isArray(result.data)
+          ? result.data
+          : [result.data]
+        : [];
+
+      // Wait for the transactions to be confirmed using the dedicated function
+      const transactions = await waitForTransactions(hashes);
+      const lastTransaction = transactions.at(-1);
+
+      if (lastTransaction?.blockNumber) {
+        await waitForIndexing(Number(lastTransaction.blockNumber));
+      }
+
+      await revalidateCaches();
+
+      toast.success(
+        `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,
+        { id: toastId }
+      );
+
+      handleOpenChange(false);
+
+      const form = getFormForAssetType();
+      const assetId = form.getValues().predictedAddress;
+
+      router.push(`/assets/${selectedAssetType}/${assetId}`);
     } catch (error) {
       console.error("Error creating asset:", error);
-      // Show error toast
-      toast.error("An unexpected error occurred. Please try again.");
+      toast.error("An unexpected error occurred. Please try again.", {
+        id: toastId,
+      });
     } finally {
       setIsSubmitting(false);
       setShowVerificationDialog(false);
-      setPincodeVerificationData(null);
       verificationForm.reset();
     }
   };
@@ -416,7 +365,6 @@ export function AssetDesignerDialog({
   const handleVerificationCancel = () => {
     setIsSubmitting(false);
     setShowVerificationDialog(false);
-    setPincodeVerificationData(null);
     verificationForm.reset();
   };
 
