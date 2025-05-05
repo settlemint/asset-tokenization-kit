@@ -34,9 +34,10 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     bool private _cancelled; // Whether the settlement has been cancelled
     Flow[] private _flows; // Array of token flows
     mapping(address => bool) private _approvals; // Maps addresses to their approval status
-
+    uint256 private _createdAt; // Timestamp when the settlement was created
     /// @notice Custom errors for the XvPSettlement contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
+
     error XvPSettlementAlreadyClaimed();
     error XvPSettlementAlreadyCancelled();
     error XvPSettlementExpired();
@@ -56,16 +57,16 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     error InsufficientAllowance(address token, address owner, address spender, uint256 required, uint256 allowed);
 
     /// @notice Event emitted when an XvP settlement is approved by a party
-    event XvPSettlementApproved();
+    event XvPSettlementApproved(address indexed sender);
 
     /// @notice Event emitted when an XvP settlement approval is revoked
-    event XvPSettlementApprovalRevoked();
+    event XvPSettlementApprovalRevoked(address indexed sender);
 
     /// @notice Event emitted when an XvP settlement is claimed
-    event XvPSettlementClaimed();
+    event XvPSettlementClaimed(address indexed sender);
 
     /// @notice Event emitted when an XvP settlement is cancelled
-    event XvPSettlementCancelled();
+    event XvPSettlementCancelled(address indexed sender);
 
     /// @notice Deploys a new XvPSettlement contract
     /// @dev Sets up the contract with admin role and initializes meta-transaction support
@@ -83,7 +84,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     {
         _cutoffDate = settlementCutoffDate;
         _autoExecute = settlementAutoExecute;
-
+        _createdAt = block.timestamp;
         if (settlementFlows.length == 0) revert EmptyFlows();
 
         for (uint256 i = 0; i < settlementFlows.length; i++) {
@@ -125,6 +126,10 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
         return _approvals[account];
     }
 
+    function createdAt() public view returns (uint256) {
+        return _createdAt;
+    }
+
     /// @notice Approves a XvP settlement for execution
     /// @dev The caller must be a party in the settlement's flows
     /// @return success True if the approval was successful
@@ -144,7 +149,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
 
         // Mark as approved
         _approvals[_msgSender()] = true;
-        emit XvPSettlementApproved();
+        emit XvPSettlementApproved(_msgSender());
 
         // If auto-execution and all parties approved, execute swap directly
         if (_autoExecute && isFullyApproved()) {
@@ -171,7 +176,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
         }
 
         _claimed = true;
-        emit XvPSettlementClaimed();
+        emit XvPSettlementClaimed(_msgSender());
 
         return true;
     }
@@ -183,7 +188,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
         if (!_approvals[_msgSender()]) revert SenderNotApprovedSettlement();
 
         _approvals[_msgSender()] = false;
-        emit XvPSettlementApprovalRevoked();
+        emit XvPSettlementApprovalRevoked(_msgSender());
 
         return true;
     }
@@ -191,7 +196,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     function cancel() external nonReentrant onlyUnclaimed onlyInvolvedSender returns (bool) {
         _cancelled = true;
 
-        emit XvPSettlementCancelled();
+        emit XvPSettlementCancelled(_msgSender());
         return true;
     }
 

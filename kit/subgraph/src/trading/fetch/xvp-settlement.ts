@@ -5,7 +5,9 @@ import {
   XvPSettlementFlow,
 } from "../../../generated/schema";
 import { XvPSettlement as XvPSettlementContract } from "../../../generated/templates/XvPSettlement/XvPSettlement";
+import { fetchAssetDecimals } from "../../assets/fetch/asset";
 import { fetchAccount } from "../../utils/account";
+import { toDecimals } from "../../utils/decimals";
 
 /**
  * Fetches or creates a Flow entity
@@ -34,7 +36,7 @@ export function fetchFlow(
   flow.from = fetchAccount(from).id;
   flow.to = fetchAccount(to).id;
   flow.amount = amount;
-
+  flow.amountExact = toDecimals(amount, fetchAssetDecimals(asset));
   flow.save();
   return flow;
 }
@@ -51,6 +53,7 @@ export function fetchApproval(
   approval = new XvPSettlementApproval(id);
   approval.xvpSettlement = contract;
   approval.account = fetchAccount(sender).id;
+
   approval.save();
   return approval;
 }
@@ -70,7 +73,7 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     let claimed = endpoint.try_claimed();
     let cancelled = endpoint.try_cancelled();
     let flows = endpoint.try_flows();
-
+    let createdAt = endpoint.try_createdAt();
     xvpSettlement = new XvPSettlement(id);
     xvpSettlement.cutoffDate = cutoffDate.reverted
       ? BigInt.zero()
@@ -80,7 +83,9 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
       : autoExecute.value;
     xvpSettlement.claimed = claimed.reverted ? false : claimed.value;
     xvpSettlement.cancelled = cancelled.reverted ? false : cancelled.value;
-
+    xvpSettlement.createdAt = createdAt.reverted
+      ? BigInt.zero()
+      : createdAt.value;
     xvpSettlement.save();
 
     if (!flows.reverted) {
