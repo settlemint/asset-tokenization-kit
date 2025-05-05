@@ -13,15 +13,15 @@ dependencies:
   version: 5.33.0
 - name: grafana
   repository: https://grafana.github.io/helm-charts
-  version: 8.14.1
+  version: 8.14.2
 - name: loki
   repository: https://grafana.github.io/helm-charts
   version: 6.29.0
 - name: prometheus-node-exporter
   repository: https://prometheus-community.github.io/helm-charts
-  version: 4.45.3
+  version: 4.46.0
 - name: tempo
   repository: https://grafana.github.io/helm-charts
   version: 1.21.0
-digest: sha256:eaf4d15acb831f6ab9aa9e2b8b3451d00115a4bd479872a71c132f2401a355a7
-generated: "2025-05-02T01:14:16.428788499Z"
+digest: sha256:915f9dac4d612a686b39540dff3336b4355ceda55af39ccf5ba9c2aab70bfa40
+generated: "2025-05-03T05:02:04.505072737Z"

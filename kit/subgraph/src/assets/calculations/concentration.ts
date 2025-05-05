@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { BigDecimal, BigInt, Entity } from "@graphprotocol/graph-ts";
 import { AssetBalance } from "../../../generated/schema";
 
 /**
@@ -10,12 +10,14 @@ import { AssetBalance } from "../../../generated/schema";
  * @returns The concentration percentage (0-100)
  */
 export function calculateConcentration(
+  asset: Entity,
   holders: AssetBalance[],
   totalSupplyExact: BigInt
-): BigDecimal {
+): void {
   // Skip calculation if there's no supply
   if (totalSupplyExact.equals(BigInt.zero())) {
-    return BigDecimal.zero();
+    asset.setBigDecimal("concentration", BigDecimal.zero());
+    return;
   }
 
   // Prepare to find the top N holders
@@ -50,8 +52,11 @@ export function calculateConcentration(
 
   // Calculate concentration percentage
   // concentration = (topHoldersSum / totalSupply) * 100
-  return topHoldersSum
-    .toBigDecimal()
-    .times(BigDecimal.fromString("100"))
-    .div(totalSupplyExact.toBigDecimal());
+  asset.setBigDecimal(
+    "concentration",
+    topHoldersSum
+      .toBigDecimal()
+      .times(BigDecimal.fromString("100"))
+      .div(totalSupplyExact.toBigDecimal())
+  );
 }

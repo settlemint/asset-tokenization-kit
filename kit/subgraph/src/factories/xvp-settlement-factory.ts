@@ -1,10 +1,7 @@
 import { XvPSettlement } from "../../generated/templates";
 import { XvPSettlementCreated } from "../../generated/XvPSettlementFactory/XvPSettlementFactory";
-import { xvpSettlementCreatedEvent } from "../assets/events/xvpsettlementcreated";
-import { fetchAccount } from "../fetch/account";
-import { fetchXvPSettlement } from "../fetch/xvp-settlement";
-import { eventId } from "../utils/events";
-
+import { fetchXvPSettlement } from "../trading/fetch/xvp-settlement";
+import { fetchAccount } from "../utils/account";
 /**
  * Handles XvPSettlementCreated events from the XvPSettlementFactory contract.
  * Ensures the factory and creator are registered as Accounts,
@@ -16,13 +13,6 @@ export function handleXvPSettlementCreated(event: XvPSettlementCreated): void {
   const factoryAccount = fetchAccount(event.address);
   factoryAccount.lastActivity = event.block.timestamp;
   factoryAccount.save();
-
-  xvpSettlementCreatedEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    event.transaction.from
-  );
 
   XvPSettlement.create(event.params.settlement);
 

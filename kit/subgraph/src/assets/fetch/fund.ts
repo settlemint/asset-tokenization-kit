@@ -1,7 +1,7 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { Fund } from "../../../generated/schema";
 import { Fund as FundContract } from "../../../generated/templates/Fund/Fund";
-import { fetchAccount } from "../../fetch/account";
+import { fetchAccount } from "../../utils/account";
 import { AssetType } from "../../utils/enums";
 
 export function fetchFund(address: Address): Fund {
@@ -31,9 +31,13 @@ export function fetchFund(address: Address): Fund {
     fund.userManagers = [];
     fund.lastActivity = BigInt.zero();
     fund.creator = Address.zero();
+    fund.totalMinted = BigDecimal.zero();
+    fund.totalMintedExact = BigInt.zero();
     fund.totalBurned = BigDecimal.zero();
     fund.totalBurnedExact = BigInt.zero();
-    fund.totalHolders = 0;
+    fund.totalTransferred = BigDecimal.zero();
+    fund.totalTransferredExact = BigInt.zero();
+    fund.totalHolders = BigInt.zero();
     fund.concentration = BigDecimal.zero();
 
     // Fund-specific fields

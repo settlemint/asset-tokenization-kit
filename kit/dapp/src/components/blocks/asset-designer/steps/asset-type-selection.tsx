@@ -109,7 +109,7 @@ export function AssetTypeSelection({
             <Card
               key={assetInfo.type}
               className={cn(
-                "cursor-pointer transition-all hover:shadow-md hover:bg-accent focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+                "flex flex-col h-full cursor-pointer transition-all hover:shadow-md hover:bg-accent focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               )}
               style={
                 selectedType === assetInfo.type
@@ -126,7 +126,7 @@ export function AssetTypeSelection({
               }
               onClick={() => assetInfo.type && onSelect(assetInfo.type)}
             >
-              <CardHeader className="flex flex-row items-center justify-between pb-0">
+              <CardHeader className="flex flex-row items-center justify-between pb-0 flex-shrink-0">
                 <div className="flex items-center space-x-3">
                   {assetInfo.type && (
                     <AssetTypeIcon type={assetInfo.type} size="md" />
@@ -154,7 +154,7 @@ export function AssetTypeSelection({
                   </Tooltip>
                 </TooltipProvider>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 mt-auto">
                 <p className="text-xs text-muted-foreground">
                   {t(assetInfo.descriptionKey as any)}
                 </p>
