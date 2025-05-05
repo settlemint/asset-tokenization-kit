@@ -34,9 +34,10 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     bool private _cancelled; // Whether the settlement has been cancelled
     Flow[] private _flows; // Array of token flows
     mapping(address => bool) private _approvals; // Maps addresses to their approval status
-
+    uint256 private _createdAt; // Timestamp when the settlement was created
     /// @notice Custom errors for the XvPSettlement contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
+
     error XvPSettlementAlreadyClaimed();
     error XvPSettlementAlreadyCancelled();
     error XvPSettlementExpired();
@@ -83,7 +84,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     {
         _cutoffDate = settlementCutoffDate;
         _autoExecute = settlementAutoExecute;
-
+        _createdAt = block.timestamp;
         if (settlementFlows.length == 0) revert EmptyFlows();
 
         for (uint256 i = 0; i < settlementFlows.length; i++) {
@@ -123,6 +124,10 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
 
     function approvals(address account) public view returns (bool) {
         return _approvals[account];
+    }
+
+    function createdAt() public view returns (uint256) {
+        return _createdAt;
     }
 
     /// @notice Approves a XvP settlement for execution

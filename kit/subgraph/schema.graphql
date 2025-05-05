@@ -756,6 +756,7 @@ type XvPSettlement @entity(immutable: false) {
   autoExecute: Boolean!
   claimed: Boolean!
   cancelled: Boolean!
+  createdAt: BigInt!
   flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")
   approvals: [XvPSettlementApproval!]! @derivedFrom(field: "xvpSettlement")
 }

@@ -73,7 +73,7 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     let claimed = endpoint.try_claimed();
     let cancelled = endpoint.try_cancelled();
     let flows = endpoint.try_flows();
-
+    let createdAt = endpoint.try_createdAt();
     xvpSettlement = new XvPSettlement(id);
     xvpSettlement.cutoffDate = cutoffDate.reverted
       ? BigInt.zero()
@@ -83,7 +83,9 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
       : autoExecute.value;
     xvpSettlement.claimed = claimed.reverted ? false : claimed.value;
     xvpSettlement.cancelled = cancelled.reverted ? false : cancelled.value;
-
+    xvpSettlement.createdAt = createdAt.reverted
+      ? BigInt.zero()
+      : createdAt.value;
     xvpSettlement.save();
 
     if (!flows.reverted) {
