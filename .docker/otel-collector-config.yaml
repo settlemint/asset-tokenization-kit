@@ -2,7 +2,9 @@ receivers:
   otlp:
     protocols:
       grpc:
+        endpoint: 0.0.0.0:4317
       http:
+        endpoint: 0.0.0.0:4318
 
 exporters:
   prometheus:
@@ -27,13 +29,16 @@ extensions:
     endpoint: :55679
 
 service:
+  telemetry:
+    logs:
+      level: debug
   extensions: [pprof, zpages, health_check]
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
       exporters: [debug, zipkin]
-    metrics:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [debug, prometheus]
+#    metrics:
+#      receivers: [otlp]
+#      processors: [batch]
+#      exporters: [debug, prometheus]
