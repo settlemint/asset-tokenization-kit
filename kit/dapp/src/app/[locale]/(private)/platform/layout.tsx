@@ -1,3 +1,4 @@
+import { RoleGuard } from "@/components/blocks/auth/role-guard";
 import NavInset from "@/components/layout/nav-inset";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
@@ -26,6 +27,7 @@ export async function generateMetadata({
 export default function PlatformLayout({ children }: LayoutProps) {
   return (
     <>
+      <RoleGuard allowedRoles={["admin"]} redirectTo="/portfolio" />
       <PlatformSidebar />
       <NavInset>{children}</NavInset>
     </>

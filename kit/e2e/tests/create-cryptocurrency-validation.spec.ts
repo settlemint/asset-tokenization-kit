@@ -35,7 +35,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         symbol: "TCC",
         decimals: "18",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is empty", async () => {
@@ -44,7 +44,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         symbol: "",
         decimals: "18",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is with lower case", async () => {
@@ -53,7 +53,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         symbol: "tcc",
         decimals: "18",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct asset-symbol format"
       );
@@ -68,14 +68,14 @@ test.describe("Cryptocurrency Creation Validation", () => {
         symbol: "TCC",
         decimals: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates decimals range", async () => {
       await createAssetForm.fillBasicFields({
         decimals: "19",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
 
@@ -91,7 +91,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         symbol: cryptocurrencyData.symbol,
         decimals: cryptocurrencyData.decimals,
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
     });
 
     test("validates initial supply field is empty", async () => {
@@ -99,7 +99,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         initialSupply: "",
         price: "1",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
     test("validates price field is empty", async () => {
@@ -107,7 +107,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         initialSupply: "1",
         price: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
 
@@ -116,7 +116,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         initialSupply: "0",
         price: "10",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no less than 0.000001"
       );
@@ -127,7 +127,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         initialSupply: "10000000000000000000",
         price: "1",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );
@@ -137,7 +137,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         initialSupply: "1",
         price: "10000000000000000000",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );

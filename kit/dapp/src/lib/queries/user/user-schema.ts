@@ -82,7 +82,7 @@ export const AccountSchema = t.Object(
       description: "The Ethereum address of the account",
     }),
     balancesCount: t.Optional(
-      t.Number({
+      t.StringifiedBigInt({
         description:
           "The number of token balances associated with this account",
       })
@@ -102,7 +102,7 @@ export type Account = StaticDecode<typeof AccountSchema>;
  */
 export const CalculatedUserSchema = t.Object(
   {
-    assetCount: t.Number({
+    assetCount: t.BigInt({
       description: "The number of assets held by the user",
     }),
     transactionCount: t.Number({

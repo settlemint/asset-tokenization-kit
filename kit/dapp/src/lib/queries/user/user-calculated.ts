@@ -14,7 +14,7 @@ export function userCalculateFields(
   account?: Account
 ): CalculatedUser {
   // Calculate asset count from account data
-  const assetCount = account?.balancesCount ?? 0;
+  const assetCount = account?.balancesCount ?? BigInt(0);
 
   // Calculate transaction count from account data
   const transactionCount = 0;

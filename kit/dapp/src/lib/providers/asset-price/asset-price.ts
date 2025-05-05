@@ -98,9 +98,6 @@ export const getAssetPriceInBaseCurrency = withTracing(
   "queries",
   "getAssetPrice",
   async (assetId: string): Promise<number | null> => {
-    "use cache";
-    cacheTag("asset-price");
-
     try {
       const price = await getAssetPrice(assetId);
       if (!price) {

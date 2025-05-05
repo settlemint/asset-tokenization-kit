@@ -40,7 +40,7 @@ test.describe.serial("Bond Creation Validation", () => {
         decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is empty", async () => {
@@ -50,7 +50,7 @@ test.describe.serial("Bond Creation Validation", () => {
         decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is with lower case", async () => {
@@ -60,7 +60,7 @@ test.describe.serial("Bond Creation Validation", () => {
         decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct asset-symbol format"
       );
@@ -75,7 +75,7 @@ test.describe.serial("Bond Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         isin: "invalid-isin",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct isin format"
       );
@@ -84,7 +84,7 @@ test.describe.serial("Bond Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         isin: "US0000000000000",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct isin format"
       );
@@ -95,7 +95,7 @@ test.describe.serial("Bond Creation Validation", () => {
         symbol: "TBO",
         decimals: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates decimals range", async () => {
@@ -104,7 +104,7 @@ test.describe.serial("Bond Creation Validation", () => {
         symbol: "TBO",
         decimals: "19",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates default decimals field", async () => {
@@ -120,11 +120,11 @@ test.describe.serial("Bond Creation Validation", () => {
         decimals: bondData.decimals,
         isin: bondData.isin,
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
     });
 
     test("validates required fields are empty", async () => {
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
       await createAssetForm.expectErrorMessage(
         "Please provide all required information"
@@ -136,7 +136,7 @@ test.describe.serial("Bond Creation Validation", () => {
         maximumSupply: "0",
         faceValue: "50",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no less than 1e-12"
       );
@@ -147,7 +147,7 @@ test.describe.serial("Bond Creation Validation", () => {
         maximumSupply: "1",
         faceValue: "0",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no less than 1e-12"
       );
@@ -159,7 +159,7 @@ test.describe.serial("Bond Creation Validation", () => {
         faceValue: "100",
         maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Please provide all required information"
       );
@@ -170,7 +170,7 @@ test.describe.serial("Bond Creation Validation", () => {
         faceValue: "100",
         maturityDate: createAssetForm.getMaturityDate({ isPast: true }),
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnContinueButton();
       await createAssetForm.expectErrorMessage(
         "Maturity date must be at least 1 hour in the future"
       );

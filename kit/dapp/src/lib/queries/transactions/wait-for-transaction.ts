@@ -1,6 +1,7 @@
 "use server";
 
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import type { FragmentOf } from "gql.tada";
 import { ReceiptFragment } from "./transaction-fragment";
 
 const GetTransaction = portalGraphql(
@@ -16,6 +17,8 @@ const GetTransaction = portalGraphql(
   [ReceiptFragment]
 );
 
+type TransactionReceipt = FragmentOf<typeof ReceiptFragment>;
+
 /**
  * Waits for multiple transactions to be mined
  * @param transactionHashes Array of transaction hashes to wait for
@@ -23,9 +26,9 @@ const GetTransaction = portalGraphql(
  */
 export async function waitForTransactions(
   hashes: string[] | undefined
-): Promise<void> {
+): Promise<TransactionReceipt[]> {
   if (!hashes || hashes.length === 0) {
-    return Promise.resolve();
+    return Promise.resolve([]);
   }
 
   const promises = hashes.map(async (hash) => {
@@ -41,7 +44,7 @@ export async function waitForTransactions(
         if (result.getTransaction?.receipt) {
           const receipt = result.getTransaction.receipt;
           if (receipt.status === "Success") {
-            return Promise.resolve();
+            return Promise.resolve(result.getTransaction.receipt);
           } else {
             return Promise.reject(
               new Error(
@@ -68,5 +71,5 @@ export async function waitForTransactions(
     throw new Error(`Transaction ${hash} took too long to confirm`);
   });
 
-  return Promise.all(promises).then(() => Promise.resolve());
+  return Promise.all(promises);
 }
