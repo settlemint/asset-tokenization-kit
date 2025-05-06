@@ -16,6 +16,12 @@ import { SMARTUtils } from "./utils/SMARTUtils.sol";
 import { console } from "forge-std/console.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
+/// Following tests are changed:
+/// - test_BurnFrom: removed because it doesn't exist in ERC3643
+/// - test_OnlyUserManagementCanBlock: removed because it will be managed by compliance modules
+/// - test_OnlyAdminCanUpdateCollateral: renamed to test_OnlyTrustedIssuerCanUpdateCollateral
+/// - test_StableCoinClawback: renamed to test_StableCoinForceTransfer
+/// - test_onlySupplyManagementCanClawback: renamed to test_onlySupplyManagementCanForceTransfer
 contract SMARTDepositTest is Test {
     SMARTUtils internal smartUtils;
 
@@ -169,6 +175,15 @@ contract SMARTDepositTest is Test {
         vm.stopPrank();
     }
 
+    function test_Burn() public {
+        _mintInitialSupply(user1);
+
+        vm.prank(owner);
+        deposit.burn(user1, 100);
+
+        assertEq(deposit.balanceOf(user1), INITIAL_SUPPLY - 100);
+    }
+
     function test_onlyAdminCanPause() public {
         vm.prank(user1);
         vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1));
@@ -308,5 +323,77 @@ contract SMARTDepositTest is Test {
         vm.prank(user2);
         vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2));
         deposit.forcedTransfer(user1, user2, INITIAL_SUPPLY);
+    }
+
+    // Test for recoverERC20 function
+    function test_RecoverERC20() public {
+        // Create a mock token
+        SMARTDeposit mockToken =
+            _createDeposit("Mock", "MCK", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner);
+
+        // Set up identity for the deposit contract (required to receive tokens)
+        smartUtils.setUpIdentity(address(deposit));
+
+        // Update collateral and mint some tokens to the deposit contract
+        _updateCollateral(address(mockToken), owner, 1000);
+        vm.startPrank(owner);
+        mockToken.mint(address(deposit), 1000);
+        vm.stopPrank();
+
+        assertEq(mockToken.balanceOf(address(deposit)), 1000);
+
+        // Remove redundant identity setup for user1 (already done in setUp)
+
+        // Test recovery by owner (who has DEFAULT_ADMIN_ROLE)
+        vm.startPrank(owner);
+        deposit.recoverERC20(address(mockToken), user1, 500);
+        vm.stopPrank();
+
+        // Verify tokens were recovered
+        assertEq(mockToken.balanceOf(address(deposit)), 500);
+        assertEq(mockToken.balanceOf(user1), 500);
+
+        // Test recovery by non-admin
+        vm.startPrank(user2);
+        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2));
+        deposit.recoverERC20(address(mockToken), user1, 500);
+        vm.stopPrank();
+    }
+
+    // Test recoverERC20 revert on invalid address
+    function test_RecoverERC20RevertOnInvalidAddress() public {
+        // Test recovering from address(0)
+        vm.startPrank(owner);
+        vm.expectRevert(); // ZeroAddressNotAllowed
+        deposit.recoverERC20(address(0), user1, 100);
+        vm.stopPrank();
+
+        // Test recovering own token (should revert)
+        vm.startPrank(owner);
+        vm.expectRevert(); // CannotRecoverSelf
+        deposit.recoverERC20(address(deposit), user1, 100);
+        vm.stopPrank();
+    }
+
+    // Test recoverERC20 revert on insufficient balance
+    function test_RecoverERC20RevertOnInsufficientBalance() public {
+        // Create a mock token
+        SMARTDeposit mockToken =
+            _createDeposit("Mock", "MCK", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner);
+
+        // Set up identity for the deposit contract (required to receive tokens)
+        smartUtils.setUpIdentity(address(deposit));
+
+        // Update collateral and mint some tokens to the deposit contract
+        _updateCollateral(address(mockToken), owner, 100);
+        vm.startPrank(owner);
+        mockToken.mint(address(deposit), 100);
+        vm.stopPrank();
+
+        // Test recovering more than balance
+        vm.startPrank(owner);
+        vm.expectRevert(); // InsufficientTokenBalance
+        deposit.recoverERC20(address(mockToken), user1, 200);
+        vm.stopPrank();
     }
 }
