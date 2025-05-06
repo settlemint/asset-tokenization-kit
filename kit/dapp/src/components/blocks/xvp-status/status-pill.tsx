@@ -1,5 +1,5 @@
 import { Badge, type badgeVariants } from "@/components/ui/badge";
-import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
+import type { XvPSettlement } from "@/lib/queries/xvp/xvp-list";
 import { cn } from "@/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { isBefore } from "date-fns";

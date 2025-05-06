@@ -1,5 +1,4 @@
 import { t } from "@/lib/utils/typebox";
-import type { Static } from "@sinclair/typebox";
 /**
  * TypeBox schema for XvPSettlementFlow
  */
@@ -34,5 +33,3 @@ export const XvPSettlementSchema = t.Object({
   flows: t.Array(XvPSettlementFlowSchema),
   createdAt: t.StringifiedBigInt(),
 });
-
-export type XvPSettlement = Static<typeof XvPSettlementSchema>;

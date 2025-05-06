@@ -4,7 +4,7 @@ import { DataTableRowActions } from "@/components/blocks/data-table/data-table-r
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { XvpDetailSheet } from "@/components/blocks/xvp-status/detail-sheet";
 import { XvpStatusPill } from "@/components/blocks/xvp-status/status-pill";
-import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
+import type { XvPSettlement } from "@/lib/queries/xvp/xvp-list";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import { isBefore } from "date-fns";

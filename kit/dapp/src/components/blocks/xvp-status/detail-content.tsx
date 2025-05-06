@@ -1,7 +1,7 @@
 "use client";
 
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
+import type { XvPSettlement } from "@/lib/queries/xvp/xvp-list";
 import { useTranslations } from "next-intl";
 
 export function XvpDetailContent({ xvp }: { xvp: XvPSettlement }) {

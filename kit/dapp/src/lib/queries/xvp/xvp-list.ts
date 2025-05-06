@@ -49,3 +49,7 @@ export const getXvPSettlementList = withTracing(
     });
   }
 );
+
+export type XvPSettlement = Awaited<
+  ReturnType<typeof getXvPSettlementList>
+>[number];
