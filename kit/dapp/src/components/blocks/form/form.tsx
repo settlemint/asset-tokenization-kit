@@ -287,7 +287,6 @@ export function Form<
         },
         actionProps: {
           onSuccess: async ({ data, input }) => {
-            let lastBlockNumber: number | undefined = undefined;
             if (secureForm) {
               const hashes = safeParse(tb.Hashes(), data);
 
@@ -300,8 +299,11 @@ export function Form<
               const toastId = Date.now();
               toast.promise(waitForTransactions(hashes), {
                 loading: t("transactions.sending"),
-                success: (results) => {
-                  lastBlockNumber = Number(results.at(-1)?.blockNumber);
+                success: async (results) => {
+                  const lastBlockNumber = Number(results.at(-1)?.blockNumber);
+                  await waitForIndexing(lastBlockNumber);
+                  await revalidate();
+
                   toast.dismiss(toastId);
                   return toast.success(successMessage, {
                     action,
@@ -319,11 +321,6 @@ export function Form<
 
             resetFormAndAction();
             onOpenChange?.(false);
-
-            if (lastBlockNumber) {
-              await waitForIndexing(lastBlockNumber);
-              await revalidate();
-            }
           },
           onError: (error) => {
             let errorMessage = "Unknown error";
