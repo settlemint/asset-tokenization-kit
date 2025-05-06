@@ -41,6 +41,17 @@ export class EventType {
   static Distribution: string = "Distribution";
   static BatchDistribution: string = "BatchDistribution";
   static MerkleRootUpdated: string = "MerkleRootUpdated";
+  static VaultCreated: string = "VaultCreated";
+  static Deposit: string = "Deposit";
+  static RequirementChanged: string = "RequirementChanged";
+  static SubmitTransaction: string = "SubmitTransaction";
+  static SubmitERC20TransferTransaction: string =
+    "SubmitERC20TransferTransaction";
+  static SubmitContractCallTransaction: string =
+    "SubmitContractCallTransaction";
+  static ConfirmTransaction: string = "ConfirmTransaction";
+  static RevokeConfirmation: string = "RevokeConfirmation";
+  static ExecuteTransaction: string = "ExecuteTransaction";
 }
 
 function activityLogEntryId(event: ethereum.Event): Bytes {
@@ -99,6 +110,33 @@ export function createActivityLogEntry(
       value = param.value.toBigInt().toString();
     } else if (param.value.kind == ethereum.ValueKind.STRING) {
       value = param.value.toString();
+    } else if (
+      param.value.kind == ethereum.ValueKind.ARRAY ||
+      param.value.kind == ethereum.ValueKind.FIXED_ARRAY
+    ) {
+      const arrayValue = param.value.toArray();
+      const stringValues: string[] = [];
+      for (let j = 0; j < arrayValue.length; j++) {
+        const item = arrayValue[j];
+        if (item.kind == ethereum.ValueKind.ADDRESS) {
+          stringValues.push(item.toAddress().toHexString());
+        } else if (item.kind == ethereum.ValueKind.BOOL) {
+          stringValues.push(item.toBoolean().toString());
+        } else if (item.kind == ethereum.ValueKind.BYTES) {
+          stringValues.push(item.toBytes().toString());
+        } else if (item.kind == ethereum.ValueKind.FIXED_BYTES) {
+          stringValues.push(item.toBytes().toHexString());
+        } else if (item.kind == ethereum.ValueKind.INT) {
+          stringValues.push(item.toBigInt().toString());
+        } else if (item.kind == ethereum.ValueKind.UINT) {
+          stringValues.push(item.toBigInt().toString());
+        } else if (item.kind == ethereum.ValueKind.STRING) {
+          stringValues.push(item.toString());
+        } else {
+          stringValues.push(item.toString());
+        }
+      }
+      value = "[" + stringValues.join(", ") + "]";
     } else {
       value = param.value.toString();
     }
