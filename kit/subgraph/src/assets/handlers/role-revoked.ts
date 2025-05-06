@@ -11,7 +11,7 @@ import { Role } from "../../utils/enums";
 
 export function roleRevokedHandler(
   event: ethereum.Event,
-  asset: Entity,
+  entity: Entity,
   role: string,
   roleHolder: Address,
   sender: Address
@@ -23,8 +23,7 @@ export function roleRevokedHandler(
   const roleHolderAccount = fetchAccount(roleHolder);
 
   if (role == Role.DEFAULT_ADMIN_ROLE) {
-    let found = false;
-    const adminsValue = asset.get("admins");
+    const adminsValue = entity.get("admins");
     let admins: Bytes[] = [];
     if (!adminsValue) {
       admins = [];
@@ -37,13 +36,12 @@ export function roleRevokedHandler(
         newAdmins.push(admins[i]);
       }
     }
-    asset.set("admins", Value.fromBytesArray(newAdmins));
+    entity.set("admins", Value.fromBytesArray(newAdmins));
     return;
   }
 
   if (role == Role.SUPPLY_MANAGEMENT_ROLE) {
-    let found = false;
-    const supplyManagersValue = asset.get("supplyManagers");
+    const supplyManagersValue = entity.get("supplyManagers");
     let supplyManagers: Bytes[] = [];
     if (!supplyManagersValue) {
       supplyManagers = [];
@@ -56,13 +54,12 @@ export function roleRevokedHandler(
         newSupplyManagers.push(supplyManagers[i]);
       }
     }
-    asset.set("supplyManagers", Value.fromBytesArray(newSupplyManagers));
+    entity.set("supplyManagers", Value.fromBytesArray(newSupplyManagers));
     return;
   }
 
   if (role == Role.USER_MANAGEMENT_ROLE) {
-    let found = false;
-    const userManagersValue = asset.get("userManagers");
+    const userManagersValue = entity.get("userManagers");
     let userManagers: Bytes[] = [];
     if (!userManagersValue) {
       userManagers = [];
@@ -75,7 +72,25 @@ export function roleRevokedHandler(
         newUserManagers.push(userManagers[i]);
       }
     }
-    asset.set("userManagers", Value.fromBytesArray(newUserManagers));
+    entity.set("userManagers", Value.fromBytesArray(newUserManagers));
+    return;
+  }
+
+  if (role == Role.SIGNER_ROLE) {
+    const signersValue = entity.get("signers");
+    let signers: Bytes[] = [];
+    if (!signersValue) {
+      signers = [];
+    } else {
+      signers = signersValue.toBytesArray();
+    }
+    const newSigners: Bytes[] = [];
+    for (let i = 0; i < signers.length; i++) {
+      if (!signers[i].equals(roleHolderAccount.id)) {
+        newSigners.push(signers[i]);
+      }
+    }
+    entity.set("signers", Value.fromBytesArray(newSigners));
     return;
   }
 

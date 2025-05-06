@@ -32,4 +32,13 @@ export class Role {
   static USER_MANAGEMENT_ROLE: string = crypto
     .keccak256(ByteArray.fromUTF8("USER_MANAGEMENT_ROLE"))
     .toHexString();
+  static SIGNER_ROLE: string = crypto
+    .keccak256(ByteArray.fromUTF8("SIGNER_ROLE"))
+    .toHexString();
+}
+
+export class VaultTransactionType {
+  static NativeCurrencyTransfer: string = "NativeCurrencyTransfer";
+  static ERC20Transfer: string = "ERC20Transfer";
+  static ContractCall: string = "ContractCall";
 }
