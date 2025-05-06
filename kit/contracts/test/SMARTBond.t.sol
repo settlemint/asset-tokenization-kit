@@ -127,8 +127,6 @@ contract SMARTBondTest is Test {
         internal
         returns (SMARTBond smartBond)
     {
-        vm.startPrank(owner);
-
         smartBond = new SMARTBond(
             name_,
             symbol_,
@@ -148,6 +146,7 @@ contract SMARTBondTest is Test {
 
         smartUtils.createAndSetTokenOnchainID(address(smartBond), owner);
 
+        vm.startPrank(owner);
         smartBond.mint(owner, initialSupply);
         vm.stopPrank();
 
