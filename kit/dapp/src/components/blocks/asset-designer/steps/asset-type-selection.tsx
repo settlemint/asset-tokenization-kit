@@ -3,13 +3,12 @@
 import { AssetTypeIcon } from "@/components/blocks/asset-type-icon/asset-type-icon";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Info } from "lucide-react";
+import { CheckCircle2, Info, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { AssetType } from "../types";
 
@@ -21,68 +20,195 @@ interface AssetTypeSelectionProps {
 interface AssetTypeInfo {
   type: AssetType;
   descriptionKey: string;
-  featureKeys: string[];
+  extendedDescriptionKey: string;
+  featureKeys: { status: boolean; label: string }[];
 }
 
 const assetTypesInfo: AssetTypeInfo[] = [
   {
     type: "bond",
     descriptionKey: "private.assets.create.form.description.bonds",
+    extendedDescriptionKey: "private.assets.table.topinfo-description.bond",
     featureKeys: [
-      "asset-designer.type-selection.features.bond.fixed-interest",
-      "asset-designer.type-selection.features.bond.maturity-management",
-      "asset-designer.type-selection.features.bond.transferable-ownership",
-      "asset-designer.type-selection.features.bond.principal-repayment",
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.one",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.two",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.three",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.four",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.five",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.six",
+      },
     ],
   },
   {
     type: "cryptocurrency",
     descriptionKey: "private.assets.create.form.description.cryptocurrencies",
+    extendedDescriptionKey: "private.assets.table.topinfo-title.cryptocurrency",
     featureKeys: [
-      "asset-designer.type-selection.features.cryptocurrency.secure-transactions",
-      "asset-designer.type-selection.features.cryptocurrency.decentralized-ownership",
-      "asset-designer.type-selection.features.cryptocurrency.global-payments",
-      "asset-designer.type-selection.features.cryptocurrency.programmable-money",
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.one",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.two",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.three",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.four",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.five",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.six",
+      },
     ],
   },
   {
     type: "equity",
     descriptionKey: "private.assets.create.form.description.equities",
+    extendedDescriptionKey: "private.assets.table.topinfo-title.equity",
     featureKeys: [
-      "asset-designer.type-selection.features.equity.voting-rights",
-      "asset-designer.type-selection.features.equity.dividend-distribution",
-      "asset-designer.type-selection.features.equity.fractional-ownership",
-      "asset-designer.type-selection.features.equity.liquidity",
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.one",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.two",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.three",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.four",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.five",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.six",
+      },
     ],
   },
   {
     type: "fund",
     descriptionKey: "private.assets.create.form.description.funds",
+    extendedDescriptionKey: "private.assets.table.topinfo-title.fund",
     featureKeys: [
-      "asset-designer.type-selection.features.fund.portfolio-diversification",
-      "asset-designer.type-selection.features.fund.performance-tracking",
-      "asset-designer.type-selection.features.fund.redemption-rights",
-      "asset-designer.type-selection.features.fund.lower-investment",
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.one",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.two",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.three",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.four",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.five",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.six",
+      },
     ],
   },
   {
     type: "stablecoin",
     descriptionKey: "private.assets.create.form.description.stablecoins",
+    extendedDescriptionKey: "private.assets.table.topinfo-title.stablecoin",
     featureKeys: [
-      "asset-designer.type-selection.features.stablecoin.price-stability",
-      "asset-designer.type-selection.features.stablecoin.collateral-backing",
-      "asset-designer.type-selection.features.stablecoin.transparent-reserves",
-      "asset-designer.type-selection.features.stablecoin.fast-settlements",
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.one",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.two",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.three",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.four",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.five",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.six",
+      },
     ],
   },
   {
     type: "deposit",
     descriptionKey: "private.assets.create.form.description.deposits",
+    extendedDescriptionKey: "private.assets.table.topinfo-title.deposit",
     featureKeys: [
-      "asset-designer.type-selection.features.deposit.interest-earning",
-      "asset-designer.type-selection.features.deposit.redeemable",
-      "asset-designer.type-selection.features.deposit.term-options",
-      "asset-designer.type-selection.features.deposit.institutional-backing",
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.one",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.two",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.three",
+      },
+      {
+        status: false,
+        label: "asset-designer.type-selection.features.four",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.five",
+      },
+      {
+        status: true,
+        label: "asset-designer.type-selection.features.six",
+      },
     ],
   },
 ];
@@ -126,38 +252,38 @@ export function AssetTypeSelection({
               }
               onClick={() => assetInfo.type && onSelect(assetInfo.type)}
             >
-              <CardHeader className="flex flex-row items-center justify-between pb-0 flex-shrink-0">
-                <div className="flex items-center space-x-3">
-                  {assetInfo.type && (
-                    <AssetTypeIcon type={assetInfo.type} size="md" />
-                  )}
-                  <CardTitle className="text-base font-medium capitalize">
-                    {assetInfo.type
-                      ? t(
-                          assetInfo.type === "cryptocurrency"
-                            ? "asset-type.cryptocurrencies"
-                            : assetInfo.type === "equity"
-                              ? "asset-type.equities"
-                              : (`asset-type.${assetInfo.type}s` as any)
-                        )
-                      : ""}
-                  </CardTitle>
-                </div>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
+              <CardHeader>
+                <div className="flex flex-row items-center justify-between pb-0 flex-shrink-0">
+                  <div className="flex items-center space-x-2">
+                    {assetInfo.type && (
+                      <AssetTypeIcon type={assetInfo.type} size="md" />
+                    )}
+                    <CardTitle className="text-base font-medium capitalize">
+                      {assetInfo.type
+                        ? t(
+                            assetInfo.type === "cryptocurrency"
+                              ? "asset-type.cryptocurrencies"
+                              : assetInfo.type === "equity"
+                                ? "asset-type.equities"
+                                : (`asset-type.${assetInfo.type}s` as any)
+                          )
+                        : ""}
+                    </CardTitle>
+                  </div>
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
                       <Info className="h-4 w-4 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>More information about {assetInfo.type}.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </CardHeader>
-              <CardContent className="space-y-4 mt-auto">
-                <p className="text-xs text-muted-foreground">
+                    </HoverCardTrigger>
+                    <HoverCardContent className="text-sm">
+                      <p>{t(assetInfo.extendedDescriptionKey as any)}</p>
+                    </HoverCardContent>
+                  </HoverCard>
+                </div>
+                <p className="text-xs text-muted-foreground mt-4">
                   {t(assetInfo.descriptionKey as any)}
                 </p>
+              </CardHeader>
+              <CardContent className="space-y-4 mt-auto">
                 <div className="space-y-2">
                   <h4 className="text-xs font-medium text-foreground">
                     {t("asset-designer.type-selection.key-features")}
@@ -165,12 +291,16 @@ export function AssetTypeSelection({
                   <ul className="space-y-1.5">
                     {assetInfo.featureKeys.map((featureKey) => (
                       <li
-                        key={featureKey}
+                        key={featureKey.label}
                         className="flex items-center space-x-2"
                       >
-                        <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        {featureKey.status ? (
+                          <CheckCircle2 className="h-4 w-4 text-sm-state-success-background flex-shrink-0" />
+                        ) : (
+                          <XCircle className="h-4 w-4 text-sm-state-error-background flex-shrink-0" />
+                        )}
                         <span className="text-xs text-muted-foreground">
-                          {t(featureKey as any)}
+                          {t(featureKey.label as any)}
                         </span>
                       </li>
                     ))}
