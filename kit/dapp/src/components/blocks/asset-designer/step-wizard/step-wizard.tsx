@@ -81,14 +81,29 @@ export function StepWizard({
                     tabIndex={-1}
                     className={cn(
                       "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-20",
-                      isCurrent
-                        ? "hover:bg-primary hover:text-primary-foreground"
-                        : "text-primary-foreground hover:bg-primary hover:text-primary-foreground",
-                      finalDisabled && "cursor-not-allowed",
+                      isCurrent ? "" : "text-primary-foreground",
+                      finalDisabled && "cursor-not-allowed opacity-60",
                       !isCurrent && "text-muted-foreground"
                     )}
+                    style={{
+                      ["--hover-color" as any]: "#36BACF",
+                    }}
                     onClick={() => !finalDisabled && onStepChange(step.id)}
                     disabled={finalDisabled}
+                    onMouseEnter={(e) => {
+                      if (!finalDisabled) {
+                        e.currentTarget.style.backgroundColor = "#36BACF";
+                        e.currentTarget.style.color = "white";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!finalDisabled) {
+                        e.currentTarget.style.backgroundColor = "";
+                        e.currentTarget.style.color = isCurrent
+                          ? ""
+                          : "var(--muted-foreground)";
+                      }
+                    }}
                   >
                     <div className="flex items-center space-x-3">
                       <div
@@ -105,9 +120,14 @@ export function StepWizard({
                           isCompleted
                             ? "bg-primary-foreground text-primary border-primary"
                             : isCurrent
-                              ? "border-none text-primary-foreground bg-primary"
-                              : "border-none text-primary-foreground bg-primary"
+                              ? "border-none text-primary-foreground"
+                              : "border-none text-primary-foreground"
                         )}
+                        style={
+                          !isCompleted
+                            ? { backgroundColor: "#36BACF" }
+                            : undefined
+                        }
                       >
                         {/* Conditional Icon Rendering with Transitions */}
                         <div className="transition-opacity duration-300 ease-in-out">
@@ -118,7 +138,7 @@ export function StepWizard({
                               height="16"
                               viewBox="0 0 24 24"
                               fill="none"
-                              stroke="currentColor"
+                              stroke="#36BACF"
                               strokeWidth="3"
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -177,8 +197,8 @@ export function StepWizard({
                       className={cn(
                         "text-xs mt-1 ml-9 transition-colors duration-300",
                         isCurrent
-                          ? "text-primary-foreground/70"
-                          : "text-primary-foreground/25"
+                          ? "text-primary-foreground/90"
+                          : "text-primary-foreground/70"
                       )}
                     >
                       {step.description}
