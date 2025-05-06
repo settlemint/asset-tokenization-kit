@@ -19,13 +19,12 @@ export const betterAuth = new Elysia({ name: "better-auth" })
         };
       },
     },
-  })
-  .as("plugin");
+  });
 
-export const cacheControl = new Elysia({ name: "cache-control" })
-  .onBeforeHandle(({ request, set }) => {
-    if (request.method === "GET") {
-      set.headers["Cache-Control"] = "public, max-age=10";
-    }
-  })
-  .as("plugin");
+export const cacheControl = new Elysia({
+  name: "cache-control",
+}).onBeforeHandle(({ request, set }) => {
+  if (request.method === "GET") {
+    set.headers["Cache-Control"] = "public, max-age=10";
+  }
+});
