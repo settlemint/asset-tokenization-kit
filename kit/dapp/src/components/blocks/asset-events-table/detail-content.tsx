@@ -1,17 +1,23 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api/client";
+import { getRoleFromHash } from "@/lib/config/roles";
 import { formatDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
+import React from "react";
 import useSWR from "swr";
-import { isAddress, type Hash } from "viem";
+import { isAddress, type Hash, type Hex } from "viem";
 import { EvmAddress } from "../evm-address/evm-address";
 import { TransactionHash } from "../transaction-hash/transaction-hash";
 
-export function EventDetailContent({ eventId }: { eventId: string }) {
+export const EventDetailContent = React.memo(function EventDetailContent({
+  eventId,
+}: {
+  eventId: string;
+}) {
   const t = useTranslations("components.asset-events-table.detail-sheet");
   const { data: event, isLoading } = useSWR(
     [`events-${eventId}`],
@@ -68,7 +74,10 @@ export function EventDetailContent({ eventId }: { eventId: string }) {
       </SheetHeader>
       <div className="mx-4 overflow-auto">
         <Card>
-          <CardContent className="pt-6">
+          <CardHeader>
+            <CardTitle>Event details</CardTitle>
+          </CardHeader>
+          <CardContent>
             <dl className="grid grid-cols-[1fr_2fr] gap-4">
               <dt className="text-muted-foreground text-sm">{t("sender")}:</dt>
               <dd className="text-sm">
@@ -95,25 +104,28 @@ export function EventDetailContent({ eventId }: { eventId: string }) {
           {event.values && Object.keys(event.values).length > 0 && (
             <>
               <Card>
-                <CardContent className="pt-6">
+                <CardHeader>
+                  <CardTitle>Event parameters</CardTitle>
+                </CardHeader>
+                <CardContent>
                   <dl className="grid grid-cols-[1fr_2fr] gap-4">
-                    {event.values.map(({ name, value }) => (
-                      <>
-                        <dt
-                          key={`${name}-dt`}
-                          className="text-muted-foreground text-sm capitalize"
-                        >
-                          {name}:
-                        </dt>
-                        <dd key={`${name}-dd`} className="text-sm break-all">
-                          {isAddress(value as Hash) ? (
-                            <EvmAddress address={value as Hash} />
-                          ) : (
-                            String(value)
-                          )}
-                        </dd>
-                      </>
-                    ))}
+                    {event.values.map(({ name, value }) => [
+                      <dt
+                        key={`${name}-dt`}
+                        className="text-muted-foreground text-sm capitalize"
+                      >
+                        {name}:
+                      </dt>,
+                      <dd key={`${name}-dd`} className="text-sm break-all">
+                        {isAddress(value as Hash) ? (
+                          <EvmAddress address={value as Hash} />
+                        ) : getRoleFromHash(value as Hex) ? (
+                          <span>{t(getRoleFromHash(value as Hex) as any)}</span>
+                        ) : (
+                          String(value)
+                        )}
+                      </dd>,
+                    ])}
                   </dl>
                 </CardContent>
               </Card>
@@ -123,4 +135,4 @@ export function EventDetailContent({ eventId }: { eventId: string }) {
       </div>
     </SheetContent>
   );
-}
+});

@@ -255,6 +255,10 @@ files:
     components.asset-events-table.detail-sheet.details-for-event: 3fa5319884c97c84f64cf07ca94a467e
     components.asset-events-table.detail-sheet.sender: 8aace3ec18d83874d22850b7eee93c7d
     components.asset-events-table.detail-sheet.transaction-hash: a0bd1db035c6e85fbe6f3cbbf3ff28ee
+    components.asset-events-table.detail-sheet.USER_MANAGEMENT_ROLE: 59a95d9229f376d6468af48408c7413b
+    components.asset-events-table.detail-sheet.SUPPLY_MANAGEMENT_ROLE: 1472f2da8e5c038e259d573d6be2d1d2
+    components.asset-events-table.detail-sheet.AUDITOR_ROLE: cc790ee546ee60d2cabbcf26244aea37
+    components.asset-events-table.detail-sheet.SIGNER_ROLE: aa600fdb53b3a438fdfcdbb9c269032d
     components.asset-events-table.details.account: 08bd40c7543007ad06e4fce31618f6ec
     components.asset-events-table.details.amount: b2f40690858b404ed10e62bdf422c704
     components.asset-events-table.details.asset: 26e9054be7f40079575582b7ad3f7363

@@ -371,7 +371,11 @@
         "details-button": "Details",
         "details-for-event": "Details for {event} event",
         "sender": "Sender",
-        "transaction-hash": "Transaction Hash"
+        "transaction-hash": "Transaction Hash",
+        "USER_MANAGEMENT_ROLE": "User Management Role",
+        "SUPPLY_MANAGEMENT_ROLE": "Supply Management Role",
+        "AUDITOR_ROLE": "Auditor Role",
+        "SIGNER_ROLE": "Signer Role"
       },
       "details": {
         "account": "Account",

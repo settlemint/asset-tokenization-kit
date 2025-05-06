@@ -291,7 +291,11 @@
         "details-for-event": "Details für das {event} Ereignis",
         "sender": "Absender",
         "transaction-hash": "Transaktions-Hash",
-        "details": "Ereignisdetails"
+        "details": "Ereignisdetails",
+        "USER_MANAGEMENT_ROLE": "Benutzerverwaltungsrolle",
+        "SUPPLY_MANAGEMENT_ROLE": "Liefermanagementrolle",
+        "AUDITOR_ROLE": "Prüferrolle",
+        "SIGNER_ROLE": "Unterzeichnerrolle"
       },
       "details": {
         "account": "Konto",

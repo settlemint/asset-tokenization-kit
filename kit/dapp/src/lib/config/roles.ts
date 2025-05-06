@@ -38,7 +38,17 @@ export const ROLES = {
     displayName: "Auditor",
     description: "Allows the account to audit the asset",
   },
+  SIGNER_ROLE: {
+    id: keccak256(stringToBytes("SIGNER_ROLE")),
+    contractRole: "SIGNER_ROLE",
+    displayName: "Signer",
+    description: "Allows the account to sign in a vault",
+  },
 } as const;
+
+export function getRoleFromHash(hash: Hex) {
+  return Object.values(ROLES).find((role) => role.id === hash)?.contractRole;
+}
 
 export const getRoles = (assettype: AssetType): Role[] => {
   const allRoles = Object.keys(ROLES) as Role[];
