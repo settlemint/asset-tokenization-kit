@@ -174,12 +174,12 @@ files:
     admin.sidebar.trade-management.xvp-settlement: 772e51e35d4c11a6b2729005cff10d2f
     admin-user: e3afed0047b08059d0fada10f400c1e5
     asset-designer.type-selection.description: 0bdd37d4ffef4f5fd35c8cfe4075e8ee
-    asset-designer.type-selection.features.one: 1eaf82dde7b0245f7f7fd0381bd4fb7f
-    asset-designer.type-selection.features.two: debf72f171f80b342399c14259a6d6ec
-    asset-designer.type-selection.features.three: bbd7f7db7f29f2c6b85606b22c617f77
-    asset-designer.type-selection.features.four: b5b04cb0701ade733e0df66abe1f7023
     asset-designer.type-selection.features.five: 1e0e883c9754947d269f21eb0edffe03
+    asset-designer.type-selection.features.four: b5b04cb0701ade733e0df66abe1f7023
+    asset-designer.type-selection.features.one: 1eaf82dde7b0245f7f7fd0381bd4fb7f
     asset-designer.type-selection.features.six: e230c1596e9d7d42f6ca3ae585c59e52
+    asset-designer.type-selection.features.three: bbd7f7db7f29f2c6b85606b22c617f77
+    asset-designer.type-selection.features.two: debf72f171f80b342399c14259a6d6ec
     asset-designer.type-selection.key-features: e7f6892ee78e46a33e8f9dbe921f886f
     asset-designer.type-selection.title: 6e9eb8e53a19be6ee2fa666d2d982092
     asset-events.Approval: 0162bce636a63c3ae499224203e06ed0
@@ -853,8 +853,10 @@ files:
     portfolio.transfer-form.transfer-title: 2ebe32cd04f98bb3bdb78cf93dcc220e
     portfolio.transfer-form.trigger-label: 6950810f0d2bba97a6f710c7b965b84e
     private.assets.asset-statistics-title: c33e404a441c6ba9648f88af3c68a1ca
-    private.assets.create.basics.description: edfd0bd18b6ec6be4c3bc66ba8835946
-    private.assets.create.basics.title: 76dad39ff147053eb3a9f8493872d062
+    private.assets.create.basics.description: 3735b5b809a8acb22b61cd1f79d5df02
+    private.assets.create.basics.description-offchain: e9095eb8b9efa2f946c4e07d7841be87
+    private.assets.create.basics.title: ac061eff69e6c106d74d21859dcb28a9
+    private.assets.create.basics.title-offchain: 0bb534e8b387711055b824c55a9d1656
     private.assets.create.configuration.bonds.description: acd48831270cfa0eb1e69dcd1315083e
     private.assets.create.configuration.bonds.title: f8a901f4f21ee6409e5c5fb8100180fd
     private.assets.create.configuration.cryptocurrencies.description: 5a22678bbfb6fcec396c1855270ca184
@@ -914,6 +916,7 @@ files:
     private.assets.create.parameters.bonds.underlying-asset-label: 7b350ed595b03937afb12262eb0f0960
     private.assets.create.parameters.common.collateral-proof-validity-label: 4f48427723be78cbcfd4953a0bd8a5e0
     private.assets.create.parameters.common.decimals-label: 2b417805040de3a3df31c8fd3626b57c
+    private.assets.create.parameters.common.internalid-label: 7e45bd3d0f499fe6fcd68cfaa873072f
     private.assets.create.parameters.common.isin-label: d03440b351474d0b1a3f851c3453e8de
     private.assets.create.parameters.common.name-label: 49ee3087348e8d44e1feda1917443987
     private.assets.create.parameters.common.price-label: 3601146c4e948c32b6424d2c0a7f0118
@@ -1682,6 +1685,8 @@ files:
     trade-management.forms.amounts.max-amount-to-send: cc521903c94bc4bdd85ffc0a66e6de2b
     trade-management.forms.amounts.title: d8db79f4fdae5de73504ec3bd1724e5c
     trade-management.forms.button.xvp: f455b847b38f2bcd2bde24b76f08c20b
+    trade-management.forms.configuration.auto-execute: 31e74595beaf9b61c93c691346e8bec3
+    trade-management.forms.configuration.auto-execute-description: d2f9ffb93a45bcdd8474a24529e2a2ae
     trade-management.forms.configuration.description: 11278e46e078493cb7799b4d0523401b
     trade-management.forms.configuration.expiry: ad7a5dccbb87e6c4be1cfd32954711fc
     trade-management.forms.configuration.expiry-description: efc7a1a33242a6edb107d3e6bc3f8193
@@ -1689,8 +1694,6 @@ files:
     trade-management.forms.configuration.past-expiry-error: 3c1067fa64edfa6f278cd47df3ece294
     trade-management.forms.configuration.secret-description: c8556577b99d37d494b0eb839f9d75d0
     trade-management.forms.configuration.title: 254f642527b45bc260048e30704edb39
-    trade-management.forms.configuration.auto-execute: 31e74595beaf9b61c93c691346e8bec3
-    trade-management.forms.configuration.auto-execute-description: d2f9ffb93a45bcdd8474a24529e2a2ae
     trade-management.forms.description.xvp: f70854bd9116d633fdf066cd2dd8846b
     trade-management.forms.summary.amount: b2f40690858b404ed10e62bdf422c704
     trade-management.forms.summary.configuration: 254f642527b45bc260048e30704edb39
@@ -1709,19 +1712,19 @@ files:
     trade-management.forms.user.title: 8f9bfe9d1345237cb3b2b205864da075
     trade-management.forms.user.user: 6f74ccfa13a87e0700a065ed7ecb342e
     trade-management.page.xvp: 772e51e35d4c11a6b2729005cff10d2f
-    trade-management.xvp.expired: 24fe48030f7d3097d5882535b04c3fa8
-    trade-management.xvp.details: 3ec365dd533ddb7ef3d1c111186ce872
-    trade-management.xvp.status.pending: 2d13df6f8b5e4c5af9f87e0dc39df69d
-    trade-management.xvp.status.approved: 6f8063417ab31f38d864c28302f3de2f
-    trade-management.xvp.status.expired: 24fe48030f7d3097d5882535b04c3fa8
-    trade-management.xvp.status.claimed: 9d8b15ef78357692564f5aced0c68eaf
-    trade-management.xvp.status.cancelled: a149e85a44aeec9140e92733d9ed694e
-    trade-management.xvp.columns.id: f88def581f6df5b2799ae795626f22e2
-    trade-management.xvp.columns.status: ec53a8c4f07baed5d8825072c89799be
+    trade-management.xvp.columns.approvals: 12aeabd22fdf83c9e158860b3b8ddc93
+    trade-management.xvp.columns.assets: 9aedeaf1f77b8642abe528503b8c5de8
     trade-management.xvp.columns.created-at: 5f2b9345f9bbd74079b99d6fcf461408
     trade-management.xvp.columns.expires-at: 8d7f12bd0dc53389421144669ff4ee63
-    trade-management.xvp.columns.assets: 9aedeaf1f77b8642abe528503b8c5de8
-    trade-management.xvp.columns.approvals: 12aeabd22fdf83c9e158860b3b8ddc93
+    trade-management.xvp.columns.id: f88def581f6df5b2799ae795626f22e2
+    trade-management.xvp.columns.status: ec53a8c4f07baed5d8825072c89799be
+    trade-management.xvp.details: 3ec365dd533ddb7ef3d1c111186ce872
+    trade-management.xvp.expired: 24fe48030f7d3097d5882535b04c3fa8
+    trade-management.xvp.status.approved: 6f8063417ab31f38d864c28302f3de2f
+    trade-management.xvp.status.cancelled: a149e85a44aeec9140e92733d9ed694e
+    trade-management.xvp.status.claimed: 9d8b15ef78357692564f5aced0c68eaf
+    trade-management.xvp.status.expired: 24fe48030f7d3097d5882535b04c3fa8
+    trade-management.xvp.status.pending: 2d13df6f8b5e4c5af9f87e0dc39df69d
     transactions.sending: e4b0c2b6d59cb4cf3e169a9886008087
     transactions.success: 505a83f220c02df2f85c3810cd9ceb38
     transactions.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b

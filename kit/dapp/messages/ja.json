@@ -1040,8 +1040,10 @@
       "asset-statistics-title": "統計",
       "create": {
         "basics": {
-          "description": "資産を定義するために必要な一般情報を提供してください。",
-          "title": "資産の基本"
+          "description": "ブロックチェーンに保存されている識別情報で新しい資産を設定します。この日付は不変です。",
+          "title": "オンチェーン識別",
+          "description-offchain": "この資産のために追加の識別情報を任意で入力してください。この情報はオフチェーンに保存され、このプラットフォームの外部からはアクセスできません。",
+          "title-offchain": "オフチェーン識別"
         },
         "configuration": {
           "bonds": {
@@ -1164,7 +1166,8 @@
                 "months": "月"
               }
             },
-            "price-label": "価格"
+            "price-label": "価格",
+            "internalid-label": "内部ID"
           },
           "cryptocurrencies": {
             "initial-supply-description": "発行される資産の初期量",

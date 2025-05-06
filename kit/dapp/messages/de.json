@@ -1040,8 +1040,10 @@
       "asset-statistics-title": "Statistiken",
       "create": {
         "basics": {
-          "description": "Geben Sie die allgemeinen Informationen an, die erforderlich sind, um Ihr Vermögen zu definieren.",
-          "title": "Vermögensgrundlagen"
+          "description": "Konfigurieren Sie Ihr neues Asset mit Identifikationsinformationen, die auf der Blockchain gespeichert sind. Dieses Datum ist unveränderlich.",
+          "title": "Onchain-Identifikation",
+          "description-offchain": "Geben Sie optional zusätzliche Identifikationsinformationen für dieses Asset ein. Diese Informationen werden offchain gespeichert und sind außerhalb dieser Plattform nicht zugänglich.",
+          "title-offchain": "Offchain-Identifikation"
         },
         "configuration": {
           "bonds": {
@@ -1164,7 +1166,8 @@
                 "months": "Monate"
               }
             },
-            "price-label": "Preis"
+            "price-label": "Preis",
+            "internalid-label": "Interne ID"
           },
           "cryptocurrencies": {
             "initial-supply-description": "Anfangsbetrag an Assets, die geprägt werden sollen",
