@@ -261,8 +261,8 @@
         "settings": "Settings"
       },
       "trade-management": {
-        "dvp-swap": "DvP Swap",
-        "group-title": "Trade management"
+        "group-title": "Trade management",
+        "xvp-settlement": "XvP"
       }
     }
   },
@@ -929,7 +929,8 @@
       "platform": "Platform management",
       "portfolio": "My portfolio",
       "title": "Private",
-      "trade-management": "Trade management"
+      "trade-management": "Trade management",
+      "xvp-settlement": "XvP"
     },
     "user-dropdown": {
       "documentation": "Documentation",
@@ -2371,26 +2372,27 @@
         "title": "Amount to exchange"
       },
       "button": {
-        "dvp-swap": "Create a DvP Swap"
+        "xvp": "Create an XvP Settlement"
       },
       "configuration": {
-        "description": "Configuration for the swap.",
+        "description": "Configuration for the settlement.",
         "expiry": "Expiry",
-        "expiry-description": "The time until which you will not be able to refund assets from the swap. If the swap is not executed, you can refund your assets after this time.",
+        "expiry-description": "The time until which you will not be able to refund assets from the settlement. If the settlement is not executed, you can refund your assets after this time.",
         "expiry-required": "Expiry is required",
         "past-expiry-error": "Expiry must be in the future.",
-        "secret": "Secret",
-        "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the swap.",
-        "title": "Configuration"
+        "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the settlement.",
+        "title": "Configuration",
+        "auto-execute": "Auto execute",
+        "auto-execute-description": "Automatically execute the settlement on last approval."
       },
       "description": {
-        "dvp-swap": "A DvP (Delivery vs Payment) Swap enables an atomic exchange of assets between two parties. It allows you to reliably exchange assets with another user without the need for a third party."
+        "xvp": "An XvP (Delivery vs Payment or Payment vs Payment) Settlement enables an atomic exchange of assets between parties. It allows you to reliably exchange assets with other users without the need for a third party."
       },
       "summary": {
         "amount": "Amount",
         "configuration": "Configuration",
-        "configuration-description": "The configuration for the DvP Swap",
-        "description": "Review the DvP Swap details. Ensure the receiver, amounts, expiry and secret are correct.",
+        "configuration-description": "The configuration for the XvP Settlement",
+        "description": "Review the XvP Settlement details. Ensure the receiver, amounts, expiry and secret are correct.",
         "expiry": "Expiry",
         "from": "From",
         "offer": "Your offer",
@@ -2401,16 +2403,35 @@
         "to": "To"
       },
       "title": {
-        "dvp-swap": "Create a DvP Swap"
+        "xvp": "Create an XvP Settlement"
       },
       "user": {
-        "description": "Select the user wallet you wish to swap assets with.",
+        "description": "Select the user wallet you wish to exchange assets with.",
         "title": "User",
         "user": "User wallet"
       }
     },
     "page": {
-      "dvp-swap": "DvP Swap"
+      "xvp": "XvP"
+    },
+    "xvp": {
+      "expired": "Expired",
+      "details": "Details",
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "expired": "Expired",
+        "claimed": "Claimed",
+        "cancelled": "Cancelled"
+      },
+      "columns": {
+        "id": "Settlement ID",
+        "status": "Status",
+        "created-at": "Created at",
+        "expires-at": "Expires at",
+        "assets": "Assets",
+        "approvals": "Approvals"
+      }
     }
   },
   "transactions": {

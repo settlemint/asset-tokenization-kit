@@ -1,14 +1,15 @@
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { PageHeader } from "@/components/layout/page-header";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { CreateDvpSwapForm } from "./_components/create-dvp-swap-form/form";
-
+import type { Address } from "viem";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: Locale }>;
+  params: Promise<{ locale: Locale; address: Address }>;
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({
@@ -19,18 +20,18 @@ export async function generateMetadata({
   return {
     title: {
       ...metadata.title,
-      default: t("dvp-swap"),
+      default: t("xvp"),
     },
-    description: t("dvp-swap"),
+    description: t("xvp"),
   };
 }
 
-export default async function DvpSwapPage({
+export default async function XvpPage({
   params,
 }: {
-  params: Promise<{ locale: Locale }>;
+  params: Promise<{ locale: Locale; address: Address }>;
 }) {
-  const { locale } = await params;
+  const { locale, address } = await params;
   const t = await getTranslations({
     locale,
     namespace: "trade-management.page",
@@ -39,8 +40,12 @@ export default async function DvpSwapPage({
   return (
     <>
       <PageHeader
-        title={t("dvp-swap")}
-        button={<CreateDvpSwapForm asButton />}
+        title={
+          <EvmAddress address={address} prettyNames={false}>
+            <EvmAddressBalances address={address} />
+          </EvmAddress>
+        }
+        section={t("xvp")}
       />
     </>
   );

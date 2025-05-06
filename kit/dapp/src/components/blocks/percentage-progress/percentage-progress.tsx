@@ -9,6 +9,7 @@ interface PercentageProgressBarProps {
   mode?: "standard" | "inverted";
   warningThreshold?: number;
   errorThreshold?: number;
+  label?: string;
 }
 
 export function PercentageProgressBar({
@@ -16,6 +17,7 @@ export function PercentageProgressBar({
   mode = "standard",
   warningThreshold = 75,
   errorThreshold = 90,
+  label,
 }: PercentageProgressBarProps) {
   const locale = useLocale();
   const percentageNumber =
@@ -70,10 +72,11 @@ export function PercentageProgressBar({
         </ProgressPrimitive.Root>
       </div>
       <div className="ml-4">
-        {formatNumber(percentage, {
-          percentage: true,
-          locale: locale,
-        })}
+        {label ??
+          formatNumber(percentage, {
+            percentage: true,
+            locale: locale,
+          })}
       </div>
     </div>
   );

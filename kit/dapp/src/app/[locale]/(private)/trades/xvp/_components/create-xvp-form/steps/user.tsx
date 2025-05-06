@@ -1,12 +1,12 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
-import type { CreateDvpSwapInput } from "@/lib/mutations/dvp/create/create-schema";
+import type { CreateXvpInput } from "@/lib/mutations/xvp/create/create-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 export function User() {
   const t = useTranslations("trade-management.forms.user");
-  const { control } = useFormContext<CreateDvpSwapInput>();
+  const { control } = useFormContext<CreateXvpInput>();
 
   return (
     <FormStep
@@ -25,4 +25,4 @@ export function User() {
   );
 }
 
-User.validatedFields = ["user"] as (keyof CreateDvpSwapInput)[];
+User.validatedFields = ["user"] as (keyof CreateXvpInput)[];

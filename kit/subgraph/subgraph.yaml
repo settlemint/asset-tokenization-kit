@@ -170,6 +170,8 @@ dataSources:
       abis:
         - name: XvPSettlementFactory
           file: ../contracts/artifacts/contracts/XvPSettlementFactory.sol/XvPSettlementFactory.json
+        - name: XvPSettlement
+          file: ../contracts/artifacts/contracts/XvPSettlement.sol/XvPSettlement.json
       eventHandlers:
         - event: XvPSettlementCreated(indexed address,indexed address)
           handler: handleXvPSettlementCreated
@@ -208,7 +210,8 @@ dataSources:
       eventHandlers:
         - event: StandardAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handleStandardAirdropDeployed
-        - event: VestingAirdropDeployed(indexed address,indexed address,indexed address,address)
+        - event: VestingAirdropDeployed(indexed address,indexed address,indexed
+            address,address)
           handler: handleVestingAirdropDeployed
         - event: PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
@@ -778,11 +781,14 @@ templates:
           handler: handleExecuteTransaction
         - event: RevokeConfirmation(indexed address,indexed uint256)
           handler: handleRevokeConfirmation
-        - event: SubmitContractCallTransaction(indexed address,indexed uint256,indexed address,uint256,bytes4,bytes,string)
+        - event: SubmitContractCallTransaction(indexed address,indexed uint256,indexed
+            address,uint256,bytes4,bytes,string)
           handler: handleSubmitContractCallTransaction
-        - event: SubmitERC20TransferTransaction(indexed address,indexed uint256,indexed address,address,uint256,string)
+        - event: SubmitERC20TransferTransaction(indexed address,indexed uint256,indexed
+            address,address,uint256,string)
           handler: handleSubmitERC20TransferTransaction
-        - event: SubmitTransaction(indexed address,indexed uint256,indexed address,uint256,bytes,string)
+        - event: SubmitTransaction(indexed address,indexed uint256,indexed
+            address,uint256,bytes,string)
           handler: handleSubmitTransaction
         - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit

@@ -1,7 +1,9 @@
 "use client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form as UIForm } from "@/components/ui/form";
+import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
+import { revalidate } from "@/lib/utils/revalidate";
 import { safeParse, t as tb } from "@/lib/utils/typebox";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { Kind } from "@sinclair/typebox";
@@ -297,7 +299,11 @@ export function Form<
               const toastId = Date.now();
               toast.promise(waitForTransactions(hashes), {
                 loading: t("transactions.sending"),
-                success: () => {
+                success: async (results) => {
+                  const lastBlockNumber = Number(results.at(-1)?.blockNumber);
+                  await waitForIndexing(lastBlockNumber);
+                  await revalidate();
+
                   toast.dismiss(toastId);
                   return toast.success(successMessage, {
                     action,

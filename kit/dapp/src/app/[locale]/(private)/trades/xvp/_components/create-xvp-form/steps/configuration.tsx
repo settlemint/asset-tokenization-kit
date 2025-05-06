@@ -1,13 +1,14 @@
 import { FormStep } from "@/components/blocks/form/form-step";
+import { FormCheckbox } from "@/components/blocks/form/inputs/form-checkbox";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
-import type { CreateDvpSwapInput } from "@/lib/mutations/dvp/create/create-schema";
+import type { CreateXvpInput } from "@/lib/mutations/xvp/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Configuration() {
   const t = useTranslations("trade-management.forms.configuration");
-  const { control } = useFormContext<CreateDvpSwapInput>();
+  const { control } = useFormContext<CreateXvpInput>();
   return (
     <FormStep
       title={t("title")}
@@ -23,13 +24,23 @@ export function Configuration() {
         description={t("expiry-description")}
         required
       />
+
+      <FormCheckbox
+        name="autoExecute"
+        control={control}
+        label={t("auto-execute")}
+        description={t("auto-execute-description")}
+      />
     </FormStep>
   );
 }
 
-Configuration.validatedFields = ["expiry"] as (keyof CreateDvpSwapInput)[];
+Configuration.validatedFields = [
+  "expiry",
+  "autoExecute",
+] as (keyof CreateXvpInput)[];
 
-const validateExpiry = async (form: UseFormReturn<CreateDvpSwapInput>) => {
+const validateExpiry = async (form: UseFormReturn<CreateXvpInput>) => {
   const expiry = form.getValues("expiry");
 
   if (!expiry) {

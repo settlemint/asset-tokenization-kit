@@ -1,7 +1,7 @@
 import { HolderSchema } from "@/lib/queries/asset/asset-users-schema";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 
-export const CreateDvpSwapSchema = t.Object(
+export const CreateXvpSchema = t.Object(
   {
     offerAmount: t.Amount({
       error: "Amount to send is required",
@@ -54,14 +54,25 @@ export const CreateDvpSwapSchema = t.Object(
     ),
     expiry: t.String({
       description:
-        "The time until which assets cannot be refunded from the swap.",
+        "The time until which assets cannot be refunded from the settlement.",
       error: "Expiry is required",
+    }),
+    autoExecute: t.Boolean({
+      description:
+        "Whether to automatically execute the settlement on last approval",
+    }),
+    verificationCode: t.VerificationCode({
+      description:
+        "The verification code (PIN, 2FA, or secret code) for signing the transaction",
+    }),
+    verificationType: t.VerificationType({
+      description: "The type of verification",
     }),
   },
   {
-    $id: "CreateDvpSwapForm",
+    $id: "CreateXvpForm",
     additionalProperties: false,
   }
 );
 
-export type CreateDvpSwapInput = StaticDecode<typeof CreateDvpSwapSchema>;
+export type CreateXvpInput = StaticDecode<typeof CreateXvpSchema>;

@@ -166,6 +166,7 @@ export const auth = betterAuth({
               },
             };
           } catch (error) {
+            console.error("Failed to create user wallet", error);
             throw new APIError("BAD_REQUEST", {
               message: "Failed to create user wallet",
               cause: error instanceof Error ? error : undefined,

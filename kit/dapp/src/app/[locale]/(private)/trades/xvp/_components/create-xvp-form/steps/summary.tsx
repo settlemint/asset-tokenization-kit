@@ -2,7 +2,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import type { CreateDvpSwapInput } from "@/lib/mutations/dvp/create/create-schema";
+import type { CreateXvpInput } from "@/lib/mutations/xvp/create/create-schema";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { ArrowDownLeft, ArrowUpRight, Lock } from "lucide-react";
@@ -11,7 +11,7 @@ import { useFormContext } from "react-hook-form";
 
 export function Summary() {
   const t = useTranslations("trade-management.forms.summary");
-  const { getValues } = useFormContext<CreateDvpSwapInput>();
+  const { getValues } = useFormContext<CreateXvpInput>();
   const locale = useLocale();
   const values = getValues();
 
