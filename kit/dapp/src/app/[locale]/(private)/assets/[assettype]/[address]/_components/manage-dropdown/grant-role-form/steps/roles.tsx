@@ -13,18 +13,20 @@ export function AdminRoles() {
   return (
     <FormStep title={t("roles.title")} description={t("roles.description")}>
       <div className="space-y-3">
-        {getRoles(assettype).map((role) => {
-          const roleInfo = ROLES[role];
-          return (
-            <FormCheckbox
-              key={role}
-              name={`roles.${role}`}
-              control={control}
-              label={roleInfo.displayName}
-              description={roleInfo.description}
-            />
-          );
-        })}
+        {getRoles(assettype)
+          .filter((role) => role !== "SIGNER_ROLE")
+          .map((role) => {
+            const roleInfo = ROLES[role];
+            return (
+              <FormCheckbox
+                key={role}
+                name={`roles.${role}`}
+                control={control}
+                label={roleInfo.displayName}
+                description={roleInfo.description}
+              />
+            );
+          })}
       </div>
     </FormStep>
   );
