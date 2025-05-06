@@ -2413,6 +2413,27 @@
     },
     "page": {
       "xvp": "XvP"
+    },
+    "xvp": {
+      "expired": "Expired",
+      "details": "Details",
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "expired": "Expired",
+        "claimed": "Claimed",
+        "cancelled": "Cancelled"
+      },
+      "columns": {
+        "id": "Settlement ID",
+        "status": "Status",
+        "created-at": "Created",
+        "expires-at": "Expires",
+        "assets": "Assets",
+        "parties": "parties",
+        "total-value": "Total value",
+        "actions": "Actions"
+      }
     }
   },
   "transactions": {

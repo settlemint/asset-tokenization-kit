@@ -45,10 +45,7 @@ export const getXvPSettlementList = withTracing(
         skip,
       });
 
-      return safeParse(
-        t.Array(XvPSettlementSchema),
-        result.xvPSettlements || []
-      );
+      return safeParse(t.Array(XvPSettlementSchema), result.xvPSettlements);
     });
   }
 );
