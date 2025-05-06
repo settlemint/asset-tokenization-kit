@@ -139,18 +139,6 @@ contract SMARTBond is
         _;
     }
 
-    /// @notice Modifier to prevent operations if the yield schedule has started
-    modifier yieldNotStarted() {
-        if (yieldSchedule != address(0)) {
-            // Use the interface to call the external contract
-            // Revert if the yield schedule has already started
-            if (IFixedYield(yieldSchedule).startDate() <= block.timestamp) {
-                revert YieldScheduleActive();
-            }
-        }
-        _;
-    }
-
     /// @notice Deploys a new SMARTBond token contract.
     /// @dev Initializes SMART core, AccessControl, ERC20Collateral, and grants custom roles.
     /// @param name_ Token name
@@ -385,6 +373,14 @@ contract SMARTBond is
 
     /// @inheritdoc SMARTHooks
     function _beforeMint(address to, uint256 amount) internal virtual override(SMART, SMARTCustodian, SMARTHooks) {
+        if (yieldSchedule != address(0)) {
+            // Use the interface to call the external contract
+            // Revert if the yield schedule has already started
+            if (IFixedYield(yieldSchedule).startDate() <= block.timestamp) {
+                revert YieldScheduleActive();
+            }
+        }
+
         super._beforeMint(to, amount);
     }
 
