@@ -2,19 +2,18 @@
 pragma solidity ^0.8.27;
 
 // OpenZeppelin imports
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 // Constants
 import { SMARTConstants } from "./SMARTConstants.sol";
 
 // Interface imports
 import { ISMART } from "@smartprotocol/contracts/interface/ISMART.sol";
-
+import { SMARTComplianceModuleParamPair } from
+    "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 // Core extensions
 import { SMART } from "@smartprotocol/contracts/extensions/core/SMART.sol"; // Base SMART logic + ERC20
 import { SMARTExtension } from "@smartprotocol/contracts/extensions/common/SMARTExtension.sol";
@@ -30,72 +29,42 @@ import { SMARTCollateral } from "@smartprotocol/contracts/extensions/collateral/
 import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
 
 /// @title SMARTDeposit
-/// @notice A collateralized deposit token implemented using the SMART extension framework,
-///         with advanced control features including collateral tracking, pausing, and custodian capabilities.
-/// @dev Combines core SMART features with extensions for pausing, burning, custodian actions, and collateral tracking.
-///      Access control is implemented using custom roles.
-/// @custom:security-contact support@settlemint.com
-contract SMARTDeposit is SMART, AccessControl, SMARTCollateral, SMARTCustodian, SMARTPausable, SMARTBurnable {
-    using SafeERC20 for IERC20;
-
-    /// @notice Role identifier for addresses that can audit the collateral
-    bytes32 public constant AUDITOR_ROLE = keccak256("AUDITOR_ROLE");
-
-    /// @notice Custom errors for the SMARTDeposit contract
-    error InvalidDecimals(uint8 decimals);
-    error InvalidLiveness();
-    error InsufficientCollateral();
-    error InvalidTokenAddress();
-    error InsufficientTokenBalance();
-    error InsufficientAllowance();
-
-    /// @notice Structure to store collateral proof details
-    struct CollateralProof {
-        /// @notice The amount of collateral proven
-        uint256 amount;
-        /// @notice The timestamp when the proof was submitted
-        uint48 timestamp;
-    }
-
-    /// @notice The current collateral proof details
-    CollateralProof private _collateralProof;
-
-    /// @notice The timestamp of the last collateral update
-    uint256 private _lastCollateralUpdate;
-
-    /// @notice Emitted when the collateral amount is updated
-    /// @param oldAmount The previous collateral amount
-    /// @param newAmount The new collateral amount
-    /// @param timestamp The timestamp when the update occurred
-    event CollateralUpdated(uint256 oldAmount, uint256 newAmount, uint256 timestamp);
-
-    /// @notice Emitted when mistakenly sent tokens are withdrawn
-    /// @param token The address of the token being withdrawn
-    /// @param to The address receiving the tokens
-    /// @param amount The amount of tokens withdrawn
-    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
-
+/// @notice An implementation of a deposit using the SMART extension framework,
+///         backed by collateral and using custom roles.
+/// @dev Combines core SMART features (compliance, verification) with extensions for pausing,
+///      burning, custodian actions, and collateral tracking. Access control uses custom roles.
+contract SMARTDeposit is
+    SMART,
+    AccessControl,
+    SMARTCollateral,
+    SMARTCustodian,
+    SMARTPausable,
+    SMARTBurnable,
+    ERC2771Context
+{
     /// @notice Deploys a new SMARTDeposit token contract.
-    /// @dev Initializes SMART core, AccessControl, and SMARTCollateral extensions.
+    /// @dev Initializes SMART core, AccessControl, ERC20Collateral, and grants custom roles.
     /// @param name_ Token name
     /// @param symbol_ Token symbol
     /// @param decimals_ Token decimals
     /// @param onchainID_ Optional on-chain identifier address
-    /// @param identityRegistry_ Address of the identity registry contract
-    /// @param compliance_ Address of the compliance contract
     /// @param requiredClaimTopics_ Initial list of required claim topics
     /// @param initialModulePairs_ Initial list of compliance modules
+    /// @param identityRegistry_ Address of the identity registry contract
+    /// @param compliance_ Address of the compliance contract
     /// @param initialOwner_ Address receiving admin and operational roles
+    /// @param forwarder Address of the forwarder contract
     constructor(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         address onchainID_,
+        uint256[] memory requiredClaimTopics_,
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
-        uint256[] memory requiredClaimTopics_,
-        ISMART.ComplianceModuleParamPair[] memory initialModulePairs_,
-        address initialOwner_
+        address initialOwner_,
+        address forwarder
     )
         // Initialize the core SMART logic (which includes ERC20)
         SMART(
@@ -108,19 +77,15 @@ contract SMARTDeposit is SMART, AccessControl, SMARTCollateral, SMARTCustodian, 
             requiredClaimTopics_,
             initialModulePairs_
         )
+        ERC2771Context(forwarder)
         SMARTCollateral(SMARTConstants.CLAIM_TOPIC_COLLATERAL)
     {
-        if (decimals_ > 18) revert InvalidDecimals(decimals_);
-
-        _lastCollateralUpdate = block.timestamp;
-
         // Grant standard admin role
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
 
         // Grant custom operational roles
-        _grantRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, initialOwner_);
-        _grantRole(SMARTConstants.USER_MANAGEMENT_ROLE, initialOwner_);
-        _grantRole(AUDITOR_ROLE, initialOwner_);
+        _grantRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, initialOwner_); // Mint, Burn, Forced Transfer
+        _grantRole(SMARTConstants.USER_MANAGEMENT_ROLE, initialOwner_); // Freeze, Recovery
     }
 
     // --- State-Changing Functions (Overrides) ---
@@ -141,71 +106,8 @@ contract SMARTDeposit is SMART, AccessControl, SMARTCollateral, SMARTCustodian, 
         return super.decimals();
     }
 
-    function hasRole(bytes32 role, address account) public view virtual override(AccessControl) returns (bool) {
-        return AccessControl.hasRole(role, account);
-    }
-
-    /// @notice Returns current collateral amount and timestamp
-    /// @dev Provides the same interface as ERC20Collateral
-    /// @return amount Current proven collateral amount
-    /// @return timestamp Timestamp when the collateral was last proven
-    function collateral() public view virtual returns (uint256 amount, uint48 timestamp) {
-        return (_collateralProof.amount, _collateralProof.timestamp);
-    }
-
-    /// @notice Returns the timestamp of the last collateral update
-    /// @return The timestamp of the last collateral update
-    function lastCollateralUpdate() public view returns (uint256) {
-        return _lastCollateralUpdate;
-    }
-
-    /// @notice Updates the proven collateral amount with a timestamp
-    /// @dev Only callable by addresses with AUDITOR_ROLE. Requires collateral >= total supply.
-    /// @param amount New collateral amount
-    function updateCollateral(uint256 amount) public {
-        if (!hasRole(AUDITOR_ROLE, _msgSender())) revert Unauthorized(_msgSender());
-        if (amount < totalSupply()) revert InsufficientCollateral();
-
-        uint256 oldAmount = _collateralProof.amount;
-        _collateralProof = CollateralProof({ amount: amount, timestamp: uint48(block.timestamp) });
-        _lastCollateralUpdate = block.timestamp;
-
-        emit CollateralUpdated(oldAmount, amount, block.timestamp);
-    }
-
-    /// @notice Creates new tokens and assigns them to an address
-    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Requires sufficient collateral.
-    /// @param to The address that will receive the minted tokens
-    /// @param amount The quantity of tokens to create in base units
-    function mint(address to, uint256 amount) public virtual {
-        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, _msgSender())) revert Unauthorized(_msgSender());
-
-        (uint256 collateralAmount,) = collateral();
-        if (collateralAmount < totalSupply() + amount) revert InsufficientCollateral();
-
-        _mint(to, amount);
-    }
-
-    /// @notice Withdraws mistakenly sent tokens from the contract
-    /// @dev Only callable by addresses with DEFAULT_ADMIN_ROLE. Cannot withdraw this token.
-    /// @param token The token to withdraw
-    /// @param to The recipient address
-    /// @param amount The amount to withdraw
-    function withdrawToken(address token, address to, uint256 amount) external {
-        if (!hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) revert Unauthorized(_msgSender());
-        if (token == address(0)) revert InvalidTokenAddress();
-        if (to == address(0)) revert InvalidTokenAddress();
-        if (amount == 0) return;
-
-        uint256 balance = IERC20(token).balanceOf(address(this));
-        if (balance < amount) revert InsufficientTokenBalance();
-
-        IERC20(token).safeTransfer(to, amount);
-        emit TokenWithdrawn(token, to, amount);
-    }
-
     // --- Hooks (Overrides for Chaining) ---
-    // These ensure that logic from multiple inherited extensions is called correctly.
+    // These ensure that logic from multiple inherited extensions (SMART, SMARTCustodian, etc.) is called correctly.
 
     /// @inheritdoc SMARTHooks
     function _beforeMint(
@@ -268,12 +170,22 @@ contract SMARTDeposit is SMART, AccessControl, SMARTCollateral, SMARTCustodian, 
     }
 
     /// @dev Resolves msgSender across Context and SMARTPausable.
-    function _msgSender() internal view virtual override(Context, SMARTPausable) returns (address) {
-        return super._msgSender();
+    function _msgSender() internal view virtual override(Context, ERC2771Context, SMARTPausable) returns (address) {
+        return ERC2771Context._msgSender();
+    }
+
+    /// @dev Resolves msgData across Context and ERC2771Context.
+    function _msgData() internal view virtual override(Context, ERC2771Context) returns (bytes calldata) {
+        return ERC2771Context._msgData();
+    }
+
+    /// @dev Hook defining the length of the trusted forwarder address suffix in `msg.data`.
+    function _contextSuffixLength() internal view virtual override(Context, ERC2771Context) returns (uint256) {
+        return ERC2771Context._contextSuffixLength();
     }
 
     // --- Authorization Hook Implementations ---
-    // Implementing the abstract functions from SMART* authorization hooks
+    // Implementing the abstract functions from _SMART*AuthorizationHooks
 
     function _authorizeUpdateTokenSettings() internal view virtual override {
         address sender = _msgSender();
@@ -323,5 +235,10 @@ contract SMARTDeposit is SMART, AccessControl, SMARTCollateral, SMARTCustodian, 
     function _authorizeRecoveryAddress() internal view virtual override {
         address sender = _msgSender();
         if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+    }
+
+    function _authorizeRecoverERC20() internal view virtual override {
+        address sender = _msgSender();
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
     }
 }

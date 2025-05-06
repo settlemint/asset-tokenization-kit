@@ -14,7 +14,6 @@ import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonE
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 import { console } from "forge-std/console.sol";
 
-
 contract SMARTDepositTest is Test {
     SMARTUtils internal smartUtils;
 
@@ -27,6 +26,8 @@ contract SMARTDepositTest is Test {
 
     SMARTDeposit public deposit;
     Forwarder public forwarder;
+
+    uint8 public constant DECIMALS = 8;
 
     function setUp() public {
         smartUtils = new SMARTUtils();
@@ -48,14 +49,8 @@ contract SMARTDepositTest is Test {
         // Create forwarder first
         forwarder = new Forwarder();
 
-        deposit = _createDeposit(
-            "Deposit",
-            "DEP",
-            DECIMALS,
-            new uint256[](0),
-            new SMARTComplianceModuleParamPair[](0),
-            owner
-        )
+        deposit =
+            _createDeposit("Deposit", "DEP", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner);
     }
 
     function _createDeposit(
@@ -64,29 +59,28 @@ contract SMARTDepositTest is Test {
         uint8 decimals,
         uint256[] memory requiredClaimTopics,
         SMARTComplianceModuleParamPair[] memory initialModulePairs,
-        address owner_,
-    ){
-      vm.startPrank(owner_);
-      SMARTDeposit deposit_ = new SMARTDeposit(
-        name,
-        symbol,
-        decimals,
-        address(0),
-        requiredClaimTopics,
-        initialModulePairs,
-        identityRegistry,
-        compliance,
-        owner_,
-        address(forwarder)
-      );
-      vm.stopPrank();
+        address owner_
+    )
+        internal
+        returns (SMARTDeposit)
+    {
+        vm.startPrank(owner_);
+        SMARTDeposit deposit_ = new SMARTDeposit(
+            name,
+            symbol,
+            decimals,
+            address(0),
+            requiredClaimTopics,
+            initialModulePairs,
+            identityRegistry,
+            compliance,
+            owner_,
+            address(forwarder)
+        );
+        vm.stopPrank();
 
-      smartUtils.createAndSetTokenOnchainID(address(deposit_), owner_);
+        smartUtils.createAndSetTokenOnchainID(address(deposit_), owner_);
 
-      return deposit_;
-
+        return deposit_;
     }
-
-
-
 }

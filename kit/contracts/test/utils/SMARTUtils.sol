@@ -88,4 +88,24 @@ contract SMARTUtils is Test {
     function issueCollateralClaim(address _token, address _issuer, uint256 _amount, uint256 _expiry) public {
         claimUtils.issueCollateralClaim(_token, _issuer, _amount, _expiry);
     }
+
+    function createIdentity(address _wallet) public returns (address) {
+        return identityUtils.createIdentity(_wallet);
+    }
+
+    function createClaimUtilsForIssuer(
+        address claimIssuer_,
+        uint256 claimIssuerPrivateKey_
+    )
+        public
+        returns (ClaimUtils)
+    {
+        return new ClaimUtils(
+            platformAdmin,
+            claimIssuer_,
+            claimIssuerPrivateKey_,
+            infrastructureUtils.identityRegistry(),
+            infrastructureUtils.identityFactory()
+        );
+    }
 }
