@@ -7,6 +7,7 @@ import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/exte
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 // Constants
 import { SMARTConstants } from "./SMARTConstants.sol";
 
@@ -40,7 +41,8 @@ contract SMARTDeposit is
     SMARTCustodian,
     SMARTPausable,
     SMARTBurnable,
-    ERC2771Context
+    ERC2771Context,
+    ERC20Permit
 {
     /// @notice Deploys a new SMARTDeposit token contract.
     /// @dev Initializes SMART core, AccessControl, ERC20Collateral, and grants custom roles.
@@ -77,6 +79,7 @@ contract SMARTDeposit is
             requiredClaimTopics_,
             initialModulePairs_
         )
+        ERC20Permit(name_)
         ERC2771Context(forwarder)
         SMARTCollateral(SMARTConstants.CLAIM_TOPIC_COLLATERAL)
     {
