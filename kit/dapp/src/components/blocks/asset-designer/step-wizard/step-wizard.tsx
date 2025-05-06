@@ -71,7 +71,7 @@ export function StepWizard({
                     {/* The step dot */}
                     <div
                       className={cn(
-                        "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 h-8 w-8 opacity-70 text-primary-foreground transition-all duration-300 ease-in-out",
+                        "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 h-6 w-6 opacity-70 text-primary-foreground transition-all duration-300 ease-in-out",
                         // Only current step gets larger
                         isCurrent && "opacity-100"
                       )}
@@ -81,8 +81,8 @@ export function StepWizard({
                         {isCompleted ? (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width="22"
-                            height="22"
+                            width="20"
+                            height="20"
                             viewBox="0 0 16 16"
                             fill="none"
                             className="text-current"
@@ -98,8 +98,8 @@ export function StepWizard({
                           </svg>
                         ) : isCurrent ? (
                           <svg
-                            width="30"
-                            height="30"
+                            width="27"
+                            height="27"
                             viewBox="0 0 16 16"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
@@ -116,8 +116,8 @@ export function StepWizard({
                           </svg>
                         ) : (
                           <svg
-                            width="22"
-                            height="22"
+                            width="20"
+                            height="20"
                             viewBox="0 0 16 16"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +128,7 @@ export function StepWizard({
                               cy="8"
                               r="6"
                               stroke="currentColor"
-                              strokeWidth="2"
+                              strokeWidth="1.75"
                             />
                           </svg>
                         )}
@@ -146,7 +146,7 @@ export function StepWizard({
                   </div>
 
                   {/* Content column */}
-                  <div className="flex-1">
+                  <div className="flex-1 flex items-center -mt-1 mb-2">
                     <button
                       type="button"
                       tabIndex={-1}
