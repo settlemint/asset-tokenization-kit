@@ -15,8 +15,12 @@ export const asset = pgTable(
   {
     id: text("id").primaryKey(),
     isin: text("isin"),
+    internalid: text("internalid"),
   },
-  (table) => [index("asset_isin_idx").on(table.isin)]
+  (table) => [
+    index("asset_isin_idx").on(table.isin),
+    index("asset_internalid_idx").on(table.internalid),
+  ]
 );
 
 export const currencyEnum = pgEnum("currency", fiatCurrencies);
