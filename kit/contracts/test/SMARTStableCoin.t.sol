@@ -7,13 +7,20 @@ import { Forwarder } from "../contracts/Forwarder.sol";
 import { SMARTConstants } from "../contracts/SMARTConstants.sol";
 import { TestConstants } from "./TestConstants.sol";
 import { InvalidDecimals } from "@smartprotocol/contracts/extensions/core/SMARTErrors.sol";
+import { ClaimUtils } from "@smartprotocol/test-utils/ClaimUtils.sol";
 
 import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
+import { InsufficientCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateralErrors.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
-import { console } from "forge-std/console.sol";
 
+/// Following tests are changed:
+/// - test_BurnFrom: removed because it doesn't exist in ERC3643
+/// - test_OnlyUserManagementCanBlock: removed because it will be managed by compliance modules
+/// - test_OnlyAdminCanUpdateCollateral: renamed to test_OnlyTrustedIssuerCanUpdateCollateral
+/// - test_StableCoinClawback: renamed to test_StableCoinForceTransfer
+/// - test_onlySupplyManagementCanClawback: renamed to test_onlySupplyManagementCanForceTransfer
 contract SMARTStableCoinTest is Test {
     SMARTUtils internal smartUtils;
 
@@ -58,9 +65,8 @@ contract SMARTStableCoinTest is Test {
         // Deploy forwarder first
         forwarder = new Forwarder();
 
-        stableCoin = _createStableCoin(
-            "StableCoin", "STBL", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner
-        );
+        stableCoin =
+            _createStableCoin("StableCoin", "STBL", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0));
     }
 
     function _createStableCoin(
@@ -68,13 +74,12 @@ contract SMARTStableCoinTest is Test {
         string memory symbol,
         uint8 decimals,
         uint256[] memory requiredClaimTopics,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs,
-        address owner_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
         internal
         returns (SMARTStableCoin)
     {
-        vm.startPrank(owner_);
+        vm.startPrank(owner);
         SMARTStableCoin stableCoin_ = new SMARTStableCoin(
             name,
             symbol,
@@ -84,12 +89,12 @@ contract SMARTStableCoinTest is Test {
             initialModulePairs,
             identityRegistry,
             compliance,
-            owner_,
+            owner,
             address(forwarder)
         );
         vm.stopPrank();
 
-        smartUtils.createAndSetTokenOnchainID(address(stableCoin_), owner_);
+        smartUtils.createAndSetTokenOnchainID(address(stableCoin_), owner);
 
         return stableCoin_;
     }
@@ -130,7 +135,7 @@ contract SMARTStableCoinTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             SMARTStableCoin newToken = _createStableCoin(
-                "StableCoin", "STBL", decimalValues[i], new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner
+                "StableCoin", "STBL", decimalValues[i], new uint256[](0), new SMARTComplianceModuleParamPair[](0)
             );
             assertEq(newToken.decimals(), decimalValues[i]);
         }
@@ -187,23 +192,6 @@ contract SMARTStableCoinTest is Test {
         assertEq(stableCoin.balanceOf(user1), INITIAL_SUPPLY - 100);
     }
 
-    // function test_BurnFrom() public {
-    //     vm.startPrank(owner);
-    //     _updateCollateral(address(stableCoin), address(owner), INITIAL_SUPPLY);
-    //     stableCoin.mint(user1, INITIAL_SUPPLY);
-    //     vm.stopPrank();
-
-    //     vm.startPrank(user1);
-    //     stableCoin.approve(spender, 100);
-    //     vm.stopPrank();
-
-    //     vm.startPrank(spender);
-    //     stableCoin.burn(user1, 100);
-    //     vm.stopPrank();
-
-    //     assertEq(stableCoin.balanceOf(user1), INITIAL_SUPPLY - 100);
-    // }
-
     // ERC20Pausable tests
     function test_OnlyAdminCanPause() public {
         vm.startPrank(user1);
@@ -218,60 +206,45 @@ contract SMARTStableCoinTest is Test {
         assertTrue(stableCoin.paused());
     }
 
-    // // ERC20Blocklist tests
-    // function test_OnlyUserManagementCanBlock() public {
-    //     vm.startPrank(owner);
-    //     _updateCollateral(address(stableCoin), address(owner), INITIAL_SUPPLY);
-    //     stableCoin.mint(user1, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+    function test_OnlyTrustedIssuerCanUpdateCollateral() public {
+        uint256 collateralAmount = 1_000_000;
 
-    //     vm.startPrank(user2);
-    //     vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2, SMARTConstants.USER_MANAGEMENT_ROLE));
-    //     stableCoin.blockUser(user1);
-    //     vm.stopPrank();
+        // Setup an untrusted issuer
+        uint256 untrustedIssuerPK = 0xBAD155;
+        address untrustedIssuerWallet = vm.addr(untrustedIssuerPK);
+        vm.label(untrustedIssuerWallet, "Untrusted Issuer Wallet");
+        ClaimUtils untrustedClaimUtils = smartUtils.createClaimUtilsForIssuer(untrustedIssuerWallet, untrustedIssuerPK);
+        smartUtils.createIdentity(untrustedIssuerWallet);
 
-    //     vm.startPrank(owner);
-    //     stableCoin.blockUser(user1);
-    //     vm.stopPrank();
+        uint256 farFutureExpiry = block.timestamp + 3650 days; // ~10 years
 
-    //     assertTrue(stableCoin.blocked(user1));
+        vm.startPrank(untrustedIssuerWallet);
+        untrustedClaimUtils.issueCollateralClaim(address(stableCoin), owner, collateralAmount, farFutureExpiry);
+        vm.stopPrank();
 
-    //     vm.startPrank(user1);
-    //     vm.expectRevert();
-    //     stableCoin.transfer(user2, 100);
-    //     vm.stopPrank();
+        // Declare variables the first time
+        (uint256 amount, address claimIssuer, uint256 timestamp) = stableCoin.findValidCollateralClaim();
+        assertEq(amount, 0); // Check initial state (untrusted issuer)
 
-    //     vm.startPrank(owner);
-    //     stableCoin.unblockUser(user1);
-    //     vm.stopPrank();
+        // Expect mint to revert due to insufficient collateral
+        vm.startPrank(owner);
+        vm.expectRevert(abi.encodeWithSelector(InsufficientCollateral.selector, 100, 0)); // Assuming mint amount is 100
+        stableCoin.mint(user1, 100);
+        vm.stopPrank();
 
-    //     assertFalse(stableCoin.blocked(user1));
+        // Issue claim from the trusted issuer (owner)
+        vm.startPrank(owner);
+        smartUtils.issueCollateralClaim(address(stableCoin), owner, collateralAmount, farFutureExpiry);
+        vm.stopPrank();
 
-    //     vm.startPrank(user1);
-    //     stableCoin.transfer(user2, 100);
-    //     vm.stopPrank();
+        // Assign new values to existing variables (no type declaration)
+        (amount, claimIssuer, timestamp) = stableCoin.findValidCollateralClaim();
+        assertEq(amount, collateralAmount); // Check updated state (trusted issuer)
 
-    //     assertEq(stableCoin.balanceOf(user2), 100);
-    // }
-
-    // ERC20Collateral tests
-    // function test_OnlyAdminCanUpdateCollateral() public {
-    //     uint256 collateralAmount = 1_000_000;
-
-    //     bytes32 role = stableCoin.AUDITOR_ROLE();
-    //     vm.startPrank(user1);
-    //     vm.expectRevert(abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user1, role));
-    //     stableCoin.updateCollateral(collateralAmount);
-    //     vm.stopPrank();
-
-    //     vm.startPrank(owner);
-    //     stableCoin.updateCollateral(collateralAmount);
-    //     vm.stopPrank();
-
-    //     (uint256 amount, uint48 timestamp) = stableCoin.collateral();
-    //     assertEq(amount, collateralAmount);
-    //     assertEq(timestamp, uint48(block.timestamp));
-    // }
+        vm.startPrank(owner);
+        stableCoin.mint(user1, 100);
+        vm.stopPrank();
+    }
 
     // ERC20Custodian tests
     function test_OnlyUserManagementCanFreeze() public {
@@ -305,90 +278,77 @@ contract SMARTStableCoinTest is Test {
     }
 
     // ERC20Permit tests
-    // function test_Permit() public {
-    //     uint256 privateKey = 0xA11CE;
-    //     address signer = vm.addr(privateKey);
+    function test_Permit() public {
+        uint256 privateKey = 0xA11CE;
+        address signer = vm.addr(privateKey);
+        vm.label(signer, "Signer Wallet");
 
-    //     vm.startPrank(owner);
-    //     stableCoin.updateCollateral(INITIAL_SUPPLY);
-    //     stableCoin.mint(signer, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+        smartUtils.setUpIdentity(signer);
 
-    //     uint256 deadline = block.timestamp + 1 hours;
-    //     uint256 nonce = stableCoin.nonces(signer);
+        _mintInitialSupply(signer);
 
-    //     bytes32 DOMAIN_SEPARATOR = stableCoin.DOMAIN_SEPARATOR();
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = stableCoin.nonces(signer);
 
-    //     (uint8 v, bytes32 r, bytes32 s) = vm.sign(
-    //         privateKey,
-    //         keccak256(
-    //             abi.encodePacked(
-    //                 "\x19\x01",
-    //                 DOMAIN_SEPARATOR,
-    //                 keccak256(
-    //                     abi.encode(
-    //                         keccak256(
-    //                             "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
-    //                         ),
-    //                         signer,
-    //                         spender,
-    //                         100,
-    //                         nonce,
-    //                         deadline
-    //                     )
-    //                 )
-    //             )
-    //         )
-    //     );
+        bytes32 DOMAIN_SEPARATOR = stableCoin.DOMAIN_SEPARATOR();
 
-    //     stableCoin.permit(signer, spender, 100, deadline, v, r, s);
-    //     assertEq(stableCoin.allowance(signer, spender), 100);
-    // }
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            privateKey,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    DOMAIN_SEPARATOR,
+                    keccak256(
+                        abi.encode(
+                            keccak256(
+                                "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+                            ),
+                            signer,
+                            spender,
+                            100,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
 
-    // // Transfer and approval tests
-    // function test_TransferAndApproval() public {
-    //     vm.startPrank(owner);
-    //     stableCoin.updateCollateral(INITIAL_SUPPLY);
-    //     stableCoin.mint(user1, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+        stableCoin.permit(signer, spender, 100, deadline, v, r, s);
+        assertEq(stableCoin.allowance(signer, spender), 100);
+    }
 
-    //     vm.prank(user1);
-    //     stableCoin.approve(spender, 100);
-    //     assertEq(stableCoin.allowance(user1, spender), 100);
+    // Transfer and approval tests
+    function test_TransferAndApproval() public {
+        _mintInitialSupply(user1);
 
-    //     vm.prank(spender);
-    //     stableCoin.transferFrom(user1, user2, 50);
-    //     assertEq(stableCoin.balanceOf(user2), 50);
-    //     assertEq(stableCoin.allowance(user1, spender), 50);
-    // }
+        vm.prank(user1);
+        stableCoin.approve(spender, 100);
+        assertEq(stableCoin.allowance(user1, spender), 100);
 
-    // function test_StableCoinClawback() public {
-    //     vm.startPrank(owner);
-    //     stableCoin.updateCollateral(INITIAL_SUPPLY);
-    //     stableCoin.mint(user1, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+        vm.prank(spender);
+        stableCoin.transferFrom(user1, user2, 50);
+        assertEq(stableCoin.balanceOf(user2), 50);
+        assertEq(stableCoin.allowance(user1, spender), 50);
+    }
 
-    //     vm.startPrank(owner);
-    //     stableCoin.clawback(user1, user2, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+    function test_StableCoinForcedTransfer() public {
+        _mintInitialSupply(user1);
 
-    //     assertEq(stableCoin.balanceOf(user1), 0);
-    //     assertEq(stableCoin.balanceOf(user2), INITIAL_SUPPLY);
-    // }
+        vm.startPrank(owner);
+        stableCoin.forcedTransfer(user1, user2, INITIAL_SUPPLY);
+        vm.stopPrank();
 
-    // function test_onlySupplyManagementCanClawback() public {
-    //     vm.startPrank(owner);
-    //     stableCoin.updateCollateral(INITIAL_SUPPLY);
-    //     stableCoin.mint(user1, INITIAL_SUPPLY);
-    //     vm.stopPrank();
+        assertEq(stableCoin.balanceOf(user1), 0);
+        assertEq(stableCoin.balanceOf(user2), INITIAL_SUPPLY);
+    }
 
-    //     vm.startPrank(user2);
-    //     vm.expectRevert(
-    //         abi.encodeWithSignature(
-    //             "AccessControlUnauthorizedAccount(address,bytes32)", user2, stableCoin.SUPPLY_MANAGEMENT_ROLE()
-    //         )
-    //     );
-    //     stableCoin.clawback(user1, user2, INITIAL_SUPPLY);
-    //     vm.stopPrank();
-    // }
+    function test_onlySupplyManagementCanForceTransfer() public {
+        _mintInitialSupply(user1);
+
+        vm.startPrank(user2);
+        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2));
+        stableCoin.forcedTransfer(user1, user2, INITIAL_SUPPLY);
+        vm.stopPrank();
+    }
 }

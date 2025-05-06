@@ -9,7 +9,7 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { ERC20HistoricalBalances } from "./extensions/ERC20HistoricalBalances.sol";
 import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
-import { ERC20Yield } from "./extensions/ERC20Yield.sol";
+import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
 // Constants
 import { SMARTConstants } from "./SMARTConstants.sol";
@@ -31,9 +31,12 @@ import { SMARTBurnable } from "@smartprotocol/contracts/extensions/burnable/SMAR
 import { SMARTCustodian } from "@smartprotocol/contracts/extensions/custodian/SMARTCustodian.sol";
 import { SMARTCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateral.sol";
 import { SMARTRedeemable } from "@smartprotocol/contracts/extensions/redeemable/SMARTRedeemable.sol";
+import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 
 // Common errors
 import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
+
+import "forge-std/console.sol";
 
 /// @title SMARTBond
 /// @notice An implementation of a bond using the SMART extension framework,
@@ -49,6 +52,7 @@ contract SMARTBond is
     SMARTRedeemable,
     ERC20HistoricalBalances, // TODO: should this become part of SMART?
     ERC20Capped,
+    ERC20Permit,
     ERC20Yield,
     ERC2771Context
 {
@@ -192,6 +196,7 @@ contract SMARTBond is
         )
         ERC2771Context(forwarder)
         ERC20Capped(cap_)
+        ERC20Permit(name_)
     {
         if (maturityDate_ <= block.timestamp) revert BondInvalidMaturityDate();
         if (faceValue_ == 0) revert InvalidFaceValue();
