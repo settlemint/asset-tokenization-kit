@@ -71,57 +71,44 @@ export function StepWizard({
                     {/* The step dot */}
                     <div
                       className={cn(
-                        "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 transition-all duration-300 ease-in-out",
-                        // Conditional Size & Scale:
-                        isCompleted
-                          ? "h-6 w-6 scale-100 opacity-100"
-                          : "h-7 w-7 scale-100 opacity-100",
-                        isCurrent && "scale-110",
-                        // Initial state for animation (when not completed/current yet)
-                        !isCompleted && !isCurrent && "scale-90 opacity-70",
-                        // Add bg-sidebar for current/inactive states to cover the line
-                        isCompleted
-                          ? "bg-primary-foreground text-primary border-primary"
-                          : isCurrent
-                            ? "border-none text-primary-foreground"
-                            : "border-none text-primary-foreground"
+                        "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 h-8 w-8 opacity-70 text-primary-foreground transition-all duration-300 ease-in-out",
+                        // Only current step gets larger
+                        isCurrent && "opacity-100"
                       )}
-                      style={
-                        !isCompleted
-                          ? { backgroundColor: "#36BACF" }
-                          : undefined
-                      }
                     >
                       {/* Conditional Icon Rendering with Transitions */}
-                      <div className="transition-opacity duration-300 ease-in-out">
+                      <div className="transition-opacity duration-300 ease-in-out flex items-center justify-center">
                         {isCompleted ? (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
+                            width="22"
+                            height="22"
+                            viewBox="0 0 16 16"
                             fill="none"
-                            stroke="#36BACF"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="opacity-100"
+                            className="text-current"
                           >
-                            <path d="M20 6 9 17l-5-5" />
+                            <circle cx="8" cy="8" r="7" fill="white" />
+                            <path
+                              d="M10.5 6.5L7 9.5L5.5 8"
+                              stroke="rgba(54, 139, 207, 1)"
+                              strokeWidth="1.50"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </svg>
                         ) : isCurrent ? (
                           <svg
-                            width="18"
-                            height="18"
+                            width="30"
+                            height="30"
                             viewBox="0 0 16 16"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
-                            className="text-current opacity-100"
+                            className="text-current"
                           >
                             <circle
                               cx="8"
                               cy="8"
-                              r="7"
+                              r="6"
                               stroke="currentColor"
                               strokeWidth="2"
                             />
@@ -129,19 +116,19 @@ export function StepWizard({
                           </svg>
                         ) : (
                           <svg
-                            width="18"
-                            height="18"
+                            width="22"
+                            height="22"
                             viewBox="0 0 16 16"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
-                            className="text-current opacity-100"
+                            className="text-current"
                           >
                             <circle
                               cx="8"
                               cy="8"
-                              r="7"
+                              r="6"
                               stroke="currentColor"
-                              strokeWidth="1.5"
+                              strokeWidth="2"
                             />
                           </svg>
                         )}
@@ -152,8 +139,7 @@ export function StepWizard({
                     {index < steps.length - 1 && (
                       <div
                         className={cn(
-                          "w-0 border-l-2 border-dashed border-slate-300 flex-grow",
-                          isCompleted ? "opacity-100" : "opacity-50"
+                          "w-0 border-l-2 border-dashed border-slate-300 flex-grow opacity-50"
                         )}
                       ></div>
                     )}
@@ -171,13 +157,14 @@ export function StepWizard({
                         !isCurrent && "text-muted-foreground"
                       )}
                       style={{
-                        ["--hover-color" as any]: "#36BACF",
+                        ["--hover-color" as any]: "white",
                       }}
                       onClick={() => !finalDisabled && onStepChange(step.id)}
                       disabled={finalDisabled}
                       onMouseEnter={(e) => {
                         if (!finalDisabled) {
-                          e.currentTarget.style.backgroundColor = "#36BACF";
+                          e.currentTarget.style.backgroundColor =
+                            "rgba(255, 255, 255, 0.2)";
                           e.currentTarget.style.color = "white";
                         }
                       }}
