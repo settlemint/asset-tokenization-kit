@@ -1,9 +1,10 @@
 "use client";
 
-import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { XvpDetailSheet } from "@/components/blocks/xvp-status/detail-sheet";
+import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
 import { XvpStatusPill } from "@/components/blocks/xvp-status/status-pill";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/routing";
 import type { XvPSettlement } from "@/lib/queries/xvp/xvp-list";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -18,6 +19,8 @@ export function columns() {
   const t = useTranslations("trade-management.xvp");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const locale = useLocale();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const router = useRouter();
 
   return [
     columnHelper.accessor("id", {
@@ -59,16 +62,38 @@ export function columns() {
         );
       },
     }),
+    columnHelper.accessor("approvals", {
+      id: "approvals",
+      header: t("columns.approvals"),
+      cell: ({ row }) => {
+        const approvals = row.original.approvals;
+        const approvalsRequired = new Set(
+          row.original.flows.map((flow) => flow.from.id)
+        );
+        const percentage = (approvals.length / approvalsRequired.size) * 100;
+        return (
+          <PercentageProgressBar
+            percentage={percentage}
+            label={`${approvals.length}/${approvalsRequired.size}`}
+          />
+        );
+      },
+    }),
     columnHelper.display({
       id: "details",
       header: t("details"),
-      cell: ({ row }) => <XvpDetailSheet xvp={row.original} />,
-    }),
-    columnHelper.display({
-      id: "actions",
-      header: t("columns.actions"),
       cell: ({ row }) => {
-        return <DataTableRowActions actions={[]} />;
+        return (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              router.push(`/trades/xvp/${row.original.id}`);
+            }}
+          >
+            {t("details")}
+          </Button>
+        );
       },
     }),
   ];

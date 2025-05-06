@@ -2427,12 +2427,10 @@
       "columns": {
         "id": "Settlement ID",
         "status": "Status",
-        "created-at": "Created",
-        "expires-at": "Expires",
+        "created-at": "Created at",
+        "expires-at": "Expires at",
         "assets": "Assets",
-        "parties": "parties",
-        "total-value": "Total value",
-        "actions": "Actions"
+        "approvals": "Approvals"
       }
     }
   },
