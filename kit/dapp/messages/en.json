@@ -271,12 +271,12 @@
     "type-selection": {
       "description": "Choose the type of digital asset you want to create",
       "features": {
-        "one": "Full lifecycle management",
-        "two": "Custodial functionality",
-        "three": "Maximum cap",
-        "four": "Voting rights",
         "five": "KYC required",
-        "six": "Collateral management"
+        "four": "Voting rights",
+        "one": "Full lifecycle management",
+        "six": "Collateral management",
+        "three": "Maximum cap",
+        "two": "Custodial functionality"
       },
       "key-features": "Key features:",
       "title": "Select asset type"
@@ -1209,8 +1209,10 @@
       "asset-statistics-title": "Statistics",
       "create": {
         "basics": {
-          "description": "Provide the general information required to define your asset.",
-          "title": "Asset basics"
+          "description": "Configure your new asset with identifying information which is stored on the blockchain. This date is immutable.",
+          "description-offchain": "Optionally enter additional identifying information for this asset. This information is stored offchain and is not accessible ourside of this platform.",
+          "title": "Onchain identification",
+          "title-offchain": "Offchain identification"
         },
         "configuration": {
           "bonds": {
@@ -1305,6 +1307,7 @@
           "common": {
             "collateral-proof-validity-label": "Collateral proof validity",
             "decimals-label": "Decimals",
+            "internalid-label": "Internal ID",
             "isin-label": "ISIN",
             "name-label": "Name",
             "price-label": "Price",
@@ -2345,15 +2348,15 @@
         "xvp": "Create an XvP Settlement"
       },
       "configuration": {
+        "auto-execute": "Auto execute",
+        "auto-execute-description": "Automatically execute the settlement on last approval.",
         "description": "Configuration for the settlement.",
         "expiry": "Expiry",
         "expiry-description": "The time until which you will not be able to refund assets from the settlement. If the settlement is not executed, you can refund your assets after this time.",
         "expiry-required": "Expiry is required",
         "past-expiry-error": "Expiry must be in the future.",
         "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the settlement.",
-        "title": "Configuration",
-        "auto-execute": "Auto execute",
-        "auto-execute-description": "Automatically execute the settlement on last approval."
+        "title": "Configuration"
       },
       "description": {
         "xvp": "An XvP (Delivery vs Payment or Payment vs Payment) Settlement enables an atomic exchange of assets between parties. It allows you to reliably exchange assets with other users without the need for a third party."
@@ -2385,22 +2388,22 @@
       "xvp": "XvP"
     },
     "xvp": {
-      "expired": "Expired",
-      "details": "Details",
-      "status": {
-        "pending": "Pending",
-        "approved": "Approved",
-        "expired": "Expired",
-        "claimed": "Claimed",
-        "cancelled": "Cancelled"
-      },
       "columns": {
-        "id": "Settlement ID",
-        "status": "Status",
+        "approvals": "Approvals",
+        "assets": "Assets",
         "created-at": "Created at",
         "expires-at": "Expires at",
-        "assets": "Assets",
-        "approvals": "Approvals"
+        "id": "Settlement ID",
+        "status": "Status"
+      },
+      "details": "Details",
+      "expired": "Expired",
+      "status": {
+        "approved": "Approved",
+        "cancelled": "Cancelled",
+        "claimed": "Claimed",
+        "expired": "Expired",
+        "pending": "Pending"
       }
     }
   },

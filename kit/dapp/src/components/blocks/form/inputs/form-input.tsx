@@ -3,13 +3,18 @@
 import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
 import { type FieldValues, useFormContext } from "react-hook-form";
@@ -99,18 +104,30 @@ export function FormInput<T extends FieldValues>({
         return (
           <FormItem className="flex flex-col space-y-1">
             {label && (
-              <FormLabel
-                className={cn(disabled && "cursor-not-allowed opacity-70")}
-                htmlFor={field.name}
-                id={`${field.name}-label`}
-              >
-                <span>
-                  {label}
-                  {inputProps.required && (
-                    <span className="text-destructive">*</span>
-                  )}
-                </span>
-              </FormLabel>
+              <div className="flex flex-row items-center justify-between pb-0 flex-shrink-0">
+                <FormLabel
+                  className={cn(disabled && "cursor-not-allowed opacity-70")}
+                  htmlFor={field.name}
+                  id={`${field.name}-label`}
+                >
+                  <span>
+                    {label}
+                    {inputProps.required && (
+                      <span className="text-destructive">*</span>
+                    )}
+                  </span>
+                </FormLabel>
+                {description && (
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground" />
+                    </HoverCardTrigger>
+                    <HoverCardContent className="text-sm">
+                      <p>{description}</p>
+                    </HoverCardContent>
+                  </HoverCard>
+                )}
+              </div>
             )}
             <FormControl>
               <div
@@ -206,11 +223,6 @@ export function FormInput<T extends FieldValues>({
                 )}
               </div>
             </FormControl>
-            {description && (
-              <FormDescription id={`${field.name}-description`}>
-                {description}
-              </FormDescription>
-            )}
             <TranslatableFormFieldMessage />
           </FormItem>
         );
