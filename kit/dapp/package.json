@@ -68,7 +68,7 @@
     "@settlemint/sdk-thegraph": "2.2.2",
     "@sinclair/typebox": "0.34.33",
     "@tanstack/react-table": "8.21.3",
-    "@vercel/otel": "1.11.0",
+    "@vercel/otel": "1.12.0",
     "ajv": "8.17.1",
     "better-auth": "1.2.7",
     "better-call": "1.0.9",
