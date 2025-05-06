@@ -1,23 +1,52 @@
 "use client";
-import { Skeleton } from "@/components/ui/skeleton";
-import { authClient } from "@/lib/auth/client";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import type { User } from "@/lib/auth/types";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
+import { MyAssetsCount } from "../header/my-assets-count";
 
-export function Greeting() {
-  const session = authClient.useSession();
-  const name = session.data?.user.name;
+export function Greeting({
+  totalUserAssetsValue,
+  user,
+}: {
+  totalUserAssetsValue: number;
+  user: User;
+}) {
   const t = useTranslations("portfolio.greeting");
+  const { resolvedTheme } = useTheme();
+
+  const sidebarStyle = {
+    backgroundImage:
+      resolvedTheme === "dark"
+        ? "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)), url('/backgrounds/sidebar-bg.png')"
+        : "url('/backgrounds/sidebar-bg.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "top",
+    backgroundRepeat: "no-repeat",
+  };
 
   return (
-    <div>
-      {getGreeting(t)},
-      {name ? (
-        <span className="ml-1 font-semibold">{name}</span>
-      ) : (
-        <Skeleton className="mx-1 inline-block h-4 w-24 bg-muted/50" />
-      )}
-      . {t("you-have")}
-    </div>
+    <Card style={sidebarStyle}>
+      <CardHeader
+        className={cn(
+          "font-semibold",
+          resolvedTheme === "light" && "text-primary-foreground"
+        )}
+      >
+        {getGreeting(t)}! {t("you-have")}
+      </CardHeader>
+      <CardContent
+        className={cn(resolvedTheme === "light" && "text-primary-foreground")}
+      >
+        <MyAssetsCount
+          totalValue={{
+            amount: totalUserAssetsValue,
+            currency: user.currency,
+          }}
+        />
+      </CardContent>
+    </Card>
   );
 }
 
