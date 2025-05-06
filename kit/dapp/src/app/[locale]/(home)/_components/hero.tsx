@@ -50,17 +50,17 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
               <Logo className="w-48" />
             </div>
             <div className="absolute top-8 right-8 flex items-center gap-3">
-              <Button variant="ghost" asChild>
+              <Button variant="ghost">
                 <Link href={buttons.tertiary.href}>
                   {buttons.tertiary.text}
                 </Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline">
                 <Link href={buttons.secondary.href}>
                   {buttons.secondary.text}
                 </Link>
               </Button>
-              <Button asChild className="text-accent-foreground">
+              <Button className="text-accent-foreground">
                 <Link href={buttons.main.href}>{buttons.main.text}</Link>
               </Button>
             </div>

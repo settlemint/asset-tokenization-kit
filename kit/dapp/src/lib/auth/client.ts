@@ -23,6 +23,7 @@ import type { User } from "./types";
  * The authentication client instance with configured plugins
  */
 const client = createAuthClient({
+  basePath: "/api/auth",
   plugins: [
     inferAdditionalFields<typeof auth>(),
     adminClient({
