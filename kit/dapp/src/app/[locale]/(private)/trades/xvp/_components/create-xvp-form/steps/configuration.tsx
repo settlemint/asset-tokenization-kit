@@ -1,6 +1,6 @@
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormCheckbox } from "@/components/blocks/form/inputs/form-checkbox";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormSwitch } from "@/components/blocks/form/inputs/form-switch";
 import type { CreateXvpInput } from "@/lib/mutations/xvp/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
@@ -25,7 +25,7 @@ export function Configuration() {
         required
       />
 
-      <FormCheckbox
+      <FormSwitch
         name="autoExecute"
         control={control}
         label={t("auto-execute")}
