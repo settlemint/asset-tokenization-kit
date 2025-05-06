@@ -42,7 +42,7 @@ export const createXvpFunction = async ({
   const requestAssetDecimals = requestAsset.decimals;
 
   const result = await portalClient.request(XvpFactoryCreate, {
-    address: "0x202bdfdD1b4AC18fB5B68536f59CcAA693D00eF3",
+    address: "0x5e771e1417100000000000000000000000000008",
     from: user.wallet,
     input: {
       autoExecute,

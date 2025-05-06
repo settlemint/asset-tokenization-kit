@@ -37,11 +37,8 @@ export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
       return "expired";
     }
 
-    if (
-      item.approvals &&
-      item.approvals.length > 0 &&
-      item.approvals.every((appr) => appr.approved)
-    ) {
+    const approvalsRequired = new Set(item.flows.map((flow) => flow.from.id));
+    if (approvalsRequired.size === item.approvals.length) {
       return "approved";
     }
 
