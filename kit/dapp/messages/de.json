@@ -295,7 +295,10 @@
         "USER_MANAGEMENT_ROLE": "Benutzerverwaltungsrolle",
         "SUPPLY_MANAGEMENT_ROLE": "Liefermanagementrolle",
         "AUDITOR_ROLE": "Prüferrolle",
-        "SIGNER_ROLE": "Unterzeichnerrolle"
+        "SIGNER_ROLE": "Unterzeichnerrolle",
+        "DEFAULT_ADMIN_ROLE": "Standard-Admin-Rolle",
+        "event-details": "Ereignisdetails",
+        "event-parameters": "Ereignisparameter"
       },
       "details": {
         "account": "Konto",

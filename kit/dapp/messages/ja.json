@@ -295,7 +295,10 @@
         "USER_MANAGEMENT_ROLE": "ユーザー管理ロール",
         "SUPPLY_MANAGEMENT_ROLE": "サプライ管理ロール",
         "AUDITOR_ROLE": "監査人ロール",
-        "SIGNER_ROLE": "署名者ロール"
+        "SIGNER_ROLE": "署名者ロール",
+        "DEFAULT_ADMIN_ROLE": "デフォルト管理者ロール",
+        "event-details": "イベントの詳細",
+        "event-parameters": "イベントパラメータ"
       },
       "details": {
         "account": "アカウント",

@@ -295,7 +295,10 @@
         "USER_MANAGEMENT_ROLE": "دور إدارة المستخدمين",
         "SUPPLY_MANAGEMENT_ROLE": "دور إدارة الإمدادات",
         "AUDITOR_ROLE": "دور المدقق",
-        "SIGNER_ROLE": "دور الموقّع"
+        "SIGNER_ROLE": "دور الموقّع",
+        "DEFAULT_ADMIN_ROLE": "دور المسؤول الافتراضي",
+        "event-details": "تفاصيل الحدث",
+        "event-parameters": "معلمات الحدث"
       },
       "details": {
         "account": "حساب",

@@ -13,30 +13,6 @@ import { isAddress, type Hash, type Hex } from "viem";
 import { EvmAddress } from "../evm-address/evm-address";
 import { TransactionHash } from "../transaction-hash/transaction-hash";
 
-interface EventParameterValueProps {
-  value:
-    | string
-    | number
-    | boolean
-    | readonly unknown[]
-    | Record<string, unknown>;
-  t: ReturnType<typeof useTranslations>;
-}
-
-const EventParameterValue: React.FC<EventParameterValueProps> = ({
-  value,
-  t,
-}) => {
-  if (isAddress(value as Hash)) {
-    return <EvmAddress address={value as Hash} />;
-  }
-  const role = getRoleFromHash(value as Hex);
-  if (role) {
-    return <span>{t(role as any)}</span>; // Assuming role is a valid translation key
-  }
-  return <span>{String(value)}</span>;
-};
-
 export const EventDetailContent = React.memo(function EventDetailContent({
   eventId,
 }: {
@@ -58,6 +34,18 @@ export const EventDetailContent = React.memo(function EventDetailContent({
       dedupingInterval: 10000, // 10 seconds
     }
   );
+
+  // Define EventParameterValue as an internal helper function
+  const renderEventParameterValue = (value: unknown) => {
+    if (isAddress(value as Hash)) {
+      return <EvmAddress address={value as Hash} />;
+    }
+    const role = getRoleFromHash(value as Hex);
+    if (typeof role === "string") {
+      return <span>{t(role as any)}</span>;
+    }
+    return <span>{String(value)}</span>;
+  };
 
   if (isLoading || !event) {
     return (
@@ -99,7 +87,7 @@ export const EventDetailContent = React.memo(function EventDetailContent({
       <div className="mx-4 overflow-auto">
         <Card>
           <CardHeader>
-            <CardTitle>Event details</CardTitle>
+            <CardTitle>{t("event-details")}</CardTitle>
           </CardHeader>
           <CardContent>
             <dl className="grid grid-cols-[1fr_2fr] gap-4">
@@ -129,7 +117,7 @@ export const EventDetailContent = React.memo(function EventDetailContent({
             <>
               <Card>
                 <CardHeader>
-                  <CardTitle>Event parameters</CardTitle>
+                  <CardTitle>{t("event-parameters")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <dl className="grid grid-cols-[1fr_2fr] gap-4">
@@ -141,7 +129,7 @@ export const EventDetailContent = React.memo(function EventDetailContent({
                         {name}:
                       </dt>,
                       <dd key={`${name}-dd`} className="text-sm break-all">
-                        <EventParameterValue value={value} t={t} />
+                        {renderEventParameterValue(value)}
                       </dd>,
                     ])}
                   </dl>
