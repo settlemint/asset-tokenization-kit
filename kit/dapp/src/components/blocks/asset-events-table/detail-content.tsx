@@ -13,6 +13,30 @@ import { isAddress, type Hash, type Hex } from "viem";
 import { EvmAddress } from "../evm-address/evm-address";
 import { TransactionHash } from "../transaction-hash/transaction-hash";
 
+interface EventParameterValueProps {
+  value:
+    | string
+    | number
+    | boolean
+    | readonly unknown[]
+    | Record<string, unknown>;
+  t: ReturnType<typeof useTranslations>;
+}
+
+const EventParameterValue: React.FC<EventParameterValueProps> = ({
+  value,
+  t,
+}) => {
+  if (isAddress(value as Hash)) {
+    return <EvmAddress address={value as Hash} />;
+  }
+  const role = getRoleFromHash(value as Hex);
+  if (role) {
+    return <span>{t(role as any)}</span>; // Assuming role is a valid translation key
+  }
+  return <span>{String(value)}</span>;
+};
+
 export const EventDetailContent = React.memo(function EventDetailContent({
   eventId,
 }: {
@@ -117,13 +141,7 @@ export const EventDetailContent = React.memo(function EventDetailContent({
                         {name}:
                       </dt>,
                       <dd key={`${name}-dd`} className="text-sm break-all">
-                        {isAddress(value as Hash) ? (
-                          <EvmAddress address={value as Hash} />
-                        ) : getRoleFromHash(value as Hex) ? (
-                          <span>{t(getRoleFromHash(value as Hex) as any)}</span>
-                        ) : (
-                          String(value)
-                        )}
+                        <EventParameterValue value={value} t={t} />
                       </dd>,
                     ])}
                   </dl>

@@ -46,8 +46,13 @@ export const ROLES = {
   },
 } as const;
 
-export function getRoleFromHash(hash: Hex) {
-  return Object.values(ROLES).find((role) => role.id === hash)?.contractRole;
+// Create a map for efficient role lookup by ID
+const ROLES_BY_ID = new Map<Hex, string>(
+  Object.values(ROLES).map((role) => [role.id, role.contractRole])
+);
+
+export function getRoleFromHash(hash: Hex): string | undefined {
+  return ROLES_BY_ID.get(hash);
 }
 
 export const getRoles = (assettype: AssetType): Role[] => {
