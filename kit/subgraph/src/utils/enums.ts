@@ -20,6 +20,7 @@ export class FactoryType {
   static fixedyield: string = "fixedyield";
   static deposit: string = "deposit";
   static xvp: string = "xvp";
+  static vault: string = "vault";
 }
 
 export class Role {

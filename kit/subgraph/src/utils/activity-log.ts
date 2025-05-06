@@ -41,6 +41,7 @@ export class EventType {
   static Distribution: string = "Distribution";
   static BatchDistribution: string = "BatchDistribution";
   static MerkleRootUpdated: string = "MerkleRootUpdated";
+  static VaultCreated: string = "VaultCreated";
 }
 
 function activityLogEntryId(event: ethereum.Event): Bytes {
