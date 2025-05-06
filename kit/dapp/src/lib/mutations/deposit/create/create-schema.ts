@@ -73,6 +73,7 @@ export function CreateDepositSchema() {
         description: "Price of the tokenized deposit",
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
     },
     {
       description: "Schema for validating tokenized deposit creation inputs",

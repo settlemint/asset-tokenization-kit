@@ -31,7 +31,7 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
   const { data: balances, isLoading } = useSWR(
     [`asset-balances-${address}`],
     async () => {
-      const { data } = await apiClient.api["asset-balance"]
+      const { data } = await apiClient.api.balance
         .portfolio({
           wallet: getAddress(address),
         })

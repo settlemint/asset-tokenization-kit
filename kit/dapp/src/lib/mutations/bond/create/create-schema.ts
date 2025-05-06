@@ -90,6 +90,7 @@ export function CreateBondSchema({
         },
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
     },
     {
       description: "Schema for validating bond creation inputs",

@@ -13,8 +13,8 @@ export function handleXvPSettlementApproved(
   createActivityLogEntry(
     event,
     EventType.XvPSettlementApproved,
-    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
-    []
+    event.params.sender,
+    [event.params.sender]
   );
 }
 
@@ -24,10 +24,10 @@ export function handleXvPSettlementApprovalRevoked(
   createActivityLogEntry(
     event,
     EventType.XvPSettlementApprovalRevoked,
-    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
-    []
+    event.params.sender,
+    [event.params.sender]
   );
-  const approval = fetchApproval(event.address, event.transaction.from);
+  const approval = fetchApproval(event.address, event.params.sender);
   approval.save();
 }
 
@@ -36,8 +36,8 @@ export function handleXvPSettlementClaimed(event: XvPSettlementClaimed): void {
   createActivityLogEntry(
     event,
     EventType.XvPSettlementClaimed,
-    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
-    []
+    event.params.sender,
+    [event.params.sender]
   );
 
   xvpSettlement.claimed = true;
@@ -51,8 +51,8 @@ export function handleXvPSettlementCancelled(
   createActivityLogEntry(
     event,
     EventType.XvPSettlementCancelled,
-    event.transaction.from, // not perfect but the event does not have an ERC2771 sender parameter
-    []
+    event.params.sender,
+    [event.params.sender]
   );
 
   xvpSettlement.cancelled = true;

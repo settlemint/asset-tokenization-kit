@@ -8,7 +8,6 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t as tTypebox } from "@/lib/utils/typebox";
 import type { VariablesOf } from "gql.tada";
-import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
@@ -52,8 +51,6 @@ export interface AssetEventsListProps {
   sender?: Address;
   /** Optional limit to restrict total items fetched */
   limit?: number;
-  /** Optional locale to use for formatting */
-  locale?: Locale;
 }
 
 const fetchAssetEventsList = cache(
