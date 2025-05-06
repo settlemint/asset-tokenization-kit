@@ -72,7 +72,6 @@ export function StepWizard({
                     <div
                       className={cn(
                         "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 h-6 w-6 opacity-70 text-primary-foreground transition-all duration-300 ease-in-out",
-                        // Only current step gets larger
                         isCurrent && "opacity-100"
                       )}
                     >
