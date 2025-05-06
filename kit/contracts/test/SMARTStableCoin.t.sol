@@ -14,13 +14,12 @@ import { SMARTComplianceModuleParamPair } from
 import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
 import { InsufficientCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateralErrors.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
-import { console } from "forge-std/console.sol";
 
 /// Following tests are changed:
 /// - test_BurnFrom: removed because it doesn't exist in ERC3643
 /// - test_OnlyUserManagementCanBlock: removed because it will be managed by compliance modules
 /// - test_OnlyAdminCanUpdateCollateral: renamed to test_OnlyTrustedIssuerCanUpdateCollateral
-/// - test_StableCoinClawback: renamed to test_StableCoinForcedTransfer
+/// - test_StableCoinClawback: renamed to test_StableCoinForceTransfer
 /// - test_onlySupplyManagementCanClawback: renamed to test_onlySupplyManagementCanForceTransfer
 contract SMARTStableCoinTest is Test {
     SMARTUtils internal smartUtils;
@@ -66,9 +65,8 @@ contract SMARTStableCoinTest is Test {
         // Deploy forwarder first
         forwarder = new Forwarder();
 
-        stableCoin = _createStableCoin(
-            "StableCoin", "STBL", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner
-        );
+        stableCoin =
+            _createStableCoin("StableCoin", "STBL", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0));
     }
 
     function _createStableCoin(
@@ -76,13 +74,12 @@ contract SMARTStableCoinTest is Test {
         string memory symbol,
         uint8 decimals,
         uint256[] memory requiredClaimTopics,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs,
-        address owner_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
         internal
         returns (SMARTStableCoin)
     {
-        vm.startPrank(owner_);
+        vm.startPrank(owner);
         SMARTStableCoin stableCoin_ = new SMARTStableCoin(
             name,
             symbol,
@@ -92,12 +89,12 @@ contract SMARTStableCoinTest is Test {
             initialModulePairs,
             identityRegistry,
             compliance,
-            owner_,
+            owner,
             address(forwarder)
         );
         vm.stopPrank();
 
-        smartUtils.createAndSetTokenOnchainID(address(stableCoin_), owner_);
+        smartUtils.createAndSetTokenOnchainID(address(stableCoin_), owner);
 
         return stableCoin_;
     }
@@ -138,7 +135,7 @@ contract SMARTStableCoinTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             SMARTStableCoin newToken = _createStableCoin(
-                "StableCoin", "STBL", decimalValues[i], new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner
+                "StableCoin", "STBL", decimalValues[i], new uint256[](0), new SMARTComplianceModuleParamPair[](0)
             );
             assertEq(newToken.decimals(), decimalValues[i]);
         }
