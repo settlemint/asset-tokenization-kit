@@ -30,7 +30,7 @@ export async function generateMetadata({
   };
 }
 
-export default function AdminLayout({ children }: LayoutProps) {
+export default function Layout({ children }: LayoutProps) {
   return (
     <>
       <RedirectToSignIn />

@@ -2,11 +2,10 @@ import { FixedYieldCreated as FixedYieldCreatedEvent } from "../../generated/Fix
 import { Bond as BondEntity } from "../../generated/schema";
 import { FixedYield } from "../../generated/templates";
 import { FixedYield as FixedYieldContract } from "../../generated/templates/FixedYield/FixedYield";
-import { fixedYieldCreatedEvent } from "../assets/events/fixedyieldcreated";
 import { fetchFixedYield } from "../assets/fetch/fixed-yield";
-import { fetchAccount } from "../fetch/account";
+import { fetchAccount } from "../utils/account";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { FactoryType } from "../utils/enums";
-import { eventId } from "../utils/events";
 import { fetchFactory } from "./fetch/factory";
 
 export function handleFixedYieldCreated(event: FixedYieldCreatedEvent): void {
@@ -21,12 +20,12 @@ export function handleFixedYieldCreated(event: FixedYieldCreatedEvent): void {
 
   // Record event
   const sender = fetchAccount(event.transaction.from);
-  fixedYieldCreatedEvent(
-    eventId(event),
-    event.block.timestamp,
-    factory.id,
-    sender.id,
-    fixedYield.id
+
+  createActivityLogEntry(
+    event,
+    EventType.FixedYieldCreated,
+    event.params.creator,
+    [event.params.schedule, event.params.creator]
   );
 
   // Check contract data

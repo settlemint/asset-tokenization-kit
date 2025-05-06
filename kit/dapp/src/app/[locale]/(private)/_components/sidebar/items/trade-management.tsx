@@ -20,9 +20,9 @@ export function TradeManagement() {
           groupTitle: t("group-title"),
           items: [
             {
-              label: t("dvp-swap"),
+              label: t("xvp-settlement"),
               icon: <ArrowRightLeft className="size-4" />,
-              path: "/trades/dvp",
+              path: "/trades/xvp",
             },
           ],
         },

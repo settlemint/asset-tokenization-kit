@@ -26,10 +26,10 @@ contract XvPSettlementTest is Test {
     event XvPSettlementCreated(address indexed token, address indexed creator);
 
     // Events from XvPSettlement to verify
-    event XvPSettlementApproved();
-    event XvPSettlementApprovalRevoked();
-    event XvPSettlementClaimed();
-    event XvPSettlementCancelled();
+    event XvPSettlementApproved(address indexed sender);
+    event XvPSettlementApprovalRevoked(address indexed sender);
+    event XvPSettlementClaimed(address indexed sender);
+    event XvPSettlementCancelled(address indexed sender);
 
     function setUp() public {
         admin = makeAddr("admin");
@@ -90,7 +90,7 @@ contract XvPSettlementTest is Test {
 
         // Then approve the settlement
         vm.expectEmit(true, false, false, false);
-        emit XvPSettlementApproved();
+        emit XvPSettlementApproved(alice);
         bool approved = settlement.approve();
         assertTrue(approved, "Settlement should be approved");
 
@@ -102,7 +102,7 @@ contract XvPSettlementTest is Test {
         // Step 3: Execute settlement
         vm.prank(bob); // Anyone can execute (in this case bob)
         vm.expectEmit(true, false, false, false);
-        emit XvPSettlementClaimed();
+        emit XvPSettlementClaimed(bob);
         bool executed = settlement.execute();
         assertTrue(executed, "Settlement execution should succeed");
 
@@ -279,7 +279,7 @@ contract XvPSettlementTest is Test {
 
         // Step 3: Revoke approval
         vm.expectEmit(true, false, false, false);
-        emit XvPSettlementApprovalRevoked();
+        emit XvPSettlementApprovalRevoked(alice);
         settlement.revokeApproval();
         vm.stopPrank();
 
@@ -351,7 +351,7 @@ contract XvPSettlementTest is Test {
         // Step 2: Cancel the settlement as a party involved
         vm.prank(alice);
         vm.expectEmit(true, false, false, false);
-        emit XvPSettlementCancelled();
+        emit XvPSettlementCancelled(alice);
         bool cancelled = settlement.cancel();
         assertTrue(cancelled, "Cancel should succeed");
 

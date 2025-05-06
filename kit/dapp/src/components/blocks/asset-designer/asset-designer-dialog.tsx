@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { AssetDesignerStep, AssetType, VerificationData } from "./types";
+import type { AssetDesignerStep, AssetType } from "./types";
 import { stepDetailsMap, stepsOrder } from "./types";
 
 // Import step wizard components
@@ -37,14 +37,19 @@ import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-actio
 // Import the predict address functions
 import { getPredictedAddress as getBondPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
 import { getPredictedAddress as getCryptocurrencyPredictedAddress } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-predict-address";
+import { getPredictedAddress as getDepositPredictedAddress } from "@/lib/queries/deposit-factory/deposit-factory-predict-address";
+import { getPredictedAddress as getEquityPredictedAddress } from "@/lib/queries/equity-factory/equity-factory-predict-address";
+import { getPredictedAddress as getFundPredictedAddress } from "@/lib/queries/fund-factory/fund-factory-predict-address";
 import { getPredictedAddress as getStablecoinPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
-import { getTomorrowMidnight } from "@/lib/utils/date";
 
 // Import FormOtpDialog
 import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 
 // Import the waitForTransactions function
+import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
+import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
+import { revalidate } from "@/lib/utils/revalidate";
 
 interface AssetDesignerDialogProps {
   open: boolean;
@@ -95,12 +100,16 @@ export function AssetDesignerDialog({
     isBasicInfoFormValid,
     isConfigurationFormValid,
     isPermissionsFormValid,
+    bondForm,
+    cryptocurrencyForm,
+    equityForm,
+    fundForm,
+    stablecoinForm,
+    depositForm,
   } = useAssetDesignerForms();
 
   // State for verification dialog
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
-  const [pincodeVerificationData, setPincodeVerificationData] =
-    useState<VerificationData | null>(null);
 
   // Create a form for the verification code
   const verificationForm = useForm({
@@ -145,124 +154,55 @@ export function AssetDesignerDialog({
     if (!selectedAssetType) return;
 
     setIsSubmitting(true);
-    const form = getFormForAssetType();
 
     try {
-      // Try to get a predicted address based on the asset type
-      let predictedAddress = "0x0000000000000000000000000000000000000000";
-
-      try {
-        const formValues = form.getValues();
-
-        switch (selectedAssetType) {
-          case "bond": {
-            // Only pass the required properties for bond prediction
-            const bondFormValues = formValues as any;
-            if (
-              bondFormValues.cap &&
-              bondFormValues.maturityDate &&
-              bondFormValues.underlyingAsset &&
-              bondFormValues.faceValue
-            ) {
-              predictedAddress = await getBondPredictedAddress({
-                assetName: bondFormValues.assetName,
-                symbol: bondFormValues.symbol,
-                decimals: bondFormValues.decimals,
-                cap: bondFormValues.cap,
-                maturityDate: bondFormValues.maturityDate,
-                underlyingAsset: bondFormValues.underlyingAsset,
-                faceValue: bondFormValues.faceValue,
-              });
-            }
-            break;
-          }
-          case "cryptocurrency": {
-            // Only pass the required properties for cryptocurrency prediction
-            const cryptoFormValues = formValues as any;
-            if (cryptoFormValues.initialSupply) {
-              predictedAddress = await getCryptocurrencyPredictedAddress({
-                assetName: cryptoFormValues.assetName,
-                symbol: cryptoFormValues.symbol,
-                decimals: cryptoFormValues.decimals,
-                initialSupply: cryptoFormValues.initialSupply,
-              });
-            }
-            break;
-          }
-          case "stablecoin": {
-            // Only pass the required properties for stablecoin prediction
-            const stablecoinFormValues = formValues as any;
-            if (
-              stablecoinFormValues.collateralLivenessValue &&
-              stablecoinFormValues.collateralLivenessTimeUnit
-            ) {
-              predictedAddress = await getStablecoinPredictedAddress({
-                assetName: stablecoinFormValues.assetName,
-                symbol: stablecoinFormValues.symbol,
-                decimals: stablecoinFormValues.decimals,
-                collateralLivenessValue:
-                  stablecoinFormValues.collateralLivenessValue,
-                collateralLivenessTimeUnit:
-                  stablecoinFormValues.collateralLivenessTimeUnit,
-              });
-            }
-            break;
-          }
-          default:
-            // Generate a fallback random address for asset types without a prediction function
-            predictedAddress = `0x${Math.random().toString(16).substring(2).padStart(40, "0")}`;
-        }
-      } catch (error) {
-        console.error("Error predicting address:", error);
-        // Generate a fallback random address in case of prediction failure
-        predictedAddress = `0x${Math.random().toString(16).substring(2).padStart(40, "0")}`;
-      }
-
-      // Common values needed for asset creation
-      const baseFormValues = {
-        ...form.getValues(),
-        verificationType: "pincode",
-        predictedAddress,
-      } as any;
-
-      let formData;
-      let action;
-
-      // Prepare form data based on asset type
       switch (selectedAssetType) {
-        case "bond":
-          action = createBond;
-          formData = {
-            ...baseFormValues,
-            maturityDate: baseFormValues.maturityDate || getTomorrowMidnight(),
-          };
+        case "bond": {
+          const bondFormValues = bondForm.getValues();
+          const predictedAddress =
+            await getBondPredictedAddress(bondFormValues);
+          bondForm.setValue("predictedAddress", predictedAddress);
           break;
-        case "cryptocurrency":
-          action = createCryptoCurrency;
-          formData = { ...baseFormValues };
+        }
+        case "cryptocurrency": {
+          const cryptoFormValues = cryptocurrencyForm.getValues();
+          const predictedAddress =
+            await getCryptocurrencyPredictedAddress(cryptoFormValues);
+          cryptocurrencyForm.setValue("predictedAddress", predictedAddress);
           break;
-        case "equity":
-          action = createEquity;
-          formData = { ...baseFormValues };
+        }
+        case "stablecoin": {
+          const stablecoinFormValues = stablecoinForm.getValues();
+          const predictedAddress =
+            await getStablecoinPredictedAddress(stablecoinFormValues);
+          stablecoinForm.setValue("predictedAddress", predictedAddress);
           break;
-        case "fund":
-          action = createFund;
-          formData = { ...baseFormValues };
+        }
+        case "deposit": {
+          const depositFormValues = depositForm.getValues();
+          const predictedAddress =
+            await getDepositPredictedAddress(depositFormValues);
+          depositForm.setValue("predictedAddress", predictedAddress);
           break;
-        case "stablecoin":
-          action = createStablecoin;
-          formData = { ...baseFormValues };
+        }
+        case "equity": {
+          const equityFormValues = equityForm.getValues();
+          const predictedAddress =
+            await getEquityPredictedAddress(equityFormValues);
+          equityForm.setValue("predictedAddress", predictedAddress);
           break;
-        case "deposit":
-          action = createDeposit;
-          formData = { ...baseFormValues };
+        }
+        case "fund": {
+          const fundFormValues = fundForm.getValues();
+          const predictedAddress =
+            await getFundPredictedAddress(fundFormValues);
+          fundForm.setValue("predictedAddress", predictedAddress);
           break;
+        }
         default:
-          throw new Error("Invalid asset type");
+          exhaustiveGuard(selectedAssetType);
       }
 
-      // Store verification data and show pincode dialog
-      setPincodeVerificationData({ action, formData });
       setShowVerificationDialog(true);
     } catch (error) {
       console.error("Error preparing asset creation:", error);
@@ -273,90 +213,112 @@ export function AssetDesignerDialog({
 
   // Handle verification submission
   const handleVerificationSubmit = async () => {
-    if (!pincodeVerificationData) return;
-
+    const toastId = toast.loading(
+      `Creating ${selectedAssetType}... This process may take a moment.`
+    );
     try {
       // Get the verification code from the form
       const verificationCode = verificationForm.getValues().verificationCode;
+      const form = getFormForAssetType();
+      const assetId = form.getValues().predictedAddress;
 
-      // Add the verification code to the form data
-      const formDataWithCode = {
-        ...pincodeVerificationData.formData,
-        verificationCode,
-      };
-
-      // Show the loading toast only after pin confirmation
-      const toastId = toast.loading(
-        `Creating ${selectedAssetType}... This process may take a moment.`
-      );
-
-      // Submit the form with the action
-      const result = await pincodeVerificationData.action(formDataWithCode);
-
-      if (result.data) {
-        try {
-          // Parse the transaction hashes from the response
-          const hashes = Array.isArray(result.data)
-            ? result.data
-            : [result.data];
-
-          // Wait for the transactions to be confirmed using the dedicated function
-          await waitForTransactions(hashes);
-
-          // Add a small delay to allow indexing to complete
-          await new Promise((resolve) => setTimeout(resolve, 3000));
-
-          // Update the toast with success message
-          toast.success(
-            `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,
-            { id: toastId }
-          );
-
-          // Close the dialog and reset state
-          handleOpenChange(false);
-
-          // Navigate to the asset page if we have a valid address
-          const assetId = formDataWithCode.predictedAddress;
-          if (
-            assetId &&
-            assetId !== "0x0000000000000000000000000000000000000000"
-          ) {
-            router.push(`/assets/${selectedAssetType}/${assetId}`);
-          } else {
-            // Refresh the current page
-            router.refresh();
-          }
-        } catch (error) {
-          console.error("Error waiting for transaction:", error);
-          toast.error(
-            "Transaction submitted but failed to confirm. Please check your activity history.",
-            {
-              id: toastId,
-            }
-          );
-          handleOpenChange(false);
+      const createAsset = async () => {
+        switch (selectedAssetType) {
+          case "bond":
+            const bondFormValues = bondForm.getValues();
+            return createBond({
+              ...bondFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          case "cryptocurrency":
+            const cryptoFormValues = cryptocurrencyForm.getValues();
+            return createCryptoCurrency({
+              ...cryptoFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          case "stablecoin":
+            const stablecoinFormValues = stablecoinForm.getValues();
+            return createStablecoin({
+              ...stablecoinFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          case "deposit":
+            const depositFormValues = depositForm.getValues();
+            return createDeposit({
+              ...depositFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          case "equity":
+            const equityFormValues = equityForm.getValues();
+            return createEquity({
+              ...equityFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          case "fund":
+            const fundFormValues = fundForm.getValues();
+            return createFund({
+              ...fundFormValues,
+              verificationCode,
+              verificationType: "pincode",
+            });
+          default:
+            exhaustiveGuard(selectedAssetType);
         }
-      } else if (result.validationErrors) {
+      };
+      const result = await createAsset();
+
+      if (!result) {
+        toast.error("Failed to create asset. Please try again.", {
+          id: toastId,
+        });
+        return;
+      }
+
+      if (result.validationErrors) {
         // Update the toast with validation error message
         toast.error(
           "Please fix the validation errors before creating the asset.",
           { id: toastId }
         );
         console.error("Validation errors:", result.validationErrors);
-      } else {
-        // Update the toast with generic error message
-        toast.error("Failed to create asset. Please try again.", {
-          id: toastId,
-        });
       }
+
+      // Parse the transaction hashes from the response
+      const hashes = result.data
+        ? Array.isArray(result.data)
+          ? result.data
+          : [result.data]
+        : [];
+
+      // Wait for the transactions to be confirmed using the dedicated function
+      const receipts = await waitForTransactions(hashes);
+      const lastBlockNumber = Number(receipts.at(-1)?.blockNumber);
+      if (lastBlockNumber) {
+        await waitForIndexing(lastBlockNumber);
+        await revalidate();
+      }
+
+      toast.success(
+        `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,
+        { id: toastId }
+      );
+
+      handleOpenChange(false);
+
+      router.push(`/assets/${selectedAssetType}/${assetId}`);
     } catch (error) {
       console.error("Error creating asset:", error);
-      // Show error toast
-      toast.error("An unexpected error occurred. Please try again.");
+      toast.error("An unexpected error occurred. Please try again.", {
+        id: toastId,
+      });
     } finally {
       setIsSubmitting(false);
       setShowVerificationDialog(false);
-      setPincodeVerificationData(null);
       verificationForm.reset();
     }
   };
@@ -365,7 +327,6 @@ export function AssetDesignerDialog({
   const handleVerificationCancel = () => {
     setIsSubmitting(false);
     setShowVerificationDialog(false);
-    setPincodeVerificationData(null);
     verificationForm.reset();
   };
 

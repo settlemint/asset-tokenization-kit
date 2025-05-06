@@ -134,7 +134,7 @@ export const OnChainBondSchema = t.Object(
       description:
         "The exact total burned amount of the token as a raw big integer value",
     }),
-    totalHolders: t.Number({
+    totalHolders: t.StringifiedBigInt({
       description: "The total number of unique addresses holding the token",
     }),
     paused: t.Boolean({

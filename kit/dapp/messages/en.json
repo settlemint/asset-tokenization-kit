@@ -1,4 +1,34 @@
 {
+  "actions": {
+    "action-type": {
+      "bond-mature": "Mature Bond"
+    },
+    "action-type-header": "Action type",
+    "active-on-header": "Active on",
+    "all-tasks-complete": "All tasks complete!",
+    "all-tasks-complete-description": "You have no pending actions.",
+    "completed-description": {
+      "bond-mature": "The bond has been matured successfully."
+    },
+    "completed-on-header": "Completed on",
+    "description-header": "Description",
+    "page": {
+      "actions": "Actions"
+    },
+    "pending-description": {
+      "bond-mature": "You need to send the transaction to mature the bond."
+    },
+    "sender-header": "Sender",
+    "subject": "Subject",
+    "tabs": {
+      "completed": "Completed",
+      "pending": "Pending",
+      "upcoming": "Upcoming"
+    },
+    "upcoming-description": {
+      "bond-mature": "You will need to send the transaction to mature the bond."
+    }
+  },
   "active": "Active",
   "admin": {
     "activity": {
@@ -187,11 +217,11 @@
     "sidebar": {
       "asset-designer": "Asset Designer",
       "asset-management": {
+        "actions": "Actions",
         "asset-activity": "Asset activity",
         "bonds": "Bonds",
         "cryptocurrencies": "Cryptocurrencies",
         "dashboard": "Dashboard",
-        "actions": "Actions",
         "equities": "Equities",
         "funds": "Funds",
         "group-title": "Asset management",
@@ -231,37 +261,93 @@
         "settings": "Settings"
       },
       "trade-management": {
-        "dvp-swap": "DvP Swap",
-        "group-title": "Trade management"
+        "group-title": "Trade management",
+        "xvp-settlement": "XvP"
       }
     }
   },
   "admin-user": "Admin",
+  "asset-designer": {
+    "type-selection": {
+      "description": "Choose the type of digital asset you want to create",
+      "features": {
+        "bond": {
+          "fixed-interest": "Fixed interest payments",
+          "maturity-management": "Maturity date management",
+          "principal-repayment": "Principal repayment",
+          "transferable-ownership": "Transferable ownership"
+        },
+        "cryptocurrency": {
+          "decentralized-ownership": "Decentralized ownership",
+          "global-payments": "Global payments",
+          "programmable-money": "Programmable money",
+          "secure-transactions": "Secure transactions"
+        },
+        "deposit": {
+          "institutional-backing": "Institutional backing",
+          "interest-earning": "Interest earning",
+          "redeemable": "Redeemable",
+          "term-options": "Term options"
+        },
+        "equity": {
+          "dividend-distribution": "Dividend distribution",
+          "fractional-ownership": "Fractional ownership",
+          "liquidity": "Liquidity",
+          "voting-rights": "Voting rights"
+        },
+        "fund": {
+          "lower-investment": "Lower investment barriers",
+          "performance-tracking": "Performance tracking",
+          "portfolio-diversification": "Portfolio diversification",
+          "redemption-rights": "Redemption rights"
+        },
+        "stablecoin": {
+          "collateral-backing": "Collateral backing",
+          "fast-settlements": "Fast settlements",
+          "price-stability": "Price stability",
+          "transparent-reserves": "Transparent reserves"
+        }
+      },
+      "key-features": "Key features:",
+      "title": "Select asset type"
+    }
+  },
   "asset-events": {
-    "ApprovalEvent": "Approval",
-    "AssetCreatedEvent": "Create",
-    "BondMaturedEvent": "Matured",
-    "BondRedeemedEvent": "Redeemed",
-    "BurnEvent": "Burn",
-    "ClawbackEvent": "Clawback",
-    "CollateralUpdatedEvent": "Collateral updated",
-    "ManagementFeeCollectedEvent": "Management fee collected",
-    "MintEvent": "Mint",
-    "PausedEvent": "Paused",
-    "PerformanceFeeCollectedEvent": "Performance fee collected",
-    "RoleAdminChangedEvent": "Role admin changed",
-    "RoleGrantedEvent": "Role granted",
-    "RoleRevokedEvent": "Role revoked",
-    "TokenWithdrawnEvent": "Withdraw",
-    "TokensFrozenEvent": "Freeze",
-    "TransferEvent": "Transfer",
-    "UnderlyingAssetTopUpEvent": "Top up",
-    "UnderlyingAssetWithdrawnEvent": "Withdraw",
-    "UnpausedEvent": "Unpause",
-    "UserAllowedEvent": "Allow",
-    "UserBlockedEvent": "Block",
-    "UserDisallowedEvent": "Disallow",
-    "UserUnblockedEvent": "Unblock"
+    "Approval": "Approval",
+    "AssetCreated": "Asset created",
+    "BatchDistribution": "Batch distribution",
+    "Burn": "Burn",
+    "Claimed": "Claimed",
+    "Clawback": "Clawback",
+    "CollateralUpdated": "Collateral updated",
+    "Distribution": "Distribution",
+    "FixedYieldCreated": "Fixed yield created",
+    "ManagementFeeCollected": "Management fee collected",
+    "Matured": "Matured",
+    "MerkleRootUpdated": "Merkle root updated",
+    "Mint": "Mint",
+    "Pause": "Pause",
+    "PerformanceFeeCollected": "Performance fee collected",
+    "Redeemed": "Redeemed",
+    "RoleAdminChanged": "Role admin changed",
+    "RoleGranted": "Role granted",
+    "RoleRevoked": "Role revoked",
+    "TokenWithdrawn": "Token withdrawn",
+    "TokensFrozen": "Tokens frozen",
+    "Transfer": "Transfer",
+    "UnderlyingAssetTopUp": "Underlying asset top up",
+    "UnderlyingAssetWithdrawn": "Underlying asset withdrawn",
+    "Unpause": "Unpause",
+    "UserAllowed": "User allowed",
+    "UserBlocked": "User blocked",
+    "UserDisallowed": "User disallowed",
+    "UserUnblocked": "User unblocked",
+    "XvPSettlementApprovalRevoked": "Settlement approval revoked",
+    "XvPSettlementApproved": "Settlement approved",
+    "XvPSettlementCancelled": "Settlement cancelled",
+    "XvPSettlementClaimed": "Settlement claimed",
+    "XvPSettlementExecuted": "Settlement executed",
+    "YieldClaimed": "Yield claimed"
   },
   "asset-info": {
     "admin": "Admin",
@@ -273,51 +359,6 @@
     "active": "Active",
     "blocked": "Blocked",
     "paused": "Paused"
-  },
-  "asset-designer": {
-    "type-selection": {
-      "title": "Select asset type",
-      "description": "Choose the type of digital asset you want to create",
-      "key-features": "Key features:",
-      "features": {
-        "bond": {
-          "fixed-interest": "Fixed interest payments",
-          "maturity-management": "Maturity date management",
-          "transferable-ownership": "Transferable ownership",
-          "principal-repayment": "Principal repayment"
-        },
-        "cryptocurrency": {
-          "secure-transactions": "Secure transactions",
-          "decentralized-ownership": "Decentralized ownership",
-          "global-payments": "Global payments",
-          "programmable-money": "Programmable money"
-        },
-        "equity": {
-          "voting-rights": "Voting rights",
-          "dividend-distribution": "Dividend distribution",
-          "fractional-ownership": "Fractional ownership",
-          "liquidity": "Liquidity"
-        },
-        "fund": {
-          "portfolio-diversification": "Portfolio diversification",
-          "performance-tracking": "Performance tracking",
-          "redemption-rights": "Redemption rights",
-          "lower-investment": "Lower investment barriers"
-        },
-        "stablecoin": {
-          "price-stability": "Price stability",
-          "collateral-backing": "Collateral backing",
-          "transparent-reserves": "Transparent reserves",
-          "fast-settlements": "Fast settlements"
-        },
-        "deposit": {
-          "interest-earning": "Interest earning",
-          "redeemable": "Redeemable",
-          "term-options": "Term options",
-          "institutional-backing": "Institutional backing"
-        }
-      }
-    }
   },
   "asset-type": {
     "bonds": "Bond",
@@ -356,6 +397,7 @@
         "asset": "Asset",
         "asset-type": "Asset type",
         "date": "Date",
+        "details": "Event details",
         "details-button": "Details",
         "details-for-event": "Details for {event} event",
         "sender": "Sender",
@@ -556,9 +598,32 @@
         "send-transaction": "Send transaction",
         "sending-transaction": "Sending transaction..."
       },
+      "document-upload": {
+        "accepted-format": "Accepted formats: {formats} (Max: {maxSize}MB)",
+        "add-document": "Add Document",
+        "cancel": "Cancel",
+        "choose-file": "Choose File",
+        "delete-document": "Delete Document",
+        "document-description": "Description",
+        "document-description-placeholder": "Brief description of the document",
+        "document-file": "Upload File",
+        "document-title": "Document Title",
+        "document-title-placeholder": "e.g. MiCA Compliance White Paper",
+        "document-type": "Document Type",
+        "file-too-large": "File is too large. Maximum size is {maxSize}MB.",
+        "invalid-file-format": "Invalid file format. Only {formats} files are accepted.",
+        "no-documents": "No documents have been uploaded yet",
+        "no-file-chosen": "No file chosen",
+        "select-document-type": "Select document type",
+        "upload-document": "Upload",
+        "upload-document-description": "Upload white papers, audit reports, and other compliance documents",
+        "upload-document-title": "Upload Document",
+        "uploading": "Uploading",
+        "uploading-document": "Uploading..."
+      },
       "input": {
-        "letters-only": "Please enter letters only",
         "alphanumeric-only": "Please enter letters and numbers only",
+        "letters-only": "Please enter letters only",
         "max-value": "Value cannot be higher than {max}",
         "min-value": "Value cannot be lower than {min}",
         "valid-email": "Please enter a valid email address",
@@ -605,29 +670,6 @@
         "recent-users": "Recently selected",
         "search-contact-placeholder": "Search for a contact...",
         "search-placeholder": "Search for a user..."
-      },
-      "document-upload": {
-        "add-document": "Add Document",
-        "no-documents": "No documents have been uploaded yet",
-        "delete-document": "Delete Document",
-        "uploading": "Uploading",
-        "upload-document-title": "Upload Document",
-        "upload-document-description": "Upload white papers, audit reports, and other compliance documents",
-        "document-title": "Document Title",
-        "document-title-placeholder": "e.g. MiCA Compliance White Paper",
-        "document-type": "Document Type",
-        "select-document-type": "Select document type",
-        "document-description": "Description",
-        "document-description-placeholder": "Brief description of the document",
-        "document-file": "Upload File",
-        "choose-file": "Choose File",
-        "no-file-chosen": "No file chosen",
-        "accepted-format": "Accepted formats: {formats} (Max: {maxSize}MB)",
-        "invalid-file-format": "Invalid file format. Only {formats} files are accepted.",
-        "file-too-large": "File is too large. Maximum size is {maxSize}MB.",
-        "cancel": "Cancel",
-        "uploading-document": "Uploading...",
-        "upload-document": "Upload"
       }
     },
     "logo": {
@@ -880,14 +922,15 @@
       "portfolio": "My portfolio"
     },
     "navigation": {
+      "actions": "Actions",
       "admin": "Issuer portal",
       "asset-management": "Asset management",
+      "dvp-swap": "DvP Swap",
       "platform": "Platform management",
       "portfolio": "My portfolio",
       "title": "Private",
       "trade-management": "Trade management",
-      "dvp-swap": "DvP Swap",
-      "actions": "Actions"
+      "xvp-settlement": "XvP"
     },
     "user-dropdown": {
       "documentation": "Documentation",
@@ -897,36 +940,6 @@
     }
   },
   "paused": "Paused",
-  "actions": {
-    "page": {
-      "actions": "Actions"
-    },
-    "tabs": {
-      "pending": "Pending",
-      "upcoming": "Upcoming",
-      "completed": "Completed"
-    },
-    "all-tasks-complete": "All tasks complete!",
-    "all-tasks-complete-description": "You have no pending actions.",
-    "subject": "Subject",
-    "action-type-header": "Action type",
-    "description-header": "Description",
-    "active-on-header": "Active on",
-    "sender-header": "Sender",
-    "completed-on-header": "Completed on",
-    "action-type": {
-      "bond-mature": "Mature Bond"
-    },
-    "pending-description": {
-      "bond-mature": "You need to send the transaction to mature the bond."
-    },
-    "upcoming-description": {
-      "bond-mature": "You will need to send the transaction to mature the bond."
-    },
-    "completed-description": {
-      "bond-mature": "The bond has been matured successfully."
-    }
-  },
   "portfolio": {
     "activity": {
       "page-description": "Your activity on chain",
@@ -2333,6 +2346,12 @@
     }
   },
   "regular": "User",
+  "regulations": {
+    "mica": {
+      "description": "Markets in Crypto-Assets (MiCA) is the EU's comprehensive regulatory framework designed to regulate cryptocurrencies, stablecoins, and other digital assets, providing legal certainty for crypto-asset issuers and service providers.",
+      "name": "MiCA"
+    }
+  },
   "supply-manager": "Supply Manager",
   "theme": {
     "dark": "Dark",
@@ -2353,26 +2372,27 @@
         "title": "Amount to exchange"
       },
       "button": {
-        "dvp-swap": "Create a DvP Swap"
+        "xvp": "Create an XvP Settlement"
       },
       "configuration": {
-        "description": "Configuration for the swap.",
+        "description": "Configuration for the settlement.",
         "expiry": "Expiry",
-        "expiry-description": "The time until which you will not be able to refund assets from the swap. If the swap is not executed, you can refund your assets after this time.",
+        "expiry-description": "The time until which you will not be able to refund assets from the settlement. If the settlement is not executed, you can refund your assets after this time.",
         "expiry-required": "Expiry is required",
         "past-expiry-error": "Expiry must be in the future.",
-        "secret": "Secret",
-        "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the swap.",
-        "title": "Configuration"
+        "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the settlement.",
+        "title": "Configuration",
+        "auto-execute": "Auto execute",
+        "auto-execute-description": "Automatically execute the settlement on last approval."
       },
       "description": {
-        "dvp-swap": "A DvP (Delivery vs Payment) Swap enables an atomic exchange of assets between two parties. It allows you to reliably exchange assets with another user without the need for a third party."
+        "xvp": "An XvP (Delivery vs Payment or Payment vs Payment) Settlement enables an atomic exchange of assets between parties. It allows you to reliably exchange assets with other users without the need for a third party."
       },
       "summary": {
         "amount": "Amount",
         "configuration": "Configuration",
-        "configuration-description": "The configuration for the DvP Swap",
-        "description": "Review the DvP Swap details. Ensure the receiver, amounts, expiry and secret are correct.",
+        "configuration-description": "The configuration for the XvP Settlement",
+        "description": "Review the XvP Settlement details. Ensure the receiver, amounts, expiry and secret are correct.",
         "expiry": "Expiry",
         "from": "From",
         "offer": "Your offer",
@@ -2383,27 +2403,40 @@
         "to": "To"
       },
       "title": {
-        "dvp-swap": "Create a DvP Swap"
+        "xvp": "Create an XvP Settlement"
       },
       "user": {
-        "description": "Select the user wallet you wish to swap assets with.",
+        "description": "Select the user wallet you wish to exchange assets with.",
         "title": "User",
         "user": "User wallet"
       }
     },
     "page": {
-      "dvp-swap": "DvP Swap"
+      "xvp": "XvP"
+    },
+    "xvp": {
+      "expired": "Expired",
+      "details": "Details",
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "expired": "Expired",
+        "claimed": "Claimed",
+        "cancelled": "Cancelled"
+      },
+      "columns": {
+        "id": "Settlement ID",
+        "status": "Status",
+        "created-at": "Created at",
+        "expires-at": "Expires at",
+        "assets": "Assets",
+        "approvals": "Approvals"
+      }
     }
   },
   "transactions": {
     "sending": "Sending",
     "success": "Success",
     "validation-errors": "Validation error"
-  },
-  "regulations": {
-    "mica": {
-      "name": "MiCA",
-      "description": "Markets in Crypto-Assets (MiCA) is the EU's comprehensive regulatory framework designed to regulate cryptocurrencies, stablecoins, and other digital assets, providing legal certainty for crypto-asset issuers and service providers."
-    }
   }
 }

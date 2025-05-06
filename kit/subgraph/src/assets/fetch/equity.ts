@@ -1,7 +1,7 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { Equity } from "../../../generated/schema";
 import { Equity as EquityContract } from "../../../generated/templates/Equity/Equity";
-import { fetchAccount } from "../../fetch/account";
+import { fetchAccount } from "../../utils/account";
 import { AssetType } from "../../utils/enums";
 
 export function fetchEquity(address: Address): Equity {
@@ -30,9 +30,13 @@ export function fetchEquity(address: Address): Equity {
     equity.userManagers = [];
     equity.lastActivity = BigInt.zero();
     equity.creator = Address.zero();
+    equity.totalMinted = BigDecimal.zero();
+    equity.totalMintedExact = BigInt.zero();
     equity.totalBurned = BigDecimal.zero();
     equity.totalBurnedExact = BigInt.zero();
-    equity.totalHolders = 0;
+    equity.totalTransferred = BigDecimal.zero();
+    equity.totalTransferredExact = BigInt.zero();
+    equity.totalHolders = BigInt.zero();
     equity.concentration = BigDecimal.zero();
 
     // Equity-specific fields

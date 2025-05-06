@@ -71,9 +71,118 @@ export function StepWizard({
                     {/* The step dot */}
                     <div
                       className={cn(
+<<<<<<< HEAD
                         "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 h-6 w-6 opacity-70 text-primary-foreground transition-all duration-300 ease-in-out",
                         // Only current step gets larger
                         isCurrent && "opacity-100"
+=======
+                        "absolute left-[1.5rem] top-[1.4rem] h-[calc(100%+0.5rem)] w-0 border-l-2 border-dashed border-slate-300 z-10 transition-opacity duration-300 ease-in-out",
+                        isCompleted ? "opacity-100" : "opacity-50"
+                      )}
+                    ></div>
+                  )}
+
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    className={cn(
+                      "flex flex-col w-full px-3 py-2 rounded-md transition-colors text-left relative z-20",
+                      finalDisabled && "cursor-not-allowed",
+                      !isCurrent && "text-muted-foreground"
+                    )}
+                    onClick={() => !finalDisabled && onStepChange(step.id)}
+                    disabled={finalDisabled}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={cn(
+                          "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 relative transition-all duration-300 ease-in-out",
+                          // Conditional Size & Scale:
+                          isCompleted
+                            ? "h-6 w-6 scale-100 opacity-100"
+                            : "h-7 w-7 scale-100 opacity-100",
+                          isCurrent && "scale-110",
+                          // Initial state for animation (when not completed/current yet)
+                          !isCompleted && !isCurrent && "scale-90 opacity-70",
+                          // Add bg-sidebar for current/inactive states to cover the line
+                          isCompleted
+                            ? "bg-primary-foreground text-primary border-primary"
+                            : isCurrent
+                              ? "border-none text-primary-foreground bg-primary"
+                              : "border-none text-primary-foreground bg-primary"
+                        )}
+                      >
+                        {/* Conditional Icon Rendering with Transitions */}
+                        <div className="transition-opacity duration-300 ease-in-out">
+                          {isCompleted ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="opacity-100"
+                            >
+                              <path d="M20 6 9 17l-5-5" />
+                            </svg>
+                          ) : isCurrent ? (
+                            <svg
+                              width="18"
+                              height="18"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="text-current opacity-100"
+                            >
+                              <circle
+                                cx="8"
+                                cy="8"
+                                r="7"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              />
+                              <circle cx="8" cy="8" r="3" fill="currentColor" />
+                            </svg>
+                          ) : (
+                            <svg
+                              width="18"
+                              height="18"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="text-current opacity-100"
+                            >
+                              <circle
+                                cx="8"
+                                cy="8"
+                                r="7"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <span
+                        className={cn(
+                          "text-sm text-primary-foreground transition-colors duration-300",
+                          isCurrent ? "font-bold" : "font-medium"
+                        )}
+                      >
+                        {step.title}
+                      </span>
+                    </div>
+                    <p
+                      className={cn(
+                        "text-xs mt-1 ml-9 transition-colors duration-300",
+                        isCurrent
+                          ? "text-primary-foreground/70"
+                          : "text-primary-foreground/25"
+>>>>>>> origin/main
                       )}
                     >
                       {/* Conditional Icon Rendering with Transitions */}

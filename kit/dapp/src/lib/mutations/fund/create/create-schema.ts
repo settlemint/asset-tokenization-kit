@@ -66,6 +66,7 @@ export function CreateFundSchema() {
         description: "Price of the fund",
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
     },
     {
       description: "Schema for validating fund creation inputs",

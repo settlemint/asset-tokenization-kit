@@ -55,6 +55,7 @@ export function CreateCryptoCurrencySchema({
         description: "Price of the cryptocurrency",
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
     },
     {
       description: "Schema for validating cryptocurrency creation inputs",
