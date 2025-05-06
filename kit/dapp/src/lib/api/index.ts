@@ -1,3 +1,4 @@
+import { auth } from "@/lib/auth/auth";
 import { opentelemetry } from "@elysiajs/opentelemetry";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
@@ -116,6 +117,7 @@ export const api = new Elysia({
     );
     return elysiaStatus(500, "Internal server error");
   })
+  .mount(auth.handler)
   .group("/bond", (app) => app.use(BondApi))
   .group("/contact", (app) => app.use(ContactApi))
   .group("/cryptocurrency", (app) => app.use(CryptoCurrencyApi))
