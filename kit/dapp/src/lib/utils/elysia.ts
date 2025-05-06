@@ -6,12 +6,14 @@ export const betterAuth = new Elysia({ name: "better-auth" })
   .mount(auth.handler)
   .macro({
     auth: {
-      async resolve({ error, request: { headers } }) {
+      async resolve({ error: status, request: { headers } }) {
         const session = await auth.api.getSession({
           headers,
         });
 
-        if (!session) return error(401);
+        if (!session) {
+          return status(401);
+        }
 
         return {
           user: session.user as User,

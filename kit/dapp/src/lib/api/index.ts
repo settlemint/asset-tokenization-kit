@@ -1,7 +1,7 @@
 import { opentelemetry } from "@elysiajs/opentelemetry";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
-import { Elysia, error as elysiaError } from "elysia";
+import { Elysia, error as elysiaStatus } from "elysia";
 import pkgjson from "../../../package.json";
 import { metadata } from "../config/metadata";
 import { siteConfig } from "../config/site";
@@ -88,10 +88,10 @@ export const api = new Elysia({
   )
   .onError(({ code, error, path }) => {
     if (code === "NOT_FOUND") {
-      return elysiaError(404, "Not Found");
+      return elysiaStatus(404, "Not Found");
     }
     if (error instanceof AccessControlError) {
-      return elysiaError(error.statusCode, error.message);
+      return elysiaStatus(error.statusCode, error.message);
     }
 
     // Handle transaction-related errors more specifically
@@ -106,7 +106,7 @@ export const api = new Elysia({
         return []; // Return empty array instead of error for transaction endpoints
       }
 
-      return elysiaError(500, "Transaction processing error");
+      return elysiaStatus(500, "Transaction processing error");
     }
 
     // TODO: handle specific errors (hasura, postgres, thegraph, portal, etc)
@@ -114,7 +114,7 @@ export const api = new Elysia({
       `Unexpected error: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
       error
     );
-    return elysiaError(500, "Internal server error");
+    return elysiaStatus(500, "Internal server error");
   })
   .group("/bond", (app) => app.use(BondApi))
   .group("/contact", (app) => app.use(ContactApi))
