@@ -33,6 +33,7 @@ export const auth = betterAuth({
   appName: metadata.title.default,
   secret: env.SETTLEMINT_HASURA_ADMIN_SECRET,
   baseURL: env.APP_URL,
+  basePath: "/api/auth",
   trustedOrigins: [env.APP_URL],
   database: drizzleAdapter(db, {
     provider: "pg",

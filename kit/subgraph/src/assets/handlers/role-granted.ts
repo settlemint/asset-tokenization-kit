@@ -11,7 +11,7 @@ import { Role } from "../../utils/enums";
 
 export function roleGrantedHandler(
   event: ethereum.Event,
-  asset: Entity,
+  entity: Entity,
   role: string,
   roleHolder: Address,
   sender: Address
@@ -21,7 +21,7 @@ export function roleGrantedHandler(
 
   if (role == Role.DEFAULT_ADMIN_ROLE) {
     let found = false;
-    const adminsValue = asset.get("admins");
+    const adminsValue = entity.get("admins");
     let admins: Bytes[] = [];
     if (!adminsValue) {
       admins = [];
@@ -35,7 +35,7 @@ export function roleGrantedHandler(
       }
     }
     if (!found) {
-      asset.set(
+      entity.set(
         "admins",
         Value.fromBytesArray(admins.concat([roleHolderAccount.id]))
       );
@@ -45,7 +45,7 @@ export function roleGrantedHandler(
 
   if (role == Role.SUPPLY_MANAGEMENT_ROLE) {
     let found = false;
-    const supplyManagersValue = asset.get("supplyManagers");
+    const supplyManagersValue = entity.get("supplyManagers");
     let supplyManagers: Bytes[] = [];
     if (!supplyManagersValue) {
       supplyManagers = [];
@@ -59,7 +59,7 @@ export function roleGrantedHandler(
       }
     }
     if (!found) {
-      asset.set(
+      entity.set(
         "supplyManagers",
         Value.fromBytesArray(supplyManagers.concat([roleHolderAccount.id]))
       );
@@ -69,7 +69,7 @@ export function roleGrantedHandler(
 
   if (role == Role.USER_MANAGEMENT_ROLE) {
     let found = false;
-    const userManagersValue = asset.get("userManagers");
+    const userManagersValue = entity.get("userManagers");
     let userManagers: Bytes[] = [];
     if (!userManagersValue) {
       userManagers = [];
@@ -83,9 +83,33 @@ export function roleGrantedHandler(
       }
     }
     if (!found) {
-      asset.set(
+      entity.set(
         "userManagers",
         Value.fromBytesArray(userManagers.concat([roleHolderAccount.id]))
+      );
+    }
+    return;
+  }
+
+  if (role == Role.SIGNER_ROLE) {
+    let found = false;
+    const signersValue = entity.get("signers");
+    let signers: Bytes[] = [];
+    if (!signersValue) {
+      signers = [];
+    } else {
+      signers = signersValue.toBytesArray();
+    }
+    for (let i = 0; i < signers.length; i++) {
+      if (signers[i].equals(roleHolderAccount.id)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      entity.set(
+        "signers",
+        Value.fromBytesArray(signers.concat([roleHolderAccount.id]))
       );
     }
     return;
