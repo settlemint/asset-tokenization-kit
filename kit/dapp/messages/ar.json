@@ -1048,7 +1048,13 @@
         "configuration": {
           "bonds": {
             "description": "حدد المعلمات الخاصة بسندك.",
-            "title": "تكوين السند"
+            "title": "تكوين السند",
+            "description-lifecycle": "قم بتكوين التواريخ ذات الصلة لأحداث دورة حياة هذا السند.",
+            "description-supply": "قم بتكوين العرض والتجزئة لهذا السند. هذه المعلومات غير قابلة للتغيير.",
+            "description-value": "قم بتكوين الأصل الذي يُستخدم كقيمة اسمية للسند والذي يُستخدم لمدفوعات القسيمة والاستحقاق.",
+            "title-lifecycle": "دورة الحياة",
+            "title-supply": "العرض",
+            "title-value": "القيمة الاسمية"
           },
           "cryptocurrencies": {
             "description": "حدد المعلمات الخاصة بالعملة المشفرة الخاصة بك.",
@@ -1167,7 +1173,8 @@
               }
             },
             "price-label": "السعر",
-            "internalid-label": "معرف داخلي"
+            "internalid-label": "معرف داخلي",
+            "decimals-description": "عدد الأرقام العشرية التي يجب استخدامها للسند. يُستخدم ذلك لتحديد دقة السند."
           },
           "cryptocurrencies": {
             "initial-supply-description": "المبلغ الأولي من الأصول التي سيتم سكها",

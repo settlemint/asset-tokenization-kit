@@ -858,7 +858,13 @@ files:
     private.assets.create.basics.title: ac061eff69e6c106d74d21859dcb28a9
     private.assets.create.basics.title-offchain: 0bb534e8b387711055b824c55a9d1656
     private.assets.create.configuration.bonds.description: acd48831270cfa0eb1e69dcd1315083e
+    private.assets.create.configuration.bonds.description-lifecycle: 2bc4fa379c474c1c87fe20f045f1993f
+    private.assets.create.configuration.bonds.description-supply: 88834a004fe362f38d6b3956d1c4a353
+    private.assets.create.configuration.bonds.description-value: d5d0ff77806ccacb96e1e25bbfa34c64
     private.assets.create.configuration.bonds.title: f8a901f4f21ee6409e5c5fb8100180fd
+    private.assets.create.configuration.bonds.title-lifecycle: ebdf3845fcafb2a153e977837fc2728a
+    private.assets.create.configuration.bonds.title-supply: 4288e091a848e12c896ef09f489affec
+    private.assets.create.configuration.bonds.title-value: 089de4f8c31f363927bca21027ad3f54
     private.assets.create.configuration.cryptocurrencies.description: 5a22678bbfb6fcec396c1855270ca184
     private.assets.create.configuration.cryptocurrencies.title: 44764afbcf743e84c03b70140bbfc3ce
     private.assets.create.configuration.deposits.description: 4f0d76c3bd15037645733fd62d580200
@@ -915,6 +921,7 @@ files:
     private.assets.create.parameters.bonds.underlying-asset-description: 1925f8f66c852c579a49dd45ece2ea92
     private.assets.create.parameters.bonds.underlying-asset-label: 7b350ed595b03937afb12262eb0f0960
     private.assets.create.parameters.common.collateral-proof-validity-label: 4f48427723be78cbcfd4953a0bd8a5e0
+    private.assets.create.parameters.common.decimals-description: a1654d545304699116fdc9d26d585620
     private.assets.create.parameters.common.decimals-label: 2b417805040de3a3df31c8fd3626b57c
     private.assets.create.parameters.common.internalid-label: 7e45bd3d0f499fe6fcd68cfaa873072f
     private.assets.create.parameters.common.isin-label: d03440b351474d0b1a3f851c3453e8de

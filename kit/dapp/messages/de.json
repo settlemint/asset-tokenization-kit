@@ -1048,7 +1048,13 @@
         "configuration": {
           "bonds": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre Anleihe sind.",
-            "title": "Anleihekonfiguration"
+            "title": "Anleihekonfiguration",
+            "description-lifecycle": "Konfigurieren Sie die relevanten Daten für Lebenszyklusereignisse für diese Anleihe.",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieser Anleihe. Diese Informationen sind unveränderlich.",
+            "description-value": "Konfigurieren Sie, welches Vermögen als Nennwert der Anleihe verwendet wird und für Zins- und Rückzahlungszahlungen genutzt wird.",
+            "title-lifecycle": "Lebenszyklus",
+            "title-supply": "Angebot",
+            "title-value": "Nennwert"
           },
           "cryptocurrencies": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre Kryptowährung sind.",
@@ -1167,7 +1173,8 @@
               }
             },
             "price-label": "Preis",
-            "internalid-label": "Interne ID"
+            "internalid-label": "Interne ID",
+            "decimals-description": "Die Anzahl der Dezimalstellen, die für die Anleihe verwendet werden sollen. Dies wird verwendet, um die Genauigkeit der Anleihe zu bestimmen."
           },
           "cryptocurrencies": {
             "initial-supply-description": "Anfangsbetrag an Assets, die geprägt werden sollen",

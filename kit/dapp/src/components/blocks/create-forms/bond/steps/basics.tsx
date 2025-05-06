@@ -26,16 +26,16 @@ export function Basics() {
         contentClassName="w-full"
       >
         <div className="grid grid-cols-1 gap-6 w-full">
-          <FormInput
-            control={control}
-            name="assetName"
-            label={t("parameters.common.name-label")}
-            placeholder={t("parameters.bonds.name-placeholder")}
-            description="The name of the bond. This is used to identify the bond in the UI and cannot be changed after creation."
-            required
-            maxLength={50}
-          />
           <div className="grid grid-cols-2 gap-6">
+            <FormInput
+              control={control}
+              name="assetName"
+              label={t("parameters.common.name-label")}
+              placeholder={t("parameters.bonds.name-placeholder")}
+              description="The name of the bond. This is used to identify the bond in the UI and cannot be changed after creation."
+              required
+              maxLength={50}
+            />
             <FormInput
               control={control}
               name="symbol"
@@ -45,15 +45,6 @@ export function Basics() {
               alphanumeric
               required
               maxLength={10}
-            />
-            <FormInput
-              control={control}
-              type="number"
-              name="decimals"
-              label={t("parameters.common.decimals-label")}
-              defaultValue={18}
-              description="The number of decimals to use for the bond. This is used to determine the precision of the bond. Blockchain based tokens typically use 18 decimals, but in any case use enough decimals to prevent rounding errors. The number of decimals cannot be changed after creation."
-              required
             />
           </div>
         </div>
@@ -91,6 +82,6 @@ export function Basics() {
 Basics.validatedFields = [
   "assetName",
   "symbol",
-  "decimals",
   "isin",
+  "internalid",
 ] satisfies (keyof CreateBondInput)[];

@@ -1217,7 +1217,13 @@
         "configuration": {
           "bonds": {
             "description": "Set parameters specific to your bond.",
-            "title": "Bond configuration"
+            "description-lifecycle": "Configure the relevant dates for lifecycle events for this bond.",
+            "description-supply": "Configure the supply and franctionalization of this bond. This information is immutable",
+            "description-value": "Configure in which asset is used as the denomination of the bond and is used for coupon and maturity payments.",
+            "title": "Bond configuration",
+            "title-lifecycle": "Lifecycle",
+            "title-supply": "Supply",
+            "title-value": "Denomination"
           },
           "cryptocurrencies": {
             "description": "Set parameters specific to your cryptocurrency.",
@@ -1306,6 +1312,7 @@
           },
           "common": {
             "collateral-proof-validity-label": "Collateral proof validity",
+            "decimals-description": "The number of decimals to use for the bond. This is used to determine the precision of the bond.",
             "decimals-label": "Decimals",
             "internalid-label": "Internal ID",
             "isin-label": "ISIN",

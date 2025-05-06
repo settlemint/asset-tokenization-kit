@@ -1048,7 +1048,13 @@
         "configuration": {
           "bonds": {
             "description": "債券に特有のパラメータを設定します。",
-            "title": "債券の設定"
+            "title": "債券の設定",
+            "description-lifecycle": "この債券のライフサイクルイベントに関連する日付を設定してください。",
+            "description-supply": "この債券の供給と分割を設定してください。この情報は変更できません。",
+            "description-value": "債券の単位として使用され、クーポンおよび満期の支払いに使用される資産を設定してください。",
+            "title-lifecycle": "ライフサイクル",
+            "title-supply": "供給",
+            "title-value": "単位"
           },
           "cryptocurrencies": {
             "description": "暗号通貨に特有のパラメータを設定します。",
@@ -1167,7 +1173,8 @@
               }
             },
             "price-label": "価格",
-            "internalid-label": "内部ID"
+            "internalid-label": "内部ID",
+            "decimals-description": "債券に使用する小数点以下の桁数。この桁数は債券の精度を決定するために使用されます。"
           },
           "cryptocurrencies": {
             "initial-supply-description": "発行される資産の初期量",
