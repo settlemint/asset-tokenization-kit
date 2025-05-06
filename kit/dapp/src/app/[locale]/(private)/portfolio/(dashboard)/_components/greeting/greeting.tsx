@@ -1,6 +1,7 @@
 "use client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { User } from "@/lib/auth/types";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { MyAssetsCount } from "../header/my-assets-count";
@@ -27,10 +28,17 @@ export function Greeting({
 
   return (
     <Card style={sidebarStyle}>
-      <CardHeader className="font-semibold">
+      <CardHeader
+        className={cn(
+          "font-semibold",
+          resolvedTheme === "light" && "text-primary-foreground"
+        )}
+      >
         {getGreeting(t)}! {t("you-have")}
       </CardHeader>
-      <CardContent>
+      <CardContent
+        className={cn(resolvedTheme === "light" && "text-primary-foreground")}
+      >
         <MyAssetsCount
           totalValue={{
             amount: totalUserAssetsValue,
