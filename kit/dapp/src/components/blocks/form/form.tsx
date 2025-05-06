@@ -1,6 +1,7 @@
 "use client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form as UIForm } from "@/components/ui/form";
+import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { revalidate } from "@/lib/utils/revalidate";
 import { safeParse, t as tb } from "@/lib/utils/typebox";
@@ -286,6 +287,7 @@ export function Form<
         },
         actionProps: {
           onSuccess: async ({ data, input }) => {
+            let lastBlockNumber: number | undefined = undefined;
             if (secureForm) {
               const hashes = safeParse(tb.Hashes(), data);
 
@@ -298,7 +300,8 @@ export function Form<
               const toastId = Date.now();
               toast.promise(waitForTransactions(hashes), {
                 loading: t("transactions.sending"),
-                success: () => {
+                success: (results) => {
+                  lastBlockNumber = Number(results.at(-1)?.blockNumber);
                   toast.dismiss(toastId);
                   return toast.success(successMessage, {
                     action,
@@ -316,7 +319,11 @@ export function Form<
 
             resetFormAndAction();
             onOpenChange?.(false);
-            await revalidate();
+
+            if (lastBlockNumber) {
+              await waitForIndexing(lastBlockNumber);
+              await revalidate();
+            }
           },
           onError: (error) => {
             let errorMessage = "Unknown error";

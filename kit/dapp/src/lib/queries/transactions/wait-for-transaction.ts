@@ -3,7 +3,6 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { FragmentOf } from "gql.tada";
 import { ReceiptFragment } from "./transaction-fragment";
-import { waitForIndexing } from "./wait-for-indexing";
 
 const GetTransaction = portalGraphql(
   `
@@ -72,9 +71,5 @@ export async function waitForTransactions(
     throw new Error(`Transaction ${hash} took too long to confirm`);
   });
 
-  const receipts = await Promise.all(promises);
-  const lastReceipt = receipts.at(-1);
-  await waitForIndexing(Number(lastReceipt!.blockNumber));
-
-  return receipts;
+  return await Promise.all(promises);
 }

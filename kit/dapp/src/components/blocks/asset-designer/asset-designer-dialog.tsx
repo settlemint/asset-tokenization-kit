@@ -46,6 +46,7 @@ import { getPredictedAddress as getStablecoinPredictedAddress } from "@/lib/quer
 import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 
 // Import the waitForTransactions function
+import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { revalidate } from "@/lib/utils/revalidate";
@@ -295,9 +296,12 @@ export function AssetDesignerDialog({
         : [];
 
       // Wait for the transactions to be confirmed using the dedicated function
-      await waitForTransactions(hashes);
-
-      await revalidate();
+      const receipts = await waitForTransactions(hashes);
+      const lastBlockNumber = Number(receipts.at(-1)?.blockNumber);
+      if (lastBlockNumber) {
+        await waitForIndexing(lastBlockNumber);
+        await revalidate();
+      }
 
       toast.success(
         `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,
