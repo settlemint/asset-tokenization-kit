@@ -2,6 +2,7 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form as UIForm } from "@/components/ui/form";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
+import { revalidate } from "@/lib/utils/revalidate";
 import { safeParse, t as tb } from "@/lib/utils/typebox";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { Kind } from "@sinclair/typebox";
@@ -315,6 +316,7 @@ export function Form<
 
             resetFormAndAction();
             onOpenChange?.(false);
+            await revalidate();
           },
           onError: (error) => {
             let errorMessage = "Unknown error";

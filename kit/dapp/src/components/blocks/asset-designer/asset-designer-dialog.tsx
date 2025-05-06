@@ -48,6 +48,7 @@ import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 // Import the waitForTransactions function
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
+import { revalidate } from "@/lib/utils/revalidate";
 
 interface AssetDesignerDialogProps {
   open: boolean;
@@ -295,6 +296,8 @@ export function AssetDesignerDialog({
 
       // Wait for the transactions to be confirmed using the dedicated function
       await waitForTransactions(hashes);
+
+      await revalidate();
 
       toast.success(
         `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,
