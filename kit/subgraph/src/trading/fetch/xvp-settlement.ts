@@ -35,8 +35,8 @@ export function fetchFlow(
   flow.asset = asset;
   flow.from = fetchAccount(from).id;
   flow.to = fetchAccount(to).id;
-  flow.amount = amount;
-  flow.amountExact = toDecimals(amount, fetchAssetDecimals(asset));
+  flow.amount = toDecimals(amount, fetchAssetDecimals(asset));
+  flow.amountExact = amount;
   flow.save();
   return flow;
 }

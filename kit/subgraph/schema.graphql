@@ -767,8 +767,8 @@ type XvPSettlementFlow @entity(immutable: false) {
   asset: Asset!
   from: Account!
   to: Account!
-  amount: BigInt!
-  amountExact: BigDecimal!
+  amount: BigDecimal!
+  amountExact: BigInt!
 }
 
 type XvPSettlementApproval @entity(immutable: false) {
