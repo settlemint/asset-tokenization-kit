@@ -364,12 +364,19 @@
     "asset-events-table": {
       "asset": "Asset",
       "detail-sheet": {
+        "AUDITOR_ROLE": "Auditor Role",
+        "SIGNER_ROLE": "Signer Role",
+        "SUPPLY_MANAGEMENT_ROLE": "Supply Management Role",
+        "USER_MANAGEMENT_ROLE": "User Management Role",
+        "DEFAULT_ADMIN_ROLE": "Default Admin Role",
         "asset": "Asset",
         "asset-type": "Asset type",
         "date": "Date",
         "details": "Event details",
         "details-button": "Details",
         "details-for-event": "Details for {event} event",
+        "event-details": "Event Details",
+        "event-parameters": "Event parameters",
         "sender": "Sender",
         "transaction-hash": "Transaction Hash"
       },

@@ -43,6 +43,7 @@ export const RoleMap = (options?: SchemaOptions) =>
       SUPPLY_MANAGEMENT_ROLE: t.Boolean(),
       USER_MANAGEMENT_ROLE: t.Boolean(),
       AUDITOR_ROLE: t.Boolean(),
+      SIGNER_ROLE: t.Boolean(),
     },
     {
       ...options,

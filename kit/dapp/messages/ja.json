@@ -291,7 +291,14 @@
         "details-for-event": "イベント {event} の詳細",
         "sender": "送信者",
         "transaction-hash": "トランザクションハッシュ",
-        "details": "イベント詳細"
+        "details": "イベント詳細",
+        "USER_MANAGEMENT_ROLE": "ユーザー管理ロール",
+        "SUPPLY_MANAGEMENT_ROLE": "サプライ管理ロール",
+        "AUDITOR_ROLE": "監査人ロール",
+        "SIGNER_ROLE": "署名者ロール",
+        "DEFAULT_ADMIN_ROLE": "デフォルト管理者ロール",
+        "event-details": "イベントの詳細",
+        "event-parameters": "イベントパラメータ"
       },
       "details": {
         "account": "アカウント",
