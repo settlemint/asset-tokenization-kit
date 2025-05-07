@@ -60,7 +60,8 @@
         "description": "Willkommen im Dashboard",
         "latest-events-heading": "Neueste Ereignisse",
         "stats-heading": "Statistiken",
-        "title": "Dashboard"
+        "title": "Dashboard",
+        "platform-management": "Plattformverwaltung"
       },
       "table": {
         "latest-events": {
@@ -121,7 +122,8 @@
         "group-title": "Vermögensverwaltung",
         "stablecoins": "Stablecoins",
         "tokenized-deposits": "Einzahlungen",
-        "view-all": "Alle anzeigen"
+        "view-all": "Alle anzeigen",
+        "actions": "Aktionen"
       },
       "asset-types": {
         "bond": "Anleihe",
@@ -133,8 +135,9 @@
       },
       "platform-management": {
         "group-title": "Plattformverwaltung",
-        "settings": "Plattform",
-        "user-management": "Benutzerverwaltung"
+        "settings": "Einstellungen",
+        "user-management": "Benutzerverwaltung",
+        "api": "API"
       },
       "portfolio-management": {
         "dashboard": "Dashboard",
@@ -155,7 +158,8 @@
       },
       "trade-management": {
         "group-title": "Handelsverwaltung",
-        "dvp-swap": "DvP Swap"
+        "dvp-swap": "DvP Swap",
+        "xvp-settlement": "XvP"
       }
     },
     "bonds": {
@@ -286,7 +290,15 @@
         "details-button": "Details",
         "details-for-event": "Details für das {event} Ereignis",
         "sender": "Absender",
-        "transaction-hash": "Transaktions-Hash"
+        "transaction-hash": "Transaktions-Hash",
+        "details": "Ereignisdetails",
+        "USER_MANAGEMENT_ROLE": "Benutzerverwaltungsrolle",
+        "SUPPLY_MANAGEMENT_ROLE": "Liefermanagementrolle",
+        "AUDITOR_ROLE": "Prüferrolle",
+        "SIGNER_ROLE": "Unterzeichnerrolle",
+        "DEFAULT_ADMIN_ROLE": "Standard-Admin-Rolle",
+        "event-details": "Ereignisdetails",
+        "event-parameters": "Ereignisparameter"
       },
       "details": {
         "account": "Konto",
@@ -477,7 +489,8 @@
         "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
         "max-value": "Der Wert darf nicht höher sein als {max}",
         "min-value": "Der Wert darf nicht niedriger sein als {min}",
-        "valid-number": "Bitte geben Sie eine gültige Zahl ein"
+        "valid-number": "Bitte geben Sie eine gültige Zahl ein",
+        "alphanumeric-only": "Bitte nur Buchstaben und Zahlen eingeben"
       },
       "pincode-dialog": {
         "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Verifizierung und Autorisierung ein.",
@@ -526,6 +539,29 @@
           "use-secret-codes": "Oder verwenden Sie einen Ihrer Sicherheitscodes"
         },
         "switch-method": "Methode wechseln"
+      },
+      "document-upload": {
+        "add-document": "Dokument hinzufügen",
+        "no-documents": "Es wurden noch keine Dokumente hochgeladen",
+        "delete-document": "Dokument löschen",
+        "uploading": "Hochladen",
+        "upload-document-title": "Dokument hochladen",
+        "upload-document-description": "Laden Sie Whitepapers, Prüfberichte und andere Compliance-Dokumente hoch",
+        "document-title": "Dokumenttitel",
+        "document-title-placeholder": "z.B. MiCA Compliance White Paper",
+        "document-type": "Dokumenttyp",
+        "select-document-type": "Dokumenttyp auswählen",
+        "document-description": "Beschreibung",
+        "document-description-placeholder": "Kurze Beschreibung des Dokuments",
+        "document-file": "Datei hochladen",
+        "choose-file": "Datei auswählen",
+        "no-file-chosen": "Keine Datei ausgewählt",
+        "accepted-format": "Akzeptierte Formate: {formats} (Max: {maxSize}MB)",
+        "invalid-file-format": "Ungültiges Dateiformat. Nur {formats} Dateien werden akzeptiert.",
+        "file-too-large": "Datei ist zu groß. Maximale Größe beträgt {maxSize}MB.",
+        "cancel": "Abbrechen",
+        "uploading-document": "Hochladen...",
+        "upload-document": "Hochladen"
       }
     },
     "logo": {
@@ -693,12 +729,21 @@
       "portfolio": "Mein Portfolio",
       "title": "Privat",
       "trade-management": "Handelsverwaltung",
-      "dvp-swap": "DvP Swap"
+      "dvp-swap": "DvP Swap",
+      "actions": "Aktionen",
+      "xvp-settlement": "XvP"
     },
     "user-dropdown": {
       "documentation": "Dokumentation",
       "logout": "Abmelden",
-      "pending-transactions": "Ausstehende Transaktionen"
+      "pending-transactions": "Ausstehende Transaktionen",
+      "profile": "Profil verwalten"
+    },
+    "modeswitch": {
+      "assets": "Asset-Verwaltung",
+      "label": "Betriebsmodus",
+      "platform": "Plattformverwaltung",
+      "portfolio": "Mein Portfolio"
     }
   },
   "paused": "Pausiert",
@@ -1002,13 +1047,21 @@
       "asset-statistics-title": "Statistiken",
       "create": {
         "basics": {
-          "description": "Geben Sie die allgemeinen Informationen an, die erforderlich sind, um Ihr Vermögen zu definieren.",
-          "title": "Vermögensgrundlagen"
+          "description": "Konfigurieren Sie Ihr neues Asset mit Identifikationsinformationen, die auf der Blockchain gespeichert sind. Dieses Datum ist unveränderlich.",
+          "title": "Onchain-Identifikation",
+          "description-offchain": "Geben Sie optional zusätzliche Identifikationsinformationen für dieses Asset ein. Diese Informationen werden offchain gespeichert und sind außerhalb dieser Plattform nicht zugänglich.",
+          "title-offchain": "Offchain-Identifikation"
         },
         "configuration": {
           "bonds": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre Anleihe sind.",
-            "title": "Anleihekonfiguration"
+            "title": "Anleihekonfiguration",
+            "description-lifecycle": "Konfigurieren Sie die relevanten Daten für Lebenszyklusereignisse für diese Anleihe.",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieser Anleihe. Diese Informationen sind unveränderlich.",
+            "description-value": "Konfigurieren Sie, welches Vermögen als Nennwert der Anleihe verwendet wird und für Zins- und Rückzahlungszahlungen genutzt wird.",
+            "title-lifecycle": "Lebenszyklus",
+            "title-supply": "Angebot",
+            "title-value": "Nennwert"
           },
           "cryptocurrencies": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre Kryptowährung sind.",
@@ -1037,13 +1090,13 @@
         },
         "form": {
           "description": {
-            "bonds": "Schuldtitel, die als tokenisierte Wertpapiere ausgegeben werden.",
-            "cryptocurrencies": "Dezentralisierte digitale Vermögenswerte, die als Tauschmittel oder Wertspeicher verwendet werden.",
-            "equities": "Vermögenswerte, die Eigentum an einem Unternehmen repräsentieren.",
-            "funds": "Anlagevehikel, die von professionellen Managern gebündelt werden.",
-            "stablecoins": "Digitale Vermögenswerte, die an einen stabilen Vermögenswert wie USD gekoppelt sind.",
+            "bonds": "Eine Anleihe ist ein digitales Schuldtitel, bei dem Emittenten Kapital von Investoren mit vordefinierten Bedingungen aufnehmen, ermöglicht durch Blockchain für automatisierte Emission, transparente Nachverfolgung und optimierte Abwicklung.",
+            "cryptocurrencies": "Kryptowährung ist ein digitaler Vermögenswert, der durch Kryptografie gesichert ist und dezentrale, Peer-to-Peer-Transaktionen sowie programmierbare Wertübertragungen auf Blockchain-Netzwerken ermöglicht.",
+            "equities": "Eigenkapital repräsentiert das Eigentum an einem Vermögenswert oder Unternehmen, das auf der Blockchain tokenisiert werden kann, um Teilbesitz, transparente Governance und effiziente Übertragbarkeit zu ermöglichen.",
+            "funds": "Ein Fonds ist ein gebündeltes Investitionsvehikel, das verwaltet wird, um spezifische finanzielle Ziele zu erreichen, das auf der Blockchain tokenisiert werden kann für Echtzeitransparenz, programmierbare Vermögensverwaltung und automatisierte Compliance.",
+            "stablecoins": "Ein Stablecoin ist ein blockchain-basierter digitaler Vermögenswert, der an einen stabilen Wert, wie eine Fiat-Währung, gekoppelt ist, um die Volatilität zu minimieren und zuverlässige, On-Chain-Transaktionen und -Abwicklungen zu ermöglichen.",
             "tokenizeddeposits": "Digitale Vermögenswerte, die eine Einzahlung eines traditionellen Vermögenswerts repräsentieren.",
-            "deposits": "Digitale Vermögenswerte, die eine Einzahlung eines traditionellen Vermögenswerts darstellen."
+            "deposits": "Eine Einzahlung ist ein Geldbetrag, der auf ein Konto oder Treuhandkonto eingezahlt wird, der auf der Blockchain tokenisiert werden kann für sichere, transparente und programmierbare Verwahrung oder Transaktionsabwicklung."
           },
           "title": {
             "bonds": "Gestalten Sie eine neue Anleihe",
@@ -1126,7 +1179,9 @@
                 "months": "Monate"
               }
             },
-            "price-label": "Preis"
+            "price-label": "Preis",
+            "internalid-label": "Interne ID",
+            "decimals-description": "Die Anzahl der Dezimalstellen, die für die Anleihe verwendet werden sollen. Dies wird verwendet, um die Genauigkeit der Anleihe zu bestimmen."
           },
           "cryptocurrencies": {
             "initial-supply-description": "Anfangsbetrag an Assets, die geprägt werden sollen",
@@ -1715,7 +1770,7 @@
             "title": {
               "bonds": "Anleihen einlösen",
               "equities": "Angebotsmenge der Anteile reduzieren",
-              "funds": "Anleihen einlösen",
+              "funds": "Fondsanteile verbrennen",
               "stablecoins": "Die Menge reduzieren",
               "tokenizeddeposits": "Angebotsmenge der tokenisierten Einlagen reduzieren",
               "deposits": "Einzahlungsangebot reduzieren",
@@ -1736,7 +1791,7 @@
               "bonds": "Anleihen ausgeben",
               "cryptocurrencies": "Assets prägen",
               "equities": "Neue Anteile ausgeben",
-              "funds": "Anleihen ausgeben",
+              "funds": "Neue Fondsanteile ausgeben",
               "stablecoins": "Die Menge erhöhen",
               "tokenizeddeposits": "Die Menge erhöhen",
               "deposits": "Das Angebot erhöhen"
@@ -2075,13 +2130,13 @@
           }
         },
         "topinfo-description": {
-          "bond": "Digitale Anleihen repräsentieren traditionelle festverzinsliche Wertpapiere sicher auf der Blockchain, unterstützt durch reale Sicherheiten. Sie kombinieren die Transparenz der Blockchain mit vorhersehbaren Renditen, Rückzahlung bei Fälligkeit und automatisierter Ertragsverteilung. Dieses Anleihe-Asset gewährleistet eine sichere Emission, präzises Fälligkeitsmanagement, umfassende Compliance-Fähigkeiten und investorenfreundliche Rückzahlungsprozesse, die speziell für Finanzinstitute entwickelt wurden.",
-          "cryptocurrency": "Krypto-Währungs-Assets sind anpassbare digitale Instrumente, die kontrolliertes Minting, robuste Sicherheit und vollständige regulatorische Compliance bieten, ideal für institutionelle Nutzung. Sie optimieren Finanzoperationen durch programmierbare Transaktionen, verbesserte Transparenz und integrierte Meta-Transaktionen für eine verbesserte Benutzerfreundlichkeit. Zu den Hauptmerkmalen gehören rollenbasiertes Zugriffsmanagement, sichere Emission und einfache Integration in institutionelle Zahlungsprozesse.",
-          "equity": "Eigenkapital-Assets digitalisieren traditionelle Eigenkapitalwertpapiere und kombinieren fortschrittliche Blockchain-Funktionen mit robusten Governance- und Compliance-Tools. Sie sind für institutionelle Investoren konzipiert und bieten eine sichere Eigenkapitalemission, Stimmrechte der Aktionäre, detaillierte Zugriffskontrollen und Mechanismen zur Einhaltung von Vorschriften. Dieses Asset vereinfacht das Eigenkapitalmanagement, erhöht die Transparenz und gewährleistet eine sichere Teilnahme der Investoren.",
-          "fund": "Fonds-Assets digitalisieren Anteile an Investmentfonds und bieten automatisierte Verwaltung von Verwaltungsgebühren, Investoren-Governance und umfassende regulatorische Compliance. Ideal für Finanzinstitute optimieren sie administrative Prozesse, gewährleisten eine transparente Gebührenverwaltung und ermöglichen eine sichere Abstimmung der Investoren. Der Vertrag bietet starke Sicherheit, anpassbare Fondsattribute und verbesserte betriebliche Effizienz.",
-          "stablecoin": "Stablecoins sind digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert zu erhalten, indem sie durch reale Vermögenswerte oder Reserven gedeckt sind. Sie bieten die Vorteile digitaler Vermögenswerte – wie Geschwindigkeit, Transparenz und Programmierbarkeit – und vermeiden gleichzeitig die Preisschwankungen, die typischerweise mit Kryptowährungen verbunden sind. Dieser StableCoin-Vertrag stellt sicher, dass jeder ausgegebene Token vollständig besichert ist und den Institutionen eine sichere, prüfbare und zuverlässige Verwaltung digitaler Gelder bietet. Zu den Hauptmerkmalen gehören besicherte Emissionen, umfassende rollenbasierte Kontrollen, robuste Pausierungsmechanismen und Compliance-Fähigkeiten.",
+          "bond": "Eine Anleihe ist ein Schuldtitel, durch den ein Emittent Kapital von Investoren aufnimmt und sich verpflichtet, das Kapital zuzüglich Zinsen über einen definierten Zeitraum zurückzuzahlen. Wenn sie auf der Blockchain ausgegeben wird, werden Anleihen zu programmierbaren Vermögenswerten mit transparenten Bedingungen, automatisierter Compliance und effizientem End-to-End-Lebenszyklusmanagement von der Emission bis zur Abwicklung.",
+          "cryptocurrency": "Kryptowährung ist eine Form von digitalen Vermögenswerten, die kryptografische Techniken verwendet, um Transaktionen zu sichern und unabhängig von zentralen Behörden zu operieren. Auf blockchain-basierten Plattformen ermöglichen Kryptowährungen den Echtzeit-, vertrauenslosen Wertausgleich und dienen als Grundlage für programmierbare Finanzinstrumente und tokenisierte Vermögenswerte.",
+          "equity": "Eigenkapital bezieht sich auf das Eigentumsinteresse an einem Unternehmen oder Vermögenswert, das typischerweise dem Inhaber einen Anteil an Gewinnen und Stimmrechten gewährt. Wenn es auf der Blockchain tokenisiert wird, kann Eigenkapital mit programmierbaren Regeln ausgegeben, verwaltet und übertragen werden, was den Zugang, die Liquidität und die betriebliche Effizienz in Eigentums Märkten verbessert.",
+          "fund": "Ein Fonds aggregiert Kapital von mehreren Investoren, um in ein Portfolio von Vermögenswerten gemäß einer definierten Strategie und Managementstruktur zu investieren. Die Tokenisierung von Fonds auf der Blockchain ermöglicht eine granulare Eigentumsverfolgung, effiziente Verteilung von Erträgen und optimierte Abläufe durch Smart Contracts und Echtzeitberichterstattung.",
+          "stablecoin": "Ein Stablecoin ist eine Art von Kryptowährung, die darauf ausgelegt ist, einen stabilen Wert zu erhalten, oft durch Reserven wie Fiat-Währungen oder andere Vermögenswerte gedeckt. Auf Blockchain-Plattformen bieten Stablecoins ein zuverlässiges Zahlungsmittel und Wertspeicher, die nahtlose, wenig volatile Transaktionen und programmierbare Finanzoperationen erleichtern.",
           "tokenizeddeposit": "Tokenisierte Einlagen repräsentieren digital traditionelle Bankeinlagen und bieten Finanzinstituten verbesserte Sicherheit, Echtzeit-Transparenz und strenge Compliance-Fähigkeiten. Zu den Hauptmerkmalen gehören anpassbare Zulassungslisten, treuhänderische Aufsicht, robustes rollenbasiertes Management und integrierte Meta-Transaktionen, die die Verwaltung institutioneller Einlagen vereinfachen.",
-          "deposit": "Einzahlungen stellen digital traditionelle Bankeinlagen dar und bieten Finanzinstituten verbesserte Sicherheit, Echtzeit-Transparenz und strenge Compliance-Fähigkeiten. Zu den Hauptmerkmalen gehören anpassbare Zulassungslisten, treuhänderische Aufsicht, robustes rollenbasiertes Management und integrierte Meta-Transaktionen, die die Verwaltung institutioneller Einzahlungen vereinfachen."
+          "deposit": "Eine Einzahlung ist der Akt, Gelder in ein Finanzkonto einzuzahlen, typischerweise zur sicheren Verwahrung, zukünftigen Nutzung oder um eine vertragliche Verpflichtung zu erfüllen. Auf Blockchain-Plattformen können Einzahlungen als digitale Token dargestellt werden, die automatisierte Überprüfung, bedingte Freigabe und prüfbare Verwahrung während des Transaktionslebenszyklus ermöglichen."
         },
         "topinfo-title": {
           "bond": "Ein digitales festverzinsliches Wertpapier-Asset",
@@ -2484,7 +2539,42 @@
     "UserBlockedEvent": "Blockieren",
     "UserUnblockedEvent": "Entblockieren",
     "UserAllowedEvent": "Erlauben",
-    "UserDisallowedEvent": "Nicht erlauben"
+    "UserDisallowedEvent": "Nicht erlauben",
+    "Transfer": "Übertragung",
+    "Mint": "Prägung",
+    "Burn": "Verbrennung",
+    "RoleGranted": "Rolle gewährt",
+    "RoleRevoked": "Rolle widerrufen",
+    "RoleAdminChanged": "Rollenadministrator geändert",
+    "Approval": "Genehmigung",
+    "Pause": "Pause",
+    "Unpause": "Wiederaufnahme",
+    "Clawback": "Rückforderung",
+    "TokensFrozen": "Token eingefroren",
+    "UserBlocked": "Benutzer blockiert",
+    "UserUnblocked": "Benutzer entsperrt",
+    "UserAllowed": "Benutzer erlaubt",
+    "UserDisallowed": "Benutzer nicht erlaubt",
+    "TokenWithdrawn": "Token abgehoben",
+    "CollateralUpdated": "Sicherheit aktualisiert",
+    "Matured": "Fällig",
+    "Redeemed": "Eingelöst",
+    "UnderlyingAssetTopUp": "Unterliegendes Vermögen aufgeladen",
+    "UnderlyingAssetWithdrawn": "Unterliegendes Vermögen abgehoben",
+    "ManagementFeeCollected": "Verwaltungsgebühr erhoben",
+    "PerformanceFeeCollected": "Performancegebühr erhoben",
+    "YieldClaimed": "Ertrag beansprucht",
+    "AssetCreated": "Vermögen erstellt",
+    "FixedYieldCreated": "Festzins erstellt",
+    "XvPSettlementApproved": "Abrechnung genehmigt",
+    "XvPSettlementApprovalRevoked": "Abrechnungsgenehmigung widerrufen",
+    "XvPSettlementClaimed": "Abrechnung beansprucht",
+    "XvPSettlementExecuted": "Abrechnung ausgeführt",
+    "XvPSettlementCancelled": "Abrechnung storniert",
+    "Claimed": "Beansprucht",
+    "Distribution": "Verteilung",
+    "BatchDistribution": "Batch-Verteilung",
+    "MerkleRootUpdated": "Merkle-Wurzel aktualisiert"
   },
   "homepage": {
     "asset-tokenization": "Vermögens-Tokenisierung",
@@ -2595,21 +2685,25 @@
   },
   "trade-management": {
     "page": {
-      "dvp-swap": "DvP Swap"
+      "dvp-swap": "DvP Swap",
+      "xvp": "XvP"
     },
     "forms": {
       "title": {
-        "dvp-swap": "Einen DvP Swap erstellen"
+        "dvp-swap": "Einen DvP Swap erstellen",
+        "xvp": "Erstellen Sie eine XvP-Abwicklung"
       },
       "description": {
-        "dvp-swap": "Ein DvP (Delivery vs Payment) Swap ermöglicht einen atomaren Austausch von Vermögenswerten zwischen zwei Parteien. Es erlaubt Ihnen, Vermögenswerte zuverlässig mit einem anderen Benutzer auszutauschen, ohne dass eine dritte Partei erforderlich ist."
+        "dvp-swap": "Ein DvP (Delivery vs Payment) Swap ermöglicht einen atomaren Austausch von Vermögenswerten zwischen zwei Parteien. Es erlaubt Ihnen, Vermögenswerte zuverlässig mit einem anderen Benutzer auszutauschen, ohne dass eine dritte Partei erforderlich ist.",
+        "xvp": "Eine XvP (Lieferung gegen Zahlung oder Zahlung gegen Zahlung) Abwicklung ermöglicht einen atomaren Austausch von Vermögenswerten zwischen Parteien. Sie ermöglicht es Ihnen, Vermögenswerte zuverlässig mit anderen Benutzern auszutauschen, ohne dass eine dritte Partei erforderlich ist."
       },
       "button": {
-        "dvp-swap": "Einen DvP Swap erstellen"
+        "dvp-swap": "Einen DvP Swap erstellen",
+        "xvp": "Erstellen Sie eine XvP-Abwicklung"
       },
       "user": {
         "title": "Benutzer",
-        "description": "Wählen Sie die Benutzer-Wallet aus, mit der Sie Vermögenswerte tauschen möchten.",
+        "description": "Wählen Sie die Benutzer-Wallet aus, mit der Sie Vermögenswerte austauschen möchten.",
         "user": "Benutzer-Wallet"
       },
       "amounts": {
@@ -2623,17 +2717,19 @@
       },
       "configuration": {
         "title": "Konfiguration",
-        "description": "Konfiguration für den Swap.",
+        "description": "Konfiguration für die Abwicklung.",
         "expiry": "Ablauf",
-        "expiry-description": "Die Zeit, bis zu der Sie Vermögenswerte aus dem Swap nicht zurückerstatten können. Wenn der Swap nicht ausgeführt wird, können Sie Ihre Vermögenswerte nach dieser Zeit zurückerstatten.",
+        "expiry-description": "Die Zeit, bis zu der Sie keine Vermögenswerte aus der Abwicklung zurückerstatten können. Wenn die Abwicklung nicht ausgeführt wird, können Sie Ihre Vermögenswerte nach dieser Zeit zurückerstatten.",
         "expiry-required": "Ablauf ist erforderlich",
         "past-expiry-error": "Der Ablauf muss in der Zukunft liegen.",
         "secret": "Geheimnis",
-        "secret-description": "Bitte speichern Sie dieses Geheimnis sicher. Sie benötigen es, um die aus dem Swap erhaltenen Vermögenswerte freizuschalten."
+        "secret-description": "Bitte speichern Sie dieses Geheimnis sicher. Sie benötigen es, um die aus der Abwicklung erhaltenen Vermögenswerte freizuschalten.",
+        "auto-execute": "Automatisch ausführen",
+        "auto-execute-description": "Die Abwicklung bei letzter Genehmigung automatisch ausführen."
       },
       "summary": {
         "title": "Zusammenfassung",
-        "description": "Überprüfen Sie die Details des DvP Swaps. Stellen Sie sicher, dass der Empfänger, die Beträge, der Ablauf und das Geheimnis korrekt sind.",
+        "description": "Überprüfen Sie die Details der XvP-Abwicklung. Stellen Sie sicher, dass der Empfänger, die Beträge, das Ablaufdatum und das Geheimnis korrekt sind.",
         "offer": "Ihr Angebot",
         "offer-description": "Der Betrag der Vermögenswerte, den Sie dem Benutzer anbieten. Dieser Betrag wird gesperrt.",
         "request": "Ihre Anfrage",
@@ -2642,9 +2738,115 @@
         "from": "Von",
         "amount": "Betrag",
         "configuration": "Konfiguration",
-        "configuration-description": "Die Konfiguration für den DvP Swap",
+        "configuration-description": "Die Konfiguration für die XvP-Abwicklung",
         "expiry": "Ablauf"
       }
+    },
+    "xvp": {
+      "expired": "Abgelaufen",
+      "details": "Details",
+      "status": {
+        "pending": "Ausstehend",
+        "approved": "Genehmigt",
+        "expired": "Abgelaufen",
+        "claimed": "Beansprucht",
+        "cancelled": "Storniert"
+      },
+      "columns": {
+        "id": "Abwicklungs-ID",
+        "status": "Status",
+        "created-at": "Erstellt am",
+        "expires-at": "Läuft ab am",
+        "assets": "Vermögenswerte",
+        "approvals": "Genehmigungen"
+      }
+    }
+  },
+  "asset-designer": {
+    "type-selection": {
+      "title": "Vermögensart auswählen",
+      "description": "Wählen Sie die Art des digitalen Vermögens, das Sie erstellen möchten",
+      "key-features": "Hauptmerkmale:",
+      "features": {
+        "bond": {
+          "fixed-interest": "Feste Zinszahlungen",
+          "maturity-management": "Fälligkeitsdatum-Management",
+          "transferable-ownership": "Übertragbares Eigentum",
+          "principal-repayment": "Kapitalrückzahlung"
+        },
+        "cryptocurrency": {
+          "secure-transactions": "Sichere Transaktionen",
+          "decentralized-ownership": "Dezentralisiertes Eigentum",
+          "global-payments": "Globale Zahlungen",
+          "programmable-money": "Programmierbares Geld"
+        },
+        "equity": {
+          "voting-rights": "Stimmrechte",
+          "dividend-distribution": "Dividendenverteilung",
+          "fractional-ownership": "Bruchteilseigentum",
+          "liquidity": "Liquidität"
+        },
+        "fund": {
+          "portfolio-diversification": "Portfolio-Diversifizierung",
+          "performance-tracking": "Leistungsüberwachung",
+          "redemption-rights": "Einlösungsrechte",
+          "lower-investment": "Niedrigere Investitionsbarrieren"
+        },
+        "stablecoin": {
+          "price-stability": "Preisstabilität",
+          "collateral-backing": "Sicherheitenunterstützung",
+          "transparent-reserves": "Transparente Reserven",
+          "fast-settlements": "Schnelle Abrechnungen"
+        },
+        "deposit": {
+          "interest-earning": "Zinsen verdienen",
+          "redeemable": "Einlösbar",
+          "term-options": "Laufzeitoptionen",
+          "institutional-backing": "Institutionelle Unterstützung"
+        },
+        "one": "Vollständiges Lebenszyklusmanagement",
+        "two": "Treuhandfunktionalität",
+        "three": "Maximalbetrag",
+        "four": "Stimmrechte",
+        "five": "KYC erforderlich",
+        "six": "Sicherheitenverwaltung"
+      }
+    }
+  },
+  "actions": {
+    "page": {
+      "actions": "Aktionen"
+    },
+    "tabs": {
+      "pending": "Ausstehend",
+      "upcoming": "Bevorstehend",
+      "completed": "Abgeschlossen"
+    },
+    "all-tasks-complete": "Alle Aufgaben abgeschlossen!",
+    "all-tasks-complete-description": "Sie haben keine ausstehenden Aktionen.",
+    "subject": "Betreff",
+    "action-type-header": "Aktionstyp",
+    "description-header": "Beschreibung",
+    "active-on-header": "Aktiv am",
+    "sender-header": "Absender",
+    "completed-on-header": "Abgeschlossen am",
+    "action-type": {
+      "bond-mature": "Fällige Anleihe"
+    },
+    "pending-description": {
+      "bond-mature": "Sie müssen die Transaktion senden, um die Anleihe fällig zu machen."
+    },
+    "upcoming-description": {
+      "bond-mature": "Sie müssen die Transaktion senden, um die Anleihe fällig zu machen."
+    },
+    "completed-description": {
+      "bond-mature": "Die Anleihe wurde erfolgreich fällig."
+    }
+  },
+  "regulations": {
+    "mica": {
+      "name": "MiCA",
+      "description": "Die Märkte für Krypto-Assets (MiCA) sind der umfassende regulatorische Rahmen der EU, der darauf abzielt, Kryptowährungen, Stablecoins und andere digitale Vermögenswerte zu regulieren und rechtliche Sicherheit für Emittenten von Krypto-Assets und Dienstleister zu bieten."
     }
   }
 }

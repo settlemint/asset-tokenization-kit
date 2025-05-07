@@ -11,9 +11,11 @@ export function UpdateKycStatusSchema() {
       userId: t.String({
         description: "The unique identifier of the user",
       }),
-      kycVerified: t.Timestamp({
-        description: "The timestamp of the KYC verification",
-      }),
+      kycVerified: t.Nullable(
+        t.String({
+          description: "The timestamp of the KYC verification",
+        })
+      ),
     },
     {
       description: "Schema for validating update kyc status mutation inputs",

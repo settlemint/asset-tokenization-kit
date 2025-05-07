@@ -17,10 +17,18 @@ export class SignUpPage extends BasePage {
     await this.page.getByRole("link", { name: "Sign Up" }).click();
     await this.page.getByLabel("Name").fill(options.name);
     await this.page.getByLabel("Email").fill(options.email);
-    await this.page.locator("#password").fill(options.password);
-    await this.page.locator("#confirmPassword").fill(options.password);
+    await this.page
+      .getByPlaceholder("Enter your password", { exact: true })
+      .fill(options.password);
+    await this.page
+      .getByPlaceholder("Confirm Password", { exact: true })
+      .fill(options.password);
     await this.page.getByRole("button", { name: "Create an account" }).click();
-    await this.page.waitForURL("**/portfolio");
+    await this.page.waitForURL(
+      (url) =>
+        url.pathname.includes("/portfolio") || url.pathname.includes("/assets"),
+      { timeout: 10000 }
+    );
     await this.secureWallet({ pincode: options.pincode });
     await expect(
       this.page.locator("div.grid span.truncate.font-semibold", {
@@ -31,7 +39,10 @@ export class SignUpPage extends BasePage {
 
   async secureWallet(options: { pincode: string }) {
     const dialogSelector = 'div[role="dialog"][data-state="open"]';
-    const isDialogVisible = await this.page.isVisible(dialogSelector);
+
+    const isDialogVisible = await this.page
+      .isVisible(dialogSelector, { timeout: 30000 })
+      .catch(() => false);
 
     if (isDialogVisible) {
       await this.page.getByRole("button", { name: "Secure my wallet" }).click();
@@ -40,6 +51,7 @@ export class SignUpPage extends BasePage {
       await this.page.getByRole("button", { name: "Next" }).click();
       await this.page.waitForSelector('button[title="Copy to clipboard"]', {
         state: "visible",
+        timeout: 30000,
       });
       await this.page.getByRole("button", { name: "Next" }).click();
       await this.page

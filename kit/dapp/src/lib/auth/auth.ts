@@ -33,6 +33,7 @@ export const auth = betterAuth({
   appName: metadata.title.default,
   secret: env.SETTLEMINT_HASURA_ADMIN_SECRET,
   baseURL: env.APP_URL,
+  basePath: "/api/auth",
   trustedOrigins: [env.APP_URL],
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -165,6 +166,7 @@ export const auth = betterAuth({
               },
             };
           } catch (error) {
+            console.error("Failed to create user wallet", error);
             throw new APIError("BAD_REQUEST", {
               message: "Failed to create user wallet",
               cause: error instanceof Error ? error : undefined,

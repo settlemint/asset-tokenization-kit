@@ -1,12 +1,10 @@
 import { FundCreated } from "../../generated/FundFactory/FundFactory";
 import { Fund } from "../../generated/templates";
-import { accountActivityEvent } from "../assets/events/accountactivity";
-import { assetCreatedEvent } from "../assets/events/assetcreated";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchFund } from "../assets/fetch/fund";
-import { fetchAccount } from "../fetch/account";
-import { AssetType, EventName, FactoryType } from "../utils/enums";
-import { eventId } from "../utils/events";
+import { fetchAccount } from "../utils/account";
+import { createActivityLogEntry, EventType } from "../utils/activity-log";
+import { AssetType, FactoryType } from "../utils/enums";
 import { fetchFactory } from "./fetch/factory";
 
 export function handleFundCreated(event: FundCreated): void {
@@ -21,20 +19,10 @@ export function handleFundCreated(event: FundCreated): void {
   assetCount.count = assetCount.count + 1;
   assetCount.save();
 
-  assetCreatedEvent(
-    eventId(event),
-    event.block.timestamp,
-    asset.id,
-    creator.id,
-    AssetType.fund
-  );
-  accountActivityEvent(
-    creator,
-    EventName.AssetCreated,
-    event.block.timestamp,
-    AssetType.fund,
-    asset.id
-  );
+  createActivityLogEntry(event, EventType.AssetCreated, event.params.creator, [
+    event.params.token,
+    event.params.creator,
+  ]);
 
   Fund.create(event.params.token);
 }

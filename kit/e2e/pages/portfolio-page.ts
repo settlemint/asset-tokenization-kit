@@ -1,4 +1,8 @@
 import { expect } from "@playwright/test";
+import {
+  parseAmountString,
+  selectRecipientFromDialog,
+} from "../utils/page-utils";
 import { BasePage } from "./base-page";
 
 export class PortfolioPage extends BasePage {
@@ -64,6 +68,7 @@ export class PortfolioPage extends BasePage {
     user: string;
     pincode: string;
   }): Promise<void> {
+    await this.page.goto("/portfolio");
     await this.page.getByRole("link", { name: "Dashboard" }).first().click();
     await this.page.getByRole("button", { name: "Transfer" }).click();
     const assetButton = this.page.locator('#asset, [id="asset"]');
@@ -88,7 +93,11 @@ export class PortfolioPage extends BasePage {
     const recipientButton = this.page.locator('#to, [id="to"]');
     await recipientButton.waitFor({ state: "visible", timeout: 15000 });
     await recipientButton.click();
-    await this.searchAndSelectFromDialog(options.walletAddress, options.user);
+    await selectRecipientFromDialog(
+      this.page,
+      options.walletAddress,
+      options.user
+    );
     await this.page.getByRole("button", { name: "Next" }).click();
 
     const button = this.page.getByRole("button", { name: "Transfer" });
@@ -161,26 +170,6 @@ export class PortfolioPage extends BasePage {
       );
   }
 
-  private async searchAndSelectFromDialog(
-    searchText: string,
-    user: string,
-    optionSelector: string = '[role="option"]'
-  ) {
-    await this.page.waitForSelector('[role="dialog"][data-state="open"]');
-
-    const searchInput = this.page.locator(
-      '[role="dialog"][data-state="open"] input'
-    );
-    await searchInput.waitFor({ state: "visible" });
-    await searchInput.fill(searchText);
-
-    await this.page
-      .locator(optionSelector)
-      .filter({ hasText: user })
-      .first()
-      .click();
-  }
-
   async verifyContactExists(options: { name: string; walletAddress: string }) {
     await this.page.getByRole("table").waitFor({ state: "visible" });
 
@@ -201,32 +190,6 @@ export class PortfolioPage extends BasePage {
   }
 
   private parseAmountString(text: string): number {
-    if (!text) {
-      throw new Error("Cannot parse empty amount string");
-    }
-
-    let numericValue: number | null = null;
-
-    const matchInParens = text.match(/\(([^)]+)\)/);
-    if (matchInParens && matchInParens[1]) {
-      const valueInParens = matchInParens[1].replace(/[€$£,]/g, "").trim();
-      numericValue = Number.parseFloat(valueInParens);
-    } else {
-      let cleanedAmount = text.replace(/[€$£,]/g, "").trim();
-
-      const kiloMatch = cleanedAmount.match(/^([\d.]+)\s*K$/i);
-      if (kiloMatch && kiloMatch[1]) {
-        numericValue = Number.parseFloat(kiloMatch[1]) * 1000;
-      } else {
-        cleanedAmount = cleanedAmount.replace(/[^\d.]/g, "");
-        numericValue = Number.parseFloat(cleanedAmount);
-      }
-    }
-
-    if (numericValue === null || Number.isNaN(numericValue)) {
-      throw new Error(`Could not parse amount from text: "${text}"`);
-    }
-
-    return numericValue;
+    return parseAmountString(text);
   }
 }

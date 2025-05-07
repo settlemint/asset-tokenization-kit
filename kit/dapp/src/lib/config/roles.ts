@@ -38,7 +38,22 @@ export const ROLES = {
     displayName: "Auditor",
     description: "Allows the account to audit the asset",
   },
+  SIGNER_ROLE: {
+    id: keccak256(stringToBytes("SIGNER_ROLE")),
+    contractRole: "SIGNER_ROLE",
+    displayName: "Signer",
+    description: "Allows the account to sign in a vault",
+  },
 } as const;
+
+// Create a map for efficient role lookup by ID
+const ROLES_BY_ID = new Map<Hex, string>(
+  Object.values(ROLES).map((role) => [role.id, role.contractRole])
+);
+
+export function getRoleFromHash(hash: Hex): string | undefined {
+  return ROLES_BY_ID.get(hash);
+}
 
 export const getRoles = (assettype: AssetType): Role[] => {
   const allRoles = Object.keys(ROLES) as Role[];

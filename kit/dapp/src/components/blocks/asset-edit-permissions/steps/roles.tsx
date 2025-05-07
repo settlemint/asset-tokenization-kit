@@ -19,22 +19,24 @@ export function Roles({ disableEditAdminRole }: RolesProps) {
   return (
     <FormStep title={t("title")} description={t("description")}>
       <div className="space-y-3">
-        {getRoles(assettype).map((role) => {
-          const roleInfo = ROLES[role];
-          return (
-            <FormCheckbox
-              key={role}
-              name={`roles.${role}`}
-              control={control}
-              label={roleInfo.displayName}
-              description={roleInfo.description}
-              disabled={
-                disableEditAdminRole &&
-                role === ROLES.DEFAULT_ADMIN_ROLE.contractRole
-              }
-            />
-          );
-        })}
+        {getRoles(assettype)
+          .filter((role) => role !== "SIGNER_ROLE")
+          .map((role) => {
+            const roleInfo = ROLES[role];
+            return (
+              <FormCheckbox
+                key={role}
+                name={`roles.${role}`}
+                control={control}
+                label={roleInfo.displayName}
+                description={roleInfo.description}
+                disabled={
+                  disableEditAdminRole &&
+                  role === ROLES.DEFAULT_ADMIN_ROLE.contractRole
+                }
+              />
+            );
+          })}
       </div>
     </FormStep>
   );

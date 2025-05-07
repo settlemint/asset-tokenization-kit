@@ -44,8 +44,8 @@ const BondFactoryCreate = portalGraphql(`
  * Stores additional metadata about the bond in Hasura
  */
 const CreateOffchainBond = hasuraGraphql(`
-  mutation CreateOffchainBond($id: String!, $isin: String) {
-    insert_asset_one(object: {id: $id, isin: $isin}) {
+  mutation CreateOffchainBond($id: String!, $isin: String, $internalid: String) {
+    insert_asset_one(object: {id: $id, isin: $isin, internalid: $internalid}) {
       id
     }
   }
@@ -72,6 +72,7 @@ export const createBondFunction = withAccessControl(
       verificationCode,
       verificationType,
       isin,
+      internalid,
       cap,
       faceValue,
       maturityDate,
@@ -93,6 +94,7 @@ export const createBondFunction = withAccessControl(
     await hasuraClient.request(CreateOffchainBond, {
       id: predictedAddress,
       isin: isin,
+      internalid: internalid,
     });
 
     const createBondResult = await portalClient.request(BondFactoryCreate, {
@@ -120,7 +122,13 @@ export const createBondFunction = withAccessControl(
       throw new Error("Failed to create bond: no transaction hash received");
     }
 
-    // Wait for the stablecoin creation transaction to be mined
+    const hasMoreAdmins = assetAdmins.length > 0;
+
+    if (!hasMoreAdmins) {
+      return safeParse(t.Hashes(), [createTxHash]);
+    }
+
+    // Wait for the creation transaction to be mined
     await waitForTransactions([createTxHash]);
 
     // Grant roles to admins using the shared helper

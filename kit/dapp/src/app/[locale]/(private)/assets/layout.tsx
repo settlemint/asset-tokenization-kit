@@ -1,8 +1,11 @@
+import { RoleGuard } from "@/components/blocks/auth/role-guard";
+import NavInset from "@/components/layout/nav-inset";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
+import { AssetsSidebar } from "../_components/sidebar/assets-sidebar";
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{ locale: Locale }>;
@@ -26,5 +29,11 @@ export async function generateMetadata({
 }
 
 export default function AssetsLayout({ children }: LayoutProps) {
-  return <>{children}</>;
+  return (
+    <>
+      <RoleGuard allowedRoles={["admin", "issuer"]} redirectTo="/portfolio" />
+      <AssetsSidebar />
+      <NavInset>{children}</NavInset>
+    </>
+  );
 }

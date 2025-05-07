@@ -1,5 +1,4 @@
 import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
-import { getLocale } from "next-intl/server";
 import type { Address } from "viem";
 import { AssetEventsClientTable } from "./asset-events-client-table";
 
@@ -21,8 +20,7 @@ export async function AssetEventsTable({
   sender,
   limit,
 }: AssetEventsTableProps) {
-  const locale = await getLocale();
-  const events = await getAssetEventsList({ asset, sender, limit, locale });
+  const events = await getAssetEventsList({ asset, sender, limit });
 
   return (
     <AssetEventsClientTable

@@ -1,7 +1,7 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { StableCoin } from "../../../generated/schema";
 import { StableCoin as StableCoinContract } from "../../../generated/templates/StableCoin/StableCoin";
-import { fetchAccount } from "../../fetch/account";
+import { fetchAccount } from "../../utils/account";
 import { AssetType } from "../../utils/enums";
 
 export function fetchStableCoin(address: Address): StableCoin {
@@ -30,9 +30,13 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.auditors = [];
     stableCoin.lastActivity = BigInt.zero();
     stableCoin.creator = Address.zero();
+    stableCoin.totalMinted = BigDecimal.zero();
+    stableCoin.totalMintedExact = BigInt.zero();
     stableCoin.totalBurned = BigDecimal.zero();
     stableCoin.totalBurnedExact = BigInt.zero();
-    stableCoin.totalHolders = 0;
+    stableCoin.totalTransferred = BigDecimal.zero();
+    stableCoin.totalTransferredExact = BigInt.zero();
+    stableCoin.totalHolders = BigInt.zero();
     stableCoin.concentration = BigDecimal.zero();
 
     // StableCoin-specific fields

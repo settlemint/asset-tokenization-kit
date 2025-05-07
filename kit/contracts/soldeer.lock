@@ -25,6 +25,12 @@ git = "https://github.com/settlemint/solidity-smart-protocol.git"
 rev = "9aa04ebfe952a491fb17687ab57ce59b7ec178c0"
 
 [[dependencies]]
+name = "eas-contracts"
+version = "1.4.0"
+git = "https://github.com/ethereum-attestation-service/eas-contracts.git"
+rev = "v1.4.0"
+
+[[dependencies]]
 name = "forge-std"
 version = "1.9.5"
 url = "https://soldeer-revisions.s3.amazonaws.com/forge-std/1_9_5_21-12-2024_15:04:05_forge-std-1.9.zip"

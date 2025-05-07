@@ -1,3 +1,5 @@
 [test]
-
-preload = ["./src/lib/utils/test-preload.ts"]
+timeout = 5000
+coverage = true
+files = ["**/*.test.ts", "**/*.spec.ts"]
+ignore-files = ["node_modules/**", ".next/**"]

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "@/i18n/routing";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useParams } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 

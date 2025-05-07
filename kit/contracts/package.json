@@ -25,12 +25,12 @@
     "@nomicfoundation/hardhat-toolbox-viem": "3.0.0",
     "@nomiclabs/hardhat-solhint": "4.0.1",
     "hardhat": "2.23.0",
-    "solhint": "5.0.5"
+    "solhint": "5.1.0"
   },
   "devDependencies": {},
   "peerDependencies": {},
   "overrides": {
     "elliptic": "6.6.1",
-    "ws": "8.18.1"
+    "ws": "8.18.2"
   }
 }

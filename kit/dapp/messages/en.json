@@ -1,4 +1,34 @@
 {
+  "actions": {
+    "action-type": {
+      "bond-mature": "Mature Bond"
+    },
+    "action-type-header": "Action type",
+    "active-on-header": "Active on",
+    "all-tasks-complete": "All tasks complete!",
+    "all-tasks-complete-description": "You have no pending actions.",
+    "completed-description": {
+      "bond-mature": "The bond has been matured successfully."
+    },
+    "completed-on-header": "Completed on",
+    "description-header": "Description",
+    "page": {
+      "actions": "Actions"
+    },
+    "pending-description": {
+      "bond-mature": "You need to send the transaction to mature the bond."
+    },
+    "sender-header": "Sender",
+    "subject": "Subject",
+    "tabs": {
+      "completed": "Completed",
+      "pending": "Pending",
+      "upcoming": "Upcoming"
+    },
+    "upcoming-description": {
+      "bond-mature": "You will need to send the transaction to mature the bond."
+    }
+  },
   "active": "Active",
   "admin": {
     "activity": {
@@ -133,6 +163,7 @@
         "asset-management": "Asset management",
         "description": "Welcome to the dashboard",
         "latest-events-heading": "Latest events",
+        "platform-management": "Platform management",
         "stats-heading": "Stats",
         "title": "Dashboard"
       },
@@ -186,6 +217,7 @@
     "sidebar": {
       "asset-designer": "Asset Designer",
       "asset-management": {
+        "actions": "Actions",
         "asset-activity": "Asset activity",
         "bonds": "Bonds",
         "cryptocurrencies": "Cryptocurrencies",
@@ -206,8 +238,9 @@
         "tokenized-deposit": "Deposits"
       },
       "platform-management": {
+        "api": "API",
         "group-title": "Platform management",
-        "settings": "Platform",
+        "settings": "Settings",
         "user-management": "User management"
       },
       "portfolio-management": {
@@ -223,96 +256,68 @@
       "settings-management": {
         "api": "API",
         "group-title": "Settings",
+        "platform": "Platform",
         "profile": "Profile",
-        "settings": "Settings",
-        "platform": "Platform"
+        "settings": "Settings"
       },
       "trade-management": {
         "group-title": "Trade management",
-        "dvp-swap": "DvP Swap"
-      }
-    }
-  },
-  "trade-management": {
-    "page": {
-      "dvp-swap": "DvP Swap"
-    },
-    "forms": {
-      "title": {
-        "dvp-swap": "Create a DvP Swap"
-      },
-      "description": {
-        "dvp-swap": "A DvP (Delivery vs Payment) Swap enables an atomic exchange of assets between two parties. It allows you to reliably exchange assets with another user without the need for a third party."
-      },
-      "button": {
-        "dvp-swap": "Create a DvP Swap"
-      },
-      "user": {
-        "title": "User",
-        "description": "Select the user wallet you wish to swap assets with.",
-        "user": "User wallet"
-      },
-      "amounts": {
-        "title": "Amount to exchange",
-        "description": "Enter the asset and amount of assets that you wish to exchange.",
-        "amount-to-offer": "Offer amount",
-        "asset-to-offer": "Offer asset",
-        "amount-to-request": "Request amount",
-        "asset-to-request": "Request asset",
-        "max-amount-to-send": "Amount available to offer: {maxAmount}"
-      },
-      "configuration": {
-        "title": "Configuration",
-        "description": "Configuration for the swap.",
-        "expiry": "Expiry",
-        "expiry-description": "The time until which you will not be able to refund assets from the swap. If the swap is not executed, you can refund your assets after this time.",
-        "expiry-required": "Expiry is required",
-        "past-expiry-error": "Expiry must be in the future.",
-        "secret": "Secret",
-        "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the swap."
-      },
-      "summary": {
-        "title": "Summary",
-        "description": "Review the DvP Swap details. Ensure the receiver, amounts, expiry and secret are correct.",
-        "offer": "Your offer",
-        "offer-description": "The amount of assets you are offering to the user. This amount will be locked.",
-        "request": "Your request",
-        "request-description": "The amount of assets you are requesting from the user.",
-        "to": "To",
-        "from": "From",
-        "amount": "Amount",
-        "configuration": "Configuration",
-        "configuration-description": "The configuration for the DvP Swap",
-        "expiry": "Expiry"
+        "xvp-settlement": "XvP"
       }
     }
   },
   "admin-user": "Admin",
+  "asset-designer": {
+    "type-selection": {
+      "description": "Choose the type of digital asset you want to create",
+      "features": {
+        "five": "KYC required",
+        "four": "Voting rights",
+        "one": "Full lifecycle management",
+        "six": "Collateral management",
+        "three": "Maximum cap",
+        "two": "Custodial functionality"
+      },
+      "key-features": "Key features:",
+      "title": "Select asset type"
+    }
+  },
   "asset-events": {
-    "ApprovalEvent": "Approval",
-    "AssetCreatedEvent": "Create",
-    "BondMaturedEvent": "Matured",
-    "BondRedeemedEvent": "Redeemed",
-    "BurnEvent": "Burn",
-    "ClawbackEvent": "Clawback",
-    "CollateralUpdatedEvent": "Collateral updated",
-    "ManagementFeeCollectedEvent": "Management fee collected",
-    "MintEvent": "Mint",
-    "PausedEvent": "Paused",
-    "PerformanceFeeCollectedEvent": "Performance fee collected",
-    "RoleAdminChangedEvent": "Role admin changed",
-    "RoleGrantedEvent": "Role granted",
-    "RoleRevokedEvent": "Role revoked",
-    "TokenWithdrawnEvent": "Withdraw",
-    "TokensFrozenEvent": "Freeze",
-    "TransferEvent": "Transfer",
-    "UnderlyingAssetTopUpEvent": "Top up",
-    "UnderlyingAssetWithdrawnEvent": "Withdraw",
-    "UnpausedEvent": "Unpause",
-    "UserAllowedEvent": "Allow",
-    "UserBlockedEvent": "Block",
-    "UserDisallowedEvent": "Disallow",
-    "UserUnblockedEvent": "Unblock"
+    "Approval": "Approval",
+    "AssetCreated": "Asset created",
+    "BatchDistribution": "Batch distribution",
+    "Burn": "Burn",
+    "Claimed": "Claimed",
+    "Clawback": "Clawback",
+    "CollateralUpdated": "Collateral updated",
+    "Distribution": "Distribution",
+    "FixedYieldCreated": "Fixed yield created",
+    "ManagementFeeCollected": "Management fee collected",
+    "Matured": "Matured",
+    "MerkleRootUpdated": "Merkle root updated",
+    "Mint": "Mint",
+    "Pause": "Pause",
+    "PerformanceFeeCollected": "Performance fee collected",
+    "Redeemed": "Redeemed",
+    "RoleAdminChanged": "Role admin changed",
+    "RoleGranted": "Role granted",
+    "RoleRevoked": "Role revoked",
+    "TokenWithdrawn": "Token withdrawn",
+    "TokensFrozen": "Tokens frozen",
+    "Transfer": "Transfer",
+    "UnderlyingAssetTopUp": "Underlying asset top up",
+    "UnderlyingAssetWithdrawn": "Underlying asset withdrawn",
+    "Unpause": "Unpause",
+    "UserAllowed": "User allowed",
+    "UserBlocked": "User blocked",
+    "UserDisallowed": "User disallowed",
+    "UserUnblocked": "User unblocked",
+    "XvPSettlementApprovalRevoked": "Settlement approval revoked",
+    "XvPSettlementApproved": "Settlement approved",
+    "XvPSettlementCancelled": "Settlement cancelled",
+    "XvPSettlementClaimed": "Settlement claimed",
+    "XvPSettlementExecuted": "Settlement executed",
+    "YieldClaimed": "Yield claimed"
   },
   "asset-info": {
     "admin": "Admin",
@@ -356,27 +361,22 @@
     "address-avatar": {
       "avatar": "Avatar"
     },
-    "chart": {
-      "switch-to-area-chart": "Switch to area chart",
-      "switch-to-bar-chart": "Switch to bar chart",
-      "info-icon-label": "Info",
-      "select-time-range": "Select time range",
-      "last-updated-at": "Last updated at: {lastUpdated}",
-      "time-range": {
-        "24h": "24h",
-        "7d": "7d",
-        "30d": "30d",
-        "90d": "90d"
-      }
-    },
     "asset-events-table": {
       "asset": "Asset",
       "detail-sheet": {
+        "AUDITOR_ROLE": "Auditor Role",
+        "SIGNER_ROLE": "Signer Role",
+        "SUPPLY_MANAGEMENT_ROLE": "Supply Management Role",
+        "USER_MANAGEMENT_ROLE": "User Management Role",
+        "DEFAULT_ADMIN_ROLE": "Default Admin Role",
         "asset": "Asset",
         "asset-type": "Asset type",
         "date": "Date",
+        "details": "Event details",
         "details-button": "Details",
         "details-for-event": "Details for {event} event",
+        "event-details": "Event Details",
+        "event-parameters": "Event parameters",
         "sender": "Sender",
         "transaction-hash": "Transaction Hash"
       },
@@ -575,7 +575,31 @@
         "send-transaction": "Send transaction",
         "sending-transaction": "Sending transaction..."
       },
+      "document-upload": {
+        "accepted-format": "Accepted formats: {formats} (Max: {maxSize}MB)",
+        "add-document": "Add Document",
+        "cancel": "Cancel",
+        "choose-file": "Choose File",
+        "delete-document": "Delete Document",
+        "document-description": "Description",
+        "document-description-placeholder": "Brief description of the document",
+        "document-file": "Upload File",
+        "document-title": "Document Title",
+        "document-title-placeholder": "e.g. MiCA Compliance White Paper",
+        "document-type": "Document Type",
+        "file-too-large": "File is too large. Maximum size is {maxSize}MB.",
+        "invalid-file-format": "Invalid file format. Only {formats} files are accepted.",
+        "no-documents": "No documents have been uploaded yet",
+        "no-file-chosen": "No file chosen",
+        "select-document-type": "Select document type",
+        "upload-document": "Upload",
+        "upload-document-description": "Upload white papers, audit reports, and other compliance documents",
+        "upload-document-title": "Upload Document",
+        "uploading": "Uploading",
+        "uploading-document": "Uploading..."
+      },
       "input": {
+        "alphanumeric-only": "Please enter letters and numbers only",
         "letters-only": "Please enter letters only",
         "max-value": "Value cannot be higher than {max}",
         "min-value": "Value cannot be lower than {min}",
@@ -868,19 +892,28 @@
       "app-name": "SettleMint",
       "home": "Home"
     },
+    "modeswitch": {
+      "assets": "Asset management",
+      "label": "Operating mode",
+      "platform": "Platform management",
+      "portfolio": "My portfolio"
+    },
     "navigation": {
+      "actions": "Actions",
       "admin": "Issuer portal",
       "asset-management": "Asset management",
+      "dvp-swap": "DvP Swap",
       "platform": "Platform management",
       "portfolio": "My portfolio",
       "title": "Private",
       "trade-management": "Trade management",
-      "dvp-swap": "DvP Swap"
+      "xvp-settlement": "XvP"
     },
     "user-dropdown": {
       "documentation": "Documentation",
       "logout": "Log out",
-      "pending-transactions": "Pending Transactions"
+      "pending-transactions": "Pending Transactions",
+      "profile": "Manage profile"
     }
   },
   "paused": "Paused",
@@ -1183,13 +1216,21 @@
       "asset-statistics-title": "Statistics",
       "create": {
         "basics": {
-          "description": "Provide the general information required to define your asset.",
-          "title": "Asset basics"
+          "description": "Configure your new asset with identifying information which is stored on the blockchain. This date is immutable.",
+          "description-offchain": "Optionally enter additional identifying information for this asset. This information is stored offchain and is not accessible ourside of this platform.",
+          "title": "Onchain identification",
+          "title-offchain": "Offchain identification"
         },
         "configuration": {
           "bonds": {
             "description": "Set parameters specific to your bond.",
-            "title": "Bond configuration"
+            "description-lifecycle": "Configure the relevant dates for lifecycle events for this bond.",
+            "description-supply": "Configure the supply and franctionalization of this bond. This information is immutable",
+            "description-value": "Configure in which asset is used as the denomination of the bond and is used for coupon and maturity payments.",
+            "title": "Bond configuration",
+            "title-lifecycle": "Lifecycle",
+            "title-supply": "Supply",
+            "title-value": "Denomination"
           },
           "cryptocurrencies": {
             "description": "Set parameters specific to your cryptocurrency.",
@@ -1214,12 +1255,12 @@
         },
         "form": {
           "description": {
-            "bonds": "Debt instruments issued as tokenized securities.",
-            "cryptocurrencies": "Decentralized digital assets used as a medium of exchange or store of value.",
-            "deposits": "Digital assets that represent a deposit of a traditional asset.",
-            "equities": "Assets representing ownership in a company.",
-            "funds": "Investment vehicles pooled by professional managers.",
-            "stablecoins": "Digital assets pegged to a stable asset like USD."
+            "bonds": "A bond is a digital debt instrument where issuers raise capital from investors with predefined terms, enabled by blockchain for automated issuance, transparent tracking, and streamlined settlement.",
+            "cryptocurrencies": "Cryptocurrency is a digital asset secured by cryptography, enabling decentralized, peer-to-peer transactions and programmable value transfer on blockchain networks.",
+            "deposits": "A deposit is a sum of money placed into an account or escrow, which on blockchain can be tokenized for secure, transparent, and programmable custody or transaction settlement.",
+            "equities": "Equity represents ownership in an asset or company, which on blockchain can be tokenized to enable fractional ownership, transparent governance, and efficient transferability.",
+            "funds": "A fund is a pooled investment vehicle managed to achieve specific financial goals, which on blockchain can be tokenized for real-time transparency, programmable asset management, and automated compliance.",
+            "stablecoins": "A stablecoin is a blockchain-based digital asset pegged to a stable value, such as a fiat currency, designed to minimize volatility and enable reliable, on-chain transactions and settlements."
           },
           "steps": {
             "asset-admins": {
@@ -1244,14 +1285,6 @@
             "equities": "Design a new equity",
             "funds": "Design a new fund",
             "stablecoins": "Design a new stable coin"
-          },
-          "trigger-label": {
-            "bonds": "Issue a new bond",
-            "cryptocurrencies": "Issue a new cryptocurrency",
-            "equities": "Issue a new equity",
-            "funds": "Issue a new fund",
-            "stablecoins": "Issue a new stablecoin",
-            "deposits": "Issue a new deposit"
           },
           "toast-action": {
             "bonds": "View bond",
@@ -1286,7 +1319,9 @@
           },
           "common": {
             "collateral-proof-validity-label": "Collateral proof validity",
+            "decimals-description": "The number of decimals to use for the bond. This is used to determine the precision of the bond.",
             "decimals-label": "Decimals",
+            "internalid-label": "Internal ID",
             "isin-label": "ISIN",
             "name-label": "Name",
             "price-label": "Price",
@@ -1612,7 +1647,7 @@
               "cryptocurrencies": "Decrease supply",
               "deposits": "Reduce deposit supply",
               "equities": "Reduce share supply",
-              "funds": "Redeem bonds",
+              "funds": "Burn fund shares",
               "stablecoins": "Decrease the supply"
             }
           },
@@ -1630,7 +1665,7 @@
               "cryptocurrencies": "Mint assets",
               "deposits": "Increase the supply",
               "equities": "Issue new shares",
-              "funds": "Issue bonds",
+              "funds": "Issue new fund shares",
               "stablecoins": "Increase the supply"
             }
           },
@@ -1941,12 +1976,12 @@
           "title": "Related actions"
         },
         "topinfo-description": {
-          "bond": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
-          "cryptocurrency": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
-          "deposit": "Deposits digitally represent traditional banking deposits, providing financial institutions with enhanced security, real-time transparency, and rigorous compliance capabilities. Key features include customizable allowlists, custodial oversight, robust role-based management, and integrated meta-transactions, simplifying institutional deposit administration.",
-          "equity": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
-          "fund": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
-          "stablecoin": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities."
+          "bond": "A bond is a debt instrument through which an issuer raises capital from investors, agreeing to repay the principal with interest over a defined period. When issued on blockchain, bonds become programmable assets with transparent terms, automated compliance, and efficient end-to-end lifecycle management from issuance to settlement.",
+          "cryptocurrency": "Cryptocurrency is a form of digital asset that uses cryptographic techniques to secure transactions and operate independently of central authorities. On blockchain-based platforms, cryptocurrencies enable real-time, trustless value exchange and serve as a foundation for programmable financial instruments and tokenized assets.",
+          "deposit": "A deposit is the act of placing funds into a financial account, typically for safekeeping, future use, or to fulfill a contractual obligation. On blockchain platforms, deposits can be represented as digital tokens, enabling automated verification, conditional release, and auditable custody throughout the transaction lifecycle.",
+          "equity": "Equity refers to the ownership interest in a company or asset, typically entitling the holder to a share of profits and voting rights. When tokenized on blockchain, equity can be issued, managed, and transferred with programmable rules, improving access, liquidity, and operational efficiency in ownership markets.",
+          "fund": "A fund aggregates capital from multiple investors to invest in a portfolio of assets according to a defined strategy and management structure. Tokenizing funds on blockchain enables granular ownership tracking, efficient distribution of returns, and streamlined operations through smart contracts and real-time reporting.",
+          "stablecoin": "A stablecoin is a type of cryptocurrency engineered to maintain a stable value, often backed by reserves like fiat currencies or other assets. On blockchain platforms, stablecoins provide a dependable medium of exchange and store of value, facilitating seamless, low-volatility transactions and programmable financial operations."
         },
         "topinfo-title": {
           "bond": "A digital fixed-income security asset",
@@ -2298,6 +2333,12 @@
     }
   },
   "regular": "User",
+  "regulations": {
+    "mica": {
+      "description": "Markets in Crypto-Assets (MiCA) is the EU's comprehensive regulatory framework designed to regulate cryptocurrencies, stablecoins, and other digital assets, providing legal certainty for crypto-asset issuers and service providers.",
+      "name": "MiCA"
+    }
+  },
   "supply-manager": "Supply Manager",
   "theme": {
     "dark": "Dark",
@@ -2305,6 +2346,80 @@
     "switch-to-mode": "Switch to {mode} mode",
     "system": "System",
     "toggle-label": "Toggle theme"
+  },
+  "trade-management": {
+    "forms": {
+      "amounts": {
+        "amount-to-offer": "Offer amount",
+        "amount-to-request": "Request amount",
+        "asset-to-offer": "Offer asset",
+        "asset-to-request": "Request asset",
+        "description": "Enter the asset and amount of assets that you wish to exchange.",
+        "max-amount-to-send": "Amount available to offer: {maxAmount}",
+        "title": "Amount to exchange"
+      },
+      "button": {
+        "xvp": "Create an XvP Settlement"
+      },
+      "configuration": {
+        "auto-execute": "Auto execute",
+        "auto-execute-description": "Automatically execute the settlement on last approval.",
+        "description": "Configuration for the settlement.",
+        "expiry": "Expiry",
+        "expiry-description": "The time until which you will not be able to refund assets from the settlement. If the settlement is not executed, you can refund your assets after this time.",
+        "expiry-required": "Expiry is required",
+        "past-expiry-error": "Expiry must be in the future.",
+        "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the settlement.",
+        "title": "Configuration"
+      },
+      "description": {
+        "xvp": "An XvP (Delivery vs Payment or Payment vs Payment) Settlement enables an atomic exchange of assets between parties. It allows you to reliably exchange assets with other users without the need for a third party."
+      },
+      "summary": {
+        "amount": "Amount",
+        "configuration": "Configuration",
+        "configuration-description": "The configuration for the XvP Settlement",
+        "description": "Review the XvP Settlement details. Ensure the receiver, amounts, expiry and secret are correct.",
+        "expiry": "Expiry",
+        "from": "From",
+        "offer": "Your offer",
+        "offer-description": "The amount of assets you are offering to the user. This amount will be locked.",
+        "request": "Your request",
+        "request-description": "The amount of assets you are requesting from the user.",
+        "title": "Summary",
+        "to": "To"
+      },
+      "title": {
+        "xvp": "Create an XvP Settlement"
+      },
+      "user": {
+        "description": "Select the user wallet you wish to exchange assets with.",
+        "title": "User",
+        "user": "User wallet"
+      }
+    },
+    "page": {
+      "xvp": "XvP"
+    },
+    "xvp": {
+      "columns": {
+        "approvals": "Approvals",
+        "assets": "Assets",
+        "created-at": "Created at",
+        "expires-at": "Expires at",
+        "id": "Settlement ID",
+        "status": "Status"
+      },
+      "details": "Details",
+      "expired": "Expired",
+      "status": {
+        "approved": "Approved",
+        "cancelled": "Cancelled",
+        "claimed": "Claimed",
+        "expired": "Expired",
+        "pending": "Pending"
+      }
+    }
   },
   "transactions": {
     "sending": "Sending",

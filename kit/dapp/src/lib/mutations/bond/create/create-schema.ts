@@ -46,6 +46,11 @@ export function CreateBondSchema({
           description: "International Securities Identification Number",
         })
       ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the bond",
+        })
+      ),
       verificationCode: t.VerificationCode({
         description:
           "The verification code (PIN, 2FA, or secret code) for signing the transaction",
@@ -90,6 +95,7 @@ export function CreateBondSchema({
         },
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
     },
     {
       description: "Schema for validating bond creation inputs",

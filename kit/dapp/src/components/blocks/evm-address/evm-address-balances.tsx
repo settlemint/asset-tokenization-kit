@@ -10,11 +10,28 @@ interface EvmAddressBalancesProps {
   address: Address;
 }
 
+// Define balance type
+interface AssetBalance {
+  asset: {
+    symbol: string;
+    // Add other properties from asset if needed
+  };
+  value: number; // Changed from string to number
+  // Add other required properties
+  account?: {
+    id: `0x${string}`;
+    lastActivity: Date;
+  };
+  lastActivity?: Date;
+  blocked?: boolean;
+  frozen?: number;
+}
+
 export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
   const { data: balances, isLoading } = useSWR(
     [`asset-balances-${address}`],
     async () => {
-      const { data } = await apiClient.api["asset-balance"]
+      const { data } = await apiClient.api.balance
         .portfolio({
           wallet: getAddress(address),
         })
@@ -50,7 +67,7 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
 
   return (
     <div className="flex flex-col gap-1">
-      {balances.map((balance, index: number) => (
+      {balances.map((balance: AssetBalance, index: number) => (
         <div key={index} className="flex items-center justify-between">
           <span className="font-medium text-sm">{balance.asset.symbol}</span>
           <span className="text-muted-foreground text-sm">{balance.value}</span>

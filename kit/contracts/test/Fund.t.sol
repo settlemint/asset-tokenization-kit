@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { Fund } from "../contracts/Fund.sol";
@@ -29,7 +29,7 @@ contract FundTest is Test {
 
     event ManagementFeeCollected(uint256 amount, uint256 timestamp);
     event PerformanceFeeCollected(uint256 amount, uint256 timestamp);
-    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
+    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount, address indexed sender);
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -137,7 +137,7 @@ contract FundTest is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TokenWithdrawn(mockToken, investor1, withdrawAmount);
+        emit TokenWithdrawn(mockToken, investor1, withdrawAmount, owner);
         fund.withdrawToken(mockToken, investor1, withdrawAmount);
         vm.stopPrank();
     }

@@ -4,13 +4,15 @@ import AirdropFactoryModule from "./airdrop-factory";
 import BondsModule from "./bonds";
 import CryptoCurrenciesModule from "./crypto-currencies";
 import DepositsModule from "./deposits";
-import DvPSwapModule from "./dvpswap";
-import DvPSwapFactoryModule from "./dvpswap-factory";
+import EASModule from "./eas";
 import EquitiesModule from "./equities";
 import FixedYieldFactoryModule from "./fixed-yield-factory";
 import ForwarderModule from "./forwarder";
 import FundsModule from "./funds";
 import StableCoinsModule from "./stable-coins";
+import VaultFactoryModule from "./vault-factory";
+import VaultsModule from "./vaults";
+import XvPSettlementFactoryModule from "./xvp-settlement-factory";
 
 const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
   m.useModule(ForwarderModule);
@@ -23,9 +25,11 @@ const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
   const { gmf } = m.useModule(FundsModule);
   const { EURD } = m.useModule(DepositsModule);
   const { fixedYieldFactory } = m.useModule(FixedYieldFactoryModule);
-  const { dvpSwapFactory } = m.useModule(DvPSwapFactoryModule);
-  const { dvpSwap } = m.useModule(DvPSwapModule);
+  const { xvpSettlementFactory } = m.useModule(XvPSettlementFactoryModule);
   const { airdropFactory } = m.useModule(AirdropFactoryModule);
+  const { schemaRegistry, eas } = m.useModule(EASModule);
+  const { vaultFactory } = m.useModule(VaultFactoryModule);
+  const { vault } = m.useModule(VaultsModule);
 
   return {
     ...smart,
@@ -36,9 +40,12 @@ const AssetTokenizationModule = buildModule("AssetTokenizationModule", (m) => {
     gmf,
     EURD,
     fixedYieldFactory,
-    dvpSwap,
-    dvpSwapFactory,
+    xvpSettlementFactory,
     airdropFactory,
+    schemaRegistry,
+    eas,
+    vaultFactory,
+    vault,
   };
 });
 

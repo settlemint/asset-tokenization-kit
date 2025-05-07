@@ -1,37 +1,36 @@
-import { BigDecimal } from "@graphprotocol/graph-ts";
-import { Deposit, StableCoin } from "../../../generated/schema";
-import { toDecimals } from "../../utils/decimals";
+import { BigDecimal, BigInt, Bytes, Entity } from "@graphprotocol/graph-ts";
+import { setValueWithDecimals } from "../../utils/decimals";
+import { AssetType } from "../../utils/enums";
+import { newAssetStatsData } from "../stats/assets";
 
-export function collateralCalculatedFields(stableCoin: StableCoin): StableCoin {
-  stableCoin.collateralRatio = stableCoin.collateral.equals(BigDecimal.zero())
-    ? BigDecimal.fromString("100")
-    : stableCoin.totalSupply
-        .div(stableCoin.collateral)
-        .times(BigDecimal.fromString("100"));
+export function calculateCollateral(
+  asset: Entity,
+  assetId: Bytes,
+  collateralExact: BigInt,
+  totalSupplyExact: BigInt,
+  decimals: number
+): void {
+  const collateralRatio = collateralExact.equals(BigInt.zero())
+    ? BigInt.fromString("100")
+    : totalSupplyExact.div(collateralExact).times(BigInt.fromString("100"));
 
-  stableCoin.freeCollateralExact = stableCoin.collateralExact.minus(
-    stableCoin.totalSupplyExact
+  asset.setBigDecimal(
+    "collateralRatio",
+    BigDecimal.fromString(collateralRatio.toString())
   );
-  stableCoin.freeCollateral = toDecimals(
-    stableCoin.freeCollateralExact,
-    stableCoin.decimals
-  );
-  return stableCoin;
-}
 
-export function depositCollateralCalculatedFields(deposit: Deposit): Deposit {
-  deposit.collateralRatio = deposit.collateral.equals(BigDecimal.zero())
-    ? BigDecimal.fromString("100")
-    : deposit.totalSupply
-        .div(deposit.collateral)
-        .times(BigDecimal.fromString("100"));
+  setValueWithDecimals(
+    asset,
+    "freeCollateral",
+    collateralExact.minus(totalSupplyExact),
+    decimals
+  );
 
-  deposit.freeCollateralExact = deposit.collateralExact.minus(
-    deposit.totalSupplyExact
-  );
-  deposit.freeCollateral = toDecimals(
-    deposit.freeCollateralExact,
-    deposit.decimals
-  );
-  return deposit;
+  const assetStats = newAssetStatsData(assetId, AssetType.deposit);
+  assetStats.collateral = asset.getBigDecimal("collateral");
+  assetStats.collateralExact = asset.getBigInt("collateralExact");
+  assetStats.freeCollateral = asset.getBigDecimal("freeCollateral");
+  assetStats.freeCollateralExact = asset.getBigInt("freeCollateralExact");
+  assetStats.collateralRatio = asset.getBigDecimal("collateralRatio");
+  assetStats.save();
 }

@@ -20,6 +20,14 @@ export const assetTypes = [
 ] as const;
 
 /**
+ * Enum-like object for dot notation access to asset types
+ * Example: AssetTypeEnum.stablecoin instead of "stablecoin"
+ */
+export const AssetTypeEnum = Object.fromEntries(
+  assetTypes.map((type) => [type, type])
+) as Record<AssetType, AssetType>;
+
+/**
  * Validates an asset type
  *
  * @param options - Additional schema options
