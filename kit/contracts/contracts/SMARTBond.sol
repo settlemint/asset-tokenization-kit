@@ -70,10 +70,6 @@ contract SMARTBond is
 
     uint256 public immutable maturityDate;
 
-    /// @notice The number of decimals used for token amounts
-    /// @dev Set at deployment and cannot be changed
-    uint8 private immutable _decimals;
-
     /// @notice Tracks whether the bond has matured
     /// @dev Set to true when mature() is called after maturity date
     bool public isMatured;
@@ -182,7 +178,6 @@ contract SMARTBond is
             revert InvalidUnderlyingAsset();
         }
 
-        _decimals = decimals_;
         maturityDate = maturityDate_;
         faceValue = faceValue_;
         underlyingAsset = IERC20(underlyingAsset_);
@@ -195,24 +190,72 @@ contract SMARTBond is
         _grantRole(SMARTConstants.USER_MANAGEMENT_ROLE, initialOwner_); // Freeze, Recovery
     }
 
-    // --- State-Changing Functions (Overrides) ---
-    function transfer(address to, uint256 amount) public virtual override(SMART, ERC20, IERC20) returns (bool) {
-        return super.transfer(to, amount);
+    // --- View Functions ---
+
+    /// @notice Returns the amount of underlying assets held by the contract
+    /// @return The balance of underlying assets
+    function underlyingAssetBalance() public view returns (uint256) {
+        return underlyingAsset.balanceOf(address(this));
     }
 
-    /// @notice Closes off the bond at maturity
-    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
-    /// @dev Requires sufficient underlying assets for all potential redemptions
-    function mature() external onlyRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE) {
-        if (block.timestamp < maturityDate) revert BondNotYetMatured();
-        if (isMatured) revert BondAlreadyMatured();
+    /// @notice Returns the total amount of underlying assets needed for all potential redemptions
+    /// @return The total amount of underlying assets needed
+    function totalUnderlyingNeeded() public view returns (uint256) {
+        return _calculateUnderlyingAmount(totalSupply());
+    }
 
+    /// @notice Returns the amount of underlying assets missing for all potential redemptions
+    /// @return The amount of underlying assets missing (0 if there's enough or excess)
+    function missingUnderlyingAmount() public view returns (uint256) {
         uint256 needed = totalUnderlyingNeeded();
-        if (underlyingAssetBalance() < needed) revert InsufficientUnderlyingBalance();
-
-        isMatured = true;
-        emit BondMatured(block.timestamp);
+        uint256 current = underlyingAssetBalance();
+        return needed > current ? needed - current : 0;
     }
+
+    /// @notice Returns the amount of excess underlying assets that can be withdrawn
+    /// @return The amount of excess underlying assets
+    function withdrawableUnderlyingAmount() public view returns (uint256) {
+        uint256 needed = totalUnderlyingNeeded();
+        uint256 current = underlyingAssetBalance();
+        return current > needed ? current - needed : 0;
+    }
+
+    // --- View Functions (Overrides) ---
+    function name() public view virtual override(SMART, ERC20, IERC20Metadata) returns (string memory) {
+        return super.name();
+    }
+
+    function symbol() public view virtual override(SMART, ERC20, IERC20Metadata) returns (string memory) {
+        return super.symbol();
+    }
+
+    function decimals() public view virtual override(SMART, ERC20, IERC20Metadata) returns (uint8) {
+        return super.decimals();
+    }
+
+    /// @notice Returns the basis for yield calculation
+    /// @dev For bonds, the yield basis is the face value
+    /// @return The face value as the basis for yield calculations
+    function yieldBasisPerUnit(address) public view override returns (uint256) {
+        return faceValue;
+    }
+
+    /// @notice Returns the token used for yield payments
+    /// @dev For bonds, this is the underlying asset
+    /// @return The underlying asset token
+    function yieldToken() public view override returns (IERC20) {
+        return underlyingAsset;
+    }
+
+    /// @notice Checks if an address can manage yield on this token
+    /// @dev Only addresses with SUPPLY_MANAGEMENT_ROLE can manage yield
+    /// @param manager The address to check
+    /// @return True if the address has SUPPLY_MANAGEMENT_ROLE
+    function canManageYield(address manager) public view override returns (bool) {
+        return hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, manager);
+    }
+
+    // --- State-Changing Functions ---
 
     /// @notice Allows topping up the contract with underlying assets
     /// @dev Anyone can top up the contract with underlying assets
@@ -250,47 +293,6 @@ contract SMARTBond is
         _withdrawUnderlyingAsset(to, withdrawable);
     }
 
-    // --- View Functions (Overrides) ---
-    function name() public view virtual override(SMART, ERC20, IERC20Metadata) returns (string memory) {
-        return super.name();
-    }
-
-    function symbol() public view virtual override(SMART, ERC20, IERC20Metadata) returns (string memory) {
-        return super.symbol();
-    }
-
-    function decimals() public view virtual override(SMART, ERC20, IERC20Metadata) returns (uint8) {
-        return super.decimals();
-    }
-
-    /// @notice Returns the amount of underlying assets held by the contract
-    /// @return The balance of underlying assets
-    function underlyingAssetBalance() public view returns (uint256) {
-        return underlyingAsset.balanceOf(address(this));
-    }
-
-    /// @notice Returns the total amount of underlying assets needed for all potential redemptions
-    /// @return The total amount of underlying assets needed
-    function totalUnderlyingNeeded() public view returns (uint256) {
-        return _calculateUnderlyingAmount(totalSupply());
-    }
-
-    /// @notice Returns the amount of underlying assets missing for all potential redemptions
-    /// @return The amount of underlying assets missing (0 if there's enough or excess)
-    function missingUnderlyingAmount() public view returns (uint256) {
-        uint256 needed = totalUnderlyingNeeded();
-        uint256 current = underlyingAssetBalance();
-        return needed > current ? needed - current : 0;
-    }
-
-    /// @notice Returns the amount of excess underlying assets that can be withdrawn
-    /// @return The amount of excess underlying assets
-    function withdrawableUnderlyingAmount() public view returns (uint256) {
-        uint256 needed = totalUnderlyingNeeded();
-        uint256 current = underlyingAssetBalance();
-        return current > needed ? current - needed : 0;
-    }
-
     /// @notice Tops up the contract with exactly the amount needed for all redemptions
     /// @dev Will revert if no assets are missing or if the transfer fails
     function topUpMissingAmount() external {
@@ -303,26 +305,23 @@ contract SMARTBond is
         emit UnderlyingAssetTopUp(_msgSender(), missing);
     }
 
-    /// @notice Returns the basis for yield calculation
-    /// @dev For bonds, the yield basis is the face value
-    /// @return The face value as the basis for yield calculations
-    function yieldBasisPerUnit(address) public view override returns (uint256) {
-        return faceValue;
+    /// @notice Closes off the bond at maturity
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
+    /// @dev Requires sufficient underlying assets for all potential redemptions
+    function mature() external onlyRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE) {
+        if (block.timestamp < maturityDate) revert BondNotYetMatured();
+        if (isMatured) revert BondAlreadyMatured();
+
+        uint256 needed = totalUnderlyingNeeded();
+        if (underlyingAssetBalance() < needed) revert InsufficientUnderlyingBalance();
+
+        isMatured = true;
+        emit BondMatured(block.timestamp);
     }
 
-    /// @notice Returns the token used for yield payments
-    /// @dev For bonds, this is the underlying asset
-    /// @return The underlying asset token
-    function yieldToken() public view override returns (IERC20) {
-        return underlyingAsset;
-    }
-
-    /// @notice Checks if an address can manage yield on this token
-    /// @dev Only addresses with SUPPLY_MANAGEMENT_ROLE can manage yield
-    /// @param manager The address to check
-    /// @return True if the address has SUPPLY_MANAGEMENT_ROLE
-    function canManageYield(address manager) public view override returns (bool) {
-        return hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, manager);
+    // --- State-Changing Functions (Overrides) ---
+    function transfer(address to, uint256 amount) public virtual override(SMART, ERC20, IERC20) returns (bool) {
+        return super.transfer(to, amount);
     }
 
     // --- Internal Functions ---
@@ -487,9 +486,9 @@ contract SMARTBond is
     )
         internal
         virtual
-        override(SMART, SMARTPausable, ERC20Capped, ERC20)
+        override(SMARTPausable, ERC20Capped, SMART, ERC20)
     {
-        // Calls chain: ERC20Collateral -> SMARTPausable -> SMART -> ERC20
+        // Calls chain: SMARTPausable -> ERC20Capped -> SMART -> ERC20
         super._update(from, to, value);
     }
 
