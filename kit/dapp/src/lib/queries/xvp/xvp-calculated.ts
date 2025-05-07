@@ -41,7 +41,7 @@ export async function calculateXvPSettlement(
   const calculatedFlows = flows.map((flow) => {
     const assetPrice = allAssetsPrices.get(getAddress(flow.asset.id))!;
 
-    totalPriceAmount += Number(flow.amountExact) * assetPrice.amount;
+    totalPriceAmount += Number(flow.amount) * assetPrice.amount;
     return safeParse(XvPSettlementFlowSchema, {
       ...flow,
       assetPrice,

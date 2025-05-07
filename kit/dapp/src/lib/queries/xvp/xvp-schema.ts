@@ -4,7 +4,7 @@ export const OnChainXvPSettlementFlowSchema = t.Object({
   id: t.String(),
   from: t.Object({ id: t.EthereumAddress() }),
   to: t.Object({ id: t.EthereumAddress() }),
-  amountExact: t.StringifiedBigInt(),
+  amount: t.BigDecimal(),
   asset: t.Object({ id: t.EthereumAddress() }),
 });
 
@@ -31,18 +31,18 @@ export const XvPSettlementApprovalSchema = t.Object({
   id: t.String(),
   account: t.Object({ id: t.EthereumAddress() }),
   approved: t.Boolean(),
-  timestamp: t.Nullable(t.StringifiedBigInt()),
+  timestamp: t.Timestamp(),
 });
 
 export const OnChainXvPSettlementSchema = t.Object({
   id: t.EthereumAddress(),
-  cutoffDate: t.StringifiedBigInt(),
+  cutoffDate: t.Timestamp(),
   autoExecute: t.Boolean(),
   claimed: t.Boolean(),
   cancelled: t.Boolean(),
   approvals: t.Array(XvPSettlementApprovalSchema),
   flows: t.Array(OnChainXvPSettlementFlowSchema),
-  createdAt: t.StringifiedBigInt(),
+  createdAt: t.Timestamp(),
 });
 
 export type OnChainXvPSettlement = StaticDecode<
