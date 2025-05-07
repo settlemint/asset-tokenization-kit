@@ -3,13 +3,14 @@ pragma solidity ^0.8.27;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-import { ERC20HistoricalBalances } from "./ERC20HistoricalBalances.sol";
+import { ISMARTHistoricalBalances } from
+    "@smartprotocol/contracts/extensions/historical-balances/ISMARTHistoricalBalances.sol";
 
 /// @title ERC20Yield - Extension for ERC20 tokens to support yield functionality
 /// @notice This abstract contract provides the base functionality for ERC20 tokens to work with fixed yield schedules
 /// @dev Inherit this contract to add yield support to your ERC20 token
 /// @custom:security-contact support@settlemint.com
-abstract contract ERC20Yield is Context, ERC20HistoricalBalances {
+abstract contract ERC20Yield is Context, ISMARTHistoricalBalances {
     /// @notice Custom errors for the ERC20Yield contract
     error InvalidYieldSchedule();
     error YieldScheduleAlreadySet();

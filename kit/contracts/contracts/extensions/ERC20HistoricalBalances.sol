@@ -4,13 +4,15 @@ pragma solidity ^0.8.27;
 import { Checkpoints } from "@openzeppelin/contracts/utils/structs/Checkpoints.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { Time } from "@openzeppelin/contracts/utils/types/Time.sol";
-
+import { ISMARTHistoricalBalances } from
+    "@smartprotocol/contracts/extensions/historical-balances/ISMARTHistoricalBalances.sol";
 /**
  * @title ERC20HistoricalBalances
  * @dev Extension for ERC20 tokens that tracks historical balances of token holders.
  * This allows querying the balance of any account at any past block number.
  */
-abstract contract ERC20HistoricalBalances {
+
+abstract contract ERC20HistoricalBalances is ISMARTHistoricalBalances {
     using Checkpoints for Checkpoints.Trace208;
 
     /**

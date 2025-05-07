@@ -5,9 +5,9 @@ pragma solidity ^0.8.27;
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import { ERC20HistoricalBalances } from "./extensions/ERC20HistoricalBalances.sol";
 import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
@@ -31,12 +31,9 @@ import { SMARTBurnable } from "@smartprotocol/contracts/extensions/burnable/SMAR
 import { SMARTCustodian } from "@smartprotocol/contracts/extensions/custodian/SMARTCustodian.sol";
 import { SMARTCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateral.sol";
 import { SMARTRedeemable } from "@smartprotocol/contracts/extensions/redeemable/SMARTRedeemable.sol";
+import { SMARTHistoricalBalances } from
+    "@smartprotocol/contracts/extensions/historical-balances/SMARTHistoricalBalances.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
-
-// Common errors
-import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
-
-import "forge-std/console.sol";
 
 /// @title SMARTBond
 /// @notice An implementation of a bond using the SMART extension framework,
@@ -50,7 +47,7 @@ contract SMARTBond is
     SMARTPausable,
     SMARTBurnable,
     SMARTRedeemable,
-    ERC20HistoricalBalances, // TODO: should this become part of SMART?
+    SMARTHistoricalBalances,
     ERC20Capped,
     ERC20Permit,
     ERC20Yield,
@@ -112,18 +109,6 @@ contract SMARTBond is
     /// @param to The address receiving the underlying assets
     /// @param amount The amount of underlying assets withdrawn
     event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
-
-    /// @notice Emitted when mistakenly sent tokens are withdrawn
-    /// @param token The address of the token being withdrawn
-    /// @param to The address receiving the tokens
-    /// @param amount The amount of tokens withdrawn
-    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
-
-    /// @notice Emitted when tokens are forcibly transferred from one address to another
-    /// @param from The address tokens are taken from
-    /// @param to The address tokens are sent to
-    /// @param amount The amount of tokens transferred
-    event Clawback(address indexed from, address indexed to, uint256 amount);
 
     /// @notice Modifier to prevent operations after bond maturity
     /// @dev Reverts with BondAlreadyMatured if the bond has matured
@@ -422,17 +407,39 @@ contract SMARTBond is
     }
 
     /// @inheritdoc SMARTHooks
-    function _afterMint(address to, uint256 amount) internal virtual override(SMART, SMARTHooks) {
+    function _afterMint(
+        address to,
+        uint256 amount
+    )
+        internal
+        virtual
+        override(SMART, SMARTHistoricalBalances, SMARTHooks)
+    {
         super._afterMint(to, amount);
     }
 
     /// @inheritdoc SMARTHooks
-    function _afterTransfer(address from, address to, uint256 amount) internal virtual override(SMART, SMARTHooks) {
+    function _afterTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
+        internal
+        virtual
+        override(SMART, SMARTHistoricalBalances, SMARTHooks)
+    {
         super._afterTransfer(from, to, amount);
     }
 
     /// @inheritdoc SMARTHooks
-    function _afterBurn(address from, uint256 amount) internal virtual override(SMART, SMARTHooks) {
+    function _afterBurn(
+        address from,
+        uint256 amount
+    )
+        internal
+        virtual
+        override(SMART, SMARTHistoricalBalances, SMARTHooks)
+    {
         super._afterBurn(from, amount);
     }
 
@@ -518,56 +525,78 @@ contract SMARTBond is
 
     function _authorizeUpdateTokenSettings() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 
     function _authorizeUpdateComplianceSettings() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 
     function _authorizeUpdateVerificationSettings() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 
     function _authorizeMintToken() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.SUPPLY_MANAGEMENT_ROLE);
+        }
     }
 
     function _authorizePause() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 
     function _authorizeBurn() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 
     function _authorizeFreezeAddress() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.USER_MANAGEMENT_ROLE);
+        }
     }
 
     function _authorizeFreezePartialTokens() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.USER_MANAGEMENT_ROLE);
+        }
     }
 
     function _authorizeForcedTransfer() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.SUPPLY_MANAGEMENT_ROLE);
+        }
     }
 
     function _authorizeRecoveryAddress() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.USER_MANAGEMENT_ROLE);
+        }
     }
 
     function _authorizeRecoverERC20() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 }
