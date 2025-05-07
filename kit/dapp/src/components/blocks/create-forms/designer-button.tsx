@@ -1,15 +1,12 @@
 "use client";
 
 import {
-  FrameIcon,
-  type FrameIconHandle,
-} from "@/components/ui/animated-icons/frame";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FrameIcon, type FrameIconHandle } from "@/components/ui/frame";
 import {
   SidebarGroup,
   SidebarMenu,

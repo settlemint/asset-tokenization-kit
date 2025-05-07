@@ -1,42 +1,37 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import type { Variants } from 'motion/react';
+import { motion, useAnimation } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
-export interface ShieldCheckIconHandle {
+export interface ChartLineIconHandle {
   startAnimation: () => void;
   stopAnimation: () => void;
 }
 
-interface ShieldCheckIconProps extends HTMLAttributes<HTMLDivElement> {
+interface ChartLineIconProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;
 }
 
-const pathVariants: Variants = {
+const variants: Variants = {
   normal: {
-    opacity: 1,
     pathLength: 1,
-    scale: 1,
-    transition: {
-      duration: 0.3,
-      opacity: { duration: 0.1 },
-    },
+    opacity: 1,
   },
   animate: {
-    opacity: [0, 1],
     pathLength: [0, 1],
-    scale: [0.5, 1],
+    opacity: [0, 1],
     transition: {
-      duration: 0.4,
-      opacity: { duration: 0.1 },
+      delay: 0.15,
+      duration: 0.3,
+      opacity: { delay: 0.1 },
     },
   },
 };
 
-const ShieldCheckIcon = forwardRef<ShieldCheckIconHandle, ShieldCheckIconProps>(
+const ChartLineIcon = forwardRef<ChartLineIconHandle, ChartLineIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
@@ -45,15 +40,15 @@ const ShieldCheckIcon = forwardRef<ShieldCheckIconHandle, ShieldCheckIconProps>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
+        startAnimation: () => controls.start('animate'),
+        stopAnimation: () => controls.start('normal'),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("animate");
+          controls.start('animate');
         } else {
           onMouseEnter?.(e);
         }
@@ -64,7 +59,7 @@ const ShieldCheckIcon = forwardRef<ShieldCheckIconHandle, ShieldCheckIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("normal");
+          controls.start('normal');
         } else {
           onMouseLeave?.(e);
         }
@@ -74,10 +69,7 @@ const ShieldCheckIcon = forwardRef<ShieldCheckIconHandle, ShieldCheckIconProps>(
 
     return (
       <div
-        className={cn(
-          `cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center`,
-          className
-        )}
+        className={cn(className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...props}
@@ -93,12 +85,11 @@ const ShieldCheckIcon = forwardRef<ShieldCheckIconHandle, ShieldCheckIconProps>(
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+          <path d="M3 3v16a2 2 0 0 0 2 2h16" />
           <motion.path
-            variants={pathVariants}
-            initial="normal"
+            d="m7 13 3-3 4 4 5-5"
+            variants={variants}
             animate={controls}
-            d="m9 12 2 2 4-4"
           />
         </svg>
       </div>
@@ -106,6 +97,6 @@ const ShieldCheckIcon = forwardRef<ShieldCheckIconHandle, ShieldCheckIconProps>(
   }
 );
 
-ShieldCheckIcon.displayName = "ShieldCheckIcon";
+ChartLineIcon.displayName = 'ChartLineIcon';
 
-export { ShieldCheckIcon };
+export { ChartLineIcon };

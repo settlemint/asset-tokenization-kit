@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import type { Variants } from 'motion/react';
+import { motion, useAnimation } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface LanguagesIconHandle {
   startAnimation: () => void;
@@ -24,7 +24,7 @@ const pathVariants: Variants = {
     transition: {
       opacity: { duration: 0.01, delay: custom * 0.1 },
       pathLength: {
-        type: "spring",
+        type: 'spring',
         duration: 0.5,
         bounce: 0,
         delay: custom * 0.1,
@@ -56,12 +56,12 @@ const LanguagesIcon = forwardRef<LanguagesIconHandle, LanguagesIconProps>(
 
       return {
         startAnimation: () => {
-          svgControls.start("animate");
-          pathControls.start("animate");
+          svgControls.start('animate');
+          pathControls.start('animate');
         },
         stopAnimation: () => {
-          svgControls.start("normal");
-          pathControls.start("normal");
+          svgControls.start('normal');
+          pathControls.start('normal');
         },
       };
     });
@@ -69,8 +69,8 @@ const LanguagesIcon = forwardRef<LanguagesIconHandle, LanguagesIconProps>(
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          svgControls.start("animate");
-          pathControls.start("animate");
+          svgControls.start('animate');
+          pathControls.start('animate');
         } else {
           onMouseEnter?.(e);
         }
@@ -81,8 +81,8 @@ const LanguagesIcon = forwardRef<LanguagesIconHandle, LanguagesIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          svgControls.start("normal");
-          pathControls.start("normal");
+          svgControls.start('normal');
+          pathControls.start('normal');
         } else {
           onMouseLeave?.(e);
         }
@@ -92,10 +92,7 @@ const LanguagesIcon = forwardRef<LanguagesIconHandle, LanguagesIconProps>(
 
     return (
       <div
-        className={cn(
-          `cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center`,
-          className
-        )}
+        className={cn(className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...props}
@@ -155,6 +152,6 @@ const LanguagesIcon = forwardRef<LanguagesIconHandle, LanguagesIconProps>(
   }
 );
 
-LanguagesIcon.displayName = "LanguagesIcon";
+LanguagesIcon.displayName = 'LanguagesIcon';
 
 export { LanguagesIcon };

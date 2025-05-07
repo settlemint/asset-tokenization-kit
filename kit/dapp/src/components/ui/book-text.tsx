@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { motion, useAnimation } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface BookTextIconHandle {
   startAnimation: () => void;
@@ -23,15 +23,15 @@ const BookTextIcon = forwardRef<BookTextIconHandle, BookTextIconProps>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
+        startAnimation: () => controls.start('animate'),
+        stopAnimation: () => controls.start('normal'),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("animate");
+          controls.start('animate');
         } else {
           onMouseEnter?.(e);
         }
@@ -42,7 +42,7 @@ const BookTextIcon = forwardRef<BookTextIconHandle, BookTextIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("normal");
+          controls.start('normal');
         } else {
           onMouseLeave?.(e);
         }
@@ -52,10 +52,7 @@ const BookTextIcon = forwardRef<BookTextIconHandle, BookTextIconProps>(
 
     return (
       <div
-        className={cn(
-          `cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center`,
-          className
-        )}
+        className={cn(className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...props}
@@ -69,7 +66,7 @@ const BookTextIcon = forwardRef<BookTextIconHandle, BookTextIconProps>(
               y: [0, -2, 0],
               transition: {
                 duration: 0.6,
-                ease: "easeInOut",
+                ease: 'easeInOut',
                 times: [0, 0.2, 0.5, 0.8, 1],
               },
             },
@@ -98,6 +95,6 @@ const BookTextIcon = forwardRef<BookTextIconHandle, BookTextIconProps>(
   }
 );
 
-BookTextIcon.displayName = "BookTextIcon";
+BookTextIcon.displayName = 'BookTextIcon';
 
 export { BookTextIcon };

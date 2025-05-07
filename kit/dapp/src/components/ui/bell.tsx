@@ -1,14 +1,18 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import type { Variants } from 'motion/react';
+import { motion, useAnimation } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface BellIconHandle {
   startAnimation: () => void;
   stopAnimation: () => void;
+}
+
+interface BellIconProps extends HTMLAttributes<HTMLDivElement> {
+  size?: number;
 }
 
 const svgVariants: Variants = {
@@ -16,8 +20,8 @@ const svgVariants: Variants = {
   animate: { rotate: [0, -10, 10, -10, 0] },
 };
 
-const BellIcon = forwardRef<BellIconHandle, HTMLAttributes<HTMLDivElement>>(
-  ({ onMouseEnter, onMouseLeave, className, ...props }, ref) => {
+const BellIcon = forwardRef<BellIconHandle, BellIconProps>(
+  ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -25,15 +29,15 @@ const BellIcon = forwardRef<BellIconHandle, HTMLAttributes<HTMLDivElement>>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
+        startAnimation: () => controls.start('animate'),
+        stopAnimation: () => controls.start('normal'),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("animate");
+          controls.start('animate');
         } else {
           onMouseEnter?.(e);
         }
@@ -44,7 +48,7 @@ const BellIcon = forwardRef<BellIconHandle, HTMLAttributes<HTMLDivElement>>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("normal");
+          controls.start('normal');
         } else {
           onMouseLeave?.(e);
         }
@@ -53,18 +57,15 @@ const BellIcon = forwardRef<BellIconHandle, HTMLAttributes<HTMLDivElement>>(
     );
     return (
       <div
-        className={cn(
-          "cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center",
-          className
-        )}
+        className={cn(className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...props}
       >
         <motion.svg
           xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
+          width={size}
+          height={size}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -75,7 +76,7 @@ const BellIcon = forwardRef<BellIconHandle, HTMLAttributes<HTMLDivElement>>(
           animate={controls}
           transition={{
             duration: 0.5,
-            ease: "easeInOut",
+            ease: 'easeInOut',
           }}
         >
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
@@ -86,6 +87,6 @@ const BellIcon = forwardRef<BellIconHandle, HTMLAttributes<HTMLDivElement>>(
   }
 );
 
-BellIcon.displayName = "BellIcon";
+BellIcon.displayName = 'BellIcon';
 
 export { BellIcon };

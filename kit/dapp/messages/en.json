@@ -218,13 +218,15 @@
       "asset-designer": "Asset Designer",
       "asset-management": {
         "actions": "Actions",
-        "asset-activity": "Asset activity",
+        "asset-activity": "Activity",
         "bonds": "Bonds",
         "cryptocurrencies": "Cryptocurrencies",
+        "custody-group-title": "Custody",
         "dashboard": "Dashboard",
         "equities": "Equities",
         "funds": "Funds",
         "group-title": "Asset management",
+        "multisig-vaults": "Vaults",
         "stablecoins": "Stablecoins",
         "tokenized-deposits": "Deposits",
         "view-all": "View all"
@@ -236,6 +238,10 @@
         "fund": "Fund",
         "stablecoin": "Stablecoin",
         "tokenized-deposit": "Deposits"
+      },
+      "custody-management": {
+        "group-title": "Custody",
+        "multisig-vaults": "Vaults"
       },
       "platform-management": {
         "api": "API",
@@ -808,34 +814,6 @@
     "changelog-link-title": "Introducing the SMART protocol",
     "cryptocurrencies": "cryptocurrencies",
     "documentation": "Documentation",
-    "pricing": {
-      "title": "Pricing that scales with you",
-      "starter": {
-        "title": "Starter",
-        "price": "€ 4.760 / mo",
-        "description": "Per month for non-production usecases",
-        "feature1": "Complete access to the SettleMint platform",
-        "feature2": "All tokenization features",
-        "feature3": "Single validator network",
-        "feature4": "Unlimited assets",
-        "feature5": "Unlimited users",
-        "feature6": "Unlimited volume",
-        "feature7": "Access to the SettleMint support",
-        "cta": "Get Started"
-      },
-      "enterprise": {
-        "badge": "Production ready",
-        "title": "Enterprise",
-        "price": "€ 19.988 / mo",
-        "description": "Per month for production usecases",
-        "feature1": "Everything in Starter",
-        "feature2": "Byzantine Fault Tolerant network",
-        "feature3": "High Availability",
-        "feature4": "99.99% Uptime SLA",
-        "feature5": "Priority Support",
-        "cta": "Get Started"
-      }
-    },
     "features": {
       "api": {
         "description": "Integrate effortlessly into existing systems with extensive, well-documented APIs.",
@@ -911,6 +889,34 @@
     "hero-subtitle-title": "Unlock your assets by tokenizing on chain",
     "issuer-portal": "Issuer portal",
     "portfolio": "Portfolio",
+    "pricing": {
+      "enterprise": {
+        "badge": "Production ready",
+        "cta": "Get Started",
+        "description": "Per month for production usecases",
+        "feature1": "Everything in Starter",
+        "feature2": "Byzantine Fault Tolerant network",
+        "feature3": "High Availability",
+        "feature4": "99.99% Uptime SLA",
+        "feature5": "Priority Support",
+        "price": "€ 19.988 / mo",
+        "title": "Enterprise"
+      },
+      "starter": {
+        "cta": "Get Started",
+        "description": "Per month for non-production usecases",
+        "feature1": "Complete access to the SettleMint platform",
+        "feature2": "All tokenization features",
+        "feature3": "Single validator network",
+        "feature4": "Unlimited assets",
+        "feature5": "Unlimited users",
+        "feature6": "Unlimited volume",
+        "feature7": "Access to the SettleMint support",
+        "price": "€ 4.760 / mo",
+        "title": "Starter"
+      },
+      "title": "Pricing that scales with you"
+    },
     "stablecoins": "stablecoins",
     "tokenized-deposits": "deposits"
   },

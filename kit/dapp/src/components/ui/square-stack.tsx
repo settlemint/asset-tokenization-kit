@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import type { Variants } from 'motion/react';
+import { motion, useAnimation } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface SquareStackIconHandle {
   startAnimation: () => void;
@@ -15,46 +15,18 @@ interface SquareStackIconProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;
 }
 
-// Animation variants for the bottom square (first in stack)
-const bottomSquareVariants: Variants = {
-  normal: { opacity: 1 },
+const rectVariants: Variants = {
+  normal: { scale: 1 },
   animate: {
-    opacity: [1, 0.3, 1],
-    transition: {
-      duration: 0.8,
-      repeat: Infinity,
-      repeatType: "reverse",
-      ease: "easeInOut",
-    },
+    scale: [1, 0.8, 1],
+    transition: { duration: 0.4 },
   },
 };
 
-// Animation variants for the middle square
-const middleSquareVariants: Variants = {
-  normal: { opacity: 1 },
+const pathVariants: Variants = {
+  normal: { scale: 1 },
   animate: {
-    opacity: [0.3, 1, 0.3],
-    transition: {
-      duration: 0.8,
-      repeat: Infinity,
-      repeatType: "reverse",
-      ease: "easeInOut",
-    },
-  },
-};
-
-// Animation variants for the top square (last in stack)
-const topSquareVariants: Variants = {
-  normal: { opacity: 1 },
-  animate: {
-    opacity: [0.3, 1, 0.3],
-    transition: {
-      duration: 0.8,
-      repeat: Infinity,
-      repeatType: "reverse",
-      ease: "easeInOut",
-      delay: 0.4, // Offset the animation to create alternating effect
-    },
+    scale: [1, 0.9, 1],
   },
 };
 
@@ -67,15 +39,15 @@ const SquareStackIcon = forwardRef<SquareStackIconHandle, SquareStackIconProps>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
+        startAnimation: () => controls.start('animate'),
+        stopAnimation: () => controls.start('normal'),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("animate");
+          controls.start('animate');
         } else {
           onMouseEnter?.(e);
         }
@@ -86,7 +58,7 @@ const SquareStackIcon = forwardRef<SquareStackIconHandle, SquareStackIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("normal");
+          controls.start('normal');
         } else {
           onMouseLeave?.(e);
         }
@@ -96,10 +68,7 @@ const SquareStackIcon = forwardRef<SquareStackIconHandle, SquareStackIconProps>(
 
     return (
       <div
-        className={cn(
-          `cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center`,
-          className
-        )}
+        className={cn(className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...props}
@@ -115,21 +84,26 @@ const SquareStackIcon = forwardRef<SquareStackIconHandle, SquareStackIconProps>(
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          {/* Bottom square */}
           <motion.path
-            variants={bottomSquareVariants}
+            variants={pathVariants}
             animate={controls}
+            transition={{
+              delay: 0.3,
+              duration: 0.4,
+            }}
             d="M4 10c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2"
           />
-          {/* Middle square */}
           <motion.path
             d="M10 16c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2"
-            variants={middleSquareVariants}
+            variants={pathVariants}
             animate={controls}
+            transition={{
+              delay: 0.2,
+              duration: 0.2,
+            }}
           />
-          {/* Top square (main square) */}
           <motion.rect
-            variants={topSquareVariants}
+            variants={rectVariants}
             width="8"
             height="8"
             x="14"
@@ -143,6 +117,6 @@ const SquareStackIcon = forwardRef<SquareStackIconHandle, SquareStackIconProps>(
   }
 );
 
-SquareStackIcon.displayName = "SquareStackIcon";
+SquareStackIcon.displayName = 'SquareStackIcon';
 
 export { SquareStackIcon };

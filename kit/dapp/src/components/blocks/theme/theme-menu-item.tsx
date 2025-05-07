@@ -1,14 +1,8 @@
 "use client";
 
-import {
-  MoonIcon,
-  type MoonIconHandle,
-} from "@/components/ui/animated-icons/moon";
-import {
-  SunIcon,
-  type SunIconHandle,
-} from "@/components/ui/animated-icons/sun";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { MoonIcon, type MoonIconHandle } from "@/components/ui/moon";
+import { SunIcon, type SunIconHandle } from "@/components/ui/sun";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useRef } from "react";

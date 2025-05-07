@@ -1,6 +1,5 @@
 "use client";
 
-import { ChartPieIcon } from "@/components/ui/animated-icons/chart-pie";
 import {
   Card,
   CardContent,
@@ -17,6 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { ChartPieIcon } from "@/components/ui/chart-pie";
 import type { ReactNode } from "react";
 import { Cell, Pie, PieChart } from "recharts";
 import { ChartSkeleton } from "./chart-skeleton";

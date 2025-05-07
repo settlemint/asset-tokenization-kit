@@ -1,39 +1,42 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import type { Variants } from 'motion/react';
+import { motion, useAnimation } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
-export interface CheckIconHandle {
+export interface UsersIconHandle {
   startAnimation: () => void;
   stopAnimation: () => void;
 }
 
+interface UsersIconProps extends HTMLAttributes<HTMLDivElement> {
+  size?: number;
+}
+
 const pathVariants: Variants = {
   normal: {
-    opacity: 1,
-    pathLength: 1,
-    scale: 1,
+    translateX: 0,
     transition: {
-      duration: 0.3,
-      opacity: { duration: 0.1 },
+      type: 'spring',
+      stiffness: 200,
+      damping: 13,
     },
   },
   animate: {
-    opacity: [0, 1],
-    pathLength: [0, 1],
-    scale: [0.5, 1],
+    translateX: [-6, 0],
     transition: {
-      duration: 0.4,
-      opacity: { duration: 0.1 },
+      delay: 0.1,
+      type: 'spring',
+      stiffness: 200,
+      damping: 13,
     },
   },
 };
 
-const CheckIcon = forwardRef<CheckIconHandle, HTMLAttributes<HTMLDivElement>>(
-  ({ onMouseEnter, onMouseLeave, className, ...props }, ref) => {
+const UsersIcon = forwardRef<UsersIconHandle, UsersIconProps>(
+  ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -41,15 +44,15 @@ const CheckIcon = forwardRef<CheckIconHandle, HTMLAttributes<HTMLDivElement>>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
+        startAnimation: () => controls.start('animate'),
+        stopAnimation: () => controls.start('normal'),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("animate");
+          controls.start('animate');
         } else {
           onMouseEnter?.(e);
         }
@@ -60,7 +63,7 @@ const CheckIcon = forwardRef<CheckIconHandle, HTMLAttributes<HTMLDivElement>>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("normal");
+          controls.start('normal');
         } else {
           onMouseLeave?.(e);
         }
@@ -70,18 +73,15 @@ const CheckIcon = forwardRef<CheckIconHandle, HTMLAttributes<HTMLDivElement>>(
 
     return (
       <div
-        className={cn(
-          "cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center",
-          className
-        )}
+        className={cn(className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...props}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
+          width={size}
+          height={size}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -89,11 +89,17 @@ const CheckIcon = forwardRef<CheckIconHandle, HTMLAttributes<HTMLDivElement>>(
           strokeLinecap="round"
           strokeLinejoin="round"
         >
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
           <motion.path
+            d="M22 21v-2a4 4 0 0 0-3-3.87"
             variants={pathVariants}
-            initial="normal"
             animate={controls}
-            d="M4 12 9 17L20 6"
+          />
+          <motion.path
+            d="M16 3.13a4 4 0 0 1 0 7.75"
+            variants={pathVariants}
+            animate={controls}
           />
         </svg>
       </div>
@@ -101,6 +107,6 @@ const CheckIcon = forwardRef<CheckIconHandle, HTMLAttributes<HTMLDivElement>>(
   }
 );
 
-CheckIcon.displayName = "CheckIcon";
+UsersIcon.displayName = 'UsersIcon';
 
-export { CheckIcon };
+export { UsersIcon };
