@@ -5,7 +5,7 @@ import type { User } from "@/lib/queries/user/user-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { UserRole } from "@/lib/utils/typebox/user-roles";
 import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import MiniProgressBar from "./components/mini-progress-bar";
 import { StepContent } from "./step-wizard/step-content";
 import type { Step } from "./step-wizard/step-wizard";
@@ -17,14 +17,6 @@ import {
   type AssetFormDefinition,
 } from "./types";
 import { getAssetDescription } from "./utils";
-
-// Navigation types to help track intended navigation direction
-type NavigationType =
-  | "INITIAL"
-  | "ASSET_TYPE_SELECTED"
-  | "NEXT_STEP"
-  | "PREVIOUS_STEP"
-  | "DIRECT_NAVIGATION";
 
 interface AssetDesignerDialogProps {
   open: boolean;
@@ -45,13 +37,6 @@ export function AssetDesignerDialog({
   const [formComponent, setFormComponent] =
     useState<React.ComponentType<any> | null>(null);
 
-  // Track the last navigation action to help resolve race conditions
-  const [navigationType, setNavigationType] =
-    useState<NavigationType>("INITIAL");
-
-  // Skip automatic navigation when going back to type selection
-  const skipNextTypeNavigation = useRef(false);
-
   // Placeholder user for development
   const placeholderUser: User = {
     id: "1",
@@ -70,6 +55,15 @@ export function AssetDesignerDialog({
     updated_at: undefined,
   };
 
+  // Create a unified representation of all steps
+  const allSteps: Step[] = [
+    typeSelectionStep,
+    ...(assetForm?.steps || []),
+  ].filter((step) => step.id === "type" || selectedAssetType !== null);
+
+  // Derive stepsOrder from allSteps for navigation
+  const stepsOrder = allSteps.map((step) => step.id);
+
   // Load asset form definition and form component when type changes
   useEffect(() => {
     if (!selectedAssetType) {
@@ -79,10 +73,16 @@ export function AssetDesignerDialog({
     }
 
     setLoading(true);
+
     // Load the form definition
     assetForms[selectedAssetType]()
       .then((module) => {
         setAssetForm(module.default);
+
+        // Auto-navigate to first step of the loaded form
+        if (module.default.steps.length > 0 && currentStepId === "type") {
+          setCurrentStepId(module.default.steps[0].id);
+        }
 
         // For bond type, also load the CreateBondForm component
         if (selectedAssetType === "bond") {
@@ -98,115 +98,44 @@ export function AssetDesignerDialog({
         console.error("Failed to load asset form:", error);
         setLoading(false);
       });
-  }, [selectedAssetType]);
-
-  // Handle navigation based on form loading and navigation type
-  useEffect(() => {
-    // Skip navigation if we just went back to type selection
-    if (skipNextTypeNavigation.current && currentStepId === "type") {
-      skipNextTypeNavigation.current = false;
-      return;
-    }
-
-    // Auto-navigate to first step when asset type is selected
-    if (
-      navigationType === "ASSET_TYPE_SELECTED" &&
-      assetForm &&
-      currentStepId === "type"
-    ) {
-      if (assetForm.steps.length > 0) {
-        setCurrentStepId(assetForm.steps[0].id);
-        setNavigationType("DIRECT_NAVIGATION");
-      }
-    }
-  }, [assetForm, currentStepId, navigationType]);
-
-  // Combine the type selection step with asset-specific steps
-  const stepsOrder = [
-    "type",
-    ...(assetForm?.steps.map((step) => step.id) || []),
-  ];
-
-  // Convert our steps to the format expected by StepWizard
-  const wizardSteps: Step[] = [
-    typeSelectionStep,
-    ...(assetForm?.steps || []),
-  ].filter((step) => step.id === "type" || selectedAssetType !== null);
-
-  // Helper function to get the next step ID
-  const getNextStepId = (currentId: string): string | null => {
-    const currentIndex = stepsOrder.indexOf(currentId);
-    if (currentIndex >= 0 && currentIndex < stepsOrder.length - 1) {
-      return stepsOrder[currentIndex + 1];
-    }
-    return null;
-  };
-
-  // Helper function to get the previous step ID
-  const getPreviousStepId = (currentId: string): string | null => {
-    const currentIndex = stepsOrder.indexOf(currentId);
-    if (currentIndex > 0) {
-      return stepsOrder[currentIndex - 1];
-    }
-    return null;
-  };
+  }, [selectedAssetType, currentStepId]);
 
   // Handler for asset type selection
   const handleAssetTypeSelect = (type: AssetType) => {
     if (type !== selectedAssetType) {
       setSelectedAssetType(type);
-      setNavigationType("ASSET_TYPE_SELECTED");
     }
   };
 
-  // Handler for step change
+  // Navigation helpers
   const handleStepChange = (stepId: string) => {
-    // Always allow navigating to the type selection step
-    if (stepId === "type") {
-      setCurrentStepId(stepId);
-      setNavigationType("DIRECT_NAVIGATION");
-      return;
+    // If navigating to type selection, reset asset type
+    if (stepId === "type" && currentStepId !== "type") {
+      setSelectedAssetType(null);
     }
-
-    // Only allow navigating to other steps if an asset type is selected
-    if (selectedAssetType !== null) {
-      setCurrentStepId(stepId);
-      setNavigationType("DIRECT_NAVIGATION");
-    }
+    setCurrentStepId(stepId);
   };
 
-  // Handler for next step
   const handleNextStep = () => {
-    const nextStepId = getNextStepId(currentStepId);
-    if (nextStepId) {
-      setCurrentStepId(nextStepId);
-      setNavigationType("NEXT_STEP");
+    const currentIndex = stepsOrder.indexOf(currentStepId);
+    if (currentIndex >= 0 && currentIndex < stepsOrder.length - 1) {
+      setCurrentStepId(stepsOrder[currentIndex + 1]);
     }
   };
 
-  // Handler for previous step
   const handlePreviousStep = () => {
-    // If we're at the first step of an asset form, go back to type selection
-    if (
-      assetForm &&
-      assetForm.steps.length > 0 &&
-      assetForm.steps[0].id === currentStepId
-    ) {
-      // Set a flag to skip the auto-navigation in the useEffect
-      skipNextTypeNavigation.current = true;
+    const currentIndex = stepsOrder.indexOf(currentStepId);
 
-      // Reset to initial state when going back to type selection
+    // If we're at the first step of an asset form, go back to type selection
+    if (currentIndex === 1) {
       setCurrentStepId("type");
-      setSelectedAssetType(null); // Clear the selected asset type
-      setNavigationType("PREVIOUS_STEP");
+      setSelectedAssetType(null);
       return;
     }
 
-    // Otherwise, go to the previous step
-    const previousStepId = getPreviousStepId(currentStepId);
-    if (previousStepId) {
-      setCurrentStepId(previousStepId);
-      setNavigationType("PREVIOUS_STEP");
+    // Otherwise go to the previous step
+    if (currentIndex > 0) {
+      setCurrentStepId(stepsOrder[currentIndex - 1]);
     }
   };
 
@@ -224,9 +153,9 @@ export function AssetDesignerDialog({
   // Get current step index for the progress bar
   const currentStepIndex = stepsOrder.indexOf(currentStepId);
 
-  // Render step content
+  // Simplified step content rendering
   const renderStepContent = () => {
-    // Type selection step is handled directly
+    // Type selection step
     if (currentStepId === "type") {
       return (
         <StepContent showNextButton={false} showBackButton={false}>
@@ -238,10 +167,9 @@ export function AssetDesignerDialog({
       );
     }
 
-    // For asset-specific steps, render the form component
-    if (assetForm && formComponent) {
+    // Form steps with component
+    if (formComponent) {
       const FormComponent = formComponent;
-
       return (
         <StepContent
           showNextButton={currentStepId !== "review"}
@@ -257,18 +185,23 @@ export function AssetDesignerDialog({
       );
     }
 
-    // Loading or fallback
-    return loading ? (
-      <StepContent
-        showNextButton={false}
-        showBackButton={true}
-        onBack={handlePreviousStep}
-      >
-        <div className="flex justify-center items-center min-h-[300px]">
-          Loading...
-        </div>
-      </StepContent>
-    ) : (
+    // Loading state
+    if (loading) {
+      return (
+        <StepContent
+          showNextButton={false}
+          showBackButton={true}
+          onBack={handlePreviousStep}
+        >
+          <div className="flex justify-center items-center min-h-[300px]">
+            Loading...
+          </div>
+        </StepContent>
+      );
+    }
+
+    // Fallback for future steps
+    return (
       <StepContent
         showNextButton={false}
         showBackButton={true}
@@ -292,7 +225,7 @@ export function AssetDesignerDialog({
         <div className="relative">
           <DialogTitle className="sr-only">Asset Designer</DialogTitle>
           <StepWizard
-            steps={wizardSteps}
+            steps={allSteps}
             currentStepId={currentStepId}
             title="Create Digital Asset"
             description={getAssetDescription(selectedAssetType)}
