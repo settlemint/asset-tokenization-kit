@@ -24,7 +24,6 @@ error InvalidSMARTTrustedIssuersRegistryAddress();
 error CoreDependenciesNotRegistered();
 error InvalidModuleAddress();
 error ModuleAlreadyRegistered();
-// NotDeploymentOwner removed, AccessControl handles unauthorized access
 
 /**
  * @title SMARTDeploymentRegistry
