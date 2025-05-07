@@ -247,12 +247,19 @@ files:
     components.active-pill.paused: e99180abf47a8b3a856e0bcb2656990a
     components.address-avatar.avatar: 32036005d1f6ed59803ba3e13c80993e
     components.asset-events-table.asset: 26e9054be7f40079575582b7ad3f7363
+    components.asset-events-table.detail-sheet.AUDITOR_ROLE: cc790ee546ee60d2cabbcf26244aea37
+    components.asset-events-table.detail-sheet.DEFAULT_ADMIN_ROLE: 9d2e4f9c4d1644eb7d5e25408a8b0523
+    components.asset-events-table.detail-sheet.SIGNER_ROLE: aa600fdb53b3a438fdfcdbb9c269032d
+    components.asset-events-table.detail-sheet.SUPPLY_MANAGEMENT_ROLE: 1472f2da8e5c038e259d573d6be2d1d2
+    components.asset-events-table.detail-sheet.USER_MANAGEMENT_ROLE: 59a95d9229f376d6468af48408c7413b
     components.asset-events-table.detail-sheet.asset: 26e9054be7f40079575582b7ad3f7363
     components.asset-events-table.detail-sheet.asset-type: a929f2ae00fe5ccc912c986064cc7f95
     components.asset-events-table.detail-sheet.date: 44749712dbec183e983dcd78a7736c41
     components.asset-events-table.detail-sheet.details: 5c94a66b78fcfd4484f237769108cc12
     components.asset-events-table.detail-sheet.details-button: 3ec365dd533ddb7ef3d1c111186ce872
     components.asset-events-table.detail-sheet.details-for-event: 3fa5319884c97c84f64cf07ca94a467e
+    components.asset-events-table.detail-sheet.event-details: 12ea1a38991aa3bc4992b10adac0f3bc
+    components.asset-events-table.detail-sheet.event-parameters: 03c4b9547188d8fa859a76e0616b05b4
     components.asset-events-table.detail-sheet.sender: 8aace3ec18d83874d22850b7eee93c7d
     components.asset-events-table.detail-sheet.transaction-hash: a0bd1db035c6e85fbe6f3cbbf3ff28ee
     components.asset-events-table.details.account: 08bd40c7543007ad06e4fce31618f6ec
@@ -583,15 +590,38 @@ files:
     error-pages.not-found.title: d0fbda9855d118740f1105334305c126
     homepage.asset-tokenization: 09572338ab9b55d3fd3e8327f643961a
     homepage.bonds-funds-equities: d78c37b03915c31ee5c79d6353cc2ce1
+    homepage.changelog-link-title: 6e602cb40b2be6cded6dbf0b5231d812
     homepage.cryptocurrencies: 82d545659cf7ab6dd908094739a64fda
     homepage.documentation: 5b6cf869265c13af8566f192b4ab3d2a
+    homepage.pricing.title: 5ed8f3244c599892bef1a67c28802174
+    homepage.pricing.starter.title: ee6085db6c9b85f45fd9b9b31b020f8d
+    homepage.pricing.starter.price: 8888d6fafad7ad5cda87cf962502f868
+    homepage.pricing.starter.description: e5f80bc4824f4dd7c3e26cfe8b1a770f
+    homepage.pricing.starter.feature1: 30d226d8c7d0e32f5dde916944873a48
+    homepage.pricing.starter.feature2: 5707b1eed51241655a373a44d7785b15
+    homepage.pricing.starter.feature3: 6fd00f2b31de932643b9544df3d07c7f
+    homepage.pricing.starter.feature4: 063ad9eae30e31a66c6a8fbc4e5ebcdc
+    homepage.pricing.starter.feature5: 2c5099873648870a904c9f359fb76499
+    homepage.pricing.starter.feature6: 0844b3249b315b6ba080311451a28812
+    homepage.pricing.starter.feature7: 6532b350bd1da9bd3123a48a4932a1ef
+    homepage.pricing.starter.cta: e0c4332e8c13be976552a059f106354f
+    homepage.pricing.enterprise.badge: a25403b5f92e4dda5055ab0f1770ff78
+    homepage.pricing.enterprise.title: a0f27638260642afb474516cc918407e
+    homepage.pricing.enterprise.price: 0302718ada3ce0cd8758ccda150919e7
+    homepage.pricing.enterprise.description: f1d7cfb62dea143bb78d943a31d1d71b
+    homepage.pricing.enterprise.feature1: f6030faf74e033fed42f1dc48bc77836
+    homepage.pricing.enterprise.feature2: 351024dce2802d7acfdb109f276ef3b1
+    homepage.pricing.enterprise.feature3: 520b661a272c9e6f55f469cc9c24193d
+    homepage.pricing.enterprise.feature4: a50952aff0f5beb072cb2c58507bf765
+    homepage.pricing.enterprise.feature5: 1e14432cb6eb0bc6ae0cf7d6119bec97
+    homepage.pricing.enterprise.cta: e0c4332e8c13be976552a059f106354f
     homepage.features.api.description: a75d50523f20dcd21803714f0dfb721a
     homepage.features.api.title: 3ddc12cb87c6f55d885617caa141f225
-    homepage.features.asset-lifecycle.description: 124989eaf22eef36b50d6cca00be5419
+    homepage.features.asset-lifecycle.description: 25f63855b5fa8ad93e0575c4cea8b096
     homepage.features.asset-lifecycle.title: 23472b6f6343bbf45b9a2f7161feff0e
     homepage.features.compliance.description: 653e66e7cb6a455a81bc95d72e82db4b
-    homepage.features.compliance.title: 093daef9ca66bee6418f918d711c4f3f
-    homepage.features.customizable.description: 76f23cb3ba610717b6ad1a29ffb5b861
+    homepage.features.compliance.title: 9719eafec6b34b5a78e4cc4e5172e778
+    homepage.features.customizable.description: 176ccf1c8b4273511e6fc26b0b6c5a4a
     homepage.features.customizable.title: 238aeeb01f9ccf664aeaf390d9f4e362
     homepage.features.description: 79a0079eb8ef2bd2133c7098fab5ba1f
     homepage.features.insights.description: d16c71d646c0c3d79bce93bfcdeafe5b
@@ -602,27 +632,30 @@ files:
     homepage.features.purpose-built.title: 306109df86fda630171c44dda9dc8473
     homepage.features.time-to-market.description: f7ff2526328bcd910b07dbb389da81a7
     homepage.features.time-to-market.title: 983d405304431b3217cbb533f5f69677
-    homepage.features.title: 7e3bd09b84432e6f98f35d49a79542a5
+    homepage.features.title: 88af83aeeabe6a86766f8d3f514e0fad
     homepage.footer.company-description: d68cd934b10b68e5cd305fb67854a1bb
     homepage.footer.legal.cookie-policy: 26b3bb7bcea37723dcea15254b14510f
     homepage.footer.legal.copyright: fccaef8801e055f0ae6424da19f6fc56
     homepage.footer.legal.privacy-policy: fa2ead697d9998cbc65c81384e6533d5
     homepage.footer.legal.terms-of-service: 3b6c2b4caaf4f14f8d7feeddc4ac3f4d
+    homepage.footer.legal.title: a10a9bcd450087de1ce1f80b35f44883
     homepage.footer.sections.company.about: 8f7f4c1ce7a4f933663d10543562b096
     homepage.footer.sections.company.blog: be8df1f28c0abc85a0ed0c6860e5d832
     homepage.footer.sections.company.contact: bbaff12800505b22a853e8b7f4eb6a22
-    homepage.footer.sections.company.title: 0f025176fb8b953690ad8f20f119ed75
-    homepage.footer.sections.config.title: ed6f7aca7887a927b9ed3d62aa347a86
+    homepage.footer.sections.company.title: 1c76cbfe21c6f44c1d1e59d54f3e4420
+    homepage.footer.sections.config.title: f4f70727dc34561dfde1a3c529b6205c
     homepage.footer.sections.platform.console: bccaa4aa80831b76c11240a16447975f
     homepage.footer.sections.platform.mcp: 2b45ec473e7682f65e46602407006cf1
     homepage.footer.sections.platform.sdk-cli: 3a6f15020fd4c9fa41f323c9e2036a4b
-    homepage.footer.sections.platform.title: 8b55a44b49368262df89fd0e17b1a181
+    homepage.footer.sections.platform.title: 419f3742e6de8e0ec4b22cce005e7630
     homepage.footer.sections.resources.documentation: 5b6cf869265c13af8566f192b4ab3d2a
     homepage.footer.sections.resources.partners: fd6df34ee4e7642c02ced6012028f6b8
-    homepage.footer.sections.resources.title: 85132af6b5f14319cb4c91ec6ddffe43
+    homepage.footer.sections.resources.title: ddcf50c29294d4414f3f7c1bbc892cb5
     homepage.footer.sections.resources.usecases: 5cb617d22da857ea5d75209d6b70acb4
     homepage.hero-description: cde0d1ff8d85c4ceda6c41e0e764c594
     homepage.hero-subtitle-regular: a024841c4d9a6a7cd34ccaac7df2b740
+    homepage.hero-subtitle-subtitle: 215a545620dd0c43ba87f3f9d7faefcc
+    homepage.hero-subtitle-title: 0e63cc4d746587cb024ccdb9e66060b2
     homepage.issuer-portal: 05e93ee934950bba9b453434d9ad6ff3
     homepage.portfolio: d4f859a96c13f551a2771b7fc3a78d38
     homepage.stablecoins: 27b561ff856fac592429735b2472f4e3

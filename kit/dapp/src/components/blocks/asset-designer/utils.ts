@@ -84,9 +84,6 @@ export function getAssetDescription(assetType: AssetType): string {
 
 // Check if the basic information form is valid
 export function isBasicInfoValid(form: UseFormReturn<any>): boolean {
-  // Mark all fields as touched to force validation
-  form.trigger();
-
   // Get form state
   const { errors } = form.formState;
 
@@ -109,9 +106,6 @@ export function isConfigurationValid(
   form: UseFormReturn<any>,
   assetType: AssetType
 ): boolean {
-  // Mark all fields as touched to force validation
-  form.trigger();
-
   // Get form values and check specific required fields for configuration
   const formValues = form.getValues();
   let requiredFieldsValid = false;

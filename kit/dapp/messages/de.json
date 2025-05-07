@@ -291,7 +291,14 @@
         "details-for-event": "Details für das {event} Ereignis",
         "sender": "Absender",
         "transaction-hash": "Transaktions-Hash",
-        "details": "Ereignisdetails"
+        "details": "Ereignisdetails",
+        "USER_MANAGEMENT_ROLE": "Benutzerverwaltungsrolle",
+        "SUPPLY_MANAGEMENT_ROLE": "Liefermanagementrolle",
+        "AUDITOR_ROLE": "Prüferrolle",
+        "SIGNER_ROLE": "Unterzeichnerrolle",
+        "DEFAULT_ADMIN_ROLE": "Standard-Admin-Rolle",
+        "event-details": "Ereignisdetails",
+        "event-parameters": "Ereignisparameter"
       },
       "details": {
         "account": "Konto",
@@ -2580,15 +2587,15 @@
         "title": "Vollständige API-Abdeckung"
       },
       "asset-lifecycle": {
-        "description": "Verwalten Sie den gesamten Lebenszyklus von Vermögenswerten nahtlos – von der Emission und Verwaltung bis zur Abwicklung und darüber hinaus.",
+        "description": "Verwalten Sie den gesamten Lebenszyklus von Vermögenswerten nahtlos, von der Ausgabe und Verwaltung bis zur Abwicklung und darüber hinaus.",
         "title": "Vollständiger Vermögenswertlebenszyklus"
       },
       "compliance": {
         "description": "Navigieren Sie mühelos durch regulatorische Rahmenbedingungen, einschließlich vollständiger Einhaltung der MiCA-Anforderungen.",
-        "title": "Umfassende Compliance"
+        "title": "Compliance durch Design"
       },
       "customizable": {
-        "description": "Passen Sie jeden Aspekt der Plattform perfekt an die einzigartigen Bedürfnisse und Arbeitsabläufe Ihrer Institution an.",
+        "description": "Passen Sie jeden Aspekt der Plattform an die Bedürfnisse und Arbeitsabläufe Ihrer Institution an.",
         "title": "100 % anpassbar"
       },
       "description": "Das SettleMint Asset Tokenization Kit ist eine Full-Stack-Lösung, die entwickelt wurde, um die Entwicklung digitaler Vermögenswertplattformen zu beschleunigen.",
@@ -2608,7 +2615,7 @@
         "description": "Beschleunigen Sie Ihre Bereitstellung und erreichen Sie schneller als jede andere Lösung einen schnellen Markteintritt.",
         "title": "Kürzeste Markteinführungszeit"
       },
-      "title": "Vollständiges Funktionsset"
+      "title": "Ein One-Stop-Shop für all Ihre Tokenisierungsbedürfnisse"
     },
     "footer": {
       "company-description": "Verändert, wie die Welt tokenisierte Vermögenswerte auf Blockchain erstellt, verwaltet und handelt.",
@@ -2616,28 +2623,29 @@
         "cookie-policy": "Cookie-Richtlinie",
         "copyright": "© {year} SettleMint. Funktionale Quelllizenz, Version 1.1, MIT Future License.",
         "privacy-policy": "Datenschutzrichtlinie",
-        "terms-of-service": "Nutzungsbedingungen"
+        "terms-of-service": "Nutzungsbedingungen",
+        "title": "Rechtlich"
       },
       "sections": {
         "company": {
           "about": "Über",
           "blog": "Blog",
           "contact": "Kontakt",
-          "title": "UNTERNEHMEN"
+          "title": "Unternehmen"
         },
         "config": {
-          "title": "EINSTELLUNGEN"
+          "title": "Einstellungen"
         },
         "platform": {
           "console": "Konsole",
           "mcp": "Modellkontextanbieter",
           "sdk-cli": "SDK & CLI",
-          "title": "PLATTFORM"
+          "title": "Plattform"
         },
         "resources": {
           "documentation": "Dokumentation",
           "partners": "Partner",
-          "title": "Ressourcen",
+          "title": "Richten Sie Ihre eigene unternehmensgerechte Tokenisierungsplattform für Vermögenswerte auf öffentlichen, privaten oder Konsortialketten, in der Cloud oder vor Ort ein, die vollständig an Ihre Bedürfnisse anpassbar ist.",
           "usecases": "Anwendungsfälle"
         }
       }
@@ -2647,7 +2655,39 @@
     "issuer-portal": "Emittentenportal",
     "portfolio": "Portfolio",
     "stablecoins": "Stablecoins",
-    "tokenized-deposits": "einzahlungen"
+    "tokenized-deposits": "einzahlungen",
+    "changelog-link-title": "Einführung des SMART-Protokolls",
+    "pricing": {
+      "title": "Preise, die mit Ihnen skalieren",
+      "description": "Gemini entwickelt sich zu mehr als nur den Modellen. Es unterstützt eine gesamte API- und Plattformlandschaft, die Entwicklern und Unternehmen hilft, Innovationen voranzutreiben.",
+      "starter": {
+        "title": "Starter",
+        "price": "€ 4.760 / Monat",
+        "description": "Pro Monat für Nicht-Produktionsanwendungen",
+        "feature1": "Vollständiger Zugriff auf die SettleMint-Plattform",
+        "feature2": "Alle Tokenisierungsfunktionen",
+        "feature3": "Einzelvalidator-Netzwerk",
+        "feature4": "Unbegrenzte Vermögenswerte",
+        "feature5": "Unbegrenzte Benutzer",
+        "feature6": "Unbegrenztes Volumen",
+        "feature7": "Zugang zum SettleMint-Support",
+        "cta": "Loslegen"
+      },
+      "enterprise": {
+        "badge": "Produktionsbereit",
+        "title": "Unternehmen",
+        "price": "€ 19.988 / Monat",
+        "description": "Pro Monat für Produktionsanwendungen",
+        "feature1": "Alles im Starter",
+        "feature2": "Byzantinisch fehlertolerantes Netzwerk",
+        "feature3": "Hohe Verfügbarkeit",
+        "feature4": "99,99% Uptime SLA",
+        "feature5": "Priorisierter Support",
+        "cta": "Loslegen"
+      }
+    },
+    "hero-subtitle-subtitle": "Schalten Sie Ihre Vermögenswerte frei, indem Sie sie on-chain tokenisieren",
+    "hero-subtitle-title": "Entsperren Sie Ihre Vermögenswerte, indem Sie sie on-chain tokenisieren"
   },
   "not-found": {
     "description": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben.",

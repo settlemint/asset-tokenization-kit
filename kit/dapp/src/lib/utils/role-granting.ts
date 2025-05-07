@@ -35,6 +35,7 @@ export async function grantRolesToAdmins(
       SUPPLY_MANAGEMENT_ROLE: admin.roles.includes("issuer"),
       USER_MANAGEMENT_ROLE: admin.roles.includes("user-manager"),
       AUDITOR_ROLE: admin.roles.includes("auditor"),
+      SIGNER_ROLE: admin.roles.includes("signer"),
     };
 
     return grantRoleFunction({
