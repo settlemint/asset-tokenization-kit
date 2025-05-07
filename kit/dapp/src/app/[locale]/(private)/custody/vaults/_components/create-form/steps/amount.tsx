@@ -44,7 +44,7 @@ export function Amount() {
         step={offerAsset?.decimals ? 10 ** -offerAsset.decimals : 1}
         postfix={offerAsset?.symbol}
         max={
-          !isNaN(Number(maxAmountToSend)) ? Number(maxAmountToSend) : undefined
+          isNaN(Number(maxAmountToSend)) ? undefined : Number(maxAmountToSend)
         }
         description={
           !isNaN(Number(maxAmountToSend))
