@@ -776,7 +776,7 @@ type XvPSettlementApproval @entity(immutable: false) {
   xvpSettlement: XvPSettlement!
   account: Account!
   approved: Boolean!
-  timestamp: BigInt!
+  timestamp: BigInt
 }
 
 # --------------------------------------------------
