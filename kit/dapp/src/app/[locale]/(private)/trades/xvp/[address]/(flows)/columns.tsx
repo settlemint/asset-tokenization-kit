@@ -41,7 +41,7 @@ export function columns() {
     columnHelper.accessor("assetPrice", {
       header: t("columns.price"),
       cell: ({ row, getValue }) => {
-        return formatNumber(getValue().amount, {
+        return formatNumber(getValue().amount * Number(row.original.amount), {
           locale,
           currency: row.original.assetPrice.currency,
         });
