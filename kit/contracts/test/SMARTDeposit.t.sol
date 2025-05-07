@@ -10,7 +10,6 @@ import { InvalidDecimals } from "@smartprotocol/contracts/extensions/core/SMARTE
 import { ClaimUtils } from "@smartprotocol/tests/utils/ClaimUtils.sol";
 import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
 import { InsufficientCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateralErrors.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 import { console } from "forge-std/console.sol";

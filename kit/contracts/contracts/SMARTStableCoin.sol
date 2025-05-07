@@ -14,12 +14,11 @@ import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC2
 import { SMARTConstants } from "./SMARTConstants.sol";
 
 // Interface imports
-import { ISMART } from "@smartprotocol/contracts/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+
 // Core extensions
 import { SMART } from "@smartprotocol/contracts/extensions/core/SMART.sol"; // Base SMART logic + ERC20
-import { SMARTExtension } from "@smartprotocol/contracts/extensions/common/SMARTExtension.sol";
 import { SMARTHooks } from "@smartprotocol/contracts/extensions/common/SMARTHooks.sol";
 
 // Feature extensions
@@ -172,7 +171,7 @@ contract SMARTStableCoin is
     }
 
     /// @dev Resolves msgSender across Context and SMARTPausable.
-    function _msgSender() internal view virtual override(Context, ERC2771Context, SMARTPausable) returns (address) {
+    function _msgSender() internal view virtual override(Context, ERC2771Context) returns (address) {
         return ERC2771Context._msgSender();
     }
 
