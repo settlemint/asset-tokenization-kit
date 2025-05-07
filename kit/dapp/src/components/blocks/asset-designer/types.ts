@@ -56,7 +56,7 @@ export const stepsOrder: AssetDesignerStep[] = [
   "details",
   "configuration",
   "permissions",
-  "regulation",
+  // "regulation",
   "summary",
 ];
 
