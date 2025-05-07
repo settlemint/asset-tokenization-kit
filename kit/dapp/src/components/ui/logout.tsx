@@ -1,38 +1,32 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import type { Variants } from 'motion/react';
+import { motion, useAnimation } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
-export interface UsersIconHandle {
+export interface LogoutIconHandle {
   startAnimation: () => void;
   stopAnimation: () => void;
 }
 
+interface LogoutIconProps extends HTMLAttributes<HTMLDivElement> {
+  size?: number;
+}
+
 const pathVariants: Variants = {
-  normal: {
-    translateX: 0,
-    transition: {
-      type: "spring",
-      stiffness: 200,
-      damping: 13,
-    },
-  },
   animate: {
-    translateX: [-6, 0],
+    x: 2,
+    translateX: [0, -3, 0],
     transition: {
-      delay: 0.1,
-      type: "spring",
-      stiffness: 200,
-      damping: 13,
+      duration: 0.4,
     },
   },
 };
 
-const UsersIcon = forwardRef<UsersIconHandle, HTMLAttributes<HTMLDivElement>>(
-  ({ onMouseEnter, onMouseLeave, className, ...props }, ref) => {
+const LogoutIcon = forwardRef<LogoutIconHandle, LogoutIconProps>(
+  ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -40,15 +34,15 @@ const UsersIcon = forwardRef<UsersIconHandle, HTMLAttributes<HTMLDivElement>>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
+        startAnimation: () => controls.start('animate'),
+        stopAnimation: () => controls.start('normal'),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("animate");
+          controls.start('animate');
         } else {
           onMouseEnter?.(e);
         }
@@ -59,7 +53,7 @@ const UsersIcon = forwardRef<UsersIconHandle, HTMLAttributes<HTMLDivElement>>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("normal");
+          controls.start('normal');
         } else {
           onMouseLeave?.(e);
         }
@@ -69,18 +63,15 @@ const UsersIcon = forwardRef<UsersIconHandle, HTMLAttributes<HTMLDivElement>>(
 
     return (
       <div
-        className={cn(
-          "cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center",
-          className
-        )}
+        className={cn(className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...props}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
+          width={size}
+          height={size}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -88,15 +79,17 @@ const UsersIcon = forwardRef<UsersIconHandle, HTMLAttributes<HTMLDivElement>>(
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <motion.path
-            d="M22 21v-2a4 4 0 0 0-3-3.87"
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <motion.polyline
+            points="16 17 21 12 16 7"
             variants={pathVariants}
             animate={controls}
           />
-          <motion.path
-            d="M16 3.13a4 4 0 0 1 0 7.75"
+          <motion.line
+            x1="21"
+            x2="9"
+            y1="12"
+            y2="12"
             variants={pathVariants}
             animate={controls}
           />
@@ -106,6 +99,6 @@ const UsersIcon = forwardRef<UsersIconHandle, HTMLAttributes<HTMLDivElement>>(
   }
 );
 
-UsersIcon.displayName = "UsersIcon";
+LogoutIcon.displayName = 'LogoutIcon';
 
-export { UsersIcon };
+export { LogoutIcon };

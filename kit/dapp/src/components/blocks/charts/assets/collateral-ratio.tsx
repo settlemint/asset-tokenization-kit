@@ -1,7 +1,7 @@
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
-import { ChartPieIcon } from "@/components/ui/animated-icons/chart-pie";
 import type { ChartConfig } from "@/components/ui/chart";
+import { ChartPieIcon } from "@/components/ui/chart-pie";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { getTranslations } from "next-intl/server";

@@ -8,8 +8,8 @@ import {
   type TimeRange,
 } from "@/components/blocks/charts/time-series";
 import { TIME_RANGE_CONFIG } from "@/components/blocks/charts/time-series/index";
-import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
+import { ChartColumnIncreasingIcon } from "@/components/ui/chart-column-increasing";
 import { createTimeSeries } from "@/lib/charts";
 import type { AssetStats } from "@/lib/queries/asset-stats/asset-stats-schema";
 import { cn } from "@/lib/utils";

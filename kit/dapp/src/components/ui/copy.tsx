@@ -1,25 +1,29 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import type { Transition } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import type { Transition } from 'motion/react';
+import { motion, useAnimation } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface CopyIconHandle {
   startAnimation: () => void;
   stopAnimation: () => void;
 }
 
+interface CopyIconProps extends HTMLAttributes<HTMLDivElement> {
+  size?: number;
+}
+
 const defaultTransition: Transition = {
-  type: "spring",
+  type: 'spring',
   stiffness: 160,
   damping: 17,
   mass: 1,
 };
 
-const CopyIcon = forwardRef<CopyIconHandle, HTMLAttributes<HTMLDivElement>>(
-  ({ onMouseEnter, onMouseLeave, className, ...props }, ref) => {
+const CopyIcon = forwardRef<CopyIconHandle, CopyIconProps>(
+  ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -27,15 +31,15 @@ const CopyIcon = forwardRef<CopyIconHandle, HTMLAttributes<HTMLDivElement>>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
+        startAnimation: () => controls.start('animate'),
+        stopAnimation: () => controls.start('normal'),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("animate");
+          controls.start('animate');
         } else {
           onMouseEnter?.(e);
         }
@@ -46,7 +50,7 @@ const CopyIcon = forwardRef<CopyIconHandle, HTMLAttributes<HTMLDivElement>>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("normal");
+          controls.start('normal');
         } else {
           onMouseLeave?.(e);
         }
@@ -55,18 +59,15 @@ const CopyIcon = forwardRef<CopyIconHandle, HTMLAttributes<HTMLDivElement>>(
     );
     return (
       <div
-        className={cn(
-          "cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center",
-          className
-        )}
+        className={cn(className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...props}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
+          width={size}
+          height={size}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -103,6 +104,6 @@ const CopyIcon = forwardRef<CopyIconHandle, HTMLAttributes<HTMLDivElement>>(
   }
 );
 
-CopyIcon.displayName = "CopyIcon";
+CopyIcon.displayName = 'CopyIcon';
 
 export { CopyIcon };
