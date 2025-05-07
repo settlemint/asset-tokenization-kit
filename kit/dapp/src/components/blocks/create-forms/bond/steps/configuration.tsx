@@ -1,39 +1,20 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
+import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Configuration() {
-  const { control, setValue } = useFormContext<CreateBondInput>();
+  const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
-  const posthog = usePostHog();
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-      posthog.capture("create_bond_form_configuration_step_opened");
-    }
-  }, [posthog]);
-
-  // Get default maturity date (current date + 1 day)
-  const [_defaultMaturityDate, setDefaultMaturityDate] = useState<string>("");
-
-  useEffect(() => {
-    // Set default maturity date to tomorrow
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    // Format as YYYY-MM-DDThh:mm
-    const formattedDate = tomorrow.toISOString().slice(0, 16);
-    setDefaultMaturityDate(formattedDate);
-
-    // Set the default value in the form
-    setValue("maturityDate", formattedDate);
-  }, [setValue]);
+  const currencyOptions = fiatCurrencies.map((currency) => ({
+    value: currency,
+    label: currency,
+  }));
 
   return (
     <FormStep
@@ -70,6 +51,21 @@ export function Configuration() {
           label={t("parameters.bonds.underlying-asset-label")}
           description={t("parameters.bonds.underlying-asset-description")}
           required
+        />
+        <FormInput
+          control={control}
+          type="number"
+          name="price.amount"
+          required
+          label={t("parameters.common.price-label")}
+          postfix={
+            <FormSelect
+              name="price.currency"
+              control={control}
+              options={currencyOptions}
+              className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
+            />
+          }
         />
       </div>
     </FormStep>
@@ -108,7 +104,16 @@ Configuration.validatedFields = [
   "cap",
   "faceValue",
   "underlyingAsset",
+  // "price",
 ] satisfies (keyof CreateBondInput)[];
 
 // Using customValidation as TypeBox refinement doesn't work well with @hookform/typebox resolver
 Configuration.customValidation = [validateMaturityDate];
+
+// Export step definition for the asset designer
+export const stepDefinition = {
+  id: "configuration",
+  title: "Bond Configuration",
+  description: "Configure bond-specific properties",
+  component: Configuration,
+};

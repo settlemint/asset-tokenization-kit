@@ -2,29 +2,15 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
 export function Basics() {
   const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
-  const posthog = usePostHog();
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-      posthog.capture("create_bond_form_basics_step_opened");
-    }
-  }, [posthog]);
 
   return (
-    <FormStep
-      title={t("basics.title")}
-      description={t("basics.description")}
-      className="w-full"
-      contentClassName="w-full"
-    >
-      <div className="grid grid-cols-1 gap-6 w-full">
+    <FormStep title={t("basics.title")} description={t("basics.description")}>
+      <div className="grid grid-cols-1 gap-6">
         <FormInput
           control={control}
           name="assetName"
@@ -39,7 +25,7 @@ export function Basics() {
             name="symbol"
             label={t("parameters.common.symbol-label")}
             placeholder={t("parameters.bonds.symbol-placeholder")}
-            alphanumeric
+            textOnly
             required
             maxLength={10}
           />
@@ -69,3 +55,11 @@ Basics.validatedFields = [
   "decimals",
   "isin",
 ] satisfies (keyof CreateBondInput)[];
+
+// Export step definition for the asset designer
+export const stepDefinition = {
+  id: "details",
+  title: "Basic Details",
+  description: "Enter basic information about your bond",
+  component: Basics,
+};

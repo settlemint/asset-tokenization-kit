@@ -84,24 +84,11 @@ export function getAssetDescription(assetType: AssetType): string {
 
 // Check if the basic information form is valid
 export function isBasicInfoValid(form: UseFormReturn<any>): boolean {
-  // Mark all fields as touched to force validation
+  // Trigger validation for basic fields
   form.trigger();
 
-  // Get form state
-  const { errors } = form.formState;
-
-  // For the details step, check specific required fields
-  const formValues = form.getValues();
-  const hasAssetName = !!formValues.assetName;
-  const hasSymbol = !!formValues.symbol;
-  const hasValidDecimals =
-    typeof formValues.decimals === "number" && formValues.decimals > 0;
-
-  // Check if any fields have errors
-  const hasErrors = Object.keys(errors).length > 0;
-
-  // Form is valid only if all required fields have values and there are no errors
-  return hasAssetName && hasSymbol && hasValidDecimals && !hasErrors;
+  // Basic way to check if all fields are valid - schema validation will handle the details
+  return Object.keys(form.formState.errors).length === 0;
 }
 
 // Check if the configuration form is valid
@@ -109,71 +96,46 @@ export function isConfigurationValid(
   form: UseFormReturn<any>,
   assetType: AssetType
 ): boolean {
-  // Mark all fields as touched to force validation
+  // Trigger validation
   form.trigger();
 
-  // Get form values and check specific required fields for configuration
-  const formValues = form.getValues();
-  let requiredFieldsValid = false;
+  // Schema validation will handle which fields are required and valid
+  return Object.keys(form.formState.errors).length === 0;
+}
 
-  // Get errors from form state
-  const formErrors = form.formState.errors;
-  const hasErrors = Object.keys(formErrors).length > 0;
-
-  const hasPrice = !!formValues.price?.amount && !!formValues.price?.currency;
-  const hasCollateralLiveness =
-    !!formValues.collateralLivenessValue &&
-    !!formValues.collateralLivenessTimeUnit;
-
-  // Check asset-specific required fields
+// Helper function to get configuration fields by asset type
+function getConfigurationFields(assetType: AssetType): string[] {
   switch (assetType) {
     case "bond":
-      // Check if required fields are filled
-      const hasCap = !!formValues.cap;
-      const hasFaceValue = !!formValues.faceValue;
-      const hasMaturityDate = !!formValues.maturityDate;
-      const hasUnderlyingAsset = !!formValues.underlyingAsset;
-
-      requiredFieldsValid =
-        hasCap && hasFaceValue && hasMaturityDate && hasUnderlyingAsset;
-      break;
-
+      return ["cap", "faceValue", "maturityDate", "underlyingAsset"];
     case "cryptocurrency":
-      const hasInitialSupply = !!formValues.initialSupply;
-
-      requiredFieldsValid = hasInitialSupply && hasPrice;
-      break;
-
+      return ["initialSupply", "price.amount", "price.currency"];
     case "equity":
-      const hasEquityClass = !!formValues.equityClass;
-      const hasEquityCategory = !!formValues.equityCategory;
-
-      requiredFieldsValid = hasEquityClass && hasEquityCategory && hasPrice;
-      break;
-
+      return [
+        "equityClass",
+        "equityCategory",
+        "price.amount",
+        "price.currency",
+      ];
     case "fund":
-      const hasFundCategory = !!formValues.fundCategory;
-      const hasFundClass = !!formValues.fundClass;
-      const hasManagementFeeBps = !!formValues.managementFeeBps;
-
-      requiredFieldsValid =
-        hasFundCategory && hasFundClass && hasManagementFeeBps && hasPrice;
-      break;
-
+      return [
+        "fundCategory",
+        "fundClass",
+        "managementFeeBps",
+        "price.amount",
+        "price.currency",
+      ];
     case "stablecoin":
-      requiredFieldsValid = hasCollateralLiveness && hasPrice;
-      break;
-
     case "deposit":
-      requiredFieldsValid = hasCollateralLiveness && hasPrice;
-      break;
-
+      return [
+        "collateralLivenessValue",
+        "collateralLivenessTimeUnit",
+        "price.amount",
+        "price.currency",
+      ];
     default:
-      requiredFieldsValid = true;
+      return [];
   }
-
-  // Form is valid if required fields are filled and there are no errors
-  return requiredFieldsValid && !hasErrors;
 }
 
 // Handle asset creation submission error

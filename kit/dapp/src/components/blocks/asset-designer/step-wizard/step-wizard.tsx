@@ -203,7 +203,7 @@ export function StepWizard({
             })}
           </div>
 
-          {/* Close Button */}
+          {/* Close button */}
           {onClose && (
             <Button
               variant="ghost"
@@ -216,7 +216,7 @@ export function StepWizard({
           )}
         </div>
 
-        {/* Content area - REMOVED FOCUS SCOPE */}
+        {/* Content area */}
         <div className="flex flex-col flex-1 overflow-hidden bg-background ml-6 rounded-lg p-10 pt-6 pr-14">
           {children}
         </div>

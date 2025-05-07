@@ -2,42 +2,34 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useRouter } from "@/i18n/routing";
-import { authClient } from "@/lib/auth/client";
 import { createFund } from "@/lib/mutations/fund/create/create-action";
 import { CreateFundSchema } from "@/lib/mutations/fund/create/create-schema";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AssetAdmins } from "../common/asset-admins/asset-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
+
 interface CreateFundFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
+  userDetails: User;
 }
 
 export function CreateFundForm({
   open,
   onOpenChange,
   asButton = false,
+  userDetails,
 }: CreateFundFormProps) {
   const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
-  const posthog = usePostHog();
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
-      posthog.capture("create_fund_form_opened");
-    }
-  }, [open, localOpen, posthog]);
 
   return (
     <FormSheet
@@ -61,29 +53,18 @@ export function CreateFundForm({
           managementFeeBps: 100, // Default 1% management fee
           price: {
             amount: 1,
-            currency: session?.user.currency,
+            currency: userDetails.currency,
           },
           assetAdmins: [],
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}
-        toastMessages={{
-          action: (input) => {
-            const assetId = input?.predictedAddress;
-            return assetId
-              ? {
-                  label: t("toast-action.funds"),
-                  onClick: () => router.push(`/assets/fund/${assetId}`),
-                }
-              : undefined;
-          },
-        }}
       >
         <Basics />
         <Configuration />
-        <AssetAdmins />
-        <Summary />
+        <AssetAdmins userDetails={userDetails} />
+        <Summary userDetails={userDetails} />
       </Form>
     </FormSheet>
   );

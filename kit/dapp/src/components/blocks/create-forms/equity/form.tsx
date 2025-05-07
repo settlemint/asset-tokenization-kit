@@ -2,14 +2,12 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useRouter } from "@/i18n/routing";
-import { authClient } from "@/lib/auth/client";
 import { createEquity } from "@/lib/mutations/equity/create/create-action";
 import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AssetAdmins } from "../common/asset-admins/asset-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
@@ -18,26 +16,19 @@ interface CreateEquityFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
+  userDetails: User;
 }
 
 export function CreateEquityForm({
   open,
   onOpenChange,
   asButton = false,
+  userDetails,
 }: CreateEquityFormProps) {
   const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
-  const posthog = usePostHog();
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
-      posthog.capture("create_equity_form_opened");
-    }
-  }, [open, localOpen, posthog]);
 
   return (
     <FormSheet
@@ -60,29 +51,18 @@ export function CreateEquityForm({
         defaultValues={{
           price: {
             amount: 1,
-            currency: session?.user.currency,
+            currency: userDetails.currency,
           },
           assetAdmins: [],
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}
-        toastMessages={{
-          action: (input) => {
-            const assetId = input?.predictedAddress;
-            return assetId
-              ? {
-                  label: t("toast-action.equities"),
-                  onClick: () => router.push(`/assets/equity/${assetId}`),
-                }
-              : undefined;
-          },
-        }}
       >
         <Basics />
         <Configuration />
-        <AssetAdmins />
-        <Summary />
+        <AssetAdmins userDetails={userDetails} />
+        <Summary userDetails={userDetails} />
       </Form>
     </FormSheet>
   );

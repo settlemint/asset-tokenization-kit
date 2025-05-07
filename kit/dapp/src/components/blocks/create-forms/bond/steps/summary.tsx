@@ -2,30 +2,25 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
+import { useSettings } from "@/hooks/use-settings";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
+import type { User } from "@/lib/queries/user/user-schema";
 import { formatDate } from "@/lib/utils/date";
+import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect } from "react";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
 import { AssetAdminsCard } from "../../common/asset-admins/asset-admins-card";
 
-export function Summary() {
+export function Summary({ userDetails }: { userDetails: User }) {
   const { control } = useFormContext<CreateBondInput>();
   const values = useWatch({
     control: control,
   });
   const t = useTranslations("private.assets.create");
+  const baseCurrency = useSettings("baseCurrency");
   const locale = useLocale();
-  const posthog = usePostHog();
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-      posthog.capture("create_bond_form_summary_step_opened");
-    }
-  }, [posthog]);
 
   return (
     <FormStep title={t("summary.title")} description={t("summary.description")}>
@@ -83,9 +78,19 @@ export function Summary() {
             )
           }
         />
+        <FormSummaryDetailItem
+          label={t("parameters.common.price-label")}
+          value={formatNumber(values.price?.amount || 0, {
+            currency: values.price?.currency || baseCurrency,
+            locale: locale,
+          })}
+        />
       </FormSummaryDetailCard>
 
-      <AssetAdminsCard assetAdmins={values.assetAdmins} />
+      <AssetAdminsCard
+        userDetails={userDetails}
+        assetAdmins={values.assetAdmins}
+      />
     </FormStep>
   );
 }
@@ -102,3 +107,11 @@ Summary.beforeValidate = [
     setValue("predictedAddress", predictedAddress);
   },
 ];
+
+// Export step definition for the asset designer
+export const stepDefinition = {
+  id: "review",
+  title: "Review & Deploy",
+  description: "Review details and deploy the bond",
+  component: Summary,
+};

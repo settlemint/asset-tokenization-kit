@@ -5,8 +5,6 @@ import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/cr
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { timeUnits } from "@/lib/utils/typebox/time-units";
 import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export function Configuration() {
@@ -27,13 +25,6 @@ export function Configuration() {
     value: currency,
     label: currency,
   }));
-  const posthog = usePostHog();
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-      posthog.capture("create_stablecoin_form_configuration_step_opened");
-    }
-  }, [posthog]);
 
   return (
     <FormStep

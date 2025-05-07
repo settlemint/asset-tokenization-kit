@@ -4,8 +4,6 @@ import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { FundCategoriesSelect } from "./_components/fund-categories";
 import { FundClassesSelect } from "./_components/fund-classes";
@@ -17,13 +15,6 @@ export function Configuration() {
     value: currency,
     label: currency,
   }));
-  const posthog = usePostHog();
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-      posthog.capture("create_fund_form_configuration_step_opened");
-    }
-  }, [posthog]);
 
   return (
     <FormStep
