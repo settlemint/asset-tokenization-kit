@@ -2443,12 +2443,22 @@
         "created-at": "Created at",
         "expiry": "Expiry",
         "id": "Settlement ID",
-        "status": "Status"
+        "status": "Status",
+        "from": "From",
+        "to": "To",
+        "amount": "Amount",
+        "price": "Price",
+        "total-price": "Total price",
+        "approver": "Approver",
+        "approved-at": "Approved At"
       },
+      "total-price-description": "The total price of the assets involved in the settlement.",
+      "flows": "Flows",
       "auto-execute": "Auto execute",
       "auto-execute-description": "Automatically execute the settlement on last approval.",
       "details": "Details",
       "expired": "Expired",
+      "approvals": "Approvals",
       "status": {
         "approved": "Approved",
         "cancelled": "Cancelled",

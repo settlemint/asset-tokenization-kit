@@ -23,7 +23,6 @@ interface StatusStyle extends VariantProps<typeof badgeVariants> {
 
 export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
   const t = useTranslations("trade-management.xvp");
-
   const getStatus = (item: XvPSettlement): XvpStatus => {
     if (item.claimed) {
       return "claimed";
@@ -37,8 +36,15 @@ export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
       return "expired";
     }
 
-    const approvalsRequired = new Set(item.flows.map((flow) => flow.from.id));
-    if (approvalsRequired.size === item.approvals.length) {
+    const approvalsRequiredCount = item.flows.length;
+    const actualApprovalsCount = item.approvals.filter(
+      (approval) => approval.approved
+    ).length;
+
+    if (
+      approvalsRequiredCount > 0 &&
+      actualApprovalsCount === approvalsRequiredCount
+    ) {
       return "approved";
     }
 

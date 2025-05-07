@@ -6,7 +6,7 @@ import { getXvPSettlementList } from "@/lib/queries/xvp/xvp-list";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { columns } from "./_components/columns";
+import { columns } from "./(table)/columns";
 import { CreateXvPForm } from "./_components/create-xvp-form/form";
 export async function generateMetadata({
   params,

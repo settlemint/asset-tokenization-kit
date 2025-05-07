@@ -1,11 +1,12 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
+import type { Static } from "@sinclair/typebox";
 
 export const OnChainXvPSettlementFlowSchema = t.Object({
   id: t.String(),
   from: t.Object({ id: t.EthereumAddress() }),
   to: t.Object({ id: t.EthereumAddress() }),
   amount: t.BigDecimal(),
-  asset: t.Object({ id: t.EthereumAddress() }),
+  asset: t.Object({ id: t.EthereumAddress(), symbol: t.AssetSymbol() }),
 });
 
 /**
@@ -24,6 +25,8 @@ export const XvPSettlementFlowSchema = t.Intersect(
   }
 );
 
+export type XvPSettlementFlow = Static<typeof XvPSettlementFlowSchema>;
+
 /**
  * TypeBox schema for XvPSettlementApproval
  */
@@ -31,18 +34,22 @@ export const XvPSettlementApprovalSchema = t.Object({
   id: t.String(),
   account: t.Object({ id: t.EthereumAddress() }),
   approved: t.Boolean(),
-  timestamp: t.Timestamp(),
+  timestamp: t.Optional(t.String()),
 });
+
+export type XvPSettlementApproval = StaticDecode<
+  typeof XvPSettlementApprovalSchema
+>;
 
 export const OnChainXvPSettlementSchema = t.Object({
   id: t.EthereumAddress(),
-  cutoffDate: t.Timestamp(),
+  cutoffDate: t.String(),
   autoExecute: t.Boolean(),
   claimed: t.Boolean(),
   cancelled: t.Boolean(),
   approvals: t.Array(XvPSettlementApprovalSchema),
   flows: t.Array(OnChainXvPSettlementFlowSchema),
-  createdAt: t.Timestamp(),
+  createdAt: t.String(),
 });
 
 export type OnChainXvPSettlement = StaticDecode<
@@ -50,6 +57,7 @@ export type OnChainXvPSettlement = StaticDecode<
 >;
 
 export const CalculatedXvPSettlementSchema = t.Object({
+  flows: t.Array(XvPSettlementFlowSchema),
   totalPrice: t.Price({
     description: "Total price of the settlement",
   }),
@@ -60,11 +68,8 @@ export const CalculatedXvPSettlementSchema = t.Object({
  */
 export const XvPSettlementSchema = t.Intersect(
   [
-    OnChainXvPSettlementSchema,
+    t.Omit(OnChainXvPSettlementSchema, ["flows"]),
     CalculatedXvPSettlementSchema,
-    t.Object({
-      flows: t.Array(XvPSettlementFlowSchema),
-    }),
   ],
   {
     description: "XvPSettlement",

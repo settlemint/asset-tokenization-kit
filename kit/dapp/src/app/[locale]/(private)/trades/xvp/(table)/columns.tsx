@@ -66,15 +66,21 @@ export function columns() {
       id: "approvals",
       header: t("columns.approvals"),
       cell: ({ row }) => {
-        const approvals = row.original.approvals;
-        const approvalsRequired = new Set(
-          row.original.flows.map((flow) => flow.from.id)
-        );
-        const percentage = (approvals.length / approvalsRequired.size) * 100;
+        const allApprovalEntries = row.original.approvals;
+        const actualApprovalsCount = allApprovalEntries.filter(
+          (approval) => approval.approved
+        ).length;
+        const approvalsRequiredCount = allApprovalEntries.length;
+
+        const percentage =
+          approvalsRequiredCount > 0
+            ? (actualApprovalsCount / approvalsRequiredCount) * 100
+            : 0;
+
         return (
           <PercentageProgressBar
             percentage={percentage}
-            label={`${approvals.length}/${approvalsRequired.size}`}
+            label={`${actualApprovalsCount}/${approvalsRequiredCount}`}
           />
         );
       },

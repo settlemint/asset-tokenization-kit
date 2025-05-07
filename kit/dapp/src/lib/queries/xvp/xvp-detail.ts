@@ -8,7 +8,6 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { ApiError } from "next/dist/server/api-utils";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { calculateXvPSettlement } from "./xvp-calculated";
 import { XvPSettlementFragment } from "./xvp-fragment";
 import { OnChainXvPSettlementSchema, type XvPSettlement } from "./xvp-schema";
@@ -36,12 +35,9 @@ const XvPSettlementDetail = theGraphGraphqlKit(
 export const getXvPSettlementDetail = withTracing(
   "queries",
   "getXvPSettlementDetail",
-  async (
-    id: string,
-    userCurrency: CurrencyCode
-  ): Promise<XvPSettlement | null> => {
-    "use cache";
-    cacheTag("trades");
+  async (id: string, userCurrency: CurrencyCode): Promise<XvPSettlement> => {
+    // "use cache";
+    // cacheTag("trades");
 
     const result = await theGraphClientKit.request(XvPSettlementDetail, {
       id,

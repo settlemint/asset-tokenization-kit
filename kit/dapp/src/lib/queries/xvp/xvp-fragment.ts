@@ -16,6 +16,7 @@ export const XvPSettlementFlowFragment = theGraphGraphqlKit(
     amount
     asset {
       id
+      symbol
     }
   }
 `

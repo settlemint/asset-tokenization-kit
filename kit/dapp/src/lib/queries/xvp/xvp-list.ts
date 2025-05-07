@@ -9,7 +9,6 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { calculateXvPSettlement } from "./xvp-calculated";
 import { XvPSettlementFragment } from "./xvp-fragment";
 import { OnChainXvPSettlementSchema, type XvPSettlement } from "./xvp-schema";
@@ -38,8 +37,8 @@ export const getXvPSettlementList = withTracing(
   "queries",
   "getXvPSettlementList",
   async (userCurrency: CurrencyCode): Promise<XvPSettlement[]> => {
-    "use cache";
-    cacheTag("trades");
+    // "use cache";
+    // cacheTag("trades");
 
     const onChainSettlements = await fetchAllTheGraphPages(
       async (first, skip) => {
