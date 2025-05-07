@@ -190,12 +190,12 @@ contract SMARTDepositTest is Test {
     }
 
     function test_onlyAdminCanPause() public {
-        vm.prank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector, user1, deposit.DEFAULT_ADMIN_ROLE()
             )
         );
+        vm.prank(user1);
         deposit.pause();
 
         vm.prank(owner);
