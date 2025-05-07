@@ -2444,13 +2444,12 @@
         "expiry": "Expiry",
         "id": "Settlement ID",
         "status": "Status",
-        "from": "From",
-        "to": "To",
         "amount": "Amount",
         "price": "Price",
         "total-price": "Total price",
         "approver": "Approver",
-        "approved-at": "Approved At"
+        "approved-at": "Approved At",
+        "participants": "Participants"
       },
       "total-price-description": "The total price of the assets involved in the settlement.",
       "flows": "Flows",

@@ -96,7 +96,7 @@ export default async function XvpPage({
         </DetailGridItem>
       </DetailGrid>
 
-      <div className="font-medium text-accent text-xl my-4">
+      <div className="font-medium text-accent text-xl mt-6 mb-4">
         {t("xvp.flows")}
       </div>
       <DataTable
@@ -111,7 +111,7 @@ export default async function XvpPage({
         }}
       />
 
-      <div className="font-medium text-accent text-xl my-4">
+      <div className="font-medium text-accent text-xl mt-6 mb-4">
         {t("xvp.approvals")}
       </div>
       <DataTable
