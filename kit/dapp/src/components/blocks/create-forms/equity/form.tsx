@@ -64,6 +64,9 @@ export function CreateEquityForm({
           },
           assetAdmins: [],
         }}
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors("predictedAddress");
+        }}
         toastMessages={{
           action: (input) => {
             const assetId = input?.predictedAddress;

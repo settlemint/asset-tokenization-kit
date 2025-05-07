@@ -1301,6 +1301,14 @@
             "equities": "Issue a new equity",
             "funds": "Issue a new fund",
             "stablecoins": "Issue a new stablecoin"
+          },
+          "duplicate-errors": {
+            "stablecoin": "A stablecoin with these parameters already exists. Please change at least one parameter and try again.",
+            "cryptocurrency": "A cryptocurrency with these parameters already exists. Please change at least one parameter and try again.",
+            "deposit": "A deposit with these parameters already exists. Please change at least one parameter and try again.",
+            "equity": "An equity with these parameters already exists. Please change at least one parameter and try again.",
+            "fund": "A fund with these parameters already exists. Please change at least one parameter and try again.",
+            "bond": "A bond with these parameters already exists. Please change at least one parameter and try again."
           }
         },
         "parameters": {

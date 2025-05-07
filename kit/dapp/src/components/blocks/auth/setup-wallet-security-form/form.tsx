@@ -31,7 +31,10 @@ export function SetupWalletSecurityForm() {
         }}
         hideButtons={(step) => step === 0}
         secureForm={false}
-        onAnyFieldChange={(getValues, { step, goToStep, changedFieldName }) => {
+        onAnyFieldChange={(
+          { getValues },
+          { step, goToStep, changedFieldName }
+        ) => {
           if (
             step === 0 &&
             changedFieldName === "verificationType" &&

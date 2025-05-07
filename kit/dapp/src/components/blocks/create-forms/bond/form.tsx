@@ -69,6 +69,9 @@ export function CreateBondForm({
           predictedAddress: "0x0000000000000000000000000000000000000000",
           assetAdmins: [],
         }}
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors("predictedAddress");
+        }}
         toastMessages={{
           action: (input) => {
             const assetId = input?.predictedAddress;

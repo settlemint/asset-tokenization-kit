@@ -1,6 +1,4 @@
 import { AssetAdminsSchemaFragment } from "@/lib/mutations/common/asset-admins-schema";
-import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
-import { isValidFutureDate } from "@/lib/utils/date";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
@@ -68,13 +66,6 @@ export function CreateBondSchema({
       }),
       maturityDate: t.String({
         description: "Maturity date of the bond",
-        // NOTE: This refinement validation doesn't work reliably with @hookform/typebox resolver.
-        // We implement a custom validation in the Configuration component using customValidation
-        // to ensure proper validation and error display.
-        refinement: {
-          predicate: (date: string | Date) => isValidFutureDate(date, 1),
-          message: "Maturity date must be at least 1 hour in the future",
-        },
       }),
       underlyingAsset: t.Object(
         {
@@ -89,10 +80,6 @@ export function CreateBondSchema({
       ),
       predictedAddress: t.EthereumAddress({
         description: "Predicted address of the bond",
-        refinement: {
-          predicate: isAddressAvailable,
-          message: "Address already in use",
-        },
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
       selectedRegulations: t.Optional(t.Array(t.String())),

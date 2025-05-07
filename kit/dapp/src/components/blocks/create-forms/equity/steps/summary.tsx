@@ -3,6 +3,7 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
+import { isAddressAvailable } from "@/lib/queries/equity-factory/equity-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/equity-factory/equity-factory-predict-address";
 import { formatNumber } from "@/lib/utils/number";
 import type { equityCategories } from "@/lib/utils/typebox/equity-categories";
@@ -15,6 +16,7 @@ import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
 import { AssetAdminsCard } from "../../common/asset-admins/asset-admins-card";
 import { EquityCategoriesSummary } from "./_components/equity-categories-summary";
 import { EquityClassesSummary } from "./_components/equity-classes-summary";
+
 export function Summary() {
   const { control } = useFormContext<CreateEquityInput>();
   const values = useWatch({
@@ -101,12 +103,20 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = ["predictedAddress"] as const;
-Summary.beforeValidate = [
-  async ({ setValue, getValues }: UseFormReturn<CreateEquityInput>) => {
-    const values = getValues();
-    const predictedAddress = await getPredictedAddress(values);
+const validatePredictedAddress = async (
+  form: UseFormReturn<CreateEquityInput>
+) => {
+  const values = form.getValues();
+  const predictedAddress = await getPredictedAddress(values);
+  const isAvailable = await isAddressAvailable(predictedAddress);
+  if (!isAvailable) {
+    form.setError("predictedAddress", {
+      message: "private.assets.create.form.duplicate-errors.equity",
+    });
+    return false;
+  }
+  form.clearErrors("predictedAddress");
+  return true;
+};
 
-    setValue("predictedAddress", predictedAddress);
-  },
-];
+Summary.customValidation = [validatePredictedAddress];

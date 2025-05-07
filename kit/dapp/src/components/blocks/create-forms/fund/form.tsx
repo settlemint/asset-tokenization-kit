@@ -65,6 +65,9 @@ export function CreateFundForm({
           },
           assetAdmins: [],
         }}
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors("predictedAddress");
+        }}
         toastMessages={{
           action: (input) => {
             const assetId = input?.predictedAddress;
