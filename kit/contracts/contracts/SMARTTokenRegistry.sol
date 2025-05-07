@@ -11,7 +11,7 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 /// @dev Inherits from Ownable and ERC2771Context for ownership management and meta-transaction support.
 /// @custom:security-contact support@settlemint.com
 
-contract SMARTRegistry is ERC2771Context, Ownable {
+contract SMARTTokenRegistry is ERC2771Context, Ownable {
     /// @notice Custom errors for the registry contract
     error InvalidTokenAddress(); // Error for when the provided token address is the zero address
     error TokenAlreadyRegistered(address token); // Error for attempting to register an already registered token

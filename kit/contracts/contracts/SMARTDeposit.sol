@@ -5,6 +5,7 @@ pragma solidity ^0.8.27;
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
@@ -25,9 +26,6 @@ import { SMARTPausable } from "@smartprotocol/contracts/extensions/pausable/SMAR
 import { SMARTBurnable } from "@smartprotocol/contracts/extensions/burnable/SMARTBurnable.sol";
 import { SMARTCustodian } from "@smartprotocol/contracts/extensions/custodian/SMARTCustodian.sol";
 import { SMARTCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateral.sol";
-
-// Common errors
-import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
 
 /// @title SMARTDeposit
 /// @notice An implementation of a deposit using the SMART extension framework,
@@ -192,56 +190,78 @@ contract SMARTDeposit is
 
     function _authorizeUpdateTokenSettings() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 
     function _authorizeUpdateComplianceSettings() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 
     function _authorizeUpdateVerificationSettings() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 
     function _authorizeMintToken() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.SUPPLY_MANAGEMENT_ROLE);
+        }
     }
 
     function _authorizePause() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 
     function _authorizeBurn() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 
     function _authorizeFreezeAddress() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.USER_MANAGEMENT_ROLE);
+        }
     }
 
     function _authorizeFreezePartialTokens() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.USER_MANAGEMENT_ROLE);
+        }
     }
 
     function _authorizeForcedTransfer() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.SUPPLY_MANAGEMENT_ROLE);
+        }
     }
 
     function _authorizeRecoveryAddress() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.USER_MANAGEMENT_ROLE);
+        }
     }
 
     function _authorizeRecoverERC20() internal view virtual override {
         address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) revert Unauthorized(sender);
+        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
+        }
     }
 }

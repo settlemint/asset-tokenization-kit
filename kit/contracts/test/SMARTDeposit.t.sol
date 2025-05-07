@@ -15,6 +15,7 @@ import { InsufficientCollateral } from "@smartprotocol/contracts/extensions/coll
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 import { console } from "forge-std/console.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /// Following tests are changed:
 /// - test_BurnFrom: removed because it doesn't exist in ERC3643
@@ -192,7 +193,7 @@ contract SMARTDepositTest is Test {
         vm.prank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, deposit.DEFAULT_ADMIN_ROLE()
             )
         );
         deposit.pause();
@@ -244,7 +245,7 @@ contract SMARTDepositTest is Test {
         vm.prank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTConstants.USER_MANAGEMENT_ROLE
             )
         );
         deposit.freezePartialTokens(user1, 100);
@@ -373,7 +374,7 @@ contract SMARTDepositTest is Test {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, deposit.DEFAULT_ADMIN_ROLE()
             )
         );
         deposit.recoverERC20(address(mockToken), user1, 500);
