@@ -160,7 +160,11 @@ contract SMARTDepositTest is Test {
         _updateCollateral(address(deposit), owner, INITIAL_SUPPLY + 100);
 
         vm.startPrank(user1);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+            )
+        );
         deposit.mint(user1, 100);
         vm.stopPrank();
     }
@@ -186,7 +190,11 @@ contract SMARTDepositTest is Test {
 
     function test_onlyAdminCanPause() public {
         vm.prank(user1);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+            )
+        );
         deposit.pause();
 
         vm.prank(owner);
@@ -234,7 +242,11 @@ contract SMARTDepositTest is Test {
         deposit.mint(user1, 100);
 
         vm.prank(user2);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+            )
+        );
         deposit.freezePartialTokens(user1, 100);
 
         vm.prank(owner);
@@ -321,7 +333,11 @@ contract SMARTDepositTest is Test {
         _mintInitialSupply(user1);
 
         vm.prank(user2);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+            )
+        );
         deposit.forcedTransfer(user1, user2, INITIAL_SUPPLY);
     }
 
@@ -355,7 +371,11 @@ contract SMARTDepositTest is Test {
 
         // Test recovery by non-admin
         vm.startPrank(user2);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+            )
+        );
         deposit.recoverERC20(address(mockToken), user1, 500);
         vm.stopPrank();
     }
