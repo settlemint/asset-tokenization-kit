@@ -41,23 +41,18 @@ export function CreateBondForm({
   currentStepId,
 }: CreateBondFormProps) {
   // Using any type to avoid TypeScript errors with extra fields
-  const bondForm = useForm<any>({
+  const bondForm = useForm<CreateBondInput>({
     defaultValues: {
       assetName: "",
       symbol: "",
       decimals: 18,
       isin: "",
-      price: {
-        amount: 0,
-        currency: "EUR",
-      },
       assetAdmins: [],
       selectedRegulations: [],
       maturityDate: getTomorrowMidnight(),
       verificationType: "pincode",
       predictedAddress: "0x0000000000000000000000000000000000000000",
       // Extra field used by AssetAdmins but not part of the schema validation
-      selectedWallet: "",
     },
     mode: "all", // Validate on all events
     resolver: (...args) =>
