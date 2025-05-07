@@ -103,7 +103,7 @@ Summary.validatedFields = ["predictedAddress", "verificationType"];
 // Export step definition for asset designer
 export const stepDefinition = {
   id: "review",
-  title: "Review & Deploy",
-  description: "Review bond details and deploy to blockchain",
+  title: "summary.title",
+  description: "summary.description",
   component: Summary,
 };

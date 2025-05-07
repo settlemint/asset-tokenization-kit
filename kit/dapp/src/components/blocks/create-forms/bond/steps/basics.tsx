@@ -113,7 +113,7 @@ export function Basics({ onNext, onBack }: BasicsProps) {
 // Export step definition for the asset designer
 export const stepDefinition = {
   id: "details",
-  title: "Basic Details",
-  description: "Enter basic information about your bond",
+  title: "basics.title",
+  description: "basics.description",
   component: Basics,
 };

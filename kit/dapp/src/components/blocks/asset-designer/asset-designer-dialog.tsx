@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { User } from "@/lib/queries/user/user-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { UserRole } from "@/lib/utils/typebox/user-roles";
+import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
 import MiniProgressBar from "./components/mini-progress-bar";
@@ -16,7 +17,7 @@ import {
   typeSelectionStep,
   type AssetFormDefinition,
 } from "./types";
-import { getAssetDescription } from "./utils";
+import { getAssetDescription, getAssetTitle } from "./utils";
 
 interface AssetDesignerDialogProps {
   open: boolean;
@@ -27,6 +28,7 @@ export function AssetDesignerDialog({
   open,
   onOpenChange,
 }: AssetDesignerDialogProps) {
+  const t = useTranslations("private.assets.create");
   const { theme } = useTheme();
   const [selectedAssetType, setSelectedAssetType] = useState<AssetType | null>(
     null
@@ -224,11 +226,13 @@ export function AssetDesignerDialog({
       >
         <div className="relative">
           <DialogTitle className="sr-only">Asset Designer</DialogTitle>
+          {/* Using 'as any' type assertions because dynamic translation keys from getAssetTitle/getAssetDescription
+              don't match the literal string types expected by next-intl's t function */}
           <StepWizard
             steps={allSteps}
             currentStepId={currentStepId}
-            title="Create Digital Asset"
-            description={getAssetDescription(selectedAssetType)}
+            title={t(getAssetTitle(selectedAssetType) as any)}
+            description={t(getAssetDescription(selectedAssetType) as any)}
             onStepChange={handleStepChange}
             sidebarStyle={sidebarStyle}
             onClose={() => onOpenChange(false)}

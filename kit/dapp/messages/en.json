@@ -1247,6 +1247,30 @@
     "assets": {
       "asset-statistics-title": "Statistics",
       "create": {
+        "general": {
+          "title": {
+            "default": "Create digital asset",
+            "bond": "Create a new bond",
+            "cryptocurrency": "Create a new cryptocurrency",
+            "deposit": "Create a new deposit",
+            "equity": "Create a new equity",
+            "fund": "Create a new fund",
+            "stablecoin": "Create a new stablecoin"
+          },
+          "description": {
+            "default": "Create your digital asset in a few steps.",
+            "bond": "Debt instruments issued as tokenized securities.",
+            "cryptocurrency": "Decentralized digital assets used as a medium of exchange or store of value.",
+            "deposit": "Digital assets that represent a deposit of a traditional asset.",
+            "equity": "Assets representing ownership in a company.",
+            "fund": "Investment vehicles pooled by professional managers.",
+            "stablecoin": "Digital assets pegged to a stable asset like USD."
+          }
+        },
+        "select-asset-type": {
+          "title": "Select asset type",
+          "description": "Choose the type of digital asset you want to create."
+        },
         "basics": {
           "description": "Specify the basic information for this bond.",
           "description-onchain": "Configure your new asset with identifying information which is stored on the blockchain. This data is immutable.",

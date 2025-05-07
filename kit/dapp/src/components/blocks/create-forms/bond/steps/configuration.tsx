@@ -141,7 +141,7 @@ export function Configuration({ onNext, onBack }: ConfigurationProps) {
 // Export step definition for the asset designer
 export const stepDefinition = {
   id: "configuration",
-  title: "Bond Configuration",
-  description: "Configure bond-specific properties",
+  title: "configuration.bonds.title",
+  description: "configuration.bonds.description",
   component: Configuration,
 };

@@ -62,6 +62,6 @@ export const assetForms: Record<
 // Common step for asset type selection
 export const typeSelectionStep = {
   id: "type",
-  title: "Asset Type",
-  description: "Select the type of digital asset to create",
+  title: "select-asset-type.title",
+  description: "select-asset-type.description",
 };
