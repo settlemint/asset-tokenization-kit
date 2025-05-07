@@ -291,7 +291,14 @@
         "details-for-event": "イベント {event} の詳細",
         "sender": "送信者",
         "transaction-hash": "トランザクションハッシュ",
-        "details": "イベント詳細"
+        "details": "イベント詳細",
+        "USER_MANAGEMENT_ROLE": "ユーザー管理ロール",
+        "SUPPLY_MANAGEMENT_ROLE": "サプライ管理ロール",
+        "AUDITOR_ROLE": "監査人ロール",
+        "SIGNER_ROLE": "署名者ロール",
+        "DEFAULT_ADMIN_ROLE": "デフォルト管理者ロール",
+        "event-details": "イベントの詳細",
+        "event-parameters": "イベントパラメータ"
       },
       "details": {
         "account": "アカウント",
@@ -1040,13 +1047,21 @@
       "asset-statistics-title": "統計",
       "create": {
         "basics": {
-          "description": "資産を定義するために必要な一般情報を提供してください。",
-          "title": "資産の基本"
+          "description": "ブロックチェーンに保存されている識別情報で新しい資産を設定します。この日付は不変です。",
+          "title": "オンチェーン識別",
+          "description-offchain": "この資産のために追加の識別情報を任意で入力してください。この情報はオフチェーンに保存され、このプラットフォームの外部からはアクセスできません。",
+          "title-offchain": "オフチェーン識別"
         },
         "configuration": {
           "bonds": {
             "description": "債券に特有のパラメータを設定します。",
-            "title": "債券の設定"
+            "title": "債券の設定",
+            "description-lifecycle": "この債券のライフサイクルイベントに関連する日付を設定してください。",
+            "description-supply": "この債券の供給と分割を設定してください。この情報は変更できません。",
+            "description-value": "債券の単位として使用され、クーポンおよび満期の支払いに使用される資産を設定してください。",
+            "title-lifecycle": "ライフサイクル",
+            "title-supply": "供給",
+            "title-value": "単位"
           },
           "cryptocurrencies": {
             "description": "暗号通貨に特有のパラメータを設定します。",
@@ -1164,7 +1179,9 @@
                 "months": "月"
               }
             },
-            "price-label": "価格"
+            "price-label": "価格",
+            "internalid-label": "内部ID",
+            "decimals-description": "債券に使用する小数点以下の桁数。この桁数は債券の精度を決定するために使用されます。"
           },
           "cryptocurrencies": {
             "initial-supply-description": "発行される資産の初期量",
@@ -2575,10 +2592,10 @@
       },
       "compliance": {
         "description": "MiCA要件に完全に準拠し、規制フレームワークを簡単にナビゲートします。",
-        "title": "包括的なコンプライアンス"
+        "title": "設計によるコンプライアンス"
       },
       "customizable": {
-        "description": "プラットフォームのあらゆる側面を、あなたの機関の独自のニーズとワークフローに完璧に合わせて調整します。",
+        "description": "プラットフォームのすべての側面を、あなたの機関のニーズやワークフローに合わせて調整します。",
         "title": "100%カスタマイズ可能"
       },
       "description": "SettleMint資産トークン化キットは、デジタル資産プラットフォームの開発を加速するために設計されたフルスタックソリューションです。",
@@ -2598,7 +2615,7 @@
         "description": "展開を加速し、他のどのソリューションよりも早く市場に参入します。",
         "title": "最短の市場投入時間"
       },
-      "title": "完全な機能セット"
+      "title": "すべてのトークン化ニーズに対応するワンストップショップ"
     },
     "footer": {
       "company-description": "世界がトークン化された資産をブロックチェーン上で作成、管理、取引する方法を変革します。",
@@ -2606,7 +2623,8 @@
         "cookie-policy": "クッキーポリシー",
         "copyright": "© {year} SettleMint。機能的ソースライセンス、バージョン1.1、MIT未来ライセンス。",
         "privacy-policy": "プライバシーポリシー",
-        "terms-of-service": "利用規約"
+        "terms-of-service": "利用規約",
+        "title": "法務"
       },
       "sections": {
         "company": {
@@ -2627,7 +2645,7 @@
         "resources": {
           "documentation": "ドキュメンテーション",
           "partners": "パートナー",
-          "title": "リソース",
+          "title": "パブリック、プライベート、またはコンソーシアムチェーン上で、クラウドまたはオンプレミスで、ニーズに合わせて完全にカスタマイズ可能なエンタープライズグレードの資産トークン化プラットフォームを立ち上げます。",
           "usecases": "ユースケース"
         }
       }
@@ -2637,7 +2655,39 @@
     "issuer-portal": "発行者ポータル",
     "portfolio": "ポートフォリオ",
     "stablecoins": "ステーブルコイン",
-    "tokenized-deposits": "預金"
+    "tokenized-deposits": "預金",
+    "changelog-link-title": "SMARTプロトコルの紹介",
+    "pricing": {
+      "title": "あなたに合わせてスケールする価格設定",
+      "description": "Geminiはモデル以上の存在へ進化しています。開発者や企業が革新するのを助けるAPIやプラットフォーム全体をサポートしています。",
+      "starter": {
+        "title": "スターター",
+        "price": "€ 4.760 / 月",
+        "description": "非生産用途向けの月額料金",
+        "feature1": "SettleMintプラットフォームへの完全アクセス",
+        "feature2": "すべてのトークン化機能",
+        "feature3": "単一のバリデーターネットワーク",
+        "feature4": "無制限の資産",
+        "feature5": "無制限のユーザー",
+        "feature6": "無制限のボリューム",
+        "feature7": "SettleMintサポートへのアクセス",
+        "cta": "始める"
+      },
+      "enterprise": {
+        "badge": "生産準備完了",
+        "title": "エンタープライズ",
+        "price": "€ 19.988 / 月",
+        "description": "生産用途向けの月額料金",
+        "feature1": "スターターのすべて",
+        "feature2": "ビザンチン耐障害性ネットワーク",
+        "feature3": "高可用性",
+        "feature4": "99.99%の稼働時間SLA",
+        "feature5": "優先サポート",
+        "cta": "始める"
+      }
+    },
+    "hero-subtitle-subtitle": "チェーン上でトークン化することで資産を解放します",
+    "hero-subtitle-title": "チェーン上でトークン化して資産を解放する"
   },
   "not-found": {
     "description": "お探しのページは存在しないか、移動されました。",

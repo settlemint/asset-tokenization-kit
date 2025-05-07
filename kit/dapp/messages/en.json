@@ -271,12 +271,12 @@
     "type-selection": {
       "description": "Choose the type of digital asset you want to create",
       "features": {
-        "one": "Full lifecycle management",
-        "two": "Custodial functionality",
-        "three": "Maximum cap",
-        "four": "Voting rights",
         "five": "KYC required",
-        "six": "Collateral management"
+        "four": "Voting rights",
+        "one": "Full lifecycle management",
+        "six": "Collateral management",
+        "three": "Maximum cap",
+        "two": "Custodial functionality"
       },
       "key-features": "Key features:",
       "title": "Select asset type"
@@ -364,12 +364,19 @@
     "asset-events-table": {
       "asset": "Asset",
       "detail-sheet": {
+        "AUDITOR_ROLE": "Auditor Role",
+        "DEFAULT_ADMIN_ROLE": "Default Admin Role",
+        "SIGNER_ROLE": "Signer Role",
+        "SUPPLY_MANAGEMENT_ROLE": "Supply Management Role",
+        "USER_MANAGEMENT_ROLE": "User Management Role",
         "asset": "Asset",
         "asset-type": "Asset type",
         "date": "Date",
         "details": "Event details",
         "details-button": "Details",
         "details-for-event": "Details for {event} event",
+        "event-details": "Event Details",
+        "event-parameters": "Event parameters",
         "sender": "Sender",
         "transaction-hash": "Transaction Hash"
       },
@@ -798,23 +805,52 @@
   "homepage": {
     "asset-tokenization": "asset tokenization",
     "bonds-funds-equities": "bonds, funds, equities",
+    "changelog-link-title": "Introducing the SMART protocol",
     "cryptocurrencies": "cryptocurrencies",
     "documentation": "Documentation",
+    "pricing": {
+      "title": "Pricing that scales with you",
+      "starter": {
+        "title": "Starter",
+        "price": "€ 4.760 / mo",
+        "description": "Per month for non-production usecases",
+        "feature1": "Complete access to the SettleMint platform",
+        "feature2": "All tokenization features",
+        "feature3": "Single validator network",
+        "feature4": "Unlimited assets",
+        "feature5": "Unlimited users",
+        "feature6": "Unlimited volume",
+        "feature7": "Access to the SettleMint support",
+        "cta": "Get Started"
+      },
+      "enterprise": {
+        "badge": "Production ready",
+        "title": "Enterprise",
+        "price": "€ 19.988 / mo",
+        "description": "Per month for production usecases",
+        "feature1": "Everything in Starter",
+        "feature2": "Byzantine Fault Tolerant network",
+        "feature3": "High Availability",
+        "feature4": "99.99% Uptime SLA",
+        "feature5": "Priority Support",
+        "cta": "Get Started"
+      }
+    },
     "features": {
       "api": {
         "description": "Integrate effortlessly into existing systems with extensive, well-documented APIs.",
         "title": "Complete API Coverage"
       },
       "asset-lifecycle": {
-        "description": "Manage the complete asset lifecycle seamlessly—from issuance and management to settlement and beyond.",
+        "description": "Manage the complete asset lifecycle seamlessly, from issuance and management to settlement and beyond.",
         "title": "Full Asset Lifecycle"
       },
       "compliance": {
         "description": "Navigate regulatory frameworks effortlessly, including full compliance with MiCA requirements.",
-        "title": "Comprehensive Compliance"
+        "title": "Compliance by design"
       },
       "customizable": {
-        "description": "Tailor every aspect of the platform to perfectly match your institution's unique needs and workflows.",
+        "description": "Tailor every aspect of the platform to match your institution's needs and workflows.",
         "title": "100% Customizable"
       },
       "description": "The SettleMint Asset Tokenization Kit is a full-stack solution designed to accelerate the development of digital asset platforms.",
@@ -834,7 +870,7 @@
         "description": "Accelerate your deployment and achieve rapid market entry faster than any other solution.",
         "title": "Shortest Time to Market"
       },
-      "title": "Complete Feature Set"
+      "title": "A one stop shop for all your tokenization needs"
     },
     "footer": {
       "company-description": "Transforming how the world creates, manages, and trades tokenized assets on blockchain.",
@@ -842,34 +878,37 @@
         "cookie-policy": "Cookie Policy",
         "copyright": "© {year} SettleMint. Functional Source License, Version 1.1, MIT Future License.",
         "privacy-policy": "Privacy Policy",
-        "terms-of-service": "Terms of Service"
+        "terms-of-service": "Terms of Service",
+        "title": "Legal"
       },
       "sections": {
         "company": {
           "about": "About",
           "blog": "Blog",
           "contact": "Contact",
-          "title": "COMPANY"
+          "title": "Company"
         },
         "config": {
-          "title": "SETTINGS"
+          "title": "Settings"
         },
         "platform": {
           "console": "Console",
           "mcp": "Model Context Provider",
           "sdk-cli": "SDK & CLI",
-          "title": "PLATFORM"
+          "title": "Platform"
         },
         "resources": {
           "documentation": "Documentation",
           "partners": "Partners",
-          "title": "RESOURCES",
+          "title": "Resources",
           "usecases": "Usecases"
         }
       }
     },
     "hero-description": "This kit is pre-configured to leverage your SettleMint application and provide an easy way to get started with your own asset tokenization solution.",
     "hero-subtitle-regular": "Unlock the power of",
+    "hero-subtitle-subtitle": "Bootstrap your own enterprise-grade asset tokenization platform, on public, private or consortium chains, in the cloud or on-premise and fully customizable to fit your needs.",
+    "hero-subtitle-title": "Unlock your assets by tokenizing on chain",
     "issuer-portal": "Issuer portal",
     "portfolio": "Portfolio",
     "stablecoins": "stablecoins",
@@ -1209,13 +1248,23 @@
       "asset-statistics-title": "Statistics",
       "create": {
         "basics": {
-          "description": "Provide the general information required to define your asset.",
-          "title": "Asset basics"
+          "description": "Specify the basic information for this bond.",
+          "description-onchain": "Configure your new asset with identifying information which is stored on the blockchain. This data is immutable.",
+          "description-offchain": "Optionally enter additional identifying information for this asset. This information is stored offchain and is not accessible outside of this platform.",
+          "title": "Basic information",
+          "title-onchain": "Onchain identification",
+          "title-offchain": "Offchain identification"
         },
         "configuration": {
           "bonds": {
-            "description": "Set parameters specific to your bond.",
-            "title": "Bond configuration"
+            "description": "Configure specific parameters for this bond.",
+            "description-lifecycle": "Configure the relevant dates for lifecycle events for this bond.",
+            "description-supply": "Configure the supply and franctionalization of this bond. This information is immutable",
+            "description-value": "Configure in which asset is used as the denomination of the bond and is used for coupon and maturity payments.",
+            "title": "Bond configuration",
+            "title-lifecycle": "Lifecycle",
+            "title-supply": "Supply",
+            "title-value": "Denomination"
           },
           "cryptocurrencies": {
             "description": "Set parameters specific to your cryptocurrency.",
@@ -1304,7 +1353,9 @@
           },
           "common": {
             "collateral-proof-validity-label": "Collateral proof validity",
+            "decimals-description": "The number of decimals to use for the bond. This is used to determine the precision of the bond.",
             "decimals-label": "Decimals",
+            "internalid-label": "Internal ID",
             "isin-label": "ISIN",
             "name-label": "Name",
             "price-label": "Price",
@@ -2345,15 +2396,15 @@
         "xvp": "Create an XvP Settlement"
       },
       "configuration": {
+        "auto-execute": "Auto execute",
+        "auto-execute-description": "Automatically execute the settlement on last approval.",
         "description": "Configuration for the settlement.",
         "expiry": "Expiry",
         "expiry-description": "The time until which you will not be able to refund assets from the settlement. If the settlement is not executed, you can refund your assets after this time.",
         "expiry-required": "Expiry is required",
         "past-expiry-error": "Expiry must be in the future.",
         "secret-description": "Please save this secret securely. You will need it to unlock the assets received from the settlement.",
-        "title": "Configuration",
-        "auto-execute": "Auto execute",
-        "auto-execute-description": "Automatically execute the settlement on last approval."
+        "title": "Configuration"
       },
       "description": {
         "xvp": "An XvP (Delivery vs Payment or Payment vs Payment) Settlement enables an atomic exchange of assets between parties. It allows you to reliably exchange assets with other users without the need for a third party."
@@ -2385,22 +2436,22 @@
       "xvp": "XvP"
     },
     "xvp": {
-      "expired": "Expired",
-      "details": "Details",
-      "status": {
-        "pending": "Pending",
-        "approved": "Approved",
-        "expired": "Expired",
-        "claimed": "Claimed",
-        "cancelled": "Cancelled"
-      },
       "columns": {
-        "id": "Settlement ID",
-        "status": "Status",
+        "approvals": "Approvals",
+        "assets": "Assets",
         "created-at": "Created at",
         "expires-at": "Expires at",
-        "assets": "Assets",
-        "approvals": "Approvals"
+        "id": "Settlement ID",
+        "status": "Status"
+      },
+      "details": "Details",
+      "expired": "Expired",
+      "status": {
+        "approved": "Approved",
+        "cancelled": "Cancelled",
+        "claimed": "Claimed",
+        "expired": "Expired",
+        "pending": "Pending"
       }
     }
   },
