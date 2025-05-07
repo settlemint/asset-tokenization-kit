@@ -73,9 +73,10 @@ contract SMARTFund is
     string private _fundCategory;
 
     /// @notice Emitted when management fees are collected
+    /// @param initiator The address that collected the management fees
     /// @param amount The amount of tokens minted as management fees
     /// @param timestamp The timestamp when the fees were collected
-    event ManagementFeeCollected(uint256 amount, uint256 timestamp);
+    event ManagementFeeCollected(address indexed initiator, uint256 amount, uint256 timestamp);
 
     /// @notice Deploys a new SMARTFund token contract
     /// @dev Sets up the token with specified parameters and initializes governance capabilities.
@@ -199,8 +200,9 @@ contract SMARTFund is
         uint256 fee = Math.mulDiv(Math.mulDiv(aum, _managementFeeBps, 10_000), timeElapsed, 365 days);
 
         if (fee > 0) {
-            _mint(_msgSender(), fee);
-            emit ManagementFeeCollected(fee, block.timestamp);
+            address initiator = _msgSender();
+            _mint(initiator, fee);
+            emit ManagementFeeCollected(initiator, fee, block.timestamp);
         }
 
         _lastFeeCollection = uint40(block.timestamp);

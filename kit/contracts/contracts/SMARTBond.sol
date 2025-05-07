@@ -87,20 +87,22 @@ contract SMARTBond is
     event BondMatured(uint256 timestamp);
 
     /// @notice Emitted when a bond is redeemed for underlying assets
+    /// @param initiator The address that initiated the redemption
     /// @param holder The address redeeming the bonds
     /// @param bondAmount The amount of bonds redeemed
     /// @param underlyingAmount The amount of underlying assets received
-    event BondRedeemed(address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
+    event BondRedeemed(address indexed initiator, address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
 
     /// @notice Emitted when underlying assets are topped up
-    /// @param from The address providing the underlying assets
+    /// @param initiator The address that initiated the top up
     /// @param amount The amount of underlying assets added
-    event UnderlyingAssetTopUp(address indexed from, uint256 amount);
+    event UnderlyingAssetTopUp(address indexed initiator, uint256 amount);
 
     /// @notice Emitted when underlying assets are withdrawn
+    /// @param initiator The address that initiated the withdrawal
     /// @param to The address receiving the underlying assets
     /// @param amount The amount of underlying assets withdrawn
-    event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
+    event UnderlyingAssetWithdrawn(address indexed initiator, address indexed to, uint256 amount);
 
     /// @notice Modifier to prevent operations after bond maturity
     /// @dev Reverts with BondAlreadyMatured if the bond has matured
@@ -337,7 +339,7 @@ contract SMARTBond is
         bool success = underlyingAsset.transfer(to, amount);
         if (!success) revert InsufficientUnderlyingBalance();
 
-        emit UnderlyingAssetWithdrawn(to, amount);
+        emit UnderlyingAssetWithdrawn(_msgSender(), to, amount);
     }
 
     /// @notice Calculates the underlying asset amount for a given bond amount
@@ -469,7 +471,7 @@ contract SMARTBond is
         bool success = underlyingAsset.transfer(from, underlyingAmount);
         if (!success) revert InsufficientUnderlyingBalance();
 
-        emit BondRedeemed(from, amount, underlyingAmount);
+        emit BondRedeemed(_msgSender(), from, amount, underlyingAmount);
     }
 
     /**
