@@ -27,7 +27,6 @@ import { SMARTHooks } from "@smartprotocol/contracts/extensions/common/SMARTHook
 import { SMARTPausable } from "@smartprotocol/contracts/extensions/pausable/SMARTPausable.sol";
 import { SMARTBurnable } from "@smartprotocol/contracts/extensions/burnable/SMARTBurnable.sol";
 import { SMARTCustodian } from "@smartprotocol/contracts/extensions/custodian/SMARTCustodian.sol";
-import { SMARTCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateral.sol";
 import { SMARTRedeemable } from "@smartprotocol/contracts/extensions/redeemable/SMARTRedeemable.sol";
 import { SMARTHistoricalBalances } from
     "@smartprotocol/contracts/extensions/historical-balances/SMARTHistoricalBalances.sol";
@@ -60,12 +59,11 @@ contract SMARTBond is
     error InsufficientUnderlyingBalance();
     error InvalidRedemptionAmount();
     error InsufficientRedeemableBalance();
-    error CannotWithdrawUnderlyingAsset();
     error YieldScheduleActive();
     error InvalidAmount();
+
     /// @notice Timestamp when the bond matures
     /// @dev Set at deployment and cannot be changed
-
     uint256 public immutable maturityDate;
 
     /// @notice Tracks whether the bond has matured

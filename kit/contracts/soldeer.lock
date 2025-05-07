@@ -22,7 +22,7 @@ integrity = "498747bedc3f757976da0b6125d26a63e79bb2b4dbabd8ecd2547e809a2fa27e"
 name = "@smartprotocol"
 version = "v0.0.1"
 git = "https://github.com/settlemint/solidity-smart-protocol.git"
-rev = "74510b653f74eb6580ace089044e9f6b50fb2190"
+rev = "9126e8d6aed0395f19458e2ab1a9b767b1bf2f9b"
 
 [[dependencies]]
 name = "eas-contracts"
