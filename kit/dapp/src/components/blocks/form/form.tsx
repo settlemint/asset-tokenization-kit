@@ -382,13 +382,6 @@ export function Form<
       return;
     }
 
-    const beforeValidate = CurrentStep.beforeValidate ?? [];
-    await Promise.all(
-      beforeValidate.map((validate) =>
-        validate(form as UseFormReturn<Infer<S>>)
-      )
-    );
-
     // Validate using the custom validation function
     const customValidationResults = await Promise.all(
       customValidation.map((validate) =>
