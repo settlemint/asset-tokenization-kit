@@ -30,9 +30,9 @@ error ModuleAlreadyRegistered();
  * @author Your Organization
  * @notice This contract allows for the registration of a SMART protocol deployment and supports meta-transactions via
  * ERC2771.
- *         The deployer of this contract receives DEFAULT_ADMIN_ROLE for managing roles.
- *         The first address to successfully call `registerDeployment` receives DEPLOYMENT_OWNER_ROLE,
- *         authorizing them to manage compliance modules and reset the deployment for that registration.
+ *         The deployer of this contract receives DEFAULT_ADMIN_ROLE for overall contract administration.
+ *         The first address to successfully call `registerDeployment` receives DEPLOYMENT_OWNER_ROLE.
+ *         DEPLOYMENT_OWNER_ROLE is self-administering, meaning holders of this role can grant/revoke it to others.
  * @dev Utilizes AccessControl for permissioning and ERC2771Context for meta-transaction support.
  *      Core dependency addresses are stored upon registration.
  */
@@ -74,12 +74,12 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
     /**
      * @notice Initializes the contract, sets up roles, and configures the trusted forwarder for ERC2771.
      * @dev The deployer (_msgSender()) is granted DEFAULT_ADMIN_ROLE.
-     *      DEFAULT_ADMIN_ROLE is set as the admin for DEPLOYMENT_OWNER_ROLE.
+     *      DEPLOYMENT_OWNER_ROLE is set to be administered by DEPLOYMENT_OWNER_ROLE itself.
      * @param trustedForwarder_ The address of the ERC2771 trusted forwarder contract.
      */
     constructor(address trustedForwarder_) ERC2771Context(trustedForwarder_) {
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender()); // _msgSender() correctly identifies deployer
-        _setRoleAdmin(DEPLOYMENT_OWNER_ROLE, DEFAULT_ADMIN_ROLE);
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setRoleAdmin(DEPLOYMENT_OWNER_ROLE, DEPLOYMENT_OWNER_ROLE);
     }
 
     // --- Registration Functions ---
@@ -113,7 +113,7 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
         if (address(_identityRegistryContract) == address(0)) revert InvalidSMARTIdentityRegistryAddress();
         if (address(_trustedIssuersRegistryContract) == address(0)) revert InvalidSMARTTrustedIssuersRegistryAddress();
 
-        address sender = _msgSender(); // Explicitly use _msgSender() for clarity, though AccessControl also uses it
+        address sender = _msgSender();
 
         areDependenciesRegistered = true;
         deploymentRegistrar = sender;
@@ -188,19 +188,19 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
 
     /**
      * @notice Grants DEPLOYMENT_OWNER_ROLE to an account.
-     * @dev Requires DEFAULT_ADMIN_ROLE. Uses _msgSender() for role check.
+     * @dev Requires the caller to also have DEPLOYMENT_OWNER_ROLE.
      * @param account The address to grant the role to.
      */
-    function grantDeploymentOwnerRole(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function grantDeploymentOwnerRole(address account) external onlyRole(DEPLOYMENT_OWNER_ROLE) {
         grantRole(DEPLOYMENT_OWNER_ROLE, account);
     }
 
     /**
      * @notice Revokes DEPLOYMENT_OWNER_ROLE from an account.
-     * @dev Requires DEFAULT_ADMIN_ROLE. Uses _msgSender() for role check.
+     * @dev Requires the caller to also have DEPLOYMENT_OWNER_ROLE.
      * @param account The address to revoke the role from.
      */
-    function revokeDeploymentOwnerRole(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function revokeDeploymentOwnerRole(address account) external onlyRole(DEPLOYMENT_OWNER_ROLE) {
         revokeRole(DEPLOYMENT_OWNER_ROLE, account);
     }
 
