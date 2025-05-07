@@ -317,7 +317,7 @@ portal:
   enabled: true
   initContainers:
     - name: wait-for-postgres
-      image: ghcr.io/settlemint/btp-waitforit:v7.7.3
+      image: ghcr.io/settlemint/btp-waitforit:v7.7.4
       command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
   podLabels:
     app.kubernetes.io/component: portal
@@ -527,7 +527,7 @@ dapp:
       enabled: true
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: v7.7.3
+        tag: v7.7.4
         pullPolicy: IfNotPresent
       timeout: 0  # Timeout in seconds for each dependency check
       dependencies:
