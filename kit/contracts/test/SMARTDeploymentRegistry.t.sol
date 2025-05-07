@@ -1,0 +1,370 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.27;
+
+import { Test, console } from "forge-std/Test.sol";
+import { SMARTUtils } from "./utils/SMARTUtils.sol";
+import {
+    SMARTDeploymentRegistry,
+    SMARTDeploymentAlreadyRegistered,
+    InvalidSMARTComplianceAddress,
+    InvalidSMARTIdentityRegistryStorageAddress,
+    InvalidSMARTIdentityFactoryAddress,
+    InvalidSMARTIdentityRegistryAddress,
+    InvalidSMARTTrustedIssuersRegistryAddress,
+    CoreDependenciesNotRegistered,
+    InvalidModuleAddress,
+    ModuleAlreadyRegistered
+} from "../contracts/SMARTDeploymentRegistry.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+
+// SMART Protocol Dependencies
+import { SMARTCompliance } from "@smartprotocol/contracts/SMARTCompliance.sol";
+import { SMARTIdentityRegistryStorage } from "@smartprotocol/contracts/SMARTIdentityRegistryStorage.sol";
+import { SMARTIdentityFactory } from "@smartprotocol/contracts/SMARTIdentityFactory.sol";
+import { SMARTIdentityRegistry } from "@smartprotocol/contracts/SMARTIdentityRegistry.sol";
+import { SMARTTrustedIssuersRegistry } from "@smartprotocol/contracts/SMARTTrustedIssuersRegistry.sol";
+import { ISMARTComplianceModule } from "@smartprotocol/contracts/interface/ISMARTComplianceModule.sol";
+import { MockedComplianceModule } from "@smartprotocol/tests/mocks/MockedComplianceModule.sol";
+
+contract SMARTDeploymentRegistryTest is SMARTUtils {
+    SMARTDeploymentRegistry internal registry;
+
+    // Core contract instances from SMARTUtils
+    SMARTCompliance internal sCompliance;
+    SMARTIdentityRegistryStorage internal sIRS;
+    SMARTIdentityFactory internal sIF;
+    SMARTIdentityRegistry internal sIR;
+    SMARTTrustedIssuersRegistry internal sTIR;
+
+    address internal deployer; // user who deploys the registry
+    address internal user1;
+    address internal user2;
+    address internal trustedForwarder;
+
+    MockedComplianceModule internal mockModule1;
+    MockedComplianceModule internal mockModule2;
+
+    function setUp() public virtual {
+        deployer = vm.addr(0xBEEFCAFE); // Unique address for deployer
+        vm.label(deployer, "RegistryDeployer");
+        user1 = makeAddr("User1");
+        user2 = makeAddr("User2");
+        trustedForwarder = makeAddr("TrustedForwarder");
+
+        sCompliance = infrastructureUtils.compliance();
+        sIRS = infrastructureUtils.identityRegistryStorage();
+        sIF = infrastructureUtils.identityFactory();
+        sIR = infrastructureUtils.identityRegistry();
+        sTIR = infrastructureUtils.trustedIssuersRegistry();
+
+        vm.startPrank(deployer);
+        registry = new SMARTDeploymentRegistry(trustedForwarder);
+        vm.stopPrank();
+
+        // Instantiate concrete mock modules
+        mockModule1 = new MockedComplianceModule();
+        mockModule2 = new MockedComplianceModule();
+
+        vm.label(address(registry), "SMARTDeploymentRegistry");
+        vm.label(address(sCompliance), "SMARTCompliance_FromUtils");
+        vm.label(address(sIRS), "SMARTIRS_FromUtils");
+        vm.label(address(sIF), "SMARTIF_FromUtils");
+        vm.label(address(sIR), "SMARTIR_FromUtils");
+        vm.label(address(sTIR), "SMARTTIR_FromUtils");
+        vm.label(address(mockModule1), "MockModule1");
+        vm.label(address(mockModule2), "MockModule2");
+    }
+
+    // --- Test Constructor & Initial State ---
+    function test_InitialState() public {
+        assertTrue(registry.hasRole(registry.DEFAULT_ADMIN_ROLE(), deployer), "Deployer should have DEFAULT_ADMIN_ROLE");
+        assertFalse(registry.areDependenciesRegistered(), "Dependencies should not be registered initially");
+        assertEq(registry.deploymentRegistrar(), address(0), "Deployment registrar should be address(0) initially");
+        assertEq(registry.registrationTimestamp(), 0, "Registration timestamp should be 0 initially");
+        assertEq(address(registry.smartComplianceContract()), address(0));
+        assertEq(address(registry.smartIdentityRegistryStorageContract()), address(0));
+        assertEq(address(registry.smartIdentityFactoryContract()), address(0));
+        assertEq(address(registry.smartIdentityRegistryContract()), address(0));
+        assertEq(address(registry.smartTrustedIssuersRegistryContract()), address(0));
+        assertEq(registry.getRegisteredComplianceModules().length, 0, "No compliance modules initially");
+    }
+
+    // --- Test registerDeployment ---
+    function test_RegisterDeployment_Success() public {
+        vm.prank(user1);
+        registry.registerDeployment(sCompliance, sIRS, sIF, sIR, sTIR);
+
+        assertTrue(registry.areDependenciesRegistered(), "Dependencies should be registered");
+        assertEq(registry.deploymentRegistrar(), user1, "Registrar should be user1");
+        assertTrue(registry.registrationTimestamp() > 0, "Timestamp should be set");
+        assertEq(address(registry.smartComplianceContract()), address(sCompliance));
+        assertEq(address(registry.smartIdentityRegistryStorageContract()), address(sIRS));
+        assertEq(address(registry.smartIdentityFactoryContract()), address(sIF));
+        assertEq(address(registry.smartIdentityRegistryContract()), address(sIR));
+        assertEq(address(registry.smartTrustedIssuersRegistryContract()), address(sTIR));
+        assertTrue(registry.hasRole(registry.DEPLOYMENT_OWNER_ROLE(), user1), "User1 should have DEPLOYMENT_OWNER_ROLE");
+    }
+
+    function test_RegisterDeployment_Event() public {
+        vm.expectEmit(true, true, true, true);
+        emit SMARTDeploymentRegistry.SMARTDeploymentRegistered(
+            user1, block.timestamp, address(sCompliance), address(sIRS), address(sIF), address(sIR), address(sTIR)
+        );
+        vm.prank(user1);
+        registry.registerDeployment(sCompliance, sIRS, sIF, sIR, sTIR);
+    }
+
+    function test_Revert_RegisterDeployment_AlreadyRegistered() public {
+        vm.prank(user1);
+        registry.registerDeployment(sCompliance, sIRS, sIF, sIR, sTIR);
+
+        // Use global error selector directly
+        vm.expectRevert(SMARTDeploymentAlreadyRegistered.selector);
+        vm.prank(user2);
+        registry.registerDeployment(sCompliance, sIRS, sIF, sIR, sTIR);
+    }
+
+    function test_Revert_RegisterDeployment_InvalidCompliance() public {
+        vm.expectRevert(InvalidSMARTComplianceAddress.selector);
+        vm.prank(user1);
+        registry.registerDeployment(SMARTCompliance(address(0)), sIRS, sIF, sIR, sTIR);
+    }
+
+    function test_Revert_RegisterDeployment_InvalidIdentityRegistryStorage() public {
+        vm.expectRevert(InvalidSMARTIdentityRegistryStorageAddress.selector);
+        vm.prank(user1);
+        registry.registerDeployment(sCompliance, SMARTIdentityRegistryStorage(address(0)), sIF, sIR, sTIR);
+    }
+
+    function test_Revert_RegisterDeployment_InvalidIdentityFactory() public {
+        vm.expectRevert(InvalidSMARTIdentityFactoryAddress.selector);
+        vm.prank(user1);
+        registry.registerDeployment(sCompliance, sIRS, SMARTIdentityFactory(address(0)), sIR, sTIR);
+    }
+
+    function test_Revert_RegisterDeployment_InvalidIdentityRegistry() public {
+        vm.expectRevert(InvalidSMARTIdentityRegistryAddress.selector);
+        vm.prank(user1);
+        registry.registerDeployment(sCompliance, sIRS, sIF, SMARTIdentityRegistry(address(0)), sTIR);
+    }
+
+    function test_Revert_RegisterDeployment_InvalidTrustedIssuersRegistry() public {
+        vm.expectRevert(InvalidSMARTTrustedIssuersRegistryAddress.selector);
+        vm.prank(user1);
+        registry.registerDeployment(sCompliance, sIRS, sIF, sIR, SMARTTrustedIssuersRegistry(address(0)));
+    }
+
+    function _registerDeploymentAsUser(address _user) internal {
+        vm.startPrank(_user);
+        registry.registerDeployment(sCompliance, sIRS, sIF, sIR, sTIR);
+        vm.stopPrank();
+    }
+
+    function test_RegisterComplianceModule_Success() public {
+        _registerDeploymentAsUser(user1);
+
+        vm.prank(user1);
+        registry.registerComplianceModule(mockModule1);
+
+        assertTrue(registry.isComplianceModuleRegistered(address(mockModule1)));
+        ISMARTComplianceModule[] memory modules = registry.getRegisteredComplianceModules();
+        assertEq(modules.length, 1);
+        assertEq(address(modules[0]), address(mockModule1));
+    }
+
+    function test_RegisterComplianceModule_Event() public {
+        _registerDeploymentAsUser(user1);
+
+        vm.expectEmit(true, true, true, true);
+        emit SMARTDeploymentRegistry.SMARTComplianceModuleRegistered(address(mockModule1), user1, block.timestamp);
+        vm.prank(user1);
+        registry.registerComplianceModule(mockModule1);
+    }
+
+    function test_Revert_RegisterComplianceModule_NotDeploymentOwner() public {
+        _registerDeploymentAsUser(user1);
+
+        bytes memory expectedError = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector, user2, registry.DEPLOYMENT_OWNER_ROLE()
+        );
+        vm.expectRevert(expectedError);
+        vm.prank(user2);
+        registry.registerComplianceModule(mockModule1);
+    }
+
+    function test_Revert_RegisterComplianceModule_InvalidModuleAddress() public {
+        _registerDeploymentAsUser(user1);
+        vm.expectRevert(InvalidModuleAddress.selector);
+        vm.prank(user1);
+        registry.registerComplianceModule(ISMARTComplianceModule(address(0)));
+    }
+
+    function test_Revert_RegisterComplianceModule_ModuleAlreadyRegistered() public {
+        _registerDeploymentAsUser(user1);
+        vm.prank(user1);
+        registry.registerComplianceModule(mockModule1);
+
+        vm.expectRevert(ModuleAlreadyRegistered.selector);
+        vm.prank(user1);
+        registry.registerComplianceModule(mockModule1);
+    }
+
+    function test_ResetDeployment_Success() public {
+        _registerDeploymentAsUser(user1);
+        vm.prank(user1);
+        registry.registerComplianceModule(mockModule1);
+
+        vm.prank(user1);
+        registry.resetDeployment();
+
+        assertFalse(registry.areDependenciesRegistered());
+        assertEq(registry.deploymentRegistrar(), address(0));
+        assertEq(registry.registrationTimestamp(), 0);
+        assertEq(address(registry.smartComplianceContract()), address(0));
+        assertEq(address(registry.smartIdentityRegistryStorageContract()), address(0));
+        assertEq(address(registry.smartIdentityFactoryContract()), address(0));
+        assertEq(address(registry.smartIdentityRegistryContract()), address(0));
+        assertEq(address(registry.smartTrustedIssuersRegistryContract()), address(0));
+        assertFalse(registry.isComplianceModuleRegistered(address(mockModule1)));
+        assertEq(registry.getRegisteredComplianceModules().length, 0);
+
+        _registerDeploymentAsUser(user2);
+        assertTrue(registry.areDependenciesRegistered());
+        assertEq(registry.deploymentRegistrar(), user2);
+        assertTrue(registry.hasRole(registry.DEPLOYMENT_OWNER_ROLE(), user2));
+        assertTrue(
+            registry.hasRole(registry.DEPLOYMENT_OWNER_ROLE(), user1),
+            "User1 should retain DEPLOYMENT_OWNER_ROLE after reset"
+        );
+    }
+
+    function test_ResetDeployment_Event() public {
+        _registerDeploymentAsUser(user1);
+
+        vm.expectEmit(true, true, true, true);
+        emit SMARTDeploymentRegistry.SMARTDeploymentReset(user1, block.timestamp);
+        vm.prank(user1);
+        registry.resetDeployment();
+    }
+
+    function test_Revert_ResetDeployment_NotDeploymentOwner() public {
+        _registerDeploymentAsUser(user1);
+
+        bytes memory expectedError = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector, user2, registry.DEPLOYMENT_OWNER_ROLE()
+        );
+        vm.expectRevert(expectedError);
+        vm.prank(user2);
+        registry.resetDeployment();
+    }
+
+    function test_GrantRevokeRenounceDeploymentOwnerRole() public {
+        _registerDeploymentAsUser(user1);
+
+        vm.prank(user1);
+        registry.grantDeploymentOwnerRole(user2);
+        assertTrue(registry.isDeploymentOwner(user2), "User2 should have role after grant");
+
+        vm.prank(user1);
+        registry.revokeDeploymentOwnerRole(user2);
+        assertFalse(registry.isDeploymentOwner(user2), "User2 should not have role after revoke");
+
+        vm.prank(user1);
+        registry.renounceDeploymentOwnerRole();
+        assertFalse(registry.isDeploymentOwner(user1), "User1 should not have role after renounce");
+    }
+
+    function test_Revert_GrantDeploymentOwnerRole_NotDeploymentOwner() public {
+        _registerDeploymentAsUser(user1);
+
+        bytes memory expectedError = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector, user2, registry.DEPLOYMENT_OWNER_ROLE()
+        );
+        vm.expectRevert(expectedError);
+        vm.prank(user2);
+        registry.grantDeploymentOwnerRole(makeAddr("anotherUser"));
+    }
+
+    function test_Revert_RevokeDeploymentOwnerRole_NotDeploymentOwner() public {
+        _registerDeploymentAsUser(user1);
+        vm.prank(user1);
+        registry.grantDeploymentOwnerRole(user2);
+
+        address attacker = makeAddr("Attacker");
+        bytes memory expectedError = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker, registry.DEPLOYMENT_OWNER_ROLE()
+        );
+        vm.expectRevert(expectedError);
+        vm.prank(attacker);
+        registry.revokeDeploymentOwnerRole(user2);
+    }
+
+    function test_RenounceRole_NoRevertIfHasRole() public {
+        _registerDeploymentAsUser(user1);
+        assertTrue(registry.isDeploymentOwner(user1));
+        vm.prank(user1);
+        registry.renounceDeploymentOwnerRole();
+        assertFalse(registry.isDeploymentOwner(user1));
+    }
+
+    function test_RenounceRole_NoRevertIfNotHasRole() public {
+        assertFalse(registry.isDeploymentOwner(user2));
+        vm.prank(user2);
+        registry.renounceDeploymentOwnerRole();
+        assertFalse(registry.isDeploymentOwner(user2));
+    }
+
+    function test_GetRegisteredComplianceModules() public {
+        _registerDeploymentAsUser(user1);
+        ISMARTComplianceModule[] memory modules_empty = registry.getRegisteredComplianceModules();
+        assertEq(modules_empty.length, 0, "Should be empty initially");
+
+        vm.prank(user1);
+        registry.registerComplianceModule(mockModule1);
+        ISMARTComplianceModule[] memory modules1 = registry.getRegisteredComplianceModules();
+        assertEq(modules1.length, 1);
+        assertEq(address(modules1[0]), address(mockModule1));
+
+        vm.prank(user1);
+        registry.registerComplianceModule(mockModule2);
+        ISMARTComplianceModule[] memory modules2 = registry.getRegisteredComplianceModules();
+        assertEq(modules2.length, 2);
+        assertEq(address(modules2[0]), address(mockModule1));
+        assertEq(address(modules2[1]), address(mockModule2));
+    }
+
+    function test_isDeploymentOwner() public {
+        assertFalse(registry.isDeploymentOwner(user1), "user1 should not be owner initially");
+        _registerDeploymentAsUser(user1);
+        assertTrue(registry.isDeploymentOwner(user1), "user1 should be owner after registration");
+
+        vm.prank(user1);
+        registry.grantDeploymentOwnerRole(user2);
+        assertTrue(registry.isDeploymentOwner(user2), "user2 should be owner after grant");
+
+        vm.prank(user1);
+        registry.revokeDeploymentOwnerRole(user2);
+        assertFalse(registry.isDeploymentOwner(user2), "user2 should not be owner after revoke");
+    }
+
+    function test_isAdmin() public {
+        assertTrue(registry.isAdmin(deployer), "Deployer should be admin");
+        assertFalse(registry.isAdmin(user1), "user1 should not be admin by default");
+    }
+
+    function test_DeploymentOwnerRole_IsSelfAdministered() public {
+        _registerDeploymentAsUser(user1);
+        assertTrue(registry.hasRole(registry.DEFAULT_ADMIN_ROLE(), deployer));
+
+        bytes memory expectedRevert = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector, deployer, registry.DEPLOYMENT_OWNER_ROLE()
+        );
+        vm.expectRevert(expectedRevert);
+        vm.prank(deployer);
+        registry.grantDeploymentOwnerRole(user2);
+
+        vm.prank(user1);
+        registry.grantDeploymentOwnerRole(user2);
+        assertTrue(registry.hasRole(registry.DEPLOYMENT_OWNER_ROLE(), user2));
+    }
+}

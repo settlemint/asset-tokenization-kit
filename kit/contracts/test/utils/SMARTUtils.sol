@@ -2,10 +2,10 @@
 pragma solidity ^0.8.27;
 
 import { Test } from "forge-std/Test.sol";
-import { InfrastructureUtils } from "@smartprotocol/test-utils/InfrastructureUtils.sol";
-import { TokenUtils } from "@smartprotocol/test-utils/TokenUtils.sol";
-import { ClaimUtils } from "@smartprotocol/test-utils/ClaimUtils.sol";
-import { IdentityUtils } from "@smartprotocol/test-utils/IdentityUtils.sol";
+import { InfrastructureUtils } from "@smartprotocol/tests/utils/InfrastructureUtils.sol";
+import { TokenUtils } from "@smartprotocol/tests/utils/TokenUtils.sol";
+import { ClaimUtils } from "@smartprotocol/tests/utils/ClaimUtils.sol";
+import { IdentityUtils } from "@smartprotocol/tests/utils/IdentityUtils.sol";
 import { SMARTIdentityRegistry } from "@smartprotocol/contracts/SMARTIdentityRegistry.sol";
 import { SMARTCompliance } from "@smartprotocol/contracts/SMARTCompliance.sol";
 
