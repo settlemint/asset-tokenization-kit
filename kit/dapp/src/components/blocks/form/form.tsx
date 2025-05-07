@@ -49,7 +49,7 @@ interface FormProps<
   };
   secureForm?: boolean;
   onAnyFieldChange?: (
-    form: UseFormReturn<Infer<S>>,
+    getValues: UseFormReturn<Infer<S>>["getValues"],
     context: {
       step: number;
       goToStep: (step: number) => void;
@@ -424,7 +424,7 @@ export function Form<
     }
 
     const subscription = form.watch((_value, { name }) => {
-      onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
+      onAnyFieldChange((form as UseFormReturn<Infer<S>>).getValues, {
         changedFieldName: name,
         step: currentStep,
         goToStep: setCurrentStep,
