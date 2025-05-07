@@ -2441,7 +2441,7 @@
         "approvals": "Approvals",
         "assets": "Assets",
         "created-at": "Created at",
-        "expires-at": "Expires at",
+        "expiry": "Expiry",
         "id": "Settlement ID",
         "status": "Status"
       },

@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
   theGraphClientKit,
@@ -9,8 +10,9 @@ import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { calculateXvPSettlement } from "./xvp-calculated";
 import { XvPSettlementFragment } from "./xvp-fragment";
-import { OnChainXvPSettlementSchema } from "./xvp-schema";
+import { OnChainXvPSettlementSchema, type XvPSettlement } from "./xvp-schema";
 
 /**
  * GraphQL query to fetch XvPSettlement list from The Graph
@@ -27,34 +29,36 @@ const XvPSettlementList = theGraphGraphqlKit(
 );
 
 /**
- * Fetches a list of XvPSettlements from The Graph
+ * Fetches a list of XvPSettlements from The Graph and enriches them.
  *
  * @remarks
- * This function fetches data from The Graph and returns a list of XvP settlements.
+ * This function fetches data from The Graph and returns a list of enriched XvP settlements.
  */
 export const getXvPSettlementList = withTracing(
   "queries",
   "getXvPSettlementList",
-  async () => {
+  async (userCurrency: CurrencyCode): Promise<XvPSettlement[]> => {
     "use cache";
     cacheTag("trades");
 
-    const xvpSettlements = await fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKit.request(XvPSettlementList, {
-        first,
-        skip,
-      });
+    const onChainSettlements = await fetchAllTheGraphPages(
+      async (first, skip) => {
+        const result = await theGraphClientKit.request(XvPSettlementList, {
+          first,
+          skip,
+        });
 
-      return safeParse(
-        t.Array(OnChainXvPSettlementSchema),
-        result.xvPSettlements
-      );
-    });
+        return safeParse(
+          t.Array(OnChainXvPSettlementSchema),
+          result.xvPSettlements
+        );
+      }
+    );
 
-    return xvpSettlements.map((xvpSettlement) => {
-      return {
-        ...xvpSettlement,
-      };
-    });
+    return Promise.all(
+      onChainSettlements.map(async (onChainSettlement) => {
+        return calculateXvPSettlement(onChainSettlement, userCurrency);
+      })
+    );
   }
 );

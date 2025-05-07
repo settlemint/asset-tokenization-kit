@@ -40,7 +40,7 @@ export function columns() {
         formatDate(getValue().toString(), { locale, type: "relative" }),
     }),
     columnHelper.accessor("cutoffDate", {
-      header: t("columns.expires-at"),
+      header: t("columns.expiry"),
       cell: ({ getValue }) => {
         const expiresAt = getValue();
         const isExpired = isBefore(

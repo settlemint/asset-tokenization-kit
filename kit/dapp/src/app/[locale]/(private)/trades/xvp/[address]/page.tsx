@@ -4,6 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { XvpStatusPill } from "@/components/blocks/xvp-status/status-pill";
 import { PageHeader } from "@/components/layout/page-header";
+import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { formatDate } from "@/lib/utils/date";
@@ -41,7 +42,8 @@ export default async function XvpPage({
     locale,
     namespace: "trade-management",
   });
-  const xvpSettlement = await getXvPSettlementDetail(address);
+  const user = await getUser();
+  const xvpSettlement = await getXvPSettlementDetail(address, user.currency);
 
   return (
     <>
@@ -61,7 +63,7 @@ export default async function XvpPage({
             type: "relative",
           })}
         </DetailGridItem>
-        <DetailGridItem label={t("xvp.columns.expires-at")}>
+        <DetailGridItem label={t("xvp.columns.expiry")}>
           {formatDate(xvpSettlement.cutoffDate.toString(), {
             locale,
             type: "relative",

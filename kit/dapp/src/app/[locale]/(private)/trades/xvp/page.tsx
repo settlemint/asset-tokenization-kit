@@ -1,5 +1,6 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { PageHeader } from "@/components/layout/page-header";
+import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getXvPSettlementList } from "@/lib/queries/xvp/xvp-list";
 import type { Metadata } from "next";
@@ -33,11 +34,14 @@ export default async function XvpPage({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
-  const t = await getTranslations({
-    locale,
-    namespace: "trade-management.page",
-  });
-  const xvpSettlements = await getXvPSettlementList();
+  const [t, user] = await Promise.all([
+    getTranslations({
+      locale,
+      namespace: "trade-management.page",
+    }),
+    getUser(),
+  ]);
+  const xvpSettlements = await getXvPSettlementList(user.currency);
 
   return (
     <>

@@ -17,7 +17,7 @@ export const CalculatedXvPSettlementFlowSchema = t.Object({
   }),
 });
 
-export const XvPFlowSchema = t.Intersect(
+export const XvPSettlementFlowSchema = t.Intersect(
   [OnChainXvPSettlementFlowSchema, CalculatedXvPSettlementFlowSchema],
   {
     description: "Flows of the settlement",
@@ -45,6 +45,10 @@ export const OnChainXvPSettlementSchema = t.Object({
   createdAt: t.StringifiedBigInt(),
 });
 
+export type OnChainXvPSettlement = StaticDecode<
+  typeof OnChainXvPSettlementSchema
+>;
+
 export const CalculatedXvPSettlementSchema = t.Object({
   totalPrice: t.Price({
     description: "Total price of the settlement",
@@ -59,7 +63,7 @@ export const XvPSettlementSchema = t.Intersect(
     OnChainXvPSettlementSchema,
     CalculatedXvPSettlementSchema,
     t.Object({
-      flows: t.Array(XvPFlowSchema),
+      flows: t.Array(XvPSettlementFlowSchema),
     }),
   ],
   {
