@@ -1,109 +1,109 @@
-import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+"use client";
+
+import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
-import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
-import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
-import type { User } from "@/lib/queries/user/user-schema";
-import { formatDate } from "@/lib/utils/date";
-import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
-import { AssetAdminsCard } from "../../common/asset-admins/asset-admins-card";
+import { useFormContext } from "react-hook-form";
+import type { BondStepProps } from "../form";
 
-export function Summary({ userDetails }: { userDetails: User }) {
-  const { control } = useFormContext<CreateBondInput>();
-  const values = useWatch({
-    control: control,
-  });
+export function Summary({ userDetails, onNext, onBack }: BondStepProps) {
+  const { control, formState, getValues, trigger } =
+    useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
   const baseCurrency = useSettings("baseCurrency");
   const locale = useLocale();
 
+  // Fields to review in this step
+  const stepFields = ["predictedAddress", "verificationType"];
+
+  // Check for any errors in this step's fields
+  const hasStepErrors = stepFields.some(
+    (field) => !!formState.errors[field as keyof typeof formState.errors]
+  );
+
+  // Values to display in summary
+  const values = getValues();
+
+  // Handle next button click - typically submits the form
+  const handleNext = async () => {
+    // Trigger validation for fields in this step
+    const isValid = await trigger(stepFields as (keyof CreateBondInput)[]);
+    if (isValid && onNext) {
+      onNext();
+      // In a real implementation, we would submit the form here
+      console.log("Form submission values:", values);
+    }
+  };
+
   return (
-    <FormStep title={t("summary.title")} description={t("summary.description")}>
-      <FormSummaryDetailCard
-        title={t("summary.asset-basics-title")}
-        description={t("summary.asset-basics-description")}
-        icon={<DollarSign className="size-3 text-primary-foreground" />}
+    <StepContent
+      onNext={handleNext}
+      onBack={onBack}
+      isNextDisabled={hasStepErrors}
+      showBackButton={!!onBack}
+      nextLabel="Deploy Bond"
+    >
+      <FormStep
+        title={t("summary.title")}
+        description={t("summary.description")}
       >
-        <FormSummaryDetailItem
-          label={t("parameters.common.name-label")}
-          value={values.assetName}
-        />
-        <FormSummaryDetailItem
-          label={t("parameters.common.symbol-label")}
-          value={values.symbol}
-        />
-        <FormSummaryDetailItem
-          label={t("parameters.common.decimals-label")}
-          value={values.decimals}
-        />
-        <FormSummaryDetailItem
-          label={t("parameters.common.isin-label")}
-          value={values.isin === "" ? "-" : values.isin}
-        />
-      </FormSummaryDetailCard>
-
-      <FormSummaryDetailCard
-        title={t("summary.configuration-title")}
-        description={t("summary.configuration-description")}
-        icon={<Settings className="size-3 text-primary-foreground" />}
-      >
-        <FormSummaryDetailItem
-          label={t("parameters.bonds.cap-label")}
-          value={values.cap || "-"}
-        />
-        <FormSummaryDetailItem
-          label={t("parameters.bonds.face-value-label")}
-          value={values.faceValue || "-"}
-        />
-        <FormSummaryDetailItem
-          label={t("parameters.bonds.maturity-date-label")}
-          value={
-            values.maturityDate
-              ? formatDate(values.maturityDate, { locale })
-              : "-"
-          }
-        />
-        <FormSummaryDetailItem
-          label={t("parameters.bonds.underlying-asset-label")}
-          value={
-            values.underlyingAsset?.id ? (
-              <EvmAddress address={values.underlyingAsset.id} />
-            ) : (
-              "-"
-            )
-          }
-        />
-      </FormSummaryDetailCard>
-
-      <AssetAdminsCard
-        userDetails={userDetails}
-        assetAdmins={values.assetAdmins}
-      />
-    </FormStep>
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Bond Details</h3>
+          <dl className="grid grid-cols-2 gap-4">
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Name</dt>
+              <dd className="mt-1 text-sm">{values.assetName}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Symbol</dt>
+              <dd className="mt-1 text-sm">{values.symbol}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Decimals</dt>
+              <dd className="mt-1 text-sm">{values.decimals}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">ISIN</dt>
+              <dd className="mt-1 text-sm">{values.isin || "N/A"}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Cap</dt>
+              <dd className="mt-1 text-sm">{values.cap}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Face Value</dt>
+              <dd className="mt-1 text-sm">{values.faceValue}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">
+                Maturity Date
+              </dt>
+              <dd className="mt-1 text-sm">
+                {new Date(values.maturityDate).toLocaleDateString()}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">
+                Verification Type
+              </dt>
+              <dd className="mt-1 text-sm">{values.verificationType}</dd>
+            </div>
+          </dl>
+        </div>
+      </FormStep>
+    </StepContent>
   );
 }
 
-Summary.validatedFields = [
-  "predictedAddress",
-] satisfies (keyof CreateBondInput)[];
+// For use with form component
+Summary.validatedFields = ["predictedAddress", "verificationType"];
 
-Summary.beforeValidate = [
-  async ({ setValue, getValues }: UseFormReturn<CreateBondInput>) => {
-    const values = getValues();
-    const predictedAddress = await getPredictedAddress(values);
-
-    setValue("predictedAddress", predictedAddress);
-  },
-];
-
-// Export step definition for the asset designer
+// Export step definition for asset designer
 export const stepDefinition = {
   id: "review",
   title: "Review & Deploy",
-  description: "Review details and deploy the bond",
+  description: "Review bond details and deploy to blockchain",
   component: Summary,
 };

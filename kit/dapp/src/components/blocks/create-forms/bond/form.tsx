@@ -7,7 +7,6 @@ import {
 import type { User } from "@/lib/queries/user/user-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { createContext, useContext } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
@@ -15,32 +14,26 @@ import { stepDefinition as basicsStep } from "./steps/basics";
 import { stepDefinition as configurationStep } from "./steps/configuration";
 import { stepDefinition as summaryStep } from "./steps/summary";
 
-// Create form context to share bond form across steps
-interface BondFormContextType {
-  form: ReturnType<typeof useForm<CreateBondInput>>;
-  userDetails?: User;
-}
-
-const BondFormContext = createContext<BondFormContextType | null>(null);
-
-export const useBondForm = () => {
-  const context = useContext(BondFormContext);
-  if (!context) {
-    throw new Error("useBondForm must be used within a BondFormProvider");
-  }
-  return context;
-};
-
 interface CreateBondFormProps {
   userDetails: User;
   currentStepId?: string; // Optional for when used in the asset designer
+  onNextStep?: () => void;
+  onPrevStep?: () => void;
+}
+
+// Define the interface that all steps will implement
+export interface BondStepProps {
+  onNext?: () => void;
+  onBack?: () => void;
+  userDetails?: User;
 }
 
 export function CreateBondForm({
   userDetails,
   currentStepId,
+  onNextStep,
+  onPrevStep,
 }: CreateBondFormProps) {
-  // Using any type to avoid TypeScript errors with extra fields
   const bondForm = useForm<CreateBondInput>({
     defaultValues: {
       assetName: "",
@@ -52,9 +45,8 @@ export function CreateBondForm({
       maturityDate: getTomorrowMidnight(),
       verificationType: "pincode",
       predictedAddress: "0x0000000000000000000000000000000000000000",
-      // Extra field used by AssetAdmins but not part of the schema validation
     },
-    mode: "all", // Validate on all events
+    mode: "onChange", // Validate as fields change for real-time feedback
     resolver: (...args) =>
       typeboxResolver(
         CreateBondSchema({
@@ -86,24 +78,36 @@ export function CreateBondForm({
     // Only render the requested step (for asset designer)
     switch (currentStepId) {
       case "details":
-        return <BasicsComponent />;
+        return <BasicsComponent onNext={onNextStep} onBack={onPrevStep} />;
       case "configuration":
-        return <ConfigurationComponent />;
+        return (
+          <ConfigurationComponent onNext={onNextStep} onBack={onPrevStep} />
+        );
       case "admins":
-        return <AdminsComponent userDetails={userDetails} />;
+        return (
+          <AdminsComponent
+            userDetails={userDetails}
+            onNext={onNextStep}
+            onBack={onPrevStep}
+          />
+        );
       case "review":
-        return <SummaryComponent userDetails={userDetails} />;
+        return (
+          <SummaryComponent
+            userDetails={userDetails}
+            onNext={onNextStep}
+            onBack={onPrevStep}
+          />
+        );
       default:
         return <div>Unknown step: {currentStepId}</div>;
     }
   };
 
-  return (
-    <BondFormContext.Provider value={{ form: bondForm, userDetails }}>
-      <FormProvider {...bondForm}>{renderCurrentStep()}</FormProvider>
-    </BondFormContext.Provider>
-  );
+  return <FormProvider {...bondForm}>{renderCurrentStep()}</FormProvider>;
 }
+
+CreateBondForm.displayName = "CreateBondForm";
 
 // Collect all the step definitions
 const bondSteps = [basicsStep, configurationStep, adminsStep, summaryStep];

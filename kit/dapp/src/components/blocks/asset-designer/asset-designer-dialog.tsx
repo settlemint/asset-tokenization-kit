@@ -5,7 +5,7 @@ import type { User } from "@/lib/queries/user/user-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { UserRole } from "@/lib/utils/typebox/user-roles";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MiniProgressBar from "./components/mini-progress-bar";
 import { StepContent } from "./step-wizard/step-content";
 import type { Step } from "./step-wizard/step-wizard";
@@ -116,14 +116,14 @@ export function AssetDesignerDialog({
     setCurrentStepId(stepId);
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = useCallback(() => {
     const currentIndex = stepsOrder.indexOf(currentStepId);
     if (currentIndex >= 0 && currentIndex < stepsOrder.length - 1) {
       setCurrentStepId(stepsOrder[currentIndex + 1]);
     }
-  };
+  }, [currentStepId, stepsOrder]);
 
-  const handlePreviousStep = () => {
+  const handlePreviousStep = useCallback(() => {
     const currentIndex = stepsOrder.indexOf(currentStepId);
 
     // If we're at the first step of an asset form, go back to type selection
@@ -137,7 +137,7 @@ export function AssetDesignerDialog({
     if (currentIndex > 0) {
       setCurrentStepId(stepsOrder[currentIndex - 1]);
     }
-  };
+  }, [currentStepId, stepsOrder]);
 
   // Conditional sidebar style
   const sidebarStyle = {
@@ -158,7 +158,12 @@ export function AssetDesignerDialog({
     // Type selection step
     if (currentStepId === "type") {
       return (
-        <StepContent showNextButton={false} showBackButton={false}>
+        <StepContent
+          showNextButton={!!selectedAssetType}
+          showBackButton={false}
+          onNext={handleNextStep}
+          isNextDisabled={!selectedAssetType}
+        >
           <AssetTypeSelection
             selectedType={selectedAssetType}
             onSelect={handleAssetTypeSelect}
@@ -171,17 +176,12 @@ export function AssetDesignerDialog({
     if (formComponent) {
       const FormComponent = formComponent;
       return (
-        <StepContent
-          showNextButton={currentStepId !== "review"}
-          showBackButton={true}
-          onNext={handleNextStep}
-          onBack={handlePreviousStep}
-        >
-          <FormComponent
-            userDetails={placeholderUser}
-            currentStepId={currentStepId}
-          />
-        </StepContent>
+        <FormComponent
+          userDetails={placeholderUser}
+          currentStepId={currentStepId}
+          onNextStep={handleNextStep}
+          onPrevStep={handlePreviousStep}
+        />
       );
     }
 
