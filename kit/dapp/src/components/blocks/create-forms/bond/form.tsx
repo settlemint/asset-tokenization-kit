@@ -80,9 +80,6 @@ export function CreateBondForm({
               : undefined;
           },
         }}
-        onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(["predictedAddress"]);
-        }}
       >
         <Basics />
         <Configuration />
