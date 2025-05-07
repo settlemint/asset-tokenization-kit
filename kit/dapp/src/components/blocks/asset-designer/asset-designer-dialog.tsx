@@ -49,7 +49,7 @@ import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
-import { revalidateCaches } from "./revalidate-cache";
+import { revalidate } from "@/lib/utils/revalidate";
 
 interface AssetDesignerDialogProps {
   open: boolean;
@@ -296,14 +296,12 @@ export function AssetDesignerDialog({
         : [];
 
       // Wait for the transactions to be confirmed using the dedicated function
-      const transactions = await waitForTransactions(hashes);
-      const lastTransaction = transactions.at(-1);
-
-      if (lastTransaction?.blockNumber) {
-        await waitForIndexing(Number(lastTransaction.blockNumber));
+      const receipts = await waitForTransactions(hashes);
+      const lastBlockNumber = Number(receipts.at(-1)?.blockNumber);
+      if (lastBlockNumber) {
+        await waitForIndexing(lastBlockNumber);
+        await revalidate();
       }
-
-      await revalidateCaches();
 
       toast.success(
         `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,

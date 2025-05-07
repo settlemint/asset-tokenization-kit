@@ -8,10 +8,10 @@ import { SMARTConstants } from "../contracts/SMARTConstants.sol";
 import { TestConstants } from "./TestConstants.sol";
 import { InvalidDecimals } from "@smartprotocol/contracts/extensions/core/SMARTErrors.sol";
 import { ClaimUtils } from "@smartprotocol/test-utils/ClaimUtils.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
 import { InsufficientCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateralErrors.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 
@@ -36,9 +36,9 @@ contract SMARTStableCoinTest is Test {
     address public user2;
     address public spender;
 
-    uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** 18;
-    uint48 public constant COLLATERAL_LIVENESS = 7 days;
     uint8 public constant DECIMALS = 8;
+    uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** DECIMALS;
+    uint48 public constant COLLATERAL_LIVENESS = 7 days;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -166,7 +166,11 @@ contract SMARTStableCoinTest is Test {
         _updateCollateral(address(stableCoin), address(owner), INITIAL_SUPPLY + 100);
 
         vm.startPrank(user1);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+            )
+        );
         stableCoin.mint(user1, 100);
         vm.stopPrank();
     }
@@ -195,7 +199,11 @@ contract SMARTStableCoinTest is Test {
     // ERC20Pausable tests
     function test_OnlyAdminCanPause() public {
         vm.startPrank(user1);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, stableCoin.DEFAULT_ADMIN_ROLE()
+            )
+        );
         stableCoin.pause();
         vm.stopPrank();
 
@@ -255,7 +263,11 @@ contract SMARTStableCoinTest is Test {
         vm.stopPrank();
 
         vm.startPrank(user2);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTConstants.USER_MANAGEMENT_ROLE
+            )
+        );
         stableCoin.freezePartialTokens(user1, 100);
         vm.stopPrank();
 
@@ -347,7 +359,11 @@ contract SMARTStableCoinTest is Test {
         _mintInitialSupply(user1);
 
         vm.startPrank(user2);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user2));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+            )
+        );
         stableCoin.forcedTransfer(user1, user2, INITIAL_SUPPLY);
         vm.stopPrank();
     }

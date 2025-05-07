@@ -12,17 +12,17 @@ import { SMARTComplianceModuleParamPair } from
 import { SMARTBond } from "../contracts/SMARTBond.sol";
 import { SMARTConstants } from "../contracts/SMARTConstants.sol";
 import { TestConstants } from "./TestConstants.sol";
-import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import { FixedYieldFactory } from "../contracts/FixedYieldFactory.sol";
 import { FixedYield } from "../contracts/FixedYield.sol";
-import { ERC20YieldMock } from "./mocks/ERC20YieldMock.sol";
-
+import { ERC20Yield } from "../contracts/extensions/ERC20Yield.sol";
 /// Following tests are changed:
 /// - test_BurnFrom: removed because it doesn't exist in ERC3643
 /// - test_OnlyUserManagementCanBlock: removed because it will be managed by compliance modules
 /// - test_StableCoinClawback: renamed to test_BondForceTransfer
+
 contract SMARTBondTest is Test {
     SMARTUtils internal smartUtils;
 
@@ -100,7 +100,7 @@ contract SMARTBondTest is Test {
         // Deploy forwarder first
         forwarder = new Forwarder();
 
-        bond = _createBond(
+        bond = _createBondAndMint(
             "Test Bond",
             "TBOND",
             DECIMALS,
@@ -113,7 +113,7 @@ contract SMARTBondTest is Test {
         );
     }
 
-    function _createBond(
+    function _createBondAndMint(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
@@ -178,7 +178,7 @@ contract SMARTBondTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.prank(owner);
-            SMARTBond newBond = _createBond(
+            SMARTBond newBond = _createBondAndMint(
                 "Test Bond",
                 "TBOND",
                 decimalValues[i],
@@ -194,9 +194,8 @@ contract SMARTBondTest is Test {
     }
 
     function test_RevertOnInvalidDecimals() public {
-        vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(Bond.InvalidDecimals.selector, 19));
-        _createBond(
+        new SMARTBond(
             "Test Bond",
             "TBOND",
             19,
@@ -204,10 +203,14 @@ contract SMARTBondTest is Test {
             maturityDate,
             faceValue,
             address(underlyingAsset),
+            address(0),
             new uint256[](0),
-            new SMARTComplianceModuleParamPair[](0)
+            new SMARTComplianceModuleParamPair[](0),
+            identityRegistry,
+            compliance,
+            owner,
+            address(forwarder)
         );
-        vm.stopPrank();
     }
 
     function test_Transfer() public {
@@ -244,7 +247,11 @@ contract SMARTBondTest is Test {
         assertEq(bond.balanceOf(user1), toDecimals(100));
 
         vm.startPrank(user1);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+            )
+        );
         bond.mint(user1, toDecimals(100));
         vm.stopPrank();
     }
@@ -278,7 +285,11 @@ contract SMARTBondTest is Test {
 
     function test_OnlyAdminCanPause() public {
         vm.startPrank(user1);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, bond.DEFAULT_ADMIN_ROLE()
+            )
+        );
         bond.pause();
         vm.stopPrank();
         vm.prank(owner);
@@ -339,7 +350,11 @@ contract SMARTBondTest is Test {
 
         // Try to mature as non-supply manager
         vm.startPrank(user1);
-        vm.expectRevert(abi.encodeWithSelector(Unauthorized.selector, user1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+            )
+        );
         bond.mature();
         vm.stopPrank();
 
@@ -617,7 +632,7 @@ contract SMARTBondTest is Test {
 
         // Step 1: Initial state - warp to a starting point and deploy
         vm.warp(1000);
-        bond = _createBond(
+        bond = _createBondAndMint(
             "Test Bond",
             "TBOND",
             DECIMALS,
@@ -628,9 +643,6 @@ contract SMARTBondTest is Test {
             new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
-        vm.startPrank(owner);
-        bond.mint(owner, initialSupply);
-        vm.stopPrank();
 
         // Move forward one second to query the initial state
         vm.warp(1001);
@@ -673,7 +685,7 @@ contract SMARTBondTest is Test {
 
         // Step 1: Initial state - warp to a starting point and redeploy
         vm.warp(1000);
-        bond = _createBond(
+        bond = _createBondAndMint(
             "Test Bond",
             "TBOND",
             DECIMALS,
@@ -684,9 +696,6 @@ contract SMARTBondTest is Test {
             new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
-        vm.startPrank(owner);
-        bond.mint(owner, initialSupply);
-        vm.stopPrank();
 
         // Move forward one second to query initial state
         vm.warp(1001);
@@ -750,7 +759,7 @@ contract SMARTBondTest is Test {
     function test_HistoricalBalancesBeforeFirstTransfer() public {
         // First warp to a starting point and redeploy the contract
         vm.warp(1000);
-        bond = _createBond(
+        bond = _createBondAndMint(
             "Test Bond",
             "TBOND",
             DECIMALS,
@@ -761,9 +770,6 @@ contract SMARTBondTest is Test {
             new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
-        vm.startPrank(owner);
-        bond.mint(owner, initialSupply);
-        vm.stopPrank();
 
         // Store deployment time
         uint256 deploymentTime = 1000;
@@ -868,8 +874,7 @@ contract SMARTBondTest is Test {
 
         // Create the yield schedule for our bond
         // Note: The factory automatically sets up the circular reference by calling bond.setYieldSchedule()
-        address yieldScheduleAddr =
-            factory.create(ERC20YieldMock(address(bond)), startDate, endDate, yieldRate, interval);
+        address yieldScheduleAddr = factory.create(ERC20Yield(address(bond)), startDate, endDate, yieldRate, interval);
 
         // Verify the schedule references our bond
         FixedYield yieldSchedule = FixedYield(yieldScheduleAddr);
@@ -894,8 +899,7 @@ contract SMARTBondTest is Test {
         uint256 yieldRate = 500; // 5%
         uint256 interval = 30 days;
 
-        address yieldScheduleAddr =
-            factory.create(ERC20YieldMock(address(bond)), startDate, endDate, yieldRate, interval);
+        address yieldScheduleAddr = factory.create(ERC20Yield(address(bond)), startDate, endDate, yieldRate, interval);
 
         // Verify schedule is linked
         assertEq(bond.yieldSchedule(), yieldScheduleAddr);

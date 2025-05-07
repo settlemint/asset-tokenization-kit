@@ -806,3 +806,67 @@ type ActivityLogEntryValue @entity(immutable: true) {
   value: String!
   entry: ActivityLogEntry!
 }
+
+# --------------------------------------------------
+# Vault Contract
+# --------------------------------------------------
+
+type Vault @entity(immutable: false) {
+  id: Bytes!
+  creator: Account!
+  admins: [Account!]!
+  signers: [Account!]!
+  requiredSigners: BigInt!
+  totalSigners: BigInt!
+  paused: Boolean!
+  deployedOn: BigInt!
+  lastActivity: BigInt!
+  asAccount: Account!
+  transactions: [VaultTransaction!]! @derivedFrom(field: "vault")
+  pendingTransactionsCount: Int!
+  executedTransactionsCount: Int!
+}
+
+# --------------------------------------------------
+# Vault Transactions
+# --------------------------------------------------
+
+type VaultTransaction @entity(immutable: false) {
+  id: Bytes! # vaultAddress-txIndex
+  vault: Vault!
+  txIndex: BigInt!
+  type: String! # "NativeCurrencyTransfer", "ERC20Transfer", "ContractCall"
+  submitter: Account! # Signer who submitted the transaction
+  createdAt: BigInt! # Timestamp of submission
+  comment: String!
+  executed: Boolean!
+  executedAt: BigInt # Timestamp of execution, null if not executed
+  executor: Account # Signer who triggered execution, null if not executed
+  confirmationsCount: Int!
+  confirmations: [VaultTransactionConfirmation!]!
+    @derivedFrom(field: "transaction")
+
+  # NativeCurrencyTransfer specific fields (optional)
+  # For NativeCurrencyTransfer, 'to' and 'value'/'valueExact' are primary.
+  # 'data' can be used for more complex native transactions not involving contract calls.
+  to: Account # Recipient for native currency or ERC20 transfer. For contract call, this is the target.
+  value: BigDecimal # ETH value sent with native transfer/contract call OR ERC20 amount for ERC20 transfer
+  valueExact: BigInt # ETH value sent with native transfer/contract call OR ERC20 amount for ERC20 transfer
+  data: Bytes # Optional raw data for native currency transaction (e.g., if not a simple transfer to EOA)
+  # ERC20Transfer specific fields (optional)
+  # 'to', 'value'/'valueExact' are reused. 'token' specifies the ERC20 contract.
+  token: Account # The ERC20 token contract address
+  # ContractCall specific fields (optional)
+  # 'to' (as target), 'value'/'valueExact' (for ETH sent) are reused.
+  # 'selector' and 'abiEncodedArguments' are specific to contract calls.
+  # 'target' field is aliased to 'to' for consistency.
+  selector: Bytes # Function selector (bytes4)
+  abiEncodedArguments: Bytes # Arguments for the call
+}
+
+type VaultTransactionConfirmation @entity(immutable: false) {
+  id: Bytes! # txId-signerAddress
+  transaction: VaultTransaction! # Updated to point to the unified type
+  signer: Account!
+  confirmedAt: BigInt!
+}

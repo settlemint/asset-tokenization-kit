@@ -4,8 +4,7 @@ import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-
 import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { getPortfolioStats } from "@/lib/queries/portfolio/portfolio-stats";
 import type { Locale } from "next-intl";
-import { TransferForm } from "../../../_components/transfer-form/form";
-import { MyAssetsCount } from "./my-assets-count";
+import { Greeting } from "../greeting/greeting";
 
 interface MyAssetsHeaderProps {
   locale: Locale;
@@ -35,7 +34,18 @@ export async function MyAssetsHeader({ locale, user }: MyAssetsHeaderProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="grid grid-cols-4 gap-4">
+        <Greeting totalUserAssetsValue={totalUserAssetsValue} user={user} />
+        <div className="col-span-3">
+          <PortfolioValue
+            portfolioStats={portfolioStats}
+            assetPriceMap={assetPrices}
+            locale={locale}
+          />
+        </div>
+      </div>
+
+      {/* <div className="flex items-center justify-between">
         <MyAssetsCount
           totalCount={myAssetsBalance.total}
           totalValue={{
@@ -43,13 +53,14 @@ export async function MyAssetsHeader({ locale, user }: MyAssetsHeaderProps) {
             currency: user.currency,
           }}
         />
-        <TransferForm userAddress={user.wallet} asButton />
+
       </div>
+      <PortfolioValueCard />
       <PortfolioValue
         portfolioStats={portfolioStats}
         assetPriceMap={assetPrices}
         locale={locale}
-      />
+      /> */}
     </>
   );
 }

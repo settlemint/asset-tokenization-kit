@@ -2,7 +2,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { authClient } from "@/lib/auth/client";
-import type { CreateDvpSwapInput } from "@/lib/mutations/dvp/create/create-schema";
+import type { CreateXvpInput } from "@/lib/mutations/xvp/create/create-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { useLocale, useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -11,7 +11,7 @@ import { getAddress } from "viem";
 export function Amount() {
   const t = useTranslations("trade-management.forms.amounts");
   const locale = useLocale();
-  const { control } = useFormContext<CreateDvpSwapInput>();
+  const { control } = useFormContext<CreateXvpInput>();
   const offerAsset = useWatch({ control, name: "offerAsset" });
   const loggedInUserWallet = authClient.useSession().data.user.wallet;
   const maxAmountToSend = offerAsset?.holders.find(
@@ -60,7 +60,6 @@ export function Amount() {
         label={t("asset-to-request")}
         placeholder={t("asset-to-request")}
         required
-        userWallet={user}
       />
       <FormInput
         control={control}
@@ -81,4 +80,4 @@ Amount.validatedFields = [
   "offerAmount",
   "requestAsset",
   "requestAmount",
-] as (keyof CreateDvpSwapInput)[];
+] as (keyof CreateXvpInput)[];
