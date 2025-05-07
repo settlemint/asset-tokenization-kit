@@ -1,7 +1,12 @@
+import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
+import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import { XvpStatusPill } from "@/components/blocks/xvp-status/status-pill";
 import { PageHeader } from "@/components/layout/page-header";
 import { metadata } from "@/lib/config/metadata";
+import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
+import { formatDate } from "@/lib/utils/date";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -34,8 +39,9 @@ export default async function XvpPage({
   const { locale, address } = await params;
   const t = await getTranslations({
     locale,
-    namespace: "trade-management.page",
+    namespace: "trade-management",
   });
+  const xvpSettlement = await getXvPSettlementDetail(address);
 
   return (
     <>
@@ -45,8 +51,44 @@ export default async function XvpPage({
             <EvmAddressBalances address={address} />
           </EvmAddress>
         }
-        section={t("xvp")}
+        section={t("page.xvp")}
+        pill={<XvpStatusPill xvp={xvpSettlement} />}
       />
+      <DetailGrid>
+        <DetailGridItem label={t("xvp.columns.created-at")}>
+          {formatDate(xvpSettlement.createdAt.toString(), {
+            locale,
+            type: "relative",
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("xvp.columns.expires-at")}>
+          {formatDate(xvpSettlement.cutoffDate.toString(), {
+            locale,
+            type: "relative",
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("xvp.columns.status")}>
+          <XvpStatusPill xvp={xvpSettlement} />
+        </DetailGridItem>
+        <DetailGridItem
+          label={t("xvp.auto-execute")}
+          info={t("xvp.auto-execute-description")}
+        >
+          {xvpSettlement.autoExecute
+            ? t("forms.summary.yes")
+            : t("forms.summary.no")}
+        </DetailGridItem>
+        {/* <DetailGridItem label={t("xvp.columns.assets")}>
+          {xvpSettlement.flows.map((flow) => (
+            <EvmAddress address={flow.asset.id} key={flow.asset.id} />
+          ))}
+        </DetailGridItem>
+        <DetailGridItem label={t("xvp.columns.approvals")}>
+          {xvpSettlement.approvals.map((approval) => (
+            <EvmAddress address={approval.account.id} key={approval.id} />
+          ))}
+        </DetailGridItem> */}
+      </DetailGrid>
     </>
   );
 }

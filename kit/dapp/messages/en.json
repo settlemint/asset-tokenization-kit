@@ -2406,6 +2406,8 @@
         "id": "Settlement ID",
         "status": "Status"
       },
+      "auto-execute": "Auto execute",
+      "auto-execute-description": "Automatically execute the settlement on last approval.",
       "details": "Details",
       "expired": "Expired",
       "status": {

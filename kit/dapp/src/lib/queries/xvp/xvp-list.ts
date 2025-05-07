@@ -10,7 +10,7 @@ import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { XvPSettlementFragment } from "./xvp-fragment";
-import { XvPSettlementSchema } from "./xvp-schema";
+import { OnChainXvPSettlementSchema } from "./xvp-schema";
 
 /**
  * GraphQL query to fetch XvPSettlement list from The Graph
@@ -39,17 +39,22 @@ export const getXvPSettlementList = withTracing(
     "use cache";
     cacheTag("trades");
 
-    return await fetchAllTheGraphPages(async (first, skip) => {
+    const xvpSettlements = await fetchAllTheGraphPages(async (first, skip) => {
       const result = await theGraphClientKit.request(XvPSettlementList, {
         first,
         skip,
       });
 
-      return safeParse(t.Array(XvPSettlementSchema), result.xvPSettlements);
+      return safeParse(
+        t.Array(OnChainXvPSettlementSchema),
+        result.xvPSettlements
+      );
+    });
+
+    return xvpSettlements.map((xvpSettlement) => {
+      return {
+        ...xvpSettlement,
+      };
     });
   }
 );
-
-export type XvPSettlement = Awaited<
-  ReturnType<typeof getXvPSettlementList>
->[number];

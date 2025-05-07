@@ -5,7 +5,7 @@ import { PercentageProgressBar } from "@/components/blocks/percentage-progress/p
 import { XvpStatusPill } from "@/components/blocks/xvp-status/status-pill";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/routing";
-import type { XvPSettlement } from "@/lib/queries/xvp/xvp-list";
+import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import { isBefore } from "date-fns";
