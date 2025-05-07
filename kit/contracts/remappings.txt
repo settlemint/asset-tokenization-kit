@@ -4,5 +4,5 @@
 @openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.2.0/
 @openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.2.0/
 @smartprotocol/contracts/=dependencies/@smartprotocol-v0.0.1/contracts/
-@smartprotocol/test-utils/=dependencies/@smartprotocol-v0.0.1/test/tests/utils/
+@smartprotocol/tests/=dependencies/@smartprotocol-v0.0.1/test/tests
 forge-std/=dependencies/forge-std-1.9.5/src/

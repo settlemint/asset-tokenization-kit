@@ -7,7 +7,7 @@ import { Forwarder } from "../contracts/Forwarder.sol";
 import { SMARTConstants } from "../contracts/SMARTConstants.sol";
 import { TestConstants } from "./TestConstants.sol";
 import { InvalidDecimals } from "@smartprotocol/contracts/extensions/core/SMARTErrors.sol";
-import { ClaimUtils } from "@smartprotocol/test-utils/ClaimUtils.sol";
+import { ClaimUtils } from "@smartprotocol/tests/utils/ClaimUtils.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 import { SMARTComplianceModuleParamPair } from
