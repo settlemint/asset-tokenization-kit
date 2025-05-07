@@ -3,6 +3,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
+import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
 import { formatDate } from "@/lib/utils/date";
 import { DollarSign, Settings } from "lucide-react";
@@ -90,15 +91,20 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = [
-  "predictedAddress",
-] satisfies (keyof CreateBondInput)[];
+const validatePredictedAddress = async (
+  form: UseFormReturn<CreateBondInput>
+) => {
+  const values = form.getValues();
+  const predictedAddress = await getPredictedAddress(values);
+  const isAvailable = await isAddressAvailable(predictedAddress);
+  if (!isAvailable) {
+    form.setError("predictedAddress", {
+      message: "private.assets.create.form.duplicate-errors.bond",
+    });
+    return false;
+  }
+  form.clearErrors("predictedAddress");
+  return true;
+};
 
-Summary.beforeValidate = [
-  async ({ setValue, getValues }: UseFormReturn<CreateBondInput>) => {
-    const values = getValues();
-    const predictedAddress = await getPredictedAddress(values);
-
-    setValue("predictedAddress", predictedAddress);
-  },
-];
+Summary.customValidation = [validatePredictedAddress];

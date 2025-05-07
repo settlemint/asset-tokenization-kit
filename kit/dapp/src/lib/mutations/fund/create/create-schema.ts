@@ -1,4 +1,3 @@
-import { isAddressAvailable } from "@/lib/queries/fund-factory/fund-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 import { AssetAdminsSchemaFragment } from "../../common/asset-admins-schema";
 
@@ -59,8 +58,6 @@ export function CreateFundSchema() {
       }),
       predictedAddress: t.EthereumAddress({
         description: "The predicted contract address",
-        refine: isAddressAvailable,
-        error: "fund.duplicate",
       }),
       price: t.Price({
         description: "Price of the fund",

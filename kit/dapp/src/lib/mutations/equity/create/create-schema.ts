@@ -1,4 +1,3 @@
-import { isAddressAvailable } from "@/lib/queries/equity-factory/equity-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 import { AssetAdminsSchemaFragment } from "../../common/asset-admins-schema";
 
@@ -53,8 +52,6 @@ export function CreateEquitySchema() {
       }),
       predictedAddress: t.EthereumAddress({
         description: "The predicted contract address",
-        refine: isAddressAvailable,
-        error: "equity.duplicate",
       }),
       price: t.Price({
         description: "Price of the equity",

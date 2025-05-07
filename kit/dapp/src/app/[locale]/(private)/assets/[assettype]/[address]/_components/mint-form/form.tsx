@@ -125,8 +125,8 @@ export function MintForm({
           assettype,
           to: recipient,
         }}
-        onAnyFieldChange={(form) => {
-          form.clearErrors(["to"]);
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors("to");
         }}
       >
         {steps.map((step) => step)}

@@ -1,4 +1,3 @@
-import { isAddressAvailable } from "@/lib/queries/deposit-factory/deposit-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 import { AssetAdminsSchemaFragment } from "../../common/asset-admins-schema";
 
@@ -66,8 +65,6 @@ export function CreateDepositSchema() {
       }),
       predictedAddress: t.EthereumAddress({
         description: "The predicted contract address",
-        refine: isAddressAvailable,
-        error: "tokenized-deposit.duplicate",
       }),
       price: t.Price({
         description: "Price of the tokenized deposit",
