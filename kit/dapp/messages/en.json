@@ -218,13 +218,15 @@
       "asset-designer": "Asset Designer",
       "asset-management": {
         "actions": "Actions",
-        "asset-activity": "Asset activity",
+        "asset-activity": "Activity",
         "bonds": "Bonds",
         "cryptocurrencies": "Cryptocurrencies",
+        "custody-group-title": "Custody",
         "dashboard": "Dashboard",
         "equities": "Equities",
         "funds": "Funds",
         "group-title": "Asset management",
+        "multisig-vaults": "Vaults",
         "stablecoins": "Stablecoins",
         "tokenized-deposits": "Deposits",
         "view-all": "View all"
@@ -236,6 +238,10 @@
         "fund": "Fund",
         "stablecoin": "Stablecoin",
         "tokenized-deposit": "Deposits"
+      },
+      "custody-management": {
+        "group-title": "Custody management",
+        "multisig-vaults": "Vaults"
       },
       "platform-management": {
         "api": "API",
@@ -714,6 +720,25 @@
     }
   },
   "creator-owner": "Creator / Owner",
+  "custody": {
+    "vaults": {
+      "forms": {
+        "button": {
+          "vault": "Create a new vault"
+        },
+        "description": {
+          "vault": "A vault is a multi signature enabled smart contract to hold your assets securely"
+        },
+        "title": {
+          "vault": "Create a new vault"
+        }
+      },
+      "page": {
+        "vaults": "Vaults",
+        "vaults-description": "Multisig vaults to securely store assets"
+      }
+    }
+  },
   "error": {
     "array": "Please provide a list of items",
     "array-contains": "Please select at least one item from the list",
@@ -808,34 +833,6 @@
     "changelog-link-title": "Introducing the SMART protocol",
     "cryptocurrencies": "cryptocurrencies",
     "documentation": "Documentation",
-    "pricing": {
-      "title": "Pricing that scales with you",
-      "starter": {
-        "title": "Starter",
-        "price": "€ 4.760 / mo",
-        "description": "Per month for non-production usecases",
-        "feature1": "Complete access to the SettleMint platform",
-        "feature2": "All tokenization features",
-        "feature3": "Single validator network",
-        "feature4": "Unlimited assets",
-        "feature5": "Unlimited users",
-        "feature6": "Unlimited volume",
-        "feature7": "Access to the SettleMint support",
-        "cta": "Get Started"
-      },
-      "enterprise": {
-        "badge": "Production ready",
-        "title": "Enterprise",
-        "price": "€ 19.988 / mo",
-        "description": "Per month for production usecases",
-        "feature1": "Everything in Starter",
-        "feature2": "Byzantine Fault Tolerant network",
-        "feature3": "High Availability",
-        "feature4": "99.99% Uptime SLA",
-        "feature5": "Priority Support",
-        "cta": "Get Started"
-      }
-    },
     "features": {
       "api": {
         "description": "Integrate effortlessly into existing systems with extensive, well-documented APIs.",
@@ -911,6 +908,34 @@
     "hero-subtitle-title": "Unlock your assets by tokenizing on chain",
     "issuer-portal": "Issuer portal",
     "portfolio": "Portfolio",
+    "pricing": {
+      "enterprise": {
+        "badge": "Production ready",
+        "cta": "Get Started",
+        "description": "Per month for production usecases",
+        "feature1": "Everything in Starter",
+        "feature2": "Byzantine Fault Tolerant network",
+        "feature3": "High Availability",
+        "feature4": "99.99% Uptime SLA",
+        "feature5": "Priority Support",
+        "price": "€ 19.988 / mo",
+        "title": "Enterprise"
+      },
+      "starter": {
+        "cta": "Get Started",
+        "description": "Per month for non-production usecases",
+        "feature1": "Complete access to the SettleMint platform",
+        "feature2": "All tokenization features",
+        "feature3": "Single validator network",
+        "feature4": "Unlimited assets",
+        "feature5": "Unlimited users",
+        "feature6": "Unlimited volume",
+        "feature7": "Access to the SettleMint support",
+        "price": "€ 4.760 / mo",
+        "title": "Starter"
+      },
+      "title": "Pricing that scales with you"
+    },
     "stablecoins": "stablecoins",
     "tokenized-deposits": "deposits"
   },
@@ -934,11 +959,13 @@
       "actions": "Actions",
       "admin": "Issuer portal",
       "asset-management": "Asset management",
+      "custody-management": "Custody management",
       "dvp-swap": "DvP Swap",
       "platform": "Platform management",
       "portfolio": "My portfolio",
       "title": "Private",
       "trade-management": "Trade management",
+      "vaults": "Vaults",
       "xvp-settlement": "XvP"
     },
     "user-dropdown": {
@@ -1293,6 +1320,14 @@
             "equities": "Equity represents ownership in an asset or company, which on blockchain can be tokenized to enable fractional ownership, transparent governance, and efficient transferability.",
             "funds": "A fund is a pooled investment vehicle managed to achieve specific financial goals, which on blockchain can be tokenized for real-time transparency, programmable asset management, and automated compliance.",
             "stablecoins": "A stablecoin is a blockchain-based digital asset pegged to a stable value, such as a fiat currency, designed to minimize volatility and enable reliable, on-chain transactions and settlements."
+          },
+          "duplicate-errors": {
+            "bond": "A bond with these parameters already exists. Please change at least one parameter and try again.",
+            "cryptocurrency": "A cryptocurrency with these parameters already exists. Please change at least one parameter and try again.",
+            "deposit": "A deposit with these parameters already exists. Please change at least one parameter and try again.",
+            "equity": "An equity with these parameters already exists. Please change at least one parameter and try again.",
+            "fund": "A fund with these parameters already exists. Please change at least one parameter and try again.",
+            "stablecoin": "A stablecoin with these parameters already exists. Please change at least one parameter and try again."
           },
           "steps": {
             "asset-admins": {
@@ -2391,7 +2426,7 @@
         "title": "Amount to exchange"
       },
       "button": {
-        "xvp": "Create an XvP Settlement"
+        "xvp": "Create a new settlement"
       },
       "configuration": {
         "auto-execute": "Auto execute",
@@ -2425,7 +2460,7 @@
         "to": "To"
       },
       "title": {
-        "xvp": "Create an XvP Settlement"
+        "xvp": "Create a new settlement"
       },
       "user": {
         "description": "Select the user wallet you wish to exchange assets with.",

@@ -113,7 +113,7 @@
     "sidebar": {
       "asset-designer": "Vermögensdesigner",
       "asset-management": {
-        "asset-activity": "Vermögensaktivität",
+        "asset-activity": "Aktivität",
         "bonds": "Anleihen",
         "cryptocurrencies": "Kryptowährungen",
         "dashboard": "Dashboard",
@@ -123,7 +123,9 @@
         "stablecoins": "Stablecoins",
         "tokenized-deposits": "Einzahlungen",
         "view-all": "Alle anzeigen",
-        "actions": "Aktionen"
+        "actions": "Aktionen",
+        "custody-group-title": "Treuhand",
+        "multisig-vaults": "Tresore"
       },
       "asset-types": {
         "bond": "Anleihe",
@@ -160,6 +162,10 @@
         "group-title": "Handelsverwaltung",
         "dvp-swap": "DvP Swap",
         "xvp-settlement": "XvP"
+      },
+      "custody-management": {
+        "group-title": "Treuhandverwaltung",
+        "multisig-vaults": "Tresore"
       }
     },
     "bonds": {
@@ -731,7 +737,9 @@
       "trade-management": "Handelsverwaltung",
       "dvp-swap": "DvP Swap",
       "actions": "Aktionen",
-      "xvp-settlement": "XvP"
+      "xvp-settlement": "XvP",
+      "custody-management": "Treuhandverwaltung",
+      "vaults": "Tresore"
     },
     "user-dropdown": {
       "documentation": "Dokumentation",
@@ -1139,6 +1147,14 @@
             "equities": "Eigenkapital anzeigen",
             "funds": "Fonds anzeigen",
             "stablecoins": "Stablecoin anzeigen"
+          },
+          "duplicate-errors": {
+            "bond": "Ein Bond mit diesen Parametern existiert bereits. Bitte ändern Sie mindestens einen Parameter und versuchen Sie es erneut.",
+            "cryptocurrency": "Eine Kryptowährung mit diesen Parametern existiert bereits. Bitte ändern Sie mindestens einen Parameter und versuchen Sie es erneut.",
+            "deposit": "Eine Einzahlung mit diesen Parametern existiert bereits. Bitte ändern Sie mindestens einen Parameter und versuchen Sie es erneut.",
+            "equity": "Ein Eigenkapital mit diesen Parametern existiert bereits. Bitte ändern Sie mindestens einen Parameter und versuchen Sie es erneut.",
+            "fund": "Ein Fonds mit diesen Parametern existiert bereits. Bitte ändern Sie mindestens einen Parameter und versuchen Sie es erneut.",
+            "stablecoin": "Ein Stablecoin mit diesen Parametern existiert bereits. Bitte ändern Sie mindestens einen Parameter und versuchen Sie es erneut."
           }
         },
         "parameters": {
@@ -2724,7 +2740,7 @@
     "forms": {
       "title": {
         "dvp-swap": "Einen DvP Swap erstellen",
-        "xvp": "Erstellen Sie eine XvP-Abwicklung"
+        "xvp": "Einen neuen Vergleich erstellen"
       },
       "description": {
         "dvp-swap": "Ein DvP (Delivery vs Payment) Swap ermöglicht einen atomaren Austausch von Vermögenswerten zwischen zwei Parteien. Es erlaubt Ihnen, Vermögenswerte zuverlässig mit einem anderen Benutzer auszutauschen, ohne dass eine dritte Partei erforderlich ist.",
@@ -2732,7 +2748,7 @@
       },
       "button": {
         "dvp-swap": "Einen DvP Swap erstellen",
-        "xvp": "Erstellen Sie eine XvP-Abwicklung"
+        "xvp": "Einen neuen Vergleich erstellen"
       },
       "user": {
         "title": "Benutzer",
@@ -2880,6 +2896,25 @@
     "mica": {
       "name": "MiCA",
       "description": "Die Märkte für Krypto-Assets (MiCA) sind der umfassende regulatorische Rahmen der EU, der darauf abzielt, Kryptowährungen, Stablecoins und andere digitale Vermögenswerte zu regulieren und rechtliche Sicherheit für Emittenten von Krypto-Assets und Dienstleister zu bieten."
+    }
+  },
+  "custody": {
+    "vaults": {
+      "forms": {
+        "button": {
+          "vault": "Einen neuen Tresor erstellen"
+        },
+        "description": {
+          "vault": "Ein Tresor ist ein mehrsignaturfähiger Smart Contract, um Ihre Vermögenswerte sicher zu halten"
+        },
+        "title": {
+          "vault": "Einen neuen Tresor erstellen"
+        }
+      },
+      "page": {
+        "vaults": "Tresore",
+        "vaults-description": "Multisig-Tresore zur sicheren Aufbewahrung von Vermögenswerten"
+      }
     }
   }
 }

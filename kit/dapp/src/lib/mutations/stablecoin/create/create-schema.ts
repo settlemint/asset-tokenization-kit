@@ -1,5 +1,4 @@
 import { AssetAdminsSchemaFragment } from "@/lib/mutations/common/asset-admins-schema";
-import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
@@ -49,8 +48,6 @@ export function CreateStablecoinSchema() {
         }),
         predictedAddress: t.EthereumAddress({
           description: "The predicted contract address",
-          refine: isAddressAvailable,
-          error: "stablecoin.duplicate",
         }),
         price: t.Price({
           description: "Price of the stablecoin",

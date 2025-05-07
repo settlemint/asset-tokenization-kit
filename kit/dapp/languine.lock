@@ -137,13 +137,15 @@ files:
     admin.platform.settings.select-base-currency: 06b28305491d05227227db2d10408759
     admin.sidebar.asset-designer: aaafe0ea551fc6b5888b36c5ffc9961a
     admin.sidebar.asset-management.actions: 06df33001c1d7187fdd81ea1f5b277aa
-    admin.sidebar.asset-management.asset-activity: 0af652d4c797a0c6b75cff690129f572
+    admin.sidebar.asset-management.asset-activity: ecfc2dffe568c10a67dbc6d3724cfde2
     admin.sidebar.asset-management.bonds: b98e3a37b62f7207c8a0a27e0c0d8777
     admin.sidebar.asset-management.cryptocurrencies: 69ab3e648e5586bd2a099fc9b21b7440
+    admin.sidebar.asset-management.custody-group-title: 2d82833085dc62736862926cb1284b22
     admin.sidebar.asset-management.dashboard: 2938c7f7e560ed972f8a4f68e80ff834
     admin.sidebar.asset-management.equities: f38992a52cef8611666b2db431b493a6
     admin.sidebar.asset-management.funds: d42b2bb7ac17fc34a099909c0a2f1de9
     admin.sidebar.asset-management.group-title: 177512b9add0b40c38dad61838bf7d79
+    admin.sidebar.asset-management.multisig-vaults: 10075fec14fcc45a489d02bedf972e97
     admin.sidebar.asset-management.stablecoins: 2f7d136a5b9efb222650243b1d38b6ff
     admin.sidebar.asset-management.tokenized-deposits: b14b4095cfda93c81686ac81dea4dbed
     admin.sidebar.asset-management.view-all: 0b4db271fc4624853e634ef6882ea8be
@@ -153,6 +155,8 @@ files:
     admin.sidebar.asset-types.fund: c1098dd48f0fb20eeea79235055d02ca
     admin.sidebar.asset-types.stablecoin: 0501a2e331bfc725e5ea1728a8de9098
     admin.sidebar.asset-types.tokenized-deposit: b14b4095cfda93c81686ac81dea4dbed
+    admin.sidebar.custody-management.group-title: 35ade37c5df39f454d69fd7012d85840
+    admin.sidebar.custody-management.multisig-vaults: 10075fec14fcc45a489d02bedf972e97
     admin.sidebar.platform-management.api: db974238714ca8de634a7ce1d083a14f
     admin.sidebar.platform-management.group-title: bf6ba0d41ffdc7a03e03f87c569e0c3a
     admin.sidebar.platform-management.settings: f4f70727dc34561dfde1a3c529b6205c
@@ -508,6 +512,11 @@ files:
     components.transactions-table.columns.status: ec53a8c4f07baed5d8825072c89799be
     components.transactions-table.columns.transaction-hash: a0bd1db035c6e85fbe6f3cbbf3ff28ee
     creator-owner: 5439f356b537a6081aabf0ab5ead403d
+    custody.vaults.forms.button.vault: 1d069a720858305eca22c77ee6ac1a6c
+    custody.vaults.forms.description.vault: f716aea0c560827bc0bfc34093a5db49
+    custody.vaults.forms.title.vault: 1d069a720858305eca22c77ee6ac1a6c
+    custody.vaults.page.vaults: 10075fec14fcc45a489d02bedf972e97
+    custody.vaults.page.vaults-description: 75bcc657f7da21b35a113764fddc32d2
     error.array: 1c8c8151581701fa5b597ade2d5b4aea
     error.array-contains: 3e67040c90b80c828384745786c7ed9a
     error.array-max-contains: 70c318ee77460a10df3183dbe1ed3063
@@ -593,28 +602,6 @@ files:
     homepage.changelog-link-title: 6e602cb40b2be6cded6dbf0b5231d812
     homepage.cryptocurrencies: 82d545659cf7ab6dd908094739a64fda
     homepage.documentation: 5b6cf869265c13af8566f192b4ab3d2a
-    homepage.pricing.title: 5ed8f3244c599892bef1a67c28802174
-    homepage.pricing.starter.title: ee6085db6c9b85f45fd9b9b31b020f8d
-    homepage.pricing.starter.price: 8888d6fafad7ad5cda87cf962502f868
-    homepage.pricing.starter.description: e5f80bc4824f4dd7c3e26cfe8b1a770f
-    homepage.pricing.starter.feature1: 30d226d8c7d0e32f5dde916944873a48
-    homepage.pricing.starter.feature2: 5707b1eed51241655a373a44d7785b15
-    homepage.pricing.starter.feature3: 6fd00f2b31de932643b9544df3d07c7f
-    homepage.pricing.starter.feature4: 063ad9eae30e31a66c6a8fbc4e5ebcdc
-    homepage.pricing.starter.feature5: 2c5099873648870a904c9f359fb76499
-    homepage.pricing.starter.feature6: 0844b3249b315b6ba080311451a28812
-    homepage.pricing.starter.feature7: 6532b350bd1da9bd3123a48a4932a1ef
-    homepage.pricing.starter.cta: e0c4332e8c13be976552a059f106354f
-    homepage.pricing.enterprise.badge: a25403b5f92e4dda5055ab0f1770ff78
-    homepage.pricing.enterprise.title: a0f27638260642afb474516cc918407e
-    homepage.pricing.enterprise.price: 0302718ada3ce0cd8758ccda150919e7
-    homepage.pricing.enterprise.description: f1d7cfb62dea143bb78d943a31d1d71b
-    homepage.pricing.enterprise.feature1: f6030faf74e033fed42f1dc48bc77836
-    homepage.pricing.enterprise.feature2: 351024dce2802d7acfdb109f276ef3b1
-    homepage.pricing.enterprise.feature3: 520b661a272c9e6f55f469cc9c24193d
-    homepage.pricing.enterprise.feature4: a50952aff0f5beb072cb2c58507bf765
-    homepage.pricing.enterprise.feature5: 1e14432cb6eb0bc6ae0cf7d6119bec97
-    homepage.pricing.enterprise.cta: e0c4332e8c13be976552a059f106354f
     homepage.features.api.description: a75d50523f20dcd21803714f0dfb721a
     homepage.features.api.title: 3ddc12cb87c6f55d885617caa141f225
     homepage.features.asset-lifecycle.description: 25f63855b5fa8ad93e0575c4cea8b096
@@ -658,6 +645,28 @@ files:
     homepage.hero-subtitle-title: 0e63cc4d746587cb024ccdb9e66060b2
     homepage.issuer-portal: 05e93ee934950bba9b453434d9ad6ff3
     homepage.portfolio: d4f859a96c13f551a2771b7fc3a78d38
+    homepage.pricing.enterprise.badge: a25403b5f92e4dda5055ab0f1770ff78
+    homepage.pricing.enterprise.cta: e0c4332e8c13be976552a059f106354f
+    homepage.pricing.enterprise.description: f1d7cfb62dea143bb78d943a31d1d71b
+    homepage.pricing.enterprise.feature1: f6030faf74e033fed42f1dc48bc77836
+    homepage.pricing.enterprise.feature2: 351024dce2802d7acfdb109f276ef3b1
+    homepage.pricing.enterprise.feature3: 520b661a272c9e6f55f469cc9c24193d
+    homepage.pricing.enterprise.feature4: a50952aff0f5beb072cb2c58507bf765
+    homepage.pricing.enterprise.feature5: 1e14432cb6eb0bc6ae0cf7d6119bec97
+    homepage.pricing.enterprise.price: 0302718ada3ce0cd8758ccda150919e7
+    homepage.pricing.enterprise.title: a0f27638260642afb474516cc918407e
+    homepage.pricing.starter.cta: e0c4332e8c13be976552a059f106354f
+    homepage.pricing.starter.description: e5f80bc4824f4dd7c3e26cfe8b1a770f
+    homepage.pricing.starter.feature1: 30d226d8c7d0e32f5dde916944873a48
+    homepage.pricing.starter.feature2: 5707b1eed51241655a373a44d7785b15
+    homepage.pricing.starter.feature3: 6fd00f2b31de932643b9544df3d07c7f
+    homepage.pricing.starter.feature4: 063ad9eae30e31a66c6a8fbc4e5ebcdc
+    homepage.pricing.starter.feature5: 2c5099873648870a904c9f359fb76499
+    homepage.pricing.starter.feature6: 0844b3249b315b6ba080311451a28812
+    homepage.pricing.starter.feature7: 6532b350bd1da9bd3123a48a4932a1ef
+    homepage.pricing.starter.price: 8888d6fafad7ad5cda87cf962502f868
+    homepage.pricing.starter.title: ee6085db6c9b85f45fd9b9b31b020f8d
+    homepage.pricing.title: 5ed8f3244c599892bef1a67c28802174
     homepage.stablecoins: 27b561ff856fac592429735b2472f4e3
     homepage.tokenized-deposits: c4a993dbfb0f387e446ad5c4c6e165a3
     language.changing: 33755d0adea182748db47fbe988cd953
@@ -672,11 +681,13 @@ files:
     layout.navigation.actions: 06df33001c1d7187fdd81ea1f5b277aa
     layout.navigation.admin: 05e93ee934950bba9b453434d9ad6ff3
     layout.navigation.asset-management: 177512b9add0b40c38dad61838bf7d79
+    layout.navigation.custody-management: 35ade37c5df39f454d69fd7012d85840
     layout.navigation.dvp-swap: fc25920ab4bd378893e24a64175a1f62
     layout.navigation.platform: bf6ba0d41ffdc7a03e03f87c569e0c3a
     layout.navigation.portfolio: 654b240dd044565e9ba2ff98858003c3
     layout.navigation.title: 47f9082fc380ca62d531096aa1d110f1
     layout.navigation.trade-management: a65b9efd31572553cea5457e8df6d3d9
+    layout.navigation.vaults: 10075fec14fcc45a489d02bedf972e97
     layout.navigation.xvp-settlement: 772e51e35d4c11a6b2729005cff10d2f
     layout.user-dropdown.documentation: 5b6cf869265c13af8566f192b4ab3d2a
     layout.user-dropdown.logout: 4394c8d8e63c470de62ced3ae85de5ae
@@ -914,6 +925,12 @@ files:
     private.assets.create.form.description.equities: 167bbc86116f78620247ad9669c98e9f
     private.assets.create.form.description.funds: 9254251c73396aee6fe60bd932273f84
     private.assets.create.form.description.stablecoins: e64195eeec1b565ea24be665f0bf93f2
+    private.assets.create.form.duplicate-errors.bond: 84883987bb613d8f8ba358660d2b3403
+    private.assets.create.form.duplicate-errors.cryptocurrency: ebf6da3ba51ac45f55f28d7db6c0fbdf
+    private.assets.create.form.duplicate-errors.deposit: e36e4515ddb2449532414a184c71da92
+    private.assets.create.form.duplicate-errors.equity: a395fdeee342a3b76459eb7003175cc8
+    private.assets.create.form.duplicate-errors.fund: ebb1d98837d617f8efe41b6eb1862a22
+    private.assets.create.form.duplicate-errors.stablecoin: b589481055567809abb106f156b343fd
     private.assets.create.form.steps.asset-admins.add-another-admin: bc13359fda44ff58183b2b88fdcc1d0d
     private.assets.create.form.steps.asset-admins.add-first-admin: 64f23e68360a6bf1f7982e7b058ac9b5
     private.assets.create.form.steps.asset-admins.add-role: c683a42e94cceeb66f047658e10d0611
@@ -1724,7 +1741,7 @@ files:
     trade-management.forms.amounts.description: 8de95c4ca84e432696da84508dc972f4
     trade-management.forms.amounts.max-amount-to-send: cc521903c94bc4bdd85ffc0a66e6de2b
     trade-management.forms.amounts.title: d8db79f4fdae5de73504ec3bd1724e5c
-    trade-management.forms.button.xvp: f455b847b38f2bcd2bde24b76f08c20b
+    trade-management.forms.button.xvp: f9c987c371a9a7035b9f9c72b8d9d69c
     trade-management.forms.configuration.auto-execute: 31e74595beaf9b61c93c691346e8bec3
     trade-management.forms.configuration.auto-execute-description: d2f9ffb93a45bcdd8474a24529e2a2ae
     trade-management.forms.configuration.description: 11278e46e078493cb7799b4d0523401b
@@ -1747,7 +1764,7 @@ files:
     trade-management.forms.summary.request-description: 5ad313ae607fe5df2f801cb6b947c45a
     trade-management.forms.summary.title: 290612199861c31d1036b185b4e69b75
     trade-management.forms.summary.to: e12167aa0a7698e6ebc92b4ce3909b53
-    trade-management.forms.title.xvp: f455b847b38f2bcd2bde24b76f08c20b
+    trade-management.forms.title.xvp: f9c987c371a9a7035b9f9c72b8d9d69c
     trade-management.forms.user.description: e804dfd3bf7e78ec0481a383c15f161c
     trade-management.forms.user.title: 8f9bfe9d1345237cb3b2b205864da075
     trade-management.forms.user.user: 6f74ccfa13a87e0700a065ed7ecb342e

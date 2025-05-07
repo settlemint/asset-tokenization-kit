@@ -5,10 +5,6 @@ import { LanguageMenuItem } from "@/components/blocks/language/language-menu-ite
 import { ThemeMenuItem } from "@/components/blocks/theme/theme-menu-item";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
-  UsersIcon,
-  type UsersIconHandle,
-} from "@/components/ui/animated-icons/users";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -17,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UsersIcon, type UsersIconHandle } from "@/components/ui/users";
 import { Link, useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
@@ -32,11 +29,8 @@ import {
   useRef,
 } from "react";
 import { CurrencyMenuItem } from "../blocks/currency/currency-menu-item";
-import {
-  BookTextIcon,
-  type BookTextIconHandle,
-} from "../ui/animated-icons/book-text";
-import { LogoutIcon, type LogoutIconHandle } from "../ui/animated-icons/logout";
+import { BookTextIcon, type BookTextIconHandle } from "../ui/book-text";
+import { LogoutIcon, type LogoutIconHandle } from "../ui/logout";
 
 // Custom text component that renders either content or a skeleton with consistent DOM structure
 function TextOrSkeleton({

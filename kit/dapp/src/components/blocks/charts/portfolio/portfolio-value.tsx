@@ -3,9 +3,9 @@
 import { formatCompactForYAxis } from "@/app/[locale]/(private)/assets/(dashboard)/_components/utils/format-compact";
 import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
-import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import { Button } from "@/components/ui/button";
 import type { ChartConfig } from "@/components/ui/chart";
+import { ChartColumnIncreasingIcon } from "@/components/ui/chart-column-increasing";
 import { createTimeSeries } from "@/lib/charts";
 import type {
   PortfolioAsset,

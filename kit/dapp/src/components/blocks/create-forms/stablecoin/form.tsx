@@ -67,7 +67,7 @@ export function CreateStablecoinForm({
           assetAdmins: [],
         }}
         onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(["predictedAddress"]);
+          clearErrors("predictedAddress");
         }}
         toastMessages={{
           action: (input) => {

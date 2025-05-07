@@ -1,10 +1,7 @@
 "use client";
-import {
-  SearchIcon,
-  type SearchIconHandle,
-} from "@/components/ui/animated-icons/search";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { SearchIcon, type SearchIconHandle } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -173,7 +170,7 @@ export const Search = () => {
         >
           <SearchIcon
             ref={searchIconRef}
-            className="mr-2 size-4 shrink-0 opacity-50"
+            className="mr-2 size-4 shrink-0 opacity-50 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center"
           />
           <FormField
             control={form.control}
