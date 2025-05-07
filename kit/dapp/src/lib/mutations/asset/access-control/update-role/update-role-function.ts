@@ -38,12 +38,14 @@ export const updateRolesFunction = withAccessControl(
       SUPPLY_MANAGEMENT_ROLE: false,
       USER_MANAGEMENT_ROLE: false,
       AUDITOR_ROLE: false,
+      SIGNER_ROLE: false,
     };
     const rolesToDisable: RoleMap = {
       DEFAULT_ADMIN_ROLE: false,
       SUPPLY_MANAGEMENT_ROLE: false,
       USER_MANAGEMENT_ROLE: false,
       AUDITOR_ROLE: false,
+      SIGNER_ROLE: false,
     };
 
     for (const [role, enabled] of Object.entries(roles)) {
