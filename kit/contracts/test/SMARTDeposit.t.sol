@@ -64,6 +64,7 @@ contract SMARTDepositTest is Test {
 
         deposit =
             _createDeposit("Deposit", "DEP", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner);
+        vm.label(address(deposit), "Deposit");
     }
 
     function _createDeposit(
@@ -225,12 +226,14 @@ contract SMARTDepositTest is Test {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(InsufficientCollateral.selector, 100, 0));
         deposit.mint(user1, 100);
+        vm.stopPrank();
 
         smartUtils.issueCollateralClaim(address(deposit), owner, collateralAmount, farFutureExpiry);
 
         (amount, claimIssuer, timestamp) = deposit.findValidCollateralClaim();
         assertEq(amount, collateralAmount); // Check updated state (trusted issuer)
 
+        vm.startPrank(owner);
         deposit.mint(user1, 100);
         vm.stopPrank();
     }

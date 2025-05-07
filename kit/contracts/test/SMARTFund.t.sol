@@ -79,6 +79,7 @@ contract SMARTFundTest is Test {
             new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
+        vm.label(address(fund), "Fund");
     }
 
     function _createFundAndMint(

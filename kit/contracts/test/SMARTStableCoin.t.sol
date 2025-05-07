@@ -67,6 +67,7 @@ contract SMARTStableCoinTest is Test {
 
         stableCoin =
             _createStableCoin("StableCoin", "STBL", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0));
+        vm.label(address(stableCoin), "StableCoin");
     }
 
     function _createStableCoin(
@@ -241,9 +242,7 @@ contract SMARTStableCoinTest is Test {
         vm.stopPrank();
 
         // Issue claim from the trusted issuer (owner)
-        vm.startPrank(owner);
         smartUtils.issueCollateralClaim(address(stableCoin), owner, collateralAmount, farFutureExpiry);
-        vm.stopPrank();
 
         // Assign new values to existing variables (no type declaration)
         (amount, claimIssuer, timestamp) = stableCoin.findValidCollateralClaim();

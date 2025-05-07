@@ -11,7 +11,6 @@ import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { SMARTBond } from "../contracts/SMARTBond.sol";
 import { SMARTConstants } from "../contracts/SMARTConstants.sol";
-import { TestConstants } from "./TestConstants.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
@@ -111,6 +110,7 @@ contract SMARTBondTest is Test {
             new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
+        vm.label(address(bond), "Bond");
     }
 
     function _createBondAndMint(

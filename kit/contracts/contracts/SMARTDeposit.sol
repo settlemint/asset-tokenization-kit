@@ -117,7 +117,7 @@ contract SMARTDeposit is
     )
         internal
         virtual
-        override(SMART, SMARTCollateral, SMARTCustodian, SMARTHooks)
+        override(SMARTCollateral, SMARTCustodian, SMART, SMARTHooks)
     {
         super._beforeMint(to, amount);
     }
@@ -130,7 +130,7 @@ contract SMARTDeposit is
     )
         internal
         virtual
-        override(SMART, SMARTCustodian, SMARTHooks)
+        override(SMARTCustodian, SMART, SMARTHooks)
     {
         super._beforeTransfer(from, to, amount);
     }
