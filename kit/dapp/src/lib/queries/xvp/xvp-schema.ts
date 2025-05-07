@@ -34,7 +34,7 @@ export const XvPSettlementApprovalSchema = t.Object({
   id: t.String(),
   account: t.Object({ id: t.EthereumAddress() }),
   approved: t.Boolean(),
-  timestamp: t.Optional(t.String()),
+  timestamp: t.Nullable(t.String()),
 });
 
 export type XvPSettlementApproval = StaticDecode<
