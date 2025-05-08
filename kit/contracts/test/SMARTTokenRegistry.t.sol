@@ -27,7 +27,7 @@ contract SMARTTokenRegistryTest is Test {
 
     // --- Test Constructor ---
 
-    function test_Constructor_SetsOwnerCorrectly() public {
+    function test_Constructor_SetsOwnerCorrectly() public view {
         assertEq(registry.owner(), owner, "Owner should be set correctly");
     }
 

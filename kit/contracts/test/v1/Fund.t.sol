@@ -2,32 +2,14 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { Fund } from "../contracts/v1/Fund.sol";
+import { Fund } from "../../contracts/v1/Fund.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { Forwarder } from "../contracts/Forwarder.sol";
-import { SMARTUtils } from "./utils/SMARTUtils.sol";
-import { SMARTFund } from "../contracts/SMARTFund.sol";
-import { SMARTComplianceModuleParamPair } from
-    "smart-protocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { SMARTConstants } from "../contracts/SMARTConstants.sol";
-import { TestConstants } from "./TestConstants.sol";
-import { TokenRecovered } from "smart-protocol/contracts/extensions/core/SMARTEvents.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { TokenPaused } from "smart-protocol/contracts/extensions/pausable/SMARTPausableErrors.sol";
+import { Forwarder } from "../../contracts/Forwarder.sol";
 
-/// Following tests are changed:
-/// - test_BlockUnblockUser: removed because it will be managed by compliance modules
-/// - test_FundClawback: renamed to test_FundForceTransfer
-/// - test_onlySupplyManagementCanClawback: renamed to test_onlySupplyManagementCanForceTransfer
-/// - test_WithdrawToken: renamed to test_RecoverERC20
-contract SMARTFundTest is Test {
-    SMARTUtils internal smartUtils;
+error ERC20Blocked(address account);
 
-    // extract these so that these are not seen as an extra call to smartUtils contract when expecting a revert
-    address public identityRegistry;
-    address public compliance;
-
-    SMARTFund public fund;
+contract FundTest is Test {
+    Fund public fund;
     Forwarder public forwarder;
     address public owner;
     address public investor1;
@@ -50,74 +32,20 @@ contract SMARTFundTest is Test {
     event TokenWithdrawn(address indexed token, address indexed to, uint256 amount, address indexed sender);
 
     function setUp() public {
-        smartUtils = new SMARTUtils();
-        identityRegistry = address(smartUtils.identityRegistry());
-        compliance = address(smartUtils.compliance());
-
-        // Create identities
         owner = makeAddr("owner");
         investor1 = makeAddr("investor1");
         investor2 = makeAddr("investor2");
 
-        // Initialize identities
-        address[] memory identities = new address[](3);
-        identities[0] = owner;
-        identities[1] = investor1;
-        identities[2] = investor2;
-        smartUtils.setUpIdentities(identities);
-
         // Deploy forwarder first
         forwarder = new Forwarder();
 
-        fund = _createFundAndMint(
-            NAME,
-            SYMBOL,
-            DECIMALS,
-            MANAGEMENT_FEE_BPS,
-            FUND_CLASS,
-            FUND_CATEGORY,
-            new uint256[](0),
-            new SMARTComplianceModuleParamPair[](0)
-        );
-        vm.label(address(fund), "Fund");
-    }
-
-    function _createFundAndMint(
-        string memory name_,
-        string memory symbol_,
-        uint8 decimals_,
-        uint16 managementFeeBps_,
-        string memory fundClass_,
-        string memory fundCategory_,
-        uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
-    )
-        internal
-        returns (SMARTFund smartFund)
-    {
-        smartFund = new SMARTFund(
-            name_,
-            symbol_,
-            decimals_,
-            managementFeeBps_,
-            fundClass_,
-            fundCategory_,
-            address(0),
-            requiredClaimTopics_,
-            initialModulePairs_,
-            identityRegistry,
-            compliance,
-            owner,
-            address(forwarder)
-        );
-
-        smartUtils.createAndSetTokenOnchainID(address(smartFund), owner);
-
         vm.startPrank(owner);
-        smartFund.mint(owner, INITIAL_SUPPLY);
-        vm.stopPrank();
+        fund =
+            new Fund(NAME, SYMBOL, DECIMALS, owner, MANAGEMENT_FEE_BPS, FUND_CLASS, FUND_CATEGORY, address(forwarder));
 
-        return smartFund;
+        // Initial supply for testing
+        fund.mint(address(fund), INITIAL_SUPPLY);
+        vm.stopPrank();
     }
 
     function test_InitialState() public view {
@@ -127,8 +55,8 @@ contract SMARTFundTest is Test {
         assertEq(fund.fundClass(), FUND_CLASS);
         assertEq(fund.fundCategory(), FUND_CATEGORY);
         assertTrue(fund.hasRole(fund.DEFAULT_ADMIN_ROLE(), owner));
-        assertTrue(fund.hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(fund.hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, owner));
+        assertTrue(fund.hasRole(fund.SUPPLY_MANAGEMENT_ROLE(), owner));
+        assertTrue(fund.hasRole(fund.USER_MANAGEMENT_ROLE(), owner));
     }
 
     function test_Mint() public {
@@ -137,6 +65,46 @@ contract SMARTFundTest is Test {
         vm.stopPrank();
 
         assertEq(fund.balanceOf(investor1), INVESTMENT_AMOUNT);
+    }
+
+    function test_BlockUnblockUser() public {
+        uint256 amount = INVESTMENT_AMOUNT;
+        vm.startPrank(owner);
+        fund.mint(investor1, amount);
+        vm.stopPrank();
+
+        // Test that non-authorized user can't block
+        vm.startPrank(investor2);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", investor2, fund.USER_MANAGEMENT_ROLE()
+            )
+        );
+        fund.blockUser(investor1);
+        vm.stopPrank();
+
+        // Test successful blocking by owner
+        vm.startPrank(owner);
+        fund.blockUser(investor1);
+        vm.stopPrank();
+        assertTrue(fund.blocked(investor1));
+
+        // Test that blocked user can't transfer
+        vm.startPrank(investor1);
+        vm.expectRevert(abi.encodeWithSignature("ERC20Blocked(address)", investor1));
+        fund.transfer(investor2, amount / 2);
+        vm.stopPrank();
+
+        // Test unblocking and subsequent transfer
+        vm.startPrank(owner);
+        fund.unblockUser(investor1);
+        vm.stopPrank();
+
+        vm.startPrank(investor1);
+        fund.transfer(investor2, amount / 2);
+        vm.stopPrank();
+
+        assertEq(fund.balanceOf(investor2), amount / 2);
     }
 
     function test_CollectManagementFee() public {
@@ -155,7 +123,7 @@ contract SMARTFundTest is Test {
         assertEq(fund.balanceOf(owner) - initialOwnerBalance, expectedFee);
     }
 
-    function test_RecoverERC20() public {
+    function test_WithdrawToken() public {
         address mockToken = makeAddr("mockToken");
         uint256 withdrawAmount = 100 ether;
 
@@ -169,8 +137,8 @@ contract SMARTFundTest is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TokenRecovered(owner, mockToken, investor1, withdrawAmount);
-        fund.recoverERC20(mockToken, investor1, withdrawAmount);
+        emit TokenWithdrawn(mockToken, investor1, withdrawAmount, owner);
+        fund.withdrawToken(mockToken, investor1, withdrawAmount);
         vm.stopPrank();
     }
 
@@ -185,7 +153,7 @@ contract SMARTFundTest is Test {
         assertTrue(fund.paused());
 
         // Try to transfer while paused - should revert with EnforcedPause error
-        vm.expectRevert(abi.encodeWithSelector(TokenPaused.selector));
+        vm.expectRevert(abi.encodeWithSignature("EnforcedPause()"));
         fund.transfer(investor1, INVESTMENT_AMOUNT);
 
         // Unpause
@@ -199,33 +167,31 @@ contract SMARTFundTest is Test {
         vm.stopPrank();
     }
 
-    function test_FundForceTransfer() public {
+    function test_FundClawback() public {
         vm.startPrank(owner);
         fund.mint(investor1, INVESTMENT_AMOUNT);
         vm.stopPrank();
 
         vm.startPrank(owner);
-        fund.forcedTransfer(investor1, investor2, INVESTMENT_AMOUNT);
+        fund.clawback(investor1, investor2, INVESTMENT_AMOUNT);
         vm.stopPrank();
 
         assertEq(fund.balanceOf(investor1), 0);
         assertEq(fund.balanceOf(investor2), INVESTMENT_AMOUNT);
     }
 
-    function test_onlySupplyManagementCanForceTransfer() public {
+    function test_onlySupplyManagementCanClawback() public {
         vm.startPrank(owner);
         fund.mint(investor1, INVESTMENT_AMOUNT);
         vm.stopPrank();
 
         vm.startPrank(investor2);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector,
-                investor2,
-                SMARTConstants.SUPPLY_MANAGEMENT_ROLE
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", investor2, fund.SUPPLY_MANAGEMENT_ROLE()
             )
         );
-        fund.forcedTransfer(investor1, investor2, INVESTMENT_AMOUNT);
+        fund.clawback(investor1, investor2, INVESTMENT_AMOUNT);
         vm.stopPrank();
     }
 }
