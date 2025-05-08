@@ -17,7 +17,7 @@ import {
 const BondMaturedEventList = theGraphGraphqlKit(
   `
   query BondMaturedEventList($first: Int, $skip: Int) {
-    bondMaturedEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
+    activityLogEntries(first: $first, skip: $skip, where: {eventName: "BondMatured"}) {
       ...BondMaturedEventFragment
     }
   }
@@ -40,7 +40,7 @@ export const getBondMaturedEventList = withTracing(
 
         return safeParse(
           t.Array(BondMaturedEventSchema),
-          result.bondMaturedEvents || []
+          result.activityLogEntries || []
         );
       }
     );

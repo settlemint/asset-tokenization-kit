@@ -3,9 +3,9 @@ import { t } from "@/lib/utils/typebox";
 
 export const BondMaturedEventFragment = theGraphGraphqlKit(
   `
-  fragment BondMaturedEventFragment on BondMaturedEvent {
+  fragment BondMaturedEventFragment on ActivityLogEntry {
     id
-    timestamp
+    blockTimestamp
     emitter {
       id
     }
