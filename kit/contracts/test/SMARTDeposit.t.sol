@@ -6,11 +6,11 @@ import { SMARTDeposit } from "../contracts/SMARTDeposit.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
 import { SMARTConstants } from "../contracts/SMARTConstants.sol";
 import { TestConstants } from "./TestConstants.sol";
-import { InvalidDecimals } from "smart-protocol/contracts/extensions/core/SMARTErrors.sol";
-import { ClaimUtils } from "smart-protocol/test/utils/ClaimUtils.sol";
+import { InvalidDecimals } from "@smartprotocol/contracts/extensions/core/SMARTErrors.sol";
+import { ClaimUtils } from "@smartprotocol/tests/utils/ClaimUtils.sol";
 import { SMARTComplianceModuleParamPair } from
-    "smart-protocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { InsufficientCollateral } from "smart-protocol/contracts/extensions/collateral/SMARTCollateralErrors.sol";
+    "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { InsufficientCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateralErrors.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 import { console } from "forge-std/console.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
