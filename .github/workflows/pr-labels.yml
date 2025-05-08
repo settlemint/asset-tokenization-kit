@@ -5,6 +5,7 @@ on:
     types: [opened, closed]
     branches:
       - main
+      - v1
 
 permissions:
   contents: read # the config file
