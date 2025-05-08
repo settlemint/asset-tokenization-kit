@@ -35,8 +35,8 @@ export function fetchFlow(
   flow.asset = asset;
   flow.from = fetchAccount(from).id;
   flow.to = fetchAccount(to).id;
-  flow.amount = amount;
-  flow.amountExact = toDecimals(amount, fetchAssetDecimals(asset));
+  flow.amount = toDecimals(amount, fetchAssetDecimals(asset));
+  flow.amountExact = amount;
   flow.save();
   return flow;
 }
@@ -53,6 +53,8 @@ export function fetchApproval(
   approval = new XvPSettlementApproval(id);
   approval.xvpSettlement = contract;
   approval.account = fetchAccount(sender).id;
+  approval.approved = false;
+  approval.timestamp = null;
 
   approval.save();
   return approval;
@@ -88,6 +90,7 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
       : createdAt.value;
     xvpSettlement.save();
 
+    let approvers = new Set<Address>();
     if (!flows.reverted) {
       for (let i = 0; i < flows.value.length; i++) {
         fetchFlow(
@@ -98,7 +101,13 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
           flows.value[i].amount,
           i
         );
+        approvers.add(flows.value[i].from);
       }
+    }
+
+    let approversArray = approvers.values();
+    for (let i = 0; i < approversArray.length; i++) {
+      fetchApproval(id, approversArray[i]);
     }
   }
 

@@ -113,7 +113,7 @@
     "sidebar": {
       "asset-designer": "資産デザイナー",
       "asset-management": {
-        "asset-activity": "資産アクティビティ",
+        "asset-activity": "アクティビティ",
         "bonds": "債券",
         "cryptocurrencies": "暗号通貨",
         "dashboard": "ダッシュボード",
@@ -123,7 +123,9 @@
         "stablecoins": "ステーブルコイン",
         "tokenized-deposits": "預金",
         "view-all": "すべて表示",
-        "actions": "アクション"
+        "actions": "アクション",
+        "custody-group-title": "カストディ",
+        "multisig-vaults": "ボールト"
       },
       "asset-types": {
         "bond": "債券",
@@ -160,6 +162,10 @@
         "group-title": "取引管理",
         "dvp-swap": "DvPスワップ",
         "xvp-settlement": "XvP"
+      },
+      "custody-management": {
+        "group-title": "カストディ管理",
+        "multisig-vaults": "ボールト"
       }
     },
     "bonds": {
@@ -731,7 +737,9 @@
       "trade-management": "取引管理",
       "dvp-swap": "DvPスワップ",
       "actions": "アクション",
-      "xvp-settlement": "XvP"
+      "xvp-settlement": "XvP",
+      "custody-management": "カストディ管理",
+      "vaults": "ボールト"
     },
     "user-dropdown": {
       "documentation": "ドキュメント",
@@ -1139,6 +1147,14 @@
             "equities": "株式を表示",
             "funds": "ファンドを表示",
             "stablecoins": "ステーブルコインを表示"
+          },
+          "duplicate-errors": {
+            "bond": "これらのパラメータを持つボンドはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "cryptocurrency": "これらのパラメータを持つ暗号通貨はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "deposit": "これらのパラメータを持つ預金はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "equity": "これらのパラメータを持つ株式はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "fund": "これらのパラメータを持つファンドはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "stablecoin": "これらのパラメータを持つステーブルコインはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。"
           }
         },
         "parameters": {
@@ -2724,7 +2740,7 @@
     "forms": {
       "title": {
         "dvp-swap": "DvPスワップを作成",
-        "xvp": "XvP決済を作成する"
+        "xvp": "新しい決済を作成"
       },
       "description": {
         "dvp-swap": "DvP（Delivery vs Payment）スワップは、2者間での資産の原子的な交換を可能にします。これにより、第三者を介さずに他のユーザーと信頼性のある資産交換ができます。",
@@ -2732,7 +2748,7 @@
       },
       "button": {
         "dvp-swap": "DvPスワップを作成",
-        "xvp": "XvP決済を作成する"
+        "xvp": "新しい決済を作成"
       },
       "user": {
         "title": "ユーザー",
@@ -2880,6 +2896,25 @@
     "mica": {
       "name": "MiCA",
       "description": "暗号資産に関する市場（MiCA）は、暗号通貨、ステーブルコイン、その他のデジタル資産を規制するために設計されたEUの包括的な規制枠組みであり、暗号資産の発行者およびサービス提供者に法的確実性を提供します。"
+    }
+  },
+  "custody": {
+    "vaults": {
+      "forms": {
+        "button": {
+          "vault": "新しいボールトを作成"
+        },
+        "description": {
+          "vault": "ボールトは、資産を安全に保管するためのマルチシグネチャ対応のスマートコントラクトです"
+        },
+        "title": {
+          "vault": "新しいボールトを作成"
+        }
+      },
+      "page": {
+        "vaults": "ボールト",
+        "vaults-description": "資産を安全に保管するためのマルチシグボールト"
+      }
     }
   }
 }

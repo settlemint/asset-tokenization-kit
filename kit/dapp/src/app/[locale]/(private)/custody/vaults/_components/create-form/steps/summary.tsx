@@ -66,10 +66,6 @@ export function Summary() {
             locale,
           })}
         />
-        <FormSummaryDetailItem
-          label={t("auto-execute")}
-          value={values.autoExecute ? t("yes") : t("no")}
-        />
       </FormSummaryDetailCard>
     </FormStep>
   );

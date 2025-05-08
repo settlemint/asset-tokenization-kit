@@ -5,7 +5,7 @@ import { PercentageProgressBar } from "@/components/blocks/percentage-progress/p
 import { XvpStatusPill } from "@/components/blocks/xvp-status/status-pill";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/routing";
-import type { XvPSettlement } from "@/lib/queries/xvp/xvp-list";
+import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import { isBefore } from "date-fns";
@@ -40,7 +40,7 @@ export function columns() {
         formatDate(getValue().toString(), { locale, type: "relative" }),
     }),
     columnHelper.accessor("cutoffDate", {
-      header: t("columns.expires-at"),
+      header: t("columns.expiry"),
       cell: ({ getValue }) => {
         const expiresAt = getValue();
         const isExpired = isBefore(
@@ -66,15 +66,21 @@ export function columns() {
       id: "approvals",
       header: t("columns.approvals"),
       cell: ({ row }) => {
-        const approvals = row.original.approvals;
-        const approvalsRequired = new Set(
-          row.original.flows.map((flow) => flow.from.id)
-        );
-        const percentage = (approvals.length / approvalsRequired.size) * 100;
+        const allApprovalEntries = row.original.approvals;
+        const actualApprovalsCount = allApprovalEntries.filter(
+          (approval) => approval.approved
+        ).length;
+        const approvalsRequiredCount = allApprovalEntries.length;
+
+        const percentage =
+          approvalsRequiredCount > 0
+            ? (actualApprovalsCount / approvalsRequiredCount) * 100
+            : 0;
+
         return (
           <PercentageProgressBar
             percentage={percentage}
-            label={`${approvals.length}/${approvalsRequired.size}`}
+            label={`${actualApprovalsCount}/${approvalsRequiredCount}`}
           />
         );
       },

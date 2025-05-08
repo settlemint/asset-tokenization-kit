@@ -22,7 +22,7 @@ export function CustodyManagement() {
               icon: (
                 <KeySquareIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
               ),
-              path: "/vaults",
+              path: "/custody/vaults",
             },
           ],
         },
