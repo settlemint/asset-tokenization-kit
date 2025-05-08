@@ -68,14 +68,14 @@
       "dependsOn": ["codegen", "contracts#compile:forge"]
     },
     "genesis": {
-      "dependsOn": ["dependencies", "contracts#compile:forge"],
+      "dependsOn": ["dependencies", "contracts#compile:forge", "test"],
       "outputs": [
         "genesis-output.json",
         "../charts/atk/charts/besu-network/charts/besu-genesis/files/genesis-output.json"
       ]
     },
     "abi-output": {
-      "dependsOn": ["dependencies", "contracts#compile:forge"],
+      "dependsOn": ["dependencies", "contracts#compile:forge", "test"],
       "outputs": ["portal/*.json"]
     },
     "contracts#deploy:local": {
