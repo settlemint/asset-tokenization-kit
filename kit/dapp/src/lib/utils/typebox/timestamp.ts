@@ -68,6 +68,9 @@ export const Timestamp = (options?: SchemaOptions) =>
       })
     )
     .Decode((value: TimestampInput) => {
+      if (value === null || value === undefined) {
+        return value;
+      }
       if (typeof value === "string") {
         // Handle numeric strings that could be timestamps
         if (/^\d+$/.test(value)) {
