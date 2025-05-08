@@ -9,7 +9,7 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "dependencies": "forge soldeer install && find dependencies -name .git -type d -exec rm -rf {} + && ./dependencies/@smartprotocol-v0.0.1/scripts/patch-onchainid.sh",
+    "dependencies": "forge soldeer install && find dependencies -name .git -type d -exec rm -rf {} + && chmod +x ./dependencies/smart-protocol-8.0.4/scripts/patch-onchainid.sh && ./dependencies/smart-protocol-8.0.4/scripts/patch-onchainid.sh",
     "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
     "format": "settlemint scs foundry format && prettier --write .",
     "compile:forge": "settlemint scs foundry build --sizes",
