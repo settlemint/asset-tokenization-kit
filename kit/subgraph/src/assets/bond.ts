@@ -256,7 +256,7 @@ export function handleBondRedeemed(event: BondRedeemed): void {
   );
   setValueWithDecimals(
     bond,
-    "underlyingBalanceExact",
+    "underlyingBalance",
     underlyingAmount,
     bond.underlyingAssetDecimals
   );
@@ -276,7 +276,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
   );
   setValueWithDecimals(
     bond,
-    "underlyingBalanceExact",
+    "underlyingBalance",
     underlyingBalanceExact,
     bond.underlyingAssetDecimals
   );
@@ -300,7 +300,7 @@ export function handleUnderlyingAssetWithdrawn(
 
   setValueWithDecimals(
     bond,
-    "underlyingBalanceExact",
+    "underlyingBalance",
     underlyingBalanceExact,
     bond.underlyingAssetDecimals
   );
