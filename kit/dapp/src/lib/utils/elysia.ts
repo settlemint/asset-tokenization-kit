@@ -4,7 +4,7 @@ import type { User } from "../auth/types";
 
 export const betterAuth = new Elysia({ name: "better-auth" }).macro({
   auth: {
-    async resolve({ error: status, request: { headers } }) {
+    async resolve({ status, request: { headers } }) {
       const session = await auth.api.getSession({
         headers,
       });

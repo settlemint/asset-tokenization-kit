@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth/auth";
 import { opentelemetry } from "@elysiajs/opentelemetry";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
-import { Elysia, error as elysiaStatus } from "elysia";
+import { Elysia, status as elysiaStatus } from "elysia";
 import pkgjson from "../../../package.json";
 import { metadata } from "../config/metadata";
 import { siteConfig } from "../config/site";
