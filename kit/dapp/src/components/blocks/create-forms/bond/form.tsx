@@ -10,10 +10,10 @@ import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
+import { stepDefinition as summaryStep } from "../common/summary/summary";
 import { stepDefinition as basicsStep } from "./steps/basics";
 import { stepDefinition as configurationStep } from "./steps/configuration";
-import { stepDefinition as summaryStep } from "./steps/summary";
-
+import { ConfigurationCard } from "./steps/summaryConfigurationCard";
 interface CreateBondFormProps {
   userDetails: User;
   currentStepId?: string; // Optional for when used in the asset designer
@@ -61,21 +61,7 @@ export function CreateBondForm({
   const AdminsComponent = adminsStep.component;
   const SummaryComponent = summaryStep.component;
 
-  // If we have a currentStepId, only render that specific step (for asset designer)
   const renderCurrentStep = () => {
-    if (!currentStepId) {
-      // If no currentStepId, render all steps (standard behavior)
-      return (
-        <div className="space-y-6">
-          <BasicsComponent />
-          <ConfigurationComponent />
-          <AdminsComponent userDetails={userDetails} />
-          <SummaryComponent userDetails={userDetails} />
-        </div>
-      );
-    }
-
-    // Only render the requested step (for asset designer)
     switch (currentStepId) {
       case "details":
         return <BasicsComponent onNext={onNextStep} onBack={onPrevStep} />;
@@ -91,10 +77,11 @@ export function CreateBondForm({
             onBack={onPrevStep}
           />
         );
-      case "review":
+      case "summary":
         return (
           <SummaryComponent
-            userDetails={userDetails}
+            configurationCard={<ConfigurationCard form={bondForm} />}
+            form={bondForm}
             onNext={onNextStep}
             onBack={onPrevStep}
           />

@@ -125,7 +125,10 @@ export function AssetAdmins({ userDetails, onNext, onBack }: AssetAdminsProps) {
           </p>
         </div>
 
-        <FormStep title={t("title")} description={t("description")}>
+        <FormStep
+          title={t("asset-admins-title")}
+          description={t("asset-admins-description")}
+        >
           <div className="space-y-4">
             <SelectedAdminsList
               userDetails={userDetails}

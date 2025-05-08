@@ -1315,7 +1315,11 @@
             "title": "Bond configuration",
             "title-lifecycle": "Lifecycle",
             "title-supply": "Supply",
-            "title-value": "Denomination"
+            "title-value": "Denomination",
+            "maximum-supply": "Maximum supply",
+            "face-value": "Face value",
+            "maturity-date": "Maturity date",
+            "underlying-asset": "Underlying asset"
           },
           "cryptocurrencies": {
             "description": "Set parameters specific to your cryptocurrency.",
@@ -1368,7 +1372,9 @@
                 "user-manager": "User manager"
               },
               "select-user-placeholder": "Search and select a user",
-              "title": "Asset permissions"
+              "title": "Asset permissions",
+              "asset-admins-title": "Asset admins",
+              "asset-admins-description": "Manage who has access to this asset and what they can do with it."
             }
           },
           "title": {
@@ -1478,7 +1484,12 @@
           "asset-basics-title": "Basic information",
           "configuration-description": "Specific parameters for your asset.",
           "configuration-title": "Configuration",
-          "description": "This is the final step before creating your asset. Please review all the details you have entered.",
+          "creating": "Creating...",
+          "default-asset": "Asset",
+          "description": "Review all the details you have entered.",
+          "disclaimer": "By creating this asset, you confirm that all information provided is accurate and that you have the necessary permissions to deploy this asset. This action cannot be undone once the asset is created.",
+          "issue": "Issue",
+          "not-specified": "Not specified",
           "title": "Summary"
         }
       },
