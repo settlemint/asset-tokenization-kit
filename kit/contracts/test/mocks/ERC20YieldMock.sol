@@ -32,14 +32,6 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
         _yieldToken = IERC20(yieldToken_);
     }
 
-    function clock() public view virtual override returns (uint48) {
-        return uint48(block.timestamp);
-    }
-
-    function CLOCK_MODE() public pure virtual override returns (string memory) {
-        return "mode=timestamp";
-    }
-
     function yieldBasisPerUnit(address) public view override returns (uint256) {
         return _yieldBasisPerUnit;
     }

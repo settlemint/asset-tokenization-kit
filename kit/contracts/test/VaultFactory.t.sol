@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
 import { Test, console } from "forge-std/Test.sol";
 import { VaultFactory } from "../contracts/VaultFactory.sol";
