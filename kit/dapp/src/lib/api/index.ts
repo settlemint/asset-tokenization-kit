@@ -27,6 +27,7 @@ import { SettingApi } from "./setting";
 import { StableCoinApi } from "./stablecoin";
 import { TransactionApi } from "./transaction";
 import { UserApi } from "./user";
+import { VaultApi } from "./vault";
 
 export const api = new Elysia({
   aot: true,
@@ -132,6 +133,7 @@ export const api = new Elysia({
   .group("/stats", (app) => app.use(AssetStatsApi))
   .group("/events", (app) => app.use(AssetEventsApi))
   .group("/balance", (app) => app.use(AssetBalanceApi))
+  .group("/vault", (app) => app.use(VaultApi))
   .group("/activity", (app) => app.use(AssetActivityApi))
   .group("/setting", (app) => app.use(SettingApi))
   .group("/providers/fx", (app) =>
