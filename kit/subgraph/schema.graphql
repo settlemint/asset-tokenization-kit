@@ -808,6 +808,26 @@ type ActivityLogEntryValue @entity(immutable: true) {
 }
 
 # --------------------------------------------------
+# Actions
+# --------------------------------------------------
+
+type Action @entity(immutable: false) {
+  id: Bytes!
+  name: String!
+  type: String!
+  createdAt: BigInt!
+  activeAt: BigInt!
+  expiresAt: BigInt
+  executedAt: BigInt
+  executed: Boolean!
+  executedBy: Account
+  target: Account!
+  authorizationMethod: String!
+  authorizedAccounts: [Account!]!
+  requiredRole: String
+}
+
+# --------------------------------------------------
 # Vault Contract
 # --------------------------------------------------
 
