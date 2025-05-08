@@ -1,5 +1,5 @@
 import { ApplicationSetupDialog } from "@/components/blocks/application-setup/application-setup-dialog";
-import { getContracts } from "@/lib/queries/contracts/deployed-contracts-list";
+import { getApplicationSetupStatus } from "@/lib/queries/application-setup/application-setup-status";
 import type { ReactNode } from "react";
 
 interface ApplicationSetupProps {
@@ -7,11 +7,7 @@ interface ApplicationSetupProps {
 }
 
 export async function ApplicationSetup({ children }: ApplicationSetupProps) {
-  const deployedContracts = await getContracts({
-    abiName: "Portal",
-  });
-
-  const isSetup = deployedContracts?.getContracts?.count ?? 0 > 0;
+  const { isSetup } = await getApplicationSetupStatus();
 
   return isSetup ? (
     <>{children}</>

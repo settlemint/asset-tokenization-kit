@@ -8,12 +8,19 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { MiniProgressBar } from "../mini-progress-bar/mini-progress-bar";
+import { BootstrapStep } from "./steps/bootstrap";
+import { IntroStep } from "./steps/intro";
 
 interface ApplicationSetupDialogProps {
   open: boolean;
 }
 
-export type ApplicationSetupStep = "contracts" | "settings" | "summary";
+export type ApplicationSetupStep =
+  | "intro"
+  | "bootstrap"
+  | "settings"
+  | "summary";
+
 type TranslationKeys = Parameters<
   ReturnType<typeof useTranslations<"admin.application-setup">>
 >[0];
@@ -22,9 +29,13 @@ const stepDetailsMap: Record<
   ApplicationSetupStep,
   { title: TranslationKeys; description: TranslationKeys }
 > = {
-  contracts: {
-    title: "steps.contracts.title",
-    description: "steps.contracts.description",
+  intro: {
+    title: "steps.intro.title",
+    description: "steps.intro.description",
+  },
+  bootstrap: {
+    title: "steps.bootstrap.title",
+    description: "steps.bootstrap.description",
   },
   settings: {
     title: "steps.settings.title",
@@ -37,12 +48,16 @@ const stepDetailsMap: Record<
 };
 
 // Define the order of steps
-const stepsOrder: ApplicationSetupStep[] = ["contracts", "settings", "summary"];
+const stepsOrder: ApplicationSetupStep[] = [
+  "intro",
+  "bootstrap",
+  "settings",
+  "summary",
+];
 
 export function ApplicationSetupDialog({ open }: ApplicationSetupDialogProps) {
   const t = useTranslations("admin.application-setup");
-  const [currentStep, setCurrentStep] =
-    useState<ApplicationSetupStep>("contracts");
+  const [currentStep, setCurrentStep] = useState<ApplicationSetupStep>("intro");
   const wizardSteps = stepsOrder.map(
     (stepId): Step => ({
       id: stepId,
@@ -54,7 +69,14 @@ export function ApplicationSetupDialog({ open }: ApplicationSetupDialogProps) {
 
   return (
     <Dialog open={open}>
-      <DialogContent className="max-h-[95vh] min-h-[70vh] h-auto w-[90vw] lg:w-[75vw] p-0 overflow-auto border-none right-0 !max-w-screen rounded-2xl">
+      <DialogContent
+        className="max-h-[95vh] min-h-[70vh] h-auto w-[90vw] lg:w-[75vw] p-0 overflow-auto border-none right-0 !max-w-screen rounded-2xl"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onFocusOutside={(e) => e.preventDefault()}
+      >
         <div className="relative">
           <DialogTitle className="sr-only">{t("title")}</DialogTitle>
 
@@ -67,7 +89,12 @@ export function ApplicationSetupDialog({ open }: ApplicationSetupDialogProps) {
               setCurrentStep(stepId as ApplicationSetupStep)
             }
           >
-            TODO
+            {currentStep === "intro" && (
+              <IntroStep onNext={() => setCurrentStep("bootstrap")} />
+            )}
+            {currentStep === "bootstrap" && (
+              <BootstrapStep onNext={() => setCurrentStep("settings")} />
+            )}
           </StepWizard>
 
           <MiniProgressBar

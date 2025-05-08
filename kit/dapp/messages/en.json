@@ -45,9 +45,13 @@
       "title": "Application Setup",
       "description": "Setup your application to get started",
       "steps": {
-        "contracts": {
-          "title": "Contracts",
-          "description": "Deploy the initial contracts required for the application to function."
+        "intro": {
+          "title": "Introduction",
+          "description": "Info about the application and the process of setting it up."
+        },
+        "bootstrap": {
+          "title": "Setup",
+          "description": "Getting the application ready."
         },
         "settings": {
           "title": "Settings",
@@ -55,9 +59,20 @@
         },
         "summary": {
           "title": "Summary",
-          "description": "The application setup is complete. You can now start using the application."
+          "description": "The application setup is complete"
         }
-      }
+      },
+      "intro": {
+        "title": "Welcome to your asset tokenization platform",
+        "description": "This guide will walk you through setting up the asset tokenization platform.\n\nDuring setup, necessary contracts will be deployed to the network. You'll need to confirm these deployments several times using your verification method (PIN or Authenticator app).\n\nYou will also need to set the default application settings (e.g., currency). After completing these steps, the application will be ready to use."
+      },
+      "bootstrap": {
+        "title": "Getting the application ready",
+        "progress": {
+          "deploying-contracts": "Deploying contract {contractName} ({progress}/{total})"
+        }
+      },
+      "settings": {}
     },
     "bonds": {
       "yield": {

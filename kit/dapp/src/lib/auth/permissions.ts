@@ -7,6 +7,7 @@ const customPermissions = {
   user: [...defaultStatements.user, "set-kyc-status"],
   asset: ["transfer", "manage"],
   setting: ["read", "update"],
+  application: ["setup"],
 } as const;
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
@@ -22,6 +23,7 @@ export const adminRole = accessControl.newRole({
   ...adminAc.statements,
   user: [...adminAc.statements.user, "set-kyc-status"],
   setting: ["read", "update"],
+  application: ["setup"],
 });
 
 export const issuerRole = accessControl.newRole({
