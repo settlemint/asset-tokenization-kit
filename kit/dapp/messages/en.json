@@ -2426,7 +2426,7 @@
         "title": "Amount to exchange"
       },
       "button": {
-        "xvp": "Create a new settlement"
+        "xvp": "Create a new XvP Settlement"
       },
       "configuration": {
         "auto-execute": "Auto execute",
@@ -2480,12 +2480,15 @@
         "id": "Settlement ID",
         "status": "Status",
         "amount": "Amount",
+        "asset": "Asset",
         "price": "Price",
         "total-price": "Total price",
-        "approver": "Approver",
+        "user": "User",
         "approved-at": "Approved At",
-        "participants": "Participants"
+        "from": "From",
+        "to": "To"
       },
+      "ago": "ago",
       "total-price-description": "The total price of the assets involved in the settlement.",
       "flows": "Flows",
       "auto-execute": "Auto execute",
@@ -2498,7 +2501,8 @@
         "cancelled": "Cancelled",
         "claimed": "Claimed",
         "expired": "Expired",
-        "pending": "Pending"
+        "pending": "Pending",
+        "not-approved": "Not approved"
       }
     }
   },

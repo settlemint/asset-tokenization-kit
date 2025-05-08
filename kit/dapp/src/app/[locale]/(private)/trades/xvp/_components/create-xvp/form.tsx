@@ -12,7 +12,7 @@ import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
 import { User } from "./steps/user";
 
-interface CreateXvPSettlementFormProps {
+interface CreateXvPFormProps {
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -24,7 +24,7 @@ export function CreateXvPForm({
   onOpenChange,
   disabled = false,
   asButton = false,
-}: CreateXvPSettlementFormProps) {
+}: CreateXvPFormProps) {
   const t = useTranslations("trade-management.forms");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;

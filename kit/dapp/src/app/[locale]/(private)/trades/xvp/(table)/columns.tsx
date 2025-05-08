@@ -8,7 +8,6 @@ import { useRouter } from "@/i18n/routing";
 import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
-import { isBefore } from "date-fns";
 import { useLocale, useTranslations } from "next-intl";
 
 const columnHelper = createColumnHelper<XvPSettlement>();
@@ -41,26 +40,11 @@ export function columns() {
     }),
     columnHelper.accessor("cutoffDate", {
       header: t("columns.expiry"),
-      cell: ({ getValue }) => {
-        const expiresAt = getValue();
-        const isExpired = isBefore(
-          Number(expiresAt) * 1000,
-          new Date().getTime()
-        );
-        return (
-          <>
-            {isExpired
-              ? ` ${t("expired")} ${formatDate(expiresAt.toString(), {
-                  locale,
-                  type: "relative",
-                })}`
-              : formatDate(expiresAt.toString(), {
-                  locale,
-                  type: "relative",
-                })}
-          </>
-        );
-      },
+      cell: ({ getValue }) =>
+        formatDate(getValue().toString(), {
+          locale,
+          type: "relative",
+        }),
     }),
     columnHelper.accessor("approvals", {
       id: "approvals",
