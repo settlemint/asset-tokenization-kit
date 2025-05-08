@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { SMARTDeposit } from "../contracts/SMARTDeposit.sol";
@@ -10,7 +10,6 @@ import { InvalidDecimals } from "@smartprotocol/contracts/extensions/core/SMARTE
 import { ClaimUtils } from "@smartprotocol/tests/utils/ClaimUtils.sol";
 import { SMARTComplianceModuleParamPair } from
     "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { Unauthorized } from "@smartprotocol/contracts/extensions/common/CommonErrors.sol";
 import { InsufficientCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateralErrors.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 import { console } from "forge-std/console.sol";

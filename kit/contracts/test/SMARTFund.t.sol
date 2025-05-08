@@ -2,7 +2,6 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { Fund } from "../contracts/Fund.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";

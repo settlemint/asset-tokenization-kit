@@ -23,7 +23,6 @@ import { SMARTExtension } from "@smartprotocol/contracts/extensions/common/SMART
 import { SMARTHooks } from "@smartprotocol/contracts/extensions/common/SMARTHooks.sol";
 
 import { SMARTPausable } from "@smartprotocol/contracts/extensions/pausable/SMARTPausable.sol";
-//import { SMARTBlocklist } from "@smartprotocol/contracts/extensions/blocklist/SMARTBlocklist.sol";
 import { SMARTCustodian } from "@smartprotocol/contracts/extensions/custodian/SMARTCustodian.sol";
 import { SMARTBurnable } from "@smartprotocol/contracts/extensions/burnable/SMARTBurnable.sol";
 import { ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
