@@ -2480,11 +2480,13 @@
         "id": "Settlement ID",
         "status": "Status",
         "amount": "Amount",
+        "asset": "Asset",
         "price": "Price",
         "total-price": "Total price",
         "approver": "Approver",
         "approved-at": "Approved At",
-        "participants": "Participants"
+        "from": "From",
+        "to": "To"
       },
       "total-price-description": "The total price of the assets involved in the settlement.",
       "flows": "Flows",
