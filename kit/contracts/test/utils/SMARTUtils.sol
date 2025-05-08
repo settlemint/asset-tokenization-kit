@@ -36,8 +36,7 @@ contract SMARTUtils is Test {
             platformAdmin,
             infrastructureUtils.identityFactory(),
             infrastructureUtils.identityRegistry(),
-            infrastructureUtils.compliance(),
-            SMARTConstants.CLAIM_TOPIC_COLLATERAL
+            infrastructureUtils.compliance()
         );
         claimUtils = new ClaimUtils(
             platformAdmin,
