@@ -1,7 +1,11 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
+import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import type { Address } from "viem";
+import { approve } from "../../asset/approve/approve-action";
 import type { ApproveXvpInput } from "./approve-schema";
 
 const XvpApprove = portalGraphql(`
@@ -31,13 +35,49 @@ const XvpRevoke = portalGraphql(`
 `);
 
 export const approveXvpFunction = async ({
-  parsedInput: { approved, verificationCode, verificationType },
+  parsedInput: {
+    approved,
+    verificationCode,
+    verificationType,
+    xvp: xvpAddress,
+  },
   ctx: { user },
 }: {
   parsedInput: ApproveXvpInput;
   ctx: { user: User };
 }) => {
-  // TODO: grant approval for all types of tokens
+  const xvp = await getXvPSettlementDetail(xvpAddress, user.currency);
+  const assetsSentMap = new Map<
+    Address,
+    { address: Address; amount: number; assettype: AssetType }
+  >();
+  xvp.flows
+    .filter((flow) => flow.from.id === user.wallet)
+    .map((flow) => {
+      const key = flow.asset.id;
+      const approvalAmount = approved ? flow.amount : 0;
+      if (!assetsSentMap.has(key)) {
+        assetsSentMap.set(key, {
+          address: key,
+          amount: approvalAmount,
+          assettype: flow.asset.type,
+        });
+      } else {
+        assetsSentMap.get(key)!.amount += approvalAmount;
+      }
+    });
+  const approvalPromises = Array.from(assetsSentMap.values()).map((asset) =>
+    approve({
+      address: asset.address,
+      assettype: asset.assettype,
+      amount: asset.amount,
+      spender: xvpAddress,
+      verificationCode,
+      verificationType,
+    })
+  );
+  await Promise.all(approvalPromises);
+
   const challengeResponse = await handleChallenge(
     user,
     user.wallet,

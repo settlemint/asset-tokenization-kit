@@ -6,7 +6,11 @@ export const OnChainXvPSettlementFlowSchema = t.Object({
   from: t.Object({ id: t.EthereumAddress() }),
   to: t.Object({ id: t.EthereumAddress() }),
   amount: t.BigDecimal(),
-  asset: t.Object({ id: t.EthereumAddress(), symbol: t.AssetSymbol() }),
+  asset: t.Object({
+    id: t.EthereumAddress(),
+    symbol: t.AssetSymbol(),
+    type: t.AssetType(),
+  }),
 });
 
 /**
