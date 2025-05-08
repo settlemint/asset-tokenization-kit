@@ -2,6 +2,9 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 export const ApproveXvpSchema = t.Object(
   {
+    xvp: t.EthereumAddress({
+      description: "The XVP address",
+    }),
     approved: t.Boolean({
       description: "To approve or not to approve",
     }),
