@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ISMARTHistoricalBalances } from
-    "@smartprotocol/contracts/extensions/historical-balances/ISMARTHistoricalBalances.sol";
+    "smart-protocol/contracts/extensions/historical-balances/ISMARTHistoricalBalances.sol";
 
 /// @title ERC20Yield - Extension for ERC20 tokens to support yield functionality
 /// @notice This abstract contract provides the base functionality for ERC20 tokens to work with fixed yield schedules

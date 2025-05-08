@@ -18,18 +18,18 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { SMARTConstants } from "./SMARTConstants.sol";
 
 // Interface imports
-import { ISMART } from "@smartprotocol/contracts/interface/ISMART.sol";
+import { ISMART } from "smart-protocol/contracts/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from
-    "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+    "smart-protocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Core extensions
-import { SMART } from "@smartprotocol/contracts/extensions/core/SMART.sol"; // Base SMART logic + ERC20
-import { SMARTHooks } from "@smartprotocol/contracts/extensions/common/SMARTHooks.sol";
+import { SMART } from "smart-protocol/contracts/extensions/core/SMART.sol"; // Base SMART logic + ERC20
+import { SMARTHooks } from "smart-protocol/contracts/extensions/common/SMARTHooks.sol";
 
 // Feature extensions
-import { SMARTPausable } from "@smartprotocol/contracts/extensions/pausable/SMARTPausable.sol";
-import { SMARTBurnable } from "@smartprotocol/contracts/extensions/burnable/SMARTBurnable.sol";
-import { SMARTCustodian } from "@smartprotocol/contracts/extensions/custodian/SMARTCustodian.sol";
+import { SMARTPausable } from "smart-protocol/contracts/extensions/pausable/SMARTPausable.sol";
+import { SMARTBurnable } from "smart-protocol/contracts/extensions/burnable/SMARTBurnable.sol";
+import { SMARTCustodian } from "smart-protocol/contracts/extensions/custodian/SMARTCustodian.sol";
 
 /// @title SMARTFund - A security token representing fund shares with management fees
 /// @notice This contract implements a security token that represents fund shares with voting rights,

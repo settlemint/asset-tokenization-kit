@@ -6,13 +6,13 @@ import { SMARTStableCoin } from "../contracts/SMARTStableCoin.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
 import { SMARTConstants } from "../contracts/SMARTConstants.sol";
 import { TestConstants } from "./TestConstants.sol";
-import { InvalidDecimals } from "@smartprotocol/contracts/extensions/core/SMARTErrors.sol";
-import { ClaimUtils } from "@smartprotocol/tests/utils/ClaimUtils.sol";
+import { InvalidDecimals } from "smart-protocol/contracts/extensions/core/SMARTErrors.sol";
+import { ClaimUtils } from "smart-protocol/test/utils/ClaimUtils.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 import { SMARTComplianceModuleParamPair } from
-    "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { InsufficientCollateral } from "@smartprotocol/contracts/extensions/collateral/SMARTCollateralErrors.sol";
+    "smart-protocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { InsufficientCollateral } from "smart-protocol/contracts/extensions/collateral/SMARTCollateralErrors.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 
 /// Following tests are changed:

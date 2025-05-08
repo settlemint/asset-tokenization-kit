@@ -8,12 +8,12 @@ import { Forwarder } from "../contracts/Forwarder.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 import { SMARTFund } from "../contracts/SMARTFund.sol";
 import { SMARTComplianceModuleParamPair } from
-    "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+    "smart-protocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { SMARTConstants } from "../contracts/SMARTConstants.sol";
 import { TestConstants } from "./TestConstants.sol";
-import { TokenRecovered } from "@smartprotocol/contracts/extensions/core/SMARTEvents.sol";
+import { TokenRecovered } from "smart-protocol/contracts/extensions/core/SMARTEvents.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { TokenPaused } from "@smartprotocol/contracts/extensions/pausable/SMARTPausableErrors.sol";
+import { TokenPaused } from "smart-protocol/contracts/extensions/pausable/SMARTPausableErrors.sol";
 
 /// Following tests are changed:
 /// - test_BlockUnblockUser: removed because it will be managed by compliance modules

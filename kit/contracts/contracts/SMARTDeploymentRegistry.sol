@@ -2,12 +2,12 @@
 pragma solidity ^0.8.27;
 
 // SMART Protocol Dependencies
-import { SMARTCompliance } from "@smartprotocol/contracts/SMARTCompliance.sol";
-import { SMARTIdentityRegistryStorage } from "@smartprotocol/contracts/SMARTIdentityRegistryStorage.sol";
-import { SMARTIdentityFactory } from "@smartprotocol/contracts/SMARTIdentityFactory.sol";
-import { SMARTIdentityRegistry } from "@smartprotocol/contracts/SMARTIdentityRegistry.sol";
-import { SMARTTrustedIssuersRegistry } from "@smartprotocol/contracts/SMARTTrustedIssuersRegistry.sol";
-import { ISMARTComplianceModule } from "@smartprotocol/contracts/interface/ISMARTComplianceModule.sol";
+import { SMARTCompliance } from "smart-protocol/contracts/SMARTCompliance.sol";
+import { SMARTIdentityRegistryStorage } from "smart-protocol/contracts/SMARTIdentityRegistryStorage.sol";
+import { SMARTIdentityFactory } from "smart-protocol/contracts/SMARTIdentityFactory.sol";
+import { SMARTIdentityRegistry } from "smart-protocol/contracts/SMARTIdentityRegistry.sol";
+import { SMARTTrustedIssuersRegistry } from "smart-protocol/contracts/SMARTTrustedIssuersRegistry.sol";
+import { ISMARTComplianceModule } from "smart-protocol/contracts/interface/ISMARTComplianceModule.sol";
 
 // Local Contracts
 import { SMARTTokenRegistry } from "./SMARTTokenRegistry.sol";

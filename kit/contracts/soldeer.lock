@@ -19,16 +19,10 @@ checksum = "25d9cf22b6f4d8da7975f24234eefbf6c71348464ea74c8fdd481be3811767f5"
 integrity = "498747bedc3f757976da0b6125d26a63e79bb2b4dbabd8ecd2547e809a2fa27e"
 
 [[dependencies]]
-name = "@smartprotocol"
-version = "v0.0.1"
-git = "https://github.com/settlemint/solidity-smart-protocol.git"
-rev = "b8c6956d0343ff12589329ebf7533b007ed15629"
-
-[[dependencies]]
 name = "eas-contracts"
 version = "1.4.0"
 git = "https://github.com/ethereum-attestation-service/eas-contracts.git"
-rev = "v1.4.0"
+rev = "d223e17208aa110dd5ec694d77324a2321d93201"
 
 [[dependencies]]
 name = "forge-std"
@@ -42,3 +36,10 @@ name = "openzeppelin-community-contracts"
 version = "0.0.1"
 git = "https://github.com/OpenZeppelin/openzeppelin-community-contracts.git"
 rev = "e33f73d1957e46b9ed17c319ed607bb3c7137944"
+
+[[dependencies]]
+name = "smart-protocol"
+version = "8.0.3"
+url = "https://soldeer-revisions.s3.amazonaws.com/smart-protocol/8_0_3_08-05-2025_13:59:51_solidity-smart-protocol.zip"
+checksum = "dd445d0d6733016528a1d4d4552541578df0e9031a8f419a6394531dc8392f4e"
+integrity = "1d251f39a0d3d6f0d490900de932938f560c091ce9e8eb6fb3416d507bccc4e6"

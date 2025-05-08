@@ -8,7 +8,7 @@ import { Forwarder } from "../contracts/Forwarder.sol";
 import { ERC20Yield } from "../contracts/extensions/ERC20Yield.sol";
 import { SMARTUtils } from "./utils/SMARTUtils.sol";
 import { SMARTComplianceModuleParamPair } from
-    "@smartprotocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+    "smart-protocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { SMARTBond } from "../contracts/SMARTBond.sol";
 import { SMARTConstants } from "../contracts/SMARTConstants.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";

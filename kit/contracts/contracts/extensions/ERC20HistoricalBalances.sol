@@ -5,7 +5,7 @@ import { Checkpoints } from "@openzeppelin/contracts/utils/structs/Checkpoints.s
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { Time } from "@openzeppelin/contracts/utils/types/Time.sol";
 import { ISMARTHistoricalBalances } from
-    "@smartprotocol/contracts/extensions/historical-balances/ISMARTHistoricalBalances.sol";
+    "smart-protocol/contracts/extensions/historical-balances/ISMARTHistoricalBalances.sol";
 /**
  * @title ERC20HistoricalBalances
  * @dev Extension for ERC20 tokens that tracks historical balances of token holders.

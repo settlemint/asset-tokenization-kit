@@ -8,6 +8,7 @@ pragma solidity ^0.8.24;
 library TestConstants {
     // Claim Topics
     uint256 public constant CLAIM_TOPIC_KYC = 1;
+    uint256 public constant CLAIM_TOPIC_AML = 2;
 
     // Signature Schemes (ERC735)
     uint256 public constant ECDSA_TYPE = 1;

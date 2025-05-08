@@ -2,12 +2,12 @@
 pragma solidity ^0.8.27;
 
 import { Test } from "forge-std/Test.sol";
-import { InfrastructureUtils } from "@smartprotocol/tests/utils/InfrastructureUtils.sol";
-import { TokenUtils } from "@smartprotocol/tests/utils/TokenUtils.sol";
-import { ClaimUtils } from "@smartprotocol/tests/utils/ClaimUtils.sol";
-import { IdentityUtils } from "@smartprotocol/tests/utils/IdentityUtils.sol";
-import { SMARTIdentityRegistry } from "@smartprotocol/contracts/SMARTIdentityRegistry.sol";
-import { SMARTCompliance } from "@smartprotocol/contracts/SMARTCompliance.sol";
+import { InfrastructureUtils } from "smart-protocol/test/utils/InfrastructureUtils.sol";
+import { TokenUtils } from "smart-protocol/test/utils/TokenUtils.sol";
+import { ClaimUtils } from "smart-protocol/test/utils/ClaimUtils.sol";
+import { IdentityUtils } from "smart-protocol/test/utils/IdentityUtils.sol";
+import { SMARTIdentityRegistry } from "smart-protocol/contracts/SMARTIdentityRegistry.sol";
+import { SMARTCompliance } from "smart-protocol/contracts/SMARTCompliance.sol";
 
 import { SMARTConstants } from "../../contracts/SMARTConstants.sol";
 import { TestConstants } from "./../TestConstants.sol";
@@ -36,14 +36,18 @@ contract SMARTUtils is Test {
             platformAdmin,
             infrastructureUtils.identityFactory(),
             infrastructureUtils.identityRegistry(),
-            infrastructureUtils.compliance()
+            infrastructureUtils.compliance(),
+            SMARTConstants.CLAIM_TOPIC_COLLATERAL
         );
         claimUtils = new ClaimUtils(
             platformAdmin,
             claimIssuer,
             claimIssuerPrivateKey,
             infrastructureUtils.identityRegistry(),
-            infrastructureUtils.identityFactory()
+            infrastructureUtils.identityFactory(),
+            SMARTConstants.CLAIM_TOPIC_COLLATERAL,
+            TestConstants.CLAIM_TOPIC_KYC,
+            TestConstants.CLAIM_TOPIC_AML
         );
         identityUtils = new IdentityUtils(
             platformAdmin,
@@ -105,7 +109,10 @@ contract SMARTUtils is Test {
             claimIssuer_,
             claimIssuerPrivateKey_,
             infrastructureUtils.identityRegistry(),
-            infrastructureUtils.identityFactory()
+            infrastructureUtils.identityFactory(),
+            SMARTConstants.CLAIM_TOPIC_COLLATERAL,
+            TestConstants.CLAIM_TOPIC_KYC,
+            TestConstants.CLAIM_TOPIC_AML
         );
     }
 }
