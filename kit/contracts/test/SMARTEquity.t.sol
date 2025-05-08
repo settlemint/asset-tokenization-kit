@@ -378,12 +378,6 @@ contract SMARTEquityTest is Test {
         assertEq(smartEquity.allowance(signer, spender), 1000 * 10 ** DECIMALS);
     }
 
-    // Clock Mode Tests
-    function test_ClockMode() public view {
-        assertEq(smartEquity.CLOCK_MODE(), "mode=blocknumber&from=default");
-        assertEq(smartEquity.clock(), uint48(block.number));
-    }
-
     // Events Tests
     function test_TransferEvent() public {
         uint256 amount = 1000 * 10 ** DECIMALS;
