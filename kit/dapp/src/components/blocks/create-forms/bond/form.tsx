@@ -87,8 +87,8 @@ export function CreateBondForm({
         return (
           <AdminsComponent
             userDetails={userDetails}
-            // onNext={onNextStep}
-            // onBack={onPrevStep}
+            onNext={onNextStep}
+            onBack={onPrevStep}
           />
         );
       case "review":

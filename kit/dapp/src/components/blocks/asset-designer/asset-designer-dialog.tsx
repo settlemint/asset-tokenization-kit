@@ -1,9 +1,8 @@
 "use client";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import type { User } from "@/lib/queries/user/user-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import type { UserRole } from "@/lib/utils/typebox/user-roles";
+import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
@@ -22,9 +21,11 @@ import { getAssetDescription, getAssetTitle } from "./utils";
 interface AssetDesignerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  currentUser: User;
 }
 
 export function AssetDesignerDialog({
+  currentUser,
   open,
   onOpenChange,
 }: AssetDesignerDialogProps) {
@@ -38,24 +39,6 @@ export function AssetDesignerDialog({
   const [loading, setLoading] = useState(false);
   const [formComponent, setFormComponent] =
     useState<React.ComponentType<any> | null>(null);
-
-  // Placeholder user for development
-  const placeholderUser: User = {
-    id: "1",
-    email: "user@example.com",
-    name: "Demo User",
-    wallet: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-    created_at: new Date(),
-    role: "user" as UserRole,
-    currency: "EUR",
-    banned: null,
-    ban_reason: null,
-    ban_expires: null,
-    image: null,
-    kyc_verified_at: null,
-    last_login_at: undefined,
-    updated_at: undefined,
-  };
 
   // Create a unified representation of all steps
   const allSteps: Step[] = [
@@ -179,7 +162,7 @@ export function AssetDesignerDialog({
       const FormComponent = formComponent;
       return (
         <FormComponent
-          userDetails={placeholderUser}
+          userDetails={currentUser}
           currentStepId={currentStepId}
           onNextStep={handleNextStep}
           onPrevStep={handlePreviousStep}

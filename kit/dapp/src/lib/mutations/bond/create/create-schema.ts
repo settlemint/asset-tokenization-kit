@@ -67,17 +67,17 @@ export function CreateBondSchema({
       maturityDate: t.String({
         description: "Maturity date of the bond",
       }),
-      underlyingAsset: t.Object(
-        {
-          id: t.EthereumAddress({
-            minLength: 1,
-            errorMessage: "Underlying asset is required",
-          }),
-        },
-        {
-          description: "Underlying asset of the bond",
-        }
-      ),
+      // underlyingAsset: t.Object(
+      //   {
+      //     id: t.EthereumAddress({
+      //       minLength: 1,
+      //       errorMessage: "Underlying asset is required",
+      //     }),
+      //   },
+      //   {
+      //     description: "Underlying asset of the bond",
+      //   }
+      // ),
       predictedAddress: t.EthereumAddress({
         description: "Predicted address of the bond",
       }),

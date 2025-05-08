@@ -76,7 +76,7 @@ export const createBondFunction = withAccessControl(
       cap,
       faceValue,
       maturityDate,
-      underlyingAsset,
+      // underlyingAsset,
       predictedAddress,
       assetAdmins,
     },
@@ -107,7 +107,7 @@ export const createBondFunction = withAccessControl(
         cap: capExact,
         faceValue: String(faceValue),
         maturityDate: maturityDateTimestamp,
-        underlyingAsset: underlyingAsset.id,
+        underlyingAsset: "0x00",
       },
       ...(await handleChallenge(
         user,

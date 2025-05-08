@@ -99,7 +99,10 @@ const validatePredictedAddress = async (
   form: UseFormReturn<CreateBondInput>
 ) => {
   const values = form.getValues();
-  const predictedAddress = await getPredictedAddress(values);
+  const predictedAddress = await getPredictedAddress({
+    ...values,
+    underlyingAsset: { id: "0x0000000000000000000000000000000000000000" }, // TODO: remove
+  });
   const isAvailable = await isAddressAvailable(predictedAddress);
   if (!isAvailable) {
     form.setError("predictedAddress", {

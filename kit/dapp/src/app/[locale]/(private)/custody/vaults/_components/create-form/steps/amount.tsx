@@ -18,7 +18,6 @@ export function Amount() {
     (holder) => getAddress(holder.account.id) === getAddress(loggedInUserWallet)
   )?.value;
   const requestAsset = useWatch({ control, name: "requestAsset" });
-  const user = useWatch({ control, name: "user" });
 
   return (
     <FormStep
