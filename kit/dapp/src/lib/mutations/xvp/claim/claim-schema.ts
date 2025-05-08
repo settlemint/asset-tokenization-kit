@@ -2,6 +2,9 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 export const ClaimXvpSchema = t.Object(
   {
+    xvp: t.EthereumAddress({
+      description: "The address of the XVP",
+    }),
     verificationCode: t.VerificationCode({
       description:
         "The verification code (PIN, 2FA, or secret code) for signing the transaction",

@@ -18,7 +18,7 @@ const ClaimXvp = portalGraphql(`
 `);
 
 export const claimXvpFunction = async ({
-  parsedInput: { verificationCode, verificationType },
+  parsedInput: { verificationCode, verificationType, xvp },
   ctx: { user },
 }: {
   parsedInput: ClaimXvpInput;
@@ -34,7 +34,7 @@ export const claimXvpFunction = async ({
   const result = await portalClient.request(ClaimXvp, {
     challengeResponse: challengeResponse.challengeResponse,
     verificationId: challengeResponse.verificationId,
-    address: user.wallet,
+    address: xvp,
     from: user.wallet,
   });
   if (!result.XvPSettlementExecute) {

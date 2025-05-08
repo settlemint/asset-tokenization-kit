@@ -89,7 +89,7 @@ export const approveXvpFunction = async ({
     const result = await portalClient.request(XvpApprove, {
       challengeResponse: challengeResponse.challengeResponse,
       verificationId: challengeResponse.verificationId,
-      address: user.wallet,
+      address: xvpAddress,
       from: user.wallet,
     });
     if (!result.XvPSettlementApprove) {
@@ -101,7 +101,7 @@ export const approveXvpFunction = async ({
   const result = await portalClient.request(XvpRevoke, {
     challengeResponse: challengeResponse.challengeResponse,
     verificationId: challengeResponse.verificationId,
-    address: user.wallet,
+    address: xvpAddress,
     from: user.wallet,
   });
   if (!result.XvPSettlementRevokeApproval) {
