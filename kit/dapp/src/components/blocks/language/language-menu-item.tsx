@@ -1,15 +1,15 @@
 "use client";
 
 import {
-  LanguagesIcon,
-  type LanguagesIconHandle,
-} from "@/components/ui/animated-icons/languages";
-import {
   DropdownMenuItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  LanguagesIcon,
+  type LanguagesIconHandle,
+} from "@/components/ui/languages";
 import { routing, usePathname, useRouter } from "@/i18n/routing";
 import { Check } from "lucide-react";
 import { useLocale, useTranslations, type Locale } from "next-intl";
@@ -70,7 +70,7 @@ export function LanguageMenuItem() {
       >
         <LanguagesIcon
           ref={languagesIconRef}
-          className="mr-4 size-4 text-muted-foreground"
+          className="mr-4 size-4 text-muted-foreground cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center"
         />
         <span>{isPending ? t("changing") : t("language")}</span>
       </DropdownMenuSubTrigger>

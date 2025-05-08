@@ -1,18 +1,16 @@
 "use client";
-
 import { NavMain } from "@/components/layout/nav-main";
-import { RefreshCWIcon } from "@/components/ui/refresh-cw";
+import { KeySquareIcon } from "@/components/ui/key-square";
 import { useTranslations } from "next-intl";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 
-export function TradeManagement() {
-  const t = useTranslations("admin.sidebar.trade-management");
-  const flagEnabled = useFeatureFlagEnabled("trade-management");
+export function CustodyManagement() {
+  const t = useTranslations("admin.sidebar.custody-management");
+  const flagEnabled = useFeatureFlagEnabled("custody-management");
 
   if (process.env.NEXT_PUBLIC_POSTHOG_KEY && !flagEnabled) {
     return null;
   }
-
   return (
     <NavMain
       items={[
@@ -20,11 +18,11 @@ export function TradeManagement() {
           groupTitle: t("group-title"),
           items: [
             {
-              label: t("xvp-settlement"),
+              label: t("multisig-vaults"),
               icon: (
-                <RefreshCWIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+                <KeySquareIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
               ),
-              path: "/trades/xvp",
+              path: "/vaults",
             },
           ],
         },

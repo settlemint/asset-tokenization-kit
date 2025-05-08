@@ -1,7 +1,7 @@
 import { BarChartComponent } from "@/components/blocks/charts/bar-charts/horizontal-bar-chart";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
-import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
+import { ChartColumnIncreasingIcon } from "@/components/ui/chart-column-increasing";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";

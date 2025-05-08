@@ -4,10 +4,11 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/fund-factory/fund-factory-predict-address";
-import type { User } from "@/lib/queries/user/user-schema";
+import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
 import { formatNumber } from "@/lib/utils/number";
 import type { fundCategories } from "@/lib/utils/typebox/fund-categories";
 import type { fundClasses } from "@/lib/utils/typebox/fund-classes";
+import type { User } from "better-auth";
 import { DollarSign, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type UseFormReturn, useFormContext, useWatch } from "react-hook-form";
@@ -95,19 +96,28 @@ export function Summary({ userDetails }: { userDetails: User }) {
         />
       </FormSummaryDetailCard>
 
-      <AssetAdminsCard userDetails={userDetails} assetAdmins={values.assetAdmins} />
+      <AssetAdminsCard
+        userDetails={userDetails}
+        assetAdmins={values.assetAdmins}
+      />
     </FormStep>
   );
 }
 
-Summary.validatedFields = [
-  "predictedAddress",
-] satisfies (keyof CreateFundInput)[];
-Summary.beforeValidate = [
-  async ({ setValue, getValues }: UseFormReturn<CreateFundInput>) => {
-    const values = getValues();
-    const predictedAddress = await getPredictedAddress(values);
+const validatePredictedAddress = async (
+  form: UseFormReturn<CreateFundInput>
+) => {
+  const values = form.getValues();
+  const predictedAddress = await getPredictedAddress(values);
+  const isAvailable = await isAddressAvailable(predictedAddress);
+  if (!isAvailable) {
+    form.setError("predictedAddress", {
+      message: "private.assets.create.form.duplicate-errors.fund",
+    });
+    return false;
+  }
+  form.clearErrors("predictedAddress");
+  return true;
+};
 
-    setValue("predictedAddress", predictedAddress);
-  },
-];
+Summary.customValidation = [validatePredictedAddress];

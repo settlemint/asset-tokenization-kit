@@ -18,6 +18,8 @@ import type {
   Path,
   PathValue,
   Resolver,
+  UseFormClearErrors,
+  UseFormGetValues,
   UseFormReturn,
 } from "react-hook-form";
 import { toast, type Action } from "sonner";
@@ -49,7 +51,13 @@ interface FormProps<
   };
   secureForm?: boolean;
   onAnyFieldChange?: (
-    form: UseFormReturn<Infer<S>>,
+    {
+      getValues,
+      clearErrors,
+    }: {
+      getValues: UseFormGetValues<Infer<S>>;
+      clearErrors: UseFormClearErrors<Infer<S>>;
+    },
     context: {
       step: number;
       goToStep: (step: number) => void;
@@ -349,6 +357,8 @@ export function Form<
       }
     );
 
+  const { getValues, clearErrors, watch } = form;
+
   const isLastStep = currentStep === totalSteps - 1;
 
   const handlePrev = () => {
@@ -359,8 +369,12 @@ export function Form<
     const CurrentStep = Array.isArray(children)
       ? children[currentStep].type
       : children.type;
-    const fieldsToValidate = CurrentStep.validatedFields;
-    if (!fieldsToValidate?.length) {
+
+    const fieldsToValidate = CurrentStep.validatedFields ?? [];
+    const customValidation = CurrentStep.customValidation ?? [];
+
+    const shouldValidate = fieldsToValidate?.length || customValidation?.length;
+    if (!shouldValidate) {
       if (isLastStep && secureForm) {
         setShowFormSecurityConfirmation(true);
       }
@@ -368,15 +382,7 @@ export function Form<
       return;
     }
 
-    const beforeValidate = CurrentStep.beforeValidate ?? [];
-    await Promise.all(
-      beforeValidate.map((validate) =>
-        validate(form as UseFormReturn<Infer<S>>)
-      )
-    );
-
     // Validate using the custom validation function
-    const customValidation = CurrentStep.customValidation ?? [];
     const customValidationResults = await Promise.all(
       customValidation.map((validate) =>
         validate(form as UseFormReturn<Infer<S>>)
@@ -423,16 +429,22 @@ export function Form<
       return;
     }
 
-    const subscription = form.watch((_value, { name }) => {
-      onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
-        changedFieldName: name,
-        step: currentStep,
-        goToStep: setCurrentStep,
-      });
+    const subscription = watch((_value, { name }) => {
+      onAnyFieldChange(
+        {
+          getValues: getValues as UseFormGetValues<Infer<S>>,
+          clearErrors: clearErrors as UseFormClearErrors<Infer<S>>,
+        },
+        {
+          changedFieldName: name,
+          step: currentStep,
+          goToStep: setCurrentStep,
+        }
+      );
     });
 
     return () => subscription.unsubscribe();
-  }, [form, onAnyFieldChange, currentStep]);
+  }, [onAnyFieldChange, currentStep, watch, clearErrors, getValues]);
 
   const hasError = Object.keys(form.formState.errors).length > 0;
   const formatError = (key: string, errorMessage?: string, type?: string) => {

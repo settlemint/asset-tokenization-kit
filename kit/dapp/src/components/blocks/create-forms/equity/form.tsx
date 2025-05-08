@@ -56,7 +56,7 @@ export function CreateEquityForm({
           assetAdmins: [],
         }}
         onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(["predictedAddress"]);
+          clearErrors("predictedAddress");
         }}
       >
         <Basics />

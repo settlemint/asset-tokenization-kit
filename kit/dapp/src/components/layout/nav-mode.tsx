@@ -1,8 +1,8 @@
 "use client";
 
-import { ChevronsUpDown } from "lucide-react";
 import { useRef } from "react";
 
+import { ChevronsUpDownIcon } from "@/components/ui/chevrons-up-down";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,18 +20,12 @@ import {
 import { usePathname, useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import { useTranslations } from "next-intl";
-import {
-  ChartLineIcon,
-  type ChartLineIconHandle,
-} from "../ui/animated-icons/chart-line";
-import {
-  HandCoinsIcon,
-  type HandCoinsIconHandle,
-} from "../ui/animated-icons/hand-coins";
+import { ChartLineIcon, type ChartLineIconHandle } from "../ui/chart-line";
+import { HandCoinsIcon, type HandCoinsIconHandle } from "../ui/hand-coins";
 import {
   SettingsGearIcon,
   type SettingsGearIconHandle,
-} from "../ui/animated-icons/settings-gear";
+} from "../ui/settings-gear";
 
 export function NavMode() {
   const t = useTranslations("layout.modeswitch");
@@ -85,19 +79,19 @@ export function NavMode() {
               {mode === "assets" && (
                 <HandCoinsIcon
                   ref={handCoinsRef}
-                  className="size-6 rounded p-1 bg-accent"
+                  className="size-6  p-1 bg-accent cursor-pointer select-none rounded transition-colors duration-200 flex items-center justify-center"
                 />
               )}
               {mode === "portfolio" && (
                 <ChartLineIcon
                   ref={chartLineRef}
-                  className="size-6 rounded p-1 bg-accent"
+                  className="size-6  p-1 bg-accent cursor-pointer select-none rounded transition-colors duration-200 flex items-center justify-center"
                 />
               )}
               {mode === "platform" && (
                 <SettingsGearIcon
                   ref={settingsGearRef}
-                  className="size-6 rounded p-1 bg-accent"
+                  className="size-6  p-1 bg-accent cursor-pointer select-none rounded transition-colors duration-200 flex items-center justify-center"
                 />
               )}
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -107,7 +101,7 @@ export function NavMode() {
                   {mode === "platform" && t("platform")}
                 </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDownIcon className="ml-auto size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

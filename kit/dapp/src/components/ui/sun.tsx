@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import type { Variants } from 'motion/react';
+import { motion, useAnimation } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface SunIconHandle {
   startAnimation: () => void;
@@ -32,15 +32,15 @@ const SunIcon = forwardRef<SunIconHandle, SunIconProps>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
+        startAnimation: () => controls.start('animate'),
+        stopAnimation: () => controls.start('normal'),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("animate");
+          controls.start('animate');
         } else {
           onMouseEnter?.(e);
         }
@@ -51,7 +51,7 @@ const SunIcon = forwardRef<SunIconHandle, SunIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start("normal");
+          controls.start('normal');
         } else {
           onMouseLeave?.(e);
         }
@@ -60,10 +60,7 @@ const SunIcon = forwardRef<SunIconHandle, SunIconProps>(
     );
     return (
       <div
-        className={cn(
-          `cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center`,
-          className
-        )}
+        className={cn(className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...props}
@@ -81,14 +78,14 @@ const SunIcon = forwardRef<SunIconHandle, SunIconProps>(
         >
           <circle cx="12" cy="12" r="4" />
           {[
-            "M12 2v2",
-            "m19.07 4.93-1.41 1.41",
-            "M20 12h2",
-            "m17.66 17.66 1.41 1.41",
-            "M12 20v2",
-            "m6.34 17.66-1.41 1.41",
-            "M2 12h2",
-            "m4.93 4.93 1.41 1.41",
+            'M12 2v2',
+            'm19.07 4.93-1.41 1.41',
+            'M20 12h2',
+            'm17.66 17.66 1.41 1.41',
+            'M12 20v2',
+            'm6.34 17.66-1.41 1.41',
+            'M2 12h2',
+            'm4.93 4.93 1.41 1.41',
           ].map((d, index) => (
             <motion.path
               key={d}
@@ -104,6 +101,6 @@ const SunIcon = forwardRef<SunIconHandle, SunIconProps>(
   }
 );
 
-SunIcon.displayName = "SunIcon";
+SunIcon.displayName = 'SunIcon';
 
 export { SunIcon };

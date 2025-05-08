@@ -48,9 +48,6 @@ export function CreateDepositForm({
         buttonLabels={{
           label: t("trigger-label.deposits"),
         }}
-        onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(["predictedAddress"]);
-        }}
         defaultValues={{
           collateralLivenessValue: 12,
           collateralLivenessTimeUnit: "months",
@@ -59,6 +56,20 @@ export function CreateDepositForm({
             currency: userDetails.currency,
           },
           assetAdmins: [],
+        }}
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors("predictedAddress");
+        }}
+        toastMessages={{
+          action: (input) => {
+            const assetId = input?.predictedAddress;
+            return assetId
+              ? {
+                  label: t("toast-action.deposits"),
+                  onClick: () => router.push(`/assets/deposit/${assetId}`),
+                }
+              : undefined;
+          },
         }}
       >
         <Basics />

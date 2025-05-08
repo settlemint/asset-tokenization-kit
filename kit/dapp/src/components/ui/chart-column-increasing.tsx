@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { type Variants, motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { type Variants, motion, useAnimation } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface ChartColumnIncreasingIconHandle {
   startAnimation: () => void;
@@ -43,7 +43,7 @@ const ChartColumnIncreasingIcon = forwardRef<
           transition: { delay: i * 0.1, duration: 0.3 },
         }));
       },
-      stopAnimation: () => controls.start("visible"),
+      stopAnimation: () => controls.start('visible'),
     };
   });
 
@@ -70,7 +70,7 @@ const ChartColumnIncreasingIcon = forwardRef<
   const handleMouseLeave = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!isControlledRef.current) {
-        controls.start("visible");
+        controls.start('visible');
       } else {
         onMouseLeave?.(e);
       }
@@ -80,10 +80,7 @@ const ChartColumnIncreasingIcon = forwardRef<
 
   return (
     <div
-      className={cn(
-        `cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center`,
-        className
-      )}
+      className={cn(className)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       {...props}
@@ -126,6 +123,6 @@ const ChartColumnIncreasingIcon = forwardRef<
   );
 });
 
-ChartColumnIncreasingIcon.displayName = "ChartColumnIncreasingIcon";
+ChartColumnIncreasingIcon.displayName = 'ChartColumnIncreasingIcon';
 
 export { ChartColumnIncreasingIcon };

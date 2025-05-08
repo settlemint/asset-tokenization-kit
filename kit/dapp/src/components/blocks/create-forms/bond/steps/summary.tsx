@@ -4,8 +4,10 @@ import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step
 import { FormStep } from "@/components/blocks/form/form-step";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
+import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
 import { useLocale, useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, type UseFormReturn } from "react-hook-form";
 import type { BondStepProps } from "../form";
 
 export function Summary({ userDetails, onNext, onBack }: BondStepProps) {
@@ -97,8 +99,25 @@ export function Summary({ userDetails, onNext, onBack }: BondStepProps) {
   );
 }
 
+const validatePredictedAddress = async (
+  form: UseFormReturn<CreateBondInput>
+) => {
+  const values = form.getValues();
+  const predictedAddress = await getPredictedAddress(values);
+  const isAvailable = await isAddressAvailable(predictedAddress);
+  if (!isAvailable) {
+    form.setError("predictedAddress", {
+      message: "private.assets.create.form.duplicate-errors.bond",
+    });
+    return false;
+  }
+  form.clearErrors("predictedAddress");
+  return true;
+};
+
 // For use with form component
-Summary.validatedFields = ["predictedAddress", "verificationType"];
+Summary.validatedFields = ["verificationType"];
+Summary.customValidation = [validatePredictedAddress];
 
 // Export step definition for asset designer
 export const stepDefinition = {

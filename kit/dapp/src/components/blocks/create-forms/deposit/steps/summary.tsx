@@ -3,6 +3,7 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
+import { isAddressAvailable } from "@/lib/queries/deposit-factory/deposit-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/deposit-factory/deposit-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { formatNumber } from "@/lib/utils/number";
@@ -80,14 +81,20 @@ export function Summary({ userDetails }: { userDetails: User }) {
   );
 }
 
-Summary.validatedFields = [
-  "predictedAddress",
-] satisfies (keyof CreateDepositInput)[];
-Summary.beforeValidate = [
-  async ({ setValue, getValues }: UseFormReturn<CreateDepositInput>) => {
-    const values = getValues();
-    const predictedAddress = await getPredictedAddress(values);
+const validatePredictedAddress = async (
+  form: UseFormReturn<CreateDepositInput>
+) => {
+  const values = form.getValues();
+  const predictedAddress = await getPredictedAddress(values);
+  const isAvailable = await isAddressAvailable(predictedAddress);
+  if (!isAvailable) {
+    form.setError("predictedAddress", {
+      message: "private.assets.create.form.duplicate-errors.deposit",
+    });
+    return false;
+  }
+  form.clearErrors("predictedAddress");
+  return true;
+};
 
-    setValue("predictedAddress", predictedAddress);
-  },
-];
+Summary.customValidation = [validatePredictedAddress];
