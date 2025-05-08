@@ -159,7 +159,7 @@ dataSources:
     name: XvPSettlementFactory
     network: settlemint
     source:
-      address: "0x202bdfdD1b4AC18fB5B68536f59CcAA693D00eF3"
+      address: "0x5e771e1417100000000000000000000000000008"
       abi: XvPSettlementFactory
     mapping:
       kind: ethereum/events
@@ -208,12 +208,16 @@ dataSources:
         - name: LinearVestingStrategy
           file: ../contracts/artifacts/contracts/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
       eventHandlers:
-        - event: StandardAirdropDeployed(indexed address,indexed address,indexed address)
+        - event:
+            StandardAirdropDeployed(indexed address,indexed address,indexed
+            address)
           handler: handleStandardAirdropDeployed
-        - event: VestingAirdropDeployed(indexed address,indexed address,indexed
+        - event:
+            VestingAirdropDeployed(indexed address,indexed address,indexed
             address,address)
           handler: handleVestingAirdropDeployed
-        - event: PushAirdropDeployed(indexed address,indexed address,indexed address)
+        - event:
+            PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
       file: ./src/factories/airdrop-factory.ts
   - kind: ethereum/contract
@@ -284,7 +288,9 @@ templates:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
-        - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
+        - event:
+            YieldClaimed(indexed
+            address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
@@ -352,13 +358,15 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
-        - event: Clawback(indexed address,indexed address,uint256,indexed address)
+        - event:
+            Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/assets/bond.ts
   - kind: ethereum/contract
@@ -404,7 +412,8 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -464,9 +473,11 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-        - event: Clawback(indexed address,indexed address,uint256,indexed address)
+        - event:
+            Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/assets/equity.ts
   - kind: ethereum/contract
@@ -524,11 +535,13 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: CollateralUpdated(uint256,uint256,uint256,indexed address)
           handler: handleCollateralUpdated
-        - event: Clawback(indexed address,indexed address,uint256,indexed address)
+        - event:
+            Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/assets/stablecoin.ts
   - kind: ethereum/contract
@@ -586,15 +599,19 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: ManagementFeeCollected(uint256,uint256)
           handler: handleManagementFeeCollected
         - event: PerformanceFeeCollected(uint256,uint256)
           handler: handlePerformanceFeeCollected
-        - event: TokenWithdrawn(indexed address,indexed address,uint256,indexed address)
+        - event:
+            TokenWithdrawn(indexed address,indexed address,uint256,indexed
+            address)
           handler: handleTokenWithdrawn
-        - event: Clawback(indexed address,indexed address,uint256,indexed address)
+        - event:
+            Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/assets/fund.ts
   - kind: ethereum/contract
@@ -647,13 +664,17 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-        - event: TokenWithdrawn(indexed address,indexed address,uint256,indexed address)
+        - event:
+            TokenWithdrawn(indexed address,indexed address,uint256,indexed
+            address)
           handler: handleTokenWithdrawn
         - event: CollateralUpdated(uint256,uint256,uint256,indexed address)
           handler: handleCollateralUpdated
-        - event: Clawback(indexed address,indexed address,uint256,indexed address)
+        - event:
+            Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/assets/deposit.ts
   - kind: ethereum/contract
@@ -781,13 +802,16 @@ templates:
           handler: handleExecuteTransaction
         - event: RevokeConfirmation(indexed address,indexed uint256)
           handler: handleRevokeConfirmation
-        - event: SubmitContractCallTransaction(indexed address,indexed uint256,indexed
-            address,uint256,bytes4,bytes,string)
+        - event:
+            SubmitContractCallTransaction(indexed address,indexed
+            uint256,indexed address,uint256,bytes4,bytes,string)
           handler: handleSubmitContractCallTransaction
-        - event: SubmitERC20TransferTransaction(indexed address,indexed uint256,indexed
-            address,address,uint256,string)
+        - event:
+            SubmitERC20TransferTransaction(indexed address,indexed
+            uint256,indexed address,address,uint256,string)
           handler: handleSubmitERC20TransferTransaction
-        - event: SubmitTransaction(indexed address,indexed uint256,indexed
+        - event:
+            SubmitTransaction(indexed address,indexed uint256,indexed
             address,uint256,bytes,string)
           handler: handleSubmitTransaction
         - event: Deposit(indexed address,uint256,uint256)
