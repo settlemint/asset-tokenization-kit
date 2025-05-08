@@ -41,6 +41,24 @@
       },
       "view-all": "View All"
     },
+    "application-setup": {
+      "title": "Application Setup",
+      "description": "Setup your application to get started",
+      "steps": {
+        "contracts": {
+          "title": "Contracts",
+          "description": "Deploy the initial contracts required for the application to function."
+        },
+        "settings": {
+          "title": "Settings",
+          "description": "Configure the application settings."
+        },
+        "summary": {
+          "title": "Summary",
+          "description": "The application setup is complete. You can now start using the application."
+        }
+      }
+    },
     "bonds": {
       "yield": {
         "contract-address": "Contract address",

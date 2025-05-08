@@ -1,3 +1,4 @@
+import { ApplicationSetup } from "@/components/blocks/application-setup/application-setup";
 import { WalletSecurity } from "@/components/blocks/auth/wallet-security";
 import NavProvider from "@/components/layout/nav-provider";
 import { metadata } from "@/lib/config/metadata";
@@ -35,7 +36,9 @@ export default function Layout({ children }: LayoutProps) {
     <>
       <RedirectToSignIn />
       <WalletSecurity>
-        <NavProvider>{children}</NavProvider>
+        <ApplicationSetup>
+          <NavProvider>{children}</NavProvider>
+        </ApplicationSetup>
       </WalletSecurity>
     </>
   );

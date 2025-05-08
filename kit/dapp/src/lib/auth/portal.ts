@@ -1,15 +1,5 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-
-type CreateWalletResponse = {
-  createWallet: null | {
-    address: null | string;
-  };
-};
-
-interface CreateWalletVariables {
-  keyVaultId: string;
-  name: string;
-}
+import type { ResultOf, VariablesOf } from "gql.tada";
 
 const createWalletMutation = portalGraphql(`
   mutation createUserWallet($keyVaultId: String!, $name: String!) {
@@ -18,6 +8,9 @@ const createWalletMutation = portalGraphql(`
     }
   }
 `);
+
+type CreateWalletResponse = ResultOf<typeof createWalletMutation>;
+type CreateWalletVariables = VariablesOf<typeof createWalletMutation>;
 
 export async function createUserWallet(
   variables: CreateWalletVariables

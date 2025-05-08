@@ -2,7 +2,6 @@
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/routing";
-import { useTheme } from "next-themes";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -50,36 +49,11 @@ import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { revalidate } from "@/lib/utils/revalidate";
+import { MiniProgressBar } from "../mini-progress-bar/mini-progress-bar";
 
 interface AssetDesignerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-// Mini progress bar component
-interface MiniProgressBarProps {
-  totalSteps: number;
-  currentStepIndex: number;
-}
-
-function MiniProgressBar({
-  totalSteps,
-  currentStepIndex,
-}: MiniProgressBarProps) {
-  return (
-    <div className="absolute bottom-10 left-[61%] transform -translate-x-1/2 flex justify-center items-center gap-2 pointer-events-none">
-      {Array.from({ length: totalSteps }).map((_, index) => (
-        <div
-          key={index}
-          className={`transition-all duration-300 ${
-            index === currentStepIndex
-              ? "w-4 h-1.5 bg-primary rounded-full animate-pulse"
-              : "w-1.5 h-1.5 bg-muted-foreground/30 rounded-full"
-          }`}
-        />
-      ))}
-    </div>
-  );
 }
 
 export function AssetDesignerDialog({
@@ -89,7 +63,6 @@ export function AssetDesignerDialog({
   const [currentStep, setCurrentStep] = useState<AssetDesignerStep>("type");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { theme } = useTheme();
 
   // Use the custom hook for form management
   const {
@@ -330,17 +303,6 @@ export function AssetDesignerDialog({
     verificationForm.reset();
   };
 
-  // Conditionally apply the sidebar background style
-  const sidebarStyle = {
-    backgroundImage:
-      theme === "dark"
-        ? "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)), url('/backgrounds/sidebar-bg.png')"
-        : "url('/backgrounds/sidebar-bg.png')",
-    backgroundSize: "cover",
-    backgroundPosition: "top",
-    backgroundRepeat: "no-repeat",
-  };
-
   // Get current step index for the progress bar
   const currentStepIndex = stepsOrder.findIndex((step) => step === currentStep);
 
@@ -366,7 +328,6 @@ export function AssetDesignerDialog({
             onStepChange={(stepId) =>
               setCurrentStep(stepId as AssetDesignerStep)
             }
-            sidebarStyle={sidebarStyle}
             onClose={() => handleOpenChange(false)}
           >
             {/* Type Selection Step */}
