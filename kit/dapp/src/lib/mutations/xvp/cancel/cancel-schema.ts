@@ -14,7 +14,7 @@ export const CancelXvpSchema = t.Object(
     }),
   },
   {
-    $id: "ApproveXvpForm",
+    $id: "CancelXvpForm",
     additionalProperties: false,
   }
 );

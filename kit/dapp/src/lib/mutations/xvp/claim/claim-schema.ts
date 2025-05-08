@@ -14,7 +14,7 @@ export const ClaimXvpSchema = t.Object(
     }),
   },
   {
-    $id: "ApproveXvpForm",
+    $id: "ClaimXvpForm",
     additionalProperties: false,
   }
 );
