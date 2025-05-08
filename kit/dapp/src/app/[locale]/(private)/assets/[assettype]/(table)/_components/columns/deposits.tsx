@@ -129,7 +129,7 @@ export function DepositColumns() {
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      },
     }),
   ];
 }

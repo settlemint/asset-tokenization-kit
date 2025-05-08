@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
-import * as React from "react";
+import { useTheme } from "next-themes";
+import { useMemo, type ReactNode } from "react";
 
 export interface Step {
   id: string;
@@ -18,7 +18,6 @@ interface StepWizardProps {
   description: string;
   onStepChange: (stepId: string) => void;
   children: ReactNode;
-  sidebarStyle?: React.CSSProperties;
   onClose?: () => void;
 }
 
@@ -29,10 +28,23 @@ export function StepWizard({
   description,
   onStepChange,
   children,
-  sidebarStyle,
   onClose,
 }: StepWizardProps) {
+  const { theme } = useTheme();
+
   const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
+
+  const sidebarStyle = useMemo(() => {
+    return {
+      backgroundImage:
+        theme === "dark"
+          ? "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)), url('/backgrounds/sidebar-bg.png')"
+          : "url('/backgrounds/sidebar-bg.png')",
+      backgroundSize: "cover",
+      backgroundPosition: "top",
+      backgroundRepeat: "no-repeat",
+    };
+  }, [theme]);
 
   return (
     <div className="flex h-full min-h-[65vh] flex-col" tabIndex={-1}>
