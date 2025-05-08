@@ -3,6 +3,7 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { useSettings } from "@/hooks/use-settings";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
+import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-predict-address";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign, Settings } from "lucide-react";
@@ -72,14 +73,20 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = [
-  "predictedAddress",
-] satisfies (keyof CreateCryptoCurrencyInput)[];
-Summary.beforeValidate = [
-  async ({ setValue, getValues }: UseFormReturn<CreateCryptoCurrencyInput>) => {
-    const values = getValues();
-    const predictedAddress = await getPredictedAddress(values);
+const validatePredictedAddress = async (
+  form: UseFormReturn<CreateCryptoCurrencyInput>
+) => {
+  const values = form.getValues();
+  const predictedAddress = await getPredictedAddress(values);
+  const isAvailable = await isAddressAvailable(predictedAddress);
+  if (!isAvailable) {
+    form.setError("predictedAddress", {
+      message: "private.assets.create.form.duplicate-errors.cryptocurrency",
+    });
+    return false;
+  }
+  form.clearErrors("predictedAddress");
+  return true;
+};
 
-    setValue("predictedAddress", predictedAddress);
-  },
-];
+Summary.customValidation = [validatePredictedAddress];

@@ -1,7 +1,7 @@
 import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
-import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
+import { ChartColumnIncreasingIcon } from "@/components/ui/chart-column-increasing";
 import { getUser } from "@/lib/auth/utils";
 import { createTimeSeries } from "@/lib/charts";
 import { getBondYieldDistribution } from "@/lib/queries/bond/bond-yield-distribution";

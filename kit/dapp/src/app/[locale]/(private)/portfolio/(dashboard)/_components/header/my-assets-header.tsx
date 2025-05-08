@@ -44,23 +44,6 @@ export async function MyAssetsHeader({ locale, user }: MyAssetsHeaderProps) {
           />
         </div>
       </div>
-
-      {/* <div className="flex items-center justify-between">
-        <MyAssetsCount
-          totalCount={myAssetsBalance.total}
-          totalValue={{
-            amount: totalUserAssetsValue,
-            currency: user.currency,
-          }}
-        />
-
-      </div>
-      <PortfolioValueCard />
-      <PortfolioValue
-        portfolioStats={portfolioStats}
-        assetPriceMap={assetPrices}
-        locale={locale}
-      /> */}
     </>
   );
 }

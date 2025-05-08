@@ -10,6 +10,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { AssetManagement } from "./items/asset-management";
+import { CustodyManagement } from "./items/custody-management";
 
 export async function AssetsSidebar() {
   return (
@@ -20,6 +21,7 @@ export async function AssetsSidebar() {
       <SidebarContent className="pt-4">
         <AssetDesignerButton />
         <AssetManagement />
+        <CustodyManagement />
       </SidebarContent>
       <SidebarFooter>
         <Separator />

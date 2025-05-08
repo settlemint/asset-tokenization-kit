@@ -1,7 +1,7 @@
 "use client";
 
 import { NavMain } from "@/components/layout/nav-main";
-import { ArrowRightLeft } from "lucide-react";
+import { RefreshCWIcon } from "@/components/ui/refresh-cw";
 import { useTranslations } from "next-intl";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 
@@ -21,7 +21,9 @@ export function TradeManagement() {
           items: [
             {
               label: t("xvp-settlement"),
-              icon: <ArrowRightLeft className="size-4" />,
+              icon: (
+                <RefreshCWIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+              ),
               path: "/trades/xvp",
             },
           ],

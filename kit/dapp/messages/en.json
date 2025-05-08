@@ -218,13 +218,15 @@
       "asset-designer": "Asset Designer",
       "asset-management": {
         "actions": "Actions",
-        "asset-activity": "Asset activity",
+        "asset-activity": "Activity",
         "bonds": "Bonds",
         "cryptocurrencies": "Cryptocurrencies",
+        "custody-group-title": "Custody",
         "dashboard": "Dashboard",
         "equities": "Equities",
         "funds": "Funds",
         "group-title": "Asset management",
+        "multisig-vaults": "Vaults",
         "stablecoins": "Stablecoins",
         "tokenized-deposits": "Deposits",
         "view-all": "View all"
@@ -236,6 +238,10 @@
         "fund": "Fund",
         "stablecoin": "Stablecoin",
         "tokenized-deposit": "Deposits"
+      },
+      "custody-management": {
+        "group-title": "Custody management",
+        "multisig-vaults": "Vaults"
       },
       "platform-management": {
         "api": "API",
@@ -365,10 +371,10 @@
       "asset": "Asset",
       "detail-sheet": {
         "AUDITOR_ROLE": "Auditor Role",
+        "DEFAULT_ADMIN_ROLE": "Default Admin Role",
         "SIGNER_ROLE": "Signer Role",
         "SUPPLY_MANAGEMENT_ROLE": "Supply Management Role",
         "USER_MANAGEMENT_ROLE": "User Management Role",
-        "DEFAULT_ADMIN_ROLE": "Default Admin Role",
         "asset": "Asset",
         "asset-type": "Asset type",
         "date": "Date",
@@ -714,6 +720,25 @@
     }
   },
   "creator-owner": "Creator / Owner",
+  "custody": {
+    "vaults": {
+      "forms": {
+        "button": {
+          "vault": "Create a new vault"
+        },
+        "description": {
+          "vault": "A vault is a multi signature enabled smart contract to hold your assets securely"
+        },
+        "title": {
+          "vault": "Create a new vault"
+        }
+      },
+      "page": {
+        "vaults": "Vaults",
+        "vaults-description": "Multisig vaults to securely store assets"
+      }
+    }
+  },
   "error": {
     "array": "Please provide a list of items",
     "array-contains": "Please select at least one item from the list",
@@ -805,6 +830,7 @@
   "homepage": {
     "asset-tokenization": "asset tokenization",
     "bonds-funds-equities": "bonds, funds, equities",
+    "changelog-link-title": "Introducing the SMART protocol",
     "cryptocurrencies": "cryptocurrencies",
     "documentation": "Documentation",
     "features": {
@@ -813,15 +839,15 @@
         "title": "Complete API Coverage"
       },
       "asset-lifecycle": {
-        "description": "Manage the complete asset lifecycle seamlessly—from issuance and management to settlement and beyond.",
+        "description": "Manage the complete asset lifecycle seamlessly, from issuance and management to settlement and beyond.",
         "title": "Full Asset Lifecycle"
       },
       "compliance": {
         "description": "Navigate regulatory frameworks effortlessly, including full compliance with MiCA requirements.",
-        "title": "Comprehensive Compliance"
+        "title": "Compliance by design"
       },
       "customizable": {
-        "description": "Tailor every aspect of the platform to perfectly match your institution's unique needs and workflows.",
+        "description": "Tailor every aspect of the platform to match your institution's needs and workflows.",
         "title": "100% Customizable"
       },
       "description": "The SettleMint Asset Tokenization Kit is a full-stack solution designed to accelerate the development of digital asset platforms.",
@@ -841,7 +867,7 @@
         "description": "Accelerate your deployment and achieve rapid market entry faster than any other solution.",
         "title": "Shortest Time to Market"
       },
-      "title": "Complete Feature Set"
+      "title": "A one stop shop for all your tokenization needs"
     },
     "footer": {
       "company-description": "Transforming how the world creates, manages, and trades tokenized assets on blockchain.",
@@ -849,36 +875,67 @@
         "cookie-policy": "Cookie Policy",
         "copyright": "© {year} SettleMint. Functional Source License, Version 1.1, MIT Future License.",
         "privacy-policy": "Privacy Policy",
-        "terms-of-service": "Terms of Service"
+        "terms-of-service": "Terms of Service",
+        "title": "Legal"
       },
       "sections": {
         "company": {
           "about": "About",
           "blog": "Blog",
           "contact": "Contact",
-          "title": "COMPANY"
+          "title": "Company"
         },
         "config": {
-          "title": "SETTINGS"
+          "title": "Settings"
         },
         "platform": {
           "console": "Console",
           "mcp": "Model Context Provider",
           "sdk-cli": "SDK & CLI",
-          "title": "PLATFORM"
+          "title": "Platform"
         },
         "resources": {
           "documentation": "Documentation",
           "partners": "Partners",
-          "title": "RESOURCES",
+          "title": "Resources",
           "usecases": "Usecases"
         }
       }
     },
     "hero-description": "This kit is pre-configured to leverage your SettleMint application and provide an easy way to get started with your own asset tokenization solution.",
     "hero-subtitle-regular": "Unlock the power of",
+    "hero-subtitle-subtitle": "Bootstrap your own enterprise-grade asset tokenization platform, on public, private or consortium chains, in the cloud or on-premise and fully customizable to fit your needs.",
+    "hero-subtitle-title": "Unlock your assets by tokenizing on chain",
     "issuer-portal": "Issuer portal",
     "portfolio": "Portfolio",
+    "pricing": {
+      "enterprise": {
+        "badge": "Production ready",
+        "cta": "Get Started",
+        "description": "Per month for production usecases",
+        "feature1": "Everything in Starter",
+        "feature2": "Byzantine Fault Tolerant network",
+        "feature3": "High Availability",
+        "feature4": "99.99% Uptime SLA",
+        "feature5": "Priority Support",
+        "price": "€ 19.988 / mo",
+        "title": "Enterprise"
+      },
+      "starter": {
+        "cta": "Get Started",
+        "description": "Per month for non-production usecases",
+        "feature1": "Complete access to the SettleMint platform",
+        "feature2": "All tokenization features",
+        "feature3": "Single validator network",
+        "feature4": "Unlimited assets",
+        "feature5": "Unlimited users",
+        "feature6": "Unlimited volume",
+        "feature7": "Access to the SettleMint support",
+        "price": "€ 4.760 / mo",
+        "title": "Starter"
+      },
+      "title": "Pricing that scales with you"
+    },
     "stablecoins": "stablecoins",
     "tokenized-deposits": "deposits"
   },
@@ -902,11 +959,13 @@
       "actions": "Actions",
       "admin": "Issuer portal",
       "asset-management": "Asset management",
+      "custody-management": "Custody management",
       "dvp-swap": "DvP Swap",
       "platform": "Platform management",
       "portfolio": "My portfolio",
       "title": "Private",
       "trade-management": "Trade management",
+      "vaults": "Vaults",
       "xvp-settlement": "XvP"
     },
     "user-dropdown": {
@@ -1261,6 +1320,14 @@
             "equities": "Equity represents ownership in an asset or company, which on blockchain can be tokenized to enable fractional ownership, transparent governance, and efficient transferability.",
             "funds": "A fund is a pooled investment vehicle managed to achieve specific financial goals, which on blockchain can be tokenized for real-time transparency, programmable asset management, and automated compliance.",
             "stablecoins": "A stablecoin is a blockchain-based digital asset pegged to a stable value, such as a fiat currency, designed to minimize volatility and enable reliable, on-chain transactions and settlements."
+          },
+          "duplicate-errors": {
+            "bond": "A bond with these parameters already exists. Please change at least one parameter and try again.",
+            "cryptocurrency": "A cryptocurrency with these parameters already exists. Please change at least one parameter and try again.",
+            "deposit": "A deposit with these parameters already exists. Please change at least one parameter and try again.",
+            "equity": "An equity with these parameters already exists. Please change at least one parameter and try again.",
+            "fund": "A fund with these parameters already exists. Please change at least one parameter and try again.",
+            "stablecoin": "A stablecoin with these parameters already exists. Please change at least one parameter and try again."
           },
           "steps": {
             "asset-admins": {
@@ -2359,7 +2426,7 @@
         "title": "Amount to exchange"
       },
       "button": {
-        "xvp": "Create an XvP Settlement"
+        "xvp": "Create a new settlement"
       },
       "configuration": {
         "auto-execute": "Auto execute",
@@ -2381,6 +2448,9 @@
         "configuration-description": "The configuration for the XvP Settlement",
         "description": "Review the XvP Settlement details. Ensure the receiver, amounts, expiry and secret are correct.",
         "expiry": "Expiry",
+        "auto-execute": "Automatically execute on last approval",
+        "yes": "Yes",
+        "no": "No",
         "from": "From",
         "offer": "Your offer",
         "offer-description": "The amount of assets you are offering to the user. This amount will be locked.",
@@ -2390,7 +2460,7 @@
         "to": "To"
       },
       "title": {
-        "xvp": "Create an XvP Settlement"
+        "xvp": "Create a new settlement"
       },
       "user": {
         "description": "Select the user wallet you wish to exchange assets with.",
@@ -2406,12 +2476,23 @@
         "approvals": "Approvals",
         "assets": "Assets",
         "created-at": "Created at",
-        "expires-at": "Expires at",
+        "expiry": "Expiry",
         "id": "Settlement ID",
-        "status": "Status"
+        "status": "Status",
+        "amount": "Amount",
+        "price": "Price",
+        "total-price": "Total price",
+        "approver": "Approver",
+        "approved-at": "Approved At",
+        "participants": "Participants"
       },
+      "total-price-description": "The total price of the assets involved in the settlement.",
+      "flows": "Flows",
+      "auto-execute": "Auto execute",
+      "auto-execute-description": "Automatically execute the settlement on last approval.",
       "details": "Details",
       "expired": "Expired",
+      "approvals": "Approvals",
       "status": {
         "approved": "Approved",
         "cancelled": "Cancelled",

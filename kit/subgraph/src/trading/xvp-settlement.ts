@@ -16,6 +16,10 @@ export function handleXvPSettlementApproved(
     event.params.sender,
     [event.params.sender]
   );
+  const approval = fetchApproval(event.address, event.params.sender);
+  approval.approved = true;
+  approval.timestamp = event.block.timestamp;
+  approval.save();
 }
 
 export function handleXvPSettlementApprovalRevoked(
@@ -28,6 +32,8 @@ export function handleXvPSettlementApprovalRevoked(
     [event.params.sender]
   );
   const approval = fetchApproval(event.address, event.params.sender);
+  approval.approved = false;
+  approval.timestamp = event.block.timestamp;
   approval.save();
 }
 

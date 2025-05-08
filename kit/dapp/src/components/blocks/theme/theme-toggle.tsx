@@ -1,7 +1,5 @@
 "use client";
 
-import { MoonIcon } from "@/components/ui/animated-icons/moon";
-import { SunIcon } from "@/components/ui/animated-icons/sun";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,7 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { MoonIcon } from "@/components/ui/moon";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SunIcon } from "@/components/ui/sun";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";

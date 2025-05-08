@@ -113,7 +113,7 @@
     "sidebar": {
       "asset-designer": "資産デザイナー",
       "asset-management": {
-        "asset-activity": "資産アクティビティ",
+        "asset-activity": "アクティビティ",
         "bonds": "債券",
         "cryptocurrencies": "暗号通貨",
         "dashboard": "ダッシュボード",
@@ -123,7 +123,9 @@
         "stablecoins": "ステーブルコイン",
         "tokenized-deposits": "預金",
         "view-all": "すべて表示",
-        "actions": "アクション"
+        "actions": "アクション",
+        "custody-group-title": "カストディ",
+        "multisig-vaults": "ボールト"
       },
       "asset-types": {
         "bond": "債券",
@@ -160,6 +162,10 @@
         "group-title": "取引管理",
         "dvp-swap": "DvPスワップ",
         "xvp-settlement": "XvP"
+      },
+      "custody-management": {
+        "group-title": "カストディ管理",
+        "multisig-vaults": "ボールト"
       }
     },
     "bonds": {
@@ -731,7 +737,9 @@
       "trade-management": "取引管理",
       "dvp-swap": "DvPスワップ",
       "actions": "アクション",
-      "xvp-settlement": "XvP"
+      "xvp-settlement": "XvP",
+      "custody-management": "カストディ管理",
+      "vaults": "ボールト"
     },
     "user-dropdown": {
       "documentation": "ドキュメント",
@@ -1139,6 +1147,14 @@
             "equities": "株式を表示",
             "funds": "ファンドを表示",
             "stablecoins": "ステーブルコインを表示"
+          },
+          "duplicate-errors": {
+            "bond": "これらのパラメータを持つボンドはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "cryptocurrency": "これらのパラメータを持つ暗号通貨はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "deposit": "これらのパラメータを持つ預金はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "equity": "これらのパラメータを持つ株式はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "fund": "これらのパラメータを持つファンドはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "stablecoin": "これらのパラメータを持つステーブルコインはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。"
           }
         },
         "parameters": {
@@ -2592,10 +2608,10 @@
       },
       "compliance": {
         "description": "MiCA要件に完全に準拠し、規制フレームワークを簡単にナビゲートします。",
-        "title": "包括的なコンプライアンス"
+        "title": "設計によるコンプライアンス"
       },
       "customizable": {
-        "description": "プラットフォームのあらゆる側面を、あなたの機関の独自のニーズとワークフローに完璧に合わせて調整します。",
+        "description": "プラットフォームのすべての側面を、あなたの機関のニーズやワークフローに合わせて調整します。",
         "title": "100%カスタマイズ可能"
       },
       "description": "SettleMint資産トークン化キットは、デジタル資産プラットフォームの開発を加速するために設計されたフルスタックソリューションです。",
@@ -2615,7 +2631,7 @@
         "description": "展開を加速し、他のどのソリューションよりも早く市場に参入します。",
         "title": "最短の市場投入時間"
       },
-      "title": "完全な機能セット"
+      "title": "すべてのトークン化ニーズに対応するワンストップショップ"
     },
     "footer": {
       "company-description": "世界がトークン化された資産をブロックチェーン上で作成、管理、取引する方法を変革します。",
@@ -2623,7 +2639,8 @@
         "cookie-policy": "クッキーポリシー",
         "copyright": "© {year} SettleMint。機能的ソースライセンス、バージョン1.1、MIT未来ライセンス。",
         "privacy-policy": "プライバシーポリシー",
-        "terms-of-service": "利用規約"
+        "terms-of-service": "利用規約",
+        "title": "法務"
       },
       "sections": {
         "company": {
@@ -2644,7 +2661,7 @@
         "resources": {
           "documentation": "ドキュメンテーション",
           "partners": "パートナー",
-          "title": "リソース",
+          "title": "パブリック、プライベート、またはコンソーシアムチェーン上で、クラウドまたはオンプレミスで、ニーズに合わせて完全にカスタマイズ可能なエンタープライズグレードの資産トークン化プラットフォームを立ち上げます。",
           "usecases": "ユースケース"
         }
       }
@@ -2654,7 +2671,39 @@
     "issuer-portal": "発行者ポータル",
     "portfolio": "ポートフォリオ",
     "stablecoins": "ステーブルコイン",
-    "tokenized-deposits": "預金"
+    "tokenized-deposits": "預金",
+    "changelog-link-title": "SMARTプロトコルの紹介",
+    "pricing": {
+      "title": "あなたに合わせてスケールする価格設定",
+      "description": "Geminiはモデル以上の存在へ進化しています。開発者や企業が革新するのを助けるAPIやプラットフォーム全体をサポートしています。",
+      "starter": {
+        "title": "スターター",
+        "price": "€ 4.760 / 月",
+        "description": "非生産用途向けの月額料金",
+        "feature1": "SettleMintプラットフォームへの完全アクセス",
+        "feature2": "すべてのトークン化機能",
+        "feature3": "単一のバリデーターネットワーク",
+        "feature4": "無制限の資産",
+        "feature5": "無制限のユーザー",
+        "feature6": "無制限のボリューム",
+        "feature7": "SettleMintサポートへのアクセス",
+        "cta": "始める"
+      },
+      "enterprise": {
+        "badge": "生産準備完了",
+        "title": "エンタープライズ",
+        "price": "€ 19.988 / 月",
+        "description": "生産用途向けの月額料金",
+        "feature1": "スターターのすべて",
+        "feature2": "ビザンチン耐障害性ネットワーク",
+        "feature3": "高可用性",
+        "feature4": "99.99%の稼働時間SLA",
+        "feature5": "優先サポート",
+        "cta": "始める"
+      }
+    },
+    "hero-subtitle-subtitle": "チェーン上でトークン化することで資産を解放します",
+    "hero-subtitle-title": "チェーン上でトークン化して資産を解放する"
   },
   "not-found": {
     "description": "お探しのページは存在しないか、移動されました。",
@@ -2691,7 +2740,7 @@
     "forms": {
       "title": {
         "dvp-swap": "DvPスワップを作成",
-        "xvp": "XvP決済を作成する"
+        "xvp": "新しい決済を作成"
       },
       "description": {
         "dvp-swap": "DvP（Delivery vs Payment）スワップは、2者間での資産の原子的な交換を可能にします。これにより、第三者を介さずに他のユーザーと信頼性のある資産交換ができます。",
@@ -2699,7 +2748,7 @@
       },
       "button": {
         "dvp-swap": "DvPスワップを作成",
-        "xvp": "XvP決済を作成する"
+        "xvp": "新しい決済を作成"
       },
       "user": {
         "title": "ユーザー",
@@ -2847,6 +2896,25 @@
     "mica": {
       "name": "MiCA",
       "description": "暗号資産に関する市場（MiCA）は、暗号通貨、ステーブルコイン、その他のデジタル資産を規制するために設計されたEUの包括的な規制枠組みであり、暗号資産の発行者およびサービス提供者に法的確実性を提供します。"
+    }
+  },
+  "custody": {
+    "vaults": {
+      "forms": {
+        "button": {
+          "vault": "新しいボールトを作成"
+        },
+        "description": {
+          "vault": "ボールトは、資産を安全に保管するためのマルチシグネチャ対応のスマートコントラクトです"
+        },
+        "title": {
+          "vault": "新しいボールトを作成"
+        }
+      },
+      "page": {
+        "vaults": "ボールト",
+        "vaults-description": "資産を安全に保管するためのマルチシグボールト"
+      }
     }
   }
 }
