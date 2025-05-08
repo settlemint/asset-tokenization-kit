@@ -4,7 +4,7 @@ dependencies:
   version: 0.18.0
 - name: alloy
   repository: https://grafana.github.io/helm-charts
-  version: 1.0.2
+  version: 1.0.3
 - name: metrics-server
   repository: https://kubernetes-sigs.github.io/metrics-server/
   version: 3.12.2
@@ -23,5 +23,5 @@ dependencies:
 - name: tempo
   repository: https://grafana.github.io/helm-charts
   version: 1.21.1
-digest: sha256:79fbc9c93c74056a90647527614d35440206aaefef0038cc673cc1321db34305
-generated: "2025-05-07T15:55:33.084048347Z"
+digest: sha256:fc9ae22e84d8df6836b21b5c7993dfbadbc90bf84645166e305198492d4388f1
+generated: "2025-05-08T15:33:19.915394143Z"
