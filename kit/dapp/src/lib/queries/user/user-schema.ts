@@ -21,16 +21,16 @@ export const UserSchema = t.Object(
     wallet: t.EthereumAddress({
       description: "The Ethereum wallet address of the user",
     }),
-    created_at: t.Date({
+    created_at: t.Timestamp({
       description: "The timestamp when the user was created",
     }),
-    updated_at: t.Optional(
-      t.Date({
+    updated_at: t.MaybeEmpty(
+      t.Timestamp({
         description: "The timestamp when the user was last updated",
       })
     ),
     kyc_verified_at: t.MaybeEmpty(
-      t.String({
+      t.Timestamp({
         description: "The timestamp when the user's KYC was verified",
       })
     ),
@@ -48,12 +48,12 @@ export const UserSchema = t.Object(
       })
     ),
     ban_expires: t.MaybeEmpty(
-      t.Date({
+      t.Timestamp({
         description: "The timestamp when the user's ban expires",
       })
     ),
     last_login_at: t.Optional(
-      t.String({
+      t.Timestamp({
         description: "The timestamp of the user's last login",
       })
     ),
