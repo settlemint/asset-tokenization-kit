@@ -13,9 +13,13 @@ import {
     InvalidSMARTTrustedIssuersRegistryAddress,
     CoreDependenciesNotRegistered,
     InvalidModuleAddress,
-    ModuleAlreadyRegistered
+    ModuleAlreadyRegistered,
+    InvalidTokenRegistryAddress,
+    TokenRegistryTypeAlreadyRegistered,
+    TokenRegistryAddressAlreadyUsed
 } from "../contracts/SMARTDeploymentRegistry.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { SMARTTokenRegistry } from "../contracts/SMARTTokenRegistry.sol";
 
 // SMART Protocol Dependencies
 import { SMARTCompliance } from "@smartprotocol/contracts/SMARTCompliance.sol";
@@ -44,6 +48,10 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
     MockedComplianceModule internal mockModule1;
     MockedComplianceModule internal mockModule2;
 
+    // Mock Token Registries
+    SMARTTokenRegistry internal mockTokenRegistry1;
+    SMARTTokenRegistry internal mockTokenRegistry2;
+
     function setUp() public virtual {
         deployer = vm.addr(0xBEEFCAFE); // Unique address for deployer
         vm.label(deployer, "RegistryDeployer");
@@ -65,6 +73,11 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
         mockModule1 = new MockedComplianceModule();
         mockModule2 = new MockedComplianceModule();
 
+        // Instantiate mock token registries
+        // Note: SMARTTokenRegistry constructor needs initialOwner and forwarder
+        mockTokenRegistry1 = new SMARTTokenRegistry(trustedForwarder, deployer);
+        mockTokenRegistry2 = new SMARTTokenRegistry(trustedForwarder, deployer);
+
         vm.label(address(registry), "SMARTDeploymentRegistry");
         vm.label(address(sCompliance), "SMARTCompliance_FromUtils");
         vm.label(address(sIRS), "SMARTIRS_FromUtils");
@@ -73,6 +86,8 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
         vm.label(address(sTIR), "SMARTTIR_FromUtils");
         vm.label(address(mockModule1), "MockModule1");
         vm.label(address(mockModule2), "MockModule2");
+        vm.label(address(mockTokenRegistry1), "MockTokenRegistry1");
+        vm.label(address(mockTokenRegistry2), "MockTokenRegistry2");
     }
 
     // --- Test Constructor & Initial State ---
@@ -87,6 +102,11 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
         assertEq(address(registry.smartIdentityRegistryContract()), address(0));
         assertEq(address(registry.smartTrustedIssuersRegistryContract()), address(0));
         assertEq(registry.getRegisteredComplianceModules().length, 0, "No compliance modules initially");
+        assertEq(
+            address(registry.getTokenRegistryByType("AnyType")),
+            address(0),
+            "getTokenRegistryByType for non-existent type"
+        );
     }
 
     // --- Test registerDeployment ---
@@ -209,10 +229,120 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
         registry.registerComplianceModule(mockModule1);
     }
 
+    function test_RegisterTokenRegistry_Success() public {
+        _registerDeploymentAsUser(user1);
+        string memory typeName = "Bond";
+        bytes32 typeHash = keccak256(abi.encodePacked(typeName));
+
+        vm.prank(user1);
+        registry.registerTokenRegistry(typeName, mockTokenRegistry1);
+
+        assertEq(
+            address(registry.getTokenRegistryByType(typeName)), address(mockTokenRegistry1), "Registry address mismatch"
+        );
+        assertTrue(
+            registry.isTokenRegistryAddressUsed(address(mockTokenRegistry1)),
+            "Registry address should be marked as used"
+        );
+    }
+
+    function test_RegisterTokenRegistry_Event() public {
+        _registerDeploymentAsUser(user1);
+        string memory typeName = "Equity";
+        bytes32 typeHash = keccak256(abi.encodePacked(typeName));
+
+        vm.expectEmit(true, true, true, true);
+        emit SMARTDeploymentRegistry.SMARTTokenRegistryRegistered(
+            typeName, typeHash, address(mockTokenRegistry1), user1, block.timestamp
+        );
+        vm.prank(user1);
+        registry.registerTokenRegistry(typeName, mockTokenRegistry1);
+    }
+
+    function test_Revert_RegisterTokenRegistry_NotDeploymentOwner() public {
+        _registerDeploymentAsUser(user1);
+        string memory typeName = "Bond";
+
+        bytes memory expectedError = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector, user2, registry.DEPLOYMENT_OWNER_ROLE()
+        );
+        vm.expectRevert(expectedError);
+        vm.prank(user2);
+        registry.registerTokenRegistry(typeName, mockTokenRegistry1);
+    }
+
+    function test_Revert_RegisterTokenRegistry_CoreDependenciesNotRegistered() public {
+        string memory typeName = "Bond";
+
+        // Should throw this because there is no DEPLOYMENT_OWNER if the core dependencies are not registered.
+        bytes memory expectedError = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector, user1, registry.DEPLOYMENT_OWNER_ROLE()
+        );
+        vm.expectRevert(expectedError);
+        vm.prank(user1); // Let's assume user1 has the role for other reasons or it doesn't matter for this revert.
+        registry.registerTokenRegistry(typeName, mockTokenRegistry1);
+    }
+
+    function test_Revert_RegisterTokenRegistry_InvalidRegistryAddress() public {
+        _registerDeploymentAsUser(user1);
+        string memory typeName = "Bond";
+        vm.expectRevert(InvalidTokenRegistryAddress.selector);
+        vm.prank(user1);
+        registry.registerTokenRegistry(typeName, SMARTTokenRegistry(address(0)));
+    }
+
+    function test_Revert_RegisterTokenRegistry_TypeAlreadyRegistered() public {
+        _registerDeploymentAsUser(user1);
+        string memory typeName = "Bond";
+        bytes32 typeHash = keccak256(abi.encodePacked(typeName));
+
+        vm.prank(user1);
+        registry.registerTokenRegistry(typeName, mockTokenRegistry1);
+
+        vm.expectRevert(abi.encodeWithSelector(TokenRegistryTypeAlreadyRegistered.selector, typeHash));
+        vm.prank(user1);
+        registry.registerTokenRegistry(typeName, mockTokenRegistry2); // Different address, same type
+    }
+
+    function test_Revert_RegisterTokenRegistry_AddressAlreadyUsed() public {
+        _registerDeploymentAsUser(user1);
+        string memory typeName1 = "Bond";
+        string memory typeName2 = "Equity";
+
+        vm.prank(user1);
+        registry.registerTokenRegistry(typeName1, mockTokenRegistry1);
+
+        vm.expectRevert(abi.encodeWithSelector(TokenRegistryAddressAlreadyUsed.selector, address(mockTokenRegistry1)));
+        vm.prank(user1);
+        registry.registerTokenRegistry(typeName2, mockTokenRegistry1); // Same address, different type
+    }
+
+    function test_GetTokenRegistryByType_Success() public {
+        _registerDeploymentAsUser(user1);
+        string memory typeName = "CommercialPaper";
+        vm.prank(user1);
+        registry.registerTokenRegistry(typeName, mockTokenRegistry1);
+
+        SMARTTokenRegistry retrievedRegistry = registry.getTokenRegistryByType(typeName);
+        assertEq(address(retrievedRegistry), address(mockTokenRegistry1));
+    }
+
+    function test_GetTokenRegistryByType_NotFound() public {
+        _registerDeploymentAsUser(user1);
+        string memory typeName = "NonExistentType";
+        SMARTTokenRegistry retrievedRegistry = registry.getTokenRegistryByType(typeName);
+        assertEq(address(retrievedRegistry), address(0));
+    }
+
     function test_ResetDeployment_Success() public {
         _registerDeploymentAsUser(user1);
         vm.prank(user1);
         registry.registerComplianceModule(mockModule1);
+
+        string memory tokenTypeName = "Bonds";
+        vm.prank(user1);
+        registry.registerTokenRegistry(tokenTypeName, mockTokenRegistry1);
+        assertTrue(registry.isTokenRegistryAddressUsed(address(mockTokenRegistry1)), "TR address used before reset");
 
         vm.prank(user1);
         registry.resetDeployment();
@@ -227,6 +357,12 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
         assertEq(address(registry.smartTrustedIssuersRegistryContract()), address(0));
         assertFalse(registry.isComplianceModuleRegistered(address(mockModule1)));
         assertEq(registry.getRegisteredComplianceModules().length, 0);
+
+        // Token Registry Checks
+        assertFalse(registry.isTokenRegistryAddressUsed(address(mockTokenRegistry1)), "TR address NOT used after reset");
+        assertEq(
+            address(registry.getTokenRegistryByType(tokenTypeName)), address(0), "getTokenRegistryByType after reset"
+        );
 
         _registerDeploymentAsUser(user2);
         assertTrue(registry.areDependenciesRegistered());

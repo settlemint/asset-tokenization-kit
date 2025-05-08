@@ -9,6 +9,9 @@ import { SMARTIdentityRegistry } from "@smartprotocol/contracts/SMARTIdentityReg
 import { SMARTTrustedIssuersRegistry } from "@smartprotocol/contracts/SMARTTrustedIssuersRegistry.sol";
 import { ISMARTComplianceModule } from "@smartprotocol/contracts/interface/ISMARTComplianceModule.sol";
 
+// Local Contracts
+import { SMARTTokenRegistry } from "./SMARTTokenRegistry.sol";
+
 // OpenZeppelin Contracts
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
@@ -24,6 +27,9 @@ error InvalidSMARTTrustedIssuersRegistryAddress();
 error CoreDependenciesNotRegistered();
 error InvalidModuleAddress();
 error ModuleAlreadyRegistered();
+error InvalidTokenRegistryAddress();
+error TokenRegistryTypeAlreadyRegistered(bytes32 typeHash);
+error TokenRegistryAddressAlreadyUsed(address registryAddress);
 
 /**
  * @title SMARTDeploymentRegistry
@@ -56,6 +62,11 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
     ISMARTComplianceModule[] public complianceModules;
     mapping(address => bool) public isComplianceModuleRegistered;
 
+    // Token Registries by Type
+    mapping(bytes32 => address) public tokenRegistriesByType;
+    mapping(address => bool) public isTokenRegistryAddressUsed;
+    bytes32[] private allRegistryTypeHashes;
+
     // --- Events ---
     event SMARTDeploymentRegistered(
         address indexed registrar,
@@ -69,6 +80,13 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
 
     event SMARTComplianceModuleRegistered(address indexed moduleAddress, address indexed registrar, uint256 timestamp);
     event SMARTDeploymentReset(address indexed resetBy, uint256 timestamp);
+    event SMARTTokenRegistryRegistered(
+        string typeName,
+        bytes32 indexed registryTypeHash,
+        address indexed registryAddress,
+        address indexed registrar,
+        uint256 timestamp
+    );
 
     // --- Constructor ---
     /**
@@ -155,6 +173,43 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
         emit SMARTComplianceModuleRegistered(address(_module), _msgSender(), block.timestamp);
     }
 
+    /**
+     * @notice Registers a SMARTTokenRegistry instance for a specific type name (e.g., "Bond", "Equity").
+     * @dev Requires DEPLOYMENT_OWNER_ROLE. Emits SMARTTokenRegistryRegistered.
+     *      The type name is hashed for internal storage.
+     *      A registry address can only be registered once.
+     *      A type name can only be registered once.
+     * @param _typeName The human-readable type of the token registry (e.g., "Bond", "Equity").
+     * @param _registryAddress The address of the deployed SMARTTokenRegistry contract.
+     */
+    function registerTokenRegistry(
+        string calldata _typeName,
+        SMARTTokenRegistry _registryAddress
+    )
+        external
+        onlyRole(DEPLOYMENT_OWNER_ROLE)
+    {
+        if (!areDependenciesRegistered) revert CoreDependenciesNotRegistered();
+        if (address(_registryAddress) == address(0)) revert InvalidTokenRegistryAddress();
+
+        bytes32 registryTypeHash = keccak256(abi.encodePacked(_typeName));
+
+        if (tokenRegistriesByType[registryTypeHash] != address(0)) {
+            revert TokenRegistryTypeAlreadyRegistered(registryTypeHash);
+        }
+        if (isTokenRegistryAddressUsed[address(_registryAddress)]) {
+            revert TokenRegistryAddressAlreadyUsed(address(_registryAddress));
+        }
+
+        tokenRegistriesByType[registryTypeHash] = address(_registryAddress);
+        isTokenRegistryAddressUsed[address(_registryAddress)] = true;
+        allRegistryTypeHashes.push(registryTypeHash);
+
+        emit SMARTTokenRegistryRegistered(
+            _typeName, registryTypeHash, address(_registryAddress), _msgSender(), block.timestamp
+        );
+    }
+
     // --- Management Functions ---
 
     /**
@@ -180,6 +235,17 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
             isComplianceModuleRegistered[address(complianceModules[i])] = false;
         }
         delete complianceModules;
+
+        // Reset token registries
+        for (uint256 i = 0; i < allRegistryTypeHashes.length; i++) {
+            bytes32 typeHash = allRegistryTypeHashes[i];
+            address registryAddress = tokenRegistriesByType[typeHash];
+            if (registryAddress != address(0)) {
+                isTokenRegistryAddressUsed[registryAddress] = false;
+                tokenRegistriesByType[typeHash] = address(0);
+            }
+        }
+        delete allRegistryTypeHashes;
 
         emit SMARTDeploymentReset(_msgSender(), block.timestamp);
     }
@@ -220,6 +286,16 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
      */
     function getRegisteredComplianceModules() external view returns (ISMARTComplianceModule[] memory) {
         return complianceModules;
+    }
+
+    /**
+     * @notice Retrieves the address of a registered SMARTTokenRegistry by its type name.
+     * @param _typeName The human-readable type of the token registry (e.g., "Bond").
+     * @return The address of the SMARTTokenRegistry contract, or address(0) if not found.
+     */
+    function getTokenRegistryByType(string calldata _typeName) external view returns (SMARTTokenRegistry) {
+        bytes32 registryTypeHash = keccak256(abi.encodePacked(_typeName));
+        return SMARTTokenRegistry(tokenRegistriesByType[registryTypeHash]);
     }
 
     /**
