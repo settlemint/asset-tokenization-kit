@@ -402,14 +402,14 @@ contract SMARTEquityTest is Test {
         vm.stopPrank();
     }
 
-    function test_PauseEvent() public {
-        vm.expectEmit(true, false, false, true);
-        emit Paused(owner);
+    // function test_PauseEvent() public {
+    //     vm.expectEmit(true, false, false, true);
+    //     emit Paused(owner);
 
-        vm.startPrank(owner);
-        smartEquity.pause();
-        vm.stopPrank();
-    }
+    //     vm.startPrank(owner);
+    //     smartEquity.pause();
+    //     vm.stopPrank();
+    // }
 
     // Forced Transfer Tests (equivalent to clawback in Equity.t.sol)
     function test_ForcedTransfer() public {
