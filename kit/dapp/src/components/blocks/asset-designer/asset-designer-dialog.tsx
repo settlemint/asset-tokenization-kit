@@ -1,11 +1,13 @@
 "use client";
 
+import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import MiniProgressBar from "./components/mini-progress-bar";
 import { StepContent } from "./step-wizard/step-content";
 import type { Step } from "./step-wizard/step-wizard";
@@ -39,6 +41,8 @@ export function AssetDesignerDialog({
   const [loading, setLoading] = useState(false);
   const [formComponent, setFormComponent] =
     useState<React.ComponentType<any> | null>(null);
+  const [showVerificationDialog, setShowVerificationDialog] = useState(false);
+  const [verifiedFormData, setVerifiedFormData] = useState<any>(null);
 
   // Create a unified representation of all steps
   const allSteps: Step[] = [
@@ -84,6 +88,56 @@ export function AssetDesignerDialog({
         setLoading(false);
       });
   }, [selectedAssetType, currentStepId]);
+
+  // Verification form (already defined in your code)
+  const verificationForm = useForm({
+    defaultValues: {
+      verificationCode: "",
+      verificationType: "pincode",
+    },
+  });
+
+  // Function to wrap submission with verification
+  const wrapWithVerification = (submitFn: (data: any) => Promise<void>) => {
+    console.log("Creating verification wrapper for submit function");
+    return async (data: any) => {
+      console.log("Verification wrapper called with data:", data);
+      // Store the form data and open verification dialog
+      setVerifiedFormData({ data, onSubmit: submitFn });
+      setShowVerificationDialog(true);
+    };
+  };
+
+  // Handle verification submission
+  const handleVerificationSubmit = async () => {
+    console.log("Verification submitted, verifiedFormData:", verifiedFormData);
+    if (verifiedFormData && formComponent) {
+      const verificationCode = verificationForm.getValues("verificationCode");
+      console.log("Using verification code:", verificationCode);
+      // Call the form's submit function with verification code
+      await verifiedFormData.onSubmit({
+        ...verifiedFormData.data,
+        verificationCode,
+        verificationType: "pincode",
+      });
+
+      // Reset the verification dialog state
+      setShowVerificationDialog(false);
+      setVerifiedFormData(null);
+      verificationForm.reset();
+    } else {
+      console.error(
+        "Missing verifiedFormData or formComponent for verification"
+      );
+    }
+  };
+
+  // Handle verification cancellation
+  const handleVerificationCancel = () => {
+    setShowVerificationDialog(false);
+    setVerifiedFormData(null);
+    verificationForm.reset();
+  };
 
   // Handler for asset type selection
   const handleAssetTypeSelect = (type: AssetType) => {
@@ -138,7 +192,7 @@ export function AssetDesignerDialog({
   // Get current step index for the progress bar
   const currentStepIndex = stepsOrder.indexOf(currentStepId);
 
-  // Simplified step content rendering
+  // Simplified step content rendering with verification wrapper
   const renderStepContent = () => {
     // Type selection step
     if (currentStepId === "type") {
@@ -157,7 +211,7 @@ export function AssetDesignerDialog({
       );
     }
 
-    // Form steps with component
+    // Wrap form component's submit with verification
     if (formComponent) {
       const FormComponent = formComponent;
       return (
@@ -166,35 +220,10 @@ export function AssetDesignerDialog({
           currentStepId={currentStepId}
           onNextStep={handleNextStep}
           onPrevStep={handlePreviousStep}
+          withVerification={wrapWithVerification}
         />
       );
     }
-
-    // Loading state
-    if (loading) {
-      return (
-        <StepContent
-          showNextButton={false}
-          showBackButton={true}
-          onBack={handlePreviousStep}
-        >
-          <div className="flex justify-center items-center min-h-[300px]">
-            Loading...
-          </div>
-        </StepContent>
-      );
-    }
-
-    // Fallback for future steps
-    return (
-      <StepContent
-        showNextButton={false}
-        showBackButton={true}
-        onBack={handlePreviousStep}
-      >
-        <p>Step {currentStepId} content will be implemented soon</p>
-      </StepContent>
-    );
   };
 
   return (
@@ -209,7 +238,7 @@ export function AssetDesignerDialog({
       >
         <div className="relative">
           <DialogTitle className="sr-only">Asset Designer</DialogTitle>
-          {/* Using 'as any' type assertions because dynamic translation keys from getAssetTitle/getAssetDescription
+          {/* TODO: Using 'as any' type assertions because dynamic translation keys from getAssetTitle/getAssetDescription
               don't match the literal string types expected by next-intl's t function */}
           <StepWizard
             steps={allSteps}
@@ -222,6 +251,20 @@ export function AssetDesignerDialog({
           >
             {renderStepContent()}
           </StepWizard>
+
+          {/* Verification dialog */}
+          <FormProvider {...verificationForm}>
+            <FormOtpDialog
+              name="verificationCode"
+              open={showVerificationDialog}
+              onOpenChange={(open: boolean) => {
+                if (!open) handleVerificationCancel();
+                else setShowVerificationDialog(open);
+              }}
+              onSubmit={handleVerificationSubmit}
+              control={verificationForm.control}
+            />
+          </FormProvider>
 
           <MiniProgressBar
             totalSteps={stepsOrder.length}

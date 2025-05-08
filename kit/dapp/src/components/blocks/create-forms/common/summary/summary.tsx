@@ -18,29 +18,33 @@ interface AssetAdmin {
 interface SummaryProps {
   form: UseFormReturn<any>;
   configurationCard: React.ReactNode;
-  onNext?: () => void;
+  onSubmit: (data: any) => Promise<void>;
   onBack?: () => void;
 }
 
 export function Summary({
   form,
-  onNext,
   onBack,
   configurationCard,
+  onSubmit,
 }: SummaryProps) {
   const t = useTranslations("private.assets.create");
   const formValues = form.getValues();
   const isSubmitting = form.formState.isSubmitting;
-
-  // Get current user's session
   const { data: session } = authClient.useSession();
-
-  // Get asset admins from form
   const assetAdmins = formValues.assetAdmins || [];
+
+  const handleSubmit = async () => {
+    console.log(
+      "Summary submit button clicked, calling onSubmit with:",
+      formValues
+    );
+    await onSubmit(formValues);
+  };
 
   return (
     <StepContent
-      onNext={onNext}
+      onNext={handleSubmit}
       onBack={onBack}
       isNextDisabled={isSubmitting}
       nextLabel={isSubmitting ? t("summary.creating") : t("summary.issue")}

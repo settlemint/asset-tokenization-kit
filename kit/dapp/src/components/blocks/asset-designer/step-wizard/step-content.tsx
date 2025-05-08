@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { FocusScope } from "@radix-ui/react-focus-scope";
-import { Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface StepContentProps {
@@ -18,7 +17,6 @@ interface StepContentProps {
   className?: string;
   centerContent?: boolean;
   fixedButtons?: boolean;
-  isLoading?: boolean;
 }
 
 export function StepContent({
@@ -33,12 +31,11 @@ export function StepContent({
   className,
   centerContent = true,
   fixedButtons = false,
-  isLoading = false,
 }: StepContentProps) {
   const ButtonContent = () => (
     <>
       {showBackButton && onBack && (
-        <Button variant="outline" onClick={onBack} disabled={isLoading}>
+        <Button variant="outline" onClick={onBack}>
           {backLabel}
         </Button>
       )}
@@ -46,17 +43,10 @@ export function StepContent({
       {showNextButton && onNext && (
         <Button
           onClick={onNext}
-          disabled={isNextDisabled || isLoading}
+          disabled={isNextDisabled}
           className={isNextDisabled ? "opacity-50 cursor-not-allowed" : ""}
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {nextLabel}
-            </>
-          ) : (
-            nextLabel
-          )}
+          {nextLabel}
         </Button>
       )}
     </>

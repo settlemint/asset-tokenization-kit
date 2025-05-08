@@ -1,5 +1,6 @@
 "use client";
 
+import { createBond } from "@/lib/mutations/bond/create/create-action";
 import {
   CreateBondSchema,
   type CreateBondInput,
@@ -8,17 +9,22 @@ import type { User } from "@/lib/queries/user/user-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
 import { stepDefinition as basicsStep } from "./steps/basics";
 import { stepDefinition as configurationStep } from "./steps/configuration";
 import { ConfigurationCard } from "./steps/summaryConfigurationCard";
+
 interface CreateBondFormProps {
   userDetails: User;
   currentStepId?: string; // Optional for when used in the asset designer
   onNextStep?: () => void;
   onPrevStep?: () => void;
+  withVerification?: (
+    fn: (data: any) => Promise<void>
+  ) => (data: any) => Promise<void>;
 }
 
 // Define the interface that all steps will implement
@@ -33,6 +39,7 @@ export function CreateBondForm({
   currentStepId,
   onNextStep,
   onPrevStep,
+  withVerification,
 }: CreateBondFormProps) {
   const bondForm = useForm<CreateBondInput>({
     defaultValues: {
@@ -54,6 +61,23 @@ export function CreateBondForm({
         })
       )(...args),
   });
+
+  const handleSubmit = async (data: CreateBondInput) => {
+    try {
+      console.log("Bond form handleSubmit called with data:", data);
+      const result = await createBond(data);
+
+      if (result?.data) {
+        toast.success("Bond created successfully");
+        // Additional success handling can be added here
+      } else {
+        toast.error(result?.serverError || "Failed to create bond");
+      }
+    } catch (error) {
+      console.error("Error creating bond:", error);
+      toast.error("An unexpected error occurred");
+    }
+  };
 
   // Create component instances for each step
   const BasicsComponent = basicsStep.component;
@@ -82,8 +106,11 @@ export function CreateBondForm({
           <SummaryComponent
             configurationCard={<ConfigurationCard form={bondForm} />}
             form={bondForm}
-            onNext={onNextStep}
             onBack={onPrevStep}
+            // Use withVerification wrapper if available
+            onSubmit={
+              withVerification ? withVerification(handleSubmit) : handleSubmit
+            }
           />
         );
       default:
