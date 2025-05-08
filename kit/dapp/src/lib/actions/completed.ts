@@ -20,7 +20,7 @@ const getBondMatureCompletedActions = withTracing(
       id: event.id,
       subject: event.emitter.id,
       actionType: actionTypes.BOND_MATURITY,
-      completedAtMs: event.timestamp,
+      completedAtMs: event.blockTimestamp,
       sender: event.sender.id,
     }));
   }

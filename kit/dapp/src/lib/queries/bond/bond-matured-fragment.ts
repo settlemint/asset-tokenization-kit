@@ -19,7 +19,7 @@ export const BondMaturedEventFragment = theGraphGraphqlKit(
 
 export const BondMaturedEventSchema = t.Object({
   id: t.String(),
-  timestamp: t.Timestamp(),
+  blockTimestamp: t.Timestamp(),
   emitter: t.Object({
     id: t.EthereumAddress(),
   }),
