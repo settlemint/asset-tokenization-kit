@@ -1,4 +1,4 @@
-import { CreateBondForm } from "@/components/blocks/create-forms/bond/form";
+import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ export async function BondsRelated() {
         title={t("bond.issue-new.title")}
         description={t("bond.issue-new.description")}
       >
-        <CreateBondForm asButton />
+        <AssetDesignerButton />
       </RelatedGridItem>
       <RelatedGridItem
         title={t("bond.mechanics.title")}

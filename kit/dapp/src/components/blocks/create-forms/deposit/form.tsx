@@ -7,11 +7,13 @@ import { CreateDepositSchema } from "@/lib/mutations/deposit/create/create-schem
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AssetAdmins } from "../common/asset-admins/asset-admins";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
+
 interface CreateDepositFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -26,6 +28,7 @@ export function CreateDepositForm({
   userDetails,
 }: CreateDepositFormProps) {
   const t = useTranslations("private.assets.create.form");
+  const router = useRouter();
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);

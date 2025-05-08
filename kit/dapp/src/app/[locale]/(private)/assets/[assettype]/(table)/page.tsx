@@ -1,3 +1,4 @@
+import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,7 +8,6 @@ import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { AddButton } from "./_components/add-button";
 import { Related } from "./_components/related";
 import { AssetsTable } from "./_components/table";
 
@@ -30,7 +30,7 @@ export default async function AssetTypeTablePage({ params }: PageProps) {
       <PageHeader
         title={t(`page-title.${assettype}`)}
         section={t("asset-management")}
-        button={<AddButton assettype={assettype} />}
+        button={<AssetDesignerButton />}
       />
       <TopInfo title={t(`topinfo-title.${assettype}`)}>
         <p>{t(`topinfo-description.${assettype}`)}</p>

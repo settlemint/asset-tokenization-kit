@@ -1,4 +1,4 @@
-import { CreateDepositForm } from "@/components/blocks/create-forms/deposit/form";
+import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ export async function DepositsRelated() {
         title={t("deposit.issue-new.title")}
         description={t("deposit.issue-new.description")}
       >
-        <CreateDepositForm asButton />
+        <AssetDesignerButton />
       </RelatedGridItem>
       <RelatedGridItem
         title={t("deposit.mechanics.title")}

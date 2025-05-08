@@ -2,20 +2,16 @@
 
 import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
 import { FormStep } from "@/components/blocks/form/form-step";
-import { useSettings } from "@/hooks/use-settings";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 import type { BondStepProps } from "../form";
 
-export function Summary({ userDetails, onNext, onBack }: BondStepProps) {
-  const { control, formState, getValues, trigger } =
-    useFormContext<CreateBondInput>();
+export function Summary({ onNext, onBack }: BondStepProps) {
+  const { formState, getValues, trigger } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
-  const baseCurrency = useSettings("baseCurrency");
-  const locale = useLocale();
 
   // Fields to review in this step
   const stepFields = ["predictedAddress", "verificationType"];

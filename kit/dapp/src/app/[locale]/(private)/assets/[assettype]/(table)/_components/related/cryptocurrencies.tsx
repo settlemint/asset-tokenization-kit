@@ -1,4 +1,4 @@
-import { CreateCryptoCurrencyForm } from "@/components/blocks/create-forms/cryptocurrency/form";
+import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ export async function CryptocurrenciesRelated() {
         title={t("cryptocurrency.issue-new.title")}
         description={t("cryptocurrency.issue-new.description")}
       >
-        <CreateCryptoCurrencyForm asButton />
+        <AssetDesignerButton />
       </RelatedGridItem>
       <RelatedGridItem
         title={t("cryptocurrency.mechanics.title")}

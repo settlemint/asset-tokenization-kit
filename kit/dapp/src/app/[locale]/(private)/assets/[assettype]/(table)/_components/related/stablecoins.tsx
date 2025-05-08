@@ -1,4 +1,4 @@
-import { CreateStablecoinForm } from "@/components/blocks/create-forms/stablecoin/form";
+import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ export async function StablecoinsRelated() {
         title={t("stablecoin.issue-new.title")}
         description={t("stablecoin.issue-new.description")}
       >
-        <CreateStablecoinForm asButton />
+        <AssetDesignerButton />
       </RelatedGridItem>
       <RelatedGridItem
         title={t("stablecoin.mechanics.title")}

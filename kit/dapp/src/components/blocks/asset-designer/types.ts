@@ -3,11 +3,11 @@ import { AssetType } from "@/lib/utils/typebox/asset-types";
 // Interface that each asset form will implement
 export interface AssetFormDefinition {
   // Steps for this asset type
-  steps: Array<{
+  steps: {
     id: string;
     title: string;
     description: string;
-  }>;
+  }[];
   // Component for rendering each step
   getStepComponent: (stepId: string) => React.ComponentType<any> | null;
 }
@@ -65,3 +65,19 @@ export const typeSelectionStep = {
   title: "select-asset-type.title",
   description: "select-asset-type.description",
 };
+
+// Document types
+export interface UploadedDocument {
+  id: string;
+  name: string;
+  title: string;
+  type: string;
+  description: string;
+  url?: string;
+  objectName?: string; // Path in MinIO storage
+  fileName?: string; // Original file name
+}
+
+export interface UploadedDocumentsState {
+  [regulationId: string]: UploadedDocument[];
+}
