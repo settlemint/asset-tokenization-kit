@@ -37,6 +37,7 @@ export const approveXvpFunction = async ({
   parsedInput: ApproveXvpInput;
   ctx: { user: User };
 }) => {
+  // TODO: grant approval for all types of tokens
   const challengeResponse = await handleChallenge(
     user,
     user.wallet,
