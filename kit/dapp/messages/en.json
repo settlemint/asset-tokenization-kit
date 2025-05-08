@@ -2426,7 +2426,7 @@
         "title": "Amount to exchange"
       },
       "button": {
-        "xvp": "Create a new settlement"
+        "xvp": "Create a new XvP Settlement"
       },
       "configuration": {
         "auto-execute": "Auto execute",
