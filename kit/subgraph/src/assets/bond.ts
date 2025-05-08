@@ -256,7 +256,7 @@ export function handleBondRedeemed(event: BondRedeemed): void {
   );
   setValueWithDecimals(
     bond,
-    "underlyingBalanceExact",
+    "underlyingBalance",
     underlyingAmount,
     bond.underlyingAssetDecimals
   );
