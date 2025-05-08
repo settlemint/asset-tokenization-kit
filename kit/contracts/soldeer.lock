@@ -26,10 +26,10 @@ rev = "d223e17208aa110dd5ec694d77324a2321d93201"
 
 [[dependencies]]
 name = "forge-std"
-version = "1.9.5"
-url = "https://soldeer-revisions.s3.amazonaws.com/forge-std/1_9_5_21-12-2024_15:04:05_forge-std-1.9.zip"
-checksum = "57ada736f383289db77fac4472d48f820e7c98172cf9b01681b0c37065ce043f"
-integrity = "4753ffdfa0dde40878372b6a4d8e8fd1648b190b33996896c8b92f6f1680850f"
+version = "1.9.6"
+url = "https://soldeer-revisions.s3.amazonaws.com/forge-std/1_9_6_01-02-2025_20:49:10_forge-std-1.9.zip"
+checksum = "55f341818321b3f925161a72fd0dcd62e4a0a4b66785a7a932bf2bfaf96fb9d1"
+integrity = "e9ecdc364d152157431e5df5aa041ffddbe9bb1c1ad81634b1e72df9e23814e8"
 
 [[dependencies]]
 name = "openzeppelin-community-contracts"
@@ -39,7 +39,7 @@ rev = "e33f73d1957e46b9ed17c319ed607bb3c7137944"
 
 [[dependencies]]
 name = "smart-protocol"
-version = "8.0.5"
-url = "https://soldeer-revisions.s3.amazonaws.com/smart-protocol/8_0_5_08-05-2025_14:37:46_solidity-smart-protocol.zip"
-checksum = "5ae2609306a50df57211ebfa29b2af0a388014aaa98d17137b2c7080934ba109"
-integrity = "7c55473a87308602499995374c5f83e969102dfdcb1938029e35a9f043539489"
+version = "8.0.6"
+url = "https://soldeer-revisions.s3.amazonaws.com/smart-protocol/8_0_6_08-05-2025_17:22:39_solidity-smart-protocol.zip"
+checksum = "2bc3ce6fdb51654e7e2f3ac3f210799193d54efb674c902dba9f033c88fd43eb"
+integrity = "7b0ac782110d91cf315cf583ca838b11e9a23b9183803ca3e81e3acb3b276023"
