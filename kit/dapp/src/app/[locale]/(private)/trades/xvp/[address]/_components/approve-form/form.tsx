@@ -58,8 +58,8 @@ export function ApproveForm({
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title={t("approve")}
-      description={t("approve-description")}
+      title={t("approve-xvp-settlement")}
+      description={t("approve-xvp-settlement-description")}
     >
       <Form
         action={approveXvp}

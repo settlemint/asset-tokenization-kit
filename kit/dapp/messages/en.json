@@ -2507,9 +2507,14 @@
       "manage": "Manage",
       "approve": "Approve",
       "approve-xvp-settlement": "Approve XvP Settlement",
-      "approve-description": "Approve the token transfers required for the XvP Settlement to be executed.",
-      "your-approvals": "Your approvals",
-      "your-approvals-description": "The XvP Settlement contract will be granted the following approvals. Then your approval will be sent to the XvP Settlement contract."
+      "approve-xvp-settlement-description": "Grant allowances to the XvP Settlement contract for the assets that will be transferred from your wallet.",
+      "approve-description": "The XvP Settlement contract will be granted the following approvals. Then the settlement will be marked as approved by you.",
+      "asset": "Asset",
+      "asset-description": "The asset that will be transferred from your wallet.",
+      "amount": "Amount",
+      "amount-description": "The amount of the asset that will be transferred.",
+      "to": "To",
+      "to-description": "The wallet address of the recipient of the asset."
     }
   },
   "transactions": {
