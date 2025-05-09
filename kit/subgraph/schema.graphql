@@ -1,4 +1,16 @@
 # --------------------------------------------------
+# SMART Indexer
+# --------------------------------------------------
+
+type EOA @entity(immutable: true) {
+  id: Bytes!
+}
+
+type Contract @entity(immutable: true) {
+  id: Bytes!
+}
+
+# --------------------------------------------------
 # Grouping Contracts by Contract Type
 # --------------------------------------------------
 

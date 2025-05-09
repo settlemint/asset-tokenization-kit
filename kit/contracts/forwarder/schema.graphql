@@ -1,0 +1,4 @@
+type ExampleEntity @entity(immutable: true) {
+  id: Bytes!
+  count: BigInt!
+}
