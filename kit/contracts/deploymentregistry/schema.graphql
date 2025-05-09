@@ -1,4 +1,6 @@
 type ExampleEntity @entity(immutable: true) {
   id: Bytes!
   count: BigInt!
+  role: Bytes! # bytes32
+  previousAdminRole: Bytes! # bytes32
 }

@@ -8,6 +8,30 @@ features:
 schema:
   file: ./schema.graphql
 dataSources:
+  - kind: ethereum
+    name: Forwarder
+    network: mainnet
+    source:
+      address: "0x5e771e1417100000000000000000000000000099"
+      abi: Forwarder
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - EIP712DomainChanged
+        - ExecutedForwardRequest
+      abis:
+        - name: Forwarder
+          file: ../contracts/artifacts/contracts/Forwarder.sol/Forwarder.json
+      eventHandlers:
+        - event: ExecutedForwardRequest(indexed address,uint256,bool)
+          handler: handleExecutedForwardRequest
+      file: ./src/event-handlers/forwarder.ts
+
+  # --------------------------------------------------
+
   - kind: ethereum/contract
     name: BondFactory
     network: settlemint
@@ -28,7 +52,7 @@ dataSources:
       eventHandlers:
         - event: BondCreated(indexed address,indexed address)
           handler: handleBondCreated
-      file: ./src/factories/bond-factory.ts
+      file: ./src/v1/factories/bond-factory.ts
   - kind: ethereum/contract
     name: CryptoCurrencyFactory
     network: settlemint
@@ -49,7 +73,7 @@ dataSources:
       eventHandlers:
         - event: CryptoCurrencyCreated(indexed address,indexed address)
           handler: handleCryptoCurrencyCreated
-      file: ./src/factories/cryptocurrency-factory.ts
+      file: ./src/v1/factories/cryptocurrency-factory.ts
   - kind: ethereum/contract
     name: EquityFactory
     network: settlemint
@@ -70,7 +94,7 @@ dataSources:
       eventHandlers:
         - event: EquityCreated(indexed address,indexed address)
           handler: handleEquityCreated
-      file: ./src/factories/equity-factory.ts
+      file: ./src/v1/factories/equity-factory.ts
   - kind: ethereum/contract
     name: StableCoinFactory
     network: settlemint
@@ -91,7 +115,7 @@ dataSources:
       eventHandlers:
         - event: StableCoinCreated(indexed address,indexed address)
           handler: handleStableCoinCreated
-      file: ./src/factories/stablecoin-factory.ts
+      file: ./src/v1/factories/stablecoin-factory.ts
   - kind: ethereum/contract
     name: FundFactory
     network: settlemint
@@ -112,7 +136,7 @@ dataSources:
       eventHandlers:
         - event: FundCreated(indexed address,indexed address)
           handler: handleFundCreated
-      file: ./src/factories/fund-factory.ts
+      file: ./src/v1/factories/fund-factory.ts
   - kind: ethereum/contract
     name: FixedYieldFactory
     network: settlemint
@@ -133,7 +157,7 @@ dataSources:
       eventHandlers:
         - event: FixedYieldCreated(indexed address,indexed address)
           handler: handleFixedYieldCreated
-      file: ./src/factories/fixedyield-factory.ts
+      file: ./src/v1/factories/fixedyield-factory.ts
   - kind: ethereum/contract
     name: DepositFactory
     network: settlemint
@@ -154,7 +178,7 @@ dataSources:
       eventHandlers:
         - event: DepositCreated(indexed address,indexed address)
           handler: handleDepositCreated
-      file: ./src/factories/deposit-factory.ts
+      file: ./src/v1/factories/deposit-factory.ts
   - kind: ethereum/contract
     name: XvPSettlementFactory
     network: settlemint
@@ -175,7 +199,7 @@ dataSources:
       eventHandlers:
         - event: XvPSettlementCreated(indexed address,indexed address)
           handler: handleXvPSettlementCreated
-      file: ./src/factories/xvp-settlement-factory.ts
+      file: ./src/v1/factories/xvp-settlement-factory.ts
   - kind: ethereum/contract
     name: AirdropFactory
     network: settlemint
@@ -219,7 +243,7 @@ dataSources:
         - event:
             PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
-      file: ./src/factories/airdrop-factory.ts
+      file: ./src/v1/factories/airdrop-factory.ts
   - kind: ethereum/contract
     name: VaultFactory
     network: settlemint
@@ -241,7 +265,7 @@ dataSources:
       eventHandlers:
         - event: VaultCreated(indexed address,indexed address,address[],uint256)
           handler: handleVaultCreated
-      file: ./src/factories/vault-factory.ts
+      file: ./src/v1/factories/vault-factory.ts
 templates:
   - kind: ethereum/contract
     name: XvPSettlement
@@ -270,7 +294,7 @@ templates:
           handler: handleXvPSettlementClaimed
         - event: XvPSettlementCancelled(indexed address)
           handler: handleXvPSettlementCancelled
-      file: ./src/trading/xvp-settlement.ts
+      file: ./src/v1/trading/xvp-settlement.ts
   - kind: ethereum/contract
     name: FixedYield
     network: settlemint
@@ -296,7 +320,7 @@ templates:
           handler: handleUnderlyingAssetTopUp
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
-      file: ./src/assets/fixed-yield.ts
+      file: ./src/v1/assets/fixed-yield.ts
   - kind: ethereum/contract
     name: Bond
     network: settlemint
@@ -368,7 +392,7 @@ templates:
         - event:
             Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
-      file: ./src/assets/bond.ts
+      file: ./src/v1/assets/bond.ts
   - kind: ethereum/contract
     name: CryptoCurrency
     network: settlemint
@@ -417,7 +441,7 @@ templates:
           handler: handleRoleAdminChanged
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
-      file: ./src/assets/cryptocurrency.ts
+      file: ./src/v1/assets/cryptocurrency.ts
   - kind: ethereum/contract
     name: Equity
     network: settlemint
@@ -479,7 +503,7 @@ templates:
         - event:
             Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
-      file: ./src/assets/equity.ts
+      file: ./src/v1/assets/equity.ts
   - kind: ethereum/contract
     name: StableCoin
     network: settlemint
@@ -543,7 +567,7 @@ templates:
         - event:
             Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
-      file: ./src/assets/stablecoin.ts
+      file: ./src/v1/assets/stablecoin.ts
   - kind: ethereum/contract
     name: Fund
     network: settlemint
@@ -613,7 +637,7 @@ templates:
         - event:
             Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
-      file: ./src/assets/fund.ts
+      file: ./src/v1/assets/fund.ts
   - kind: ethereum/contract
     name: Deposit
     network: settlemint
@@ -676,7 +700,7 @@ templates:
         - event:
             Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
-      file: ./src/assets/deposit.ts
+      file: ./src/v1/assets/deposit.ts
   - kind: ethereum/contract
     name: StandardAirdropTemplate
     network: settlemint
@@ -706,7 +730,7 @@ templates:
           handler: handleBatchClaimed
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
-      file: ./src/distribution/standard-airdrop.ts
+      file: ./src/v1/distribution/standard-airdrop.ts
   - kind: ethereum/contract
     name: VestingAirdropTemplate
     network: settlemint
@@ -744,7 +768,7 @@ templates:
           handler: handleTokensWithdrawn
         - event: ClaimInitialized(indexed address,uint256)
           handler: handleClaimInitialized
-      file: ./src/distribution/vesting-airdrop.ts
+      file: ./src/v1/distribution/vesting-airdrop.ts
   - kind: ethereum/contract
     name: PushAirdropTemplate
     network: settlemint
@@ -776,7 +800,7 @@ templates:
           handler: handleMerkleRootUpdated
         - event: DistributionCapUpdated(uint256,uint256)
           handler: handleDistributionCapUpdated
-      file: ./src/distribution/push-airdrop.ts
+      file: ./src/v1/distribution/push-airdrop.ts
   - kind: ethereum
     name: Vault
     network: settlemint
@@ -826,4 +850,4 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-      file: ./src/custody/vault.ts
+      file: ./src/v1/custody/vault.ts
