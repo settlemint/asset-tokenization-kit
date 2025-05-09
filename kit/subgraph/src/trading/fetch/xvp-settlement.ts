@@ -21,7 +21,7 @@ export function fetchFlow(
   asset: Address,
   from: Address,
   to: Address,
-  amount: BigInt,
+  amountExact: BigInt,
   index: i32
 ): XvPSettlementFlow {
   let flowId = settlementId.concat(Bytes.fromI32(index));
@@ -35,8 +35,8 @@ export function fetchFlow(
   flow.asset = asset;
   flow.from = fetchAccount(from).id;
   flow.to = fetchAccount(to).id;
-  flow.amount = toDecimals(amount, fetchAssetDecimals(asset));
-  flow.amountExact = amount;
+  flow.amount = toDecimals(amountExact, fetchAssetDecimals(asset));
+  flow.amountExact = amountExact;
   flow.save();
   return flow;
 }
