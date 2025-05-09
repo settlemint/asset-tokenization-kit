@@ -1,0 +1,18 @@
+{
+  "name": "accesscontrol",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ accesscontrol",
+    "create-local": "graph create --node http://localhost:8020/ accesscontrol",
+    "remove-local": "graph remove --node http://localhost:8020/ accesscontrol",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 accesscontrol",
+    "test": "graph test"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.97.0",
+    "@graphprotocol/graph-ts": "0.37.0"
+  },
+  "devDependencies": { "matchstick-as": "0.6.0" }
+}
