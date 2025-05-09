@@ -195,7 +195,7 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
         _registerDeploymentAsUser(user1);
 
         vm.expectEmit(true, true, true, true);
-        emit SMARTDeploymentRegistry.SMARTComplianceModuleRegistered(address(mockModule1), user1, block.timestamp);
+        emit SMARTDeploymentRegistry.SMARTComplianceModuleRegistered(user1, address(mockModule1), block.timestamp);
         vm.prank(user1);
         registry.registerComplianceModule(mockModule1);
     }
@@ -251,7 +251,7 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
 
         vm.expectEmit(true, true, true, true);
         emit SMARTDeploymentRegistry.SMARTTokenRegistryRegistered(
-            typeName, typeHash, address(mockTokenRegistry1), user1, block.timestamp
+            user1, typeName, typeHash, address(mockTokenRegistry1), block.timestamp
         );
         vm.prank(user1);
         registry.registerTokenRegistry(typeName, mockTokenRegistry1);
