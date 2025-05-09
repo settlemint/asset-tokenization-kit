@@ -79,6 +79,7 @@ contract SMARTEquityTest is Test {
         internal
         returns (SMARTEquity result)
     {
+        vm.prank(owner);
         result = new SMARTEquity(
             name_,
             symbol_,
@@ -92,9 +93,8 @@ contract SMARTEquityTest is Test {
 
         smartUtils.createAndSetTokenOnchainID(address(result), owner);
 
-        vm.startPrank(owner);
+        vm.prank(owner);
         result.mint(owner, INITIAL_SUPPLY);
-        vm.stopPrank();
 
         return result;
     }

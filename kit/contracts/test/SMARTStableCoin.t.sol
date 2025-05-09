@@ -80,7 +80,7 @@ contract SMARTStableCoinTest is Test {
         internal
         returns (SMARTStableCoin)
     {
-        vm.startPrank(owner);
+        vm.prank(owner);
         SMARTStableCoin stableCoin_ = new SMARTStableCoin(
             name,
             symbol,
@@ -91,7 +91,6 @@ contract SMARTStableCoinTest is Test {
             compliance,
             address(forwarder)
         );
-        vm.stopPrank();
 
         smartUtils.createAndSetTokenOnchainID(address(stableCoin_), owner);
 

@@ -77,7 +77,7 @@ contract SMARTDepositTest is Test {
         internal
         returns (SMARTDeposit)
     {
-        vm.startPrank(owner_);
+        vm.prank(owner);
         SMARTDeposit deposit_ = new SMARTDeposit(
             name,
             symbol,
@@ -88,7 +88,6 @@ contract SMARTDepositTest is Test {
             compliance,
             address(forwarder)
         );
-        vm.stopPrank();
 
         smartUtils.createAndSetTokenOnchainID(address(deposit_), owner_);
 
