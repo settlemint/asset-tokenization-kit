@@ -38,7 +38,6 @@ export function AssetDesignerDialog({
   );
   const [currentStepId, setCurrentStepId] = useState<string>("type");
   const [assetForm, setAssetForm] = useState<AssetFormDefinition | null>(null);
-  const [loading, setLoading] = useState(false);
   const [formComponent, setFormComponent] =
     useState<React.ComponentType<any> | null>(null);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
@@ -53,6 +52,19 @@ export function AssetDesignerDialog({
   // Derive stepsOrder from allSteps for navigation
   const stepsOrder = allSteps.map((step) => step.id);
 
+  // Reset form state when dialog is closed
+  useEffect(() => {
+    if (!open) {
+      setSelectedAssetType(null);
+      setCurrentStepId("type");
+      setAssetForm(null);
+      setFormComponent(null);
+      setVerifiedFormData(null);
+      setShowVerificationDialog(false);
+      verificationForm.reset();
+    }
+  }, [open]);
+
   // Load asset form definition and form component when type changes
   useEffect(() => {
     if (!selectedAssetType) {
@@ -60,8 +72,6 @@ export function AssetDesignerDialog({
       setFormComponent(null);
       return;
     }
-
-    setLoading(true);
 
     // Load the form definition
     assetForms[selectedAssetType]()
@@ -77,15 +87,11 @@ export function AssetDesignerDialog({
         if (selectedAssetType === "bond") {
           import("../create-forms/bond/form").then((module) => {
             setFormComponent(() => module.CreateBondForm);
-            setLoading(false);
           });
-        } else {
-          setLoading(false);
         }
       })
       .catch((error) => {
         console.error("Failed to load asset form:", error);
-        setLoading(false);
       });
   }, [selectedAssetType, currentStepId]);
 

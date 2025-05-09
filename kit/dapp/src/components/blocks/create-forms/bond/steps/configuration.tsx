@@ -2,6 +2,7 @@
 
 import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
 import { FormStep } from "@/components/blocks/form/form-step";
+import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
@@ -109,14 +110,13 @@ export function Configuration({ onNext, onBack }: ConfigurationProps) {
               description={t("parameters.bonds.face-value-description")}
               required
             />
-            {/* TODO: bring back */}
-            {/* <FormAssets
+            <FormAssets
               control={control}
               name="underlyingAsset"
               label={t("parameters.bonds.underlying-asset-label")}
               description={t("parameters.bonds.underlying-asset-description")}
               required
-            /> */}
+            />
           </div>
         </FormStep>
         <FormStep
