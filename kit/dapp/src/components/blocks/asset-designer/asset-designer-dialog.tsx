@@ -1,117 +1,127 @@
 "use client";
 
+import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/routing";
-import { useTheme } from "next-themes";
-import { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import type { AssetDesignerStep, AssetType } from "./types";
-import { stepDetailsMap, stepsOrder } from "./types";
-
-// Import step wizard components
-import type { Step } from "./step-wizard/step-wizard";
-import { StepWizard } from "./step-wizard/step-wizard";
-
-// Import steps
-import { AssetTypeSelection } from "./steps/asset-type-selection";
-import { AssetBasicsStep } from "./steps/basics";
-import { AssetConfigurationStep } from "./steps/configuration";
-import { AssetPermissionsStep } from "./steps/permissions";
-import { AssetSummaryStep } from "./steps/summary";
-
-// Import utility functions
-import { getAssetDescription, getAssetTitle } from "./utils";
-
-// Import custom hook for form management
-import { useAssetDesignerForms } from "./hooks/use-asset-designer-forms";
-
-// Import create actions for each asset type
-import { createBond } from "@/lib/mutations/bond/create/create-action";
-import { createCryptoCurrency } from "@/lib/mutations/cryptocurrency/create/create-action";
-import { createDeposit } from "@/lib/mutations/deposit/create/create-action";
-import { createEquity } from "@/lib/mutations/equity/create/create-action";
-import { createFund } from "@/lib/mutations/fund/create/create-action";
-import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
-
-// Import the predict address functions
-import { getPredictedAddress as getBondPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
-import { getPredictedAddress as getCryptocurrencyPredictedAddress } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-predict-address";
-import { getPredictedAddress as getDepositPredictedAddress } from "@/lib/queries/deposit-factory/deposit-factory-predict-address";
-import { getPredictedAddress as getEquityPredictedAddress } from "@/lib/queries/equity-factory/equity-factory-predict-address";
-import { getPredictedAddress as getFundPredictedAddress } from "@/lib/queries/fund-factory/fund-factory-predict-address";
-import { getPredictedAddress as getStablecoinPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
-
-// Import FormOtpDialog
-import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
-
-// Import the waitForTransactions function
 import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
-import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { revalidate } from "@/lib/utils/revalidate";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import type { User } from "better-auth";
+import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
+import { useCallback, useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import MiniProgressBar from "./components/mini-progress-bar";
+import { StepContent } from "./step-wizard/step-content";
+import type { Step } from "./step-wizard/step-wizard";
+import { StepWizard } from "./step-wizard/step-wizard";
+import { AssetTypeSelection } from "./steps/asset-type-selection";
+import {
+  assetForms,
+  typeSelectionStep,
+  type AssetFormDefinition,
+} from "./types";
+import { getAssetDescription, getAssetTitle } from "./utils";
 
 interface AssetDesignerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-// Mini progress bar component
-interface MiniProgressBarProps {
-  totalSteps: number;
-  currentStepIndex: number;
-}
-
-function MiniProgressBar({
-  totalSteps,
-  currentStepIndex,
-}: MiniProgressBarProps) {
-  return (
-    <div className="absolute bottom-10 left-[61%] transform -translate-x-1/2 flex justify-center items-center gap-2 pointer-events-none">
-      {Array.from({ length: totalSteps }).map((_, index) => (
-        <div
-          key={index}
-          className={`transition-all duration-300 ${
-            index === currentStepIndex
-              ? "w-4 h-1.5 bg-primary rounded-full animate-pulse"
-              : "w-1.5 h-1.5 bg-muted-foreground/30 rounded-full"
-          }`}
-        />
-      ))}
-    </div>
-  );
+  currentUser: User;
 }
 
 export function AssetDesignerDialog({
+  currentUser,
   open,
   onOpenChange,
 }: AssetDesignerDialogProps) {
-  const [currentStep, setCurrentStep] = useState<AssetDesignerStep>("type");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
+  const t = useTranslations("private.assets.create");
   const { theme } = useTheme();
-
-  // Use the custom hook for form management
-  const {
-    selectedAssetType,
-    setSelectedAssetType,
-    getFormForAssetType,
-    resetForms,
-    isBasicInfoFormValid,
-    isConfigurationFormValid,
-    isPermissionsFormValid,
-    bondForm,
-    cryptocurrencyForm,
-    equityForm,
-    fundForm,
-    stablecoinForm,
-    depositForm,
-  } = useAssetDesignerForms();
-
-  // State for verification dialog
+  const [selectedAssetType, setSelectedAssetType] = useState<AssetType | null>(
+    null
+  );
+  const [currentStepId, setCurrentStepId] = useState<string>("type");
+  const [assetForm, setAssetForm] = useState<AssetFormDefinition | null>(null);
+  const [formComponent, setFormComponent] =
+    useState<React.ComponentType<any> | null>(null);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
+  const [verifiedFormData, setVerifiedFormData] = useState<any>(null);
+  const router = useRouter();
 
-  // Create a form for the verification code
+  // Create a unified representation of all steps
+  const allSteps: Step[] = [
+    typeSelectionStep,
+    ...(assetForm?.steps || []),
+  ].filter((step) => step.id === "type" || selectedAssetType !== null);
+
+  // Derive stepsOrder from allSteps for navigation
+  const stepsOrder = allSteps.map((step) => step.id);
+
+  // Reset form state when dialog is closed
+  useEffect(() => {
+    if (!open) {
+      setSelectedAssetType(null);
+      setCurrentStepId("type");
+      setAssetForm(null);
+      setFormComponent(null);
+      setVerifiedFormData(null);
+      setShowVerificationDialog(false);
+      verificationForm.reset();
+    }
+  }, [open]);
+
+  // Load asset form definition and form component when type changes
+  useEffect(() => {
+    if (!selectedAssetType) {
+      setAssetForm(null);
+      setFormComponent(null);
+      return;
+    }
+
+    // Load the form definition
+    assetForms[selectedAssetType]()
+      .then((module) => {
+        setAssetForm(module.default);
+
+        // Auto-navigate to first step of the loaded form
+        if (module.default.steps.length > 0 && currentStepId === "type") {
+          setCurrentStepId(module.default.steps[0].id);
+        }
+
+        // Load the appropriate form component based on asset type
+        if (selectedAssetType === "bond") {
+          import("../create-forms/bond/form").then((module) => {
+            setFormComponent(() => module.CreateBondForm);
+          });
+        } else if (selectedAssetType === "cryptocurrency") {
+          import("../create-forms/cryptocurrency/form").then((module) => {
+            setFormComponent(() => module.CreateCryptoCurrencyForm);
+          });
+        } else if (selectedAssetType === "deposit") {
+          import("../create-forms/deposit/form").then((module) => {
+            setFormComponent(() => module.CreateDepositForm);
+          });
+        } else if (selectedAssetType === "equity") {
+          import("../create-forms/equity/form").then((module) => {
+            setFormComponent(() => module.CreateEquityForm);
+          });
+        } else if (selectedAssetType === "fund") {
+          import("../create-forms/fund/form").then((module) => {
+            setFormComponent(() => module.CreateFundForm);
+          });
+        } else if (selectedAssetType === "stablecoin") {
+          import("../create-forms/stablecoin/form").then((module) => {
+            setFormComponent(() => module.CreateStablecoinForm);
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load asset form:", error);
+      });
+  }, [selectedAssetType, currentStepId]);
+
+  // Verification form
   const verificationForm = useForm({
     defaultValues: {
       verificationCode: "",
@@ -119,173 +129,70 @@ export function AssetDesignerDialog({
     },
   });
 
-  const handleAssetTypeSelect = (type: AssetType) => {
-    setSelectedAssetType(type);
+  /**
+   * Asset Creation Flow:
+   * 1. User fills out the form in the asset-specific form component
+   * 2. When they click submit, this wrapper intercepts the submission
+   * 3. Instead of submitting right away, it stores the form data and shows the verification dialog
+   * 4. After verification code is entered, handleVerificationSubmit is called
+   * 5. That function submits the form with the verification code included
+   * 6. It processes the response (waiting for transactions, redirecting, etc.)
+   */
 
-    // Move to the next step after selecting an asset type
-    if (type) {
-      setCurrentStep("details");
-    }
-  };
-
-  const resetDesigner = () => {
-    setCurrentStep("type");
-    setSelectedAssetType(null);
-    resetForms();
-  };
-
-  // When the dialog is closed, reset the state
-  const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen) {
-      resetDesigner();
-    }
-    onOpenChange(newOpen);
-  };
-
-  // Convert our steps to the format expected by StepWizard
-  const wizardSteps: Step[] = stepsOrder.map((stepId) => ({
-    id: stepId,
-    title: stepDetailsMap[stepId].title,
-    description: stepDetailsMap[stepId].description,
-  }));
-
-  // Handle asset creation submission
-  const handleCreateAsset = async () => {
-    if (!selectedAssetType) return;
-
-    setIsSubmitting(true);
-
-    try {
-      switch (selectedAssetType) {
-        case "bond": {
-          const bondFormValues = bondForm.getValues();
-          const predictedAddress =
-            await getBondPredictedAddress(bondFormValues);
-          bondForm.setValue("predictedAddress", predictedAddress);
-          break;
-        }
-        case "cryptocurrency": {
-          const cryptoFormValues = cryptocurrencyForm.getValues();
-          const predictedAddress =
-            await getCryptocurrencyPredictedAddress(cryptoFormValues);
-          cryptocurrencyForm.setValue("predictedAddress", predictedAddress);
-          break;
-        }
-        case "stablecoin": {
-          const stablecoinFormValues = stablecoinForm.getValues();
-          const predictedAddress =
-            await getStablecoinPredictedAddress(stablecoinFormValues);
-          stablecoinForm.setValue("predictedAddress", predictedAddress);
-          break;
-        }
-        case "deposit": {
-          const depositFormValues = depositForm.getValues();
-          const predictedAddress =
-            await getDepositPredictedAddress(depositFormValues);
-          depositForm.setValue("predictedAddress", predictedAddress);
-          break;
-        }
-        case "equity": {
-          const equityFormValues = equityForm.getValues();
-          const predictedAddress =
-            await getEquityPredictedAddress(equityFormValues);
-          equityForm.setValue("predictedAddress", predictedAddress);
-          break;
-        }
-        case "fund": {
-          const fundFormValues = fundForm.getValues();
-          const predictedAddress =
-            await getFundPredictedAddress(fundFormValues);
-          fundForm.setValue("predictedAddress", predictedAddress);
-          break;
-        }
-        default:
-          exhaustiveGuard(selectedAssetType);
-      }
-
+  // Function to wrap submission with verification
+  // This accepts any function that returns a result (like transaction hashes)
+  const verificationWrapper = <T,>(submitFn: (data: any) => Promise<T>) => {
+    return async (data: any): Promise<void> => {
+      // Store the form data and open verification dialog
+      setVerifiedFormData({ data, onSubmit: submitFn });
       setShowVerificationDialog(true);
-    } catch (error) {
-      console.error("Error preparing asset creation:", error);
-      toast.error("Failed to prepare asset creation. Please try again.");
-      setIsSubmitting(false);
-    }
+    };
   };
 
   // Handle verification submission
   const handleVerificationSubmit = async () => {
-    const toastId = toast.loading(
-      `Creating ${selectedAssetType}... This process may take a moment.`
-    );
+    const toastId = toast.loading(t("form.toasts.submitting"));
+
+    const assetId = verifiedFormData.data.predictedAddress;
+    const verificationCode = verificationForm.getValues("verificationCode");
+
     try {
-      // Get the verification code from the form
-      const verificationCode = verificationForm.getValues().verificationCode;
-      const form = getFormForAssetType();
-      const assetId = form.getValues().predictedAddress;
+      // Call the form's submit function with verification code
+      // The specific asset form (stablecoin, bond, etc.) handles its own form submission
+      // and returns the result which contains transaction hashes
+      const result = await verifiedFormData.onSubmit({
+        ...verifiedFormData.data,
+        verificationCode,
+        verificationType: "pincode",
+      });
 
-      const createAsset = async () => {
-        switch (selectedAssetType) {
-          case "bond":
-            const bondFormValues = bondForm.getValues();
-            return createBond({
-              ...bondFormValues,
-              verificationCode,
-              verificationType: "pincode",
-            });
-          case "cryptocurrency":
-            const cryptoFormValues = cryptocurrencyForm.getValues();
-            return createCryptoCurrency({
-              ...cryptoFormValues,
-              verificationCode,
-              verificationType: "pincode",
-            });
-          case "stablecoin":
-            const stablecoinFormValues = stablecoinForm.getValues();
-            return createStablecoin({
-              ...stablecoinFormValues,
-              verificationCode,
-              verificationType: "pincode",
-            });
-          case "deposit":
-            const depositFormValues = depositForm.getValues();
-            return createDeposit({
-              ...depositFormValues,
-              verificationCode,
-              verificationType: "pincode",
-            });
-          case "equity":
-            const equityFormValues = equityForm.getValues();
-            return createEquity({
-              ...equityFormValues,
-              verificationCode,
-              verificationType: "pincode",
-            });
-          case "fund":
-            const fundFormValues = fundForm.getValues();
-            return createFund({
-              ...fundFormValues,
-              verificationCode,
-              verificationType: "pincode",
-            });
-          default:
-            exhaustiveGuard(selectedAssetType);
-        }
-      };
-      const result = await createAsset();
-
+      // Handle case when result is falsy
       if (!result) {
-        toast.error("Failed to create asset. Please try again.", {
-          id: toastId,
-        });
+        toast.error(t("form.toasts.failed"), { id: toastId });
         return;
       }
 
+      // Safe-action results have a specific format: { data?, validationErrors?, serverError? }
+      // For our transaction responses, data contains the transaction hash(es)
+
+      // Handle server errors if any
+      if (result.serverError) {
+        toast.error(result.serverError, { id: toastId });
+        return;
+      }
+
+      // Handle validation errors if any
       if (result.validationErrors) {
-        // Update the toast with validation error message
-        toast.error(
-          "Please fix the validation errors before creating the asset.",
-          { id: toastId }
-        );
+        // Get the first validation error message or use a default
+        const errorMessages = Object.values(result.validationErrors);
+        const errorMessage =
+          errorMessages.length > 0
+            ? String(errorMessages[0])
+            : t("form.errors.validation-failed");
+
+        toast.error(errorMessage, { id: toastId });
         console.error("Validation errors:", result.validationErrors);
+        return;
       }
 
       // Parse the transaction hashes from the response
@@ -295,42 +202,85 @@ export function AssetDesignerDialog({
           : [result.data]
         : [];
 
-      // Wait for the transactions to be confirmed using the dedicated function
+      if (!hashes.length) {
+        toast.error(t("form.toasts.failed"), { id: toastId });
+        return;
+      }
+
+      // Wait for the transactions to be confirmed and indexed
+      // This ensures the created asset is available in the database
       const receipts = await waitForTransactions(hashes);
       const lastBlockNumber = Number(receipts.at(-1)?.blockNumber);
+
       if (lastBlockNumber) {
         await waitForIndexing(lastBlockNumber);
         await revalidate();
       }
 
-      toast.success(
-        `${selectedAssetType?.charAt(0).toUpperCase() || ""}${selectedAssetType?.slice(1) || ""} was created successfully!`,
-        { id: toastId }
-      );
+      // Only show success toast if we got this far
+      toast.success(t("form.toasts.success"), { id: toastId });
+      onOpenChange(false);
 
-      handleOpenChange(false);
-
+      // Redirect to the newly created asset page
       router.push(`/assets/${selectedAssetType}/${assetId}`);
     } catch (error) {
-      console.error("Error creating asset:", error);
-      toast.error("An unexpected error occurred. Please try again.", {
-        id: toastId,
-      });
-    } finally {
-      setIsSubmitting(false);
-      setShowVerificationDialog(false);
-      verificationForm.reset();
+      console.error("Error during form submission:", error);
+
+      // Display a more specific error message if possible
+      const errorMessage =
+        error instanceof Error ? error.message : t("form.toasts.failed");
+
+      toast.error(errorMessage, { id: toastId });
     }
   };
 
-  // Handle verification dialog close
+  // Handle verification cancellation
   const handleVerificationCancel = () => {
-    setIsSubmitting(false);
     setShowVerificationDialog(false);
+    setVerifiedFormData(null);
     verificationForm.reset();
   };
 
-  // Conditionally apply the sidebar background style
+  // Handler for asset type selection
+  const handleAssetTypeSelect = (type: AssetType) => {
+    if (type !== selectedAssetType) {
+      setSelectedAssetType(type);
+    }
+  };
+
+  // Navigation helpers
+  const handleStepChange = (stepId: string) => {
+    // If navigating to type selection, reset asset type
+    if (stepId === "type" && currentStepId !== "type") {
+      setSelectedAssetType(null);
+    }
+    setCurrentStepId(stepId);
+  };
+
+  const handleNextStep = useCallback(() => {
+    const currentIndex = stepsOrder.indexOf(currentStepId);
+    if (currentIndex >= 0 && currentIndex < stepsOrder.length - 1) {
+      setCurrentStepId(stepsOrder[currentIndex + 1]);
+    }
+  }, [currentStepId, stepsOrder]);
+
+  const handlePreviousStep = useCallback(() => {
+    const currentIndex = stepsOrder.indexOf(currentStepId);
+
+    // If we're at the first step of an asset form, go back to type selection
+    if (currentIndex === 1) {
+      setCurrentStepId("type");
+      setSelectedAssetType(null);
+      return;
+    }
+
+    // Otherwise go to the previous step
+    if (currentIndex > 0) {
+      setCurrentStepId(stepsOrder[currentIndex - 1]);
+    }
+  }, [currentStepId, stepsOrder]);
+
+  // Conditional sidebar style
   const sidebarStyle = {
     backgroundImage:
       theme === "dark"
@@ -342,10 +292,44 @@ export function AssetDesignerDialog({
   };
 
   // Get current step index for the progress bar
-  const currentStepIndex = stepsOrder.findIndex((step) => step === currentStep);
+  const currentStepIndex = stepsOrder.indexOf(currentStepId);
+
+  // Simplified step content rendering with verification wrapper
+  const renderStepContent = () => {
+    // Type selection step
+    if (currentStepId === "type") {
+      return (
+        <StepContent
+          showNextButton={!!selectedAssetType}
+          showBackButton={false}
+          onNext={handleNextStep}
+          isNextDisabled={!selectedAssetType}
+        >
+          <AssetTypeSelection
+            selectedType={selectedAssetType}
+            onSelect={handleAssetTypeSelect}
+          />
+        </StepContent>
+      );
+    }
+
+    // Wrap form component's submit with verification
+    if (formComponent) {
+      const FormComponent = formComponent;
+      return (
+        <FormComponent
+          userDetails={currentUser}
+          currentStepId={currentStepId}
+          onNextStep={handleNextStep}
+          onPrevStep={handlePreviousStep}
+          verificationWrapper={verificationWrapper}
+        />
+      );
+    }
+  };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="max-h-[95vh] min-h-[70vh] h-auto w-[90vw] lg:w-[75vw] p-0 overflow-auto border-none right-0 !max-w-screen rounded-2xl"
         onInteractOutside={(e) => {
@@ -355,104 +339,41 @@ export function AssetDesignerDialog({
         onFocusOutside={(e) => e.preventDefault()}
       >
         <div className="relative">
-          <DialogTitle className="sr-only">
-            {getAssetTitle(selectedAssetType)}
-          </DialogTitle>
+          <DialogTitle className="sr-only">Asset Designer</DialogTitle>
+          {/* TODO: Using 'as any' type assertions because dynamic translation keys from getAssetTitle/getAssetDescription
+              don't match the literal string types expected by next-intl's t function */}
           <StepWizard
-            steps={wizardSteps}
-            currentStepId={currentStep}
-            title={getAssetTitle(selectedAssetType)}
-            description={getAssetDescription(selectedAssetType)}
-            onStepChange={(stepId) =>
-              setCurrentStep(stepId as AssetDesignerStep)
-            }
+            steps={allSteps}
+            currentStepId={currentStepId}
+            title={t(getAssetTitle(selectedAssetType) as any)}
+            description={t(getAssetDescription(selectedAssetType) as any)}
+            onStepChange={handleStepChange}
             sidebarStyle={sidebarStyle}
-            onClose={() => handleOpenChange(false)}
+            onClose={() => onOpenChange(false)}
           >
-            {/* Type Selection Step */}
-            {currentStep === "type" && (
-              <AssetTypeSelection
-                selectedType={selectedAssetType}
-                onSelect={handleAssetTypeSelect}
-              />
-            )}
-
-            {/* Basics Step */}
-            {currentStep === "details" && selectedAssetType && (
-              <AssetBasicsStep
-                assetType={selectedAssetType}
-                form={getFormForAssetType()}
-                isValid={isBasicInfoFormValid}
-                onBack={() => setCurrentStep("type")}
-                onNext={() => setCurrentStep("configuration")}
-              />
-            )}
-
-            {/* Configuration Step */}
-            {currentStep === "configuration" && selectedAssetType && (
-              <AssetConfigurationStep
-                assetType={selectedAssetType}
-                form={getFormForAssetType()}
-                isValid={isConfigurationFormValid}
-                onBack={() => setCurrentStep("details")}
-                onNext={() => setCurrentStep("permissions")}
-              />
-            )}
-
-            {/* Permissions Step */}
-            {currentStep === "permissions" && selectedAssetType && (
-              <AssetPermissionsStep
-                assetType={selectedAssetType}
-                form={getFormForAssetType()}
-                isValid={isPermissionsFormValid}
-                onBack={() => setCurrentStep("configuration")}
-                onNext={() => setCurrentStep("summary")}
-              />
-            )}
-
-            {/* TODO: bring back later */}
-            {/* Regulation Step */}
-            {/* {currentStep === "regulation" && selectedAssetType && (
-              <AssetRegulationStep
-                assetType={selectedAssetType}
-                form={getFormForAssetType()}
-                onBack={() => setCurrentStep("permissions")}
-                onNext={() => setCurrentStep("summary")}
-              />
-            )} */}
-
-            {/* Summary Step */}
-            {currentStep === "summary" && selectedAssetType && (
-              <AssetSummaryStep
-                assetType={selectedAssetType}
-                form={getFormForAssetType()}
-                isSubmitting={isSubmitting}
-                onBack={() => setCurrentStep("permissions")}
-                onSubmit={handleCreateAsset}
-              />
-            )}
+            {renderStepContent()}
           </StepWizard>
 
-          {/* Mini progress bar */}
+          {/* Verification dialog */}
+          <FormProvider {...verificationForm}>
+            <FormOtpDialog
+              name="verificationCode"
+              open={showVerificationDialog}
+              onOpenChange={(open: boolean) => {
+                if (!open) handleVerificationCancel();
+                else setShowVerificationDialog(open);
+              }}
+              onSubmit={handleVerificationSubmit}
+              control={verificationForm.control}
+            />
+          </FormProvider>
+
           <MiniProgressBar
             totalSteps={stepsOrder.length}
             currentStepIndex={currentStepIndex}
           />
         </div>
       </DialogContent>
-
-      {/* Verification dialog */}
-      <FormProvider {...verificationForm}>
-        <FormOtpDialog
-          name="verificationCode"
-          open={showVerificationDialog}
-          onOpenChange={(open: boolean) => {
-            if (!open) handleVerificationCancel();
-            else setShowVerificationDialog(open);
-          }}
-          onSubmit={handleVerificationSubmit}
-        />
-      </FormProvider>
     </Dialog>
   );
 }

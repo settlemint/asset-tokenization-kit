@@ -1,89 +1,112 @@
 "use client";
 
-import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useRouter } from "@/i18n/routing";
-import { authClient } from "@/lib/auth/client";
 import { createEquity } from "@/lib/mutations/equity/create/create-action";
-import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
+import {
+  CreateEquitySchema,
+  type CreateEquityInput,
+} from "@/lib/mutations/equity/create/create-schema";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
-import { AssetAdmins } from "../common/asset-admins/asset-admins";
-import { Basics } from "./steps/basics";
-import { Configuration } from "./steps/configuration";
-import { Summary } from "./steps/summary";
+import { FormProvider, useForm } from "react-hook-form";
+import type { AssetFormDefinition } from "../../asset-designer/types";
+import {
+  AssetAdmins,
+  stepDefinition as adminsStep,
+} from "../common/asset-admins/asset-admins";
+import {
+  Summary,
+  stepDefinition as summaryStep,
+} from "../common/summary/summary";
+import { Basics, stepDefinition as basicsStep } from "./steps/basics";
+import {
+  Configuration,
+  stepDefinition as configurationStep,
+} from "./steps/configuration";
+import { EquityConfigurationCard } from "./steps/summaryConfigurationCard";
+
 interface CreateEquityFormProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  asButton?: boolean;
+  userDetails: User;
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
+  ) => (data: any) => Promise<void>;
+}
+// Define the interface that all steps will implement
+export interface EquityStepProps {
+  onNext?: () => void;
+  onBack?: () => void;
+  userDetails?: User;
 }
 
 export function CreateEquityForm({
-  open,
-  onOpenChange,
-  asButton = false,
+  userDetails,
+  currentStepId,
+  onNextStep,
+  onPrevStep,
+  verificationWrapper,
 }: CreateEquityFormProps) {
-  const t = useTranslations("private.assets.create.form");
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [localOpen, setLocalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
-  const posthog = usePostHog();
+  const equityForm = useForm<CreateEquityInput>({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      decimals: 18,
+      equityClass: "",
+      equityCategory: "",
+      price: {
+        amount: 1,
+        currency: userDetails.currency,
+      },
+      verificationType: "pincode",
+      assetAdmins: [],
+    },
+    mode: "onChange", // Validate as fields change for real-time feedback
+    resolver: typeboxResolver(CreateEquitySchema()),
+  });
 
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
-      posthog.capture("create_equity_form_opened");
+  const renderCurrentStep = () => {
+    switch (currentStepId) {
+      case "details":
+        return <Basics onNext={onNextStep} onBack={onPrevStep} />;
+      case "configuration":
+        return <Configuration onNext={onNextStep} onBack={onPrevStep} />;
+      case "admins":
+        return (
+          <AssetAdmins
+            userDetails={userDetails}
+            onNext={onNextStep}
+            onBack={onPrevStep}
+          />
+        );
+      case "summary":
+        return (
+          <Summary
+            configurationCard={<EquityConfigurationCard form={equityForm} />}
+            form={equityForm}
+            onBack={onPrevStep}
+            onSubmit={verificationWrapper(createEquity)}
+          />
+        );
+      default:
+        return <div>Unknown step: {currentStepId}</div>;
     }
-  }, [open, localOpen, posthog]);
+  };
 
-  return (
-    <FormSheet
-      open={open ?? localOpen}
-      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t("title.equities")}
-      description={t("description.equities")}
-      asButton={asButton}
-      triggerLabel={
-        isExternallyControlled ? undefined : t("trigger-label.equities")
-      }
-    >
-      <Form
-        action={createEquity}
-        resolver={typeboxResolver(CreateEquitySchema())}
-        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-        buttonLabels={{
-          label: t("trigger-label.equities"),
-        }}
-        defaultValues={{
-          price: {
-            amount: 1,
-            currency: session?.user.currency,
-          },
-          assetAdmins: [],
-        }}
-        onAnyFieldChange={({ clearErrors }) => {
-          clearErrors("predictedAddress");
-        }}
-        toastMessages={{
-          action: (input) => {
-            const assetId = input?.predictedAddress;
-            return assetId
-              ? {
-                  label: t("toast-action.equities"),
-                  onClick: () => router.push(`/assets/equity/${assetId}`),
-                }
-              : undefined;
-          },
-        }}
-      >
-        <Basics />
-        <Configuration />
-        <AssetAdmins />
-        <Summary />
-      </Form>
-    </FormSheet>
-  );
+  return <FormProvider {...equityForm}>{renderCurrentStep()}</FormProvider>;
 }
+
+CreateEquityForm.displayName = "CreateEquityForm";
+
+// Collect all the step definitions
+const equitySteps = [basicsStep, configurationStep, adminsStep, summaryStep];
+
+// Export form definition for the asset designer
+export const equityFormDefinition: AssetFormDefinition = {
+  steps: equitySteps,
+  getStepComponent: (stepId: string) => {
+    const step = equitySteps.find((s) => s.id === stepId);
+    return step?.component || null;
+  },
+};
