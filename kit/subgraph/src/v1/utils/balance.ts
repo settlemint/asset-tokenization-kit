@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { AssetBalance } from "../../generated/schema";
+import { AssetBalance } from "../../../generated/schema";
 import { toDecimals } from "../utils/decimals";
 
 export function fetchAssetBalance(

@@ -1,5 +1,5 @@
-import { StableCoinCreated } from "../../generated/StableCoinFactory/StableCoinFactory";
-import { StableCoin } from "../../generated/templates";
+import { StableCoinCreated } from "../../../generated/StableCoinFactory/StableCoinFactory";
+import { StableCoin } from "../../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchStableCoin } from "../assets/fetch/stablecoin";
 import { fetchAccount } from "../utils/account";

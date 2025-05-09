@@ -3,8 +3,8 @@ import {
   XvPSettlement,
   XvPSettlementApproval,
   XvPSettlementFlow,
-} from "../../../generated/schema";
-import { XvPSettlement as XvPSettlementContract } from "../../../generated/templates/XvPSettlement/XvPSettlement";
+} from "../../../../generated/schema";
+import { XvPSettlement as XvPSettlementContract } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAssetDecimals } from "../../assets/fetch/asset";
 import { fetchAccount } from "../../utils/account";
 import { toDecimals } from "../../utils/decimals";

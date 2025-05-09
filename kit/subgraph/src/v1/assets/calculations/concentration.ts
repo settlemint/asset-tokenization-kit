@@ -1,5 +1,5 @@
 import { BigDecimal, BigInt, Entity } from "@graphprotocol/graph-ts";
-import { AssetBalance } from "../../../generated/schema";
+import { AssetBalance } from "../../../../generated/schema";
 
 /**
  * Calculates ownership concentration percentage for an asset's top holders.

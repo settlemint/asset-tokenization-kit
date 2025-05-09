@@ -1,6 +1,6 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
-import { CryptoCurrency } from "../../../generated/schema";
-import { CryptoCurrency as CryptoCurrencyContract } from "../../../generated/templates/CryptoCurrency/CryptoCurrency";
+import { CryptoCurrency } from "../../../../generated/schema";
+import { CryptoCurrency as CryptoCurrencyContract } from "../../../../generated/templates/CryptoCurrency/CryptoCurrency";
 import { fetchAccount } from "../../utils/account";
 import { AssetType } from "../../utils/enums";
 

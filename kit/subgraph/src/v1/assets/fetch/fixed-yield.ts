@@ -5,8 +5,8 @@ import {
   Bytes,
   log,
 } from "@graphprotocol/graph-ts";
-import { FixedYield, YieldPeriod } from "../../../generated/schema";
-import { FixedYield as FixedYieldContract } from "../../../generated/templates/FixedYield/FixedYield";
+import { FixedYield, YieldPeriod } from "../../../../generated/schema";
+import { FixedYield as FixedYieldContract } from "../../../../generated/templates/FixedYield/FixedYield";
 import { fetchAssetDecimals } from "./asset";
 
 export function fetchFixedYield(address: Address): FixedYield {

@@ -1,12 +1,12 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { CryptoCurrency } from "../../generated/schema";
+import { CryptoCurrency } from "../../../generated/schema";
 import {
   Approval,
   RoleAdminChanged,
   RoleGranted,
   RoleRevoked,
   Transfer,
-} from "../../generated/templates/CryptoCurrency/CryptoCurrency";
+} from "../../../generated/templates/CryptoCurrency/CryptoCurrency";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType } from "../utils/enums";
 import { calculateConcentration } from "./calculations/concentration";

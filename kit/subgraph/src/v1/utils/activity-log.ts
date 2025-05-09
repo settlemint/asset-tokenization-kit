@@ -2,7 +2,7 @@ import { Address, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import {
   ActivityLogEntry,
   ActivityLogEntryValue,
-} from "../../generated/schema";
+} from "../../../generated/schema";
 import { fetchAccount } from "./account";
 
 export class EventType {

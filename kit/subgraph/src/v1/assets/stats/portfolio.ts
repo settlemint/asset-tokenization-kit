@@ -19,7 +19,7 @@
  */
 
 import { BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { PortfolioStatsData } from "../../../generated/schema";
+import { PortfolioStatsData } from "../../../../generated/schema";
 
 export function newPortfolioStatsData(
   account: Bytes,

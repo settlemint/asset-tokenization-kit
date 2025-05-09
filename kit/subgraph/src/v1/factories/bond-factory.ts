@@ -1,5 +1,5 @@
-import { BondCreated } from "../../generated/BondFactory/BondFactory";
-import { Bond } from "../../generated/templates";
+import { BondCreated } from "../../../generated/BondFactory/BondFactory";
+import { Bond } from "../../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchBond } from "../assets/fetch/bond";
 import { fetchAccount } from "../utils/account";

@@ -1,5 +1,5 @@
-import { XvPSettlement } from "../../generated/templates";
-import { XvPSettlementCreated } from "../../generated/XvPSettlementFactory/XvPSettlementFactory";
+import { XvPSettlement } from "../../../generated/templates";
+import { XvPSettlementCreated } from "../../../generated/XvPSettlementFactory/XvPSettlementFactory";
 import { fetchXvPSettlement } from "../trading/fetch/xvp-settlement";
 import { fetchAccount } from "../utils/account";
 /**

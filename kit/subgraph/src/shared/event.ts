@@ -22,7 +22,7 @@ export function processEvent(event: ethereum.Event, eventType: string): Event {
     const param = event.parameters[i];
     if (param.value.kind == ethereum.ValueKind.ADDRESS) {
       const address = fetchAddress(param.value.toAddress());
-      if (param.name == "initiator") {
+      if (param.name == "initiator" || param.name == "sender") {
         entry.sender = address.id;
       }
       involvedAccounts.push(address.id);

@@ -1,6 +1,6 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-import { Bond, FixedYield } from "../../../generated/schema";
-import { FixedYield as FixedYieldContract } from "../../../generated/templates/FixedYield/FixedYield";
+import { Bond, FixedYield } from "../../../../generated/schema";
+import { FixedYield as FixedYieldContract } from "../../../../generated/templates/FixedYield/FixedYield";
 import { toDecimals } from "../../utils/decimals";
 import { fetchFixedYield, fetchFixedYieldPeriod } from "../fetch/fixed-yield";
 

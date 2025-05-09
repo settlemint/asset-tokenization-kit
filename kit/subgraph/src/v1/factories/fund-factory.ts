@@ -1,5 +1,5 @@
-import { FundCreated } from "../../generated/FundFactory/FundFactory";
-import { Fund } from "../../generated/templates";
+import { FundCreated } from "../../../generated/FundFactory/FundFactory";
+import { Fund } from "../../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchFund } from "../assets/fetch/fund";
 import { fetchAccount } from "../utils/account";

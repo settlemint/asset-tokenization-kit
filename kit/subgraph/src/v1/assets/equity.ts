@@ -1,5 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Equity } from "../../generated/schema";
+import { Equity } from "../../../generated/schema";
 import {
   Approval,
   Clawback,
@@ -12,7 +12,7 @@ import {
   Unpaused,
   UserBlocked,
   UserUnblocked,
-} from "../../generated/templates/Equity/Equity";
+} from "../../../generated/templates/Equity/Equity";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType } from "../utils/enums";
 import { calculateConcentration } from "./calculations/concentration";

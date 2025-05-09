@@ -1,5 +1,5 @@
-import { VaultCreated } from "../../generated/VaultFactory/VaultFactory";
-import { Vault } from "../../generated/templates";
+import { VaultCreated } from "../../../generated/VaultFactory/VaultFactory";
+import { Vault } from "../../../generated/templates";
 import { fetchVault } from "../custody/fetch/vault";
 import { fetchAccount } from "../utils/account";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";

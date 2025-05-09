@@ -1,5 +1,5 @@
-import { EquityCreated } from "../../generated/EquityFactory/EquityFactory";
-import { Equity } from "../../generated/templates";
+import { EquityCreated } from "../../../generated/EquityFactory/EquityFactory";
+import { Equity } from "../../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchEquity } from "../assets/fetch/equity";
 import { fetchAccount } from "../utils/account";

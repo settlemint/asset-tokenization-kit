@@ -1,5 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Vault } from "../../../generated/schema";
+import { Vault } from "../../../../generated/schema";
 import { fetchAccount } from "../../utils/account";
 
 export function fetchVault(address: Address, timestamp: BigInt): Vault {

@@ -12,26 +12,26 @@ import {
   PushAirdrop,
   StandardAirdrop,
   VestingAirdrop,
-} from "../../generated/schema";
+} from "../../../generated/schema";
 
 import {
   AirdropFactory as AirdropFactoryContract,
   PushAirdropDeployed,
   StandardAirdropDeployed,
   VestingAirdropDeployed,
-} from "../../generated/AirdropFactory/AirdropFactory";
+} from "../../../generated/AirdropFactory/AirdropFactory";
 
 import {
   PushAirdropTemplate,
   StandardAirdropTemplate,
   VestingAirdropTemplate,
-} from "../../generated/templates";
+} from "../../../generated/templates";
 
 // Import contract bindings for fetching state
-import { PushAirdrop as PushAirdropContract } from "../../generated/templates/PushAirdropTemplate/PushAirdrop";
-import { StandardAirdrop as StandardAirdropContract } from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
-import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../generated/templates/VestingAirdropTemplate/LinearVestingStrategy";
-import { VestingAirdrop as VestingAirdropContract } from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
+import { PushAirdrop as PushAirdropContract } from "../../../generated/templates/PushAirdropTemplate/PushAirdrop";
+import { StandardAirdrop as StandardAirdropContract } from "../../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
+import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../../generated/templates/VestingAirdropTemplate/LinearVestingStrategy";
+import { VestingAirdrop as VestingAirdropContract } from "../../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
 
 // Use fetchAccount instead of loadOrCreateAccount
 import { fetchAccount } from "../utils/account";

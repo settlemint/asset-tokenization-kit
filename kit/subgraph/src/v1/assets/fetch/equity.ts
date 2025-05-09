@@ -1,6 +1,6 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
-import { Equity } from "../../../generated/schema";
-import { Equity as EquityContract } from "../../../generated/templates/Equity/Equity";
+import { Equity } from "../../../../generated/schema";
+import { Equity as EquityContract } from "../../../../generated/templates/Equity/Equity";
 import { fetchAccount } from "../../utils/account";
 import { AssetType } from "../../utils/enums";
 

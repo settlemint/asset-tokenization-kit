@@ -20,14 +20,14 @@ import {
   UserVestingData,
   VestingAirdrop,
   VestingStatsData,
-} from "../../generated/schema";
-import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../generated/templates/VestingAirdropTemplate/LinearVestingStrategy";
+} from "../../../generated/schema";
+import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../../generated/templates/VestingAirdropTemplate/LinearVestingStrategy";
 import {
   BatchClaimed,
   Claimed,
   ClaimInitialized,
   TokensWithdrawn,
-} from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
+} from "../../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
 
 import { fetchAccount } from "../utils/account";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";

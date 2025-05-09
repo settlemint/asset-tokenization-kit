@@ -3,7 +3,7 @@ import {
   XvPSettlementApproved,
   XvPSettlementCancelled,
   XvPSettlementClaimed,
-} from "../../generated/templates/XvPSettlement/XvPSettlement";
+} from "../../../generated/templates/XvPSettlement/XvPSettlement";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { fetchApproval, fetchXvPSettlement } from "./fetch/xvp-settlement";
 

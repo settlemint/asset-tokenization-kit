@@ -1,5 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { StableCoin } from "../../generated/schema";
+import { StableCoin } from "../../../generated/schema";
 import {
   Approval,
   Clawback,
@@ -13,7 +13,7 @@ import {
   Unpaused,
   UserBlocked,
   UserUnblocked,
-} from "../../generated/templates/StableCoin/StableCoin";
+} from "../../../generated/templates/StableCoin/StableCoin";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType } from "../utils/enums";
 import { calculateCollateral } from "./calculations/collateral";

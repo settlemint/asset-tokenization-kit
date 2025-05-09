@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { Bond } from "../../../generated/schema";
+import { Bond } from "../../../../generated/schema";
 import { toDecimals } from "../../utils/decimals";
 
 export function calculateTotalUnderlyingNeeded(bond: Bond): void {

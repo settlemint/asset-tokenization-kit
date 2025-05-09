@@ -5,7 +5,7 @@ import {
   ethereum,
   store,
 } from "@graphprotocol/graph-ts";
-import { BlockedUser } from "../../../generated/schema";
+import { BlockedUser } from "../../../../generated/schema";
 import { fetchAccount } from "../../utils/account";
 import { createActivityLogEntry, EventType } from "../../utils/activity-log";
 import { fetchAssetBalance } from "../../utils/balance";

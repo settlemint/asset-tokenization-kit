@@ -1,7 +1,7 @@
-import { FixedYieldCreated as FixedYieldCreatedEvent } from "../../generated/FixedYieldFactory/FixedYieldFactory";
-import { Bond as BondEntity } from "../../generated/schema";
-import { FixedYield } from "../../generated/templates";
-import { FixedYield as FixedYieldContract } from "../../generated/templates/FixedYield/FixedYield";
+import { FixedYieldCreated as FixedYieldCreatedEvent } from "../../../generated/FixedYieldFactory/FixedYieldFactory";
+import { Bond as BondEntity } from "../../../generated/schema";
+import { FixedYield } from "../../../generated/templates";
+import { FixedYield as FixedYieldContract } from "../../../generated/templates/FixedYield/FixedYield";
 import { fetchFixedYield } from "../assets/fetch/fixed-yield";
 import { fetchAccount } from "../utils/account";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";

@@ -1,5 +1,5 @@
 import { Address, Bytes, Entity, ethereum } from "@graphprotocol/graph-ts";
-import { AssetBalance } from "../../../generated/schema";
+import { AssetBalance } from "../../../../generated/schema";
 import { fetchAccount } from "../../utils/account";
 import { createActivityLogEntry, EventType } from "../../utils/activity-log";
 import { hasBalance } from "../../utils/balance";

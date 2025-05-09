@@ -1,10 +1,10 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { Bond } from "../../generated/schema";
+import { Bond } from "../../../generated/schema";
 import {
   UnderlyingAssetTopUp as UnderlyingAssetTopUpEvent,
   UnderlyingAssetWithdrawn as UnderlyingAssetWithdrawnEvent,
   YieldClaimed as YieldClaimedEvent,
-} from "../../generated/templates/FixedYield/FixedYield";
+} from "../../../generated/templates/FixedYield/FixedYield";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { setValueWithDecimals } from "../utils/decimals";
 import { fetchFixedYield, fetchFixedYieldPeriod } from "./fetch/fixed-yield";

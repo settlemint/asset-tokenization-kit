@@ -15,14 +15,14 @@ import {
   Fund,
   PushAirdrop,
   StableCoin,
-} from "../../generated/schema";
+} from "../../../generated/schema";
 import {
   BatchDistributed,
   DistributionCapUpdated,
   MerkleRootUpdated,
   TokensDistributed,
   TokensWithdrawn,
-} from "../../generated/templates/PushAirdropTemplate/PushAirdrop";
+} from "../../../generated/templates/PushAirdropTemplate/PushAirdrop";
 
 // Use fetchAccount for consistent account entity creation
 import { fetchAccount } from "../utils/account";

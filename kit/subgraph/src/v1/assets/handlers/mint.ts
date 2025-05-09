@@ -5,7 +5,7 @@ import {
   Entity,
   ethereum,
 } from "@graphprotocol/graph-ts";
-import { Account, AssetBalance } from "../../../generated/schema";
+import { Account, AssetBalance } from "../../../../generated/schema";
 import { fetchAccount } from "../../utils/account";
 import { createActivityLogEntry, EventType } from "../../utils/activity-log";
 import { fetchAssetBalance, hasBalance } from "../../utils/balance";

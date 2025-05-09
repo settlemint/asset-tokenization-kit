@@ -2,11 +2,11 @@ import { BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
 import {
   VaultTransaction,
   VaultTransactionConfirmation,
-} from "../../generated/schema";
+} from "../../../generated/schema";
 import {
   RoleGranted,
   RoleRevoked,
-} from "../../generated/templates/Deposit/Deposit";
+} from "../../../generated/templates/Deposit/Deposit";
 import {
   ConfirmTransaction,
   Deposit,
@@ -18,7 +18,7 @@ import {
   SubmitERC20TransferTransaction,
   SubmitTransaction,
   Unpaused,
-} from "../../generated/templates/Vault/Vault";
+} from "../../../generated/templates/Vault/Vault";
 import { fetchAssetDecimals } from "../assets/fetch/asset";
 import { roleGrantedHandler } from "../assets/handlers/role-granted";
 import { roleRevokedHandler } from "../assets/handlers/role-revoked";

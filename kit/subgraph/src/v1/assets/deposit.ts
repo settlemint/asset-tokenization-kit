@@ -1,5 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Deposit } from "../../generated/schema";
+import { Deposit } from "../../../generated/schema";
 import {
   Approval,
   Clawback,
@@ -14,7 +14,7 @@ import {
   Unpaused,
   UserAllowed,
   UserDisallowed,
-} from "../../generated/templates/Deposit/Deposit";
+} from "../../../generated/templates/Deposit/Deposit";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType } from "../utils/enums";
 import { calculateCollateral } from "./calculations/collateral";

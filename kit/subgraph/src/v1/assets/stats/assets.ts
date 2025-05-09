@@ -1,5 +1,5 @@
 import { BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { AssetStatsData } from "../../../generated/schema";
+import { AssetStatsData } from "../../../../generated/schema";
 
 export function newAssetStatsData(
   asset: Bytes,

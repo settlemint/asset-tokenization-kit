@@ -1,5 +1,5 @@
 import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
-import { AssetActivityData } from "../../../generated/schema";
+import { AssetActivityData } from "../../../../generated/schema";
 
 export function fetchAssetActivity(assetType: string): AssetActivityData {
   let assetActivity = AssetActivityData.load(assetType);

@@ -1,5 +1,5 @@
-import { CryptoCurrencyCreated } from "../../generated/CryptoCurrencyFactory/CryptoCurrencyFactory";
-import { CryptoCurrency } from "../../generated/templates";
+import { CryptoCurrencyCreated } from "../../../generated/CryptoCurrencyFactory/CryptoCurrencyFactory";
+import { CryptoCurrency } from "../../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchCryptoCurrency } from "../assets/fetch/cryptocurrency";
 import { fetchAccount } from "../utils/account";

@@ -1,5 +1,12 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { Bond, CryptoCurrency, Deposit, Equity, Fund, StableCoin } from "../../../generated/schema";
+import {
+  Bond,
+  CryptoCurrency,
+  Deposit,
+  Equity,
+  Fund,
+  StableCoin,
+} from "../../../../generated/schema";
 
 /**
  * Fetches any asset entity by its address and returns its decimals

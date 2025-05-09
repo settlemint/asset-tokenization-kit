@@ -1,5 +1,5 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { Factory } from "../../../generated/schema";
+import { Factory } from "../../../../generated/schema";
 import { fetchAccount } from "../../utils/account";
 
 export function fetchFactory(address: Address, type: string): Factory {

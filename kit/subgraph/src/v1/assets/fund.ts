@@ -1,5 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Fund } from "../../generated/schema";
+import { Fund } from "../../../generated/schema";
 import {
   Approval,
   Clawback,
@@ -15,7 +15,7 @@ import {
   Unpaused,
   UserBlocked,
   UserUnblocked,
-} from "../../generated/templates/Fund/Fund";
+} from "../../../generated/templates/Fund/Fund";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { AssetType } from "../utils/enums";
 import { calculateConcentration } from "./calculations/concentration";

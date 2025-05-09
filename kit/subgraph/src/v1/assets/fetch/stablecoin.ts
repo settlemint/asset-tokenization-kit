@@ -1,6 +1,6 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
-import { StableCoin } from "../../../generated/schema";
-import { StableCoin as StableCoinContract } from "../../../generated/templates/StableCoin/StableCoin";
+import { StableCoin } from "../../../../generated/schema";
+import { StableCoin as StableCoinContract } from "../../../../generated/templates/StableCoin/StableCoin";
 import { fetchAccount } from "../../utils/account";
 import { AssetType } from "../../utils/enums";
 

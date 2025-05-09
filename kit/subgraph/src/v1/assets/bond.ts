@@ -1,5 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Bond } from "../../generated/schema";
+import { Bond } from "../../../generated/schema";
 import {
   Approval,
   BondMatured,
@@ -16,7 +16,7 @@ import {
   Unpaused,
   UserBlocked,
   UserUnblocked,
-} from "../../generated/templates/Bond/Bond";
+} from "../../../generated/templates/Bond/Bond";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { setValueWithDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";

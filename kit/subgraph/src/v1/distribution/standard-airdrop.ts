@@ -17,12 +17,12 @@ import {
   StableCoin,
   // Asset is an interface and cannot be loaded directly
   StandardAirdrop,
-} from "../../generated/schema";
+} from "../../../generated/schema";
 import {
   BatchClaimed,
   Claimed,
   TokensWithdrawn,
-} from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
+} from "../../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
 
 // Use fetchAccount and direct constants
 import { fetchAccount } from "../utils/account";

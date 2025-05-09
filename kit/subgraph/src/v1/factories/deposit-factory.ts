@@ -1,5 +1,5 @@
-import { DepositCreated } from "../../generated/DepositFactory/DepositFactory";
-import { Deposit } from "../../generated/templates";
+import { DepositCreated } from "../../../generated/DepositFactory/DepositFactory";
+import { Deposit } from "../../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchDeposit } from "../assets/fetch/deposit";
 import { fetchAccount } from "../utils/account";
