@@ -96,7 +96,8 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
      * @param trustedForwarder_ The address of the ERC2771 trusted forwarder contract.
      */
     constructor(address trustedForwarder_) ERC2771Context(trustedForwarder_) {
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        // _grantRole(DEFAULT_ADMIN_ROLE, _msgSender()); // TODO: this contract is predeployed and we do not use the
+        // DEFAULT_ADMIN_ROLE
         _setRoleAdmin(DEPLOYMENT_OWNER_ROLE, DEPLOYMENT_OWNER_ROLE);
     }
 

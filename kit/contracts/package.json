@@ -18,7 +18,7 @@
     "genesis": "bash -ex genesis-output.sh",
     "abi-output": "bash -ex abi-output.sh",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization",
-    "deploy:local": "settlemint scs hardhat deploy local --deployment-id asset-tokenization-local --reset"
+    "deploy:local": "settlemint scs hardhat deploy local -m ignition/modules/test.ts --deployment-id asset-tokenization-local --reset"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-foundry": "1.1.3",
