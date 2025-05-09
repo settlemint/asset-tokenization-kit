@@ -92,6 +92,22 @@ export function AssetDesignerDialog({
           import("../create-forms/cryptocurrency/form").then((module) => {
             setFormComponent(() => module.CreateCryptoCurrencyForm);
           });
+        } else if (selectedAssetType === "deposit") {
+          import("../create-forms/deposit/form").then((module) => {
+            setFormComponent(() => module.CreateDepositForm);
+          });
+        } else if (selectedAssetType === "equity") {
+          import("../create-forms/equity/form").then((module) => {
+            setFormComponent(() => module.CreateEquityForm);
+          });
+        } else if (selectedAssetType === "fund") {
+          import("../create-forms/fund/form").then((module) => {
+            setFormComponent(() => module.CreateFundForm);
+          });
+        } else if (selectedAssetType === "stablecoin") {
+          import("../create-forms/stablecoin/form").then((module) => {
+            setFormComponent(() => module.CreateStablecoinForm);
+          });
         }
       })
       .catch((error) => {

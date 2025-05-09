@@ -12,7 +12,7 @@ export interface AssetFormDefinition {
   getStepComponent: (stepId: string) => React.ComponentType<any> | null;
 }
 
-// Registry of asset forms - currently only bond is implemented
+// Registry of asset forms
 export const assetForms: Record<
   NonNullable<AssetType>,
   () => Promise<{ default: AssetFormDefinition }>
@@ -25,35 +25,22 @@ export const assetForms: Record<
     import("../create-forms/cryptocurrency/form").then((m) => ({
       default: m.cryptoFormDefinition,
     })),
-  // These will be implemented later - currently they're placeholders
-  equity: () =>
-    Promise.resolve({
-      default: {
-        steps: [],
-        getStepComponent: () => null,
-      } as AssetFormDefinition,
-    }),
-  fund: () =>
-    Promise.resolve({
-      default: {
-        steps: [],
-        getStepComponent: () => null,
-      } as AssetFormDefinition,
-    }),
-  stablecoin: () =>
-    Promise.resolve({
-      default: {
-        steps: [],
-        getStepComponent: () => null,
-      } as AssetFormDefinition,
-    }),
   deposit: () =>
-    Promise.resolve({
-      default: {
-        steps: [],
-        getStepComponent: () => null,
-      } as AssetFormDefinition,
-    }),
+    import("../create-forms/deposit/form").then((m) => ({
+      default: m.depositFormDefinition,
+    })),
+  equity: () =>
+    import("../create-forms/equity/form").then((m) => ({
+      default: m.equityFormDefinition,
+    })),
+  fund: () =>
+    import("../create-forms/fund/form").then((m) => ({
+      default: m.fundFormDefinition,
+    })),
+  stablecoin: () =>
+    import("../create-forms/stablecoin/form").then((m) => ({
+      default: m.stablecoinFormDefinition,
+    })),
 };
 
 // Common step for asset type selection
