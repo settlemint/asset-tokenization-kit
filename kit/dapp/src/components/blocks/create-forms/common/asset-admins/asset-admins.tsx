@@ -128,6 +128,8 @@ export function AssetAdmins({ userDetails, onNext, onBack }: AssetAdminsProps) {
         <FormStep
           title={t("asset-admins-title")}
           description={t("asset-admins-description")}
+          className="w-full"
+          contentClassName="w-full"
         >
           <div className="space-y-4">
             <SelectedAdminsList
