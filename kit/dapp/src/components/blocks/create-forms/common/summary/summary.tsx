@@ -35,10 +35,6 @@ export function Summary({
   const assetAdmins = formValues.assetAdmins || [];
 
   const handleSubmit = async () => {
-    console.log(
-      "Summary submit button clicked, calling onSubmit with:",
-      formValues
-    );
     await onSubmit(formValues);
   };
 

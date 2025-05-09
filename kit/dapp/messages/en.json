@@ -1299,7 +1299,7 @@
           "description": "Choose the type of digital asset you want to create."
         },
         "basics": {
-          "description": "Specify the basic information for this bond.",
+          "description": "Specify the basic information for this asset.",
           "description-onchain": "Configure your new asset with identifying information which is stored on the blockchain. This data is immutable.",
           "description-offchain": "Optionally enter additional identifying information for this asset. This information is stored offchain and is not accessible outside of this platform.",
           "title": "Basic information",

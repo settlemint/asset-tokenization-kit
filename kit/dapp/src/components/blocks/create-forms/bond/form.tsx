@@ -15,7 +15,7 @@ import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admin
 import { stepDefinition as summaryStep } from "../common/summary/summary";
 import { stepDefinition as basicsStep } from "./steps/basics";
 import { stepDefinition as configurationStep } from "./steps/configuration";
-import { ConfigurationCard } from "./steps/summaryConfigurationCard";
+import { BondConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateBondFormProps {
   userDetails: User;
@@ -104,7 +104,7 @@ export function CreateBondForm({
       case "summary":
         return (
           <SummaryComponent
-            configurationCard={<ConfigurationCard form={bondForm} />}
+            configurationCard={<BondConfigurationCard form={bondForm} />}
             form={bondForm}
             onBack={onPrevStep}
             // Use withVerification wrapper if available

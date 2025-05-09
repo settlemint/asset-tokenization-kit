@@ -9,11 +9,11 @@ import {
   formatUnderlyingAsset,
 } from "../../common/summary/summary";
 
-interface ConfigurationCardProps {
+interface BondConfigurationCardProps {
   form: UseFormReturn<any>;
 }
 
-export function ConfigurationCard({ form }: ConfigurationCardProps) {
+export function BondConfigurationCard({ form }: BondConfigurationCardProps) {
   const formValues = form.getValues();
   const t = useTranslations("private.assets.create.configuration.bonds");
 

@@ -21,14 +21,11 @@ export const assetForms: Record<
     import("../create-forms/bond/form").then((m) => ({
       default: m.bondFormDefinition,
     })),
-  // These will be implemented later - currently they're placeholders
   cryptocurrency: () =>
-    Promise.resolve({
-      default: {
-        steps: [],
-        getStepComponent: () => null,
-      } as AssetFormDefinition,
-    }),
+    import("../create-forms/cryptocurrency/form").then((m) => ({
+      default: m.cryptoFormDefinition,
+    })),
+  // These will be implemented later - currently they're placeholders
   equity: () =>
     Promise.resolve({
       default: {

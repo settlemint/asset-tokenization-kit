@@ -83,10 +83,14 @@ export function AssetDesignerDialog({
           setCurrentStepId(module.default.steps[0].id);
         }
 
-        // For bond type, also load the CreateBondForm component
+        // Load the appropriate form component based on asset type
         if (selectedAssetType === "bond") {
           import("../create-forms/bond/form").then((module) => {
             setFormComponent(() => module.CreateBondForm);
+          });
+        } else if (selectedAssetType === "cryptocurrency") {
+          import("../create-forms/cryptocurrency/form").then((module) => {
+            setFormComponent(() => module.CreateCryptoCurrencyForm);
           });
         }
       })
