@@ -13,7 +13,8 @@
     "completed-on-header": "Completed on",
     "description-header": "Description",
     "page": {
-      "actions": "Actions"
+      "actions": "Actions",
+      "my-actions": "My actions"
     },
     "pending-description": {
       "bond-mature": "You need to send the transaction to mature the bond."
@@ -257,7 +258,8 @@
         "my-assets": "My assets",
         "my-contacts": "My contacts",
         "profile": "Profile",
-        "settings": "Settings"
+        "settings": "Settings",
+        "my-actions": "My actions"
       },
       "settings-management": {
         "api": "API",
