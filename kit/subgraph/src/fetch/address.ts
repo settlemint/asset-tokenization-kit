@@ -1,6 +1,5 @@
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 import { Address as AddressEntity } from "../../generated/schema";
-import { fetchAccessControl } from "./accesscontrol";
 
 export function fetchAddress(address: Address): AddressEntity {
   let addressEntity = AddressEntity.load(address);
@@ -9,8 +8,6 @@ export function fetchAddress(address: Address): AddressEntity {
     addressEntity = new AddressEntity(address);
     if (ethereum.hasCode(address).inner) {
       addressEntity.isContract = true;
-      const accessControl = fetchAccessControl(address);
-      addressEntity.asAccessControl = accessControl.id;
     } else {
       addressEntity.isContract = false;
     }

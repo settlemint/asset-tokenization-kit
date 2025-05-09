@@ -5,7 +5,6 @@
 type Address @entity(immutable: true) {
   id: Bytes!
   isContract: Boolean!
-  asAccessControl: AccessControl
 }
 
 type Event @entity(immutable: true) {
@@ -32,13 +31,58 @@ type EventValue @entity(immutable: true) {
   entry: Event!
 }
 
-type AccessControl @entity(immutable: false) {
+type Internal_AccessControl @entity(immutable: false) {
   id: Bytes!
   admins: [Address!]!
   supplyManagers: [Address!]!
   userManagers: [Address!]!
   signers: [Address!]!
   deploymentOwners: [Address!]!
+}
+
+type System_DeploymentRegistry @entity(immutable: false) {
+  id: Bytes!
+  asAccessControl: Internal_AccessControl!
+  asAddress: Address!
+  compliance: System_Compliance
+  identityRegistryStorage: System_IdentityRegistryStorage
+  identityFactory: System_IdentityFactory
+  identityRegistry: System_IdentityRegistry
+  trustedIssuersRegistry: System_TrustedIssuersRegistry
+  tokenRegistries: [System_TokenRegistry!]!
+    @derivedFrom(field: "deploymentRegistry")
+}
+
+type System_Compliance @entity(immutable: false) {
+  id: Bytes!
+  asAddress: Address
+}
+
+type System_IdentityRegistryStorage @entity(immutable: false) {
+  id: Bytes!
+  asAddress: Address
+}
+
+type System_IdentityFactory @entity(immutable: false) {
+  id: Bytes!
+  asAddress: Address
+}
+
+type System_IdentityRegistry @entity(immutable: false) {
+  id: Bytes!
+  asAddress: Address
+}
+
+type System_TrustedIssuersRegistry @entity(immutable: false) {
+  id: Bytes!
+  asAddress: Address
+}
+
+type System_TokenRegistry @entity(immutable: false) {
+  id: Bytes!
+  typeName: String!
+  deploymentRegistry: System_DeploymentRegistry!
+  asAddress: Address
 }
 
 # --------------------------------------------------

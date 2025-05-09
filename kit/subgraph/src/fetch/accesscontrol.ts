@@ -1,12 +1,12 @@
 import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { AccessControl } from "../../generated/schema";
+import { Internal_AccessControl } from "../../generated/schema";
 
-export function fetchAccessControl(address: Address): AccessControl {
+export function fetchAccessControl(address: Address): Internal_AccessControl {
   const id = address.concat(Bytes.fromUTF8("accesscontrol"));
-  let accessControlEntity = AccessControl.load(id);
+  let accessControlEntity = Internal_AccessControl.load(id);
 
   if (!accessControlEntity) {
-    accessControlEntity = new AccessControl(id);
+    accessControlEntity = new Internal_AccessControl(id);
     accessControlEntity.admins = [];
     accessControlEntity.supplyManagers = [];
     accessControlEntity.userManagers = [];
