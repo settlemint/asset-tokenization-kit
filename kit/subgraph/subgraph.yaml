@@ -55,6 +55,6 @@ dataSources:
           handler: handleSMARTDeploymentRegistered
         - event: SMARTDeploymentReset(indexed address,uint256)
           handler: handleSMARTDeploymentReset
-        - event: SMARTTokenRegistryRegistered(string,indexed bytes32,indexed address,indexed address,uint256)
+        - event: SMARTTokenRegistryRegistered(indexed address,string,indexed bytes32,indexed address,uint256)
           handler: handleSMARTTokenRegistryRegistered
       file: ./src/event-handlers/deployment-registry.ts
