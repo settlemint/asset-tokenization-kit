@@ -102,7 +102,6 @@ contract SMARTFundTest is Test {
             managementFeeBps_,
             fundClass_,
             fundCategory_,
-            address(0),
             requiredClaimTopics_,
             initialModulePairs_,
             identityRegistry,

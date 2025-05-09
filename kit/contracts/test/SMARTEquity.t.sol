@@ -83,7 +83,6 @@ contract SMARTEquityTest is Test {
             name_,
             symbol_,
             decimals_,
-            address(0), // onchainID
             requiredClaimTopics_,
             initialModulePairs_,
             identityRegistry,
@@ -124,7 +123,6 @@ contract SMARTEquityTest is Test {
                 "Test SMART Equity",
                 "TEST",
                 decimalValues[i],
-                address(0),
                 new uint256[](0),
                 new SMARTComplianceModuleParamPair[](0),
                 identityRegistry,
