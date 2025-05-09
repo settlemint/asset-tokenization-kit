@@ -17,6 +17,7 @@ import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { columns as ApprovalColumns } from "./(approvals)/columns";
 import { columns as FlowColumns } from "./(flows)/columns";
+import { ManageDropdown } from "./_components/manage-dropdown";
 
 export async function generateMetadata({
   params,
@@ -44,11 +45,13 @@ export default async function XvpPage({
   params: Promise<{ locale: Locale; address: Address }>;
 }) {
   const { locale, address } = await params;
-  const t = await getTranslations({
-    locale,
-    namespace: "trade-management",
-  });
-  const user = await getUser();
+  const [t, user] = await Promise.all([
+    getTranslations({
+      locale,
+      namespace: "trade-management",
+    }),
+    getUser(),
+  ]);
   const xvpSettlement = await getXvPSettlementDetail(address, user.currency);
 
   return (
@@ -61,6 +64,9 @@ export default async function XvpPage({
         }
         section={t("page.xvp")}
         pill={<XvpStatusPill xvp={xvpSettlement} />}
+        button={
+          <ManageDropdown xvp={xvpSettlement} userAddress={user.wallet} />
+        }
       />
       <DetailGrid>
         <DetailGridItem label={t("xvp.columns.created-at")}>

@@ -2503,7 +2503,13 @@
         "expired": "Expired",
         "pending": "Pending",
         "not-approved": "Not approved"
-      }
+      },
+      "manage": "Manage",
+      "approve": "Approve",
+      "approve-xvp-settlement": "Approve XvP Settlement",
+      "approve-description": "Approve the token transfers required for the XvP Settlement to be executed.",
+      "your-approvals": "Your approvals",
+      "your-approvals-description": "The XvP Settlement contract will be granted the following approvals. Then your approval will be sent to the XvP Settlement contract."
     }
   },
   "transactions": {
