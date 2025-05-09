@@ -823,9 +823,14 @@ type Action @entity(immutable: false) {
   executed: Boolean!
   executedBy: Account
   target: Account!
-  authorizationMethod: String!
-  authorizedAccounts: [Account!]!
+  executors: ActionExecutor! @derivedFrom(field: "actions")
   requiredRole: String
+}
+
+type ActionExecutor @entity(immutable: false) {
+  id: Bytes!
+  executors: [Account!]!
+  actions: [Action!]!
 }
 
 # --------------------------------------------------

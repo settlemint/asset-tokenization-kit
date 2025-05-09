@@ -6,6 +6,7 @@ import {
   Value,
 } from "@graphprotocol/graph-ts";
 import { fetchAccount } from "../../utils/account";
+import { updateActionExecutors } from "../../utils/action";
 import { createActivityLogEntry, EventType } from "../../utils/activity-log";
 import { Role } from "../../utils/enums";
 
@@ -35,10 +36,12 @@ export function roleGrantedHandler(
       }
     }
     if (!found) {
-      entity.set(
-        "admins",
-        Value.fromBytesArray(admins.concat([roleHolderAccount.id]))
-      );
+      const newAdmins = admins.concat([roleHolderAccount.id]);
+      entity.set("admins", Value.fromBytesArray(newAdmins));
+      const id = entity.getBytes("id");
+      if (id) {
+        updateActionExecutors(id, "admins", null, newAdmins);
+      }
     }
     return;
   }
@@ -59,10 +62,12 @@ export function roleGrantedHandler(
       }
     }
     if (!found) {
-      entity.set(
-        "supplyManagers",
-        Value.fromBytesArray(supplyManagers.concat([roleHolderAccount.id]))
-      );
+      const newSupplyManagers = supplyManagers.concat([roleHolderAccount.id]);
+      entity.set("supplyManagers", Value.fromBytesArray(newSupplyManagers));
+      const id = entity.getBytes("id");
+      if (id) {
+        updateActionExecutors(id, "supplyManagers", null, newSupplyManagers);
+      }
     }
     return;
   }
@@ -83,10 +88,12 @@ export function roleGrantedHandler(
       }
     }
     if (!found) {
-      entity.set(
-        "userManagers",
-        Value.fromBytesArray(userManagers.concat([roleHolderAccount.id]))
-      );
+      const newUserManagers = userManagers.concat([roleHolderAccount.id]);
+      entity.set("userManagers", Value.fromBytesArray(newUserManagers));
+      const id = entity.getBytes("id");
+      if (id) {
+        updateActionExecutors(id, "userManagers", null, newUserManagers);
+      }
     }
     return;
   }
@@ -107,10 +114,12 @@ export function roleGrantedHandler(
       }
     }
     if (!found) {
-      entity.set(
-        "signers",
-        Value.fromBytesArray(signers.concat([roleHolderAccount.id]))
-      );
+      const newSigners = signers.concat([roleHolderAccount.id]);
+      entity.set("signers", Value.fromBytesArray(newSigners));
+      const id = entity.getBytes("id");
+      if (id) {
+        updateActionExecutors(id, "signers", null, newSigners);
+      }
     }
     return;
   }

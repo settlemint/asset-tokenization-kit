@@ -3,7 +3,7 @@ import { XvPSettlementCreated } from "../../generated/XvPSettlementFactory/XvPSe
 import { fetchXvPSettlement } from "../trading/fetch/xvp-settlement";
 import { fetchAccount } from "../utils/account";
 import { ActionName, createAction } from "../utils/action";
-import { ActionAuthorizationMethod, ActionType } from "../utils/enums";
+import { ActionType } from "../utils/enums";
 /**
  * Handles XvPSettlementCreated events from the XvPSettlementFactory contract.
  * Ensures the factory and creator are registered as Accounts,
@@ -31,9 +31,9 @@ export function handleXvPSettlementCreated(event: XvPSettlementCreated): void {
       ActionType.User,
       event.block.timestamp,
       xvpSettlement.cutoffDate,
-      ActionAuthorizationMethod.UserSpecific,
       [approval.account],
-      null
+      null,
+      approval.account.toHexString()
     );
   }
 }

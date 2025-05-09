@@ -11,7 +11,7 @@ import {
   createAction,
 } from "../utils/action";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
-import { ActionAuthorizationMethod, ActionType } from "../utils/enums";
+import { ActionType } from "../utils/enums";
 import { fetchApproval, fetchXvPSettlement } from "./fetch/xvp-settlement";
 
 export function handleXvPSettlementApproved(
@@ -33,8 +33,7 @@ export function handleXvPSettlementApproved(
     event,
     ActionName.ApproveXvPSettlement,
     xvpSettlement.id,
-    [approval.account],
-    null
+    approval.account.toHexString()
   );
 
   if (xvpSettlement.autoExecute) {
@@ -59,8 +58,8 @@ export function handleXvPSettlementApproved(
       ActionType.User,
       event.block.timestamp,
       xvpSettlement.cutoffDate,
-      ActionAuthorizationMethod.UserSpecific,
       xvpSettlement.participants,
+      null,
       null
     );
   }
@@ -84,8 +83,7 @@ export function handleXvPSettlementApprovalRevoked(
   actionRevoked(
     ActionName.ApproveXvPSettlement,
     xvpSettlement.id,
-    [approval.account],
-    null
+    approval.account.toHexString()
   );
 }
 
@@ -101,13 +99,7 @@ export function handleXvPSettlementClaimed(event: XvPSettlementClaimed): void {
   xvpSettlement.claimed = true;
   xvpSettlement.save();
 
-  actionExecuted(
-    event,
-    ActionName.ClaimXvPSettlement,
-    xvpSettlement.id,
-    xvpSettlement.participants,
-    null
-  );
+  actionExecuted(event, ActionName.ClaimXvPSettlement, xvpSettlement.id, null);
 }
 
 export function handleXvPSettlementCancelled(
