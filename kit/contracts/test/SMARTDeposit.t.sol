@@ -87,7 +87,6 @@ contract SMARTDepositTest is Test {
             initialModulePairs,
             identityRegistry,
             compliance,
-            owner_,
             address(forwarder)
         );
         vm.stopPrank();
@@ -147,7 +146,6 @@ contract SMARTDepositTest is Test {
             new SMARTComplianceModuleParamPair[](0),
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
     }

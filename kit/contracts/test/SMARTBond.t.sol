@@ -140,7 +140,6 @@ contract SMARTBondTest is Test {
             initialModulePairs_,
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
 
@@ -208,7 +207,6 @@ contract SMARTBondTest is Test {
             new SMARTComplianceModuleParamPair[](0),
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
     }

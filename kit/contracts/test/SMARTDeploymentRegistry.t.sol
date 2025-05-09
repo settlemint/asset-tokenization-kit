@@ -91,7 +91,7 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
     }
 
     // --- Test Constructor & Initial State ---
-    function test_InitialState() public {
+    function test_InitialState() public view {
         assertFalse(registry.areDependenciesRegistered(), "Dependencies should not be registered initially");
         assertEq(registry.deploymentRegistrar(), address(0), "Deployment registrar should be address(0) initially");
         assertEq(registry.registrationTimestamp(), 0, "Registration timestamp should be 0 initially");
@@ -231,7 +231,6 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
     function test_RegisterTokenRegistry_Success() public {
         _registerDeploymentAsUser(user1);
         string memory typeName = "Bond";
-        bytes32 typeHash = keccak256(abi.encodePacked(typeName));
 
         vm.prank(user1);
         registry.registerTokenRegistry(typeName, mockTokenRegistry1);

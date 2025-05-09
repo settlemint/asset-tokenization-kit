@@ -90,7 +90,6 @@ contract SMARTStableCoinTest is Test {
             initialModulePairs,
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
         vm.stopPrank();
@@ -153,7 +152,6 @@ contract SMARTStableCoinTest is Test {
             new SMARTComplianceModuleParamPair[](0),
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
     }

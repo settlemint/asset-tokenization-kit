@@ -88,7 +88,6 @@ contract SMARTEquityTest is Test {
             initialModulePairs_,
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
 
@@ -130,7 +129,6 @@ contract SMARTEquityTest is Test {
                 new SMARTComplianceModuleParamPair[](0),
                 identityRegistry,
                 compliance,
-                owner,
                 address(forwarder)
             );
 

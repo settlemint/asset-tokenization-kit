@@ -107,7 +107,6 @@ contract SMARTFundTest is Test {
             initialModulePairs_,
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
 
