@@ -17,6 +17,7 @@ import { fetchTrustedIssuersRegistry } from "../fetch/system/trusted-issuers-reg
 import { roleAdminChangedHandler } from "../shared/accesscontrol/role-admin-changed";
 import { roleGrantedHandler } from "../shared/accesscontrol/role-granted";
 import { roleRevokedHandler } from "../shared/accesscontrol/role-revoked";
+import { processEvent } from "../shared/event";
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   fetchDeploymentRegistry(event.address);
@@ -36,12 +37,15 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 export function handleSMARTComplianceModuleRegistered(
   event: SMARTComplianceModuleRegistered
 ): void {
+  processEvent(event, "ComplianceModuleRegistered");
   fetchDeploymentRegistry(event.address);
+  // TODO: handle compliance module
 }
 
 export function handleSMARTDeploymentRegistered(
   event: SMARTDeploymentRegistered
 ): void {
+  processEvent(event, "DeploymentRegistered");
   const deploymentRegistry = fetchDeploymentRegistry(event.address);
 
   const compliance = fetchCompliance(event.params.complianceAddress);
@@ -71,6 +75,7 @@ export function handleSMARTDeploymentRegistered(
 }
 
 export function handleSMARTDeploymentReset(event: SMARTDeploymentReset): void {
+  processEvent(event, "DeploymentReset");
   const deploymentRegistry = fetchDeploymentRegistry(event.address);
 
   deploymentRegistry.compliance = null;
@@ -85,6 +90,7 @@ export function handleSMARTDeploymentReset(event: SMARTDeploymentReset): void {
 export function handleSMARTTokenRegistryRegistered(
   event: SMARTTokenRegistryRegistered
 ): void {
+  processEvent(event, "TokenRegistryRegistered");
   const deploymentRegistry = fetchDeploymentRegistry(event.address);
   fetchTokenRegistry(
     event.params.registryAddress,
