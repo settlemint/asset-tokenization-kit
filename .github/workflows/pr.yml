@@ -98,8 +98,8 @@ jobs:
             kit/subgraph/subgraph-output.txt
             kit/contracts/portal/*.json
 
-      - name: Turbo!
-        run: bunx turbo deploy:local
+      # - name: Turbo!
+      #   run: bunx turbo deploy:local
 
   security:
     name: Security

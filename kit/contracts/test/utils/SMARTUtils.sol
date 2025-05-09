@@ -8,9 +8,8 @@ import { ClaimUtils } from "smart-protocol/test/utils/ClaimUtils.sol";
 import { IdentityUtils } from "smart-protocol/test/utils/IdentityUtils.sol";
 import { SMARTIdentityRegistry } from "smart-protocol/contracts/SMARTIdentityRegistry.sol";
 import { SMARTCompliance } from "smart-protocol/contracts/SMARTCompliance.sol";
-
+import { TestConstants } from "../TestConstants.sol";
 import { SMARTConstants } from "../../contracts/SMARTConstants.sol";
-import { TestConstants } from "./../TestConstants.sol";
 
 contract SMARTUtils is Test {
     address public platformAdmin;

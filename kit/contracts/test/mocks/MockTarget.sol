@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { Vault } from "../../contracts/Vault.sol"; // Adjust path if needed
+import { Vault } from "../../contracts/v1/Vault.sol"; // Adjust path if needed
 
 // Mock contract to receive calls from the Vault
 contract MockTarget is Test {
