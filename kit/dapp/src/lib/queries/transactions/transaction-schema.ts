@@ -17,29 +17,17 @@ export const TransactionSchema = t.Object(
     transactionHash: t.Hash({
       description: "The hash of the transaction",
     }),
-    updatedAt: t.Union([
-      t.Date({
-        description:
-          "The timestamp when the transaction was last updated as Date object",
-      }),
-      t.String({
-        description:
-          "The timestamp when the transaction was last updated as ISO string",
-      }),
-    ]),
+    updatedAt: t.Timestamp({
+      description:
+        "The timestamp when the transaction was last updated as Date object",
+    }),
     address: t.EthereumAddress({
       description: "The contract address the transaction interacted with",
     }),
-    createdAt: t.Union([
-      t.Date({
-        description:
-          "The timestamp when the transaction was created as Date object",
-      }),
-      t.String({
-        description:
-          "The timestamp when the transaction was created as ISO string",
-      }),
-    ]),
+    createdAt: t.Timestamp({
+      description:
+        "The timestamp when the transaction was created as Date object",
+    }),
     metadata: t.MaybeEmpty(
       t.Record(t.String(), t.Any(), {
         description: "Additional metadata about the transaction",

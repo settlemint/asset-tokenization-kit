@@ -159,7 +159,7 @@ dataSources:
     name: XvPSettlementFactory
     network: settlemint
     source:
-      address: "0x202bdfdD1b4AC18fB5B68536f59CcAA693D00eF3"
+      address: "0x5e771e1417100000000000000000000000000008"
       abi: XvPSettlementFactory
     mapping:
       kind: ethereum/events

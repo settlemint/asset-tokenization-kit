@@ -276,7 +276,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
   );
   setValueWithDecimals(
     bond,
-    "underlyingBalanceExact",
+    "underlyingBalance",
     underlyingBalanceExact,
     bond.underlyingAssetDecimals
   );

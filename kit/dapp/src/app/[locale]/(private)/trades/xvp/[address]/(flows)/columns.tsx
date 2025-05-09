@@ -4,7 +4,6 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import type { XvPSettlementFlow } from "@/lib/queries/xvp/xvp-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ArrowRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 const columnHelper = createColumnHelper<XvPSettlementFlow>();
@@ -17,15 +16,25 @@ export function columns() {
   const locale = useLocale();
 
   return [
-    columnHelper.display({
-      id: "participants",
-      header: t("columns.participants"),
-      cell: ({ row }) => (
-        <div className="flex items-center space-x-2">
-          <EvmAddress address={row.original.from.id} />
-          <ArrowRight className="h-4 w-4 flex-shrink-0" />
-          <EvmAddress address={row.original.to.id} />
-        </div>
+    columnHelper.accessor("asset", {
+      header: t("columns.asset"),
+      cell: ({ getValue, row }) => {
+        const asset = getValue();
+        return (
+          <EvmAddress address={asset.id} symbol={asset.symbol} showAssetType />
+        );
+      },
+    }),
+    columnHelper.accessor("from", {
+      header: t("columns.from"),
+      cell: ({ getValue }) => (
+        <EvmAddress address={getValue().id} copyToClipboard />
+      ),
+    }),
+    columnHelper.accessor("to", {
+      header: t("columns.to"),
+      cell: ({ getValue }) => (
+        <EvmAddress address={getValue().id} copyToClipboard />
       ),
     }),
     columnHelper.accessor("amount", {

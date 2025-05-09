@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { CheckCircle, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
 
@@ -18,10 +19,17 @@ export function ApprovalStatusBadge({
       className={cn(
         hasApproved
           ? "bg-primary/80 text-primary-foreground"
-          : "bg-warning/80 text-warning-foreground"
+          : "bg-destructive/80 text-destructive-foreground"
       )}
     >
-      {hasApproved ? t("status.approved") : t("status.pending")}
+      <span>
+        {hasApproved ? (
+          <CheckCircle className="size-4" />
+        ) : (
+          <X className="size-4" />
+        )}
+      </span>
+      {hasApproved ? t("status.approved") : t("status.not-approved")}
     </Badge>
   );
 }

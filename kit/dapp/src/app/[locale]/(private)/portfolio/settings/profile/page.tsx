@@ -1,4 +1,6 @@
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { PageHeader } from "@/components/layout/page-header";
+import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import {
   ChangeEmailCard,
@@ -36,9 +38,14 @@ export async function generateMetadata({
 
 export default async function SecuritySettingsPage() {
   const t = await getTranslations("portfolio.settings.profile");
+  const user = await getUser();
   return (
     <>
-      <PageHeader title={t("title")} section={t("portfolio-management")} />
+      <PageHeader
+        title={t("title")}
+        section={t("portfolio-management")}
+        subtitle={<EvmAddress address={user.wallet} copyToClipboard={true} />}
+      />
       <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
         <UpdateNameCard
           classNames={{
