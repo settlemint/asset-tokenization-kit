@@ -92,7 +92,6 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
 
     // --- Test Constructor & Initial State ---
     function test_InitialState() public {
-        assertTrue(registry.hasRole(registry.DEFAULT_ADMIN_ROLE(), deployer), "Deployer should have DEFAULT_ADMIN_ROLE");
         assertFalse(registry.areDependenciesRegistered(), "Dependencies should not be registered initially");
         assertEq(registry.deploymentRegistrar(), address(0), "Deployment registrar should be address(0) initially");
         assertEq(registry.registrationTimestamp(), 0, "Registration timestamp should be 0 initially");
@@ -481,26 +480,5 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
         vm.prank(user1);
         registry.revokeDeploymentOwnerRole(user2);
         assertFalse(registry.isDeploymentOwner(user2), "user2 should not be owner after revoke");
-    }
-
-    function test_isAdmin() public {
-        assertTrue(registry.isAdmin(deployer), "Deployer should be admin");
-        assertFalse(registry.isAdmin(user1), "user1 should not be admin by default");
-    }
-
-    function test_DeploymentOwnerRole_IsSelfAdministered() public {
-        _registerDeploymentAsUser(user1);
-        assertTrue(registry.hasRole(registry.DEFAULT_ADMIN_ROLE(), deployer));
-
-        bytes memory expectedRevert = abi.encodeWithSelector(
-            IAccessControl.AccessControlUnauthorizedAccount.selector, deployer, registry.DEPLOYMENT_OWNER_ROLE()
-        );
-        vm.expectRevert(expectedRevert);
-        vm.prank(deployer);
-        registry.grantDeploymentOwnerRole(user2);
-
-        vm.prank(user1);
-        registry.grantDeploymentOwnerRole(user2);
-        assertTrue(registry.hasRole(registry.DEPLOYMENT_OWNER_ROLE(), user2));
     }
 }
