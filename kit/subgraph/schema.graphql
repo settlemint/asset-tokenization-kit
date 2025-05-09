@@ -5,6 +5,7 @@
 type Address @entity(immutable: true) {
   id: Bytes!
   isContract: Boolean!
+  asAccessControl: AccessControl
 }
 
 type Event @entity(immutable: true) {
@@ -29,6 +30,15 @@ type EventValue @entity(immutable: true) {
   name: String!
   value: String!
   entry: Event!
+}
+
+type AccessControl @entity(immutable: false) {
+  id: Bytes!
+  admins: [Address!]!
+  supplyManagers: [Address!]!
+  userManagers: [Address!]!
+  signers: [Address!]!
+  deploymentOwners: [Address!]!
 }
 
 # --------------------------------------------------

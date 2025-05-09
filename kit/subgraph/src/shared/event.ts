@@ -15,6 +15,7 @@ export function processEvent(event: ethereum.Event, eventType: string): Event {
   entry.txIndex = event.transaction.index;
   entry.transactionHash = event.transaction.hash;
   entry.emitter = emitter.id;
+  entry.sender = txSender.id;
 
   const involvedAccounts = [txSender.id, emitter.id];
 
@@ -27,10 +28,6 @@ export function processEvent(event: ethereum.Event, eventType: string): Event {
       }
       involvedAccounts.push(address.id);
     }
-  }
-
-  if (!entry.sender) {
-    entry.sender = txSender.id;
   }
 
   entry.involved = involvedAccounts;

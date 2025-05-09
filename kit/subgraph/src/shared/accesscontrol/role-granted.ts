@@ -1,25 +1,20 @@
-import {
-  Address,
-  Bytes,
-  Entity,
-  ethereum,
-  Value,
-} from "@graphprotocol/graph-ts";
-import { RoleMapping } from "../enums/role";
-import { fetchAddress } from "../fetch/address";
-import { processEvent } from "./event";
+import { Address, Bytes, ethereum, Value } from "@graphprotocol/graph-ts";
+import { RoleArrayMapping } from "../../enums/role";
+import { fetchAccessControl } from "../../fetch/accesscontrol";
+import { fetchAddress } from "../../fetch/address";
+import { processEvent } from "../event";
 
 export function roleGrantedHandler(
   event: ethereum.Event,
-  entity: Entity,
-  role: string,
+  role: Bytes,
   account: Address
 ): void {
   processEvent(event, "RoleGranted");
   const roleHolder = fetchAddress(account);
+  const accessControl = fetchAccessControl(event.address);
 
   let found = false;
-  const value = entity.get(RoleMapping[role]);
+  const value = accessControl.get(RoleArrayMapping(role));
   let newValue: Bytes[] = [];
   if (!value) {
     newValue = [];
@@ -33,9 +28,10 @@ export function roleGrantedHandler(
     }
   }
   if (!found) {
-    entity.set(
-      RoleMapping[role],
+    accessControl.set(
+      RoleArrayMapping(role),
       Value.fromBytesArray(newValue.concat([roleHolder.id]))
     );
   }
+  accessControl.save();
 }
