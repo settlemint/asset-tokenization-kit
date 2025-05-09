@@ -2,12 +2,33 @@
 # SMART Indexer
 # --------------------------------------------------
 
-type EOA @entity(immutable: true) {
+type Address @entity(immutable: true) {
   id: Bytes!
+  isContract: Boolean!
 }
 
-type Contract @entity(immutable: true) {
+type Event @entity(immutable: true) {
   id: Bytes!
+  # Identifying the event
+  eventName: String!
+  # Default event fields
+  txIndex: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+  # List of accounts involved in the event
+  emitter: Address!
+  sender: Address!
+  involved: [Address!]!
+  # List of values involved in the event
+  values: [EventValue!]! @derivedFrom(field: "entry")
+}
+
+type EventValue @entity(immutable: true) {
+  id: Bytes!
+  name: String!
+  value: String!
+  entry: Event!
 }
 
 # --------------------------------------------------

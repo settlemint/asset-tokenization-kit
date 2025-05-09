@@ -42,32 +42,26 @@ dataSources:
       abis:
         - name: SMARTDeploymentRegistry
           file: ../contracts/artifacts/contracts/SMARTDeploymentRegistry.sol/SMARTDeploymentRegistry.json
+        - name: AccessControl
+          file: ../contracts/artifacts/@openzeppelin/contracts/access/AccessControl.sol/AccessControl.json
       eventHandlers:
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            SMARTComplianceModuleRegistered(indexed address,indexed
-            address,uint256)
+        - event: SMARTComplianceModuleRegistered(indexed address,indexed address,uint256)
           handler: handleSMARTComplianceModuleRegistered
-        - event:
-            SMARTDeploymentRegistered(indexed
+        - event: SMARTDeploymentRegistered(indexed
             address,uint256,address,address,address,address,address)
           handler: handleSMARTDeploymentRegistered
         - event: SMARTDeploymentReset(indexed address,uint256)
           handler: handleSMARTDeploymentReset
-        - event:
-            SMARTTokenRegistryRegistered(string,indexed bytes32,indexed
+        - event: SMARTTokenRegistryRegistered(string,indexed bytes32,indexed
             address,indexed address,uint256)
           handler: handleSMARTTokenRegistryRegistered
       file: ./src/event-handlers/deployment-registry.ts
-
-  # --------------------------------------------------
-
   - kind: ethereum/contract
     name: BondFactory
     network: settlemint
@@ -268,16 +262,12 @@ dataSources:
         - name: LinearVestingStrategy
           file: ../contracts/artifacts/contracts/v1/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
       eventHandlers:
-        - event:
-            StandardAirdropDeployed(indexed address,indexed address,indexed
-            address)
+        - event: StandardAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handleStandardAirdropDeployed
-        - event:
-            VestingAirdropDeployed(indexed address,indexed address,indexed
+        - event: VestingAirdropDeployed(indexed address,indexed address,indexed
             address,address)
           handler: handleVestingAirdropDeployed
-        - event:
-            PushAirdropDeployed(indexed address,indexed address,indexed address)
+        - event: PushAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handlePushAirdropDeployed
       file: ./src/v1/factories/airdrop-factory.ts
   - kind: ethereum/contract
@@ -348,9 +338,7 @@ templates:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/v1/FixedYield.sol/FixedYield.json
       eventHandlers:
-        - event:
-            YieldClaimed(indexed
-            address,uint256,uint256,uint256,uint256[],uint256)
+        - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
@@ -418,15 +406,13 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
-        - event:
-            Clawback(indexed address,indexed address,uint256,indexed address)
+        - event: Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/v1/assets/bond.ts
   - kind: ethereum/contract
@@ -472,8 +458,7 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -533,11 +518,9 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-        - event:
-            Clawback(indexed address,indexed address,uint256,indexed address)
+        - event: Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/v1/assets/equity.ts
   - kind: ethereum/contract
@@ -595,13 +578,11 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: CollateralUpdated(uint256,uint256,uint256,indexed address)
           handler: handleCollateralUpdated
-        - event:
-            Clawback(indexed address,indexed address,uint256,indexed address)
+        - event: Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/v1/assets/stablecoin.ts
   - kind: ethereum/contract
@@ -659,19 +640,15 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: ManagementFeeCollected(uint256,uint256)
           handler: handleManagementFeeCollected
         - event: PerformanceFeeCollected(uint256,uint256)
           handler: handlePerformanceFeeCollected
-        - event:
-            TokenWithdrawn(indexed address,indexed address,uint256,indexed
-            address)
+        - event: TokenWithdrawn(indexed address,indexed address,uint256,indexed address)
           handler: handleTokenWithdrawn
-        - event:
-            Clawback(indexed address,indexed address,uint256,indexed address)
+        - event: Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/v1/assets/fund.ts
   - kind: ethereum/contract
@@ -724,17 +701,13 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-        - event:
-            TokenWithdrawn(indexed address,indexed address,uint256,indexed
-            address)
+        - event: TokenWithdrawn(indexed address,indexed address,uint256,indexed address)
           handler: handleTokenWithdrawn
         - event: CollateralUpdated(uint256,uint256,uint256,indexed address)
           handler: handleCollateralUpdated
-        - event:
-            Clawback(indexed address,indexed address,uint256,indexed address)
+        - event: Clawback(indexed address,indexed address,uint256,indexed address)
           handler: handleClawback
       file: ./src/v1/assets/deposit.ts
   - kind: ethereum/contract
@@ -862,16 +835,13 @@ templates:
           handler: handleExecuteTransaction
         - event: RevokeConfirmation(indexed address,indexed uint256)
           handler: handleRevokeConfirmation
-        - event:
-            SubmitContractCallTransaction(indexed address,indexed
-            uint256,indexed address,uint256,bytes4,bytes,string)
+        - event: SubmitContractCallTransaction(indexed address,indexed uint256,indexed
+            address,uint256,bytes4,bytes,string)
           handler: handleSubmitContractCallTransaction
-        - event:
-            SubmitERC20TransferTransaction(indexed address,indexed
-            uint256,indexed address,address,uint256,string)
+        - event: SubmitERC20TransferTransaction(indexed address,indexed uint256,indexed
+            address,address,uint256,string)
           handler: handleSubmitERC20TransferTransaction
-        - event:
-            SubmitTransaction(indexed address,indexed uint256,indexed
+        - event: SubmitTransaction(indexed address,indexed uint256,indexed
             address,uint256,bytes,string)
           handler: handleSubmitTransaction
         - event: Deposit(indexed address,uint256,uint256)
