@@ -6,7 +6,7 @@ services:
       - "8545:8545" # Ethereum JSON-RPC
 
   postgres:
-    image: postgres:17.4-bookworm
+    image: postgres:17.5-bookworm
     user: postgres
     command:
       [
