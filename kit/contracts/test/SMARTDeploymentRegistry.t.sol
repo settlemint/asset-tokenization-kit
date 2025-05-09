@@ -91,8 +91,7 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
     }
 
     // --- Test Constructor & Initial State ---
-    function test_InitialState() public {
-        assertTrue(registry.hasRole(registry.DEFAULT_ADMIN_ROLE(), deployer), "Deployer should have DEFAULT_ADMIN_ROLE");
+    function test_InitialState() public view {
         assertFalse(registry.areDependenciesRegistered(), "Dependencies should not be registered initially");
         assertEq(registry.deploymentRegistrar(), address(0), "Deployment registrar should be address(0) initially");
         assertEq(registry.registrationTimestamp(), 0, "Registration timestamp should be 0 initially");
@@ -196,7 +195,7 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
         _registerDeploymentAsUser(user1);
 
         vm.expectEmit(true, true, true, true);
-        emit SMARTDeploymentRegistry.SMARTComplianceModuleRegistered(address(mockModule1), user1, block.timestamp);
+        emit SMARTDeploymentRegistry.SMARTComplianceModuleRegistered(user1, address(mockModule1), block.timestamp);
         vm.prank(user1);
         registry.registerComplianceModule(mockModule1);
     }
@@ -232,7 +231,6 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
     function test_RegisterTokenRegistry_Success() public {
         _registerDeploymentAsUser(user1);
         string memory typeName = "Bond";
-        bytes32 typeHash = keccak256(abi.encodePacked(typeName));
 
         vm.prank(user1);
         registry.registerTokenRegistry(typeName, mockTokenRegistry1);
@@ -253,7 +251,7 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
 
         vm.expectEmit(true, true, true, true);
         emit SMARTDeploymentRegistry.SMARTTokenRegistryRegistered(
-            typeName, typeHash, address(mockTokenRegistry1), user1, block.timestamp
+            user1, typeName, typeHash, address(mockTokenRegistry1), block.timestamp
         );
         vm.prank(user1);
         registry.registerTokenRegistry(typeName, mockTokenRegistry1);
@@ -481,26 +479,5 @@ contract SMARTDeploymentRegistryTest is SMARTUtils {
         vm.prank(user1);
         registry.revokeDeploymentOwnerRole(user2);
         assertFalse(registry.isDeploymentOwner(user2), "user2 should not be owner after revoke");
-    }
-
-    function test_isAdmin() public {
-        assertTrue(registry.isAdmin(deployer), "Deployer should be admin");
-        assertFalse(registry.isAdmin(user1), "user1 should not be admin by default");
-    }
-
-    function test_DeploymentOwnerRole_IsSelfAdministered() public {
-        _registerDeploymentAsUser(user1);
-        assertTrue(registry.hasRole(registry.DEFAULT_ADMIN_ROLE(), deployer));
-
-        bytes memory expectedRevert = abi.encodeWithSelector(
-            IAccessControl.AccessControlUnauthorizedAccount.selector, deployer, registry.DEPLOYMENT_OWNER_ROLE()
-        );
-        vm.expectRevert(expectedRevert);
-        vm.prank(deployer);
-        registry.grantDeploymentOwnerRole(user2);
-
-        vm.prank(user1);
-        registry.grantDeploymentOwnerRole(user2);
-        assertTrue(registry.hasRole(registry.DEPLOYMENT_OWNER_ROLE(), user2));
     }
 }

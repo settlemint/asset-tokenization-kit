@@ -95,6 +95,7 @@ contract SMARTFundTest is Test {
         internal
         returns (SMARTFund smartFund)
     {
+        vm.prank(owner);
         smartFund = new SMARTFund(
             name_,
             symbol_,
@@ -102,20 +103,17 @@ contract SMARTFundTest is Test {
             managementFeeBps_,
             fundClass_,
             fundCategory_,
-            address(0),
             requiredClaimTopics_,
             initialModulePairs_,
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
 
         smartUtils.createAndSetTokenOnchainID(address(smartFund), owner);
 
-        vm.startPrank(owner);
+        vm.prank(owner);
         smartFund.mint(owner, INITIAL_SUPPLY);
-        vm.stopPrank();
 
         return smartFund;
     }

@@ -48,19 +48,17 @@ contract SMARTEquity is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
-        address initialOwner_,
         address forwarder
     )
         SMART(
             name_,
             symbol_,
             decimals_,
-            onchainID_,
+            address(0),
             identityRegistry_,
             compliance_,
             requiredClaimTopics_,
@@ -69,10 +67,10 @@ contract SMARTEquity is
         ERC2771Context(forwarder)
         ERC20Permit(name_)
     {
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
 
-        _grantRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, initialOwner_);
-        _grantRole(SMARTConstants.USER_MANAGEMENT_ROLE, initialOwner_);
+        _grantRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, _msgSender());
+        _grantRole(SMARTConstants.USER_MANAGEMENT_ROLE, _msgSender());
     }
 
     function _beforeMint(address to, uint256 amount) internal virtual override(SMART, SMARTCustodian, SMARTHooks) {

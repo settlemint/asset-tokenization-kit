@@ -127,12 +127,10 @@ contract SMARTBond is
     /// @param maturityDate_ Bond maturity date
     /// @param faceValue_ Bond face value
     /// @param underlyingAsset_ Underlying asset contract address
-    /// @param onchainID_ Optional on-chain identifier address
     /// @param requiredClaimTopics_ Initial list of required claim topics
     /// @param initialModulePairs_ Initial list of compliance modules
     /// @param identityRegistry_ Address of the identity registry contract
     /// @param compliance_ Address of the compliance contract
-    /// @param initialOwner_ Address receiving admin and operational roles
     /// @param forwarder Address of the forwarder contract
     constructor(
         string memory name_,
@@ -142,12 +140,10 @@ contract SMARTBond is
         uint256 maturityDate_,
         uint256 faceValue_,
         address underlyingAsset_,
-        address onchainID_,
         uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
-        address initialOwner_,
         address forwarder
     )
         // Initialize the core SMART logic (which includes ERC20)
@@ -155,7 +151,7 @@ contract SMARTBond is
             name_,
             symbol_,
             decimals_,
-            onchainID_,
+            address(0),
             identityRegistry_,
             compliance_,
             requiredClaimTopics_,
@@ -181,11 +177,11 @@ contract SMARTBond is
         underlyingAsset = IERC20(underlyingAsset_);
 
         // Grant standard admin role
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
 
         // Grant custom operational roles
-        _grantRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, initialOwner_); // Mint, Burn, Forced Transfer
-        _grantRole(SMARTConstants.USER_MANAGEMENT_ROLE, initialOwner_); // Freeze, Recovery
+        _grantRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, _msgSender()); // Mint, Burn, Forced Transfer
+        _grantRole(SMARTConstants.USER_MANAGEMENT_ROLE, _msgSender()); // Freeze, Recovery
     }
 
     // --- View Functions ---

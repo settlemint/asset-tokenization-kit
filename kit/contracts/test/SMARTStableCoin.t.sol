@@ -80,20 +80,17 @@ contract SMARTStableCoinTest is Test {
         internal
         returns (SMARTStableCoin)
     {
-        vm.startPrank(owner);
+        vm.prank(owner);
         SMARTStableCoin stableCoin_ = new SMARTStableCoin(
             name,
             symbol,
             decimals,
-            address(0),
             requiredClaimTopics,
             initialModulePairs,
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
-        vm.stopPrank();
 
         smartUtils.createAndSetTokenOnchainID(address(stableCoin_), owner);
 
@@ -148,12 +145,10 @@ contract SMARTStableCoinTest is Test {
             "StableCoin",
             "STBL",
             19,
-            address(0),
             new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
     }

@@ -68,6 +68,12 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
     bytes32[] private allRegistryTypeHashes;
 
     // --- Events ---
+    /// @notice Emitted when a SMART deployment is registered.
+    /// @param registrar The address of the registrar.
+    /// @param timestamp The timestamp of the registration.
+    /// @param complianceAddress The address of the SMARTCompliance contract.
+    /// @param identityRegistryStorageAddress The address of the SMARTIdentityRegistryStorage contract.
+    /// @param identityFactoryAddress The address of the SMARTIdentityFactory contract.
     event SMARTDeploymentRegistered(
         address indexed registrar,
         uint256 timestamp,
@@ -78,13 +84,28 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
         address trustedIssuersRegistryAddress
     );
 
-    event SMARTComplianceModuleRegistered(address indexed moduleAddress, address indexed registrar, uint256 timestamp);
+    /// @notice Emitted when a compliance module is registered.
+    /// @param registrar The address of the registrar.
+    /// @param moduleAddress The address of the compliance module.
+    /// @param timestamp The timestamp of the registration.
+    event SMARTComplianceModuleRegistered(address indexed registrar, address indexed moduleAddress, uint256 timestamp);
+
+    /// @notice Emitted when a deployment is reset.
+    /// @param resetBy The address of the resetter.
+    /// @param timestamp The timestamp of the reset.
     event SMARTDeploymentReset(address indexed resetBy, uint256 timestamp);
+
+    /// @notice Emitted when a token registry is registered.
+    /// @param registrar The address of the registrar.
+    /// @param typeName The type name of the token registry.
+    /// @param registryTypeHash The type hash of the token registry.
+    /// @param registryAddress The address of the token registry.
+    /// @param timestamp The timestamp of the registration.
     event SMARTTokenRegistryRegistered(
+        address indexed registrar,
         string typeName,
         bytes32 indexed registryTypeHash,
         address indexed registryAddress,
-        address indexed registrar,
         uint256 timestamp
     );
 
@@ -96,7 +117,8 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
      * @param trustedForwarder_ The address of the ERC2771 trusted forwarder contract.
      */
     constructor(address trustedForwarder_) ERC2771Context(trustedForwarder_) {
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        // _grantRole(DEFAULT_ADMIN_ROLE, _msgSender()); // TODO: this contract is predeployed and we do not use the
+        // DEFAULT_ADMIN_ROLE
         _setRoleAdmin(DEPLOYMENT_OWNER_ROLE, DEPLOYMENT_OWNER_ROLE);
     }
 
@@ -170,7 +192,7 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
         isComplianceModuleRegistered[address(_module)] = true;
         complianceModules.push(_module);
 
-        emit SMARTComplianceModuleRegistered(address(_module), _msgSender(), block.timestamp);
+        emit SMARTComplianceModuleRegistered(_msgSender(), address(_module), block.timestamp);
     }
 
     /**
@@ -206,7 +228,7 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
         allRegistryTypeHashes.push(registryTypeHash);
 
         emit SMARTTokenRegistryRegistered(
-            _typeName, registryTypeHash, address(_registryAddress), _msgSender(), block.timestamp
+            _msgSender(), _typeName, registryTypeHash, address(_registryAddress), block.timestamp
         );
     }
 

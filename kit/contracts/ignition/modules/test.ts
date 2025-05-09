@@ -1,14 +1,14 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import AssetTokenizationModule from "./main";
-
+import AssetTokenizationOnboardingModule from "./onboarding";
+import DepositModule from "./tokens/deposit";
 const AssetTokenizationTestModule = buildModule(
   "AssetTokenizationTestModule",
   (m) => {
-    const { forwarder } = m.useModule(AssetTokenizationModule);
+    m.useModule(AssetTokenizationOnboardingModule);
 
-    return {
-      forwarder,
-    };
+    const { eurd } = m.useModule(DepositModule);
+
+    return { eurd };
   }
 );
 
