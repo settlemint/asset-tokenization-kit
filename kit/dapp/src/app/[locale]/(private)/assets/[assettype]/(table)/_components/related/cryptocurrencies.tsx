@@ -1,12 +1,14 @@
-import { CreateCryptoCurrencyForm } from "@/components/blocks/create-forms/cryptocurrency/form";
+import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
+import { getUser } from "@/lib/auth/utils";
 import { getTranslations } from "next-intl/server";
 
 export async function CryptocurrenciesRelated() {
   const t = await getTranslations("private.assets.table.related");
+  const user = await getUser();
 
   return (
     <RelatedGrid title={t("title")}>
@@ -14,7 +16,7 @@ export async function CryptocurrenciesRelated() {
         title={t("cryptocurrency.issue-new.title")}
         description={t("cryptocurrency.issue-new.description")}
       >
-        <CreateCryptoCurrencyForm asButton />
+        <AssetDesignerButton currentUser={user} />
       </RelatedGridItem>
       <RelatedGridItem
         title={t("cryptocurrency.mechanics.title")}

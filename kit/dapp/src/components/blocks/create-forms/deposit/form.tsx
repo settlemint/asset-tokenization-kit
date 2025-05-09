@@ -1,91 +1,113 @@
 "use client";
 
-import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useRouter } from "@/i18n/routing";
-import { authClient } from "@/lib/auth/client";
 import { createDeposit } from "@/lib/mutations/deposit/create/create-action";
-import { CreateDepositSchema } from "@/lib/mutations/deposit/create/create-schema";
+import {
+  CreateDepositSchema,
+  type CreateDepositInput,
+} from "@/lib/mutations/deposit/create/create-schema";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
-import { AssetAdmins } from "../common/asset-admins/asset-admins";
-import { Basics } from "./steps/basics";
-import { Configuration } from "./steps/configuration";
-import { Summary } from "./steps/summary";
+import { FormProvider, useForm } from "react-hook-form";
+import type { AssetFormDefinition } from "../../asset-designer/types";
+import {
+  AssetAdmins,
+  stepDefinition as adminsStep,
+} from "../common/asset-admins/asset-admins";
+import {
+  Summary,
+  stepDefinition as summaryStep,
+} from "../common/summary/summary";
+import { Basics, stepDefinition as basicsStep } from "./steps/basics";
+import {
+  Configuration,
+  stepDefinition as configurationStep,
+} from "./steps/configuration";
+import { DepositConfigurationCard } from "./steps/summaryConfigurationCard";
+
 interface CreateDepositFormProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  asButton?: boolean;
+  userDetails: User;
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
+  ) => (data: any) => Promise<void>;
+}
+
+// Define the interface that all steps will implement
+export interface DepositStepProps {
+  onNext?: () => void;
+  onBack?: () => void;
+  userDetails?: User;
 }
 
 export function CreateDepositForm({
-  open,
-  onOpenChange,
-  asButton = false,
+  userDetails,
+  currentStepId,
+  onNextStep,
+  onPrevStep,
+  verificationWrapper,
 }: CreateDepositFormProps) {
-  const t = useTranslations("private.assets.create.form");
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [localOpen, setLocalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
-  const posthog = usePostHog();
+  const depositForm = useForm<CreateDepositInput>({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      decimals: 18,
+      collateralLivenessValue: 12,
+      collateralLivenessTimeUnit: "months",
+      price: {
+        amount: 1,
+        currency: userDetails.currency,
+      },
+      verificationType: "pincode",
+      assetAdmins: [],
+    },
+    mode: "onChange", // Validate as fields change for real-time feedback
+    resolver: typeboxResolver(CreateDepositSchema()),
+  });
 
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
-      posthog.capture("create_deposit_form_opened");
+  const renderCurrentStep = () => {
+    switch (currentStepId) {
+      case "details":
+        return <Basics onNext={onNextStep} onBack={onPrevStep} />;
+      case "configuration":
+        return <Configuration onNext={onNextStep} onBack={onPrevStep} />;
+      case "admins":
+        return (
+          <AssetAdmins
+            userDetails={userDetails}
+            onNext={onNextStep}
+            onBack={onPrevStep}
+          />
+        );
+      case "summary":
+        return (
+          <Summary
+            configurationCard={<DepositConfigurationCard form={depositForm} />}
+            form={depositForm}
+            onBack={onPrevStep}
+            onSubmit={verificationWrapper(createDeposit)}
+          />
+        );
+      default:
+        return <div>Unknown step: {currentStepId}</div>;
     }
-  }, [open, localOpen, posthog]);
+  };
 
-  return (
-    <FormSheet
-      open={open ?? localOpen}
-      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t("title.deposits")}
-      description={t("description.deposits")}
-      asButton={asButton}
-      triggerLabel={
-        isExternallyControlled ? undefined : t("trigger-label.deposits")
-      }
-    >
-      <Form
-        action={createDeposit}
-        resolver={typeboxResolver(CreateDepositSchema())}
-        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-        buttonLabels={{
-          label: t("trigger-label.deposits"),
-        }}
-        defaultValues={{
-          collateralLivenessValue: 12,
-          collateralLivenessTimeUnit: "months",
-          price: {
-            amount: 1,
-            currency: session?.user.currency,
-          },
-          assetAdmins: [],
-        }}
-        onAnyFieldChange={({ clearErrors }) => {
-          clearErrors("predictedAddress");
-        }}
-        toastMessages={{
-          action: (input) => {
-            const assetId = input?.predictedAddress;
-            return assetId
-              ? {
-                  label: t("toast-action.deposits"),
-                  onClick: () => router.push(`/assets/deposit/${assetId}`),
-                }
-              : undefined;
-          },
-        }}
-      >
-        <Basics />
-        <Configuration />
-        <AssetAdmins />
-        <Summary />
-      </Form>
-    </FormSheet>
-  );
+  return <FormProvider {...depositForm}>{renderCurrentStep()}</FormProvider>;
 }
+
+CreateDepositForm.displayName = "CreateDepositForm";
+
+// Collect all the step definitions
+const depositSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
+
+// Export form definition for the asset designer
+export const depositFormDefinition: AssetFormDefinition = {
+  steps: depositSteps,
+  getStepComponent: (stepId: string) => {
+    const step = depositSteps.find((s) => s.id === stepId);
+    return step?.component || null;
+  },
+};

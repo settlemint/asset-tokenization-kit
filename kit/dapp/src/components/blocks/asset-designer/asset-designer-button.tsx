@@ -1,12 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import type { User } from "better-auth";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { AssetDesignerDialog } from "./asset-designer-dialog";
 
-export function AssetDesignerButton() {
+export function AssetDesignerButton({ currentUser }: { currentUser: User }) {
   const t = useTranslations("admin.sidebar");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -21,7 +22,11 @@ export function AssetDesignerButton() {
         {t("asset-designer")}
       </Button>
 
-      <AssetDesignerDialog open={isOpen} onOpenChange={setIsOpen} />
+      <AssetDesignerDialog
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        currentUser={currentUser}
+      />
     </>
   );
 }

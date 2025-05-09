@@ -242,7 +242,7 @@ export const deleteFile = withTracing(
         try {
           await minioClient.statObject(DEFAULT_BUCKET, fileId);
           stillExists = true;
-        } catch (verifyError) {
+        } catch (_verifyError) {
           // This is good - file should be gone
           stillExists = false;
         }

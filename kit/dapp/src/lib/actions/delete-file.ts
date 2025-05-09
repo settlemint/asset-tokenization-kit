@@ -96,7 +96,7 @@ export async function deleteFile(fileId: string): Promise<{
       try {
         await minioClient.statObject(DEFAULT_BUCKET, fileId);
         stillExists = true;
-      } catch (e) {
+      } catch (_e) {
         // Expected - file should be gone
         stillExists = false;
       }
