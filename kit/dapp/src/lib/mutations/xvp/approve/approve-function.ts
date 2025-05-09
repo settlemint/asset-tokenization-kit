@@ -1,10 +1,11 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 import { approve } from "../../asset/approve/approve-action";
 import type { ApproveXvpInput } from "./approve-schema";
 
@@ -52,10 +53,10 @@ export const approveXvpFunction = async ({
     { address: Address; amount: number; assettype: AssetType }
   >();
   xvp.flows
-    .filter((flow) => flow.from.id === user.wallet)
+    .filter((flow) => getAddress(flow.from.id) === user.wallet)
     .map((flow) => {
       const key = flow.asset.id;
-      const approvalAmount = approved ? flow.amount : 0;
+      const approvalAmount = !approved ? flow.amount : 0;
       if (!assetsSentMap.has(key)) {
         assetsSentMap.set(key, {
           address: key,
@@ -76,8 +77,12 @@ export const approveXvpFunction = async ({
       verificationType,
     })
   );
-  await Promise.all(approvalPromises);
-
+  const results = (await Promise.all(approvalPromises)) ?? [];
+  const txns = results
+    ?.flatMap((result) => result?.data)
+    .filter(Boolean) as string[];
+  await waitForTransactions(txns);
+  console.log({ results });
   const challengeResponse = await handleChallenge(
     user,
     user.wallet,
@@ -85,7 +90,7 @@ export const approveXvpFunction = async ({
     verificationType
   );
 
-  if (approved) {
+  if (!approved) {
     const result = await portalClient.request(XvpApprove, {
       challengeResponse: challengeResponse.challengeResponse,
       verificationId: challengeResponse.verificationId,
