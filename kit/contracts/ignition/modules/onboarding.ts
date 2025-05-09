@@ -25,15 +25,31 @@ const AssetTokenizationOnboardingModule = buildModule(
     const { identityFactory } = m.useModule(IdentityFactoryModule);
     m.useModule(ConfigurationModule);
 
-    m.call(deploymentRegistry, "registerDeployment", [
-      compliance,
-      identityRegistryStorage,
-      identityFactory,
-      identityRegistry,
-      trustedIssuersRegistry,
-    ]);
+    const { tokenRegistry } = m.useModule(TokenRegistryModule);
 
-    m.useModule(TokenRegistryModule);
+    const registerDeployment = m.call(
+      deploymentRegistry,
+      "registerDeployment",
+      [
+        compliance,
+        identityRegistryStorage,
+        identityFactory,
+        identityRegistry,
+        trustedIssuersRegistry,
+      ],
+      {
+        id: "RegisterDeployment",
+      }
+    );
+
+    m.call(
+      deploymentRegistry,
+      "registerTokenRegistry",
+      ["deposit", tokenRegistry],
+      {
+        after: [registerDeployment],
+      }
+    );
 
     return {
       forwarder,

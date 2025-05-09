@@ -10,11 +10,6 @@ const TokenRegistryModule = buildModule("TokenRegistryModule", (m) => {
 
   const tokenRegistry = m.contract("SMARTTokenRegistry", [forwarder, deployer]);
 
-  m.call(deploymentRegistry, "registerTokenRegistry", [
-    "deposit",
-    tokenRegistry,
-  ]);
-
   return { tokenRegistry };
 });
 
