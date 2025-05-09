@@ -127,6 +127,7 @@ contract SMARTBondTest is Test {
         internal
         returns (SMARTBond smartBond)
     {
+        vm.prank(owner);
         smartBond = new SMARTBond(
             name_,
             symbol_,
@@ -135,20 +136,17 @@ contract SMARTBondTest is Test {
             maturityDate_,
             faceValue_,
             underlyingAsset_,
-            address(0),
             requiredClaimTopics_,
             initialModulePairs_,
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
 
         smartUtils.createAndSetTokenOnchainID(address(smartBond), owner);
 
-        vm.startPrank(owner);
+        vm.prank(owner);
         smartBond.mint(owner, initialSupply);
-        vm.stopPrank();
 
         return smartBond;
     }
@@ -177,7 +175,6 @@ contract SMARTBondTest is Test {
         decimalValues[3] = 18; // Test max decimals
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
-            vm.prank(owner);
             SMARTBond newBond = _createBondAndMint(
                 "Test Bond",
                 "TBOND",
@@ -203,12 +200,10 @@ contract SMARTBondTest is Test {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            address(0),
             new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
     }

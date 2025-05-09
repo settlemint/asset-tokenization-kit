@@ -87,12 +87,10 @@ contract SMARTFund is
     /// @param managementFeeBps_ The management fee in basis points (1 basis point = 0.01%)
     /// @param fundClass_ The class of the fund (e.g., "Hedge SMARTFund", "Mutual SMARTFund")
     /// @param fundCategory_ The category of the fund (e.g., "Long/Short Equity", "Global Macro")
-    /// @param onchainID_ Optional on-chain identifier address
     /// @param requiredClaimTopics_ Initial list of required claim topics
     /// @param initialModulePairs_ Initial list of compliance modules
     /// @param identityRegistry_ Address of the identity registry contract
     /// @param compliance_ Address of the compliance contract
-    /// @param initialOwner_ Address receiving admin and operational roles
     /// @param forwarder Address of the forwarder contract
     constructor(
         string memory name_,
@@ -101,12 +99,10 @@ contract SMARTFund is
         uint16 managementFeeBps_,
         string memory fundClass_,
         string memory fundCategory_,
-        address onchainID_,
         uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
-        address initialOwner_,
         address forwarder
     )
         // Initialize the core SMART logic (which includes ERC20)
@@ -114,7 +110,7 @@ contract SMARTFund is
             name_,
             symbol_,
             decimals_,
-            onchainID_,
+            address(0),
             identityRegistry_,
             compliance_,
             requiredClaimTopics_,
@@ -129,11 +125,11 @@ contract SMARTFund is
         _lastFeeCollection = uint40(block.timestamp);
 
         // Grant standard admin role
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
 
         // Grant custom operational roles
-        _grantRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, initialOwner_); // Mint, Burn, Forced Transfer
-        _grantRole(SMARTConstants.USER_MANAGEMENT_ROLE, initialOwner_); // Freeze, Recovery
+        _grantRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, _msgSender()); // Mint, Burn, Forced Transfer
+        _grantRole(SMARTConstants.USER_MANAGEMENT_ROLE, _msgSender()); // Freeze, Recovery
     }
 
     // --- View Functions ---

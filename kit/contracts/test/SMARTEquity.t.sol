@@ -79,24 +79,22 @@ contract SMARTEquityTest is Test {
         internal
         returns (SMARTEquity result)
     {
+        vm.prank(owner);
         result = new SMARTEquity(
             name_,
             symbol_,
             decimals_,
-            address(0), // onchainID
             requiredClaimTopics_,
             initialModulePairs_,
             identityRegistry,
             compliance,
-            owner,
             address(forwarder)
         );
 
         smartUtils.createAndSetTokenOnchainID(address(result), owner);
 
-        vm.startPrank(owner);
+        vm.prank(owner);
         result.mint(owner, INITIAL_SUPPLY);
-        vm.stopPrank();
 
         return result;
     }
@@ -125,12 +123,10 @@ contract SMARTEquityTest is Test {
                 "Test SMART Equity",
                 "TEST",
                 decimalValues[i],
-                address(0),
                 new uint256[](0),
                 new SMARTComplianceModuleParamPair[](0),
                 identityRegistry,
                 compliance,
-                owner,
                 address(forwarder)
             );
 
