@@ -2,6 +2,7 @@
 
 import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useRouter } from "@/i18n/routing";
 import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { revalidate } from "@/lib/utils/revalidate";
@@ -9,7 +10,6 @@ import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -166,8 +166,6 @@ export function AssetDesignerDialog({
         verificationType: "pincode",
       });
 
-      console.log("Form submission result:", result);
-
       // Handle case when result is falsy
       if (!result) {
         toast.error(t("form.toasts.failed"), { id: toastId });
@@ -203,8 +201,6 @@ export function AssetDesignerDialog({
           ? result.data
           : [result.data]
         : [];
-
-      console.log("Extracted transaction hashes:", hashes);
 
       if (!hashes.length) {
         toast.error(t("form.toasts.failed"), { id: toastId });

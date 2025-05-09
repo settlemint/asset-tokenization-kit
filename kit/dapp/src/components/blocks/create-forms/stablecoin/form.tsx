@@ -1,6 +1,6 @@
 "use client";
 
-import { type SafeActionResult } from "@/lib/mutations/safe-action";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
 import {
   CreateStablecoinSchema,

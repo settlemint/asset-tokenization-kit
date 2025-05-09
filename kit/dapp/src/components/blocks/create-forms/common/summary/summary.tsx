@@ -5,7 +5,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/client";
-import { type SafeActionResult } from "@/lib/mutations/safe-action";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
 import { DollarSign, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -64,8 +64,6 @@ export function Summary({
 
       const values = form.getValues();
       const predictedAddress = await predictAddress(values);
-      console.log("Predicted address:", predictedAddress);
-
       const isAvailable = await isAddressAvailable(predictedAddress);
 
       if (!isAvailable) {
