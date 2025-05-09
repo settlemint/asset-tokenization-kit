@@ -88,9 +88,10 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     xvpSettlement.createdAt = createdAt.reverted
       ? BigInt.zero()
       : createdAt.value;
-    xvpSettlement.save();
 
     let approvers = new Set<Address>();
+    let participants = new Set<Bytes>();
+
     if (!flows.reverted) {
       for (let i = 0; i < flows.value.length; i++) {
         fetchFlow(
@@ -102,8 +103,15 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
           i
         );
         approvers.add(flows.value[i].from);
+        participants.add(
+          Bytes.fromHexString(flows.value[i].from.toHexString())
+        );
+        participants.add(Bytes.fromHexString(flows.value[i].to.toHexString()));
       }
     }
+
+    xvpSettlement.participants = participants.values();
+    xvpSettlement.save();
 
     let approversArray = approvers.values();
     for (let i = 0; i < approversArray.length; i++) {
