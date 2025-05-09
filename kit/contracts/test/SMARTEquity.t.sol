@@ -253,6 +253,32 @@ contract SMARTEquityTest is Test {
         vm.stopPrank();
     }
 
+    function test_PauseUnpause() public {
+        uint256 amount = 1000 * 10 ** DECIMALS;
+        vm.startPrank(owner);
+
+        // Mint some tokens first
+        smartEquity.mint(owner, amount);
+
+        // Pause the contract
+        smartEquity.pause();
+        assertTrue(smartEquity.paused());
+
+        // Try to transfer while paused - should revert with TokenPaused error
+        vm.expectRevert(abi.encodeWithSignature("TokenPaused()"));
+        smartEquity.transfer(user1, amount);
+
+        // Unpause
+        smartEquity.unpause();
+        assertFalse(smartEquity.paused());
+
+        // Transfer should now succeed
+        smartEquity.transfer(user1, amount);
+        assertEq(smartEquity.balanceOf(user1), amount);
+
+        vm.stopPrank();
+    }
+
     // Custodian Tests
     function test_OnlyUserManagementCanFreeze() public {
         vm.startPrank(owner);
@@ -401,15 +427,6 @@ contract SMARTEquityTest is Test {
         smartEquity.approve(spender, 1000 * 10 ** DECIMALS);
         vm.stopPrank();
     }
-
-    // function test_PauseEvent() public {
-    //     vm.expectEmit(true, false, false, true);
-    //     emit Paused(owner);
-
-    //     vm.startPrank(owner);
-    //     smartEquity.pause();
-    //     vm.stopPrank();
-    // }
 
     // Forced Transfer Tests (equivalent to clawback in Equity.t.sol)
     function test_ForcedTransfer() public {
