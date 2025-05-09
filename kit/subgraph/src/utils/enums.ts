@@ -42,3 +42,13 @@ export class VaultTransactionType {
   static ERC20Transfer: string = "ERC20Transfer";
   static ContractCall: string = "ContractCall";
 }
+
+export class ActionType {
+  static Admin: string = "Admin";
+  static User: string = "User";
+}
+
+export class ActionAuthorizationMethod {
+  static RoleBased: string = "RoleBased";
+  static UserSpecific: string = "UserSpecific";
+}

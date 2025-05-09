@@ -2,6 +2,7 @@ import { NavMain } from "@/components/layout/nav-main";
 import { ActivityIcon } from "@/components/ui/activity";
 import { ChartScatterIcon } from "@/components/ui/chart-scatter";
 import { HandCoinsIcon } from "@/components/ui/hand-coins";
+import { MailCheckIcon } from "@/components/ui/mail-check";
 import { UsersIcon } from "@/components/ui/users";
 import { getTranslations } from "next-intl/server";
 
@@ -19,6 +20,27 @@ export async function PortfolioManagement() {
           path: "/portfolio",
         },
         {
+          label: t("my-actions"),
+          icon: (
+            <MailCheckIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
+          path: "/portfolio/my-actions/pending",
+        },
+        {
+          label: t("my-activity"),
+          icon: (
+            <ActivityIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
+          path: "/portfolio/my-activity",
+        },
+        {
+          label: t("my-contacts"),
+          icon: (
+            <UsersIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
+          path: "/portfolio/my-contacts",
+        },
+        {
           groupTitle: t("group-title"),
           items: [
             {
@@ -27,20 +49,6 @@ export async function PortfolioManagement() {
                 <HandCoinsIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
               ),
               path: "/portfolio/my-assets",
-            },
-            {
-              label: t("my-activity"),
-              icon: (
-                <ActivityIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
-              ),
-              path: "/portfolio/my-activity",
-            },
-            {
-              label: t("my-contacts"),
-              icon: (
-                <UsersIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
-              ),
-              path: "/portfolio/my-contacts",
             },
           ],
         },

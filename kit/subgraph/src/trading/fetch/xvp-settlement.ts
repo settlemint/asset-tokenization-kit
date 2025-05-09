@@ -21,7 +21,7 @@ export function fetchFlow(
   asset: Address,
   from: Address,
   to: Address,
-  amount: BigInt,
+  amountExact: BigInt,
   index: i32
 ): XvPSettlementFlow {
   let flowId = settlementId.concat(Bytes.fromI32(index));
@@ -35,8 +35,8 @@ export function fetchFlow(
   flow.asset = asset;
   flow.from = fetchAccount(from).id;
   flow.to = fetchAccount(to).id;
-  flow.amount = toDecimals(amount, fetchAssetDecimals(asset));
-  flow.amountExact = amount;
+  flow.amount = toDecimals(amountExact, fetchAssetDecimals(asset));
+  flow.amountExact = amountExact;
   flow.save();
   return flow;
 }
@@ -88,9 +88,10 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     xvpSettlement.createdAt = createdAt.reverted
       ? BigInt.zero()
       : createdAt.value;
-    xvpSettlement.save();
 
     let approvers = new Set<Address>();
+    let participants = new Set<Bytes>();
+
     if (!flows.reverted) {
       for (let i = 0; i < flows.value.length; i++) {
         fetchFlow(
@@ -102,8 +103,15 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
           i
         );
         approvers.add(flows.value[i].from);
+        participants.add(
+          Bytes.fromHexString(flows.value[i].from.toHexString())
+        );
+        participants.add(Bytes.fromHexString(flows.value[i].to.toHexString()));
       }
     }
+
+    xvpSettlement.participants = participants.values();
+    xvpSettlement.save();
 
     let approversArray = approvers.values();
     for (let i = 0; i < approversArray.length; i++) {

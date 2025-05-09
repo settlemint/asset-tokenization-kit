@@ -18,6 +18,7 @@ export const XvPSettlementFlowFragment = theGraphGraphqlKit(
       id
       symbol
       type
+      decimals
     }
   }
 `

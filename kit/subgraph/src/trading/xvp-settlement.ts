@@ -4,7 +4,14 @@ import {
   XvPSettlementCancelled,
   XvPSettlementClaimed,
 } from "../../generated/templates/XvPSettlement/XvPSettlement";
+import {
+  actionExecuted,
+  ActionName,
+  actionRevoked,
+  createAction,
+} from "../utils/action";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
+import { ActionType } from "../utils/enums";
 import { fetchApproval, fetchXvPSettlement } from "./fetch/xvp-settlement";
 
 export function handleXvPSettlementApproved(
@@ -20,6 +27,42 @@ export function handleXvPSettlementApproved(
   approval.approved = true;
   approval.timestamp = event.block.timestamp;
   approval.save();
+
+  const xvpSettlement = fetchXvPSettlement(event.address);
+  actionExecuted(
+    event,
+    ActionName.ApproveXvPSettlement,
+    xvpSettlement.id,
+    approval.account.toHexString()
+  );
+
+  if (xvpSettlement.autoExecute) {
+    return;
+  }
+
+  const approvals = xvpSettlement.approvals.load();
+  let allApproved = true;
+  for (let i = 0; i < approvals.length; i++) {
+    const approval = approvals[i];
+    if (!approval.approved) {
+      allApproved = false;
+      break;
+    }
+  }
+
+  if (allApproved) {
+    createAction(
+      event,
+      ActionName.ClaimXvPSettlement,
+      xvpSettlement.id,
+      ActionType.User,
+      event.block.timestamp,
+      xvpSettlement.cutoffDate,
+      xvpSettlement.participants,
+      null,
+      null
+    );
+  }
 }
 
 export function handleXvPSettlementApprovalRevoked(
@@ -35,6 +78,13 @@ export function handleXvPSettlementApprovalRevoked(
   approval.approved = false;
   approval.timestamp = event.block.timestamp;
   approval.save();
+
+  const xvpSettlement = fetchXvPSettlement(event.address);
+  actionRevoked(
+    ActionName.ApproveXvPSettlement,
+    xvpSettlement.id,
+    approval.account.toHexString()
+  );
 }
 
 export function handleXvPSettlementClaimed(event: XvPSettlementClaimed): void {
@@ -48,6 +98,8 @@ export function handleXvPSettlementClaimed(event: XvPSettlementClaimed): void {
 
   xvpSettlement.claimed = true;
   xvpSettlement.save();
+
+  actionExecuted(event, ActionName.ClaimXvPSettlement, xvpSettlement.id, null);
 }
 
 export function handleXvPSettlementCancelled(

@@ -1,7 +1,5 @@
-import { AssetsSidebar } from "@/app/[locale]/(private)/_components/sidebar/assets-sidebar";
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
-import NavInset from "@/components/layout/nav-inset";
 import { PageHeader } from "@/components/layout/page-header";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
@@ -39,27 +37,22 @@ export default async function ActionsLayout({ children, params }: LayoutProps) {
   const tabItems: TabItemProps[] = [
     {
       name: t("tabs.pending"),
-      href: `/actions/pending`,
+      href: `/portfolio/my-actions/pending`,
     },
     {
       name: t("tabs.upcoming"),
-      href: `/actions/upcoming`,
+      href: `/portfolio/my-actions/upcoming`,
     },
     {
       name: t("tabs.completed"),
-      href: `/actions/completed`,
+      href: `/portfolio/my-actions/completed`,
     },
   ];
   return (
     <>
-      <AssetsSidebar />
-      <NavInset>
-        <>
-          <PageHeader title={t("page.actions")} />
-          <TabNavigation items={tabItems} />
-          {children}
-        </>
-      </NavInset>
+      <PageHeader title={t("page.my-actions")} />
+      <TabNavigation items={tabItems} />
+      {children}
     </>
   );
 }

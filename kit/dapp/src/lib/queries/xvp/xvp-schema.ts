@@ -10,6 +10,7 @@ export const OnChainXvPSettlementFlowSchema = t.Object({
     id: t.EthereumAddress(),
     symbol: t.AssetSymbol(),
     type: t.AssetType(),
+    decimals: t.Decimals(),
   }),
 });
 

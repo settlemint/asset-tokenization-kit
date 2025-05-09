@@ -32,6 +32,7 @@ export class EventType {
   static YieldClaimed: string = "YieldClaimed";
   static AssetCreated: string = "AssetCreated";
   static FixedYieldCreated: string = "FixedYieldCreated";
+  static XvPSettlementCreated: string = "XvPSettlementCreated";
   static XvPSettlementApproved: string = "XvPSettlementApproved";
   static XvPSettlementApprovalRevoked: string = "XvPSettlementApprovalRevoked";
   static XvPSettlementClaimed: string = "XvPSettlementClaimed";
