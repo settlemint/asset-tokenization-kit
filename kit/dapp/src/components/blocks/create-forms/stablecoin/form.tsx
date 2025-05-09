@@ -69,7 +69,6 @@ export function CreateStablecoinForm({
 
   const handleSubmit = async (data: CreateStablecoinInput) => {
     try {
-      console.log("Stablecoin form handleSubmit called with data:", data);
       const result = await createStablecoin(data);
 
       if (result?.data) {

@@ -70,7 +70,6 @@ export function CreateFundForm({
 
   const handleSubmit = async (data: CreateFundInput) => {
     try {
-      console.log("Fund form handleSubmit called with data:", data);
       const result = await createFund(data);
 
       if (result?.data) {

@@ -64,7 +64,6 @@ export function CreateBondForm({
 
   const handleSubmit = async (data: CreateBondInput) => {
     try {
-      console.log("Bond form handleSubmit called with data:", data);
       const result = await createBond(data);
 
       if (result?.data) {

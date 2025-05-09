@@ -69,7 +69,6 @@ export function CreateDepositForm({
 
   const handleSubmit = async (data: CreateDepositInput) => {
     try {
-      console.log("Deposit form handleSubmit called with data:", data);
       const result = await createDeposit(data);
 
       if (result?.data) {

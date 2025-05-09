@@ -69,7 +69,6 @@ export function CreateEquityForm({
 
   const handleSubmit = async (data: CreateEquityInput) => {
     try {
-      console.log("Equity form handleSubmit called with data:", data);
       const result = await createEquity(data);
 
       if (result?.data) {

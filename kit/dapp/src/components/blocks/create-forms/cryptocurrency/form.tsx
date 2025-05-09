@@ -74,7 +74,6 @@ export function CreateCryptoCurrencyForm({
 
   const handleSubmit = async (data: CreateCryptoCurrencyInput) => {
     try {
-      console.log("Cryptocurrency form handleSubmit called with data:", data);
       const result = await createCryptoCurrency(data);
 
       if (result?.data) {
