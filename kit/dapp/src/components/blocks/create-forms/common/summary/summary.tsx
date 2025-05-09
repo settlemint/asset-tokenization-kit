@@ -5,10 +5,13 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/client";
+import { type SafeActionResult } from "@/lib/mutations/safe-action";
 import { DollarSign, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import type { Address } from "viem";
+
 interface AssetAdmin {
   wallet: Address;
   roles: string[];
@@ -18,8 +21,11 @@ interface AssetAdmin {
 interface SummaryProps {
   form: UseFormReturn<any>;
   configurationCard: React.ReactNode;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: any) => Promise<SafeActionResult<string[]> | any>;
   onBack?: () => void;
+  // Optional functions for address prediction - some asset types may not need these
+  predictAddress?: (values: any) => Promise<Address>;
+  isAddressAvailable?: (address: Address) => Promise<boolean>;
 }
 
 export function Summary({
@@ -27,23 +33,91 @@ export function Summary({
   onBack,
   configurationCard,
   onSubmit,
+  predictAddress,
+  isAddressAvailable,
 }: SummaryProps) {
   const t = useTranslations("private.assets.create");
   const formValues = form.getValues();
   const isSubmitting = form.formState.isSubmitting;
   const { data: session } = authClient.useSession();
   const assetAdmins = formValues.assetAdmins || [];
+  const [isPredictingAddress, setIsPredictingAddress] = useState(false);
+  const [predictionError, setPredictionError] = useState<string | null>(null);
+
+  // Fetch and validate predicted address on initial load
+  useEffect(() => {
+    if (predictAddress && isAddressAvailable) {
+      validatePredictedAddress();
+    }
+  }, []);
+
+  // Validate predicted address before form submission if the functions are provided
+  const validatePredictedAddress = async () => {
+    // If prediction functions aren't provided, skip validation and return success
+    if (!predictAddress || !isAddressAvailable) {
+      return true;
+    }
+
+    try {
+      setIsPredictingAddress(true);
+      setPredictionError(null);
+
+      const values = form.getValues();
+      const predictedAddress = await predictAddress(values);
+      console.log("Predicted address:", predictedAddress);
+
+      const isAvailable = await isAddressAvailable(predictedAddress);
+
+      if (!isAvailable) {
+        form.setError("predictedAddress", {
+          message: "private.assets.create.form.errors.duplicate-asset",
+        });
+        setPredictionError(
+          "This asset name and symbol combination is already taken"
+        );
+        setIsPredictingAddress(false);
+        return false;
+      }
+
+      // Set the predicted address in the form
+      form.setValue("predictedAddress", predictedAddress);
+      form.clearErrors("predictedAddress");
+      setIsPredictingAddress(false);
+      return true;
+    } catch (error) {
+      console.error("Error validating address:", error);
+      form.setError("predictedAddress", {
+        message: "private.assets.create.form.errors.address-prediction-failed",
+      });
+      setPredictionError("Failed to predict contract address");
+      setIsPredictingAddress(false);
+      return false;
+    }
+  };
 
   const handleSubmit = async () => {
-    await onSubmit(formValues);
+    // Validate and set the predicted address before submission if applicable
+    const isAddressValid = await validatePredictedAddress();
+    if (!isAddressValid) {
+      return;
+    }
+
+    // At this point the form should have a valid predictedAddress set
+    await onSubmit(form.getValues());
   };
 
   return (
     <StepContent
       onNext={handleSubmit}
       onBack={onBack}
-      isNextDisabled={isSubmitting}
-      nextLabel={isSubmitting ? t("summary.creating") : t("summary.issue")}
+      isNextDisabled={isSubmitting || isPredictingAddress}
+      nextLabel={
+        isPredictingAddress
+          ? "Predicting address..."
+          : isSubmitting
+            ? t("summary.creating")
+            : t("summary.issue")
+      }
       className="max-w-3xl w-full mx-auto"
       fixedButtons={true}
     >
@@ -54,6 +128,13 @@ export function Summary({
             {t("summary.description")}
           </p>
         </div>
+
+        {/* Show prediction error if any */}
+        {predictionError && (
+          <div className="bg-destructive/15 text-destructive p-3 rounded-md mb-4">
+            {predictionError}
+          </div>
+        )}
 
         {/* Basic Information Card: the same for all asset types */}
         <Card>

@@ -5,10 +5,10 @@ import {
   CreateEquitySchema,
   type CreateEquityInput,
 } from "@/lib/mutations/equity/create/create-schema";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import {
   AssetAdmins,
@@ -27,14 +27,13 @@ import { EquityConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateEquityFormProps {
   userDetails: User;
-  currentStepId?: string; // Optional for when used in the asset designer
-  onNextStep?: () => void;
-  onPrevStep?: () => void;
-  withVerification?: (
-    fn: (data: any) => Promise<void>
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
   ) => (data: any) => Promise<void>;
 }
-
 // Define the interface that all steps will implement
 export interface EquityStepProps {
   onNext?: () => void;
@@ -47,7 +46,7 @@ export function CreateEquityForm({
   currentStepId,
   onNextStep,
   onPrevStep,
-  withVerification,
+  verificationWrapper,
 }: CreateEquityFormProps) {
   const equityForm = useForm<CreateEquityInput>({
     defaultValues: {
@@ -66,22 +65,6 @@ export function CreateEquityForm({
     mode: "onChange", // Validate as fields change for real-time feedback
     resolver: typeboxResolver(CreateEquitySchema()),
   });
-
-  const handleSubmit = async (data: CreateEquityInput) => {
-    try {
-      const result = await createEquity(data);
-
-      if (result?.data) {
-        toast.success("Equity created successfully");
-        // Additional success handling can be added here
-      } else {
-        toast.error(result?.serverError || "Failed to create equity");
-      }
-    } catch (error) {
-      console.error("Error creating equity:", error);
-      toast.error("An unexpected error occurred");
-    }
-  };
 
   const renderCurrentStep = () => {
     switch (currentStepId) {
@@ -103,9 +86,7 @@ export function CreateEquityForm({
             configurationCard={<EquityConfigurationCard form={equityForm} />}
             form={equityForm}
             onBack={onPrevStep}
-            onSubmit={
-              withVerification ? withVerification(handleSubmit) : handleSubmit
-            }
+            onSubmit={verificationWrapper(createEquity)}
           />
         );
       default:

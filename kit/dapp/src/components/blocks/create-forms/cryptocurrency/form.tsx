@@ -5,10 +5,10 @@ import {
   CreateCryptoCurrencySchema,
   type CreateCryptoCurrencyInput,
 } from "@/lib/mutations/cryptocurrency/create/create-schema";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import {
   AssetAdmins,
@@ -27,11 +27,11 @@ import { CryptoConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateCryptoCurrencyFormProps {
   userDetails: User;
-  currentStepId?: string; // Optional for when used in the asset designer
-  onNextStep?: () => void;
-  onPrevStep?: () => void;
-  withVerification?: (
-    fn: (data: any) => Promise<void>
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
   ) => (data: any) => Promise<void>;
 }
 
@@ -47,7 +47,7 @@ export function CreateCryptoCurrencyForm({
   currentStepId,
   onNextStep,
   onPrevStep,
-  withVerification,
+  verificationWrapper,
 }: CreateCryptoCurrencyFormProps) {
   const cryptoForm = useForm<CreateCryptoCurrencyInput>({
     defaultValues: {
@@ -72,22 +72,6 @@ export function CreateCryptoCurrencyForm({
       )(...args),
   });
 
-  const handleSubmit = async (data: CreateCryptoCurrencyInput) => {
-    try {
-      const result = await createCryptoCurrency(data);
-
-      if (result?.data) {
-        toast.success("Cryptocurrency created successfully");
-        // Additional success handling can be added here
-      } else {
-        toast.error(result?.serverError || "Failed to create cryptocurrency");
-      }
-    } catch (error) {
-      console.error("Error creating cryptocurrency:", error);
-      toast.error("An unexpected error occurred");
-    }
-  };
-
   const renderCurrentStep = () => {
     switch (currentStepId) {
       case "details":
@@ -108,9 +92,7 @@ export function CreateCryptoCurrencyForm({
             configurationCard={<CryptoConfigurationCard form={cryptoForm} />}
             form={cryptoForm}
             onBack={onPrevStep}
-            onSubmit={
-              withVerification ? withVerification(handleSubmit) : handleSubmit
-            }
+            onSubmit={verificationWrapper(createCryptoCurrency)}
           />
         );
       default:

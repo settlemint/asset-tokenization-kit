@@ -5,11 +5,11 @@ import {
   CreateBondSchema,
   type CreateBondInput,
 } from "@/lib/mutations/bond/create/create-schema";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
 import type { User } from "@/lib/queries/user/user-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
@@ -19,11 +19,11 @@ import { BondConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateBondFormProps {
   userDetails: User;
-  currentStepId?: string; // Optional for when used in the asset designer
-  onNextStep?: () => void;
-  onPrevStep?: () => void;
-  withVerification?: (
-    fn: (data: any) => Promise<void>
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
   ) => (data: any) => Promise<void>;
 }
 
@@ -39,7 +39,7 @@ export function CreateBondForm({
   currentStepId,
   onNextStep,
   onPrevStep,
-  withVerification,
+  verificationWrapper,
 }: CreateBondFormProps) {
   const bondForm = useForm<CreateBondInput>({
     defaultValues: {
@@ -61,22 +61,6 @@ export function CreateBondForm({
         })
       )(...args),
   });
-
-  const handleSubmit = async (data: CreateBondInput) => {
-    try {
-      const result = await createBond(data);
-
-      if (result?.data) {
-        toast.success("Bond created successfully");
-        // Additional success handling can be added here
-      } else {
-        toast.error(result?.serverError || "Failed to create bond");
-      }
-    } catch (error) {
-      console.error("Error creating bond:", error);
-      toast.error("An unexpected error occurred");
-    }
-  };
 
   // Create component instances for each step
   const BasicsComponent = basicsStep.component;
@@ -106,10 +90,7 @@ export function CreateBondForm({
             configurationCard={<BondConfigurationCard form={bondForm} />}
             form={bondForm}
             onBack={onPrevStep}
-            // Use withVerification wrapper if available
-            onSubmit={
-              withVerification ? withVerification(handleSubmit) : handleSubmit
-            }
+            onSubmit={verificationWrapper(createBond)}
           />
         );
       default:

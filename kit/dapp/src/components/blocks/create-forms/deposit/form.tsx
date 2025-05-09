@@ -5,10 +5,10 @@ import {
   CreateDepositSchema,
   type CreateDepositInput,
 } from "@/lib/mutations/deposit/create/create-schema";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import {
   AssetAdmins,
@@ -27,11 +27,11 @@ import { DepositConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateDepositFormProps {
   userDetails: User;
-  currentStepId?: string; // Optional for when used in the asset designer
-  onNextStep?: () => void;
-  onPrevStep?: () => void;
-  withVerification?: (
-    fn: (data: any) => Promise<void>
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
   ) => (data: any) => Promise<void>;
 }
 
@@ -47,7 +47,7 @@ export function CreateDepositForm({
   currentStepId,
   onNextStep,
   onPrevStep,
-  withVerification,
+  verificationWrapper,
 }: CreateDepositFormProps) {
   const depositForm = useForm<CreateDepositInput>({
     defaultValues: {
@@ -66,22 +66,6 @@ export function CreateDepositForm({
     mode: "onChange", // Validate as fields change for real-time feedback
     resolver: typeboxResolver(CreateDepositSchema()),
   });
-
-  const handleSubmit = async (data: CreateDepositInput) => {
-    try {
-      const result = await createDeposit(data);
-
-      if (result?.data) {
-        toast.success("Deposit created successfully");
-        // Additional success handling can be added here
-      } else {
-        toast.error(result?.serverError || "Failed to create deposit");
-      }
-    } catch (error) {
-      console.error("Error creating deposit:", error);
-      toast.error("An unexpected error occurred");
-    }
-  };
 
   const renderCurrentStep = () => {
     switch (currentStepId) {
@@ -103,9 +87,7 @@ export function CreateDepositForm({
             configurationCard={<DepositConfigurationCard form={depositForm} />}
             form={depositForm}
             onBack={onPrevStep}
-            onSubmit={
-              withVerification ? withVerification(handleSubmit) : handleSubmit
-            }
+            onSubmit={verificationWrapper(createDeposit)}
           />
         );
       default:

@@ -2,12 +2,17 @@
 
 import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
+import { revalidate } from "@/lib/utils/revalidate";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import MiniProgressBar from "./components/mini-progress-bar";
 import { StepContent } from "./step-wizard/step-content";
 import type { Step } from "./step-wizard/step-wizard";
@@ -42,6 +47,7 @@ export function AssetDesignerDialog({
     useState<React.ComponentType<any> | null>(null);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
   const [verifiedFormData, setVerifiedFormData] = useState<any>(null);
+  const router = useRouter();
 
   // Create a unified representation of all steps
   const allSteps: Step[] = [
@@ -115,7 +121,7 @@ export function AssetDesignerDialog({
       });
   }, [selectedAssetType, currentStepId]);
 
-  // Verification form (already defined in your code)
+  // Verification form
   const verificationForm = useForm({
     defaultValues: {
       verificationCode: "",
@@ -123,11 +129,20 @@ export function AssetDesignerDialog({
     },
   });
 
+  /**
+   * Asset Creation Flow:
+   * 1. User fills out the form in the asset-specific form component
+   * 2. When they click submit, this wrapper intercepts the submission
+   * 3. Instead of submitting right away, it stores the form data and shows the verification dialog
+   * 4. After verification code is entered, handleVerificationSubmit is called
+   * 5. That function submits the form with the verification code included
+   * 6. It processes the response (waiting for transactions, redirecting, etc.)
+   */
+
   // Function to wrap submission with verification
-  const wrapWithVerification = (submitFn: (data: any) => Promise<void>) => {
-    console.log("Creating verification wrapper for submit function");
-    return async (data: any) => {
-      console.log("Verification wrapper called with data:", data);
+  // This accepts any function that returns a result (like transaction hashes)
+  const verificationWrapper = <T,>(submitFn: (data: any) => Promise<T>) => {
+    return async (data: any): Promise<void> => {
       // Store the form data and open verification dialog
       setVerifiedFormData({ data, onSubmit: submitFn });
       setShowVerificationDialog(true);
@@ -136,25 +151,90 @@ export function AssetDesignerDialog({
 
   // Handle verification submission
   const handleVerificationSubmit = async () => {
-    console.log("Verification submitted, verifiedFormData:", verifiedFormData);
-    if (verifiedFormData && formComponent) {
-      const verificationCode = verificationForm.getValues("verificationCode");
-      console.log("Using verification code:", verificationCode);
+    const toastId = toast.loading(t("form.toasts.submitting"));
+
+    const assetId = verifiedFormData.data.predictedAddress;
+    const verificationCode = verificationForm.getValues("verificationCode");
+
+    try {
       // Call the form's submit function with verification code
-      await verifiedFormData.onSubmit({
+      // The specific asset form (stablecoin, bond, etc.) handles its own form submission
+      // and returns the result which contains transaction hashes
+      const result = await verifiedFormData.onSubmit({
         ...verifiedFormData.data,
         verificationCode,
         verificationType: "pincode",
       });
 
-      // Reset the verification dialog state
-      setShowVerificationDialog(false);
-      setVerifiedFormData(null);
-      verificationForm.reset();
-    } else {
-      console.error(
-        "Missing verifiedFormData or formComponent for verification"
-      );
+      console.log("Form submission result:", result);
+
+      // Handle case when result is falsy
+      if (!result) {
+        toast.error(t("form.toasts.failed"), { id: toastId });
+        return;
+      }
+
+      // Safe-action results have a specific format: { data?, validationErrors?, serverError? }
+      // For our transaction responses, data contains the transaction hash(es)
+
+      // Handle server errors if any
+      if (result.serverError) {
+        toast.error(result.serverError, { id: toastId });
+        return;
+      }
+
+      // Handle validation errors if any
+      if (result.validationErrors) {
+        // Get the first validation error message or use a default
+        const errorMessages = Object.values(result.validationErrors);
+        const errorMessage =
+          errorMessages.length > 0
+            ? String(errorMessages[0])
+            : t("form.errors.validation-failed");
+
+        toast.error(errorMessage, { id: toastId });
+        console.error("Validation errors:", result.validationErrors);
+        return;
+      }
+
+      // Parse the transaction hashes from the response
+      const hashes = result.data
+        ? Array.isArray(result.data)
+          ? result.data
+          : [result.data]
+        : [];
+
+      console.log("Extracted transaction hashes:", hashes);
+
+      if (!hashes.length) {
+        toast.error(t("form.toasts.failed"), { id: toastId });
+        return;
+      }
+
+      // Wait for the transactions to be confirmed and indexed
+      // This ensures the created asset is available in the database
+      const receipts = await waitForTransactions(hashes);
+      const lastBlockNumber = Number(receipts.at(-1)?.blockNumber);
+
+      if (lastBlockNumber) {
+        await waitForIndexing(lastBlockNumber);
+        await revalidate();
+      }
+
+      // Only show success toast if we got this far
+      toast.success(t("form.toasts.success"), { id: toastId });
+      onOpenChange(false);
+
+      // Redirect to the newly created asset page
+      router.push(`/assets/${selectedAssetType}/${assetId}`);
+    } catch (error) {
+      console.error("Error during form submission:", error);
+
+      // Display a more specific error message if possible
+      const errorMessage =
+        error instanceof Error ? error.message : t("form.toasts.failed");
+
+      toast.error(errorMessage, { id: toastId });
     }
   };
 
@@ -246,7 +326,7 @@ export function AssetDesignerDialog({
           currentStepId={currentStepId}
           onNextStep={handleNextStep}
           onPrevStep={handlePreviousStep}
-          withVerification={wrapWithVerification}
+          verificationWrapper={verificationWrapper}
         />
       );
     }

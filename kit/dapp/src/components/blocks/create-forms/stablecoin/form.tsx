@@ -1,14 +1,17 @@
 "use client";
 
+import { type SafeActionResult } from "@/lib/mutations/safe-action";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
 import {
   CreateStablecoinSchema,
   type CreateStablecoinInput,
 } from "@/lib/mutations/stablecoin/create/create-schema";
+import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
+import type { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import {
   AssetAdmins,
@@ -27,15 +30,14 @@ import { StablecoinConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateStablecoinFormProps {
   userDetails: User;
-  currentStepId?: string; // Optional for when used in the asset designer
-  onNextStep?: () => void;
-  onPrevStep?: () => void;
-  withVerification?: (
-    fn: (data: any) => Promise<void>
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
   ) => (data: any) => Promise<void>;
 }
 
-// Define the interface that all steps will implement
 export interface StablecoinStepProps {
   onNext?: () => void;
   onBack?: () => void;
@@ -47,7 +49,7 @@ export function CreateStablecoinForm({
   currentStepId,
   onNextStep,
   onPrevStep,
-  withVerification,
+  verificationWrapper,
 }: CreateStablecoinFormProps) {
   const stablecoinForm = useForm<CreateStablecoinInput>({
     defaultValues: {
@@ -58,7 +60,7 @@ export function CreateStablecoinForm({
       collateralLivenessTimeUnit: "months",
       price: {
         amount: 1,
-        currency: userDetails.currency,
+        currency: userDetails.currency as FiatCurrency,
       },
       verificationType: "pincode",
       assetAdmins: [],
@@ -66,22 +68,6 @@ export function CreateStablecoinForm({
     mode: "onChange", // Validate as fields change for real-time feedback
     resolver: typeboxResolver(CreateStablecoinSchema()),
   });
-
-  const handleSubmit = async (data: CreateStablecoinInput) => {
-    try {
-      const result = await createStablecoin(data);
-
-      if (result?.data) {
-        toast.success("Stablecoin created successfully");
-        // Additional success handling can be added here
-      } else {
-        toast.error(result?.serverError || "Failed to create stablecoin");
-      }
-    } catch (error) {
-      console.error("Error creating stablecoin:", error);
-      toast.error("An unexpected error occurred");
-    }
-  };
 
   const renderCurrentStep = () => {
     switch (currentStepId) {
@@ -105,9 +91,9 @@ export function CreateStablecoinForm({
             }
             form={stablecoinForm}
             onBack={onPrevStep}
-            onSubmit={
-              withVerification ? withVerification(handleSubmit) : handleSubmit
-            }
+            onSubmit={verificationWrapper(createStablecoin)}
+            predictAddress={getPredictedAddress}
+            isAddressAvailable={isAddressAvailable}
           />
         );
       default:

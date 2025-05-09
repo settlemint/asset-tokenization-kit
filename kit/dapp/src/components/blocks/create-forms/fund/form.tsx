@@ -5,10 +5,10 @@ import {
   CreateFundSchema,
   type CreateFundInput,
 } from "@/lib/mutations/fund/create/create-schema";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import {
   AssetAdmins,
@@ -27,11 +27,11 @@ import { FundConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateFundFormProps {
   userDetails: User;
-  currentStepId?: string; // Optional for when used in the asset designer
-  onNextStep?: () => void;
-  onPrevStep?: () => void;
-  withVerification?: (
-    fn: (data: any) => Promise<void>
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
   ) => (data: any) => Promise<void>;
 }
 
@@ -47,7 +47,7 @@ export function CreateFundForm({
   currentStepId,
   onNextStep,
   onPrevStep,
-  withVerification,
+  verificationWrapper,
 }: CreateFundFormProps) {
   const fundForm = useForm<CreateFundInput>({
     defaultValues: {
@@ -67,22 +67,6 @@ export function CreateFundForm({
     mode: "onChange", // Validate as fields change for real-time feedback
     resolver: typeboxResolver(CreateFundSchema()),
   });
-
-  const handleSubmit = async (data: CreateFundInput) => {
-    try {
-      const result = await createFund(data);
-
-      if (result?.data) {
-        toast.success("Fund created successfully");
-        // Additional success handling can be added here
-      } else {
-        toast.error(result?.serverError || "Failed to create fund");
-      }
-    } catch (error) {
-      console.error("Error creating fund:", error);
-      toast.error("An unexpected error occurred");
-    }
-  };
 
   const renderCurrentStep = () => {
     switch (currentStepId) {
@@ -104,9 +88,7 @@ export function CreateFundForm({
             configurationCard={<FundConfigurationCard form={fundForm} />}
             form={fundForm}
             onBack={onPrevStep}
-            onSubmit={
-              withVerification ? withVerification(handleSubmit) : handleSubmit
-            }
+            onSubmit={verificationWrapper(createFund)}
           />
         );
       default:
