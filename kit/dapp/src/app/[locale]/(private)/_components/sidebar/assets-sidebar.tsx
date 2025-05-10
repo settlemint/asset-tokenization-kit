@@ -9,17 +9,20 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { getUser } from "@/lib/auth/utils";
 import { AssetManagement } from "./items/asset-management";
 import { CustodyManagement } from "./items/custody-management";
 
 export async function AssetsSidebar() {
+  const user = await getUser();
+
   return (
     <NavSidebar>
       <SidebarHeader className="h-16">
         <NavHeader />
       </SidebarHeader>
       <SidebarContent className="pt-4">
-        <AssetDesignerButton />
+        <AssetDesignerButton currentUser={user} />
         <AssetManagement />
         <CustodyManagement />
       </SidebarContent>

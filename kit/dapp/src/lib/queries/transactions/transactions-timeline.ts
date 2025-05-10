@@ -17,10 +17,10 @@ const ProcessedTransactionsTimeline = portalGraphql(
 );
 
 const TimelineResultSchema = t.Object({
-  start: t.Date({
+  start: t.Timestamp({
     description: "The start time of this timeline period",
   }),
-  end: t.Date({
+  end: t.Timestamp({
     description: "The end time of this timeline period",
   }),
   count: t.Number({

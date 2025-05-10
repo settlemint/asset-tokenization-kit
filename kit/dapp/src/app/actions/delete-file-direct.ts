@@ -57,7 +57,7 @@ export async function deleteFileDirect(fileId: string): Promise<{
     try {
       await minioClient.statObject(DEFAULT_BUCKET, fileId);
       exists = true;
-    } catch (statError) {
+    } catch (_statError) {
       // This is expected - file should be gone
       exists = false;
     }

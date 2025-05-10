@@ -2,7 +2,6 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { Badge } from "@/components/ui/badge";
-import { authClient } from "@/lib/auth/client";
 import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
@@ -13,13 +12,17 @@ interface AssetAdmin {
 }
 
 interface TokenAdminsCardProps {
+  userDetails: {
+    wallet: Address;
+  };
   assetAdmins?: AssetAdmin[];
 }
 
-export function AssetAdminsCard({ assetAdmins }: TokenAdminsCardProps) {
+export function AssetAdminsCard({
+  userDetails,
+  assetAdmins,
+}: TokenAdminsCardProps) {
   const t = useTranslations("private.assets.create");
-  const { data: session } = authClient.useSession();
-  const { wallet } = session?.user ?? {};
 
   if (!assetAdmins) {
     return null;
@@ -32,8 +35,8 @@ export function AssetAdminsCard({ assetAdmins }: TokenAdminsCardProps) {
       icon={<Users className="size-3 text-primary-foreground" />}
     >
       <FormSummaryDetailItem
-        key={wallet}
-        label={<EvmAddress address={wallet} prettyNames />}
+        key={userDetails.wallet}
+        label={<EvmAddress address={userDetails.wallet} prettyNames />}
         value={
           <div className="flex flex-wrap gap-1">
             <Badge key="admin" variant="outline" className="text-xs">
