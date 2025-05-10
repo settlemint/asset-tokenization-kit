@@ -50,6 +50,7 @@ services:
       GRAPH_IPFS_TIMEOUT: 60
       GRAPH_MAX_IPFS_FILE_BYTES: 52428800
       GRAPH_IPFS_REQUEST_RETRIES: 10
+      CARGO_TERM_COLOR: always
 
   # Jaeger
   jaeger-all-in-one:
