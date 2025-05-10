@@ -12,6 +12,7 @@ export function fetchAccessControl(address: Address): Internal_AccessControl {
     accessControlEntity.userManagers = [];
     accessControlEntity.signers = [];
     accessControlEntity.deploymentOwners = [];
+    accessControlEntity.storageModifiers = [];
     accessControlEntity.save();
   }
 
