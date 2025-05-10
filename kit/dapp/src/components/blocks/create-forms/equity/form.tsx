@@ -6,6 +6,8 @@ import {
   type CreateEquityInput,
 } from "@/lib/mutations/equity/create/create-schema";
 import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import { isAddressAvailable } from "@/lib/queries/equity-factory/equity-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/equity-factory/equity-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
@@ -87,6 +89,8 @@ export function CreateEquityForm({
             form={equityForm}
             onBack={onPrevStep}
             onSubmit={verificationWrapper(createEquity)}
+            predictAddress={getPredictedAddress}
+            isAddressAvailable={isAddressAvailable}
           />
         );
       default:

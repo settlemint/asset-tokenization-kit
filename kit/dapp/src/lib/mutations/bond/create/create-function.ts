@@ -7,8 +7,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { formatDate } from "@/lib/utils/date";
 import { grantRolesToAdmins } from "@/lib/utils/role-granting";
-import { safeParse } from "@/lib/utils/typebox";
-import { t } from "elysia";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import type { CreateBondInput } from "./create-schema";
 

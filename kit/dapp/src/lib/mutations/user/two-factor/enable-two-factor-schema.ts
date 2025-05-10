@@ -1,5 +1,4 @@
-import type { StaticDecode } from "@/lib/utils/typebox";
-import { t } from "elysia";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 export function EnableTwoFactorSchema() {
   return t.Object(

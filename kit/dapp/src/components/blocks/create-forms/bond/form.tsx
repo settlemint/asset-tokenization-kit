@@ -6,6 +6,8 @@ import {
   type CreateBondInput,
 } from "@/lib/mutations/bond/create/create-schema";
 import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
@@ -91,6 +93,8 @@ export function CreateBondForm({
             form={bondForm}
             onBack={onPrevStep}
             onSubmit={verificationWrapper(createBond)}
+            predictAddress={getPredictedAddress}
+            isAddressAvailable={isAddressAvailable}
           />
         );
       default:

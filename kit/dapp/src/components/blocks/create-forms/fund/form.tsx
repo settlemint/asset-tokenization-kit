@@ -6,6 +6,8 @@ import {
   type CreateFundInput,
 } from "@/lib/mutations/fund/create/create-schema";
 import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import { isAddressAvailable } from "@/lib/queries/fund-factory/fund-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/fund-factory/fund-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
@@ -89,6 +91,8 @@ export function CreateFundForm({
             form={fundForm}
             onBack={onPrevStep}
             onSubmit={verificationWrapper(createFund)}
+            predictAddress={getPredictedAddress}
+            isAddressAvailable={isAddressAvailable}
           />
         );
       default:
