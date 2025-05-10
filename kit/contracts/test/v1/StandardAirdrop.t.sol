@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test, console } from "forge-std/Test.sol";
 import { StandardAirdrop } from "../../contracts/v1/StandardAirdrop.sol";
@@ -109,13 +109,16 @@ contract StandardAirdropTest is Test {
     // Test constructor constraints
     function testConstructorRequiresValidTimeframe() public {
         vm.startPrank(owner);
-        vm.expectRevert("End time must be after start time");
+        // vm.expectRevert("End time must be after start time");
+        uint256 sTime = 10;
+        uint256 eTime = 5;
+        vm.expectRevert(abi.encodeWithSelector(StandardAirdrop.EndTimeNotAfterStartTime.selector, sTime, eTime));
         new StandardAirdrop(
             address(token),
             merkleRoot,
             owner,
-            10, // startTime
-            5, // endTime < startTime, should revert
+            sTime, // startTime
+            eTime, // endTime < startTime, should revert
             trustedForwarder
         );
         vm.stopPrank();

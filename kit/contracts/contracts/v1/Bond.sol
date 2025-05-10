@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
@@ -16,6 +16,7 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IFixedYield } from "../interfaces/IFixedYield.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title Bond - A standard bond token implementation with face value in underlying asset
 /// @notice This contract implements an ERC20 token representing a standard bond with fixed-income characteristics and
@@ -35,7 +36,8 @@ contract Bond is
     ERC20Blocklist,
     ERC20Custodian,
     ERC20Yield,
-    ERC2771Context
+    ERC2771Context,
+    ReentrancyGuard
 {
     using SafeERC20 for IERC20;
 
@@ -300,7 +302,7 @@ contract Bond is
     /// @notice Allows topping up the contract with underlying assets
     /// @dev Anyone can top up the contract with underlying assets
     /// @param amount The amount of underlying assets to top up
-    function topUpUnderlyingAsset(uint256 amount) external {
+    function topUpUnderlyingAsset(uint256 amount) external nonReentrant {
         if (amount == 0) revert InvalidAmount();
 
         bool success = underlyingAsset.transferFrom(_msgSender(), address(this), amount);
@@ -313,14 +315,21 @@ contract Bond is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
     /// @param amount The amount of underlying assets to withdraw
-    function withdrawUnderlyingAsset(address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+    function withdrawUnderlyingAsset(
+        address to,
+        uint256 amount
+    )
+        external
+        nonReentrant
+        onlyRole(SUPPLY_MANAGEMENT_ROLE)
+    {
         _withdrawUnderlyingAsset(to, amount);
     }
 
     /// @notice Allows withdrawing all excess underlying assets
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
-    function withdrawExcessUnderlyingAssets(address to) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+    function withdrawExcessUnderlyingAssets(address to) external nonReentrant onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         uint256 withdrawable = withdrawableUnderlyingAmount();
         if (withdrawable == 0) revert InsufficientUnderlyingBalance();
 
@@ -330,13 +339,13 @@ contract Bond is
     /// @notice Allows redeeming bonds for underlying assets after maturity
     /// @dev Can be called multiple times until all bonds are redeemed
     /// @param amount The amount of bonds to redeem
-    function redeem(uint256 amount) external onlyMatured {
+    function redeem(uint256 amount) external nonReentrant onlyMatured {
         _redeem(_msgSender(), amount);
     }
 
     /// @notice Allows redeeming all available bonds for underlying assets after maturity
     /// @dev Can only be called after the bond has matured
-    function redeemAll() external onlyMatured {
+    function redeemAll() external nonReentrant onlyMatured {
         uint256 redeemableAmount = balanceOf(_msgSender());
         if (redeemableAmount == 0) revert InvalidRedemptionAmount();
 
@@ -373,7 +382,7 @@ contract Bond is
 
     /// @notice Tops up the contract with exactly the amount needed for all redemptions
     /// @dev Will revert if no assets are missing or if the transfer fails
-    function topUpMissingAmount() external {
+    function topUpMissingAmount() external nonReentrant {
         uint256 missing = missingUnderlyingAmount();
         if (missing == 0) revert InvalidAmount();
 
@@ -508,7 +517,15 @@ contract Bond is
     /// @param token The token to withdraw
     /// @param to The recipient address
     /// @param amount The amount to withdraw
-    function withdrawToken(address token, address to, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function withdrawToken(
+        address token,
+        address to,
+        uint256 amount
+    )
+        external
+        nonReentrant
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         if (token == address(0)) revert InvalidTokenAddress();
         if (to == address(0)) revert InvalidTokenAddress();
         if (token == address(underlyingAsset)) revert CannotWithdrawUnderlyingAsset();
@@ -526,7 +543,15 @@ contract Bond is
     /// @param from The address to take tokens from
     /// @param to The recipient address
     /// @param amount The amount to clawback
-    function clawback(address from, address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+    function clawback(
+        address from,
+        address to,
+        uint256 amount
+    )
+        external
+        nonReentrant
+        onlyRole(SUPPLY_MANAGEMENT_ROLE)
+    {
         if (from == address(0)) revert InvalidTokenAddress();
         if (to == address(0)) revert InvalidTokenAddress();
         if (amount == 0) return;

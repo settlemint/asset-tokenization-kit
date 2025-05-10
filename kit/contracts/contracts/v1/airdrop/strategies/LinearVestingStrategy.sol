@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { IClaimStrategy } from "../interfaces/IClaimStrategy.sol";
@@ -15,6 +15,10 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
  * Now includes ERC2771 support for meta-transactions (primarily for Ownable).
  */
 contract LinearVestingStrategy is IClaimStrategy, Ownable, ReentrancyGuard, ERC2771Context {
+    // Custom Errors
+    error InvalidVestingDuration(uint256 vestingDuration);
+    error InvalidCliffDuration(uint256 cliffDuration, uint256 vestingDuration);
+
     // Vesting parameters
     uint256 public immutable vestingDuration;
     uint256 public immutable cliffDuration;
@@ -51,9 +55,13 @@ contract LinearVestingStrategy is IClaimStrategy, Ownable, ReentrancyGuard, ERC2
         Ownable(initialOwner)
         ERC2771Context(trustedForwarder)
     {
-        require(_vestingDuration > 0, "Vesting duration must be positive");
+        if (_vestingDuration == 0) {
+            revert InvalidVestingDuration(_vestingDuration);
+        }
         // Allow cliffDuration == 0
-        require(_cliffDuration <= _vestingDuration, "Cliff cannot exceed duration");
+        if (_cliffDuration > _vestingDuration) {
+            revert InvalidCliffDuration(_cliffDuration, _vestingDuration);
+        }
         vestingDuration = _vestingDuration;
         cliffDuration = _cliffDuration;
     }

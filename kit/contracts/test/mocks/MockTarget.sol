@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { Vault } from "../../contracts/v1/Vault.sol"; // Adjust path if needed
@@ -13,6 +13,12 @@ contract MockTarget is Test {
 
     event ActionCalled(address indexed caller, uint256 value, bytes data);
     event ReentrancyAttempt(address indexed caller, uint256 txIndex);
+
+    // Custom Errors
+    error ReentrancyGuardIncorrectRevertReason(string reason);
+    error MockTargetFailedToSendEth();
+    error ReentrancyGuardShouldHaveReverted();
+    error ReentrancyGuardShouldHavePreventedCall();
 
     function performAction(uint256 number) external payable {
         valueReceived = msg.value;
@@ -28,20 +34,30 @@ contract MockTarget is Test {
         emit ReentrancyAttempt(msg.sender, txIndex);
         // Attempt to call back into a nonReentrant function (e.g., confirm)
         try _vault.confirm(txIndex) {
-            revert("ReentrancyGuard should have prevented this"); // Should not succeed
+            revert ReentrancyGuardShouldHavePreventedCall(); // Should not succeed
         } catch Error(string memory reason) {
             // Expected: Revert due to ReentrancyGuard
-            require(
-                keccak256(bytes(reason)) == keccak256(bytes("ReentrancyGuard: reentrant call")),
-                "Incorrect revert reason"
-            );
+            if (keccak256(bytes(reason)) != keccak256(bytes("ReentrancyGuard: reentrant call"))) {
+                revert ReentrancyGuardIncorrectRevertReason(reason);
+            }
         } catch {
-            revert("ReentrancyGuard should have reverted"); // Catch any other unexpected revert
+            revert ReentrancyGuardShouldHaveReverted(); // Catch any other unexpected revert
         }
     }
 
     // Function that intentionally fails for testing ExecutionFailed revert
     function failAction() external pure {
         revert("Intentional failure");
+    }
+
+    // Allows withdrawing all ETH from this contract.
+    function withdrawEth() external {
+        uint256 balance = address(this).balance;
+        if (balance > 0) {
+            (bool sent,) = msg.sender.call{ value: balance }("");
+            if (!sent) {
+                revert MockTargetFailedToSendEth();
+            }
+        }
     }
 }

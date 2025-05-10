@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test, console, Vm } from "forge-std/Test.sol";
 import { AirdropFactory } from "../../contracts/v1/AirdropFactory.sol";
@@ -175,7 +175,7 @@ contract AirdropFactoryTest is Test {
     function testDeployStandardAirdropWithInvalidTimeParameters() public {
         vm.startPrank(deployer);
 
-        vm.expectRevert("End time must be after start time");
+        vm.expectRevert(abi.encodeWithSelector(StandardAirdrop.EndTimeNotAfterStartTime.selector, endTime, startTime));
         // Remove trustedForwarder argument
         factory.deployStandardAirdrop(address(token), merkleRoot, owner, endTime, startTime);
 
@@ -186,10 +186,29 @@ contract AirdropFactoryTest is Test {
     function testDeployLinearVestingAirdropWithInvalidClaimPeriod() public {
         vm.startPrank(deployer);
 
-        vm.expectRevert("Claim period must be in the future");
+        uint256 invalidClaimPeriodEnd = block.timestamp; // Same as current block time, so not in future.
+        // The error ClaimPeriodNotInFuture(claimPeriodEnd, block.timestamp) means claimPeriodEnd is the first arg.
+        // The failing test log showed ClaimPeriodNotInFuture(1, 1) when block.timestamp was 1.
+        // Here, factory.deployLinearVestingAirdrop is called with block.timestamp as the claimPeriodEnd.
+        // So the error will be ClaimPeriodNotInFuture(invalidClaimPeriodEnd, block.timestamp + 1) or similar if
+        // block.timestamp increments.
+        // Let's assume the check is against block.timestamp at the point of the check within the constructor.
+        // The log showed ClaimPeriodNotInFuture(X, Y) where X was the input claimPeriodEnd and Y was current time.
+        // Here, the input is block.timestamp (let's call it T1). Inside the constructor, block.timestamp (T2) might be
+        // T1 or T1+1.
+        // The error in the log was ClaimPeriodNotInFuture(1, 1). This suggests it might be (proposedEnd,
+        // actualEndUsedForComparison).
+        // VestingAirdrop's constructor: require(claimPeriodEnd_ > block.timestamp, "Claim period must be in the
+        // future");
+        // The custom error likely is ClaimPeriodNotInFuture(claimPeriodEnd_, block.timestamp)
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                VestingAirdrop.ClaimPeriodNotInFuture.selector, invalidClaimPeriodEnd, block.timestamp
+            )
+        );
         // Remove trustedForwarder argument
         factory.deployLinearVestingAirdrop(
-            address(token), merkleRoot, owner, vestingDuration, cliffDuration, block.timestamp
+            address(token), merkleRoot, owner, vestingDuration, cliffDuration, invalidClaimPeriodEnd
         );
 
         vm.stopPrank();
@@ -199,9 +218,18 @@ contract AirdropFactoryTest is Test {
     function testDeployLinearVestingWithInvalidParams() public {
         vm.startPrank(deployer);
 
-        vm.expectRevert("Cliff cannot exceed duration");
+        uint256 invalidVestingDuration = 100;
+        uint256 invalidCliffDuration = 200;
+        // The error is InvalidCliffDuration(cliffDuration, vestingDuration)
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LinearVestingStrategy.InvalidCliffDuration.selector, invalidCliffDuration, invalidVestingDuration
+            )
+        );
         // Remove trustedForwarder argument
-        factory.deployLinearVestingAirdrop(address(token), merkleRoot, owner, 100, 200, claimPeriodEnd);
+        factory.deployLinearVestingAirdrop(
+            address(token), merkleRoot, owner, invalidVestingDuration, invalidCliffDuration, claimPeriodEnd
+        );
 
         vm.stopPrank();
     }

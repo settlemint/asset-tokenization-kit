@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test, console } from "forge-std/Test.sol";
 import { VestingAirdrop } from "../../contracts/v1/VestingAirdrop.sol";
@@ -166,7 +166,7 @@ contract VestingAirdropTest is Test {
     // Test constructor constraints
     function testConstructorRequiresValidStrategy() public {
         vm.startPrank(owner);
-        vm.expectRevert("Invalid claim strategy");
+        vm.expectRevert(abi.encodeWithSelector(VestingAirdrop.InvalidClaimStrategyAddress.selector, address(0)));
         new VestingAirdrop(
             address(token),
             merkleRoot,
@@ -180,13 +180,16 @@ contract VestingAirdropTest is Test {
 
     function testConstructorRequiresFutureClaimPeriodEnd() public {
         vm.startPrank(owner);
-        vm.expectRevert("Claim period must be in the future");
+        uint256 pastClaimPeriodEnd = block.timestamp - 1;
+        vm.expectRevert(
+            abi.encodeWithSelector(VestingAirdrop.ClaimPeriodNotInFuture.selector, pastClaimPeriodEnd, block.timestamp)
+        );
         new VestingAirdrop(
             address(token),
             merkleRoot,
             owner,
             address(vestingStrategy),
-            block.timestamp - 1, // claimPeriodEnd in the past, should revert
+            pastClaimPeriodEnd, // claimPeriodEnd in the past, should revert
             trustedForwarder
         );
         vm.stopPrank();
@@ -283,7 +286,7 @@ contract VestingAirdropTest is Test {
         vm.startPrank(owner);
 
         // Set zero address should fail
-        vm.expectRevert("Invalid claim strategy");
+        vm.expectRevert(abi.encodeWithSelector(VestingAirdrop.InvalidClaimStrategyAddress.selector, address(0)));
         airdrop.setClaimStrategy(address(0));
 
         vm.stopPrank();
