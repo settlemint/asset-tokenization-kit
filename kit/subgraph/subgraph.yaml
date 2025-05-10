@@ -4,7 +4,7 @@ indexerHints:
 schema:
   file: ./schema.graphql
 dataSources:
-  - kind: ethereum
+  - kind: ethereum/contract
     name: Forwarder
     network: settlemint
     source:
@@ -25,7 +25,7 @@ dataSources:
         - event: ExecutedForwardRequest(indexed address,uint256,bool)
           handler: handleExecutedForwardRequest
       file: ./src/event-handlers/forwarder.ts
-  - kind: ethereum
+  - kind: ethereum/contract
     name: SMARTDeploymentRegistry
     network: settlemint
     source:
@@ -43,18 +43,66 @@ dataSources:
         - name: SMARTDeploymentRegistry
           file: ../contracts/artifacts/contracts/SMARTDeploymentRegistry.sol/SMARTDeploymentRegistry.json
       eventHandlers:
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: SMARTComplianceModuleRegistered(indexed address,indexed address,uint256)
+        - event:
+            SMARTComplianceModuleRegistered(indexed address,indexed
+            address,uint256)
           handler: handleSMARTComplianceModuleRegistered
-        - event: SMARTDeploymentRegistered(indexed address,uint256,address,address,address,address,address)
+        - event:
+            SMARTDeploymentRegistered(indexed
+            address,uint256,address,address,address,address,address)
           handler: handleSMARTDeploymentRegistered
         - event: SMARTDeploymentReset(indexed address,uint256)
           handler: handleSMARTDeploymentReset
-        - event: SMARTTokenRegistryRegistered(indexed address,string,indexed bytes32,indexed address,uint256)
+        - event:
+            SMARTTokenRegistryRegistered(indexed address,string,indexed
+            bytes32,indexed address,uint256)
           handler: handleSMARTTokenRegistryRegistered
       file: ./src/event-handlers/deployment-registry.ts
+templates:
+  - kind: ethereum/contract
+    name: IdentityRegistryStorage
+    source:
+      abi: IdentityRegistryStorage
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: IdentityRegistryStorage
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityRegistryStorage.sol/SMARTIdentityRegistryStorage.json
+      eventHandlers:
+        - event: CountryModified(indexed address,uint16)
+          handler: handleCountryModified
+        - event: IdentityModified(indexed address,indexed address)
+          handler: handleIdentityModified
+        - event: IdentityRegistryBound(indexed address)
+          handler: handleIdentityRegistryBound
+        - event: IdentityRegistryUnbound(indexed address)
+          handler: handleIdentityRegistryUnbound
+        - event: IdentityStored(indexed address,indexed address)
+          handler: handleIdentityStored
+        - event: IdentityUnstored(indexed address,indexed address)
+          handler: handleIdentityUnstored
+        - event: Initialized(uint64)
+          handler: handleInitialized
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: Upgraded(indexed address)
+          handler: handleUpgraded
+      file: ./src/event-handlers/identity-registry-storage.ts
+    network: settlemint

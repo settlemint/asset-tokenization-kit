@@ -38,6 +38,7 @@ type Internal_AccessControl @entity(immutable: false) {
   userManagers: [Address!]!
   signers: [Address!]!
   deploymentOwners: [Address!]!
+  storageModifiers: [Address!]!
 }
 
 type System_DeploymentRegistry @entity(immutable: false) {

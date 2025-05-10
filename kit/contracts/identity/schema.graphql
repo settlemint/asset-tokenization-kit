@@ -1,0 +1,6 @@
+type ExampleEntity @entity(immutable: true) {
+  id: Bytes!
+  count: BigInt!
+  executionId: BigInt! # uint256
+  approved: Boolean! # bool
+}

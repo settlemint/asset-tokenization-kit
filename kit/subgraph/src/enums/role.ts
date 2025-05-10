@@ -14,6 +14,9 @@ const SIGNER_ROLE = crypto
 const DEPLOYMENT_OWNER_ROLE = crypto
   .keccak256(ByteArray.fromUTF8("DEPLOYMENT_OWNER_ROLE"))
   .toHexString();
+const STORAGE_MODIFIER_ROLE = crypto
+  .keccak256(ByteArray.fromUTF8("STORAGE_MODIFIER_ROLE"))
+  .toHexString();
 
 export class Role {
   static DEFAULT_ADMIN_ROLE: string = DEFAULT_ADMIN_ROLE;
@@ -21,6 +24,7 @@ export class Role {
   static USER_MANAGEMENT_ROLE: string = USER_MANAGEMENT_ROLE;
   static SIGNER_ROLE: string = SIGNER_ROLE;
   static DEPLOYMENT_OWNER_ROLE: string = DEPLOYMENT_OWNER_ROLE;
+  static STORAGE_MODIFIER_ROLE: string = STORAGE_MODIFIER_ROLE;
 }
 
 export function RoleArrayMapping(role: Bytes): string {
@@ -40,8 +44,11 @@ export function RoleArrayMapping(role: Bytes): string {
   if (roleHex == Role.DEPLOYMENT_OWNER_ROLE) {
     return "deploymentOwners";
   }
+  if (roleHex == Role.STORAGE_MODIFIER_ROLE) {
+    return "storageModifiers";
+  }
   log.error(
-    "Invalid role -> roleHex: {}, DEFAULT_ADMIN_ROLE: {}, SUPPLY_MANAGEMENT_ROLE: {}, USER_MANAGEMENT_ROLE: {}, SIGNER_ROLE: {}, DEPLOYMENT_OWNER_ROLE: {}",
+    "Invalid role -> roleHex: {}, DEFAULT_ADMIN_ROLE: {}, SUPPLY_MANAGEMENT_ROLE: {}, USER_MANAGEMENT_ROLE: {}, SIGNER_ROLE: {}, DEPLOYMENT_OWNER_ROLE: {}, STORAGE_MODIFIER_ROLE: {}",
     [
       roleHex,
       Role.DEFAULT_ADMIN_ROLE,
@@ -49,6 +56,7 @@ export function RoleArrayMapping(role: Bytes): string {
       Role.USER_MANAGEMENT_ROLE,
       Role.SIGNER_ROLE,
       Role.DEPLOYMENT_OWNER_ROLE,
+      Role.STORAGE_MODIFIER_ROLE,
     ]
   );
   throw new Error("Invalid role");
