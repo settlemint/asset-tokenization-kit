@@ -43,19 +43,26 @@ dataSources:
         - name: SMARTDeploymentRegistry
           file: ../contracts/artifacts/contracts/SMARTDeploymentRegistry.sol/SMARTDeploymentRegistry.json
       eventHandlers:
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: SMARTComplianceModuleRegistered(indexed address,indexed address,uint256)
+        - event:
+            SMARTComplianceModuleRegistered(indexed address,indexed
+            address,uint256)
           handler: handleSMARTComplianceModuleRegistered
-        - event: SMARTDeploymentRegistered(indexed address,uint256,address,address,address,address,address)
+        - event:
+            SMARTDeploymentRegistered(indexed
+            address,uint256,address,address,address,address,address)
           handler: handleSMARTDeploymentRegistered
         - event: SMARTDeploymentReset(indexed address,uint256)
           handler: handleSMARTDeploymentReset
-        - event: SMARTTokenRegistryRegistered(indexed address,string,indexed bytes32,indexed address,uint256)
+        - event:
+            SMARTTokenRegistryRegistered(indexed address,string,indexed
+            bytes32,indexed address,uint256)
           handler: handleSMARTTokenRegistryRegistered
       file: ./src/event-handlers/deployment-registry.ts
 templates:
@@ -88,7 +95,8 @@ templates:
           handler: handleIdentityUnstored
         - event: Initialized(uint64)
           handler: handleInitialized
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
@@ -115,21 +123,65 @@ templates:
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
-        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed address,bytes,bytes,string)
+        - event:
+            ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
           handler: handleClaimAdded
-        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed address,bytes,bytes,string)
+        - event:
+            ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
           handler: handleClaimChanged
-        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed address,bytes,bytes,string)
+        - event:
+            ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
           handler: handleClaimRemoved
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
-        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
+        - event:
+            ExecutionFailed(indexed uint256,indexed address,indexed
+            uint256,bytes)
           handler: handleExecutionFailed
-        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
+        - event:
+            ExecutionRequested(indexed uint256,indexed address,indexed
+            uint256,bytes)
           handler: handleExecutionRequested
         - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleKeyAdded
         - event: KeyRemoved(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleKeyRemoved
       file: ./src/event-handlers/identity.ts
+    network: settlemint
+  - kind: ethereum/contract
+    name: TrustedIssuersRegistry
+    source:
+      abi: TrustedIssuersRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: TrustedIssuersRegistry
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTTrustedIssuersRegistry.sol/SMARTTrustedIssuersRegistry.json
+      eventHandlers:
+        - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[])
+          handler: handleClaimTopicsUpdated
+        - event: Initialized(uint64)
+          handler: handleInitialized
+        - event:
+            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: TrustedIssuerAdded(indexed address,indexed address,uint256[])
+          handler: handleTrustedIssuerAdded
+        - event: TrustedIssuerRemoved(indexed address,indexed address)
+          handler: handleTrustedIssuerRemoved
+        - event: Upgraded(indexed address)
+          handler: handleUpgraded
+      file: ./src/event-handlers/trusted-issuers-registry.ts
     network: settlemint

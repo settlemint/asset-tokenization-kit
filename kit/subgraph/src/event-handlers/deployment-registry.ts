@@ -7,7 +7,10 @@ import {
   SMARTDeploymentReset,
   SMARTTokenRegistryRegistered,
 } from "../../generated/SMARTDeploymentRegistry/SMARTDeploymentRegistry";
-import { IdentityRegistryStorage } from "../../generated/templates";
+import {
+  IdentityRegistryStorage,
+  TrustedIssuersRegistry,
+} from "../../generated/templates";
 import { fetchCompliance } from "../fetch/system/compliance";
 import { fetchDeploymentRegistry } from "../fetch/system/deployment-registry";
 import { fetchIdentityFactory } from "../fetch/system/identity-factory";
@@ -72,6 +75,7 @@ export function handleSMARTDeploymentRegistered(
     event.params.trustedIssuersRegistryAddress
   );
   deploymentRegistry.trustedIssuersRegistry = trustedIssuersRegistry.id;
+  TrustedIssuersRegistry.create(event.params.trustedIssuersRegistryAddress);
 
   deploymentRegistry.save();
 }
