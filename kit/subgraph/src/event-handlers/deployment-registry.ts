@@ -1,10 +1,6 @@
 import {
-  RoleAdminChanged,
-  RoleGranted,
-  RoleRevoked,
   SMARTComplianceModuleRegistered,
   SMARTDeploymentRegistered,
-  SMARTDeploymentReset,
   SMARTTokenRegistryRegistered,
 } from "../../generated/SMARTDeploymentRegistry/SMARTDeploymentRegistry";
 import {
@@ -18,25 +14,7 @@ import { fetchIdentityRegistry } from "../fetch/system/identity-registry";
 import { fetchIdentityRegistryStorage } from "../fetch/system/identity-registry-storage";
 import { fetchTokenRegistry } from "../fetch/system/token-registry";
 import { fetchTrustedIssuersRegistry } from "../fetch/system/trusted-issuers-registry";
-import { roleAdminChangedHandler } from "../shared/accesscontrol/role-admin-changed";
-import { roleGrantedHandler } from "../shared/accesscontrol/role-granted";
-import { roleRevokedHandler } from "../shared/accesscontrol/role-revoked";
 import { processEvent } from "../shared/event";
-
-export function handleRoleAdminChanged(event: RoleAdminChanged): void {
-  fetchDeploymentRegistry(event.address);
-  roleAdminChangedHandler(event);
-}
-
-export function handleRoleGranted(event: RoleGranted): void {
-  fetchDeploymentRegistry(event.address);
-  roleGrantedHandler(event, event.params.role, event.params.account);
-}
-
-export function handleRoleRevoked(event: RoleRevoked): void {
-  fetchDeploymentRegistry(event.address);
-  roleRevokedHandler(event, event.params.role, event.params.account);
-}
 
 export function handleSMARTComplianceModuleRegistered(
   event: SMARTComplianceModuleRegistered
@@ -76,19 +54,6 @@ export function handleSMARTDeploymentRegistered(
   );
   deploymentRegistry.trustedIssuersRegistry = trustedIssuersRegistry.id;
   TrustedIssuersRegistry.create(event.params.trustedIssuersRegistryAddress);
-
-  deploymentRegistry.save();
-}
-
-export function handleSMARTDeploymentReset(event: SMARTDeploymentReset): void {
-  processEvent(event, "DeploymentReset");
-  const deploymentRegistry = fetchDeploymentRegistry(event.address);
-
-  deploymentRegistry.compliance = null;
-  deploymentRegistry.identityRegistryStorage = null;
-  deploymentRegistry.identityFactory = null;
-  deploymentRegistry.identityRegistry = null;
-  deploymentRegistry.trustedIssuersRegistry = null;
 
   deploymentRegistry.save();
 }

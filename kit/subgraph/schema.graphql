@@ -41,10 +41,8 @@ type Internal_AccessControl @entity(immutable: false) {
   storageModifiers: [Address!]!
 }
 
-type System_DeploymentRegistry @entity(immutable: false) {
+type System @entity(immutable: false) {
   id: Bytes!
-  asAccessControl: Internal_AccessControl!
-  asAddress: Address!
   compliance: System_Compliance
   identityRegistryStorage: System_IdentityRegistryStorage
   identityFactory: System_IdentityFactory

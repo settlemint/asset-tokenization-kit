@@ -44,13 +44,6 @@ dataSources:
           file: ../contracts/artifacts/contracts/SMARTDeploymentRegistry.sol/SMARTDeploymentRegistry.json
       eventHandlers:
         - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event:
             SMARTComplianceModuleRegistered(indexed address,indexed
             address,uint256)
           handler: handleSMARTComplianceModuleRegistered
@@ -58,8 +51,6 @@ dataSources:
             SMARTDeploymentRegistered(indexed
             address,uint256,address,address,address,address,address)
           handler: handleSMARTDeploymentRegistered
-        - event: SMARTDeploymentReset(indexed address,uint256)
-          handler: handleSMARTDeploymentReset
         - event:
             SMARTTokenRegistryRegistered(indexed address,string,indexed
             bytes32,indexed address,uint256)
@@ -85,25 +76,10 @@ templates:
           handler: handleCountryModified
         - event: IdentityModified(indexed address,indexed address)
           handler: handleIdentityModified
-        - event: IdentityRegistryBound(indexed address)
-          handler: handleIdentityRegistryBound
         - event: IdentityRegistryUnbound(indexed address)
           handler: handleIdentityRegistryUnbound
         - event: IdentityStored(indexed address,indexed address)
           handler: handleIdentityStored
-        - event: IdentityUnstored(indexed address,indexed address)
-          handler: handleIdentityUnstored
-        - event: Initialized(uint64)
-          handler: handleInitialized
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event: Upgraded(indexed address)
-          handler: handleUpgraded
       file: ./src/event-handlers/identity-registry-storage.ts
     network: settlemint
   - kind: ethereum/contract
@@ -168,20 +144,9 @@ templates:
       eventHandlers:
         - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[])
           handler: handleClaimTopicsUpdated
-        - event: Initialized(uint64)
-          handler: handleInitialized
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
         - event: TrustedIssuerAdded(indexed address,indexed address,uint256[])
           handler: handleTrustedIssuerAdded
         - event: TrustedIssuerRemoved(indexed address,indexed address)
           handler: handleTrustedIssuerRemoved
-        - event: Upgraded(indexed address)
-          handler: handleUpgraded
       file: ./src/event-handlers/trusted-issuers-registry.ts
     network: settlemint
