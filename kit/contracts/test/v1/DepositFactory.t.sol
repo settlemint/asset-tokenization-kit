@@ -49,7 +49,7 @@ contract DepositFactoryTest is Test {
         decimalValues[1] = 8;
         decimalValues[2] = 18;
 
-        for (uint256 i = 0; i < decimalValues.length; i++) {
+        for (uint256 i = 0; i < decimalValues.length; ++i) {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 

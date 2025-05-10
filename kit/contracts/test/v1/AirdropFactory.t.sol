@@ -73,7 +73,7 @@ contract AirdropFactoryTest is Test {
 
         // Find the StandardAirdropDeployed event
         bool foundEvent = false;
-        for (uint256 i = 0; i < logs.length; i++) {
+        for (uint256 i = 0; i < logs.length; ++i) {
             // Check if this is our event
             if (logs[i].topics[0] == STANDARD_AIRDROP_DEPLOYED_EVENT_SIG) {
                 foundEvent = true;
@@ -125,7 +125,7 @@ contract AirdropFactoryTest is Test {
 
         // Find the VestingAirdropDeployed event
         bool foundEvent = false;
-        for (uint256 i = 0; i < logs.length; i++) {
+        for (uint256 i = 0; i < logs.length; ++i) {
             // Check if this is our event
             if (logs[i].topics[0] == VESTING_AIRDROP_DEPLOYED_EVENT_SIG) {
                 foundEvent = true;

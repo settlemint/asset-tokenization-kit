@@ -164,7 +164,7 @@ contract XvPSettlementFactoryTest is Test {
 
         // Find and verify XvPSettlementCreated event
         bool foundEvent = false;
-        for (uint256 i = 0; i < entries.length; i++) {
+        for (uint256 i = 0; i < entries.length; ++i) {
             VmSafe.Log memory entry = entries[i];
             if (entry.topics[0] == keccak256("XvPSettlementCreated(address,address)")) {
                 foundEvent = true;

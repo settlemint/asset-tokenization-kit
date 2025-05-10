@@ -125,7 +125,7 @@ contract SMARTDepositTest is Test {
         decimalValues[1] = 6;
         decimalValues[2] = 8; // Test max decimals
 
-        for (uint256 i = 0; i < decimalValues.length; i++) {
+        for (uint256 i = 0; i < decimalValues.length; ++i) {
             SMARTDeposit newToken = _createDeposit(
                 "Deposit", "DEP", decimalValues[i], new uint256[](0), new SMARTComplianceModuleParamPair[](0), owner
             );

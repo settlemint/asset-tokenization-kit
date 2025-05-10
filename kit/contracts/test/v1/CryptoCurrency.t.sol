@@ -46,7 +46,7 @@ contract CryptoCurrencyTest is Test {
         decimalValues[2] = 8;
         decimalValues[3] = 18; // Test max decimals
 
-        for (uint256 i = 0; i < decimalValues.length; i++) {
+        for (uint256 i = 0; i < decimalValues.length; ++i) {
             vm.startPrank(owner);
             CryptoCurrency newToken =
                 new CryptoCurrency("Test Token", "TEST", decimalValues[i], INITIAL_SUPPLY, owner, address(forwarder));

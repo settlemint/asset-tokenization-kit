@@ -88,7 +88,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
         if (settlementFlows.length == 0) revert EmptyFlows();
 
         uint256 settlementFlowsLength = settlementFlows.length;
-        for (uint256 i = 0; i < settlementFlowsLength; i++) {
+        for (uint256 i = 0; i < settlementFlowsLength; ++i) {
             Flow memory flow = settlementFlows[i];
             if (flow.asset == address(0)) revert InvalidToken();
             if (flow.from == address(0)) revert ZeroAddress();
@@ -138,7 +138,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
         if (_approvals[_msgSender()]) revert SenderAlreadyApprovedSettlement();
 
         uint256 flowsLength = _flows.length;
-        for (uint256 i = 0; i < flowsLength; i++) {
+        for (uint256 i = 0; i < flowsLength; ++i) {
             Flow storage flow = _flows[i];
             if (flow.from == _msgSender()) {
                 uint256 currentAllowance = IERC20(flow.asset).allowance(_msgSender(), address(this));
@@ -172,7 +172,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
         if (!isFullyApproved()) revert XvPSettlementNotApproved();
 
         uint256 flowsLength = _flows.length;
-        for (uint256 i = 0; i < flowsLength; i++) {
+        for (uint256 i = 0; i < flowsLength; ++i) {
             Flow storage flow = _flows[i];
             IERC20(flow.asset).safeTransferFrom(flow.from, flow.to, flow.amount);
         }
@@ -207,7 +207,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     function isFullyApproved() public view returns (bool) {
         // Check all unique "from" addresses for approval
         uint256 flowsLength = _flows.length;
-        for (uint256 i = 0; i < flowsLength; i++) {
+        for (uint256 i = 0; i < flowsLength; ++i) {
             address from = _flows[i].from;
             if (!_approvals[from]) {
                 return false;
@@ -235,7 +235,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     modifier onlyInvolvedSender() {
         bool involved = false;
         uint256 flowsLength = _flows.length;
-        for (uint256 i = 0; i < flowsLength; i++) {
+        for (uint256 i = 0; i < flowsLength; ++i) {
             if (_flows[i].from == _msgSender()) {
                 involved = true;
                 break;

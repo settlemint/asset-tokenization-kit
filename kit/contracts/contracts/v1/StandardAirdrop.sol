@@ -101,7 +101,7 @@ contract StandardAirdrop is AirdropBase {
         uint256 totalAmount = 0;
 
         // Process each claim
-        for (uint256 i = 0; i < indices.length; i++) {
+        for (uint256 i = 0; i < indices.length; ++i) {
             uint256 index = indices[i];
             uint256 amount = amounts[i];
             bytes32[] calldata merkleProof = merkleProofs[i];

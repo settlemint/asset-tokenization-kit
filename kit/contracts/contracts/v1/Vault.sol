@@ -277,7 +277,7 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
         txIndices = new uint256[](batchSize);
 
         // Process each transaction in the batch
-        for (uint256 i = 0; i < batchSize; i++) {
+        for (uint256 i = 0; i < batchSize; ++i) {
             txIndices[i] = _storeTransaction(to[i], value[i], data[i], comments[i]);
             emit SubmitTransaction(sender, txIndices[i], to[i], value[i], data[i], comments[i]);
 
@@ -343,7 +343,7 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
         txIndices = new uint256[](batchSize);
 
         // Process each token transfer in the batch
-        for (uint256 i = 0; i < batchSize; i++) {
+        for (uint256 i = 0; i < batchSize; ++i) {
             bytes memory data = abi.encodeWithSelector(IERC20.transfer.selector, to[i], amounts[i]);
             txIndices[i] = _storeTransaction(tokens[i], 0, data, comments[i]);
             emit SubmitERC20TransferTransaction(sender, txIndices[i], tokens[i], to[i], amounts[i], comments[i]);
@@ -416,7 +416,7 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
         txIndices = new uint256[](batchSize);
 
         // Process each contract call in the batch
-        for (uint256 i = 0; i < batchSize; i++) {
+        for (uint256 i = 0; i < batchSize; ++i) {
             bytes memory data = bytes.concat(selectors[i], abiEncodedArguments[i]);
             txIndices[i] = _storeTransaction(targets[i], values[i], data, comments[i]);
 
@@ -442,7 +442,7 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
 
         address sender = _msgSender();
         // Confirm each transaction in the batch
-        for (uint256 i = 0; i < txIndices.length; i++) {
+        for (uint256 i = 0; i < txIndices.length; ++i) {
             _confirm(txIndices[i], sender);
         }
     }
@@ -509,7 +509,7 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
         address[] memory result = new address[](count);
 
         // Get each confirmer from the EnumerableSet
-        for (uint256 i = 0; i < count; i++) {
+        for (uint256 i = 0; i < count; ++i) {
             result[i] = _txConfirmers[txIndex].at(i);
         }
 
@@ -605,7 +605,7 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
 
         // Clear all confirmations to save gas on future operations
         uint256 confirmerCount = _txConfirmers[txIndex].length();
-        for (uint256 i = 0; i < confirmerCount; i++) {
+        for (uint256 i = 0; i < confirmerCount; ++i) {
             // Always get the first one since we're removing them
             address confirmer = _txConfirmers[txIndex].at(0);
             confirmations[txIndex][confirmer] = false; // Clear the lookup mapping

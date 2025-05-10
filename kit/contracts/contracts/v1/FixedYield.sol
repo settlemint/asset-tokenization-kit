@@ -135,7 +135,7 @@ contract FixedYield is AccessControl, Pausable, ERC2771Context, IFixedYield, Ree
 
         // Calculate and cache period end timestamps
         uint256 totalPeriods = ((endDate_ - startDate_) / interval_) + 1;
-        for (uint256 i = 0; i < totalPeriods; i++) {
+        for (uint256 i = 0; i < totalPeriods; ++i) {
             uint256 timestamp = startDate_ + ((i + 1) * interval_);
             // If this period would end after schedule end date, cap it
             if (timestamp > endDate_) {

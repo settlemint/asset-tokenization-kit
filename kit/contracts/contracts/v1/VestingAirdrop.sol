@@ -188,7 +188,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
         uint256 totalAmountToTransfer = 0;
 
         // First, verify proofs and check eligibility
-        for (uint256 i = 0; i < indices.length; i++) {
+        for (uint256 i = 0; i < indices.length; ++i) {
             uint256 index = indices[i];
             uint256 amount = amounts[i];
             bytes32[] calldata merkleProof = merkleProofs[i];
@@ -229,7 +229,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
     {
         totalAmountToTransfer = 0;
 
-        for (uint256 i = 0; i < indices.length; i++) {
+        for (uint256 i = 0; i < indices.length; ++i) {
             uint256 index = indices[i];
             uint256 amount = amounts[i];
             bool isInitialization = !initializedClaims[index];

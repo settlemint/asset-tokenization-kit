@@ -174,7 +174,7 @@ contract SMARTBondTest is Test {
         decimalValues[2] = 8;
         decimalValues[3] = 18; // Test max decimals
 
-        for (uint256 i = 0; i < decimalValues.length; i++) {
+        for (uint256 i = 0; i < decimalValues.length; ++i) {
             SMARTBond newBond = _createBondAndMint(
                 "Test Bond",
                 "TBOND",
