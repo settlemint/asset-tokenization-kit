@@ -1,6 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { System_TrustedIssuersRegistry } from "../../../generated/schema";
-import { fetchAddress } from "../address";
+import { fetchAccount } from "../account";
 
 export function fetchTrustedIssuersRegistry(
   address: Address
@@ -10,8 +10,8 @@ export function fetchTrustedIssuersRegistry(
   if (!trustedIssuersRegistry) {
     trustedIssuersRegistry = new System_TrustedIssuersRegistry(address);
 
-    const addressEntity = fetchAddress(address);
-    trustedIssuersRegistry.asAddress = addressEntity.id;
+    const account = fetchAccount(address);
+    trustedIssuersRegistry.asAccount = account.id;
 
     trustedIssuersRegistry.save();
   }

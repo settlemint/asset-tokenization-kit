@@ -1,21 +1,11 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { System_DeploymentRegistry } from "../../../generated/schema";
-import { fetchAccessControl } from "../accesscontrol";
-import { fetchAddress } from "../address";
+import { System } from "../../../generated/schema";
 
-export function fetchDeploymentRegistry(
-  address: Address
-): System_DeploymentRegistry {
-  let deploymentRegistry = System_DeploymentRegistry.load(address);
+export function fetchDeploymentRegistry(address: Address): System {
+  let deploymentRegistry = System.load(address);
 
   if (!deploymentRegistry) {
-    deploymentRegistry = new System_DeploymentRegistry(address);
-
-    const accessControl = fetchAccessControl(address);
-    deploymentRegistry.asAccessControl = accessControl.id;
-
-    const addressEntity = fetchAddress(address);
-    deploymentRegistry.asAddress = addressEntity.id;
+    deploymentRegistry = new System(address);
 
     deploymentRegistry.save();
   }

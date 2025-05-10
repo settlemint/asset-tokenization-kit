@@ -43,16 +43,12 @@ dataSources:
         - name: SMARTDeploymentRegistry
           file: ../contracts/artifacts/contracts/SMARTDeploymentRegistry.sol/SMARTDeploymentRegistry.json
       eventHandlers:
-        - event:
-            SMARTComplianceModuleRegistered(indexed address,indexed
-            address,uint256)
+        - event: SMARTComplianceModuleRegistered(indexed address,indexed address,uint256)
           handler: handleSMARTComplianceModuleRegistered
-        - event:
-            SMARTDeploymentRegistered(indexed
+        - event: SMARTDeploymentRegistered(indexed
             address,uint256,address,address,address,address,address)
           handler: handleSMARTDeploymentRegistered
-        - event:
-            SMARTTokenRegistryRegistered(indexed address,string,indexed
+        - event: SMARTTokenRegistryRegistered(indexed address,string,indexed
             bytes32,indexed address,uint256)
           handler: handleSMARTTokenRegistryRegistered
       file: ./src/event-handlers/deployment-registry.ts
@@ -99,27 +95,20 @@ templates:
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
-        - event:
-            ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimAdded
-        - event:
-            ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimChanged
-        - event:
-            ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimRemoved
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
-        - event:
-            ExecutionFailed(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionFailed
-        - event:
-            ExecutionRequested(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionRequested
         - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleKeyAdded
@@ -150,3 +139,24 @@ templates:
           handler: handleTrustedIssuerRemoved
       file: ./src/event-handlers/trusted-issuers-registry.ts
     network: settlemint
+  - kind: ethereum/contract
+    name: IdentityFactory
+    network: settlemint
+    source:
+      abi: IdentityFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: IdentityFactory
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityFactory.sol/SMARTIdentityFactory.json
+      eventHandlers:
+        - event: IdentityCreated(indexed address,indexed address,indexed address)
+          handler: handleIdentityCreated
+        - event: TokenIdentityCreated(indexed address,indexed address,indexed address)
+          handler: handleTokenIdentityCreated
+      file: ./src/event-handlers/identity-factory.ts

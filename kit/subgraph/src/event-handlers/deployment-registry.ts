@@ -4,6 +4,7 @@ import {
   SMARTTokenRegistryRegistered,
 } from "../../generated/SMARTDeploymentRegistry/SMARTDeploymentRegistry";
 import {
+  IdentityFactory,
   IdentityRegistryStorage,
   TrustedIssuersRegistry,
 } from "../../generated/templates";
@@ -44,6 +45,7 @@ export function handleSMARTDeploymentRegistered(
     event.params.identityFactoryAddress
   );
   deploymentRegistry.identityFactory = identityFactory.id;
+  IdentityFactory.create(event.params.identityFactoryAddress);
 
   const identityRegistry = fetchIdentityRegistry(
     event.params.identityRegistryAddress

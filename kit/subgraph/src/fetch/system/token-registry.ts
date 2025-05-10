@@ -1,13 +1,10 @@
 import { Address } from "@graphprotocol/graph-ts";
-import {
-  System_DeploymentRegistry,
-  System_TokenRegistry,
-} from "../../../generated/schema";
-import { fetchAddress } from "../address";
+import { System, System_TokenRegistry } from "../../../generated/schema";
+import { fetchAccount } from "../account";
 
 export function fetchTokenRegistry(
   address: Address,
-  deploymentRegistry: System_DeploymentRegistry,
+  deploymentRegistry: System,
   typeName: string
 ): System_TokenRegistry {
   let tokenRegistry = System_TokenRegistry.load(address);
@@ -17,8 +14,8 @@ export function fetchTokenRegistry(
     tokenRegistry.typeName = typeName;
     tokenRegistry.deploymentRegistry = deploymentRegistry.id;
 
-    const addressEntity = fetchAddress(address);
-    tokenRegistry.asAddress = addressEntity.id;
+    const account = fetchAccount(address);
+    tokenRegistry.asAccount = account.id;
 
     tokenRegistry.save();
   }

@@ -1,6 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { System_IdentityRegistry } from "../../../generated/schema";
-import { fetchAddress } from "../address";
+import { fetchAccount } from "../account";
 
 export function fetchIdentityRegistry(
   address: Address
@@ -10,8 +10,8 @@ export function fetchIdentityRegistry(
   if (!identityRegistry) {
     identityRegistry = new System_IdentityRegistry(address);
 
-    const addressEntity = fetchAddress(address);
-    identityRegistry.asAddress = addressEntity.id;
+    const account = fetchAccount(address);
+    identityRegistry.asAccount = account.id;
 
     identityRegistry.save();
   }

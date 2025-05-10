@@ -1,6 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { System_Compliance } from "../../../generated/schema";
-import { fetchAddress } from "../address";
+import { fetchAccount } from "../account";
 
 export function fetchCompliance(address: Address): System_Compliance {
   let compliance = System_Compliance.load(address);
@@ -8,8 +8,8 @@ export function fetchCompliance(address: Address): System_Compliance {
   if (!compliance) {
     compliance = new System_Compliance(address);
 
-    const addressEntity = fetchAddress(address);
-    compliance.asAddress = addressEntity.id;
+    const account = fetchAccount(address);
+    compliance.asAccount = account.id;
 
     compliance.save();
   }

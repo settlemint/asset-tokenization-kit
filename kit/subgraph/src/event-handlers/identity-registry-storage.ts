@@ -1,4 +1,3 @@
-import { Identity } from "../../generated/templates";
 import {
   CountryModified,
   IdentityModified,
@@ -16,5 +15,4 @@ export function handleIdentityModified(event: IdentityModified): void {
 
 export function handleIdentityStored(event: IdentityStored): void {
   processEvent(event, "IdentityStored");
-  Identity.create(event.params._identity);
 }

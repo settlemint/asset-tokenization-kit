@@ -2,9 +2,16 @@
 # SMART Indexer
 # --------------------------------------------------
 
-type Address @entity(immutable: true) {
+type Account @entity(immutable: false) {
   id: Bytes!
   isContract: Boolean!
+  identity: Identity
+}
+
+type Identity @entity(immutable: false) {
+  id: Bytes!
+  asAccount: Account
+  wallet: Account
 }
 
 type Event @entity(immutable: true) {
@@ -17,9 +24,9 @@ type Event @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
   # List of accounts involved in the event
-  emitter: Address!
-  sender: Address!
-  involved: [Address!]!
+  emitter: Account!
+  sender: Account!
+  involved: [Account!]!
   # List of values involved in the event
   values: [EventValue!]! @derivedFrom(field: "entry")
 }
@@ -33,12 +40,12 @@ type EventValue @entity(immutable: true) {
 
 type Internal_AccessControl @entity(immutable: false) {
   id: Bytes!
-  admins: [Address!]!
-  supplyManagers: [Address!]!
-  userManagers: [Address!]!
-  signers: [Address!]!
-  deploymentOwners: [Address!]!
-  storageModifiers: [Address!]!
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  signers: [Account!]!
+  deploymentOwners: [Account!]!
+  storageModifiers: [Account!]!
 }
 
 type System @entity(immutable: false) {
@@ -54,32 +61,32 @@ type System @entity(immutable: false) {
 
 type System_Compliance @entity(immutable: false) {
   id: Bytes!
-  asAddress: Address
+  asAccount: Account
 }
 
 type System_IdentityRegistryStorage @entity(immutable: false) {
   id: Bytes!
-  asAddress: Address
+  asAccount: Account
 }
 
 type System_IdentityFactory @entity(immutable: false) {
   id: Bytes!
-  asAddress: Address
+  asAccount: Account
 }
 
 type System_IdentityRegistry @entity(immutable: false) {
   id: Bytes!
-  asAddress: Address
+  asAccount: Account
 }
 
 type System_TrustedIssuersRegistry @entity(immutable: false) {
   id: Bytes!
-  asAddress: Address
+  asAccount: Account
 }
 
 type System_TokenRegistry @entity(immutable: false) {
   id: Bytes!
   typeName: String!
-  deploymentRegistry: System_DeploymentRegistry!
-  asAddress: Address
+  deploymentRegistry: System!
+  asAccount: Account
 }

@@ -1,10 +1,10 @@
 import { Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { Event, EventValue } from "../../generated/schema";
-import { fetchAddress } from "../fetch/address";
+import { fetchAccount } from "../fetch/account";
 
 export function processEvent(event: ethereum.Event, eventType: string): Event {
-  const emitter = fetchAddress(event.address);
-  const txSender = fetchAddress(event.transaction.from);
+  const emitter = fetchAccount(event.address);
+  const txSender = fetchAccount(event.transaction.from);
 
   const entry = new Event(
     event.transaction.hash.concatI32(event.logIndex.toI32())
@@ -22,7 +22,7 @@ export function processEvent(event: ethereum.Event, eventType: string): Event {
   for (let i = 0; i < event.parameters.length; i++) {
     const param = event.parameters[i];
     if (param.value.kind == ethereum.ValueKind.ADDRESS) {
-      const address = fetchAddress(param.value.toAddress());
+      const address = fetchAccount(param.value.toAddress());
       if (
         param.name == "initiator" ||
         param.name == "registrar" ||

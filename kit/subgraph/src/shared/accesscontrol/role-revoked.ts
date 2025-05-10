@@ -1,7 +1,7 @@
 import { Address, Bytes, ethereum, Value } from "@graphprotocol/graph-ts";
 import { RoleArrayMapping } from "../../enums/role";
 import { fetchAccessControl } from "../../fetch/accesscontrol";
-import { fetchAddress } from "../../fetch/address";
+import { fetchAccount } from "../../fetch/account";
 import { processEvent } from "../event";
 
 export function roleRevokedHandler(
@@ -10,7 +10,7 @@ export function roleRevokedHandler(
   account: Address
 ): void {
   processEvent(event, "RoleGranted");
-  const roleHolder = fetchAddress(account);
+  const roleHolder = fetchAccount(account);
   const accessControl = fetchAccessControl(event.address);
 
   const value = accessControl.get(RoleArrayMapping(role));
