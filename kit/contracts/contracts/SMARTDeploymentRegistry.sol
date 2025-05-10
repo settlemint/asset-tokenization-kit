@@ -253,13 +253,15 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
         smartIdentityRegistryContract = SMARTIdentityRegistry(address(0));
         smartTrustedIssuersRegistryContract = SMARTTrustedIssuersRegistry(address(0));
 
-        for (uint256 i = 0; i < complianceModules.length; i++) {
+        uint256 complianceModulesLength = complianceModules.length;
+        for (uint256 i = 0; i < complianceModulesLength; i++) {
             isComplianceModuleRegistered[address(complianceModules[i])] = false;
         }
         delete complianceModules;
 
         // Reset token registries
-        for (uint256 i = 0; i < allRegistryTypeHashes.length; i++) {
+        uint256 allRegistryTypeHashesLength = allRegistryTypeHashes.length;
+        for (uint256 i = 0; i < allRegistryTypeHashesLength; i++) {
             bytes32 typeHash = allRegistryTypeHashes[i];
             address registryAddress = tokenRegistriesByType[typeHash];
             if (registryAddress != address(0)) {

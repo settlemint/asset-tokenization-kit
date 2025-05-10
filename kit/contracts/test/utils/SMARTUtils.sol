@@ -78,7 +78,8 @@ contract SMARTUtils is Test {
     }
 
     function setUpIdentities(address[] memory _wallets) public {
-        for (uint256 i = 0; i < _wallets.length; i++) {
+        uint256 walletsLength = _wallets.length;
+        for (uint256 i = 0; i < walletsLength; i++) {
             setUpIdentity(_wallets[i]);
         }
     }
