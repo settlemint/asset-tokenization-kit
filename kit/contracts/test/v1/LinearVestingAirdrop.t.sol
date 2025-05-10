@@ -129,7 +129,8 @@ contract LinearVestingAirdropTest is Test {
     // Test constructor constraints
     function testConstructorRequiresPositiveVestingDuration() public {
         vm.startPrank(owner);
-        vm.expectRevert("Vesting duration must be positive");
+        // vm.expectRevert("Vesting duration must be positive");
+        vm.expectRevert(abi.encodeWithSelector(LinearVestingStrategy.InvalidVestingDuration.selector, 0));
         new LinearVestingStrategy(
             0, // vestingDuration = 0, should revert
             cliffDuration,
@@ -141,13 +142,19 @@ contract LinearVestingAirdropTest is Test {
 
     function testConstructorRequiresFutureClaimPeriodEnd() public {
         vm.startPrank(owner);
-        vm.expectRevert("Claim period must be in the future");
+        // vm.expectRevert("Claim period must be in the future");
+        uint256 pastClaimPeriodEnd = block.timestamp - 1;
+        // The VestingAirdrop constructor compares claimPeriodEnd_ with block.timestamp at the time of execution.
+        // The error is ClaimPeriodNotInFuture(claimPeriodEnd_, block.timestamp_at_check)
+        vm.expectRevert(
+            abi.encodeWithSelector(VestingAirdrop.ClaimPeriodNotInFuture.selector, pastClaimPeriodEnd, block.timestamp)
+        );
         new VestingAirdrop(
             address(token),
             merkleRoot,
             owner,
             address(vestingStrategy),
-            block.timestamp - 1, // claimPeriodEnd in the past, should revert
+            pastClaimPeriodEnd, // claimPeriodEnd in the past, should revert
             trustedForwarder
         );
         vm.stopPrank();
