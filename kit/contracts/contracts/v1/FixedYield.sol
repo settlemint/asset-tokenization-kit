@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
@@ -8,6 +8,7 @@ import { ERC20Yield } from "../extensions/ERC20Yield.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { IFixedYield } from "../interfaces/IFixedYield.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title FixedYield - A contract for managing token yield distributions
 /// @notice This contract implements a fixed yield schedule for ERC20 tokens, allowing for periodic
@@ -17,7 +18,7 @@ import { IFixedYield } from "../interfaces/IFixedYield.sol";
 /// support. Works with ERC20Yield-compatible tokens to manage yield distributions. Uses timestamps for
 /// period calculations and maintains a history of distributions.
 /// @custom:security-contact support@settlemint.com
-contract FixedYield is AccessControl, Pausable, ERC2771Context, IFixedYield {
+contract FixedYield is AccessControl, Pausable, ERC2771Context, IFixedYield, ReentrancyGuard {
     /// @notice Custom errors for the FixedYield contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error InvalidToken();
@@ -317,7 +318,7 @@ contract FixedYield is AccessControl, Pausable, ERC2771Context, IFixedYield {
 
     /// @notice Claims all available yield for the caller
     /// @dev Calculates and transfers all unclaimed yield for completed periods
-    function claimYield() external whenNotPaused {
+    function claimYield() external nonReentrant whenNotPaused {
         uint256 lastPeriod = lastCompletedPeriod();
         if (lastPeriod == 0) revert NoYieldAvailable();
 
@@ -359,7 +360,7 @@ contract FixedYield is AccessControl, Pausable, ERC2771Context, IFixedYield {
 
     /// @notice Allows topping up the contract with underlying assets for yield payments
     /// @param amount The amount of underlying assets to add
-    function topUpUnderlyingAsset(uint256 amount) external whenNotPaused {
+    function topUpUnderlyingAsset(uint256 amount) external nonReentrant whenNotPaused {
         bool success = _underlyingAsset.transferFrom(_msgSender(), address(this), amount);
         if (!success) revert InsufficientUnderlyingBalance();
 
@@ -370,7 +371,15 @@ contract FixedYield is AccessControl, Pausable, ERC2771Context, IFixedYield {
     /// @dev Only callable by admin
     /// @param to The address to send the underlying assets to
     /// @param amount The amount of underlying assets to withdraw
-    function withdrawUnderlyingAsset(address to, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
+    function withdrawUnderlyingAsset(
+        address to,
+        uint256 amount
+    )
+        external
+        nonReentrant
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        whenNotPaused
+    {
         if (to == address(0)) revert InvalidUnderlyingAsset();
         if (amount == 0) revert InvalidAmount();
 
@@ -386,7 +395,7 @@ contract FixedYield is AccessControl, Pausable, ERC2771Context, IFixedYield {
     /// @notice Withdraws all underlying assets
     /// @dev Only callable by admin
     /// @param to The address to send the underlying assets to
-    function withdrawAllUnderlyingAsset(address to) external onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
+    function withdrawAllUnderlyingAsset(address to) external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
         if (to == address(0)) revert InvalidUnderlyingAsset();
 
         uint256 balance = _underlyingAsset.balanceOf(address(this));

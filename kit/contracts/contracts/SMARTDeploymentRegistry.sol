@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // SMART Protocol Dependencies
 import { SMARTCompliance } from "smart-protocol/contracts/SMARTCompliance.sol";
