@@ -22,10 +22,9 @@ interface SummaryProps {
   form: UseFormReturn<any>;
   configurationCard: React.ReactNode;
   onSubmit: (data: any) => Promise<SafeActionResult<string[]> | any>;
+  predictAddress: (values: any) => Promise<Address>;
+  isAddressAvailable: (address: Address) => Promise<boolean>;
   onBack?: () => void;
-  // Optional functions for address prediction - some asset types may not need these
-  predictAddress?: (values: any) => Promise<Address>;
-  isAddressAvailable?: (address: Address) => Promise<boolean>;
 }
 
 export function Summary({
@@ -46,9 +45,7 @@ export function Summary({
 
   // Fetch and validate predicted address on initial load
   useEffect(() => {
-    if (predictAddress && isAddressAvailable) {
-      validatePredictedAddress();
-    }
+    validatePredictedAddress();
   }, []);
 
   // Validate predicted address before form submission if the functions are provided
