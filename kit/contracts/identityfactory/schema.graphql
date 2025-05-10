@@ -1,4 +1,6 @@
 type ExampleEntity @entity(immutable: true) {
   id: Bytes!
   count: BigInt!
+  initiator: Bytes! # address
+  identity: Bytes! # address
 }

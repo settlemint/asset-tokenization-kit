@@ -1,21 +1,15 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts"
 import {
-  Compliance,
-  DefaultAdminDelayChangeCanceled,
-  DefaultAdminDelayChangeScheduled,
-  DefaultAdminTransferCanceled,
-  DefaultAdminTransferScheduled,
+  IdentityFactory,
+  IdentityCreated,
+  ImplementationAuthoritySet,
   Initialized,
-  RoleAdminChanged,
-  RoleGranted,
-  RoleRevoked,
-  Upgraded
-} from "../generated/Compliance/Compliance"
+  OwnershipTransferred,
+  TokenIdentityCreated
+} from "../generated/IdentityFactory/IdentityFactory"
 import { ExampleEntity } from "../generated/schema"
 
-export function handleDefaultAdminDelayChangeCanceled(
-  event: DefaultAdminDelayChangeCanceled
-): void {
+export function handleIdentityCreated(event: IdentityCreated): void {
   // Entities can be loaded from the store using an ID; this ID
   // needs to be unique across all entities of the same type
   const id = event.transaction.hash.concat(
@@ -36,6 +30,8 @@ export function handleDefaultAdminDelayChangeCanceled(
   entity.count = entity.count + BigInt.fromI32(1)
 
   // Entity fields can be set based on event parameters
+  entity.initiator = event.params.initiator
+  entity.identity = event.params.identity
 
   // Entities can be written to the store with `.save()`
   entity.save()
@@ -55,41 +51,24 @@ export function handleDefaultAdminDelayChangeCanceled(
   // The following functions can then be called on this contract to access
   // state variables and other data:
   //
-  // - contract.DEFAULT_ADMIN_ROLE(...)
-  // - contract.UPGRADE_INTERFACE_VERSION(...)
-  // - contract.canTransfer(...)
-  // - contract.defaultAdmin(...)
-  // - contract.defaultAdminDelay(...)
-  // - contract.defaultAdminDelayIncreaseWait(...)
-  // - contract.getRoleAdmin(...)
-  // - contract.hasRole(...)
+  // - contract.createIdentity(...)
+  // - contract.createTokenIdentity(...)
+  // - contract.getAddressForByteSalt(...)
+  // - contract.getAddressForSaltString(...)
+  // - contract.getIdentity(...)
+  // - contract.getImplementationAuthority(...)
+  // - contract.getTokenIdentity(...)
   // - contract.isTrustedForwarder(...)
   // - contract.owner(...)
-  // - contract.pendingDefaultAdmin(...)
-  // - contract.pendingDefaultAdminDelay(...)
-  // - contract.proxiableUUID(...)
-  // - contract.supportsInterface(...)
   // - contract.trustedForwarder(...)
 }
 
-export function handleDefaultAdminDelayChangeScheduled(
-  event: DefaultAdminDelayChangeScheduled
-): void {}
-
-export function handleDefaultAdminTransferCanceled(
-  event: DefaultAdminTransferCanceled
-): void {}
-
-export function handleDefaultAdminTransferScheduled(
-  event: DefaultAdminTransferScheduled
+export function handleImplementationAuthoritySet(
+  event: ImplementationAuthoritySet
 ): void {}
 
 export function handleInitialized(event: Initialized): void {}
 
-export function handleRoleAdminChanged(event: RoleAdminChanged): void {}
+export function handleOwnershipTransferred(event: OwnershipTransferred): void {}
 
-export function handleRoleGranted(event: RoleGranted): void {}
-
-export function handleRoleRevoked(event: RoleRevoked): void {}
-
-export function handleUpgraded(event: Upgraded): void {}
+export function handleTokenIdentityCreated(event: TokenIdentityCreated): void {}
