@@ -580,4 +580,9 @@ contract SMARTBond is
             revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
         }
     }
+
+    /// @dev Overrides ERC165 to ensure that the SMART implementation is used.
+    function supportsInterface(bytes4 interfaceId) public view virtual override(SMART, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
 }
