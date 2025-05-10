@@ -6,26 +6,26 @@ import {
   beforeAll,
   afterAll
 } from "matchstick-as/assembly/index"
-import { Bytes, Address, BigInt } from "@graphprotocol/graph-ts"
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts"
 import { ExampleEntity } from "../generated/schema"
-import { RoleAdminChanged } from "../generated/SMARTDeploymentRegistry/SMARTDeploymentRegistry"
-import { handleRoleAdminChanged } from "../src/smart-deployment-registry"
-import { createRoleAdminChangedEvent } from "./smart-deployment-registry-utils"
+import { CountryModified } from "../generated/IdentityRegistryStorage/IdentityRegistryStorage"
+import { handleCountryModified } from "../src/identity-registry-storage"
+import { createCountryModifiedEvent } from "./identity-registry-storage-utils"
 
 // Tests structure (matchstick-as >=0.5.0)
 // https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
 
 describe("Describe entity assertions", () => {
   beforeAll(() => {
-    let role = Bytes.fromI32(1234567890)
-    let previousAdminRole = Bytes.fromI32(1234567890)
-    let newAdminRole = Bytes.fromI32(1234567890)
-    let newRoleAdminChangedEvent = createRoleAdminChangedEvent(
-      role,
-      previousAdminRole,
-      newAdminRole
+    let _identityWallet = Address.fromString(
+      "0x0000000000000000000000000000000000000001"
     )
-    handleRoleAdminChanged(newRoleAdminChangedEvent)
+    let _country = 123
+    let newCountryModifiedEvent = createCountryModifiedEvent(
+      _identityWallet,
+      _country
+    )
+    handleCountryModified(newCountryModifiedEvent)
   })
 
   afterAll(() => {
@@ -42,20 +42,14 @@ describe("Describe entity assertions", () => {
     assert.fieldEquals(
       "ExampleEntity",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
-      "role",
-      "1234567890"
+      "_identityWallet",
+      "0x0000000000000000000000000000000000000001"
     )
     assert.fieldEquals(
       "ExampleEntity",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
-      "previousAdminRole",
-      "1234567890"
-    )
-    assert.fieldEquals(
-      "ExampleEntity",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
-      "newAdminRole",
-      "1234567890"
+      "_country",
+      "123"
     )
 
     // More assert options:
