@@ -3,8 +3,9 @@ import { Bond } from "../../generated/templates";
 import { fetchAssetCount } from "../assets/fetch/asset-count";
 import { fetchBond } from "../assets/fetch/bond";
 import { fetchAccount } from "../utils/account";
+import { ActionName, createAction } from "../utils/action";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
-import { AssetType, FactoryType } from "../utils/enums";
+import { ActionType, AssetType, FactoryType, Role } from "../utils/enums";
 import { fetchFactory } from "./fetch/factory";
 
 export function handleBondCreated(event: BondCreated): void {
@@ -24,4 +25,16 @@ export function handleBondCreated(event: BondCreated): void {
   ]);
 
   Bond.create(event.params.token);
+
+  createAction(
+    event,
+    ActionName.MatureBond,
+    event.params.token,
+    ActionType.Admin,
+    asset.maturityDate,
+    null,
+    [event.params.creator],
+    Role.DEFAULT_ADMIN_ROLE,
+    null
+  );
 }
