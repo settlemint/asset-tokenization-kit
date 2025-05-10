@@ -1,5 +1,4 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
-import { getCompletedActions } from "@/lib/actions/completed";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
@@ -27,7 +26,5 @@ export async function generateMetadata({
 }
 
 export default async function ActionsPage() {
-  const actions = await getCompletedActions();
-
-  return <DataTable columns={columns} data={actions} name="actions" />;
+  return <DataTable columns={columns} data={[]} name="actions" />;
 }
