@@ -31,6 +31,9 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
     error ClaimPeriodEnded();
     error ClaimNotEligible();
     error ZeroAmountToTransfer();
+    error InvalidClaimStrategyAddress(address strategyAddress);
+    error ClaimPeriodNotInFuture(uint256 claimPeriodEnd, uint256 currentTimestamp);
+    error StrategyDoesNotSupportVesting(address strategyAddress);
 
     // Events for claim initialization
     event ClaimInitialized(address indexed claimant, uint256 allocatedAmount);
@@ -54,10 +57,16 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
     )
         AirdropBase(tokenAddress, root, initialOwner, trustedForwarder)
     {
-        require(_claimStrategy != address(0), "Invalid claim strategy");
-        require(_claimPeriodEnd > block.timestamp, "Claim period must be in the future");
+        if (_claimStrategy == address(0)) {
+            revert InvalidClaimStrategyAddress(_claimStrategy);
+        }
+        if (_claimPeriodEnd <= block.timestamp) {
+            revert ClaimPeriodNotInFuture(_claimPeriodEnd, block.timestamp);
+        }
         claimStrategy = IClaimStrategy(_claimStrategy);
-        require(claimStrategy.supportsMultipleClaims(), "Strategy must support vesting");
+        if (!claimStrategy.supportsMultipleClaims()) {
+            revert StrategyDoesNotSupportVesting(_claimStrategy);
+        }
         claimPeriodEnd = _claimPeriodEnd;
     }
 
@@ -66,9 +75,14 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
      * @param newStrategy The new claim strategy to use
      */
     function setClaimStrategy(address newStrategy) external onlyOwner {
-        require(newStrategy != address(0), "Invalid claim strategy");
-        claimStrategy = IClaimStrategy(newStrategy);
-        require(claimStrategy.supportsMultipleClaims(), "Strategy must support vesting");
+        if (newStrategy == address(0)) {
+            revert InvalidClaimStrategyAddress(newStrategy);
+        }
+        IClaimStrategy _newClaimStrategy = IClaimStrategy(newStrategy);
+        if (!_newClaimStrategy.supportsMultipleClaims()) {
+            revert StrategyDoesNotSupportVesting(newStrategy);
+        }
+        claimStrategy = _newClaimStrategy;
     }
 
     /**
