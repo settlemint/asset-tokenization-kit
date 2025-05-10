@@ -11,11 +11,11 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
     IERC20 private immutable _yieldToken;
 
     // Mapping: holder => timestamp => balance
-    mapping(address => mapping(uint256 => uint256)) private _historicalBalances;
+    mapping(address holder => mapping(uint256 timestamp => uint256 balance)) private _historicalBalances;
     // Mapping: account => blocked from managing yield
-    mapping(address => bool) private _yieldManagementBlocked;
+    mapping(address account => bool blocked) private _yieldManagementBlocked;
     // Mapping: timestamp => totalSupply
-    mapping(uint256 => uint256) private _historicalTotalSupplies;
+    mapping(uint256 timestamp => uint256 totalSupply) private _historicalTotalSupplies;
 
     constructor(
         string memory name,

@@ -19,13 +19,13 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
     uint256 public immutable claimPeriodEnd;
 
     // Track initialization status for vesting-based claims
-    mapping(uint256 => bool) private initializedClaims;
+    mapping(uint256 index => bool initialized) private initializedClaims;
 
     // Track claim timestamps for each user's index for vesting strategies
-    mapping(uint256 => uint256) private claimTimestamps;
+    mapping(uint256 index => uint256 timestamp) private claimTimestamps;
 
     // Track already claimed amounts for each user's index for vesting
-    mapping(uint256 => uint256) private claimedAmounts;
+    mapping(uint256 index => uint256 claimedAmount) private claimedAmounts;
 
     // Additional errors
     error ClaimPeriodEnded();

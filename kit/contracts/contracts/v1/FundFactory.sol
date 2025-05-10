@@ -20,7 +20,7 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Mapping to track if an address was deployed by this factory
     /// @dev Maps token addresses to a boolean indicating if they were created by this factory
-    mapping(address => bool) public isFactoryFund;
+    mapping(address tokenAddress => bool isFromFactory) public isFactoryFund;
 
     /// @notice Emitted when a new fund token is created
     /// @param token The address of the newly created token

@@ -20,7 +20,7 @@ contract VaultFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Mapping to track if an address was deployed by this factory
     /// @dev Maps vault addresses to a boolean indicating if they were created by this factory
-    mapping(address => bool) public isFactoryVault;
+    mapping(address vaultAddress => bool isFromFactory) public isFactoryVault;
 
     /// @notice Emitted when a new vault is created
     /// @param vault The address of the newly created vault

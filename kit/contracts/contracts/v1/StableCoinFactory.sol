@@ -20,7 +20,7 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Mapping to track if an address was deployed by this factory
     /// @dev Maps token addresses to a boolean indicating if they were created by this factory
-    mapping(address => bool) public isFactoryToken;
+    mapping(address tokenAddress => bool isFromFactory) public isFactoryToken;
 
     /// @notice Emitted when a new stablecoin is created
     /// @param token The address of the newly created token

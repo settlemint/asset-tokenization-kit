@@ -24,7 +24,7 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
     bytes32 public merkleRoot;
 
     // Tracking distributed status (address => distributed)
-    mapping(address => bool) public distributed;
+    mapping(address recipient => bool distributed) public distributed;
 
     // Total tokens distributed so far
     uint256 public totalDistributed;

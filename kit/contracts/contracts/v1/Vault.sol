@@ -109,11 +109,11 @@ contract Vault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyG
     }
 
     // Store confirmers separately to avoid issues with struct containing mapping
-    mapping(uint256 => EnumerableSet.AddressSet) private _txConfirmers;
+    mapping(uint256 txIndex => EnumerableSet.AddressSet confirmers) private _txConfirmers;
 
     /// @notice Quick lookup to check if a signer has confirmed a transaction
     /// @dev txIndex => signer address => has confirmed
-    mapping(uint256 => mapping(address => bool)) public confirmations;
+    mapping(uint256 txIndex => mapping(address signer => bool confirmed)) public confirmations;
 
     /// @notice Array of all transactions (pending and executed)
     Transaction[] public transactions;

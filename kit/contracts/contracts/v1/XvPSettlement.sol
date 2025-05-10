@@ -33,7 +33,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     bool private _claimed; // Whether the settlement has been claimed
     bool private _cancelled; // Whether the settlement has been cancelled
     Flow[] private _flows; // Array of token flows
-    mapping(address => bool) private _approvals; // Maps addresses to their approval status
+    mapping(address party => bool approved) private _approvals; // Maps addresses to their approval status
     uint256 private _createdAt; // Timestamp when the settlement was created
     /// @notice Custom errors for the XvPSettlement contract
     /// @dev These errors provide more gas-efficient and descriptive error handling

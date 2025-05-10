@@ -32,7 +32,7 @@ contract LinearVestingStrategy is IClaimStrategy, Ownable, ReentrancyGuard, ERC2
     }
 
     // Map of user address to their vesting data
-    mapping(address => VestingData) public vestingData;
+    mapping(address account => VestingData data) public vestingData;
 
     // Events
     event VestingInitialized(address indexed account, uint256 totalAmount, uint256 vestingStart);

@@ -60,11 +60,11 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
 
     // Compliance Modules
     ISMARTComplianceModule[] public complianceModules;
-    mapping(address => bool) public isComplianceModuleRegistered;
+    mapping(address moduleAddress => bool isRegistered) public isComplianceModuleRegistered;
 
     // Token Registries by Type
-    mapping(bytes32 => address) public tokenRegistriesByType;
-    mapping(address => bool) public isTokenRegistryAddressUsed;
+    mapping(bytes32 typeHash => address registryAddress) public tokenRegistriesByType;
+    mapping(address tokenAddress => bool isUsed) public isTokenRegistryAddressUsed;
     bytes32[] private allRegistryTypeHashes;
 
     // --- Events ---

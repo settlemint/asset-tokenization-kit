@@ -21,7 +21,7 @@ contract SMARTTokenRegistry is ERC2771Context, AccessControl {
     error TokenNotRegistered(address token); // Error for attempting to unregister a token that is not registered
 
     /// @notice Mapping indicating whether a token address is registered.
-    mapping(address => bool) public isTokenRegistered;
+    mapping(address tokenAddress => bool isRegistered) public isTokenRegistered;
 
     /// @notice Emitted when a token is registered.
     /// @param initiator The address of the initiator of the registration.

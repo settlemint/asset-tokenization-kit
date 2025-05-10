@@ -22,7 +22,7 @@ abstract contract AirdropBase is Ownable, ERC2771Context {
     bytes32 public immutable merkleRoot;
 
     // Track claimed status with bitmap for gas efficiency
-    mapping(uint256 => uint256) private claimedBitMap;
+    mapping(uint256 wordIndex => uint256 bitmap) private claimedBitMap;
 
     // Events
     event Claimed(address indexed claimant, uint256 amount);

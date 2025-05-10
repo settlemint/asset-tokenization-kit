@@ -23,7 +23,7 @@ abstract contract ERC20HistoricalBalances is ISMARTHistoricalBalances {
     error FutureLookup(uint256 requestedTimepoint, uint48 currentTimepoint);
 
     // Track historical balances for each account
-    mapping(address account => Checkpoints.Trace208) private _balanceCheckpoints;
+    mapping(address account => Checkpoints.Trace208 balanceCheckpoints) private _balanceCheckpoints;
 
     // Track historical total supply
     Checkpoints.Trace208 private _totalSupplyCheckpoints;

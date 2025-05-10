@@ -89,7 +89,7 @@ contract Bond is
 
     /// @notice Tracks how many bonds each holder has redeemed
     /// @dev Maps holder address to amount of bonds redeemed
-    mapping(address => uint256) public bondRedeemed;
+    mapping(address holder => uint256 amountRedeemed) public bondRedeemed;
 
     /// @notice Emitted when the bond reaches maturity and is closed
     /// @param timestamp The block timestamp when the bond matured

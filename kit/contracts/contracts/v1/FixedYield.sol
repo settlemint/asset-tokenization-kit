@@ -72,7 +72,7 @@ contract FixedYield is AccessControl, Pausable, ERC2771Context, IFixedYield, Ree
 
     /// @notice Mapping of holder address to last claimed period
     /// @dev Used to track which periods each holder has claimed
-    mapping(address => uint256) private _lastClaimedPeriod;
+    mapping(address holder => uint256 lastClaimedPeriod) private _lastClaimedPeriod;
 
     /// @notice The total amount of yield claimed across all holders
     /// @dev Used to track total distributions and calculate remaining yield
