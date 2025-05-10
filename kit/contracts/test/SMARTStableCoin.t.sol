@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { SMARTStableCoin } from "../contracts/SMARTStableCoin.sol";
@@ -131,7 +131,7 @@ contract SMARTStableCoinTest is Test {
         decimalValues[2] = 8;
         decimalValues[3] = 18; // Test max decimals
 
-        for (uint256 i = 0; i < decimalValues.length; i++) {
+        for (uint256 i = 0; i < decimalValues.length; ++i) {
             SMARTStableCoin newToken = _createStableCoin(
                 "StableCoin", "STBL", decimalValues[i], new uint256[](0), new SMARTComplianceModuleParamPair[](0)
             );

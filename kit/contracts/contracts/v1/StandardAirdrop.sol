@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { AirdropBase } from "./airdrop/AirdropBase.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -19,6 +19,7 @@ contract StandardAirdrop is AirdropBase {
     // Additional errors
     error AirdropNotStarted();
     error AirdropEnded();
+    error EndTimeNotAfterStartTime(uint256 startTime, uint256 endTime);
 
     /**
      * @dev Creates a standard airdrop with time-bound claiming
@@ -39,7 +40,9 @@ contract StandardAirdrop is AirdropBase {
     )
         AirdropBase(tokenAddress, root, initialOwner, trustedForwarder)
     {
-        require(_endTime > _startTime, "End time must be after start time");
+        if (_endTime <= _startTime) {
+            revert EndTimeNotAfterStartTime(_startTime, _endTime);
+        }
         startTime = _startTime;
         endTime = _endTime;
     }
@@ -98,7 +101,7 @@ contract StandardAirdrop is AirdropBase {
         uint256 totalAmount = 0;
 
         // Process each claim
-        for (uint256 i = 0; i < indices.length; i++) {
+        for (uint256 i = 0; i < indices.length; ++i) {
             uint256 index = indices[i];
             uint256 amount = amounts[i];
             bytes32[] calldata merkleProof = merkleProofs[i];

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // OpenZeppelin imports
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -10,6 +10,7 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 // Constants
 import { SMARTConstants } from "./SMARTConstants.sol";
@@ -48,7 +49,8 @@ contract SMARTBond is
     ERC20Capped,
     ERC20Permit,
     ERC20Yield,
-    ERC2771Context
+    ERC2771Context,
+    ReentrancyGuard
 {
     // --- Custom Errors ---
     error BondAlreadyMatured();
@@ -80,7 +82,7 @@ contract SMARTBond is
 
     /// @notice Tracks how many bonds each holder has redeemed
     /// @dev Maps holder address to amount of bonds redeemed
-    mapping(address => uint256) public bondRedeemed;
+    mapping(address holder => uint256 redeemed) public bondRedeemed;
 
     /// @notice Emitted when the bond reaches maturity and is closed
     /// @param timestamp The block timestamp when the bond matured
@@ -254,7 +256,7 @@ contract SMARTBond is
     /// @notice Allows topping up the contract with underlying assets
     /// @dev Anyone can top up the contract with underlying assets
     /// @param amount The amount of underlying assets to top up
-    function topUpUnderlyingAsset(uint256 amount) external {
+    function topUpUnderlyingAsset(uint256 amount) external nonReentrant {
         if (amount == 0) revert InvalidAmount();
 
         bool success = underlyingAsset.transferFrom(_msgSender(), address(this), amount);
@@ -272,6 +274,7 @@ contract SMARTBond is
         uint256 amount
     )
         external
+        nonReentrant
         onlyRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE)
     {
         _withdrawUnderlyingAsset(to, amount);
@@ -280,7 +283,11 @@ contract SMARTBond is
     /// @notice Allows withdrawing all excess underlying assets
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
-    function withdrawExcessUnderlyingAssets(address to) external onlyRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE) {
+    function withdrawExcessUnderlyingAssets(address to)
+        external
+        nonReentrant
+        onlyRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE)
+    {
         uint256 withdrawable = withdrawableUnderlyingAmount();
         if (withdrawable == 0) revert InsufficientUnderlyingBalance();
 
@@ -289,7 +296,7 @@ contract SMARTBond is
 
     /// @notice Tops up the contract with exactly the amount needed for all redemptions
     /// @dev Will revert if no assets are missing or if the transfer fails
-    function topUpMissingAmount() external {
+    function topUpMissingAmount() external nonReentrant {
         uint256 missing = missingUnderlyingAmount();
         if (missing == 0) revert InvalidAmount();
 

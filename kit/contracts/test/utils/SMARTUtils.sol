@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { InfrastructureUtils } from "smart-protocol/test/utils/InfrastructureUtils.sol";
@@ -78,7 +78,8 @@ contract SMARTUtils is Test {
     }
 
     function setUpIdentities(address[] memory _wallets) public {
-        for (uint256 i = 0; i < _wallets.length; i++) {
+        uint256 walletsLength = _wallets.length;
+        for (uint256 i = 0; i < walletsLength; ++i) {
             setUpIdentity(_wallets[i]);
         }
     }

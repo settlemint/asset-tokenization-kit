@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { XvPSettlement } from "./XvPSettlement.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -23,7 +23,7 @@ contract XvPSettlementFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Mapping to track if an address was deployed by this factory
     /// @dev Maps settlement contract addresses to a boolean indicating if they were created by this factory
-    mapping(address => bool) public isFactoryContract;
+    mapping(address settlementAddress => bool isFromFactory) public isFactoryContract;
 
     /// @notice Emitted when a new XvPSettlement contract is created
     /// @param settlement The address of the newly created settlement contract

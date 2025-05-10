@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 
@@ -8,12 +8,21 @@ contract MockERC20 is Test {
     string public name;
     string public symbol;
     uint8 public decimals;
-    mapping(address => uint256) public balanceOf;
-    mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address account => uint256 balance) public balanceOf;
+    mapping(address account => mapping(address spender => uint256 allowance)) public allowance;
     uint256 public totalSupply;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
+
+    // Custom Errors
+    error ERC20BurnAmountExceedsBalance(address from, uint256 balance, uint256 amount);
+    error ERC20TransferFromZeroAddress();
+    error ERC20TransferToZeroAddress();
+    error ERC20TransferAmountExceedsBalance(address from, uint256 balance, uint256 amount);
+    error ERC20ApproveFromZeroAddress();
+    error ERC20ApproveToZeroAddress();
+    error ERC20InsufficientAllowance(address spender, uint256 currentAllowance, uint256 amount);
 
     constructor(string memory _name, string memory _symbol, uint8 _decimals) {
         name = _name;
@@ -28,7 +37,9 @@ contract MockERC20 is Test {
     }
 
     function burn(address from, uint256 amount) public {
-        require(balanceOf[from] >= amount, "ERC20: burn amount exceeds balance");
+        if (balanceOf[from] < amount) {
+            revert ERC20BurnAmountExceedsBalance(from, balanceOf[from], amount);
+        }
         balanceOf[from] -= amount;
         totalSupply -= amount;
         emit Transfer(from, address(0), amount); // Burn event
@@ -54,11 +65,17 @@ contract MockERC20 is Test {
     }
 
     function _transfer(address from, address to, uint256 amount) internal virtual {
-        require(from != address(0), "ERC20: transfer from the zero address");
-        require(to != address(0), "ERC20: transfer to the zero address");
+        if (from == address(0)) {
+            revert ERC20TransferFromZeroAddress();
+        }
+        if (to == address(0)) {
+            revert ERC20TransferToZeroAddress();
+        }
 
         uint256 fromBalance = balanceOf[from];
-        require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
+        if (fromBalance < amount) {
+            revert ERC20TransferAmountExceedsBalance(from, fromBalance, amount);
+        }
         unchecked {
             balanceOf[from] = fromBalance - amount;
         }
@@ -68,8 +85,12 @@ contract MockERC20 is Test {
     }
 
     function _approve(address owner, address spender, uint256 amount) internal virtual {
-        require(owner != address(0), "ERC20: approve from the zero address");
-        require(spender != address(0), "ERC20: approve to the zero address");
+        if (owner == address(0)) {
+            revert ERC20ApproveFromZeroAddress();
+        }
+        if (spender == address(0)) {
+            revert ERC20ApproveToZeroAddress();
+        }
 
         allowance[owner][spender] = amount;
         emit Approval(owner, spender, amount);
@@ -78,7 +99,9 @@ contract MockERC20 is Test {
     function _spendAllowance(address owner, address spender, uint256 amount) internal virtual {
         uint256 currentAllowance = allowance[owner][spender];
         if (currentAllowance != type(uint256).max) {
-            require(currentAllowance >= amount, "ERC20: insufficient allowance");
+            if (currentAllowance < amount) {
+                revert ERC20InsufficientAllowance(spender, currentAllowance, amount);
+            }
             unchecked {
                 _approve(owner, spender, currentAllowance - amount);
             }

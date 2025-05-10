@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { FixedYield } from "../../contracts/v1/FixedYield.sol";
@@ -131,7 +131,7 @@ contract FixedYieldTest is Test {
 
         // Set historical balances for all periods
         uint256[] memory periodEnds = yieldSchedule.allPeriods();
-        for (uint256 i = 0; i < 3; i++) {
+        for (uint256 i = 0; i < 3; ++i) {
             token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
             token.setHistoricalBalance(user2, periodEnds[i], toDecimals(20));
         }
@@ -158,7 +158,7 @@ contract FixedYieldTest is Test {
         uint256[] memory periodEnds = yieldSchedule.allPeriods();
 
         // Set historical balances for all periods
-        for (uint256 i = 0; i < periodEnds.length; i++) {
+        for (uint256 i = 0; i < periodEnds.length; ++i) {
             token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
         }
 
@@ -192,7 +192,7 @@ contract FixedYieldTest is Test {
         vm.warp(startDate + (INTERVAL * 3));
 
         // Set historical balances for first 3 periods
-        for (uint256 i = 0; i < 3; i++) {
+        for (uint256 i = 0; i < 3; ++i) {
             token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
         }
 
@@ -206,7 +206,7 @@ contract FixedYieldTest is Test {
         vm.warp(startDate + (INTERVAL * 5) + (INTERVAL / 2));
 
         // Set historical balances for periods 4-5
-        for (uint256 i = 3; i < 5; i++) {
+        for (uint256 i = 3; i < 5; ++i) {
             token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
         }
 
@@ -227,7 +227,7 @@ contract FixedYieldTest is Test {
         vm.warp(endDate);
 
         // Set historical balances for remaining periods
-        for (uint256 i = 5; i < periodEnds.length; i++) {
+        for (uint256 i = 5; i < periodEnds.length; ++i) {
             token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
         }
 
@@ -342,7 +342,7 @@ contract FixedYieldTest is Test {
         assertEq(timestamps.length, expectedPeriods, "Incorrect number of periods");
 
         // Verify each period end timestamp
-        for (uint256 i = 0; i < timestamps.length; i++) {
+        for (uint256 i = 0; i < timestamps.length; ++i) {
             uint256 expectedTimestamp = startDate + ((i + 1) * INTERVAL);
             // Last period should be capped at endDate
             if (expectedTimestamp > endDate) {
@@ -445,7 +445,7 @@ contract FixedYieldTest is Test {
 
         // Set historical balances for all periods
         uint256[] memory periodEnds = yieldSchedule.allPeriods();
-        for (uint256 i = 0; i < 3; i++) {
+        for (uint256 i = 0; i < 3; ++i) {
             token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
             token.setHistoricalBalance(user2, periodEnds[i], toDecimals(20));
             token.setHistoricalTotalSupply(periodEnds[i], token.totalSupply());
@@ -577,7 +577,7 @@ contract FixedYieldTest is Test {
 
         // Set historical balances for all periods
         uint256[] memory periodEnds = yieldSchedule.allPeriods();
-        for (uint256 i = 0; i < periodEnds.length; i++) {
+        for (uint256 i = 0; i < periodEnds.length; ++i) {
             token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
         }
 

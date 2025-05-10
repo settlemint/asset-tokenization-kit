@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -22,7 +22,7 @@ abstract contract AirdropBase is Ownable, ERC2771Context {
     bytes32 public immutable merkleRoot;
 
     // Track claimed status with bitmap for gas efficiency
-    mapping(uint256 => uint256) private claimedBitMap;
+    mapping(uint256 wordIndex => uint256 bitmap) private claimedBitMap;
 
     // Events
     event Claimed(address indexed claimant, uint256 amount);

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { VmSafe } from "forge-std/Vm.sol";
@@ -164,7 +164,7 @@ contract XvPSettlementFactoryTest is Test {
 
         // Find and verify XvPSettlementCreated event
         bool foundEvent = false;
-        for (uint256 i = 0; i < entries.length; i++) {
+        for (uint256 i = 0; i < entries.length; ++i) {
             VmSafe.Log memory entry = entries[i];
             if (entry.topics[0] == keccak256("XvPSettlementCreated(address,address)")) {
                 foundEvent = true;

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test, console } from "forge-std/Test.sol";
 import { PushAirdrop } from "../../contracts/v1/PushAirdrop.sol";
@@ -265,7 +265,7 @@ contract PushAirdropTest is Test {
         bytes32[][] memory proofs = new bytes32[][](tooLargeSize);
 
         // Fill arrays with some values
-        for (uint256 i = 0; i < tooLargeSize; i++) {
+        for (uint256 i = 0; i < tooLargeSize; ++i) {
             recipients[i] = address(uint160(i + 1000)); // Use different addresses
             amounts[i] = 1 ether;
             proofs[i] = new bytes32[](0); // Empty proofs for this test
@@ -289,7 +289,7 @@ contract PushAirdropTest is Test {
         address[] memory recipients = new address[](tooLargeSize);
 
         // Fill array with addresses
-        for (uint256 i = 0; i < tooLargeSize; i++) {
+        for (uint256 i = 0; i < tooLargeSize; ++i) {
             recipients[i] = address(uint160(i + 1000));
         }
 

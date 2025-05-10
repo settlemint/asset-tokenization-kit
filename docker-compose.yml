@@ -53,7 +53,7 @@ services:
 
   # Jaeger
   jaeger-all-in-one:
-    image: jaegertracing/jaeger:2.5.0
+    image: jaegertracing/jaeger:2.6.0
     ports:
       - "16686:16686" # Jaeger UI
       - "14268" # Jaeger collector HTTP
@@ -84,7 +84,7 @@ services:
       - jaeger-all-in-one
 
   victoriametrics:
-    image: victoriametrics/victoria-metrics:v1.116.0-scratch
+    image: victoriametrics/victoria-metrics:v1.117.0-scratch
     restart: always
     ports:
       - "8428:8428" # VictoriaMetrics HTTP API and UI

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { StableCoin } from "../../contracts/v1/StableCoin.sol";
@@ -52,7 +52,7 @@ contract StableCoinTest is Test {
         decimalValues[2] = 8;
         decimalValues[3] = 18; // Test max decimals
 
-        for (uint256 i = 0; i < decimalValues.length; i++) {
+        for (uint256 i = 0; i < decimalValues.length; ++i) {
             vm.startPrank(owner);
             StableCoin newToken =
                 new StableCoin("StableCoin", "STBL", decimalValues[i], owner, COLLATERAL_LIVENESS, address(forwarder));

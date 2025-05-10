@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // SMART Protocol Dependencies
 import { SMARTCompliance } from "smart-protocol/contracts/SMARTCompliance.sol";
@@ -60,11 +60,11 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
 
     // Compliance Modules
     ISMARTComplianceModule[] public complianceModules;
-    mapping(address => bool) public isComplianceModuleRegistered;
+    mapping(address moduleAddress => bool isRegistered) public isComplianceModuleRegistered;
 
     // Token Registries by Type
-    mapping(bytes32 => address) public tokenRegistriesByType;
-    mapping(address => bool) public isTokenRegistryAddressUsed;
+    mapping(bytes32 typeHash => address registryAddress) public tokenRegistriesByType;
+    mapping(address tokenAddress => bool isUsed) public isTokenRegistryAddressUsed;
     bytes32[] private allRegistryTypeHashes;
 
     // --- Events ---
@@ -253,13 +253,15 @@ contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
         smartIdentityRegistryContract = SMARTIdentityRegistry(address(0));
         smartTrustedIssuersRegistryContract = SMARTTrustedIssuersRegistry(address(0));
 
-        for (uint256 i = 0; i < complianceModules.length; i++) {
+        uint256 complianceModulesLength = complianceModules.length;
+        for (uint256 i = 0; i < complianceModulesLength; ++i) {
             isComplianceModuleRegistered[address(complianceModules[i])] = false;
         }
         delete complianceModules;
 
         // Reset token registries
-        for (uint256 i = 0; i < allRegistryTypeHashes.length; i++) {
+        uint256 allRegistryTypeHashesLength = allRegistryTypeHashes.length;
+        for (uint256 i = 0; i < allRegistryTypeHashesLength; ++i) {
             bytes32 typeHash = allRegistryTypeHashes[i];
             address registryAddress = tokenRegistriesByType[typeHash];
             if (registryAddress != address(0)) {

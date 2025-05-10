@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { CryptoCurrency } from "./CryptoCurrency.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -19,7 +19,7 @@ contract CryptoCurrencyFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Mapping to track if an address was deployed by this factory
     /// @dev Maps token addresses to a boolean indicating if they were created by this factory
-    mapping(address => bool) public isFactoryToken;
+    mapping(address tokenAddress => bool isFromFactory) public isFactoryToken;
 
     /// @notice Emitted when a new cryptocurrency token is created
     /// @param token The address of the newly created token

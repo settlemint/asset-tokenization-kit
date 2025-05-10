@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -24,7 +24,7 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
     bytes32 public merkleRoot;
 
     // Tracking distributed status (address => distributed)
-    mapping(address => bool) public distributed;
+    mapping(address recipient => bool distributed) public distributed;
 
     // Total tokens distributed so far
     uint256 public totalDistributed;
@@ -166,7 +166,7 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
         uint256 distributedCount = 0;
 
         // Process each distribution
-        for (uint256 i = 0; i < recipients.length; i++) {
+        for (uint256 i = 0; i < recipients.length; ++i) {
             address recipient = recipients[i];
             uint256 amount = amounts[i];
             bytes32[] calldata merkleProof = merkleProofs[i];
@@ -214,7 +214,7 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
         // Check batch size
         if (recipients.length > MAX_BATCH_SIZE) revert BatchSizeTooLarge();
 
-        for (uint256 i = 0; i < recipients.length; i++) {
+        for (uint256 i = 0; i < recipients.length; ++i) {
             distributed[recipients[i]] = true;
         }
     }
