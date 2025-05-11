@@ -13,7 +13,7 @@ import { ISMARTComplianceModule } from "smart-protocol/contracts/interface/ISMAR
 import { SMARTTokenRegistry } from "./SMARTTokenRegistry.sol";
 
 // OpenZeppelin Contracts
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { AccessControlEnumerable } from "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
@@ -39,10 +39,10 @@ error TokenRegistryAddressAlreadyUsed(address registryAddress);
  *         The deployer of this contract receives DEFAULT_ADMIN_ROLE for overall contract administration.
  *         The first address to successfully call `registerDeployment` receives DEPLOYMENT_OWNER_ROLE.
  *         DEPLOYMENT_OWNER_ROLE is self-administering, meaning holders of this role can grant/revoke it to others.
- * @dev Utilizes AccessControl for permissioning and ERC2771Context for meta-transaction support.
+ * @dev Utilizes AccessControlEnumerable for permissioning and ERC2771Context for meta-transaction support.
  *      Core dependency addresses are stored upon registration.
  */
-contract SMARTDeploymentRegistry is AccessControl, ERC2771Context {
+contract SMARTDeploymentRegistry is AccessControlEnumerable, ERC2771Context {
     // --- Roles ---
     bytes32 public constant DEPLOYMENT_OWNER_ROLE = keccak256("DEPLOYMENT_OWNER_ROLE");
 
