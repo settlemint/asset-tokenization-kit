@@ -10,7 +10,7 @@ type Account @entity(immutable: false) {
 
 type Identity @entity(immutable: false) {
   id: Bytes!
-  asAccount: Account
+  account: Account
   wallet: Account
 }
 
@@ -50,6 +50,7 @@ type Internal_AccessControl @entity(immutable: false) {
 
 type System @entity(immutable: false) {
   id: Bytes!
+  accessControl: Internal_AccessControl!
   compliance: System_Compliance
   identityRegistryStorage: System_IdentityRegistryStorage
   identityFactory: System_IdentityFactory
@@ -61,32 +62,37 @@ type System @entity(immutable: false) {
 
 type System_Compliance @entity(immutable: false) {
   id: Bytes!
-  asAccount: Account
+  accessControl: Internal_AccessControl!
+  account: Account
 }
 
 type System_IdentityRegistryStorage @entity(immutable: false) {
   id: Bytes!
-  asAccount: Account
+  accessControl: Internal_AccessControl!
+  account: Account
 }
 
 type System_IdentityFactory @entity(immutable: false) {
   id: Bytes!
-  asAccount: Account
+  account: Account
 }
 
 type System_IdentityRegistry @entity(immutable: false) {
   id: Bytes!
-  asAccount: Account
+  accessControl: Internal_AccessControl!
+  account: Account
 }
 
 type System_TrustedIssuersRegistry @entity(immutable: false) {
   id: Bytes!
-  asAccount: Account
+  accessControl: Internal_AccessControl!
+  account: Account
 }
 
 type System_TokenRegistry @entity(immutable: false) {
   id: Bytes!
+  accessControl: Internal_AccessControl!
   typeName: String!
   deploymentRegistry: System!
-  asAccount: Account
+  account: Account
 }

@@ -10,7 +10,7 @@ export function fetchIdentity(address: Address, wallet: Address): Identity {
 
     const walletAccount = fetchAccount(wallet);
     const addressAccount = fetchAccount(address);
-    identity.asAccount = addressAccount.id;
+    identity.account = addressAccount.id;
     identity.wallet = walletAccount.id;
     identity.save();
 
