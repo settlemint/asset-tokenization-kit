@@ -4,6 +4,7 @@ import { Bond as BondContract } from "../../../generated/templates/Bond/Bond";
 import { fetchAccount } from "../../utils/account";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType } from "../../utils/enums";
+import { calculateTotalUnderlyingNeeded } from "../calculations/needed-underlying";
 import { fetchAssetDecimals } from "./asset";
 
 export function fetchBond(
@@ -75,9 +76,7 @@ export function fetchBond(
       yieldSchedule.reverted || yieldSchedule.value == Address.zero()
         ? null
         : yieldSchedule.value;
-    bond.totalUnderlyingNeededExact = BigInt.zero();
-    bond.totalUnderlyingNeeded = BigDecimal.zero();
-    bond.hasSufficientUnderlying = false;
+    calculateTotalUnderlyingNeeded(bond);
     bond.save();
 
     account.asAsset = bond.id;

@@ -17,6 +17,7 @@ import {
   UserBlocked,
   UserUnblocked,
 } from "../../generated/templates/Bond/Bond";
+import { actionExecuted, ActionName } from "../utils/action";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { setValueWithDecimals } from "../utils/decimals";
 import { AssetType } from "../utils/enums";
@@ -241,6 +242,7 @@ export function handleBondMatured(event: BondMatured): void {
   ]);
   bond.isMatured = true;
   updateDerivedFieldsAndSave(bond, event.block.timestamp);
+  actionExecuted(event, ActionName.MatureBond, event.address, null);
 }
 
 export function handleBondRedeemed(event: BondRedeemed): void {
