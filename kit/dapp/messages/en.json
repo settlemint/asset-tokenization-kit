@@ -1,33 +1,50 @@
 {
   "actions": {
-    "action-type": {
-      "bond-mature": "Mature Bond"
+    "name": {
+      "ApproveXvPSettlement": "Approve XvP Settlement",
+      "ClaimXvPSettlement": "Claim XvP Settlement",
+      "MatureBond": "Mature Bond"
     },
-    "action-type-header": "Action type",
-    "active-on-header": "Active on",
-    "all-tasks-complete": "All tasks complete!",
-    "all-tasks-complete-description": "You have no pending actions.",
-    "completed-description": {
-      "bond-mature": "The bond has been matured successfully."
+    "description": {
+      "ApproveXvPSettlement": "Approve the XvP Settlement contract to be able to transfer the assets.",
+      "ClaimXvPSettlement": "Execute the XvP Settlement.",
+      "MatureBond": "Mark the bond as matured."
     },
-    "completed-on-header": "Completed on",
-    "description-header": "Description",
+    "columns": {
+      "name": "Name",
+      "subject": "Subject",
+      "description": "Description",
+      "active-at": "Active at",
+      "completed-on": "Completed on",
+      "executed-by": "Executed by"
+    },
     "page": {
       "actions": "Actions",
       "my-actions": "My actions"
     },
-    "pending-description": {
-      "bond-mature": "You need to send the transaction to mature the bond."
-    },
-    "sender-header": "Sender",
-    "subject": "Subject",
     "tabs": {
-      "completed": "Completed",
-      "pending": "Pending",
-      "upcoming": "Upcoming"
-    },
-    "upcoming-description": {
-      "bond-mature": "You will need to send the transaction to mature the bond."
+      "name": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "upcoming": "Upcoming"
+      },
+      "description": {
+        "completed": "Completed actions",
+        "pending": "Pending actions",
+        "upcoming": "Upcoming actions"
+      },
+      "empty-state": {
+        "title": {
+          "completed": "No completed actions",
+          "pending": "No pending actions",
+          "upcoming": "No upcoming actions"
+        },
+        "description": {
+          "completed": "You have no completed actions.",
+          "pending": "You have no pending actions.",
+          "upcoming": "You have no upcoming actions."
+        }
+      }
     }
   },
   "active": "Active",

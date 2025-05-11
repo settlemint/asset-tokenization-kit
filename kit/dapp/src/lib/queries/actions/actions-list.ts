@@ -7,6 +7,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
+import { getTranslations } from "next-intl/server";
 import { cache } from "react";
 import type { Address } from "viem";
 import { ActionExecutorFragment } from "./actions-fragment";
@@ -105,8 +106,13 @@ export const getActionsList = withTracing(
       const actions = validatedActionExecutors.flatMap(
         (actionExecutor) => actionExecutor.actions
       );
+      const t = await getTranslations("actions");
+      const actionsWithNames = actions.map((action) => ({
+        ...action,
+        name: t(`name.${action.name}`), // TODO: do this in the table for events and actions?
+      }));
 
-      return safeParse(ActionsListSchema, actions);
+      return safeParse(ActionsListSchema, actionsWithNames);
     }
   )
 );

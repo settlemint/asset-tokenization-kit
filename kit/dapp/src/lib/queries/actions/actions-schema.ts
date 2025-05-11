@@ -1,6 +1,13 @@
 import type { StaticDecode } from "@/lib/utils/typebox";
 import { t } from "@/lib/utils/typebox";
 
+export const ActionName = t.Union([
+  t.Literal("ApproveXvPSettlement"),
+  t.Literal("ClaimXvPSettlement"),
+  t.Literal("MatureBond"),
+]);
+export type ActionName = StaticDecode<typeof ActionName>;
+
 export const ActionType = t.Union([t.Literal("Admin"), t.Literal("User")]);
 export type ActionType = StaticDecode<typeof ActionType>;
 
@@ -10,7 +17,7 @@ export type ActionType = StaticDecode<typeof ActionType>;
 export const ActionSchema = t.Object(
   {
     id: t.String(),
-    name: t.String(),
+    name: ActionName,
     type: ActionType,
     createdAt: t.String(),
     activeAt: t.String(),
