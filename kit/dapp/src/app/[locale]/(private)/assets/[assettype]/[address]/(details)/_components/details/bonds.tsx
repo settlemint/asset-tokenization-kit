@@ -116,9 +116,23 @@ export async function BondsDetails({
       <DetailGridItem label={t("underlying-asset-balance")}>
         {formatNumber(bond.underlyingBalance, {
           token: bond.underlyingAsset.symbol,
-          decimals: 2,
+          decimals: bond.underlyingAsset.decimals,
           locale: locale,
         })}
+        <span className="text-sm text-muted-foreground">
+          (Needed:
+          {formatNumber(bond.totalUnderlyingNeeded, {
+            token: bond.underlyingAsset.symbol,
+            decimals: bond.underlyingAsset.decimals,
+            locale: locale,
+          })}
+          )
+          {bond.hasSufficientUnderlying ? (
+            <span className="text-green-500">Sufficient</span>
+          ) : (
+            <span className="text-red-500">Insufficient</span>
+          )}
+        </span>
       </DetailGridItem>
       <DetailGridItem label={t("redemption-readiness")}>
         {/* Calculate percentage: (part/total) * 100
