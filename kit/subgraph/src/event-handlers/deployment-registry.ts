@@ -5,6 +5,7 @@ import {
 } from "../../generated/SMARTDeploymentRegistry/SMARTDeploymentRegistry";
 import {
   IdentityFactory,
+  IdentityRegistry,
   IdentityRegistryStorage,
   TrustedIssuersRegistry,
 } from "../../generated/templates";
@@ -51,6 +52,7 @@ export function handleSMARTDeploymentRegistered(
     event.params.identityRegistryAddress
   );
   deploymentRegistry.identityRegistry = identityRegistry.id;
+  IdentityRegistry.create(event.params.identityRegistryAddress);
 
   const trustedIssuersRegistry = fetchTrustedIssuersRegistry(
     event.params.trustedIssuersRegistryAddress
