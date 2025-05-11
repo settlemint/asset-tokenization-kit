@@ -24,7 +24,7 @@ export function Columns({
   return [
     columnHelper.accessor("name", {
       header: t("columns.name"),
-      cell: ({ getValue }) => getValue(),
+      cell: ({ getValue }) => t(`name.${getValue()}`),
       enableColumnFilter: true,
       meta: defineMeta((row) => row.name, {
         displayName: t("columns.name"),
@@ -73,11 +73,11 @@ export function Columns({
             })
           : null,
     }),
-    ...(state === "pending"
-      ? PendingColumns(columnHelper)
-      : state === "executed"
-        ? CompletedColumns(columnHelper)
-        : []),
+    // ...(state === "pending"
+    //   ? PendingColumns(columnHelper)
+    //   : state === "executed"
+    //     ? CompletedColumns(columnHelper)
+    //     : []),
   ];
 }
 

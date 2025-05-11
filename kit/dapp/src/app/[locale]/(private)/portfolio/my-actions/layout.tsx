@@ -36,21 +36,21 @@ export default async function ActionsLayout({ children, params }: LayoutProps) {
   });
   const tabItems: TabItemProps[] = [
     {
-      name: t("tabs.pending"),
+      name: t("tabs.name.pending"),
       href: `/portfolio/my-actions/pending`,
     },
     {
-      name: t("tabs.upcoming"),
+      name: t("tabs.name.upcoming"),
       href: `/portfolio/my-actions/upcoming`,
     },
     {
-      name: t("tabs.completed"),
+      name: t("tabs.name.completed"),
       href: `/portfolio/my-actions/completed`,
     },
   ];
   return (
     <>
-      <PageHeader title={t("page.my-actions")} />
+      <PageHeader title={t("page.actions")} />
       <TabNavigation items={tabItems} />
       {children}
     </>
