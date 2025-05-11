@@ -1,5 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { System_IdentityRegistryStorage } from "../../../generated/schema";
+import { fetchAccessControl } from "../accesscontrol";
 import { fetchAccount } from "../account";
 
 export function fetchIdentityRegistryStorage(
@@ -11,7 +12,10 @@ export function fetchIdentityRegistryStorage(
     identityRegistryStorage = new System_IdentityRegistryStorage(address);
 
     const account = fetchAccount(address);
-    identityRegistryStorage.asAccount = account.id;
+    identityRegistryStorage.account = account.id;
+
+    const accessControl = fetchAccessControl(address);
+    identityRegistryStorage.accessControl = accessControl.id;
 
     identityRegistryStorage.save();
   }

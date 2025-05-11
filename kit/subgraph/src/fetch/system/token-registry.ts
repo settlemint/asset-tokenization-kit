@@ -1,5 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { System, System_TokenRegistry } from "../../../generated/schema";
+import { fetchAccessControl } from "../accesscontrol";
 import { fetchAccount } from "../account";
 
 export function fetchTokenRegistry(
@@ -15,7 +16,10 @@ export function fetchTokenRegistry(
     tokenRegistry.deploymentRegistry = deploymentRegistry.id;
 
     const account = fetchAccount(address);
-    tokenRegistry.asAccount = account.id;
+    tokenRegistry.account = account.id;
+
+    const accessControl = fetchAccessControl(address);
+    tokenRegistry.accessControl = accessControl.id;
 
     tokenRegistry.save();
   }

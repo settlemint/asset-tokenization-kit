@@ -1,11 +1,12 @@
 import {
-  ClaimTopicsUpdated,
+  CountryUpdated,
+  IdentityRegistered,
+  IdentityRemoved,
+  IdentityUpdated,
   RoleAdminChanged,
   RoleGranted,
   RoleRevoked,
-  TrustedIssuerAdded,
-  TrustedIssuerRemoved,
-} from "../../generated/templates/TrustedIssuersRegistry/TrustedIssuersRegistry";
+} from "../../generated/templates/IdentityRegistry/IdentityRegistry";
 import { roleAdminChangedHandler } from "../shared/accesscontrol/role-admin-changed";
 import { roleGrantedHandler } from "../shared/accesscontrol/role-granted";
 import { roleRevokedHandler } from "../shared/accesscontrol/role-revoked";
@@ -23,14 +24,18 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   roleRevokedHandler(event, event.params.role, event.params.account);
 }
 
-export function handleClaimTopicsUpdated(event: ClaimTopicsUpdated): void {
-  processEvent(event, "ClaimTopicsUpdated");
+export function handleCountryUpdated(event: CountryUpdated): void {
+  processEvent(event, "CountryUpdated");
 }
 
-export function handleTrustedIssuerAdded(event: TrustedIssuerAdded): void {
-  processEvent(event, "TrustedIssuerAdded");
+export function handleIdentityRegistered(event: IdentityRegistered): void {
+  processEvent(event, "IdentityRegistered");
 }
 
-export function handleTrustedIssuerRemoved(event: TrustedIssuerRemoved): void {
-  processEvent(event, "TrustedIssuerRemoved");
+export function handleIdentityRemoved(event: IdentityRemoved): void {
+  processEvent(event, "IdentityRemoved");
+}
+
+export function handleIdentityUpdated(event: IdentityUpdated): void {
+  processEvent(event, "IdentityUpdated");
 }

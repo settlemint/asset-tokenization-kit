@@ -1,5 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { System_TrustedIssuersRegistry } from "../../../generated/schema";
+import { fetchAccessControl } from "../accesscontrol";
 import { fetchAccount } from "../account";
 
 export function fetchTrustedIssuersRegistry(
@@ -11,7 +12,10 @@ export function fetchTrustedIssuersRegistry(
     trustedIssuersRegistry = new System_TrustedIssuersRegistry(address);
 
     const account = fetchAccount(address);
-    trustedIssuersRegistry.asAccount = account.id;
+    trustedIssuersRegistry.account = account.id;
+
+    const accessControl = fetchAccessControl(address);
+    trustedIssuersRegistry.accessControl = accessControl.id;
 
     trustedIssuersRegistry.save();
   }

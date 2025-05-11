@@ -43,6 +43,12 @@ dataSources:
         - name: SMARTDeploymentRegistry
           file: ../contracts/artifacts/contracts/SMARTDeploymentRegistry.sol/SMARTDeploymentRegistry.json
       eventHandlers:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
         - event: SMARTComplianceModuleRegistered(indexed address,indexed address,uint256)
           handler: handleSMARTComplianceModuleRegistered
         - event: SMARTDeploymentRegistered(indexed
@@ -68,6 +74,12 @@ templates:
         - name: IdentityRegistryStorage
           file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityRegistryStorage.sol/SMARTIdentityRegistryStorage.json
       eventHandlers:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
         - event: CountryModified(indexed address,uint16)
           handler: handleCountryModified
         - event: IdentityModified(indexed address,indexed address)
@@ -131,6 +143,12 @@ templates:
         - name: TrustedIssuersRegistry
           file: ../contracts/artifacts/smart-protocol/contracts/SMARTTrustedIssuersRegistry.sol/SMARTTrustedIssuersRegistry.json
       eventHandlers:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
         - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[])
           handler: handleClaimTopicsUpdated
         - event: TrustedIssuerAdded(indexed address,indexed address,uint256[])
@@ -160,3 +178,61 @@ templates:
         - event: TokenIdentityCreated(indexed address,indexed address,indexed address)
           handler: handleTokenIdentityCreated
       file: ./src/event-handlers/identity-factory.ts
+  - kind: ethereum/contract
+    name: IdentityRegistry
+    network: settlemint
+    source:
+      abi: IdentityRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: IdentityRegistry
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityRegistry.sol/SMARTIdentityRegistry.json
+      eventHandlers:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: CountryUpdated(indexed address,indexed address,indexed uint16)
+          handler: handleCountryUpdated
+        - event: IdentityRegistered(indexed address,indexed address,indexed address)
+          handler: handleIdentityRegistered
+        - event: IdentityRemoved(indexed address,indexed address,indexed address)
+          handler: handleIdentityRemoved
+        - event: IdentityUpdated(indexed address,indexed address,indexed address)
+          handler: handleIdentityUpdated
+      file: ./src/event-handlers/identity-registry.ts
+  - kind: ethereum/contract
+    name: TokenRegistry
+    network: settlemint
+    source:
+      abi: TokenRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: TokenRegistry
+          file: ../contracts/artifacts/contracts/SMARTTokenRegistry.sol/SMARTTokenRegistry.json
+      eventHandlers:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: TokenRegistered(indexed address,indexed address)
+          handler: handleTokenRegistered
+        - event: TokenUnregistered(indexed address,indexed address)
+          handler: handleTokenUnregistered
+      file: ./src/event-handlers/token-registry.ts

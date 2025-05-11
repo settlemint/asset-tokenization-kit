@@ -9,7 +9,7 @@ export function fetchIdentityFactory(address: Address): System_IdentityFactory {
     identityFactory = new System_IdentityFactory(address);
 
     const account = fetchAccount(address);
-    identityFactory.asAccount = account.id;
+    identityFactory.account = account.id;
 
     identityFactory.save();
   }

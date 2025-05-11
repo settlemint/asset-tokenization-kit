@@ -1,10 +1,14 @@
 import {
+  RoleAdminChanged,
+  RoleGranted,
+  RoleRevoked,
   SMARTComplianceModuleRegistered,
   SMARTDeploymentRegistered,
   SMARTTokenRegistryRegistered,
 } from "../../generated/SMARTDeploymentRegistry/SMARTDeploymentRegistry";
 import {
   IdentityFactory,
+  IdentityRegistry,
   IdentityRegistryStorage,
   TrustedIssuersRegistry,
 } from "../../generated/templates";
@@ -15,7 +19,22 @@ import { fetchIdentityRegistry } from "../fetch/system/identity-registry";
 import { fetchIdentityRegistryStorage } from "../fetch/system/identity-registry-storage";
 import { fetchTokenRegistry } from "../fetch/system/token-registry";
 import { fetchTrustedIssuersRegistry } from "../fetch/system/trusted-issuers-registry";
+import { roleAdminChangedHandler } from "../shared/accesscontrol/role-admin-changed";
+import { roleGrantedHandler } from "../shared/accesscontrol/role-granted";
+import { roleRevokedHandler } from "../shared/accesscontrol/role-revoked";
 import { processEvent } from "../shared/event";
+
+export function handleRoleAdminChanged(event: RoleAdminChanged): void {
+  roleAdminChangedHandler(event);
+}
+
+export function handleRoleGranted(event: RoleGranted): void {
+  roleGrantedHandler(event, event.params.role, event.params.account);
+}
+
+export function handleRoleRevoked(event: RoleRevoked): void {
+  roleRevokedHandler(event, event.params.role, event.params.account);
+}
 
 export function handleSMARTComplianceModuleRegistered(
   event: SMARTComplianceModuleRegistered
@@ -33,7 +52,7 @@ export function handleSMARTDeploymentRegistered(
 
   const compliance = fetchCompliance(event.params.complianceAddress);
   deploymentRegistry.compliance = compliance.id;
-  // No need to create compliance template as it is not trowing any useful events
+  // No need to create compliance template as it is not throwing any useful events
 
   const identityRegistryStorage = fetchIdentityRegistryStorage(
     event.params.identityRegistryStorageAddress
@@ -51,6 +70,7 @@ export function handleSMARTDeploymentRegistered(
     event.params.identityRegistryAddress
   );
   deploymentRegistry.identityRegistry = identityRegistry.id;
+  IdentityRegistry.create(event.params.identityRegistryAddress);
 
   const trustedIssuersRegistry = fetchTrustedIssuersRegistry(
     event.params.trustedIssuersRegistryAddress
