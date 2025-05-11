@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { AccessControlEnumerable } from "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
@@ -11,7 +11,7 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 /// @dev Inherits from AccessControl and ERC2771Context for role management and meta-transaction support.
 /// @custom:security-contact support@settlemint.com
 
-contract SMARTTokenRegistry is ERC2771Context, AccessControl {
+contract SMARTTokenRegistry is ERC2771Context, AccessControlEnumerable {
     /// @notice Role identifier for accounts permitted to register and unregister tokens.
     bytes32 public constant REGISTRAR_ROLE = keccak256("REGISTRAR_ROLE");
 

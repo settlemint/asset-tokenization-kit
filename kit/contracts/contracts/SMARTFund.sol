@@ -4,7 +4,7 @@ pragma solidity 0.8.28;
 // OpenZeppelin imports
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { AccessControlEnumerable } from "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import { Nonces } from "@openzeppelin/contracts/utils/Nonces.sol";
@@ -43,7 +43,7 @@ contract SMARTFund is
     SMARTBurnable,
     SMARTPausable,
     SMARTCustodian,
-    AccessControl,
+    AccessControlEnumerable,
     ERC20Permit,
     ERC20Votes, // TODO: ??
     ERC2771Context
@@ -370,7 +370,13 @@ contract SMARTFund is
     }
 
     /// @dev Overrides ERC165 to ensure that the SMART implementation is used.
-    function supportsInterface(bytes4 interfaceId) public view virtual override(SMART, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(SMART, AccessControlEnumerable)
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 }
