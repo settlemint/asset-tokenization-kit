@@ -10,8 +10,8 @@
   "scripts": {
     "codegen:graph": "settlemint scs subgraph codegen",
     "build": "graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt",
-    "deploy:local": "bash graph-local-deploy.sh",
-    "deploy:remote": "bash graph-remote-deploy.sh",
+    "deploy:local": "bash graph-deploy.sh --local",
+    "deploy:remote": "bash graph-deploy.sh --remote",
     "format": "prettier --write .",
     "subgraph:deploy": "settlemint scs subgraph deploy",
     "lint": "eslint src/ --ext .ts"
