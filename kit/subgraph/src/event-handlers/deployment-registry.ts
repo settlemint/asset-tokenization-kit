@@ -33,7 +33,7 @@ export function handleSMARTDeploymentRegistered(
 
   const compliance = fetchCompliance(event.params.complianceAddress);
   deploymentRegistry.compliance = compliance.id;
-  // No need to create compliance template as it is not trowing any useful events
+  // No need to create compliance template as it is not throwing any useful events
 
   const identityRegistryStorage = fetchIdentityRegistryStorage(
     event.params.identityRegistryStorageAddress
