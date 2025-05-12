@@ -89,22 +89,22 @@ contract SMARTBond is
     event BondMatured(uint256 timestamp);
 
     /// @notice Emitted when a bond is redeemed for underlying assets
-    /// @param initiator The address that initiated the redemption
+    /// @param sender The address that initiated the redemption
     /// @param holder The address redeeming the bonds
     /// @param bondAmount The amount of bonds redeemed
     /// @param underlyingAmount The amount of underlying assets received
-    event BondRedeemed(address indexed initiator, address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
+    event BondRedeemed(address indexed sender, address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
 
     /// @notice Emitted when underlying assets are topped up
-    /// @param initiator The address that initiated the top up
+    /// @param sender The address that initiated the top up
     /// @param amount The amount of underlying assets added
-    event UnderlyingAssetTopUp(address indexed initiator, uint256 amount);
+    event UnderlyingAssetTopUp(address indexed sender, uint256 amount);
 
     /// @notice Emitted when underlying assets are withdrawn
-    /// @param initiator The address that initiated the withdrawal
+    /// @param sender The address that initiated the withdrawal
     /// @param to The address receiving the underlying assets
     /// @param amount The amount of underlying assets withdrawn
-    event UnderlyingAssetWithdrawn(address indexed initiator, address indexed to, uint256 amount);
+    event UnderlyingAssetWithdrawn(address indexed sender, address indexed to, uint256 amount);
 
     /// @notice Modifier to prevent operations after bond maturity
     /// @dev Reverts with BondAlreadyMatured if the bond has matured

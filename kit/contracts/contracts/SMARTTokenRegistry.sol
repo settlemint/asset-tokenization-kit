@@ -24,14 +24,14 @@ contract SMARTTokenRegistry is ERC2771Context, AccessControlEnumerable {
     mapping(address tokenAddress => bool isRegistered) public isTokenRegistered;
 
     /// @notice Emitted when a token is registered.
-    /// @param initiator The address of the initiator of the registration.
+    /// @param sender The address of the sender of the registration.
     /// @param token The address of the registered token.
-    event TokenRegistered(address indexed initiator, address indexed token);
+    event TokenRegistered(address indexed sender, address indexed token);
 
     /// @notice Emitted when a token is unregistered.
-    /// @param initiator The address of the initiator of the unregistration.
+    /// @param sender The address of the sender of the unregistration.
     /// @param token The address of the unregistered token.
-    event TokenUnregistered(address indexed initiator, address indexed token);
+    event TokenUnregistered(address indexed sender, address indexed token);
 
     /// @notice Deploys the registry contract.
     /// @dev Sets up the initial admin and registrar roles using AccessControl's _grantRole.
