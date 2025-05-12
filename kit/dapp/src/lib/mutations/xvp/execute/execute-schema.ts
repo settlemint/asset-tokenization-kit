@@ -1,6 +1,6 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 
-export const ClaimXvpSchema = t.Object(
+export const ExecuteXvpSchema = t.Object(
   {
     xvp: t.EthereumAddress({
       description: "The address of the XVP",
@@ -14,9 +14,9 @@ export const ClaimXvpSchema = t.Object(
     }),
   },
   {
-    $id: "ClaimXvpForm",
+    $id: "ExecuteXvpForm",
     additionalProperties: false,
   }
 );
 
-export type ClaimXvpInput = StaticDecode<typeof ClaimXvpSchema>;
+export type ExecuteXvpInput = StaticDecode<typeof ExecuteXvpSchema>;

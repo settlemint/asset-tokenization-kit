@@ -2,10 +2,10 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
-import type { ClaimXvpInput } from "./claim-schema";
+import type { ExecuteXvpInput } from "./execute-schema";
 
-const ClaimXvp = portalGraphql(`
-  mutation ClaimXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
+const ExecuteXvp = portalGraphql(`
+  mutation ExecuteXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
     XvPSettlementExecute(
       challengeResponse: $challengeResponse
       verificationId: $verificationId
@@ -17,11 +17,11 @@ const ClaimXvp = portalGraphql(`
   }
 `);
 
-export const claimXvpFunction = async ({
+export const executeXvpFunction = async ({
   parsedInput: { verificationCode, verificationType, xvp },
   ctx: { user },
 }: {
-  parsedInput: ClaimXvpInput;
+  parsedInput: ExecuteXvpInput;
   ctx: { user: User };
 }) => {
   const challengeResponse = await handleChallenge(
@@ -31,14 +31,14 @@ export const claimXvpFunction = async ({
     verificationType
   );
 
-  const result = await portalClient.request(ClaimXvp, {
+  const result = await portalClient.request(ExecuteXvp, {
     challengeResponse: challengeResponse.challengeResponse,
     verificationId: challengeResponse.verificationId,
     address: xvp,
     from: user.wallet,
   });
   if (!result.XvPSettlementExecute) {
-    throw new Error("Failed to claim XVP");
+    throw new Error("Failed to execute XVP");
   }
   return safeParse(t.Hashes(), [result.XvPSettlementExecute.transactionHash]);
 };
