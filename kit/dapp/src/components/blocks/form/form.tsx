@@ -419,8 +419,8 @@ export function Form<
       return;
     }
 
-    const subscription = form.watch((_value, { name, type }) => {
-      if (type === "change") {
+    const subscription = form.watch((value, { name, type }) => {
+      if (name) {
         onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
           changedFieldName: name,
           step: currentStep,
@@ -429,7 +429,9 @@ export function Form<
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [currentStep, onAnyFieldChange, form]);
 
   const hasError = Object.keys(form.formState.errors).length > 0;
