@@ -60,11 +60,13 @@ export function columns() {
           approvalsRequiredCount > 0
             ? (actualApprovalsCount / approvalsRequiredCount) * 100
             : 0;
-
         return (
           <PercentageProgressBar
             percentage={percentage}
             label={`${actualApprovalsCount}/${approvalsRequiredCount}`}
+            mode="inverted"
+            warningThreshold={100}
+            errorThreshold={0}
           />
         );
       },
