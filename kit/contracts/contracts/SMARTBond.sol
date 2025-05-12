@@ -162,6 +162,11 @@ contract SMARTBond is
         ERC2771Context(forwarder)
         ERC20Capped(cap_)
         ERC20Permit(name_)
+        SMARTCustodian()
+        SMARTPausable()
+        SMARTBurnable()
+        SMARTRedeemable()
+        SMARTHistoricalBalances()
     {
         if (maturityDate_ <= block.timestamp) revert BondInvalidMaturityDate();
         if (faceValue_ == 0) revert InvalidFaceValue();

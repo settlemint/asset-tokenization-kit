@@ -118,6 +118,9 @@ contract SMARTFund is
         )
         ERC20Permit(name_)
         ERC2771Context(forwarder)
+        SMARTBurnable()
+        SMARTPausable()
+        SMARTCustodian()
     {
         _managementFeeBps = managementFeeBps_;
         _fundClass = fundClass_;
