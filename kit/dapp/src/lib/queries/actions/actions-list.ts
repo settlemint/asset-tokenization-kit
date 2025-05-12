@@ -84,7 +84,7 @@ export const getActionsList = withTracing(
               },
             },
             {
-              "X-GraphQL-Operation-Name": "ActionsForUser",
+              "X-GraphQL-Operation-Name": "ActionExecutors",
               "X-GraphQL-Operation-Type": "query",
             }
           );
