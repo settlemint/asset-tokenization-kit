@@ -1,6 +1,7 @@
 "use client";
 
 import { ApproveForm } from "@/components/blocks/xvp/approve-form/form";
+import { ExecuteForm } from "@/components/blocks/xvp/claim-form/form";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,6 +27,10 @@ export function ManageDropdown({ xvp }: ManageDropdownProps) {
     {
       id: "approve",
       label: t("approve"),
+    },
+    {
+      id: "execute",
+      label: t("execute"),
     },
   ] as const;
 
@@ -66,6 +71,12 @@ export function ManageDropdown({ xvp }: ManageDropdownProps) {
       <ApproveForm
         xvp={xvp.id}
         open={openMenuItem === "approve"}
+        onOpenChange={onFormOpenChange}
+      />
+
+      <ExecuteForm
+        xvp={xvp.id}
+        open={openMenuItem === "execute"}
         onOpenChange={onFormOpenChange}
       />
     </>

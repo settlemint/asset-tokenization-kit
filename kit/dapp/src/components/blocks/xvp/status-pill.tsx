@@ -1,5 +1,5 @@
 import { Badge, type badgeVariants } from "@/components/ui/badge";
-import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
+import type { XvPSettlement, XvPStatus } from "@/lib/queries/xvp/xvp-schema";
 import { cn } from "@/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { isBefore } from "date-fns";
@@ -10,30 +10,23 @@ type XvpStatusPillProps = {
   xvp: XvPSettlement;
 };
 
-export type XvpStatus =
-  | "pending"
-  | "approved"
-  | "expired"
-  | "claimed"
-  | "cancelled";
-
 interface StatusStyle extends VariantProps<typeof badgeVariants> {
   className: string;
 }
 
 export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
   const t = useTranslations("trade-management.xvp");
-  const getStatus = (item: XvPSettlement): XvpStatus => {
-    if (item.claimed) {
-      return "claimed";
+  const getStatus = (item: XvPSettlement): XvPStatus => {
+    if (item.executed) {
+      return "EXECUTED";
     }
     if (item.cancelled) {
-      return "cancelled";
+      return "CANCELLED";
     }
     const cutoffTimeMs = Number(item.cutoffDate) * 1000;
     const isExpired = isBefore(cutoffTimeMs, new Date().getTime());
     if (isExpired) {
-      return "expired";
+      return "EXPIRED";
     }
 
     const approvalsRequiredCount = item.flows.length;
@@ -45,32 +38,32 @@ export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
       approvalsRequiredCount > 0 &&
       actualApprovalsCount === approvalsRequiredCount
     ) {
-      return "approved";
+      return "APPROVED";
     }
 
-    return "pending";
+    return "PENDING";
   };
 
   const status = getStatus(xvp);
 
-  const statusConfig: Record<XvpStatus, StatusStyle> = {
-    pending: {
+  const statusConfig: Record<XvPStatus, StatusStyle> = {
+    PENDING: {
       variant: "default",
       className: "bg-warning/80 text-warning-foreground",
     },
-    approved: {
+    APPROVED: {
       variant: "default",
       className: "bg-primary/80 text-primary-foreground",
     },
-    expired: {
+    EXPIRED: {
       variant: "outline",
       className: "text-muted-foreground",
     },
-    claimed: {
+    EXECUTED: {
       variant: "default",
       className: "bg-success/80 text-success-foreground",
     },
-    cancelled: {
+    CANCELLED: {
       variant: "destructive",
       className: "bg-destructive/80 text-destructive-foreground",
     },
@@ -78,20 +71,12 @@ export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
 
   const currentStatusStyle = statusConfig[status];
 
-  const statusTextMap: Record<XvpStatus, string> = {
-    pending: t("status.pending"),
-    approved: t("status.approved"),
-    expired: t("status.expired"),
-    claimed: t("status.claimed"),
-    cancelled: t("status.cancelled"),
-  };
-
   return (
     <Badge
       variant={currentStatusStyle.variant}
       className={cn(currentStatusStyle.className)}
     >
-      {statusTextMap[status]}
+      {t(`status.${status}`)}
     </Badge>
   );
 }
