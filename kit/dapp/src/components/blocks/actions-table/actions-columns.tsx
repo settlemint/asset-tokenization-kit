@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { defineMeta, filterFn } from "@/lib/filters";
-import type { Action } from "@/lib/queries/actions/actions-schema";
+import type { Action, ActionState } from "@/lib/queries/actions/actions-schema";
 import { addressNameFilter } from "@/lib/utils/address-name-cache";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -20,11 +20,7 @@ import { ActionButton } from "./action-button";
 
 const columnHelper = createColumnHelper<Action>();
 
-export function Columns({
-  state,
-}: {
-  state: "pending" | "upcoming" | "executed";
-}) {
+export function Columns({ state }: { state: ActionState }) {
   const t = useTranslations("actions");
   const locale = useLocale();
 
@@ -84,7 +80,7 @@ export function Columns({
             })
           : null,
     }),
-    ...(state === "executed"
+    ...(state === "COMPLETED"
       ? [
           columnHelper.accessor("executedAt", {
             header: t("columns.completed-on"),
@@ -108,7 +104,7 @@ export function Columns({
           }),
         ]
       : []),
-    ...(state === "pending"
+    ...(state === "PENDING"
       ? [
           columnHelper.display({
             id: "actions",

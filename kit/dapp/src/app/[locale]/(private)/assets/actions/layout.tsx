@@ -1,5 +1,4 @@
-import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
-import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { ActionTabs } from "@/components/blocks/actions-table/action-tabs";
 import { PageHeader } from "@/components/layout/page-header";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
@@ -34,24 +33,11 @@ export default async function ActionsLayout({ children, params }: LayoutProps) {
     locale,
     namespace: "actions",
   });
-  const tabItems: TabItemProps[] = [
-    {
-      name: t("tabs.name.pending"),
-      href: `/assets/actions/pending`,
-    },
-    {
-      name: t("tabs.name.upcoming"),
-      href: `/assets/actions/upcoming`,
-    },
-    {
-      name: t("tabs.name.completed"),
-      href: `/assets/actions/completed`,
-    },
-  ];
+
   return (
     <>
       <PageHeader title={t("page.actions")} />
-      <TabNavigation items={tabItems} />
+      <ActionTabs locale={locale} path="assets/actions" />
       {children}
     </>
   );

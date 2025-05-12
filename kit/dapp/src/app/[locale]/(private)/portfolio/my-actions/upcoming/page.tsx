@@ -25,5 +25,5 @@ export async function generateMetadata({
 }
 
 export default async function ActionsPage() {
-  return <ActionsTable state="upcoming" actionType="User" />;
+  return <ActionsTable state="UPCOMING" actionType="User" />;
 }

@@ -14,6 +14,7 @@ import { ActionExecutorFragment } from "./actions-fragment";
 import {
   ActionExecutorList,
   ActionsListSchema,
+  type ActionState,
   ActionType,
 } from "./actions-schema";
 
@@ -42,11 +43,9 @@ export interface ActionsListProps {
   /** User wallet address to filter by */
   userAddress: Address;
   /** Action type to filter by */
-  actionType: ActionType;
+  type: ActionType;
   /** Whether to filter by executed actions */
-  executed: boolean;
-  /** Whether to filter by active actions */
-  active?: boolean;
+  state: ActionState;
 }
 
 /**
@@ -58,47 +57,55 @@ export interface ActionsListProps {
 export const getActionsList = withTracing(
   "queries",
   "getActionsList",
-  cache(
-    async ({ userAddress, actionType, executed, active }: ActionsListProps) => {
-      "use cache";
-      cacheTag("actions");
+  cache(async ({ userAddress, type, state }: ActionsListProps) => {
+    "use cache";
+    cacheTag("actions");
 
-      const nowSeconds = (new Date().getTime() / 1000).toFixed(0);
-      const actionExecutors = await fetchAllTheGraphPages(
-        async (first, skip) => {
-          const result = await theGraphClientKit.request(
-            Actions,
-            {
-              first,
-              skip,
-              where: {
-                executors_: {
-                  id_contains: userAddress.toLowerCase(),
-                },
-                actions_: {
-                  type: actionType,
-                  executed,
-                  ...(active === true ? { activeAt_lte: nowSeconds } : {}),
-                  ...(active === false ? { activeAt_gt: nowSeconds } : {}),
-                },
-              },
+    const nowSeconds = (new Date().getTime() / 1000).toFixed(0);
+
+    const where = {
+      PENDING: {
+        executed: false,
+        activeAt_lte: nowSeconds,
+      },
+      UPCOMING: {
+        executed: false,
+        activeAt_gt: nowSeconds,
+      },
+      COMPLETED: {
+        executed: true,
+      },
+    };
+    const actionExecutors = await fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientKit.request(
+        Actions,
+        {
+          first,
+          skip,
+          where: {
+            executors_: {
+              id_contains: userAddress.toLowerCase(),
             },
-            {
-              "X-GraphQL-Operation-Name": "ActionExecutors",
-              "X-GraphQL-Operation-Type": "query",
-            }
-          );
-
-          const actionExecutors = result.actionExecutors || [];
-          return safeParse(ActionExecutorList, actionExecutors);
+            actions_: {
+              type,
+              ...where[state],
+            },
+          },
+        },
+        {
+          "X-GraphQL-Operation-Name": "ActionExecutors",
+          "X-GraphQL-Operation-Type": "query",
         }
       );
 
-      const actions = actionExecutors.flatMap(
-        (actionExecutor) => actionExecutor.actions
-      );
+      const actionExecutors = result.actionExecutors || [];
+      return safeParse(ActionExecutorList, actionExecutors);
+    });
 
-      return safeParse(ActionsListSchema, actions);
-    }
-  )
+    const actions = actionExecutors.flatMap(
+      (actionExecutor) => actionExecutor.actions
+    );
+
+    return safeParse(ActionsListSchema, actions);
+  })
 );

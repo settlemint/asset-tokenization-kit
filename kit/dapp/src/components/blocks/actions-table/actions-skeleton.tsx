@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/table";
 
 export function ActionsSkeleton() {
-  // TODO: adjust number of columns based on the state: pending / upcoming / executed
   return (
     <>
       <div className="rounded-md border">

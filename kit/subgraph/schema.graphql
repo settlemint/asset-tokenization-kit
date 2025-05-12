@@ -819,7 +819,7 @@ type Action @entity(immutable: false) {
   createdAt: BigInt!
   activeAt: BigInt!
   expiresAt: BigInt
-  executedAt: BigInt # TODO: rename to completedAt? to match the naming in the UI
+  executedAt: BigInt
   executed: Boolean!
   executedBy: Account
   target: Account!

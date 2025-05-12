@@ -81,3 +81,10 @@ export const ActionExecutorList = t.Array(ActionExecutorSchema);
  * Type for validated actions list
  */
 export type ActionExecutorList = StaticDecode<typeof ActionExecutorList>;
+
+export const ActionStateSchema = t.Union([
+  t.Literal("PENDING"),
+  t.Literal("UPCOMING"),
+  t.Literal("COMPLETED"),
+]);
+export type ActionState = StaticDecode<typeof ActionStateSchema>;
