@@ -36,16 +36,16 @@ export function ExecuteForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t("approve")}
-      title={t("approve-xvp-settlement")}
-      description={t("approve-xvp-settlement-description")}
+      triggerLabel={isExternallyControlled ? undefined : t("execute")}
+      title={t("execute-xvp-settlement")}
+      description={t("execute-xvp-settlement-description")}
     >
       <Form
         action={executeXvp}
         resolver={typeboxResolver(ExecuteXvpSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{
-          label: t("execute-settlement"),
+          label: t("execute"),
         }}
         defaultValues={{
           xvp,

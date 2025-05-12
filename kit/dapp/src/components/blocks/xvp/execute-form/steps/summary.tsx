@@ -13,8 +13,8 @@ export function Summary({ xvp }: SummaryProps) {
 
   return (
     <FormStep
-      title={t("execute-settlement")}
-      description={t("execute-settlement-description")}
+      title={t("execute-xvp-settlement")}
+      description={t("execute-xvp-settlement-summary")}
     >
       <FormSummaryDetailItem
         label={t("xvp-settlement")}

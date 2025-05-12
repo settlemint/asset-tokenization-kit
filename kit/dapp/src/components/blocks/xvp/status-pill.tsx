@@ -55,7 +55,7 @@ export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
       variant: "default",
       className: "bg-primary/80 text-primary-foreground",
     },
-    EXPIRED: {
+    CANCELLED: {
       variant: "outline",
       className: "text-muted-foreground",
     },
@@ -63,7 +63,7 @@ export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
       variant: "default",
       className: "bg-success/80 text-success-foreground",
     },
-    CANCELLED: {
+    EXPIRED: {
       variant: "destructive",
       className: "bg-destructive/80 text-destructive-foreground",
     },

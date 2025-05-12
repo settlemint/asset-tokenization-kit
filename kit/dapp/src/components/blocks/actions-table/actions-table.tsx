@@ -12,7 +12,7 @@ import type {
 } from "@/lib/queries/actions/actions-schema";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import type { LucideIcon } from "lucide-react";
-import { ArrowBigRightDash, CircleCheck, ListCheck } from "lucide-react";
+import { ArrowBigRightDash, CircleDashed, ListCheck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { DataTable } from "../data-table/data-table";
 import { Columns } from "./actions-columns";
@@ -59,7 +59,7 @@ export async function ActionsTable({ state, actionType }: ActionsTableProps) {
     case "COMPLETED": {
       emptyState = (
         <EmptyState
-          icon={CircleCheck}
+          icon={CircleDashed}
           title={t("tabs.empty-state.title.completed")}
           description={t("tabs.empty-state.description.completed")}
         />

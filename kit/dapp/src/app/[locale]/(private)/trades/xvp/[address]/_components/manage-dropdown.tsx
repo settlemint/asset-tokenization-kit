@@ -1,7 +1,7 @@
 "use client";
 
 import { ApproveForm } from "@/components/blocks/xvp/approve-form/form";
-import { ExecuteForm } from "@/components/blocks/xvp/claim-form/form";
+import { ExecuteForm } from "@/components/blocks/xvp/execute-form/form";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,11 +9,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { authClient } from "@/lib/auth/client";
 import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
+import { isBefore } from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 
 interface ManageDropdownProps {
   xvp: XvPSettlement;
@@ -22,15 +24,25 @@ interface ManageDropdownProps {
 
 export function ManageDropdown({ xvp }: ManageDropdownProps) {
   const t = useTranslations("trade-management.xvp");
-
+  const user = authClient.useSession();
+  const userHasApproved = xvp.approvals.some(
+    (approval) =>
+      getAddress(approval.account.id) === user.data?.user.wallet &&
+      approval.approved
+  );
+  const isApproved = xvp.approvals.every((approval) => approval.approved);
+  const isExpired = isBefore(Number(xvp.cutoffDate) * 1000, new Date());
+  const isCancelled = xvp.cancelled;
   const menuItems = [
     {
       id: "approve",
       label: t("approve"),
+      disabled: userHasApproved || isCancelled || isExpired,
     },
     {
       id: "execute",
       label: t("execute"),
+      disabled: !isApproved || isExpired || isCancelled,
     },
   ] as const;
 
@@ -61,6 +73,7 @@ export function ManageDropdown({ xvp }: ManageDropdownProps) {
             <DropdownMenuItem
               key={item.id}
               onSelect={() => setOpenMenuItem(item.id)}
+              disabled={item.disabled}
             >
               {item.label}
             </DropdownMenuItem>
