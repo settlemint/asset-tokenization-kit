@@ -11,6 +11,7 @@ import { ExchangeRatesApi } from "../providers/exchange-rates/exchange-rates-api
 import { ExchangeRateUpdateApi } from "../providers/exchange-rates/exchange-rates-update-api";
 import { AccessControlError } from "../utils/access-control";
 import { cacheControl } from "../utils/elysia";
+import { ApplicationSetupApi } from "./application-setup";
 import { AssetApi } from "./asset";
 import { AssetActivityApi } from "./asset-activity";
 import { AssetBalanceApi } from "./asset-balance";
@@ -119,6 +120,7 @@ export const api = new Elysia({
     return elysiaStatus(500, "Internal server error");
   })
   .mount(auth.handler)
+  .group("/application-setup", (app) => app.use(ApplicationSetupApi))
   .group("/bond", (app) => app.use(BondApi))
   .group("/contact", (app) => app.use(ContactApi))
   .group("/cryptocurrency", (app) => app.use(CryptoCurrencyApi))
