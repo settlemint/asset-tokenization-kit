@@ -14,7 +14,7 @@ export async function waitForContractToBeDeployed(
   });
 
   if (transaction.receipt.status.toLowerCase() !== "success") {
-    throw new Error("Failed to deploy contract");
+    throw new Error(`Failed to deploy contract (hash: ${transactionHash})`);
   }
 
   return transaction.receipt.contractAddress as Address;
@@ -27,8 +27,11 @@ export async function waitForTransactionToBeMined(
     throw new Error("Transaction hash is required");
   }
 
-  await waitForTransactionReceipt(transactionHash, {
+  const transaction = await waitForTransactionReceipt(transactionHash, {
     accessToken: process.env.SETTLEMINT_ACCESS_TOKEN!,
     portalGraphqlEndpoint: process.env.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT!,
   });
+  if (transaction.receipt.status.toLowerCase() !== "success") {
+    throw new Error(`Failed to mine transaction (hash: ${transactionHash})`);
+  }
 }

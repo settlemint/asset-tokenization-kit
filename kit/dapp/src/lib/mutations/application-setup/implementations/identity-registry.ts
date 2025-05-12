@@ -4,7 +4,7 @@ import {
   waitForTransactionToBeMined,
 } from "@/lib/mutations/application-setup/utils/contract-deployment";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { zeroAddress, type Address } from "viem";
+import type { Address } from "viem";
 
 const deployContractSMARTIdentityRegistryMutation = portalGraphql(`
   mutation deployContractSMARTIdentityRegistry($from: String!, $constructorArguments: DeployContractSMARTIdentityRegistryInput!) {
@@ -31,7 +31,7 @@ const initializeIdentityRegistryMutation = portalGraphql(`
 `);
 
 interface IdentityRegistryModuleArgs {
-  forwarder: Address | null;
+  forwarder: Address;
   user: User;
   identityRegistryStorageProxy: Address;
   trustedIssuersRegistryProxy: Address;
@@ -49,7 +49,7 @@ export const identityRegistryModule = async ({
     {
       from: user.wallet,
       constructorArguments: {
-        trustedForwarder: forwarder || zeroAddress,
+        trustedForwarder: forwarder,
       },
     }
   );

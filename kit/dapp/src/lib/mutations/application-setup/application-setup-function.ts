@@ -1,142 +1,85 @@
 import type { User } from "@/lib/auth/types";
 import type { ApplicationSetupInput } from "@/lib/mutations/application-setup/application-setup-schema";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
-import { waitForTransactionReceipt } from "@settlemint/sdk-portal";
-import { zeroAddress } from "viem";
+import { getAddress, zeroAddress } from "viem";
+import { complianceModule } from "./implementations/compliance";
+import { configurationModule } from "./implementations/configuration";
+import { identityFactoryModule } from "./implementations/identity-factory";
+import { identityRegistryModule } from "./implementations/identity-registry";
+import { identityRegistryStorageModule } from "./implementations/identity-registry-storage";
+import { tokenRegistryModule } from "./implementations/token-registry";
+import { trustedIssuersRegistryModule } from "./implementations/trusted-issuer-registry";
 
-const deployContractIdentityMutation = portalGraphql(`
-  mutation deployContractIdentity($from: String!, $constructorArguments: DeployContractIdentityInput!) {
-    DeployContract: DeployContractIdentity(from: $from, constructorArguments: $constructorArguments) {
-      transactionHash
-    }
-  }
-`);
-
-const deployContractSMARTIdentityRegistryStorageMutation = portalGraphql(`
-  mutation deployContractSMARTIdentityRegistryStorage($from: String!, $constructorArguments: DeployContractSMARTIdentityRegistryStorageInput!) {
-    DeployContract: DeployContractSMARTIdentityRegistryStorage(from: $from, constructorArguments: $constructorArguments) {
-      transactionHash
-    }
-  }
-`);
-
-const deployContractSMARTTrustedIssuersRegistryMutation = portalGraphql(`
-  mutation deployContractSMARTTrustedIssuersRegistry($from: String!, $constructorArguments: DeployContractSMARTTrustedIssuersRegistryInput!) {
-    DeployContract: DeployContractSMARTTrustedIssuersRegistry(from: $from, constructorArguments: $constructorArguments) {
-      transactionHash
-    }
-  }
-`);
-
-const deployContractSMARTComplianceMutation = portalGraphql(`
-  mutation deployContractSMARTCompliance($from: String!, $constructorArguments: DeployContractSMARTComplianceInput!) {
-    DeployContract: DeployContractSMARTCompliance(from: $from, constructorArguments: $constructorArguments) {
-      transactionHash
-    }
-  }
-`);
-
-const deployContractSMARTIdentityFactoryMutation = portalGraphql(`
-  mutation deployContractSMARTIdentityFactory($from: String!, $constructorArguments: DeployContractSMARTIdentityFactoryInput!) {
-    DeployContract: DeployContractSMARTIdentityFactory(from: $from, constructorArguments: $constructorArguments) {
-      transactionHash
-    }
-  }
-`);
-
-const deployContractSMARTIdentityRegistryMutation = portalGraphql(`
-  mutation deployContractSMARTIdentityRegistry($from: String!, $constructorArguments: DeployContractSMARTIdentityRegistryInput!) {
-    DeployContract: DeployContractSMARTIdentityRegistry(from: $from, constructorArguments: $constructorArguments) {
-      transactionHash
-    }
-  }
-`);
-
-async function deployContracts(user: User) {
-  const forwarder = process.env.SETTLEMINT_HD_PRIVATE_KEY_FORWARDER_ADDRESS;
-  const deployResults = await Promise.allSettled([
-    portalClient.request(deployContractIdentityMutation, {
-      from: user.wallet,
-      constructorArguments: {
-        initialManagementKey: forwarder || zeroAddress,
-        _isLibrary: true,
-      },
+async function setupApplication(user: User) {
+  const forwarder = getAddress(
+    process.env.SETTLEMINT_HD_PRIVATE_KEY_FORWARDER_ADDRESS || zeroAddress
+  );
+  const phase1 = await Promise.allSettled([
+    identityRegistryStorageModule({
+      user,
+      forwarder,
     }),
-    portalClient.request(deployContractSMARTIdentityRegistryStorageMutation, {
-      from: user.wallet,
-      constructorArguments: {
-        trustedForwarder: forwarder || zeroAddress,
-      },
+    trustedIssuersRegistryModule({
+      user,
+      forwarder,
     }),
-    portalClient.request(deployContractSMARTTrustedIssuersRegistryMutation, {
-      from: user.wallet,
-      constructorArguments: {
-        trustedForwarder: forwarder || zeroAddress,
-      },
+    complianceModule({
+      user,
+      forwarder,
     }),
-    portalClient.request(deployContractSMARTComplianceMutation, {
-      from: user.wallet,
-      constructorArguments: {
-        trustedForwarder: forwarder || zeroAddress,
-      },
+    identityFactoryModule({
+      user,
+      forwarder,
     }),
-    portalClient.request(deployContractSMARTIdentityFactoryMutation, {
-      from: user.wallet,
-      constructorArguments: {
-        trustedForwarder: forwarder || zeroAddress,
-      },
-    }),
-    portalClient.request(deployContractSMARTIdentityRegistryMutation, {
-      from: user.wallet,
-      constructorArguments: {
-        trustedForwarder: forwarder || zeroAddress,
-      },
+    tokenRegistryModule({
+      user,
+      forwarder,
     }),
   ]);
 
-  await handleDeployResults(deployResults);
+  const isValid = validateDeployResults(phase1);
+  if (!isValid) {
+    return;
+  }
+
+  const [
+    identityRegistryStorageModuleResult,
+    trustedIssuersRegistryModuleResult,
+  ] = phase1;
+  if (identityRegistryStorageModuleResult.status !== "fulfilled") {
+    return;
+  }
+  if (trustedIssuersRegistryModuleResult.status !== "fulfilled") {
+    return;
+  }
+
+  const { identityRegistryProxy } = await identityRegistryModule({
+    user,
+    forwarder,
+    identityRegistryStorageProxy:
+      identityRegistryStorageModuleResult.value.identityRegistryStorageProxy,
+    trustedIssuersRegistryProxy:
+      trustedIssuersRegistryModuleResult.value.trustedIssuersRegistryProxy,
+  });
+  await configurationModule({
+    user,
+    identityRegistry: identityRegistryProxy,
+    identityRegistryStorage:
+      identityRegistryStorageModuleResult.value.identityRegistryStorageProxy,
+  });
 }
 
-async function handleDeployResults(
-  deployResults: PromiseSettledResult<{
-    DeployContract: { transactionHash: string | null } | null;
-  }>[]
-) {
+function validateDeployResults(deployResults: PromiseSettledResult<unknown>[]) {
   if (deployResults.some((result) => result.status === "rejected")) {
-    console.error("Application setup failed: Contract deployment failed");
-    return;
-  }
-
-  const transactionHashes = deployResults
-    .map((result) =>
-      result.status === "fulfilled"
-        ? result.value.DeployContract?.transactionHash
-        : null
-    )
-    .filter(Boolean) as string[];
-  const receipts = await Promise.all(
-    transactionHashes.map((transactionHash) => {
-      // TODO: add in portal codegen
-      return waitForTransactionReceipt(transactionHash, {
-        accessToken: process.env.SETTLEMINT_ACCESS_TOKEN!,
-        portalGraphqlEndpoint: process.env.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT!,
-      });
-    })
-  );
-
-  const reverted = receipts.filter(
-    (receipt) => receipt.receipt.status.toLowerCase() === "reverted"
-  );
-
-  if (reverted.length > 0) {
     console.error(
-      `Application setup failed: Contract deployment reverted for transactions ${reverted.map((r) => r.transactionHash).join(", ")}`
+      "Application setup failed: Contract deployment failed",
+      deployResults.map((result) =>
+        result.status === "rejected" ? result.reason?.toString() : null
+      )
     );
-    return;
+    return false;
   }
-
-  return receipts;
+  return true;
 }
 
 export const applicationSetupFunction = withAccessControl(
@@ -153,7 +96,7 @@ export const applicationSetupFunction = withAccessControl(
       user: User;
     };
   }): Promise<{ started: boolean }> => {
-    deployContracts(user)
+    setupApplication(user)
       .then(() => {
         console.log("Application setup completed successfully");
       })

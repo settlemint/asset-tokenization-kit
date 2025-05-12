@@ -1,66 +1,137 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "./forwarder";
-import IdentityRegistryStorageModule from "./identity-registry-storage";
-import TrustedIssuersRegistryModule from "./trusted-issuer-registry";
+import type { User } from "@/lib/auth/types";
+import {
+  waitForContractToBeDeployed,
+  waitForTransactionToBeMined,
+} from "@/lib/mutations/application-setup/utils/contract-deployment";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { zeroAddress, type Address } from "viem";
 
-const IdentityFactoryModule = buildModule("IdentityFactoryModule", (m) => {
-  // Define the trustedForwarder parameter
-  const { forwarder } = m.useModule(ForwarderModule);
+const deployContractIdentityMutation = portalGraphql(`
+  mutation deployContractSMARTIdentity($from: String!, $constructorArguments: DeployContractSMARTIdentityInput!) {
+    DeployContract: DeployContractSMARTIdentity(from: $from, constructorArguments: $constructorArguments) {
+      transactionHash
+    }
+  }
+`);
 
-  const deployer = m.getAccount(0);
+const deployContractSMARTIdentityImplementationAuthorityMutation =
+  portalGraphql(`
+    mutation deployContractSMARTIdentityImplementationAuthority($from: String!, $constructorArguments: DeployContractSMARTIdentityImplementationAuthorityInput!) {
+      DeployContract: DeployContractSMARTIdentityImplementationAuthority(from: $from, constructorArguments: $constructorArguments) {
+        transactionHash
+      }
+    }
+  `);
 
-  const identityImpl = m.contract("SMARTIdentity", [
-    "0x0000000000000000000000000000000000000000",
-    true,
-  ]);
-  const implementationAuthorityImpl = m.contract(
-    "SMARTIdentityImplementationAuthority",
-    [identityImpl]
+const deployContractSMARTIdentityFactoryMutation = portalGraphql(`
+  mutation deployContractSMARTIdentityFactory($from: String!, $constructorArguments: DeployContractSMARTIdentityFactoryInput!) {
+    DeployContract: DeployContractSMARTIdentityFactory(from: $from, constructorArguments: $constructorArguments) {
+      transactionHash
+    }
+  }
+`);
+
+const deployContractSMARTProxyMutation = portalGraphql(`
+  mutation deployContractSMARTProxy($from: String!, $constructorArguments: DeployContractSMARTProxyInput!) {
+    DeployContract: DeployContractSMARTProxy(from: $from, constructorArguments: $constructorArguments) {
+      transactionHash
+    }
+  }
+`);
+
+const initializeIdentityFactoryMutation = portalGraphql(`
+  mutation SMARTIdentityFactoryInitialize($from: String!, $address: String!, $input: SMARTIdentityFactoryInitializeInput!) {
+    SMARTIdentityFactoryInitialize(from: $from, address: $address, input: $input) {
+      transactionHash
+    }
+  }
+`);
+
+interface IdentityFactoryModuleArgs {
+  forwarder: Address;
+  user: User;
+}
+
+export const identityFactoryModule = async ({
+  forwarder,
+  user,
+}: IdentityFactoryModuleArgs) => {
+  const deploySmartIdentityRegistryStorageResult = await portalClient.request(
+    deployContractIdentityMutation,
+    {
+      from: user.wallet,
+      constructorArguments: {
+        initialManagementKey: zeroAddress,
+        _isLibrary: true,
+      },
+    }
+  );
+  const identityImpl = await waitForContractToBeDeployed(
+    deploySmartIdentityRegistryStorageResult.DeployContract?.transactionHash
   );
 
-  // Import dependencies. Parameters are passed implicitly.
-  const { identityRegistryStorageProxy } = m.useModule(
-    IdentityRegistryStorageModule
+  const deployImplementationAuthorityResult = await portalClient.request(
+    deployContractSMARTIdentityImplementationAuthorityMutation,
+    {
+      from: user.wallet,
+      constructorArguments: {
+        implementation: identityImpl,
+      },
+    }
   );
-  const { trustedIssuersRegistryProxy } = m.useModule(
-    TrustedIssuersRegistryModule
+  const implementationAuthorityImpl = await waitForContractToBeDeployed(
+    deployImplementationAuthorityResult.DeployContract?.transactionHash
   );
 
   // Deploy implementation contract, passing the forwarder address
-  const factoryImpl = m.contract("SMARTIdentityFactory", [forwarder]);
+  const deploySmartIdentityFactoryResult = await portalClient.request(
+    deployContractSMARTIdentityFactoryMutation,
+    {
+      from: user.wallet,
+      constructorArguments: {
+        trustedForwarder: forwarder,
+      },
+    }
+  );
+  const factoryImpl = await waitForContractToBeDeployed(
+    deploySmartIdentityFactoryResult.DeployContract?.transactionHash
+  );
 
   // Deploy proxy with empty initialization data
   const emptyInitData = "0x";
-  const registryProxy = m.contract("SMARTProxy", [factoryImpl, emptyInitData], {
-    id: "IdentityFactoryProxy",
-    after: [identityRegistryStorageProxy, trustedIssuersRegistryProxy], // Explicit dependency for proxy deployment
-  });
-
-  // Get a contract instance at the proxy address
-  const identityFactory = m.contractAt("SMARTIdentityFactory", registryProxy, {
-    id: "IdentityFactoryAtProxyUninitialized",
-  });
+  const deploySmartProxyResult = await portalClient.request(
+    deployContractSMARTProxyMutation,
+    {
+      from: user.wallet,
+      constructorArguments: {
+        _data: factoryImpl,
+        _logic: emptyInitData,
+      },
+    }
+  );
+  const factoryProxy = await waitForContractToBeDeployed(
+    deploySmartProxyResult.DeployContract?.transactionHash
+  );
 
   // Call initialize with deployer, storageProxy, and issuersProxy
-  // All these are Futures and will be resolved by m.call
-  m.call(
-    identityFactory,
-    "initialize",
-    [deployer, implementationAuthorityImpl],
+  const initializeIdentityFactoryResult = await portalClient.request(
+    initializeIdentityFactoryMutation,
     {
-      id: "InitializeIdentityFactory",
-      // Ensure proxy is deployed, and dependencies for args (storageProxy, issuersProxy) are also met.
-      // `after` on `registryProxy` already covers storageProxy and issuersProxy for its own deployment.
-      // `m.call` will wait for `identityRegistry` (which depends on `registryProxy`) and its arguments.
-      after: [registryProxy], // Or simply identityRegistry which implies registryProxy
+      from: user.wallet,
+      address: factoryProxy,
+      input: {
+        initialOwner: user.wallet,
+        implementationAuthority_: implementationAuthorityImpl,
+      },
     }
+  );
+  await waitForTransactionToBeMined(
+    initializeIdentityFactoryResult.SMARTIdentityFactoryInitialize
+      ?.transactionHash
   );
 
   return {
     identityFactoryImplementation: factoryImpl,
-    identityFactoryProxy: registryProxy,
-    identityFactory: identityFactory, // This Future now represents an initialized contract
+    identityFactoryProxy: factoryProxy,
   };
-});
-
-export default IdentityFactoryModule;
+};

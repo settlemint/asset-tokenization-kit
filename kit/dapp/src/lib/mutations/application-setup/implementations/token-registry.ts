@@ -1,16 +1,39 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import DeploymentRegistryModule from "./deployment-registry";
-import ForwarderModule from "./forwarder";
+import type { User } from "@/lib/auth/types";
+import { waitForContractToBeDeployed } from "@/lib/mutations/application-setup/utils/contract-deployment";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import type { Address } from "viem";
 
-const TokenRegistryModule = buildModule("TokenRegistryModule", (m) => {
-  const { forwarder } = m.useModule(ForwarderModule);
-  const { deploymentRegistry } = m.useModule(DeploymentRegistryModule);
+const deployContractTokenRegistryMutation = portalGraphql(`
+  mutation deployContractSMARTTokenRegistry($from: String!, $constructorArguments: DeployContractSMARTTokenRegistryInput!) {
+    DeployContract: DeployContractSMARTTokenRegistry(from: $from, constructorArguments: $constructorArguments) {
+      transactionHash
+    }
+  }
+`);
 
-  const deployer = m.getAccount(0);
+interface TokenRegistryModuleArgs {
+  forwarder: Address;
+  user: User;
+}
 
-  const tokenRegistry = m.contract("SMARTTokenRegistry", [forwarder, deployer]);
-
-  return { tokenRegistry };
-});
-
-export default TokenRegistryModule;
+export const tokenRegistryModule = async ({
+  forwarder,
+  user,
+}: TokenRegistryModuleArgs) => {
+  const deploySmartTokenRegistryResult = await portalClient.request(
+    deployContractTokenRegistryMutation,
+    {
+      from: user.wallet,
+      constructorArguments: {
+        initialAdmin: user.wallet,
+        forwarder: forwarder,
+      },
+    }
+  );
+  const tokenRegistry = await waitForContractToBeDeployed(
+    deploySmartTokenRegistryResult.DeployContract?.transactionHash
+  );
+  return {
+    tokenRegistry,
+  };
+};

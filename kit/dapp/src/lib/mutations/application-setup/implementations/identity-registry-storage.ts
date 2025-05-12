@@ -1,7 +1,10 @@
 import type { User } from "@/lib/auth/types";
-import { waitForContractToBeDeployed } from "@/lib/mutations/application-setup/utils/contract-deployment";
+import {
+  waitForContractToBeDeployed,
+  waitForTransactionToBeMined,
+} from "@/lib/mutations/application-setup/utils/contract-deployment";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { type Address, zeroAddress } from "viem";
+import type { Address } from "viem";
 
 const deployContractSMARTIdentityRegistryStorageMutation = portalGraphql(`
   mutation deployContractSMARTIdentityRegistryStorage($from: String!, $constructorArguments: DeployContractSMARTIdentityRegistryStorageInput!) {
@@ -11,28 +14,38 @@ const deployContractSMARTIdentityRegistryStorageMutation = portalGraphql(`
   }
 `);
 
-interface IdentityRegistryStorageModuleArgs {
-  forwarder: Address | null;
-  user: User;
-}
+const deployContractSMARTProxyMutation = portalGraphql(`
+  mutation deployContractSMARTProxy($from: String!, $constructorArguments: DeployContractSMARTProxyInput!) {
+    DeployContract: DeployContractSMARTProxy(from: $from, constructorArguments: $constructorArguments) {
+      transactionHash
+    }
+  }
+`);
 
-interface IdentityRegistryStorageModuleResult {
-  identityRegistryStorageImplementation: Address;
-  identityRegistryStorageProxy: Address;
-  identityRegistryStorage: Address;
+const initializeIdentityRegistryStorageMutation = portalGraphql(`
+  mutation SMARTIdentityRegistryStorageInitialize($from: String!, $address: String!, $input: SMARTIdentityRegistryStorageInitializeInput!) {
+    SMARTIdentityRegistryStorageInitialize(from: $from, address: $address, input: $input) {
+      transactionHash
+    }
+  }
+`);
+
+interface IdentityRegistryStorageModuleArgs {
+  forwarder: Address;
+  user: User;
 }
 
 export async function identityRegistryStorageModule({
   forwarder,
   user,
-}: IdentityRegistryStorageModuleArgs): Promise<IdentityRegistryStorageModuleResult> {
+}: IdentityRegistryStorageModuleArgs) {
   // Deploy implementation contract, passing the forwarder address
   const deploySmartIdentityRegistryStorageResult = await portalClient.request(
     deployContractSMARTIdentityRegistryStorageMutation,
     {
       from: user.wallet,
       constructorArguments: {
-        trustedForwarder: forwarder || zeroAddress,
+        trustedForwarder: forwarder,
       },
     }
   );
@@ -40,34 +53,40 @@ export async function identityRegistryStorageModule({
     deploySmartIdentityRegistryStorageResult.DeployContract?.transactionHash
   );
 
-  /*
   // Deploy proxy with empty initialization data
   const emptyInitData = "0x";
-  const storageProxy = m.contract(
-    "SMARTProxy",
-    [storageImpl, emptyInitData],
+  const deploySmartProxyResult = await portalClient.request(
+    deployContractSMARTProxyMutation,
     {
-      id: "StorageProxy",
+      from: user.wallet,
+      constructorArguments: {
+        _data: storageImpl,
+        _logic: emptyInitData,
+      },
     }
   );
-
-  // Get a contract instance at the proxy address
-  const identityRegistryStorage = m.contractAt(
-    "SMARTIdentityRegistryStorage",
-    storageProxy,
-    { id: "StorageAtProxyUninitialized" }
+  const storageProxy = await waitForContractToBeDeployed(
+    deploySmartProxyResult.DeployContract?.transactionHash
   );
 
   // Call initialize
-  m.call(identityRegistryStorage, "initialize", [deployer], {
-    id: "InitializeStorage",
-    after: [storageProxy],
-  });
-  */
+  const initializeIdentityRegistryStorageResult = await portalClient.request(
+    initializeIdentityRegistryStorageMutation,
+    {
+      from: user.wallet,
+      address: storageProxy,
+      input: {
+        initialAdmin: user.wallet,
+      },
+    }
+  );
+  await waitForTransactionToBeMined(
+    initializeIdentityRegistryStorageResult
+      .SMARTIdentityRegistryStorageInitialize?.transactionHash
+  );
 
   return {
     identityRegistryStorageImplementation: storageImpl,
-    identityRegistryStorageProxy: storageImpl, // TODO
-    identityRegistryStorage: storageImpl, // TODO
+    identityRegistryStorageProxy: storageProxy,
   };
 }
