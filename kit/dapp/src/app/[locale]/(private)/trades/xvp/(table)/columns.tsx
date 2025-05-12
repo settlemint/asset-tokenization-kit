@@ -2,7 +2,7 @@
 
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
-import { XvpStatusPill } from "@/components/blocks/xvp-status/status-pill";
+import { XvpStatusPill } from "@/components/blocks/xvp/status-pill";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/routing";
 import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
