@@ -90,16 +90,11 @@ export const getActionsList = withTracing(
           );
 
           const actionExecutors = result.actionExecutors || [];
-          return actionExecutors;
+          return safeParse(ActionExecutorList, actionExecutors);
         }
       );
 
-      const validatedActionExecutors = safeParse(
-        ActionExecutorList,
-        actionExecutors
-      );
-
-      const actions = validatedActionExecutors.flatMap(
+      const actions = actionExecutors.flatMap(
         (actionExecutor) => actionExecutor.actions
       );
 
