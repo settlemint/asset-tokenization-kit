@@ -10,6 +10,8 @@ import type { ActionType } from "@/lib/queries/actions/actions-schema";
 import type { LucideIcon } from "lucide-react";
 import { ArrowBigRightDash, CircleDashed, ListCheck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { DataTable } from "../data-table/data-table";
+import { Columns } from "./actions-columns";
 
 interface ActionsTableProps {
   state: "pending" | "executed" | "upcoming";
@@ -61,9 +63,14 @@ export async function ActionsTable({ state, actionType }: ActionsTableProps) {
     return emptyState;
   }
 
-  if (true) {
-    return emptyState;
-  }
+  return (
+    <DataTable
+      columns={Columns}
+      columnParams={{ state }}
+      data={actions}
+      name="Actions"
+    />
+  );
 }
 
 interface EmptyStateProps {
