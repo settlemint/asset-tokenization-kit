@@ -90,7 +90,6 @@ export const getActionsList = withTracing(
           );
 
           const actionExecutors = result.actionExecutors || [];
-
           return actionExecutors;
         }
       );
