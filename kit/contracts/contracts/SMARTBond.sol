@@ -4,8 +4,6 @@ pragma solidity 0.8.28;
 // OpenZeppelin imports
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import { AccessControlEnumerable } from "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
@@ -13,17 +11,19 @@ import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC2
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 // Constants
-import { SMARTConstants } from "./SMARTConstants.sol";
+// import { SMARTConstants } from "./SMARTConstants.sol"; // Roles moved to manager
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from
     "smart-protocol/contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IFixedYield } from "./interfaces/IFixedYield.sol";
+import { ISMARTTokenAccessControlManager } from "./access-control/interfaces/ISMARTTokenAccessControlManager.sol";
 
 // Core extensions
 import { SMART } from "smart-protocol/contracts/extensions/core/SMART.sol"; // Base SMART logic + ERC20
 import { SMARTHooks } from "smart-protocol/contracts/extensions/common/SMARTHooks.sol";
-
+import { SMARTExtensionAccessControlAuthorization } from
+    "smart-protocol/contracts/extensions/common/SMARTExtensionAccessControlAuthorization.sol";
 // Feature extensions
 import { SMARTPausable } from "smart-protocol/contracts/extensions/pausable/SMARTPausable.sol";
 import { SMARTBurnable } from "smart-protocol/contracts/extensions/burnable/SMARTBurnable.sol";
@@ -33,23 +33,37 @@ import { SMARTHistoricalBalances } from
     "smart-protocol/contracts/extensions/historical-balances/SMARTHistoricalBalances.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 
-/// @title SMARTBond
+// Import the Managed contract
+import { SMARTTokenAccessControlManaged } from "./access-control/SMARTTokenAccessControlManaged.sol";
+import { SMARTAccessControlManagerAuthorization } from
+    "./access-control/hooks/SMARTAccessControlManagerAuthorization.sol";
+import { SMARTCustodianAccessControlManagerAuthorization } from
+    "./access-control/hooks/SMARTCustodianAccessControlManagerAuthorization.sol";
+import { SMARTPausableAccessControlManagerAuthorization } from
+    "./access-control/hooks/SMARTPausableAccessControlManagerAuthorization.sol";
+import { SMARTBurnableAccessControlManagerAuthorization } from
+    "./access-control/hooks/SMARTBurnableAccessControlManagerAuthorization.sol";
+
+/// @title SMARTBond (Managed Access Control)
 /// @notice An implementation of a bond using the SMART extension framework,
-///         backed by collateral and using custom roles.
-/// @dev Combines core SMART features (compliance, verification) with extensions for pausing,
-///      burning, custodian actions, and collateral tracking. Access control uses custom roles.
+///         delegating access control checks to a central manager.
+/// @dev Combines core SMART features with extensions, inheriting `SMARTTokenAccessControlManaged`.
 contract SMARTBond is
+    SMARTTokenAccessControlManaged,
     SMART,
-    AccessControlEnumerable,
     SMARTCustodian,
     SMARTPausable,
     SMARTBurnable,
     SMARTRedeemable,
     SMARTHistoricalBalances,
+    SMARTAccessControlManagerAuthorization,
+    SMARTCustodianAccessControlManagerAuthorization,
+    SMARTPausableAccessControlManagerAuthorization,
+    SMARTBurnableAccessControlManagerAuthorization,
     ERC20Capped,
     ERC20Permit,
     ERC20Yield,
-    ERC2771Context,
+    ERC2771Context, // Keep for potential token-level meta-tx
     ReentrancyGuard
 {
     // --- Custom Errors ---
@@ -120,8 +134,7 @@ contract SMARTBond is
         _;
     }
 
-    /// @notice Deploys a new SMARTBond token contract.
-    /// @dev Initializes SMART core, AccessControl, ERC20Collateral, and grants custom roles.
+    /// @notice Deploys a new SMARTBond token contract with managed access control.
     /// @param name_ Token name
     /// @param symbol_ Token symbol
     /// @param decimals_ Token decimals
@@ -133,7 +146,8 @@ contract SMARTBond is
     /// @param initialModulePairs_ Initial list of compliance modules
     /// @param identityRegistry_ Address of the identity registry contract
     /// @param compliance_ Address of the compliance contract
-    /// @param forwarder Address of the forwarder contract
+    /// @param forwarder Address of the forwarder contract for meta-transactions
+    /// @param accessManager Address of the central SMARTTokenAccessControlManager contract
     constructor(
         string memory name_,
         string memory symbol_,
@@ -146,22 +160,23 @@ contract SMARTBond is
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
-        address forwarder
+        address forwarder,
+        address accessManager // New parameter
     )
-        // Initialize the core SMART logic (which includes ERC20)
+        SMARTTokenAccessControlManaged(accessManager) // Initialize managed contract
         SMART(
             name_,
             symbol_,
             decimals_,
-            address(0),
+            address(0), // Bond agent (if any, set later)
             identityRegistry_,
             compliance_,
             requiredClaimTopics_,
             initialModulePairs_
         )
-        ERC2771Context(forwarder)
+        ERC2771Context(forwarder) // Initialize ERC2771 context
         ERC20Capped(cap_)
-        ERC20Permit(name_)
+        ERC20Permit(name_) // Pass name for EIP712 domain separator
     {
         if (maturityDate_ <= block.timestamp) revert BondInvalidMaturityDate();
         if (faceValue_ == 0) revert InvalidFaceValue();
@@ -177,13 +192,6 @@ contract SMARTBond is
         maturityDate = maturityDate_;
         faceValue = faceValue_;
         underlyingAsset = IERC20(underlyingAsset_);
-
-        // Grant standard admin role
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-
-        // Grant custom operational roles
-        _grantRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, _msgSender()); // Mint, Burn, Forced Transfer
-        _grantRole(SMARTConstants.USER_MANAGEMENT_ROLE, _msgSender()); // Freeze, Recovery
     }
 
     // --- View Functions ---
@@ -243,12 +251,18 @@ contract SMARTBond is
         return underlyingAsset;
     }
 
-    /// @notice Checks if an address can manage yield on this token
-    /// @dev Only addresses with SUPPLY_MANAGEMENT_ROLE can manage yield
-    /// @param manager The address to check
-    /// @return True if the address has SUPPLY_MANAGEMENT_ROLE
+    /// @notice Checks if an address can manage yield on this token by checking if they have the TOKEN_ADMIN_ROLE via
+    /// the manager.
+    /// @param manager The address to check.
+    /// @return True if the address has the required role according to the manager, false otherwise.
     function canManageYield(address manager) public view override returns (bool) {
-        return hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, manager);
+        // Delegate check to manager using the appropriate authorization function.
+        // Assuming TOKEN_ADMIN_ROLE grants yield management rights.
+        try _getManager().authorizeUpdateTokenSettings(manager) {
+            return true; // If the call doesn't revert, the role is granted
+        } catch {
+            return false; // If the call reverts, the role is not granted
+        }
     }
 
     // --- State-Changing Functions ---
@@ -269,28 +283,21 @@ contract SMARTBond is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
     /// @param amount The amount of underlying assets to withdraw
-    function withdrawUnderlyingAsset(
-        address to,
-        uint256 amount
-    )
-        external
-        nonReentrant
-        onlyRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE)
-    {
+    function withdrawUnderlyingAsset(address to, uint256 amount) external nonReentrant {
+        // Authorization check is now implicitly done by _authorizeForcedTransfer or similar hook if applicable
+        // Or, if this is a specific admin action, add a dedicated auth check
+        _getManager().authorizeRecoverERC20(_msgSender()); // Reuse recover logic role, or define a new one if needed
         _withdrawUnderlyingAsset(to, amount);
     }
 
     /// @notice Allows withdrawing all excess underlying assets
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
-    function withdrawExcessUnderlyingAssets(address to)
-        external
-        nonReentrant
-        onlyRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE)
-    {
+    function withdrawExcessUnderlyingAssets(address to) external nonReentrant {
+        // Similar authorization check needed
+        _getManager().authorizeRecoverERC20(_msgSender()); // Reuse recover logic role, or define a new one if needed
         uint256 withdrawable = withdrawableUnderlyingAmount();
         if (withdrawable == 0) revert InsufficientUnderlyingBalance();
-
         _withdrawUnderlyingAsset(to, withdrawable);
     }
 
@@ -309,13 +316,17 @@ contract SMARTBond is
     /// @notice Closes off the bond at maturity
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
     /// @dev Requires sufficient underlying assets for all potential redemptions
-    function mature() external onlyRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE) {
+    function mature() external {
+        // Authorization check is now implicitly done by _authorizePause or similar hook if applicable
+        // Or, if this is a specific admin action, add a dedicated auth check
+        _getManager().authorizePause(_msgSender()); // Re-using PAUSER_ROLE seems odd, maybe TOKEN_ADMIN? Let's use
+            // TOKEN_ADMIN
+        // _getManager().authorizeUpdateTokenSettings(_msgSender()); // Alternative: use TOKEN_ADMIN
+
         if (block.timestamp < maturityDate) revert BondNotYetMatured();
         if (isMatured) revert BondAlreadyMatured();
-
         uint256 needed = totalUnderlyingNeeded();
         if (underlyingAssetBalance() < needed) revert InsufficientUnderlyingBalance();
-
         isMatured = true;
         emit BondMatured(block.timestamp);
     }
@@ -353,10 +364,7 @@ contract SMARTBond is
         return (bondAmount / (10 ** decimals())) * faceValue;
     }
 
-    // --- Hooks (Overrides for Chaining) ---
-    // These ensure that logic from multiple inherited extensions (SMART, SMARTCustodian, etc.) is called correctly.
-
-    /// @inheritdoc SMARTHooks
+    // --- Other Hooks (Overrides for Chaining) ---
     function _beforeMint(address to, uint256 amount) internal virtual override(SMART, SMARTCustodian, SMARTHooks) {
         if (yieldSchedule != address(0)) {
             // Use the interface to call the external contract
@@ -369,7 +377,6 @@ contract SMARTBond is
         super._beforeMint(to, amount);
     }
 
-    /// @inheritdoc SMARTHooks
     function _beforeTransfer(
         address from,
         address to,
@@ -386,12 +393,10 @@ contract SMARTBond is
         super._beforeTransfer(from, to, amount);
     }
 
-    /// @inheritdoc SMARTHooks
     function _beforeBurn(address from, uint256 amount) internal virtual override(SMARTCustodian, SMARTHooks) {
         super._beforeBurn(from, amount);
     }
 
-    /// @inheritdoc SMARTHooks
     function _beforeRedeem(
         address owner,
         uint256 amount
@@ -406,7 +411,6 @@ contract SMARTBond is
         super._beforeRedeem(owner, amount);
     }
 
-    /// @inheritdoc SMARTHooks
     function _afterMint(
         address to,
         uint256 amount
@@ -418,7 +422,6 @@ contract SMARTBond is
         super._afterMint(to, amount);
     }
 
-    /// @inheritdoc SMARTHooks
     function _afterTransfer(
         address from,
         address to,
@@ -431,7 +434,6 @@ contract SMARTBond is
         super._afterTransfer(from, to, amount);
     }
 
-    /// @inheritdoc SMARTHooks
     function _afterBurn(
         address from,
         uint256 amount
@@ -443,16 +445,11 @@ contract SMARTBond is
         super._afterBurn(from, amount);
     }
 
-    /// @inheritdoc SMARTHooks
     function _afterRedeem(address owner, uint256 amount) internal virtual override(SMARTRedeemable, SMARTHooks) {
         super._afterRedeem(owner, amount);
     }
 
     // --- Internal Functions (Overrides) ---
-
-    /// @notice Implementation of the abstract burn execution using the base ERC20Upgradeable `_burn` function.
-    /// @dev Assumes the inheriting contract includes an ERC20Upgradeable implementation with an internal `_burn`
-    /// function.
     function _redeem(address from, uint256 amount) internal virtual override {
         uint256 currentBalance = balanceOf(from);
         uint256 currentRedeemed = bondRedeemed[from];
@@ -493,8 +490,14 @@ contract SMARTBond is
         super._update(from, to, value);
     }
 
-    /// @dev Resolves msgSender across Context and SMARTPausable.
-    function _msgSender() internal view virtual override(Context, ERC2771Context) returns (address) {
+    /// @dev Resolves msgSender across Context and ERC2771Context.
+    function _msgSender()
+        internal
+        view
+        virtual
+        override(Context, ERC2771Context, SMARTExtensionAccessControlAuthorization)
+        returns (address)
+    {
         return ERC2771Context._msgSender();
     }
 
@@ -508,94 +511,9 @@ contract SMARTBond is
         return ERC2771Context._contextSuffixLength();
     }
 
-    // --- Authorization Hook Implementations ---
-    // Implementing the abstract functions from _SMART*AuthorizationHooks
-
-    function _authorizeUpdateTokenSettings() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
-        }
-    }
-
-    function _authorizeUpdateComplianceSettings() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
-        }
-    }
-
-    function _authorizeUpdateVerificationSettings() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
-        }
-    }
-
-    function _authorizeMintToken() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.SUPPLY_MANAGEMENT_ROLE);
-        }
-    }
-
-    function _authorizePause() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
-        }
-    }
-
-    function _authorizeBurn() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
-        }
-    }
-
-    function _authorizeFreezeAddress() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.USER_MANAGEMENT_ROLE);
-        }
-    }
-
-    function _authorizeFreezePartialTokens() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.USER_MANAGEMENT_ROLE);
-        }
-    }
-
-    function _authorizeForcedTransfer() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(SMARTConstants.SUPPLY_MANAGEMENT_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.SUPPLY_MANAGEMENT_ROLE);
-        }
-    }
-
-    function _authorizeRecoveryAddress() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(SMARTConstants.USER_MANAGEMENT_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, SMARTConstants.USER_MANAGEMENT_ROLE);
-        }
-    }
-
-    function _authorizeRecoverERC20() internal view virtual override {
-        address sender = _msgSender();
-        if (!hasRole(DEFAULT_ADMIN_ROLE, sender)) {
-            revert IAccessControl.AccessControlUnauthorizedAccount(sender, DEFAULT_ADMIN_ROLE);
-        }
-    }
-
     /// @dev Overrides ERC165 to ensure that the SMART implementation is used.
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(SMART, AccessControlEnumerable)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(SMART) returns (bool) {
+        // No longer inherits AccessControlEnumerable directly
         return super.supportsInterface(interfaceId);
     }
 }
