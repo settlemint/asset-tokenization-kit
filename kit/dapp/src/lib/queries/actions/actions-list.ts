@@ -7,6 +7,7 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import type { Address } from "viem";
 import { ActionExecutorFragment } from "./actions-fragment";
@@ -59,9 +60,10 @@ export const getActionsList = withTracing(
   "getActionsList",
   cache(
     async ({ userAddress, actionType, executed, active }: ActionsListProps) => {
-      // "use cache";
-      // cacheTag("actions");
+      "use cache";
+      cacheTag("actions");
 
+      const nowSeconds = (new Date().getTime() / 1000).toFixed(0);
       const actionExecutors = await fetchAllTheGraphPages(
         async (first, skip) => {
           const result = await theGraphClientKit.request(
@@ -76,12 +78,8 @@ export const getActionsList = withTracing(
                 actions_: {
                   type: actionType,
                   executed,
-                  ...(active === true
-                    ? { activeAt_lte: (new Date().getTime() / 1000).toFixed(0) }
-                    : {}),
-                  ...(active === false
-                    ? { activeAt_gt: (new Date().getTime() / 1000).toFixed(0) }
-                    : {}),
+                  ...(active === true ? { activeAt_lte: nowSeconds } : {}),
+                  ...(active === false ? { activeAt_gt: nowSeconds } : {}),
                 },
               },
             },
