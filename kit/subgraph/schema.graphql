@@ -28,10 +28,10 @@ type Event @entity(immutable: true) {
   sender: Account!
   involved: [Account!]!
   # List of values involved in the event
-  values: [EventValue!]! @derivedFrom(field: "entry")
+  values: [Internal_EventValue!]! @derivedFrom(field: "entry")
 }
 
-type EventValue @entity(immutable: true) {
+type Internal_EventValue @entity(immutable: true) {
   id: Bytes!
   name: String!
   value: String!
@@ -40,12 +40,18 @@ type EventValue @entity(immutable: true) {
 
 type Internal_AccessControl @entity(immutable: false) {
   id: Bytes!
-  admins: [Account!]!
-  supplyManagers: [Account!]!
-  userManagers: [Account!]!
-  signers: [Account!]!
-  deploymentOwners: [Account!]!
-  storageModifiers: [Account!]!
+  admin: [Account!]!
+  burner: [Account!]!
+  complianceAdmin: [Account!]!
+  deploymentOwner: [Account!]!
+  freezer: [Account!]!
+  forcedTransfer: [Account!]!
+  minter: [Account!]!
+  pauser: [Account!]!
+  recovery: [Account!]!
+  signer: [Account!]!
+  storageModifier: [Account!]!
+  verificationAdmin: [Account!]!
 }
 
 type System @entity(immutable: false) {
