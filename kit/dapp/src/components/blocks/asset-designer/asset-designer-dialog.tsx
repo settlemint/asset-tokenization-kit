@@ -9,7 +9,6 @@ import { revalidate } from "@/lib/utils/revalidate";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -37,7 +36,6 @@ export function AssetDesignerDialog({
   onOpenChange,
 }: AssetDesignerDialogProps) {
   const t = useTranslations("private.assets.create");
-  const { theme } = useTheme();
   const [selectedAssetType, setSelectedAssetType] = useState<AssetType | null>(
     null
   );
@@ -58,6 +56,14 @@ export function AssetDesignerDialog({
   // Derive stepsOrder from allSteps for navigation
   const stepsOrder = allSteps.map((step) => step.id);
 
+  // Verification form
+  const verificationForm = useForm({
+    defaultValues: {
+      verificationCode: "",
+      verificationType: "pincode",
+    },
+  });
+
   // Reset form state when dialog is closed
   useEffect(() => {
     if (!open) {
@@ -69,7 +75,7 @@ export function AssetDesignerDialog({
       setShowVerificationDialog(false);
       verificationForm.reset();
     }
-  }, [open]);
+  }, [open, verificationForm]);
 
   // Load asset form definition and form component when type changes
   useEffect(() => {
@@ -120,14 +126,6 @@ export function AssetDesignerDialog({
         console.error("Failed to load asset form:", error);
       });
   }, [selectedAssetType, currentStepId]);
-
-  // Verification form
-  const verificationForm = useForm({
-    defaultValues: {
-      verificationCode: "",
-      verificationType: "pincode",
-    },
-  });
 
   /**
    * Asset Creation Flow:
@@ -329,13 +327,11 @@ export function AssetDesignerDialog({
       >
         <div className="relative">
           <DialogTitle className="sr-only">Asset Designer</DialogTitle>
-          {/* TODO: Using 'as any' type assertions because dynamic translation keys from getAssetTitle/getAssetDescription
-              don't match the literal string types expected by next-intl's t function */}
           <StepWizard
             steps={allSteps}
             currentStepId={currentStepId}
-            title={t(getAssetTitle(selectedAssetType) as any)}
-            description={t(getAssetDescription(selectedAssetType) as any)}
+            title={t(getAssetTitle(selectedAssetType))}
+            description={t(getAssetDescription(selectedAssetType))}
             onStepChange={handleStepChange}
             onClose={() => onOpenChange(false)}
           >

@@ -1,7 +1,14 @@
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import { useTranslations } from "next-intl";
+
+type TranslationKeys = Parameters<
+  ReturnType<typeof useTranslations<"private.assets.create">>
+>[0];
 
 // Get the description for the asset type
-export function getAssetDescription(assetType?: AssetType | null): string {
+export function getAssetDescription(
+  assetType?: AssetType | null
+): TranslationKeys {
   if (!assetType) return "general.description.default";
 
   switch (assetType) {
@@ -22,7 +29,7 @@ export function getAssetDescription(assetType?: AssetType | null): string {
   }
 }
 
-export const getAssetTitle = (assetType: AssetType | null): string => {
+export const getAssetTitle = (assetType: AssetType | null): TranslationKeys => {
   if (!assetType) return "general.title.default";
 
   switch (assetType) {
