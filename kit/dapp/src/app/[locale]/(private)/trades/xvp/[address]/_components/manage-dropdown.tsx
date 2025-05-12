@@ -33,16 +33,19 @@ export function ManageDropdown({ xvp }: ManageDropdownProps) {
   const isApproved = xvp.approvals.every((approval) => approval.approved);
   const isExpired = isBefore(Number(xvp.cutoffDate) * 1000, new Date());
   const isCancelled = xvp.cancelled;
+  const isExecuted = xvp.executed;
+  const actionsDisabled = isCancelled || isExpired || isExecuted;
+
   const menuItems = [
     {
       id: "approve",
       label: t("approve"),
-      disabled: userHasApproved || isCancelled || isExpired,
+      disabled: userHasApproved || actionsDisabled,
     },
     {
       id: "execute",
       label: t("execute"),
-      disabled: !isApproved || isExpired || isCancelled,
+      disabled: !isApproved || actionsDisabled,
     },
   ] as const;
 
