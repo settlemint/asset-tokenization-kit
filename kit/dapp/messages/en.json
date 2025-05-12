@@ -2,12 +2,12 @@
   "actions": {
     "name": {
       "ApproveXvPSettlement": "Approve XvP Settlement",
-      "ClaimXvPSettlement": "Claim XvP Settlement",
+      "ExecuteXvPSettlement": "Execute XvP Settlement",
       "MatureBond": "Mature Bond"
     },
     "description": {
       "ApproveXvPSettlement": "Approve the XvP Settlement contract to be able to transfer the assets.",
-      "ClaimXvPSettlement": "Execute the XvP Settlement.",
+      "ExecuteXvPSettlement": "Execute the XvP Settlement contract to transfer the assets to the parties as defined in the settlement.",
       "MatureBond": "Mark the bond as matured."
     },
     "columns": {

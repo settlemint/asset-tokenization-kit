@@ -3,6 +3,7 @@ import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { getAddress } from "viem";
 import { MatureForm } from "../bonds/mature-form/form";
 import { ApproveForm } from "../xvp/approve-form/form";
+import { ExecuteForm } from "../xvp/execute-form/form";
 
 interface ActionButtonProps {
   actionName: ActionName;
@@ -14,8 +15,8 @@ export function ActionButton({ actionName, target }: ActionButtonProps) {
     case "ApproveXvPSettlement":
       return <ApproveForm xvp={getAddress(target)} asButton />;
 
-    case "ClaimXvPSettlement":
-      return <div>TODO</div>;
+    case "ExecuteXvPSettlement":
+      return <ExecuteForm xvp={getAddress(target)} asButton />;
 
     case "MatureBond":
       return <MatureForm address={getAddress(target)} asButton />;

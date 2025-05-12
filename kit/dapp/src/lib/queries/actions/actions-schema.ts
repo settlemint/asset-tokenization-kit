@@ -3,7 +3,7 @@ import { t } from "@/lib/utils/typebox";
 
 export const ActionName = t.Union([
   t.Literal("ApproveXvPSettlement"),
-  t.Literal("ClaimXvPSettlement"),
+  t.Literal("ExecuteXvPSettlement"),
   t.Literal("MatureBond"),
 ]);
 export type ActionName = StaticDecode<typeof ActionName>;
