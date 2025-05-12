@@ -1,91 +1,124 @@
 "use client";
 
-import { AssetAdmins } from "@/components/blocks/create-forms/common/asset-admins/asset-admins";
-import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useRouter } from "@/i18n/routing";
-import { authClient } from "@/lib/auth/client";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
-import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
+import {
+  CreateStablecoinSchema,
+  type CreateStablecoinInput,
+} from "@/lib/mutations/stablecoin/create/create-schema";
+import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
+import type { User } from "@/lib/queries/user/user-schema";
+import type { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
-import { Basics } from "./steps/basics";
-import { Configuration } from "./steps/configuration";
-import { Summary } from "./steps/summary";
+import { FormProvider, useForm } from "react-hook-form";
+import type { AssetFormDefinition } from "../../asset-designer/types";
+import {
+  AssetAdmins,
+  stepDefinition as adminsStep,
+} from "../common/asset-admins/asset-admins";
+import {
+  Summary,
+  stepDefinition as summaryStep,
+} from "../common/summary/summary";
+import { Basics, stepDefinition as basicsStep } from "./steps/basics";
+import {
+  Configuration,
+  stepDefinition as configurationStep,
+} from "./steps/configuration";
+import { StablecoinConfigurationCard } from "./steps/summaryConfigurationCard";
+
 interface CreateStablecoinFormProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  asButton?: boolean;
+  userDetails: User;
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
+  ) => (data: any) => Promise<void>;
+}
+
+export interface StablecoinStepProps {
+  onNext?: () => void;
+  onBack?: () => void;
+  userDetails?: User;
 }
 
 export function CreateStablecoinForm({
-  open,
-  onOpenChange,
-  asButton = false,
+  userDetails,
+  currentStepId,
+  onNextStep,
+  onPrevStep,
+  verificationWrapper,
 }: CreateStablecoinFormProps) {
-  const t = useTranslations("private.assets.create.form");
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [localOpen, setLocalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
-  const posthog = usePostHog();
+  const stablecoinForm = useForm<CreateStablecoinInput>({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      decimals: 18,
+      collateralLivenessValue: 12,
+      collateralLivenessTimeUnit: "months",
+      price: {
+        amount: 1,
+        currency: userDetails.currency as FiatCurrency,
+      },
+      verificationType: "pincode",
+      assetAdmins: [],
+    },
+    mode: "onChange", // Validate as fields change for real-time feedback
+    resolver: typeboxResolver(CreateStablecoinSchema()),
+  });
 
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
-      posthog.capture("create_stablecoin_form_opened");
+  const renderCurrentStep = () => {
+    switch (currentStepId) {
+      case "details":
+        return <Basics onNext={onNextStep} onBack={onPrevStep} />;
+      case "configuration":
+        return <Configuration onNext={onNextStep} onBack={onPrevStep} />;
+      case "admins":
+        return (
+          <AssetAdmins
+            userDetails={userDetails}
+            onNext={onNextStep}
+            onBack={onPrevStep}
+          />
+        );
+      case "summary":
+        return (
+          <Summary
+            configurationCard={
+              <StablecoinConfigurationCard form={stablecoinForm} />
+            }
+            form={stablecoinForm}
+            onBack={onPrevStep}
+            onSubmit={verificationWrapper(createStablecoin)}
+            predictAddress={getPredictedAddress}
+            isAddressAvailable={isAddressAvailable}
+          />
+        );
+      default:
+        return <div>Unknown step: {currentStepId}</div>;
     }
-  }, [open, localOpen, posthog]);
+  };
 
-  return (
-    <FormSheet
-      open={open ?? localOpen}
-      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t("title.stablecoins")}
-      description={t("description.stablecoins")}
-      asButton={asButton}
-      triggerLabel={
-        isExternallyControlled ? undefined : t("trigger-label.stablecoins")
-      }
-    >
-      <Form
-        action={createStablecoin}
-        resolver={typeboxResolver(CreateStablecoinSchema())}
-        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-        buttonLabels={{
-          label: t("trigger-label.stablecoins"),
-        }}
-        defaultValues={{
-          collateralLivenessValue: 12,
-          collateralLivenessTimeUnit: "months",
-          price: {
-            amount: 1,
-            currency: session?.user.currency,
-          },
-          assetAdmins: [],
-        }}
-        onAnyFieldChange={({ clearErrors }) => {
-          clearErrors("predictedAddress");
-        }}
-        toastMessages={{
-          action: (input) => {
-            const assetId = input?.predictedAddress;
-            return assetId
-              ? {
-                  label: t("toast-action.stablecoins"),
-                  onClick: () => router.push(`/assets/stablecoin/${assetId}`),
-                }
-              : undefined;
-          },
-        }}
-      >
-        <Basics />
-        <Configuration />
-        <AssetAdmins />
-        <Summary />
-      </Form>
-    </FormSheet>
-  );
+  return <FormProvider {...stablecoinForm}>{renderCurrentStep()}</FormProvider>;
 }
+
+CreateStablecoinForm.displayName = "CreateStablecoinForm";
+
+// Collect all the step definitions
+const stablecoinSteps = [
+  basicsStep,
+  configurationStep,
+  adminsStep,
+  summaryStep,
+];
+
+// Export form definition for the asset designer
+export const stablecoinFormDefinition: AssetFormDefinition = {
+  steps: stablecoinSteps,
+  getStepComponent: (stepId: string) => {
+    const step = stablecoinSteps.find((s) => s.id === stepId);
+    return step?.component || null;
+  },
+};

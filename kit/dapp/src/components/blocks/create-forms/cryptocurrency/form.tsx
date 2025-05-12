@@ -1,99 +1,118 @@
 "use client";
 
-import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useRouter } from "@/i18n/routing";
-import { authClient } from "@/lib/auth/client";
 import { createCryptoCurrency } from "@/lib/mutations/cryptocurrency/create/create-action";
-import { CreateCryptoCurrencySchema } from "@/lib/mutations/cryptocurrency/create/create-schema";
+import {
+  CreateCryptoCurrencySchema,
+  type CreateCryptoCurrencyInput,
+} from "@/lib/mutations/cryptocurrency/create/create-schema";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
-import { AssetAdmins } from "../common/asset-admins/asset-admins";
-import { Basics } from "./steps/basics";
-import { Configuration } from "./steps/configuration";
-import { Summary } from "./steps/summary";
+import { FormProvider, useForm } from "react-hook-form";
+import type { AssetFormDefinition } from "../../asset-designer/types";
+import {
+  AssetAdmins,
+  stepDefinition as adminsStep,
+} from "../common/asset-admins/asset-admins";
+import {
+  Summary,
+  stepDefinition as summaryStep,
+} from "../common/summary/summary";
+import { Basics, stepDefinition as basicsStep } from "./steps/basics";
+import {
+  Configuration,
+  stepDefinition as configurationStep,
+} from "./steps/configuration";
+import { CryptoConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateCryptoCurrencyFormProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  asButton?: boolean;
+  userDetails: User;
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
+  ) => (data: any) => Promise<void>;
+}
+
+// Define the interface that all steps will implement
+export interface CryptoStepProps {
+  onNext?: () => void;
+  onBack?: () => void;
+  userDetails?: User;
 }
 
 export function CreateCryptoCurrencyForm({
-  open,
-  onOpenChange,
-  asButton = false,
+  userDetails,
+  currentStepId,
+  onNextStep,
+  onPrevStep,
+  verificationWrapper,
 }: CreateCryptoCurrencyFormProps) {
-  const t = useTranslations("private.assets.create.form");
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [localOpen, setLocalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
-  const posthog = usePostHog();
+  const cryptoForm = useForm<CreateCryptoCurrencyInput>({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      decimals: 18,
+      initialSupply: undefined,
+      price: {
+        amount: 1,
+        currency: userDetails.currency,
+      },
+      verificationType: "pincode",
+      predictedAddress: "0x0000000000000000000000000000000000000000",
+      assetAdmins: [],
+    },
+    mode: "onChange", // Validate as fields change for real-time feedback
+    resolver: (...args) =>
+      typeboxResolver(
+        CreateCryptoCurrencySchema({
+          decimals: args[0].decimals,
+        })
+      )(...args),
+  });
 
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
-      posthog.capture("create_cryptocurrency_form_opened");
+  const renderCurrentStep = () => {
+    switch (currentStepId) {
+      case "details":
+        return <Basics onNext={onNextStep} onBack={onPrevStep} />;
+      case "configuration":
+        return <Configuration onNext={onNextStep} onBack={onPrevStep} />;
+      case "admins":
+        return (
+          <AssetAdmins
+            userDetails={userDetails}
+            onNext={onNextStep}
+            onBack={onPrevStep}
+          />
+        );
+      case "summary":
+        return (
+          <Summary
+            configurationCard={<CryptoConfigurationCard form={cryptoForm} />}
+            form={cryptoForm}
+            onBack={onPrevStep}
+            onSubmit={verificationWrapper(createCryptoCurrency)}
+          />
+        );
+      default:
+        return <div>Unknown step: {currentStepId}</div>;
     }
-  }, [open, localOpen, posthog]);
+  };
 
-  return (
-    <FormSheet
-      open={open ?? localOpen}
-      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t("title.cryptocurrencies")}
-      description={t("description.cryptocurrencies")}
-      asButton={asButton}
-      triggerLabel={
-        isExternallyControlled ? undefined : t("trigger-label.cryptocurrencies")
-      }
-    >
-      <Form
-        action={createCryptoCurrency}
-        resolver={(...args) =>
-          typeboxResolver(
-            CreateCryptoCurrencySchema({
-              decimals: args[0].decimals,
-            })
-          )(...args)
-        }
-        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-        buttonLabels={{
-          label: t("trigger-label.cryptocurrencies"),
-        }}
-        defaultValues={{
-          price: {
-            amount: 1,
-            currency: session?.user.currency,
-          },
-          verificationType: "pincode",
-          predictedAddress: "0x0000000000000000000000000000000000000000",
-          assetAdmins: [],
-        }}
-        onAnyFieldChange={({ clearErrors }) => {
-          clearErrors("predictedAddress");
-        }}
-        toastMessages={{
-          action: (input) => {
-            const assetId = input?.predictedAddress;
-            return assetId
-              ? {
-                  label: t("toast-action.cryptocurrencies"),
-                  onClick: () =>
-                    router.push(`/assets/cryptocurrency/${assetId}`),
-                }
-              : undefined;
-          },
-        }}
-      >
-        <Basics />
-        <Configuration />
-        <AssetAdmins />
-        <Summary />
-      </Form>
-    </FormSheet>
-  );
+  return <FormProvider {...cryptoForm}>{renderCurrentStep()}</FormProvider>;
 }
+
+CreateCryptoCurrencyForm.displayName = "CreateCryptoCurrencyForm";
+
+// Collect all the step definitions
+const cryptoSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
+
+// Export crypto form definition for the asset designer
+export const cryptoFormDefinition: AssetFormDefinition = {
+  steps: cryptoSteps,
+  getStepComponent: (stepId: string) => {
+    const step = cryptoSteps.find((s) => s.id === stepId);
+    return step?.component || null;
+  },
+};

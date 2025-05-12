@@ -1,12 +1,14 @@
-import { CreateDepositForm } from "@/components/blocks/create-forms/deposit/form";
+import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
+import { getUser } from "@/lib/auth/utils";
 import { getTranslations } from "next-intl/server";
 
 export async function DepositsRelated() {
   const t = await getTranslations("private.assets.table.related");
+  const user = await getUser();
 
   return (
     <RelatedGrid title={t("title")}>
@@ -14,7 +16,7 @@ export async function DepositsRelated() {
         title={t("deposit.issue-new.title")}
         description={t("deposit.issue-new.description")}
       >
-        <CreateDepositForm asButton />
+        <AssetDesignerButton currentUser={user} />
       </RelatedGridItem>
       <RelatedGridItem
         title={t("deposit.mechanics.title")}

@@ -18,8 +18,6 @@ import type {
   Path,
   PathValue,
   Resolver,
-  UseFormClearErrors,
-  UseFormGetValues,
   UseFormReturn,
 } from "react-hook-form";
 import { toast, type Action } from "sonner";
@@ -51,13 +49,7 @@ interface FormProps<
   };
   secureForm?: boolean;
   onAnyFieldChange?: (
-    {
-      getValues,
-      clearErrors,
-    }: {
-      getValues: UseFormGetValues<Infer<S>>;
-      clearErrors: UseFormClearErrors<Infer<S>>;
-    },
+    form: UseFormReturn<Infer<S>>,
     context: {
       step: number;
       goToStep: (step: number) => void;
@@ -357,8 +349,6 @@ export function Form<
       }
     );
 
-  const { getValues, clearErrors, watch } = form;
-
   const isLastStep = currentStep === totalSteps - 1;
 
   const handlePrev = () => {
@@ -429,22 +419,18 @@ export function Form<
       return;
     }
 
-    const subscription = watch((_value, { name }) => {
-      onAnyFieldChange(
-        {
-          getValues: getValues as UseFormGetValues<Infer<S>>,
-          clearErrors: clearErrors as UseFormClearErrors<Infer<S>>,
-        },
-        {
+    const subscription = form.watch((_value, { name, type }) => {
+      if (type === "change") {
+        onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
           changedFieldName: name,
           step: currentStep,
           goToStep: setCurrentStep,
-        }
-      );
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, [onAnyFieldChange, currentStep, watch, clearErrors, getValues]);
+  }, [currentStep, onAnyFieldChange, form]);
 
   const hasError = Object.keys(form.formState.errors).length > 0;
   const formatError = (key: string, errorMessage?: string, type?: string) => {

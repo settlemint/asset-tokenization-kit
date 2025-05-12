@@ -1,13 +1,14 @@
+import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { AddButton } from "./_components/add-button";
 import { Related } from "./_components/related";
 import { AssetsTable } from "./_components/table";
 
@@ -20,6 +21,7 @@ interface PageProps {
 
 export default async function AssetTypeTablePage({ params }: PageProps) {
   const { assettype, locale } = await params;
+  const user = await getUser();
   const t = await getTranslations({
     locale,
     namespace: "private.assets.table",
@@ -30,7 +32,7 @@ export default async function AssetTypeTablePage({ params }: PageProps) {
       <PageHeader
         title={t(`page-title.${assettype}`)}
         section={t("asset-management")}
-        button={<AddButton assettype={assettype} />}
+        button={<AssetDesignerButton currentUser={user} />}
       />
       <TopInfo title={t(`topinfo-title.${assettype}`)}>
         <p>{t(`topinfo-description.${assettype}`)}</p>

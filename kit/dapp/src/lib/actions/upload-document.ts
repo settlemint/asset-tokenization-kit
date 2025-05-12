@@ -52,9 +52,6 @@ async function uploadDocumentImplementation(formData: FormData) {
       throw new Error("Document title is required");
     }
 
-    // Ensure safe filename with only allowed characters
-    const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-
     // Create structured folder path for better organization
     // Documents/[type]/[yyyy-mm-dd]/
     const now = new Date();

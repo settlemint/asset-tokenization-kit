@@ -1,5 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
+import { XVP_SETTLEMENT_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -42,7 +43,7 @@ export const createXvpFunction = async ({
   const requestAssetDecimals = requestAsset.decimals;
 
   const result = await portalClient.request(XvpFactoryCreate, {
-    address: "0x202bdfdD1b4AC18fB5B68536f59CcAA693D00eF3",
+    address: XVP_SETTLEMENT_FACTORY_ADDRESS,
     from: user.wallet,
     input: {
       autoExecute,

@@ -20,9 +20,6 @@ jobs:
       ${{ github.ref == 'refs/heads/main' ||
       contains(github.event.pull_request.labels.*.name, 'run-playwright-tests')
       }}
-    strategy:
-      fail-fast: false
-
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7

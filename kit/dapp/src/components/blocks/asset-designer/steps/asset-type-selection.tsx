@@ -8,9 +8,9 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { CheckCircle2, Info, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { AssetType } from "../types";
 
 interface AssetTypeSelectionProps {
   selectedType: AssetType | null;

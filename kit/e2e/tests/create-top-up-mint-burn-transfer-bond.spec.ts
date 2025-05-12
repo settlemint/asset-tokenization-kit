@@ -159,8 +159,8 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     const mintAmount = Number.parseFloat(bondMintData.amount);
     const burnAmount = Number.parseFloat(bondBurnData.amount);
     const newTotal = mintAmount - burnAmount;
-    testData.currentTotalSupply = 920;
-    // await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
+    testData.currentTotalSupply = newTotal;
+    await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
   });
 
   test("Admin user transfers bonds to regular transfer user", async () => {

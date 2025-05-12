@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Yield } from "../../contracts/extensions/ERC20Yield.sol";
@@ -11,11 +11,11 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
     IERC20 private immutable _yieldToken;
 
     // Mapping: holder => timestamp => balance
-    mapping(address => mapping(uint256 => uint256)) private _historicalBalances;
+    mapping(address holder => mapping(uint256 timestamp => uint256 balance)) private _historicalBalances;
     // Mapping: account => blocked from managing yield
-    mapping(address => bool) private _yieldManagementBlocked;
+    mapping(address account => bool blocked) private _yieldManagementBlocked;
     // Mapping: timestamp => totalSupply
-    mapping(uint256 => uint256) private _historicalTotalSupplies;
+    mapping(uint256 timestamp => uint256 totalSupply) private _historicalTotalSupplies;
 
     constructor(
         string memory name,
@@ -30,14 +30,6 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
         _mint(msg.sender, initialSupply);
         _yieldBasisPerUnit = yieldBasisPerUnit_;
         _yieldToken = IERC20(yieldToken_);
-    }
-
-    function clock() public view virtual override returns (uint48) {
-        return uint48(block.timestamp);
-    }
-
-    function CLOCK_MODE() public pure virtual override returns (string memory) {
-        return "mode=timestamp";
     }
 
     function yieldBasisPerUnit(address) public view override returns (uint256) {

@@ -6,7 +6,7 @@ services:
       - "8545:8545" # Ethereum JSON-RPC
 
   postgres:
-    image: postgres:17.4-bookworm
+    image: postgres:17.5-bookworm
     user: postgres
     command:
       [
@@ -50,10 +50,11 @@ services:
       GRAPH_IPFS_TIMEOUT: 60
       GRAPH_MAX_IPFS_FILE_BYTES: 52428800
       GRAPH_IPFS_REQUEST_RETRIES: 10
+      CARGO_TERM_COLOR: always
 
   # Jaeger
   jaeger-all-in-one:
-    image: jaegertracing/jaeger:2.5.0
+    image: jaegertracing/jaeger:2.6.0
     ports:
       - "16686:16686" # Jaeger UI
       - "14268" # Jaeger collector HTTP
@@ -84,7 +85,7 @@ services:
       - jaeger-all-in-one
 
   victoriametrics:
-    image: victoriametrics/victoria-metrics:v1.116.0-scratch
+    image: victoriametrics/victoria-metrics:v1.117.0-scratch
     restart: always
     ports:
       - "8428:8428" # VictoriaMetrics HTTP API and UI

@@ -1,90 +1,114 @@
 "use client";
 
-import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useRouter } from "@/i18n/routing";
-import { authClient } from "@/lib/auth/client";
 import { createFund } from "@/lib/mutations/fund/create/create-action";
-import { CreateFundSchema } from "@/lib/mutations/fund/create/create-schema";
+import {
+  CreateFundSchema,
+  type CreateFundInput,
+} from "@/lib/mutations/fund/create/create-schema";
+import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
-import { AssetAdmins } from "../common/asset-admins/asset-admins";
-import { Basics } from "./steps/basics";
-import { Configuration } from "./steps/configuration";
-import { Summary } from "./steps/summary";
+import { FormProvider, useForm } from "react-hook-form";
+import type { AssetFormDefinition } from "../../asset-designer/types";
+import {
+  AssetAdmins,
+  stepDefinition as adminsStep,
+} from "../common/asset-admins/asset-admins";
+import {
+  Summary,
+  stepDefinition as summaryStep,
+} from "../common/summary/summary";
+import { Basics, stepDefinition as basicsStep } from "./steps/basics";
+import {
+  Configuration,
+  stepDefinition as configurationStep,
+} from "./steps/configuration";
+import { FundConfigurationCard } from "./steps/summaryConfigurationCard";
+
 interface CreateFundFormProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  asButton?: boolean;
+  userDetails: User;
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  verificationWrapper: <T = SafeActionResult<string[]>>(
+    fn: (data: any) => Promise<T>
+  ) => (data: any) => Promise<void>;
+}
+
+// Define the interface that all steps will implement
+export interface FundStepProps {
+  onNext?: () => void;
+  onBack?: () => void;
+  userDetails?: User;
 }
 
 export function CreateFundForm({
-  open,
-  onOpenChange,
-  asButton = false,
+  userDetails,
+  currentStepId,
+  onNextStep,
+  onPrevStep,
+  verificationWrapper,
 }: CreateFundFormProps) {
-  const t = useTranslations("private.assets.create.form");
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [localOpen, setLocalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
-  const posthog = usePostHog();
+  const fundForm = useForm<CreateFundInput>({
+    defaultValues: {
+      assetName: "",
+      symbol: "",
+      decimals: 18,
+      fundClass: "",
+      fundCategory: "",
+      managementFeeBps: 100, // Default 1% management fee
+      price: {
+        amount: 1,
+        currency: userDetails.currency,
+      },
+      verificationType: "pincode",
+      assetAdmins: [],
+    },
+    mode: "onChange", // Validate as fields change for real-time feedback
+    resolver: typeboxResolver(CreateFundSchema()),
+  });
 
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
-      posthog.capture("create_fund_form_opened");
+  const renderCurrentStep = () => {
+    switch (currentStepId) {
+      case "details":
+        return <Basics onNext={onNextStep} onBack={onPrevStep} />;
+      case "configuration":
+        return <Configuration onNext={onNextStep} onBack={onPrevStep} />;
+      case "admins":
+        return (
+          <AssetAdmins
+            userDetails={userDetails}
+            onNext={onNextStep}
+            onBack={onPrevStep}
+          />
+        );
+      case "summary":
+        return (
+          <Summary
+            configurationCard={<FundConfigurationCard form={fundForm} />}
+            form={fundForm}
+            onBack={onPrevStep}
+            onSubmit={verificationWrapper(createFund)}
+          />
+        );
+      default:
+        return <div>Unknown step: {currentStepId}</div>;
     }
-  }, [open, localOpen, posthog]);
+  };
 
-  return (
-    <FormSheet
-      open={open ?? localOpen}
-      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t("title.funds")}
-      description={t("description.funds")}
-      asButton={asButton}
-      triggerLabel={
-        isExternallyControlled ? undefined : t("trigger-label.funds")
-      }
-    >
-      <Form
-        action={createFund}
-        resolver={typeboxResolver(CreateFundSchema())}
-        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-        buttonLabels={{
-          label: t("trigger-label.funds"),
-        }}
-        defaultValues={{
-          managementFeeBps: 100, // Default 1% management fee
-          price: {
-            amount: 1,
-            currency: session?.user.currency,
-          },
-          assetAdmins: [],
-        }}
-        onAnyFieldChange={({ clearErrors }) => {
-          clearErrors("predictedAddress");
-        }}
-        toastMessages={{
-          action: (input) => {
-            const assetId = input?.predictedAddress;
-            return assetId
-              ? {
-                  label: t("toast-action.funds"),
-                  onClick: () => router.push(`/assets/fund/${assetId}`),
-                }
-              : undefined;
-          },
-        }}
-      >
-        <Basics />
-        <Configuration />
-        <AssetAdmins />
-        <Summary />
-      </Form>
-    </FormSheet>
-  );
+  return <FormProvider {...fundForm}>{renderCurrentStep()}</FormProvider>;
 }
+
+CreateFundForm.displayName = "CreateFundForm";
+
+// Collect all the step definitions
+const fundSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
+
+// Export form definition for the asset designer
+export const fundFormDefinition: AssetFormDefinition = {
+  steps: fundSteps,
+  getStepComponent: (stepId: string) => {
+    const step = fundSteps.find((s) => s.id === stepId);
+    return step?.component || null;
+  },
+};
