@@ -4,6 +4,7 @@ import {
   XvPSettlementCancelled,
   XvPSettlementClaimed,
 } from "../../generated/templates/XvPSettlement/XvPSettlement";
+import { fetchAccount } from "../utils/account";
 import {
   actionExecuted,
   ActionName,
@@ -32,7 +33,7 @@ export function handleXvPSettlementApproved(
   actionExecuted(
     event,
     ActionName.ApproveXvPSettlement,
-    xvpSettlement.id,
+    fetchAccount(event.address).id,
     approval.account.toHexString()
   );
 
@@ -54,7 +55,7 @@ export function handleXvPSettlementApproved(
     createAction(
       event,
       ActionName.ClaimXvPSettlement,
-      xvpSettlement.id,
+      fetchAccount(event.address).id,
       ActionType.User,
       event.block.timestamp,
       xvpSettlement.cutoffDate,
@@ -82,7 +83,7 @@ export function handleXvPSettlementApprovalRevoked(
   const xvpSettlement = fetchXvPSettlement(event.address);
   actionRevoked(
     ActionName.ApproveXvPSettlement,
-    xvpSettlement.id,
+    fetchAccount(event.address).id,
     approval.account.toHexString()
   );
 }
@@ -99,7 +100,12 @@ export function handleXvPSettlementClaimed(event: XvPSettlementClaimed): void {
   xvpSettlement.claimed = true;
   xvpSettlement.save();
 
-  actionExecuted(event, ActionName.ClaimXvPSettlement, xvpSettlement.id, null);
+  actionExecuted(
+    event,
+    ActionName.ClaimXvPSettlement,
+    fetchAccount(event.address).id,
+    null
+  );
 }
 
 export function handleXvPSettlementCancelled(

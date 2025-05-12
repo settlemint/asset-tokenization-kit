@@ -82,7 +82,7 @@ export const approveXvpFunction = async ({
     ?.flatMap((result) => result?.data)
     .filter(Boolean) as string[];
   await waitForTransactions(txns);
-  console.log({ results });
+
   const challengeResponse = await handleChallenge(
     user,
     user.wallet,

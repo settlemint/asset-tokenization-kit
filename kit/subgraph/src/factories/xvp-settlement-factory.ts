@@ -27,7 +27,7 @@ export function handleXvPSettlementCreated(event: XvPSettlementCreated): void {
     createAction(
       event,
       ActionName.ApproveXvPSettlement,
-      xvpSettlement.id,
+      fetchAccount(event.params.settlement).id,
       ActionType.User,
       event.block.timestamp,
       xvpSettlement.cutoffDate,
