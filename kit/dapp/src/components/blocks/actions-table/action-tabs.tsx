@@ -1,11 +1,20 @@
 import { getUser } from "@/lib/auth/utils";
+import type { ActionType } from "@/lib/queries/actions/actions-schema";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { TabNavigation } from "../tab-navigation/tab-navigation";
 import { BadgeLoader, BadgeSpinner } from "./badge-loader";
 
-const tabs = async ({ locale, path }: { locale: Locale; path: string }) => {
+const tabs = async ({
+  locale,
+  path,
+  type,
+}: {
+  locale: Locale;
+  path: string;
+  type: ActionType;
+}) => {
   const t = await getTranslations({
     locale,
     namespace: "actions",
@@ -20,7 +29,7 @@ const tabs = async ({ locale, path }: { locale: Locale; path: string }) => {
           <Suspense fallback={<BadgeSpinner />}>
             <BadgeLoader
               state="PENDING"
-              type="Admin"
+              type={type}
               userAddress={user.wallet}
             />
           </Suspense>
@@ -35,7 +44,7 @@ const tabs = async ({ locale, path }: { locale: Locale; path: string }) => {
           <Suspense fallback={<BadgeSpinner />}>
             <BadgeLoader
               state="UPCOMING"
-              type="Admin"
+              type={type}
               userAddress={user.wallet}
             />
           </Suspense>
@@ -50,7 +59,7 @@ const tabs = async ({ locale, path }: { locale: Locale; path: string }) => {
           <Suspense fallback={<BadgeSpinner />}>
             <BadgeLoader
               state="COMPLETED"
-              type="Admin"
+              type={type}
               userAddress={user.wallet}
             />
           </Suspense>
@@ -64,11 +73,13 @@ const tabs = async ({ locale, path }: { locale: Locale; path: string }) => {
 export async function ActionTabs({
   locale,
   path,
+  type,
 }: {
   locale: Locale;
   path: string;
+  type: ActionType;
 }) {
-  const tabItems = await tabs({ locale, path });
+  const tabItems = await tabs({ locale, path, type });
 
   return <TabNavigation items={tabItems} />;
 }

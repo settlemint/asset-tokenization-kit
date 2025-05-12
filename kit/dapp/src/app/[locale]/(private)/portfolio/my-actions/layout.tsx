@@ -37,7 +37,7 @@ export default async function ActionsLayout({ children, params }: LayoutProps) {
   return (
     <>
       <PageHeader title={t("page.actions")} />
-      <ActionTabs locale={locale} path="portfolio/my-actions" />
+      <ActionTabs locale={locale} path="portfolio/my-actions" type="User" />
       {children}
     </>
   );
