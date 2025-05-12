@@ -66,6 +66,9 @@ contract SMARTEquity is
         )
         ERC2771Context(forwarder)
         ERC20Permit(name_)
+        SMARTCustodian()
+        SMARTPausable()
+        SMARTBurnable()
     {
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
 
