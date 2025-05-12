@@ -16,6 +16,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { Info, Target, User } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { getAddress, isAddress } from "viem";
+import { ActionButton } from "./action-button";
 
 const columnHelper = createColumnHelper<Action>();
 
@@ -109,7 +110,18 @@ export function Columns({
       : []),
     ...(state === "pending"
       ? [
-          // TODO: Add action buttons
+          columnHelper.display({
+            id: "actions",
+            cell: ({ row }) => {
+              return (
+                <ActionButton
+                  actionName={row.original.name}
+                  target={row.original.target.id}
+                />
+              );
+            },
+            enableColumnFilter: false,
+          }),
         ]
       : []),
   ];
