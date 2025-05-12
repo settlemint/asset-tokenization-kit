@@ -754,7 +754,7 @@ type XvPSettlement @entity(immutable: false) {
   id: Bytes!
   cutoffDate: BigInt!
   autoExecute: Boolean!
-  claimed: Boolean!
+  executed: Boolean!
   cancelled: Boolean!
   createdAt: BigInt!
   flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")

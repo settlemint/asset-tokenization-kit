@@ -3,7 +3,7 @@ import { Action, ActionExecutor } from "../../generated/schema";
 
 export class ActionName {
   static ApproveXvPSettlement: string = "ApproveXvPSettlement";
-  static ClaimXvPSettlement: string = "ClaimXvPSettlement";
+  static ExecuteXvPSettlement: string = "ExecuteXvPSettlement";
   static MatureBond: string = "MatureBond";
 }
 

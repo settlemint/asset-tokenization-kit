@@ -2,7 +2,7 @@ import {
   XvPSettlementApprovalRevoked,
   XvPSettlementApproved,
   XvPSettlementCancelled,
-  XvPSettlementClaimed,
+  XvPSettlementExecuted,
 } from "../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../utils/account";
 import {
@@ -54,7 +54,7 @@ export function handleXvPSettlementApproved(
   if (allApproved) {
     createAction(
       event,
-      ActionName.ClaimXvPSettlement,
+      ActionName.ExecuteXvPSettlement,
       fetchAccount(event.address).id,
       ActionType.User,
       event.block.timestamp,
@@ -88,21 +88,23 @@ export function handleXvPSettlementApprovalRevoked(
   );
 }
 
-export function handleXvPSettlementClaimed(event: XvPSettlementClaimed): void {
+export function handleXvPSettlementExecuted(
+  event: XvPSettlementExecuted
+): void {
   let xvpSettlement = fetchXvPSettlement(event.address);
   createActivityLogEntry(
     event,
-    EventType.XvPSettlementClaimed,
+    EventType.XvPSettlementExecuted,
     event.params.sender,
     [event.params.sender]
   );
 
-  xvpSettlement.claimed = true;
+  xvpSettlement.executed = true;
   xvpSettlement.save();
 
   actionExecuted(
     event,
-    ActionName.ClaimXvPSettlement,
+    ActionName.ExecuteXvPSettlement,
     fetchAccount(event.address).id,
     null
   );
