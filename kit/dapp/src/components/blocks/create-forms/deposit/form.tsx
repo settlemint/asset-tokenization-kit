@@ -6,6 +6,8 @@ import {
   type CreateDepositInput,
 } from "@/lib/mutations/deposit/create/create-schema";
 import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import { isAddressAvailable } from "@/lib/queries/deposit-factory/deposit-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/deposit-factory/deposit-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
@@ -88,6 +90,8 @@ export function CreateDepositForm({
             form={depositForm}
             onBack={onPrevStep}
             onSubmit={verificationWrapper(createDeposit)}
+            predictAddress={getPredictedAddress}
+            isAddressAvailable={isAddressAvailable}
           />
         );
       default:

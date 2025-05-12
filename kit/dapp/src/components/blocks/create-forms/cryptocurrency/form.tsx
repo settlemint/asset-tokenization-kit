@@ -6,6 +6,8 @@ import {
   type CreateCryptoCurrencyInput,
 } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { FormProvider, useForm } from "react-hook-form";
@@ -93,6 +95,8 @@ export function CreateCryptoCurrencyForm({
             form={cryptoForm}
             onBack={onPrevStep}
             onSubmit={verificationWrapper(createCryptoCurrency)}
+            predictAddress={getPredictedAddress}
+            isAddressAvailable={isAddressAvailable}
           />
         );
       default:
