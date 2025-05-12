@@ -1,10 +1,8 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { Button } from "@/components/ui/button";
 import { FormField, FormItem } from "@/components/ui/form";
-import {
-  WalletSecurityMethodOptions,
-  type SetupWalletSecurityInput,
-} from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
+import type { SetupWalletSecurityInput } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
+import { WalletSecurityMethodOptions } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
@@ -17,7 +15,7 @@ export function SelectMethod() {
       <FormField
         control={control}
         name="verificationType"
-        render={() => (
+        render={({ field }) => (
           <FormItem className="flex flex-col space-y-1">
             <div className="flex flex-col gap-4">
               {/*<Button
@@ -25,7 +23,12 @@ export function SelectMethod() {
                 onClick={() => {
                   setValue(
                     "verificationType",
-                    WalletSecurityMethodOptions.TwoFactorAuthentication
+                    WalletSecurityMethodOptions.TwoFactorAuthentication,
+                    {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                      shouldTouch: true,
+                    }
                   );
                 }}
               >
@@ -36,7 +39,12 @@ export function SelectMethod() {
                 onClick={() => {
                   setValue(
                     "verificationType",
-                    WalletSecurityMethodOptions.Pincode
+                    WalletSecurityMethodOptions.Pincode,
+                    {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                      shouldTouch: true,
+                    }
                   );
                 }}
               >

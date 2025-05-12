@@ -22,6 +22,7 @@ export function SetupVerification() {
     "private.auth.wallet-security.form.set-verification"
   );
   const selectedMethod = getValues("verificationType");
+  console.log("selectedMethod", selectedMethod);
 
   useEffect(() => {
     setValue("verificationCode", "");
