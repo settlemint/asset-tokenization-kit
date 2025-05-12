@@ -11,6 +11,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  codescanning:
+    name: Code Scanning
+    runs-on: namespace-profile-atk
+    steps:
+      - name: Checkout
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          submodules: recursive
+
+      - uses: crytic/slither-action@v0.4.1
+        id: slither
+        with:
+          target: "kit/contracts"
+          sarif: slither.sarif
+          slither-args:
+            --filter-paths "lib/" --filter-paths "node_modules/" --filter-paths
+            "dependencies/" --exclude calls-loop,dead-code,naming-convention
+          solc-version: "0.8.28"
+          fail-on: none
+
+      - name: Upload findings to GitHub Advanced Security Dashboard
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.slither.outputs.sarif }}
+        if: always()
+
   test:
     name: Test
     runs-on: namespace-profile-atk
