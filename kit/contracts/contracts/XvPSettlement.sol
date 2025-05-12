@@ -30,7 +30,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
 
     uint256 private _cutoffDate; // Timestamp after which the settlement expires
     bool private _autoExecute; // Whether to auto-execute after all approvals
-    bool private _claimed; // Whether the settlement has been claimed
+    bool private _executed; // Whether the settlement has been executed
     bool private _cancelled; // Whether the settlement has been cancelled
     Flow[] private _flows; // Array of token flows
     mapping(address => bool) private _approvals; // Maps addresses to their approval status
@@ -38,7 +38,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     /// @notice Custom errors for the XvPSettlement contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
 
-    error XvPSettlementAlreadyClaimed();
+    error XvPSettlementAlreadyExecuted();
     error XvPSettlementAlreadyCancelled();
     error XvPSettlementExpired();
     error XvPSettlementNotExpired();
@@ -62,8 +62,8 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
     /// @notice Event emitted when an XvP settlement approval is revoked
     event XvPSettlementApprovalRevoked(address indexed sender);
 
-    /// @notice Event emitted when an XvP settlement is claimed
-    event XvPSettlementClaimed(address indexed sender);
+    /// @notice Event emitted when an XvP settlement is executed
+    event XvPSettlementExecuted(address indexed sender);
 
     /// @notice Event emitted when an XvP settlement is cancelled
     event XvPSettlementCancelled(address indexed sender);
@@ -110,8 +110,8 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
         return _autoExecute;
     }
 
-    function claimed() public view returns (bool) {
-        return _claimed;
+    function executed() public view returns (bool) {
+        return _executed;
     }
 
     function cancelled() public view returns (bool) {
@@ -175,8 +175,8 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
             IERC20(flow.asset).safeTransferFrom(flow.from, flow.to, flow.amount);
         }
 
-        _claimed = true;
-        emit XvPSettlementClaimed(_msgSender());
+        _executed = true;
+        emit XvPSettlementExecuted(_msgSender());
 
         return true;
     }
@@ -193,7 +193,7 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
         return true;
     }
 
-    function cancel() external nonReentrant onlyUnclaimed onlyInvolvedSender returns (bool) {
+    function cancel() external nonReentrant onlyNotExecuted onlyInvolvedSender returns (bool) {
         _cancelled = true;
 
         emit XvPSettlementCancelled(_msgSender());
@@ -216,15 +216,15 @@ contract XvPSettlement is ReentrancyGuard, ERC2771Context {
 
     /// @notice Modifier to check if a settlement is open
     modifier onlyOpen() {
-        if (_claimed) revert XvPSettlementAlreadyClaimed();
+        if (_executed) revert XvPSettlementAlreadyExecuted();
         if (_cancelled) revert XvPSettlementAlreadyCancelled();
         if (block.timestamp >= _cutoffDate) revert XvPSettlementExpired();
         _;
     }
 
-    /// @notice Modifier to check if a settlement is unclaimed
-    modifier onlyUnclaimed() {
-        if (_claimed) revert XvPSettlementAlreadyClaimed();
+    /// @notice Modifier to check if a settlement is not executed
+    modifier onlyNotExecuted() {
+        if (_executed) revert XvPSettlementAlreadyExecuted();
         _;
     }
 
