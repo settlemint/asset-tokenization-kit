@@ -1,8 +1,15 @@
-import { DataTable } from "@/components/blocks/data-table/data-table";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getUser } from "@/lib/auth/utils";
 import { getActionsList } from "@/lib/queries/actions/actions-list";
 import type { ActionType } from "@/lib/queries/actions/actions-schema";
-import { Columns } from "./actions-columns";
+import type { LucideIcon } from "lucide-react";
+import { ArrowBigRightDash, CircleDashed, ListCheck } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 interface ActionsTableProps {
   state: "pending" | "executed" | "upcoming";
@@ -14,7 +21,7 @@ interface ActionsTableProps {
  */
 export async function ActionsTable({ state, actionType }: ActionsTableProps) {
   const user = await getUser();
-
+  const t = await getTranslations("actions");
   const actions = await getActionsList({
     userAddress: user.wallet,
     executed: state === "executed",
@@ -23,12 +30,58 @@ export async function ActionsTable({ state, actionType }: ActionsTableProps) {
     actionType,
   });
 
+  let emptyState;
+  if (state === "pending") {
+    emptyState = (
+      <EmptyState
+        icon={ListCheck}
+        title={t("tabs.empty-state.title.pending")}
+        description={t("tabs.empty-state.description.pending")}
+      />
+    );
+  } else if (state === "upcoming") {
+    emptyState = (
+      <EmptyState
+        icon={ArrowBigRightDash}
+        title={t("tabs.empty-state.title.upcoming")}
+        description={t("tabs.empty-state.description.upcoming")}
+      />
+    );
+  } else {
+    emptyState = (
+      <EmptyState
+        icon={CircleDashed}
+        title={t("tabs.empty-state.title.completed")}
+        description={t("tabs.empty-state.description.completed")}
+      />
+    );
+  }
+
+  if (actions.length === 0) {
+    return emptyState;
+  }
+
+  if (true) {
+    return emptyState;
+  }
+}
+
+interface EmptyStateProps {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+function EmptyState({ icon: Icon, title, description }: EmptyStateProps) {
   return (
-    <DataTable
-      columns={Columns}
-      columnParams={{ state }}
-      data={actions}
-      name="Actions"
-    />
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 mb-2">
+          <Icon className="size-5" />
+          <div>{title}</div>
+        </CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+    </Card>
   );
 }

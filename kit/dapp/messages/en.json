@@ -40,9 +40,9 @@
           "upcoming": "No upcoming actions"
         },
         "description": {
-          "completed": "You have no completed actions.",
-          "pending": "You have no pending actions.",
-          "upcoming": "You have no upcoming actions."
+          "completed": "You haven't completed any actions yet. Actions will appear here once they are completed.",
+          "pending": "You don't have any actions that require your attention at this time.",
+          "upcoming": "You don't have any scheduled actions coming up."
         }
       }
     }
