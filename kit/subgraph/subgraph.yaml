@@ -44,6 +44,14 @@ dataSources:
           file: ../contracts/artifacts/contracts/SMARTDeploymentRegistry.sol/SMARTDeploymentRegistry.json
         - name: Compliance
           file: ../contracts/artifacts/smart-protocol/contracts/SMARTCompliance.sol/SMARTCompliance.json
+        - name: IdentityRegistryStorage
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityRegistryStorage.sol/SMARTIdentityRegistryStorage.json
+        - name: IdentityRegistry
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityRegistry.sol/SMARTIdentityRegistry.json
+        - name: TrustedIssuersRegistry
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTTrustedIssuersRegistry.sol/SMARTTrustedIssuersRegistry.json
+        - name: TokenRegistry
+          file: ../contracts/artifacts/contracts/SMARTTokenRegistry.sol/SMARTTokenRegistry.json
       eventHandlers:
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
