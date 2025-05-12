@@ -1,5 +1,6 @@
 "use client";
 
+import { ApproveForm } from "@/components/blocks/xvp/approve-form/form";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,14 +13,13 @@ import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
-import { ApproveForm } from "./approve-form/form";
 
 interface ManageDropdownProps {
   xvp: XvPSettlement;
   userAddress: Address;
 }
 
-export function ManageDropdown({ xvp, userAddress }: ManageDropdownProps) {
+export function ManageDropdown({ xvp }: ManageDropdownProps) {
   const t = useTranslations("trade-management.xvp");
 
   const menuItems = [
@@ -38,10 +38,6 @@ export function ManageDropdown({ xvp, userAddress }: ManageDropdownProps) {
       setOpenMenuItem(null);
     }
   };
-
-  const isApproved = xvp.approvals.some(
-    (approval) => approval.account.id === userAddress
-  );
 
   return (
     <>
@@ -68,8 +64,7 @@ export function ManageDropdown({ xvp, userAddress }: ManageDropdownProps) {
       </DropdownMenu>
 
       <ApproveForm
-        xvp={xvp}
-        userAddress={userAddress}
+        xvp={xvp.id}
         open={openMenuItem === "approve"}
         onOpenChange={onFormOpenChange}
       />

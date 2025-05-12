@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
 import type { ActionName } from "@/lib/queries/actions/actions-schema";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { getAddress } from "viem";
 import { MatureForm } from "../bonds/mature-form/form";
+import { ApproveForm } from "../xvp/approve-form/form";
 
 interface ActionButtonProps {
   actionName: ActionName;
@@ -12,18 +12,10 @@ interface ActionButtonProps {
 export function ActionButton({ actionName, target }: ActionButtonProps) {
   switch (actionName) {
     case "ApproveXvPSettlement":
-      return (
-        <Button variant="outline" size="sm">
-          Something
-        </Button>
-      );
+      return <ApproveForm xvp={getAddress(target)} asButton />;
 
     case "ClaimXvPSettlement":
-      return (
-        <Button variant="outline" size="sm">
-          Something
-        </Button>
-      );
+      return <div>TODO</div>;
 
     case "MatureBond":
       return <MatureForm address={getAddress(target)} asButton />;

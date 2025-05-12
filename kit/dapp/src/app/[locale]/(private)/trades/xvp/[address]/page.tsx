@@ -3,7 +3,7 @@ import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import { XvpStatusPill } from "@/components/blocks/xvp-status/status-pill";
+import { XvpStatusPill } from "@/components/blocks/xvp/status-pill";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";

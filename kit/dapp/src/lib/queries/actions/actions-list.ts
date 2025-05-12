@@ -67,6 +67,7 @@ export const getActionsList = withTracing(
       PENDING: {
         executed: false,
         activeAt_lte: nowSeconds,
+        expiresAt_gt: nowSeconds,
       },
       UPCOMING: {
         executed: false,
