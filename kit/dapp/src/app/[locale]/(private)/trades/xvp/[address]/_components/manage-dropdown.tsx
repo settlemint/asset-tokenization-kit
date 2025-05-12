@@ -1,6 +1,7 @@
 "use client";
 
 import { ApproveForm } from "@/components/blocks/xvp/approve-form/form";
+import { CancelForm } from "@/components/blocks/xvp/cancel-form/form";
 import { ExecuteForm } from "@/components/blocks/xvp/execute-form/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,6 +47,11 @@ export function ManageDropdown({ xvp }: ManageDropdownProps) {
       id: "execute",
       label: t("execute"),
       disabled: !isApproved || actionsDisabled,
+    },
+    {
+      id: "cancel",
+      label: t("cancel"),
+      disabled: actionsDisabled,
     },
   ] as const;
 
@@ -93,6 +99,12 @@ export function ManageDropdown({ xvp }: ManageDropdownProps) {
       <ExecuteForm
         xvp={xvp.id}
         open={openMenuItem === "execute"}
+        onOpenChange={onFormOpenChange}
+      />
+
+      <CancelForm
+        xvp={xvp.id}
+        open={openMenuItem === "cancel"}
         onOpenChange={onFormOpenChange}
       />
     </>
