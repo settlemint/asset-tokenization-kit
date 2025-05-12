@@ -759,6 +759,7 @@ type XvPSettlement @entity(immutable: false) {
   createdAt: BigInt!
   flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")
   approvals: [XvPSettlementApproval!]! @derivedFrom(field: "xvpSettlement")
+  participants: [Account!]!
 }
 
 type XvPSettlementFlow @entity(immutable: false) {
@@ -805,6 +806,31 @@ type ActivityLogEntryValue @entity(immutable: true) {
   name: String!
   value: String!
   entry: ActivityLogEntry!
+}
+
+# --------------------------------------------------
+# Actions
+# --------------------------------------------------
+
+type Action @entity(immutable: false) {
+  id: Bytes!
+  name: String!
+  type: String!
+  createdAt: BigInt!
+  activeAt: BigInt!
+  expiresAt: BigInt
+  executedAt: BigInt
+  executed: Boolean!
+  executedBy: Account
+  target: Account!
+  executors: ActionExecutor! @derivedFrom(field: "actions")
+  requiredRole: String
+}
+
+type ActionExecutor @entity(immutable: false) {
+  id: Bytes!
+  executors: [Account!]!
+  actions: [Action!]!
 }
 
 # --------------------------------------------------

@@ -1,10 +1,8 @@
-import { DataTable } from "@/components/blocks/data-table/data-table";
-import { getCompletedActions } from "@/lib/actions/completed";
+import { ActionsTable } from "@/components/blocks/actions-table/actions-table";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { columns } from "./_components/columns";
 
 export async function generateMetadata({
   params,
@@ -27,7 +25,5 @@ export async function generateMetadata({
 }
 
 export default async function ActionsPage() {
-  const actions = await getCompletedActions();
-
-  return <DataTable columns={columns} data={actions} name="actions" />;
+  return <ActionsTable state="UPCOMING" actionType="Admin" />;
 }

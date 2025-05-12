@@ -1,7 +1,7 @@
 "use client";
 
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { ApprovalStatusBadge } from "@/components/blocks/xvp-status/approval-status-badge";
+import { ApprovalStatusBadge } from "@/components/blocks/xvp/approval-status-badge";
 import type { XvPSettlementApproval } from "@/lib/queries/xvp/xvp-schema";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";

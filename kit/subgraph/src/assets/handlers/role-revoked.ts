@@ -6,6 +6,7 @@ import {
   Value,
 } from "@graphprotocol/graph-ts";
 import { fetchAccount } from "../../utils/account";
+import { updateActionExecutors } from "../../utils/action";
 import { createActivityLogEntry, EventType } from "../../utils/activity-log";
 import { Role } from "../../utils/enums";
 
@@ -37,6 +38,10 @@ export function roleRevokedHandler(
       }
     }
     entity.set("admins", Value.fromBytesArray(newAdmins));
+    const id = entity.getBytes("id");
+    if (id) {
+      updateActionExecutors(id, Role.DEFAULT_ADMIN_ROLE, null, newAdmins);
+    }
     return;
   }
 
@@ -55,6 +60,15 @@ export function roleRevokedHandler(
       }
     }
     entity.set("supplyManagers", Value.fromBytesArray(newSupplyManagers));
+    const id = entity.getBytes("id");
+    if (id) {
+      updateActionExecutors(
+        id,
+        Role.SUPPLY_MANAGEMENT_ROLE,
+        null,
+        newSupplyManagers
+      );
+    }
     return;
   }
 
@@ -73,6 +87,15 @@ export function roleRevokedHandler(
       }
     }
     entity.set("userManagers", Value.fromBytesArray(newUserManagers));
+    const id = entity.getBytes("id");
+    if (id) {
+      updateActionExecutors(
+        id,
+        Role.USER_MANAGEMENT_ROLE,
+        null,
+        newUserManagers
+      );
+    }
     return;
   }
 
@@ -91,6 +114,10 @@ export function roleRevokedHandler(
       }
     }
     entity.set("signers", Value.fromBytesArray(newSigners));
+    const id = entity.getBytes("id");
+    if (id) {
+      updateActionExecutors(id, Role.SIGNER_ROLE, null, newSigners);
+    }
     return;
   }
 

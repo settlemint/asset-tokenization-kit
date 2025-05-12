@@ -1,32 +1,50 @@
 {
   "actions": {
-    "action-type": {
-      "bond-mature": "Mature Bond"
+    "name": {
+      "ApproveXvPSettlement": "Approve XvP Settlement",
+      "ClaimXvPSettlement": "Claim XvP Settlement",
+      "MatureBond": "Mature Bond"
     },
-    "action-type-header": "Action type",
-    "active-on-header": "Active on",
-    "all-tasks-complete": "All tasks complete!",
-    "all-tasks-complete-description": "You have no pending actions.",
-    "completed-description": {
-      "bond-mature": "The bond has been matured successfully."
+    "description": {
+      "ApproveXvPSettlement": "Approve the XvP Settlement contract to be able to transfer the assets.",
+      "ClaimXvPSettlement": "Execute the XvP Settlement.",
+      "MatureBond": "Mark the bond as matured."
     },
-    "completed-on-header": "Completed on",
-    "description-header": "Description",
+    "columns": {
+      "name": "Name",
+      "subject": "Subject",
+      "description": "Description",
+      "active-at": "Active at",
+      "completed-on": "Completed on",
+      "executed-by": "Executed by"
+    },
     "page": {
-      "actions": "Actions"
+      "actions": "Actions",
+      "my-actions": "My actions"
     },
-    "pending-description": {
-      "bond-mature": "You need to send the transaction to mature the bond."
-    },
-    "sender-header": "Sender",
-    "subject": "Subject",
     "tabs": {
-      "completed": "Completed",
-      "pending": "Pending",
-      "upcoming": "Upcoming"
-    },
-    "upcoming-description": {
-      "bond-mature": "You will need to send the transaction to mature the bond."
+      "name": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "upcoming": "Upcoming"
+      },
+      "description": {
+        "completed": "Completed actions",
+        "pending": "Pending actions",
+        "upcoming": "Upcoming actions"
+      },
+      "empty-state": {
+        "title": {
+          "completed": "No completed actions",
+          "pending": "No pending actions",
+          "upcoming": "No upcoming actions"
+        },
+        "description": {
+          "completed": "You haven't completed any actions yet. Actions will appear here once they are completed.",
+          "pending": "You don't have any actions that require your attention at this time.",
+          "upcoming": "You don't have any scheduled actions coming up."
+        }
+      }
     }
   },
   "active": "Active",
@@ -257,7 +275,8 @@
         "my-assets": "My assets",
         "my-contacts": "My contacts",
         "profile": "Profile",
-        "settings": "Settings"
+        "settings": "Settings",
+        "my-actions": "My actions"
       },
       "settings-management": {
         "api": "API",
@@ -2542,7 +2561,16 @@
         "expired": "Expired",
         "pending": "Pending",
         "not-approved": "Not approved"
-      }
+      },
+      "manage": "Manage",
+      "approve": "Approve",
+      "approve-xvp-settlement": "Approve XvP Settlement",
+      "approve-xvp-settlement-description": "Grant allowances to the XvP Settlement contract for the assets that will be transferred from your wallet.",
+      "approve-description": "The XvP Settlement contract will be granted approval to transfer the assets configured in the settlement on your behalf. Then the settlement will be marked as approved by you.",
+      "asset": "Asset",
+      "amount": "Amount",
+      "to": "To",
+      "xvp-settlement": "XvP Settlement"
     }
   },
   "transactions": {
