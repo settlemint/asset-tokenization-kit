@@ -7,6 +7,7 @@ import {
   SMARTTokenRegistryRegistered,
 } from "../../generated/SMARTDeploymentRegistry/SMARTDeploymentRegistry";
 import {
+  Compliance,
   IdentityFactory,
   IdentityRegistry,
   IdentityRegistryStorage,
@@ -52,7 +53,7 @@ export function handleSMARTDeploymentRegistered(
 
   const compliance = fetchCompliance(event.params.complianceAddress);
   deploymentRegistry.compliance = compliance.id;
-  // No need to create compliance template as it is not throwing any useful events
+  Compliance.create(event.params.complianceAddress);
 
   const identityRegistryStorage = fetchIdentityRegistryStorage(
     event.params.identityRegistryStorageAddress
