@@ -46,7 +46,7 @@ export interface ActionsListProps {
   /** Action type to filter by */
   type: ActionType;
   /** Whether to filter by executed actions */
-  status: ActionStatus;
+  status?: ActionStatus;
   /** Target address to filter by */
   targetAddress?: Address;
 }
@@ -98,7 +98,7 @@ export const getActionsList = withTracing(
                 },
                 actions_: {
                   type,
-                  ...where[status],
+                  ...(status ? where[status] : {}),
                   ...(targetAddress ? { target: targetAddress } : {}),
                 },
               },

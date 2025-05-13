@@ -1822,7 +1822,8 @@
           "holders": "Holders",
           "permissions": "Permissions",
           "underlying-assets": "Underlying assets",
-          "yield": "Yield"
+          "yield": "Yield",
+          "actions": "Actions"
         }
       },
       "fields": {

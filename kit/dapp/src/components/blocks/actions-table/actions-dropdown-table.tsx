@@ -20,19 +20,25 @@ import { ActionsTable } from "./actions-table";
 
 interface ActionsDropdownTableProps {
   actions: Action[];
-  counts: Record<ActionStatus, number>;
+
   toolbar?: DataTableToolbarOptions;
   pagination?: DataTablePaginationOptions;
 }
 
 export function ActionsDropdownTable({
   actions,
-  counts,
   toolbar,
   pagination,
 }: ActionsDropdownTableProps) {
   const t = useTranslations("actions");
   const [status, setStatus] = useState<ActionStatus>("PENDING");
+  const counts = actions.reduce(
+    (acc, action) => {
+      acc[action.status] = (acc[action.status] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<ActionStatus, number>
+  );
   const statusOptions = [
     {
       value: "PENDING",
