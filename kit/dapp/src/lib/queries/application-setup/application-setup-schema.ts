@@ -1,6 +1,6 @@
-import { t } from "@/lib/utils/typebox";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 
-export const ContractSchema = t.Object(
+const ContractSchema = t.Object(
   {
     address: t.EthereumAddress({
       description: "The contract address",
@@ -23,3 +23,7 @@ export const ApplicationSetupStatusSchema = t.Object({
   }),
   deployedContracts: t.Array(ContractSchema),
 });
+
+export type ApplicationSetupStatus = StaticDecode<
+  typeof ApplicationSetupStatusSchema
+>;

@@ -1,12 +1,9 @@
 import { defaultErrorSchema } from "@/lib/api/default-error-schema";
+import { ApplicationSetupStatusSchema } from "@/lib/queries/application-setup/application-setup-schema";
 import {
-  ApplicationSetupStatusSchema,
-  ContractSchema,
-} from "@/lib/queries/application-setup/application-setup-schema";
-import { getApplicationSetupStatus } from "@/lib/queries/application-setup/application-setup-status";
-import { portalGraphql } from "@/lib/settlemint/portal";
-import { safeParse } from "@/lib/utils/typebox";
-import type { ResultOf } from "@settlemint/sdk-portal";
+  getApplicationSetupStatus,
+  subscribeToApplicationSetupStatus,
+} from "@/lib/queries/application-setup/application-setup-status";
 import { tryParseJson } from "@settlemint/sdk-utils";
 import { Elysia, t } from "elysia";
 import { createClient, type Client } from "graphql-ws";
@@ -42,7 +39,10 @@ export const ApplicationSetupApi = new Elysia({
     }
   )
   .ws("/status", {
-    response: t.Union([ContractSchema, t.Object({ error: t.String() })]),
+    response: t.Union([
+      ApplicationSetupStatusSchema,
+      t.Object({ error: t.String() }),
+    ]),
     error: (error) => {
       logger.error("Websocket error occurred", error);
     },
@@ -70,45 +70,9 @@ export const ApplicationSetupApi = new Elysia({
           url: process.env.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT,
         });
         portalWsConnections.set(ws.id, client);
-
-        const query = `subscription getContracts($abiNames: [String!]!) {
-          getContracts(abiNames: $abiNames) {
-            count
-            records {
-              createdAt
-              address
-              abiName
-            }
-          }
-        }` as const;
-        type getContractsQuery = typeof portalGraphql<typeof query, []>;
-        type GetContractsQueryResponse = ResultOf<
-          ReturnType<getContractsQuery>
-        >;
-
-        const subscription = client.iterate<GetContractsQueryResponse>({
-          query,
-          variables: {
-            abiNames: [
-              "SMARTIdentity",
-              "SMARTIdentityImplementationAuthority",
-              "SMARTProxy",
-              "SMARTTokenRegistry",
-            ],
-          },
+        subscribeToApplicationSetupStatus(client, (status) => {
+          ws.send(makeJsonStringifiable(status));
         });
-
-        for await (const result of subscription) {
-          if (Array.isArray(result?.data?.getContracts?.records)) {
-            ws.send(
-              makeJsonStringifiable(
-                result?.data?.getContracts.records.map((record) =>
-                  safeParse(ContractSchema, record)
-                )
-              )
-            );
-          }
-        }
       } catch (error) {
         logger.error("Error processing websocket message", error);
         ws.send(makeJsonStringifiable(error));

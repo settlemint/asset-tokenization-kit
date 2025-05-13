@@ -1,5 +1,4 @@
 import type { User } from "@/lib/auth/types";
-import type { ApplicationSetupInput } from "@/lib/mutations/application-setup/application-setup-schema";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { getAddress, zeroAddress } from "viem";
 import { complianceModule } from "./modules/compliance";
@@ -110,7 +109,6 @@ export const applicationSetupFunction = withAccessControl(
   async ({
     ctx: { user },
   }: {
-    parsedInput: ApplicationSetupInput;
     ctx: {
       user: User;
     };

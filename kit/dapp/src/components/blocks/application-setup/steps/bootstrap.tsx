@@ -3,9 +3,9 @@
 import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { apiClient } from "@/lib/api/client";
+import type { ApplicationSetupStatus } from "@/lib/queries/application-setup/application-setup-schema";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import type { Address } from "viem";
 
 interface BootstrapStepProps {
   onNext: () => void;
@@ -14,11 +14,7 @@ interface BootstrapStepProps {
 export function BootstrapStep({ onNext }: BootstrapStepProps) {
   const t = useTranslations("admin.application-setup");
 
-  const [status, setStatus] = useState<{
-    address: Address;
-    createdAt: Date;
-    abiName: string;
-  } | null>(null);
+  const [status, setStatus] = useState<ApplicationSetupStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,8 +48,12 @@ export function BootstrapStep({ onNext }: BootstrapStepProps) {
         )}
         {status && (
           <div className="flex flex-col gap-2">
-            <p>{status.address}</p>
-            <p>{status.abiName}</p>
+            <p>{status.isSetup ? "Setup" : "Not setup"}</p>
+            <p>
+              {status.deployedContracts
+                .map((contract) => contract.abiName)
+                .join(", ")}
+            </p>
           </div>
         )}
       </div>
