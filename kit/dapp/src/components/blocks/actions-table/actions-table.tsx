@@ -1,14 +1,14 @@
+import type { DataTablePaginationOptions } from "@/components/blocks/data-table/data-table-pagination";
+import type { DataTableToolbarOptions } from "@/components/blocks/data-table/data-table-toolbar";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getUser } from "@/lib/auth/utils";
-import { getActionsList } from "@/lib/queries/actions/actions-list";
 import type {
+  Action,
   ActionStatus,
-  ActionType,
 } from "@/lib/queries/actions/actions-schema";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import type { LucideIcon } from "lucide-react";
@@ -18,26 +18,27 @@ import {
   CircleDashed,
   ListCheck,
 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import { DataTable } from "../data-table/data-table";
 import { Columns } from "./actions-columns";
 
 interface ActionsTableProps {
   status: ActionStatus;
-  actionType: ActionType;
+  actions: Action[];
+  toolbar?: DataTableToolbarOptions;
+  pagination?: DataTablePaginationOptions;
 }
 
 /**
- * Server component that fetches data and passes it to the client component
+ * Component that renders actions in a table
  */
-export async function ActionsTable({ status, actionType }: ActionsTableProps) {
-  const user = await getUser();
-  const t = await getTranslations("actions");
-  const actions = await getActionsList({
-    userAddress: user.wallet,
-    status,
-    type: actionType,
-  });
+export function ActionsTable({
+  status,
+  actions,
+  toolbar,
+  pagination,
+}: ActionsTableProps) {
+  const t = useTranslations("actions");
 
   let emptyState;
   switch (status) {
@@ -85,7 +86,8 @@ export async function ActionsTable({ status, actionType }: ActionsTableProps) {
       exhaustiveGuard(status);
   }
 
-  if (actions.length === 0) {
+  const filteredActions = actions.filter((action) => action.status === status);
+  if (filteredActions.length === 0) {
     return emptyState;
   }
 
@@ -93,8 +95,10 @@ export async function ActionsTable({ status, actionType }: ActionsTableProps) {
     <DataTable
       columns={Columns}
       columnParams={{ status }}
-      data={actions}
+      data={filteredActions}
       name="Actions"
+      toolbar={toolbar}
+      pagination={pagination}
     />
   );
 }

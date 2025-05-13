@@ -1,13 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { getActionsList } from "@/lib/queries/actions/actions-list";
 import type {
-  ActionState,
+  ActionStatus,
   ActionType,
 } from "@/lib/queries/actions/actions-schema";
 import type { Address } from "viem";
 
 interface BadgeLoaderProps {
-  state: ActionState;
+  status: ActionStatus;
   type: ActionType;
   userAddress: Address;
 }
@@ -26,12 +26,12 @@ export function BadgeSpinner() {
 }
 
 export async function BadgeLoader({
-  state,
+  status,
   type,
   userAddress,
 }: BadgeLoaderProps) {
   const actions = await getActionsList({
-    state,
+    status,
     type,
     userAddress,
   });

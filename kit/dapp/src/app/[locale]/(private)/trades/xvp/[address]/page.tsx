@@ -1,4 +1,4 @@
-import { Columns } from "@/components/blocks/actions-table/actions-columns";
+import { ActionsDropdownTable } from "@/components/blocks/actions-table/actions-dropdown-table";
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
@@ -8,7 +8,8 @@ import { XvPStatusIndicator } from "@/components/blocks/xvp/xvp-status";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
-import { getActionsForTarget } from "@/lib/queries/actions/actions-for-target";
+import { getActionsList } from "@/lib/queries/actions/actions-list";
+import type { ActionStatus } from "@/lib/queries/actions/actions-schema";
 import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
@@ -54,7 +55,13 @@ export default async function XvpPage({
     getUser(),
   ]);
   const xvpSettlement = await getXvPSettlementDetail(address, user.currency);
-  const allActions = await getActionsForTarget({ target: address });
+  const actions = await getActionsList({
+    targetAddress: address,
+    type: "User",
+    status: "PENDING",
+    userAddress: user.wallet,
+  });
+
   return (
     <>
       <PageHeader
@@ -107,11 +114,15 @@ export default async function XvpPage({
       <div className="font-medium text-accent text-xl mt-6 mb-4">
         {t("xvp.actions")}
       </div>
-      <DataTable
-        columns={Columns}
-        data={allActions}
-        name={t("xvp.actions")}
-        columnParams={{ statusAsColumn: true }}
+      <ActionsDropdownTable
+        actions={actions}
+        counts={actions.reduce(
+          (acc, action) => {
+            acc[action.status] = (acc[action.status] ?? 0) + 1;
+            return acc;
+          },
+          {} as Record<ActionStatus, number>
+        )}
         toolbar={{
           enableToolbar: false,
         }}

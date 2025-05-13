@@ -1,5 +1,7 @@
 import { ActionsTable } from "@/components/blocks/actions-table/actions-table";
+import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
+import { getActionsList } from "@/lib/queries/actions/actions-list";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -25,5 +27,11 @@ export async function generateMetadata({
 }
 
 export default async function ActionsPage() {
-  return <ActionsTable status="UPCOMING" actionType="Admin" />;
+  const user = await getUser();
+  const actions = await getActionsList({
+    status: "UPCOMING",
+    userAddress: user.wallet,
+    type: "Admin",
+  });
+  return <ActionsTable status="UPCOMING" actions={actions} />;
 }

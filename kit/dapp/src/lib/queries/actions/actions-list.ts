@@ -47,6 +47,8 @@ export interface ActionsListProps {
   type: ActionType;
   /** Whether to filter by executed actions */
   status: ActionStatus;
+  /** Target address to filter by */
+  targetAddress?: Address;
 }
 
 /**
@@ -58,61 +60,68 @@ export interface ActionsListProps {
 export const getActionsList = withTracing(
   "queries",
   "getActionsList",
-  cache(async ({ userAddress, type, status }: ActionsListProps) => {
-    "use cache";
-    cacheTag("actions");
+  cache(
+    async ({ userAddress, type, status, targetAddress }: ActionsListProps) => {
+      "use cache";
+      cacheTag("actions");
 
-    const nowSeconds = (new Date().getTime() / 1000).toFixed(0);
+      const nowSeconds = (new Date().getTime() / 1000).toFixed(0);
 
-    const where = {
-      PENDING: {
-        executed: false,
-        activeAt_lte: nowSeconds,
-        expiresAt_gt: nowSeconds,
-      },
-      UPCOMING: {
-        executed: false,
-        activeAt_gt: nowSeconds,
-      },
-      COMPLETED: {
-        executed: true,
-      },
-      EXPIRED: {
-        executed: false,
-        expiresAt_lte: nowSeconds,
-      },
-    };
-    const actionExecutors = await fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKit.request(
-        Actions,
-        {
-          first,
-          skip,
-          where: {
-            executors_: {
-              id_contains: userAddress.toLowerCase(),
-            },
-            actions_: {
-              type,
-              ...where[status],
-            },
-          },
+      const where = {
+        PENDING: {
+          executed: false,
+          activeAt_lte: nowSeconds,
+          expiresAt_gt: nowSeconds,
         },
-        {
-          "X-GraphQL-Operation-Name": "ActionExecutors",
-          "X-GraphQL-Operation-Type": "query",
+        UPCOMING: {
+          executed: false,
+          activeAt_gt: nowSeconds,
+        },
+        COMPLETED: {
+          executed: true,
+        },
+        EXPIRED: {
+          executed: false,
+          expiresAt_lte: nowSeconds,
+        },
+      };
+      const actionExecutors = await fetchAllTheGraphPages(
+        async (first, skip) => {
+          const result = await theGraphClientKit.request(
+            Actions,
+            {
+              first,
+              skip,
+              where: {
+                executors_: {
+                  id_contains: userAddress.toLowerCase(),
+                },
+                actions_: {
+                  type,
+                  ...where[status],
+                  ...(targetAddress ? { target: targetAddress } : {}),
+                },
+              },
+            },
+            {
+              "X-GraphQL-Operation-Name": "ActionExecutors",
+              "X-GraphQL-Operation-Type": "query",
+            }
+          );
+
+          const actionExecutors = result.actionExecutors || [];
+          return safeParse(
+            t.Array(OnchainActionExecutorSchema),
+            actionExecutors
+          );
         }
       );
 
-      const actionExecutors = result.actionExecutors || [];
-      return safeParse(t.Array(OnchainActionExecutorSchema), actionExecutors);
-    });
+      const onchainActions = actionExecutors.flatMap(
+        (actionExecutor) => actionExecutor.actions
+      ) as OnchainAction[];
 
-    const onchainActions = actionExecutors.flatMap(
-      (actionExecutor) => actionExecutor.actions
-    ) as OnchainAction[];
-
-    // Apply calculation to get enriched actions with status field
-    return calculateActions(onchainActions);
-  })
+      return calculateActions(onchainActions);
+    }
+  )
 );
