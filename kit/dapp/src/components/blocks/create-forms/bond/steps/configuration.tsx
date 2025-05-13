@@ -82,7 +82,6 @@ export function Configuration({ onNext, onBack }: ConfigurationProps) {
               type="number"
               name="decimals"
               label={t("parameters.common.decimals-label")}
-              defaultValue={18}
               description={t("parameters.common.decimals-description")}
               required
             />
