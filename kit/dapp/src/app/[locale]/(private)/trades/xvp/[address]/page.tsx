@@ -1,12 +1,14 @@
+import { Columns } from "@/components/blocks/actions-table/actions-columns";
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import { XvpStatusPill } from "@/components/blocks/xvp/status-pill";
+import { XvpStatus } from "@/components/blocks/xvp/status-pill";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
+import { getActionsForTarget } from "@/lib/queries/actions/actions-for-target";
 import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
@@ -53,7 +55,7 @@ export default async function XvpPage({
     getUser(),
   ]);
   const xvpSettlement = await getXvPSettlementDetail(address, user.currency);
-
+  const allActions = await getActionsForTarget({ target: address });
   return (
     <>
       <PageHeader
@@ -63,7 +65,7 @@ export default async function XvpPage({
           </EvmAddress>
         }
         section={t("page.xvp")}
-        pill={<XvpStatusPill xvp={xvpSettlement} />}
+        pill={<XvpStatus xvp={xvpSettlement} asBadge={true} />}
         button={
           <ManageDropdown xvp={xvpSettlement} userAddress={user.wallet} />
         }
@@ -83,7 +85,7 @@ export default async function XvpPage({
           })}
         </DetailGridItem>
         <DetailGridItem label={t("xvp.columns.status")}>
-          <XvpStatusPill xvp={xvpSettlement} />
+          <XvpStatus xvp={xvpSettlement} />
         </DetailGridItem>
         <DetailGridItem
           label={t("xvp.auto-execute")}
@@ -103,6 +105,22 @@ export default async function XvpPage({
           })}
         </DetailGridItem>
       </DetailGrid>
+
+      <div className="font-medium text-accent text-xl mt-6 mb-4">
+        {t("xvp.actions")}
+      </div>
+      <DataTable
+        columns={Columns}
+        data={allActions}
+        name={t("xvp.actions")}
+        columnParams={{ stateAsColumn: true }}
+        toolbar={{
+          enableToolbar: false,
+        }}
+        pagination={{
+          enablePagination: false,
+        }}
+      />
 
       <div className="font-medium text-accent text-xl mt-6 mb-4">
         {t("xvp.flows")}

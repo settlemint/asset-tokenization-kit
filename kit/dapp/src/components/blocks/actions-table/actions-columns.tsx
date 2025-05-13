@@ -17,10 +17,17 @@ import { Info, Target, User } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { getAddress, isAddress } from "viem";
 import { ActionButton } from "./action-button";
+import { ActionStatePill } from "./action-state-pill";
 
 const columnHelper = createColumnHelper<Action>();
 
-export function Columns({ state }: { state: ActionState }) {
+export function Columns({
+  state,
+  stateAsColumn,
+}: {
+  state?: ActionState;
+  stateAsColumn?: boolean;
+}) {
   const t = useTranslations("actions");
   const locale = useLocale();
 
@@ -80,6 +87,18 @@ export function Columns({ state }: { state: ActionState }) {
             })
           : null,
     }),
+    ...(stateAsColumn
+      ? [
+          columnHelper.display({
+            id: "state",
+            header: t("columns.state"),
+            cell: ({ row }) => {
+              const action = row.original;
+              return <ActionStatePill action={action} />;
+            },
+          }),
+        ]
+      : []),
     ...(state === "COMPLETED"
       ? [
           columnHelper.accessor("executedAt", {

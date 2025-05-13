@@ -86,5 +86,6 @@ export const ActionStateSchema = t.Union([
   t.Literal("PENDING"),
   t.Literal("UPCOMING"),
   t.Literal("COMPLETED"),
+  t.Literal("EXPIRED"),
 ]);
 export type ActionState = StaticDecode<typeof ActionStateSchema>;

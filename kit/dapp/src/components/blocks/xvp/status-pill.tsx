@@ -1,20 +1,20 @@
-import { Badge, type badgeVariants } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import type { XvPSettlement, XvPStatus } from "@/lib/queries/xvp/xvp-schema";
 import { cn } from "@/lib/utils";
-import type { VariantProps } from "class-variance-authority";
 import { isBefore } from "date-fns";
+import { CheckCircle, Clock, Rocket, TriangleAlert, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
 
 type XvpStatusPillProps = {
   xvp: XvPSettlement;
+  asBadge?: boolean;
 };
 
-interface StatusStyle extends VariantProps<typeof badgeVariants> {
-  className: string;
-}
-
-export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
+export function XvpStatus({
+  xvp,
+  asBadge = false,
+}: XvpStatusPillProps): ReactElement {
   const t = useTranslations("trade-management.xvp");
   const getStatus = (item: XvPSettlement): XvPStatus => {
     if (item.executed) {
@@ -46,37 +46,55 @@ export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
 
   const status = getStatus(xvp);
 
-  const statusConfig: Record<XvPStatus, StatusStyle> = {
+  const statusConfig = {
     PENDING: {
       variant: "default",
-      className: "bg-warning/80 text-warning-foreground",
+      badgeClassName: "bg-warning/80 text-warning-foreground",
+      iconClassName: "size-4 text-warning-foreground",
+      icon: Clock,
     },
     READY: {
       variant: "default",
-      className: "bg-primary/80 text-primary-foreground",
+      badgeClassName: "bg-primary/80 text-primary-foreground",
+      iconClassName: "size-4 text-primary",
+      icon: Rocket,
     },
     CANCELLED: {
       variant: "outline",
-      className: "text-muted-foreground",
+      badgeClassName: "text-muted-foreground",
+      iconClassName: "size-4 text-muted-foreground",
+      icon: X,
     },
     EXECUTED: {
       variant: "default",
-      className: "bg-success/80 text-success-foreground",
+      badgeClassName: "bg-success/80 text-success-foreground",
+      iconClassName: "size-4 text-success",
+      icon: CheckCircle,
     },
     EXPIRED: {
       variant: "destructive",
-      className: "bg-destructive/80 text-destructive-foreground",
+      badgeClassName: "bg-destructive/80 text-destructive-foreground",
+      iconClassName: "size-4 text-destructive",
+      icon: TriangleAlert,
     },
-  };
+  } as const;
 
   const currentStatusStyle = statusConfig[status];
 
-  return (
+  return asBadge ? (
     <Badge
       variant={currentStatusStyle.variant}
-      className={cn(currentStatusStyle.className)}
+      className={cn(currentStatusStyle.badgeClassName)}
     >
+      <currentStatusStyle.icon className="mr-1 size-3" />
       {t(`status.${status}`)}
     </Badge>
+  ) : (
+    <div className="flex items-center gap-2">
+      <currentStatusStyle.icon
+        className={cn(currentStatusStyle.iconClassName, "size-4")}
+      />
+      {t(`status.${status}`)}
+    </div>
   );
 }
