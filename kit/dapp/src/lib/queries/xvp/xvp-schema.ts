@@ -61,11 +61,22 @@ export type OnChainXvPSettlement = StaticDecode<
   typeof OnChainXvPSettlementSchema
 >;
 
+export const XvPStatusSchema = t.Union([
+  t.Literal("PENDING"),
+  t.Literal("READY"),
+  t.Literal("EXECUTED"),
+  t.Literal("CANCELLED"),
+  t.Literal("EXPIRED"),
+]);
+
+export type XvPStatus = StaticDecode<typeof XvPStatusSchema>;
+
 export const CalculatedXvPSettlementSchema = t.Object({
   flows: t.Array(XvPSettlementFlowSchema),
   totalPrice: t.Price({
     description: "Total price of the settlement",
   }),
+  status: XvPStatusSchema,
 });
 
 /**
@@ -82,13 +93,3 @@ export const XvPSettlementSchema = t.Intersect(
 );
 
 export type XvPSettlement = StaticDecode<typeof XvPSettlementSchema>;
-
-export const XvPStatusSchema = t.Union([
-  t.Literal("PENDING"),
-  t.Literal("READY"),
-  t.Literal("EXECUTED"),
-  t.Literal("CANCELLED"),
-  t.Literal("EXPIRED"),
-]);
-
-export type XvPStatus = StaticDecode<typeof XvPStatusSchema>;

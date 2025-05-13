@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import type { XvPSettlement, XvPStatus } from "@/lib/queries/xvp/xvp-schema";
+import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
 import { cn } from "@/lib/utils";
-import { isBefore } from "date-fns";
 import { CheckCircle, Clock, Rocket, TriangleAlert, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
@@ -16,34 +15,8 @@ export function XvPStatusIndicator({
   asBadge = false,
 }: XvPStatusIndicatorProps): ReactElement {
   const t = useTranslations("trade-management.xvp");
-  const getStatus = (item: XvPSettlement): XvPStatus => {
-    if (item.executed) {
-      return "EXECUTED";
-    }
-    if (item.cancelled) {
-      return "CANCELLED";
-    }
-    const isExpired = isBefore(item.cutoffDate, new Date());
-    if (isExpired) {
-      return "EXPIRED";
-    }
 
-    const approvalsRequiredCount = item.flows.length;
-    const actualApprovalsCount = item.approvals.filter(
-      (approval) => approval.approved
-    ).length;
-
-    if (
-      approvalsRequiredCount > 0 &&
-      actualApprovalsCount === approvalsRequiredCount
-    ) {
-      return "READY";
-    }
-
-    return "PENDING";
-  };
-
-  const status = getStatus(xvp);
+  const status = xvp.status;
 
   const statusConfig = {
     PENDING: {
