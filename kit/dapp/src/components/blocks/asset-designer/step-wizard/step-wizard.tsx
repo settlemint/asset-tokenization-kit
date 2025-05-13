@@ -41,7 +41,7 @@ export function StepWizard({
       <div className="flex flex-1 overflow-hidden p-6" tabIndex={-1}>
         {/* Sidebar / Steps */}
         <div
-          className="w-[25%] bg-primary p-6 flex flex-col rounded-xl"
+          className="w-[25%] bg-primary p-6 flex flex-col rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
           style={sidebarStyle}
           aria-hidden="true"
           tabIndex={-1}
