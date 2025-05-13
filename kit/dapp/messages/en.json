@@ -2555,6 +2555,7 @@
       "expired": "Expired",
       "approvals": "Approvals",
       "status": {
+        "READY": "Ready",
         "APPROVED": "Approved",
         "CANCELLED": "Cancelled",
         "EXECUTED": "Executed",

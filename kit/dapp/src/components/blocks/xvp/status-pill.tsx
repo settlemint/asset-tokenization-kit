@@ -38,7 +38,7 @@ export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
       approvalsRequiredCount > 0 &&
       actualApprovalsCount === approvalsRequiredCount
     ) {
-      return "APPROVED";
+      return "READY";
     }
 
     return "PENDING";
@@ -51,7 +51,7 @@ export function XvpStatusPill({ xvp }: XvpStatusPillProps): ReactElement {
       variant: "default",
       className: "bg-warning/80 text-warning-foreground",
     },
-    APPROVED: {
+    READY: {
       variant: "default",
       className: "bg-primary/80 text-primary-foreground",
     },
