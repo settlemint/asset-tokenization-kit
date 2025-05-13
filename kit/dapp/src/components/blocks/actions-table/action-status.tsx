@@ -1,5 +1,8 @@
 import type { badgeVariants } from "@/components/ui/badge";
-import type { Action, ActionState } from "@/lib/queries/actions/actions-schema";
+import type {
+  Action,
+  ActionStatus,
+} from "@/lib/queries/actions/actions-schema";
 import { cn } from "@/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { isAfter, isBefore } from "date-fns";
@@ -8,7 +11,7 @@ import { CheckCircle, ChevronsRight, Clock, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
 
-type ActionStatePillProps = {
+type ActionStatusIndicatorProps = {
   action: Action;
 };
 
@@ -17,11 +20,11 @@ interface StatusStyle extends VariantProps<typeof badgeVariants> {
   icon: LucideIcon;
 }
 
-export function ActionStatePill({
+export function ActionStatusIndicator({
   action,
-}: ActionStatePillProps): ReactElement {
+}: ActionStatusIndicatorProps): ReactElement {
   const t = useTranslations("actions");
-  const getStatus = (item: Action): ActionState => {
+  const getStatus = (item: Action): ActionStatus => {
     if (item.executed) {
       return "COMPLETED";
     }
@@ -43,7 +46,7 @@ export function ActionStatePill({
 
   const status = getStatus(action);
 
-  const statusConfig: Record<ActionState, StatusStyle> = {
+  const statusConfig: Record<ActionStatus, StatusStyle> = {
     PENDING: {
       variant: "default",
       className: "size-4 text-warning",
@@ -71,7 +74,7 @@ export function ActionStatePill({
   return (
     <div className="flex items-center gap-2">
       <currentStatusStyle.icon className={cn(currentStatusStyle.className)} />
-      {t(`state.${status}`)}
+      {t(`status.${status}`)}
     </div>
   );
 }

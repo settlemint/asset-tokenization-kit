@@ -111,7 +111,7 @@ export default async function XvpPage({
         columns={Columns}
         data={allActions}
         name={t("xvp.actions")}
-        columnParams={{ stateAsColumn: true }}
+        columnParams={{ statusAsColumn: true }}
         toolbar={{
           enableToolbar: false,
         }}

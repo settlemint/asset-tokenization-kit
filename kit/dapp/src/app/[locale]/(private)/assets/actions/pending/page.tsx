@@ -25,5 +25,5 @@ export async function generateMetadata({
 }
 
 export default async function ActionsPage() {
-  return <ActionsTable state="PENDING" actionType="Admin" />;
+  return <ActionsTable status="PENDING" actionType="Admin" />;
 }

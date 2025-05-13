@@ -7,7 +7,7 @@ import {
 import { getUser } from "@/lib/auth/utils";
 import { getActionsList } from "@/lib/queries/actions/actions-list";
 import type {
-  ActionState,
+  ActionStatus,
   ActionType,
 } from "@/lib/queries/actions/actions-schema";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
@@ -23,24 +23,24 @@ import { DataTable } from "../data-table/data-table";
 import { Columns } from "./actions-columns";
 
 interface ActionsTableProps {
-  state: ActionState;
+  status: ActionStatus;
   actionType: ActionType;
 }
 
 /**
  * Server component that fetches data and passes it to the client component
  */
-export async function ActionsTable({ state, actionType }: ActionsTableProps) {
+export async function ActionsTable({ status, actionType }: ActionsTableProps) {
   const user = await getUser();
   const t = await getTranslations("actions");
   const actions = await getActionsList({
     userAddress: user.wallet,
-    state,
+    status,
     type: actionType,
   });
 
   let emptyState;
-  switch (state) {
+  switch (status) {
     case "PENDING": {
       emptyState = (
         <EmptyState
@@ -82,7 +82,7 @@ export async function ActionsTable({ state, actionType }: ActionsTableProps) {
       break;
     }
     default:
-      exhaustiveGuard(state);
+      exhaustiveGuard(status);
   }
 
   if (actions.length === 0) {
@@ -92,7 +92,7 @@ export async function ActionsTable({ state, actionType }: ActionsTableProps) {
   return (
     <DataTable
       columns={Columns}
-      columnParams={{ state }}
+      columnParams={{ status }}
       data={actions}
       name="Actions"
     />

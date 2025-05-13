@@ -14,7 +14,7 @@ import { ActionExecutorFragment } from "./actions-fragment";
 import {
   ActionExecutorList,
   ActionsListSchema,
-  type ActionState,
+  type ActionStatus,
   ActionType,
 } from "./actions-schema";
 
@@ -45,7 +45,7 @@ export interface ActionsListProps {
   /** Action type to filter by */
   type: ActionType;
   /** Whether to filter by executed actions */
-  state: ActionState;
+  status: ActionStatus;
 }
 
 /**
@@ -57,7 +57,7 @@ export interface ActionsListProps {
 export const getActionsList = withTracing(
   "queries",
   "getActionsList",
-  cache(async ({ userAddress, type, state }: ActionsListProps) => {
+  cache(async ({ userAddress, type, status }: ActionsListProps) => {
     "use cache";
     cacheTag("actions");
 
@@ -93,7 +93,7 @@ export const getActionsList = withTracing(
             },
             actions_: {
               type,
-              ...where[state],
+              ...where[status],
             },
           },
         },

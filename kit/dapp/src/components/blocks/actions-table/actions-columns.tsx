@@ -9,7 +9,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { defineMeta, filterFn } from "@/lib/filters";
-import type { Action, ActionState } from "@/lib/queries/actions/actions-schema";
+import type {
+  Action,
+  ActionStatus,
+} from "@/lib/queries/actions/actions-schema";
 import { addressNameFilter } from "@/lib/utils/address-name-cache";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -17,16 +20,16 @@ import { Info, Target, User } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { getAddress, isAddress } from "viem";
 import { ActionButton } from "./action-button";
-import { ActionStatePill } from "./action-state-pill";
+import { ActionStatusIndicator } from "./action-status";
 
 const columnHelper = createColumnHelper<Action>();
 
 export function Columns({
-  state,
-  stateAsColumn,
+  status,
+  statusAsColumn,
 }: {
-  state?: ActionState;
-  stateAsColumn?: boolean;
+  status?: ActionStatus;
+  statusAsColumn?: boolean;
 }) {
   const t = useTranslations("actions");
   const locale = useLocale();
@@ -87,19 +90,19 @@ export function Columns({
             })
           : null,
     }),
-    ...(stateAsColumn
+    ...(statusAsColumn
       ? [
           columnHelper.display({
-            id: "state",
-            header: t("columns.state"),
+            id: "status",
+            header: t("columns.status"),
             cell: ({ row }) => {
               const action = row.original;
-              return <ActionStatePill action={action} />;
+              return <ActionStatusIndicator action={action} />;
             },
           }),
         ]
       : []),
-    ...(state === "COMPLETED"
+    ...(status === "COMPLETED"
       ? [
           columnHelper.accessor("executedAt", {
             header: t("columns.completed-on"),
@@ -123,7 +126,7 @@ export function Columns({
           }),
         ]
       : []),
-    ...(state === "PENDING"
+    ...(status === "PENDING"
       ? [
           columnHelper.display({
             id: "actions",

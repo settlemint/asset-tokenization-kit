@@ -17,13 +17,13 @@
       "active-at": "Active at",
       "completed-on": "Completed on",
       "executed-by": "Executed by",
-      "state": "State"
+      "status": "Status"
     },
     "page": {
       "actions": "Actions",
       "my-actions": "My actions"
     },
-    "state": {
+    "status": {
       "COMPLETED": "Completed",
       "UPCOMING": "Upcoming",
       "EXPIRED": "Expired",

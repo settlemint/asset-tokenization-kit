@@ -82,10 +82,10 @@ export const ActionExecutorList = t.Array(ActionExecutorSchema);
  */
 export type ActionExecutorList = StaticDecode<typeof ActionExecutorList>;
 
-export const ActionStateSchema = t.Union([
+export const ActionStatusSchema = t.Union([
   t.Literal("PENDING"),
   t.Literal("UPCOMING"),
   t.Literal("COMPLETED"),
   t.Literal("EXPIRED"),
 ]);
-export type ActionState = StaticDecode<typeof ActionStateSchema>;
+export type ActionStatus = StaticDecode<typeof ActionStatusSchema>;
