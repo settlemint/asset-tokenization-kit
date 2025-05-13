@@ -5,6 +5,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import type { User } from "@/lib/queries/user/user-schema";
+import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -98,17 +99,20 @@ export function AssetAdmins({ userDetails, onNext, onBack }: AssetAdminsProps) {
     form.trigger("assetAdmins");
   };
 
+  // Fields for this step - used for validation
+  const stepFields = ["assetAdmins"] as const;
+
+  // Check if any touched fields in this step have errors
+  const hasStepErrors = hasStepFieldErrors(stepFields, form.formState);
+
   // Handle next button click - trigger validation before proceeding
   const handleNext = async () => {
     // Trigger validation for assetAdmins field
-    const isValid = await form.trigger("assetAdmins");
+    const isValid = await form.trigger(stepFields);
     if (isValid && onNext) {
       onNext();
     }
   };
-
-  // Check if there are errors in the assetAdmins field
-  const hasStepErrors = !!form.formState.errors.assetAdmins;
 
   return (
     <StepContent
@@ -174,9 +178,6 @@ export function AssetAdmins({ userDetails, onNext, onBack }: AssetAdminsProps) {
     </StepContent>
   );
 }
-
-// Define validatedFields for the AssetAdmins component
-AssetAdmins.validatedFields = ["assetAdmins"];
 
 // Export step definition for the asset designer
 export const stepDefinition = {

@@ -2,6 +2,7 @@ import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
+import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import type { FundStepProps } from "../form";
@@ -13,10 +14,8 @@ export function Basics({ onNext, onBack }: FundStepProps) {
   // Fields for this step - used for validation
   const stepFields = ["assetName", "symbol", "decimals", "isin"];
 
-  // Check if there are errors in the current step's fields
-  const hasStepErrors = stepFields.some(
-    (field) => !!formState.errors[field as keyof typeof formState.errors]
-  );
+  // Check if any touched fields in this step have errors
+  const hasStepErrors = hasStepFieldErrors(stepFields, formState);
 
   // Handle next button click - trigger validation before proceeding
   const handleNext = async () => {
@@ -79,7 +78,6 @@ export function Basics({ onNext, onBack }: FundStepProps) {
               type="number"
               name="decimals"
               label={t("parameters.common.decimals-label")}
-              defaultValue={18}
               required
             />
           </div>

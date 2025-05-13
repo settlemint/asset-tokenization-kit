@@ -55,7 +55,7 @@ export function CreateBondForm({
       verificationType: "pincode",
       predictedAddress: "0x0000000000000000000000000000000000000000",
     },
-    mode: "onChange", // Validate as fields change for real-time feedback
+    mode: "onTouched",
     resolver: (...args) =>
       typeboxResolver(
         CreateBondSchema({
