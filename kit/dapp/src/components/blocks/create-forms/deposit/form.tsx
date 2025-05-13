@@ -65,7 +65,7 @@ export function CreateDepositForm({
       verificationType: "pincode",
       assetAdmins: [],
     },
-    mode: "onChange", // Validate as fields change for real-time feedback
+    mode: "onTouched",
     resolver: typeboxResolver(CreateDepositSchema()),
   });
 

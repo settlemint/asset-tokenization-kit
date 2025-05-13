@@ -6,6 +6,7 @@ import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
+import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
@@ -20,12 +21,10 @@ export function Configuration({ onNext, onBack }: ConfigurationProps) {
   const t = useTranslations("private.assets.create");
 
   // Fields for this step
-  const stepFields = ["cap", "faceValue", "underlyingAsset", "maturityDate"];
+  const stepFields = ["cap", "faceValue", "underlyingAsset"] as const;
 
-  // Check for any errors in this step's fields
-  const hasStepErrors = stepFields.some(
-    (field) => !!formState.errors[field as keyof typeof formState.errors]
-  );
+  // Check if any touched fields in this step have errors
+  const hasStepErrors = hasStepFieldErrors(stepFields, formState);
 
   // Special validation for maturity date (this can't be handled by TypeBox schema)
   const validateMaturityDate = async () => {
@@ -50,7 +49,7 @@ export function Configuration({ onNext, onBack }: ConfigurationProps) {
     if (!isMaturityDateValid) return;
 
     // Then trigger validation for fields in this step
-    const isValid = await trigger(stepFields as (keyof CreateBondInput)[]);
+    const isValid = await trigger(stepFields);
     if (isValid && onNext) {
       onNext();
     }
@@ -83,7 +82,6 @@ export function Configuration({ onNext, onBack }: ConfigurationProps) {
               type="number"
               name="decimals"
               label={t("parameters.common.decimals-label")}
-              defaultValue={18}
               description={t("parameters.common.decimals-description")}
               required
             />

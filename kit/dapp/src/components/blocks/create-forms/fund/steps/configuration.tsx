@@ -3,6 +3,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
+import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
@@ -27,10 +28,8 @@ export function Configuration({ onNext, onBack }: FundStepProps) {
     "price.currency",
   ];
 
-  // Check if there are errors in the current step's fields
-  const hasStepErrors = stepFields.some(
-    (field) => !!formState.errors[field as keyof typeof formState.errors]
-  );
+  // Check if any touched fields in this step have errors
+  const hasStepErrors = hasStepFieldErrors(stepFields, formState);
 
   // Handle next button click - trigger validation before proceeding
   const handleNext = async () => {

@@ -65,7 +65,7 @@ export function CreateCryptoCurrencyForm({
       predictedAddress: "0x0000000000000000000000000000000000000000",
       assetAdmins: [],
     },
-    mode: "onChange", // Validate as fields change for real-time feedback
+    mode: "onTouched",
     resolver: (...args) =>
       typeboxResolver(
         CreateCryptoCurrencySchema({
