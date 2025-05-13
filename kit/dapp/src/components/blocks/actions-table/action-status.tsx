@@ -5,7 +5,6 @@ import type {
 } from "@/lib/queries/actions/actions-schema";
 import { cn } from "@/lib/utils";
 import type { VariantProps } from "class-variance-authority";
-import { isAfter, isBefore } from "date-fns";
 import type { LucideIcon } from "lucide-react";
 import { CheckCircle, ChevronsRight, Clock, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -24,27 +23,8 @@ export function ActionStatusIndicator({
   action,
 }: ActionStatusIndicatorProps): ReactElement {
   const t = useTranslations("actions");
-  const getStatus = (item: Action): ActionStatus => {
-    if (item.executed) {
-      return "COMPLETED";
-    }
-    const isExpired = action.expiresAt
-      ? isBefore(action.expiresAt, new Date())
-      : false;
 
-    if (isExpired) {
-      return "EXPIRED";
-    }
-
-    const isUpcoming = isAfter(action.activeAt, new Date());
-    if (isUpcoming) {
-      return "UPCOMING";
-    }
-
-    return "PENDING";
-  };
-
-  const status = getStatus(action);
+  const status = action.status;
 
   const statusConfig: Record<ActionStatus, StatusStyle> = {
     PENDING: {

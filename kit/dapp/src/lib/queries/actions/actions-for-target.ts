@@ -6,12 +6,13 @@ import {
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
-import { safeParse } from "@/lib/utils/typebox";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import type { Address } from "viem";
+import { calculateActions } from "./action-calculated";
 import { ActionFragment } from "./actions-fragment";
-import { ActionsListSchema } from "./actions-schema";
+import { OnchainActionSchema } from "./actions-schema";
 
 /**
  * GraphQL query to fetch actions for user
@@ -51,7 +52,7 @@ export const getActionsForTarget = withTracing(
     "use cache";
     cacheTag("actions");
 
-    return await fetchAllTheGraphPages(async (first, skip) => {
+    const onchainActions = await fetchAllTheGraphPages(async (first, skip) => {
       const result = await theGraphClientKit.request(
         Actions,
         {
@@ -68,7 +69,9 @@ export const getActionsForTarget = withTracing(
       );
 
       const actions = result.actions || [];
-      return safeParse(ActionsListSchema, actions);
+      return safeParse(t.Array(OnchainActionSchema), actions);
     });
+
+    return calculateActions(onchainActions);
   })
 );

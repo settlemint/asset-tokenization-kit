@@ -8,8 +8,9 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
+import { calculateAction } from "./action-calculated";
 import { ActionFragment } from "./actions-fragment";
-import { ActionSchema } from "./actions-schema";
+import { OnchainActionSchema } from "./actions-schema";
 
 /**
  * GraphQL query to fetch a single action detail by ID
@@ -60,6 +61,7 @@ export const getActionDetail = withTracing(
       return null;
     }
 
-    return safeParse(ActionSchema, result.action);
+    const onchainAction = safeParse(OnchainActionSchema, result.action);
+    return calculateAction(onchainAction);
   })
 );
