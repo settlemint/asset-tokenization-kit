@@ -43,7 +43,9 @@ export function ExecuteForm({
       <Form
         action={executeXvp}
         resolver={typeboxResolver(ExecuteXvpSchema)}
-        onOpenChange={onOpenChange}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("execute"),
         }}

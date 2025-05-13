@@ -43,7 +43,9 @@ export function CancelForm({
       <Form
         action={cancelXvp}
         resolver={typeboxResolver(CancelXvpSchema)}
-        onOpenChange={onOpenChange}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("cancel"),
         }}

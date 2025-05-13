@@ -43,7 +43,9 @@ export function ApproveForm({
       <Form
         action={approveXvp}
         resolver={typeboxResolver(ApproveXvpSchema)}
-        onOpenChange={onOpenChange}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("approve"),
         }}
