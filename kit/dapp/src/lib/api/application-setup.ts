@@ -89,7 +89,12 @@ export const ApplicationSetupApi = new Elysia({
         const subscription = client.iterate<GetContractsQueryResponse>({
           query,
           variables: {
-            abiNames: ["ApplicationSetup"],
+            abiNames: [
+              "SMARTIdentity",
+              "SMARTIdentityImplementationAuthority",
+              "SMARTProxy",
+              "SMARTTokenRegistry",
+            ],
           },
         });
 

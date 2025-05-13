@@ -1,6 +1,7 @@
 "use client";
 
 import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { apiClient } from "@/lib/api/client";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -41,6 +42,14 @@ export function BootstrapStep({ onNext }: BootstrapStepProps) {
         <div className="mb-6">
           <h2 className="text-xl font-semibold">{t("bootstrap.title")}</h2>
         </div>
+        {error && (
+          <Alert
+            variant="destructive"
+            className="mb-4 border-destructive text-destructive"
+          >
+            <AlertTitle>{error}</AlertTitle>
+          </Alert>
+        )}
         {status && (
           <div className="flex flex-col gap-2">
             <p>{status.address}</p>

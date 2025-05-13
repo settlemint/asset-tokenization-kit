@@ -2,13 +2,14 @@ import type { User } from "@/lib/auth/types";
 import type { ApplicationSetupInput } from "@/lib/mutations/application-setup/application-setup-schema";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { getAddress, zeroAddress } from "viem";
-import { complianceModule } from "./implementations/compliance";
-import { configurationModule } from "./implementations/configuration";
-import { identityFactoryModule } from "./implementations/identity-factory";
-import { identityRegistryModule } from "./implementations/identity-registry";
-import { identityRegistryStorageModule } from "./implementations/identity-registry-storage";
-import { tokenRegistryModule } from "./implementations/token-registry";
-import { trustedIssuersRegistryModule } from "./implementations/trusted-issuer-registry";
+import { complianceModule } from "./modules/compliance";
+import { configurationModule } from "./modules/configuration";
+import { identityFactoryModule } from "./modules/identity-factory";
+import { identityRegistryModule } from "./modules/identity-registry";
+import { identityRegistryStorageModule } from "./modules/identity-registry-storage";
+import { registerDeploymentModule } from "./modules/register-deployment";
+import { tokenRegistryModule } from "./modules/token-registry";
+import { trustedIssuersRegistryModule } from "./modules/trusted-issuer-registry";
 
 async function setupApplication(user: User) {
   const forwarder = getAddress(
@@ -45,11 +46,17 @@ async function setupApplication(user: User) {
   const [
     identityRegistryStorageModuleResult,
     trustedIssuersRegistryModuleResult,
+    complianceModuleResult,
+    identityFactoryModuleResult,
+    tokenRegistryModuleResult,
   ] = phase1;
-  if (identityRegistryStorageModuleResult.status !== "fulfilled") {
-    return;
-  }
-  if (trustedIssuersRegistryModuleResult.status !== "fulfilled") {
+  if (
+    identityRegistryStorageModuleResult.status !== "fulfilled" ||
+    trustedIssuersRegistryModuleResult.status !== "fulfilled" ||
+    complianceModuleResult.status !== "fulfilled" ||
+    identityFactoryModuleResult.status !== "fulfilled" ||
+    tokenRegistryModuleResult.status !== "fulfilled"
+  ) {
     return;
   }
 
@@ -66,6 +73,18 @@ async function setupApplication(user: User) {
     identityRegistry: identityRegistryProxy,
     identityRegistryStorage:
       identityRegistryStorageModuleResult.value.identityRegistryStorageProxy,
+  });
+
+  await registerDeploymentModule({
+    user,
+    compliance: complianceModuleResult.value.complianceProxy,
+    identityRegistryStorage:
+      identityRegistryStorageModuleResult.value.identityRegistryStorageProxy,
+    identityFactory: identityFactoryModuleResult.value.identityFactoryProxy,
+    identityRegistry: identityRegistryProxy,
+    trustedIssuersRegistry:
+      trustedIssuersRegistryModuleResult.value.trustedIssuersRegistryProxy,
+    tokenRegistry: tokenRegistryModuleResult.value.tokenRegistry,
   });
 }
 
