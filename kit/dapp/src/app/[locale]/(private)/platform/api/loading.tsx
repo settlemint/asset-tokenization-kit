@@ -1,5 +1,5 @@
-import { AssetEventsSkeleton } from "@/components/blocks/asset-events-table/asset-events-skeleton";
+import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
 
 export default function Loading() {
-  return <AssetEventsSkeleton />;
+  return <DataTableSkeleton />;
 }

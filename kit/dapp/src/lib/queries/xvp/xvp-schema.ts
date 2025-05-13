@@ -85,7 +85,7 @@ export type XvPSettlement = StaticDecode<typeof XvPSettlementSchema>;
 
 export const XvPStatusSchema = t.Union([
   t.Literal("PENDING"),
-  t.Literal("APPROVED"),
+  t.Literal("READY"),
   t.Literal("EXECUTED"),
   t.Literal("CANCELLED"),
   t.Literal("EXPIRED"),
