@@ -9,7 +9,6 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getActionsList } from "@/lib/queries/actions/actions-list";
-import type { ActionStatus } from "@/lib/queries/actions/actions-schema";
 import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
@@ -58,7 +57,6 @@ export default async function XvpPage({
   const actions = await getActionsList({
     targetAddress: address,
     type: "User",
-    status: "PENDING",
     userAddress: user.wallet,
   });
 
@@ -116,13 +114,6 @@ export default async function XvpPage({
       </div>
       <ActionsDropdownTable
         actions={actions}
-        counts={actions.reduce(
-          (acc, action) => {
-            acc[action.status] = (acc[action.status] ?? 0) + 1;
-            return acc;
-          },
-          {} as Record<ActionStatus, number>
-        )}
         toolbar={{
           enableToolbar: false,
         }}
