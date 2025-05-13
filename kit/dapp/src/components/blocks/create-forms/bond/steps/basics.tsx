@@ -4,6 +4,7 @@ import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
+import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
@@ -17,18 +18,15 @@ export function Basics({ onNext, onBack }: BasicsProps) {
   const t = useTranslations("private.assets.create");
 
   // Fields for this step - used for validation
-  const stepFields = ["assetName", "symbol", "decimals", "isin"];
+  const stepFields = ["assetName", "symbol", "decimals", "isin"] as const;
 
-  // We can directly use formState.isValid for the whole form (resolver validates everything)
-  // But for a multi-step form, we only want to check the current step's fields
-  const hasStepErrors = stepFields.some(
-    (field) => !!formState.errors[field as keyof typeof formState.errors]
-  );
+  // Check if any touched fields in this step have errors
+  const hasStepErrors = hasStepFieldErrors(stepFields, formState);
 
   // Handle next button click - trigger validation before proceeding
   const handleNext = async () => {
     // Trigger validation for just these fields
-    const isValid = await trigger(stepFields as (keyof CreateBondInput)[]);
+    const isValid = await trigger(stepFields);
     if (isValid && onNext) {
       onNext();
     }

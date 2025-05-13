@@ -5,6 +5,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
+import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { timeUnits } from "@/lib/utils/typebox/time-units";
 import { useTranslations } from "next-intl";
@@ -38,16 +39,8 @@ export function Configuration({ onNext, onBack }: DepositStepProps) {
     "price.currency",
   ];
 
-  // Check if there are errors in the current step's fields
-  const hasStepErrors = stepFields.some((field) => {
-    const [parent, child] = field.split(".");
-    if (child) {
-      return !!(
-        formState.errors[parent as keyof typeof formState.errors] as any
-      )?.[child];
-    }
-    return !!formState.errors[field as keyof typeof formState.errors];
-  });
+  // Check if any touched fields in this step have errors
+  const hasStepErrors = hasStepFieldErrors(stepFields, formState);
 
   // Handle next button click - trigger validation before proceeding
   const handleNext = async () => {

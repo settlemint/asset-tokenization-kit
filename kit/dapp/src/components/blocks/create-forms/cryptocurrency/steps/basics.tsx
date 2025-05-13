@@ -4,6 +4,7 @@ import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
+import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import type { CryptoStepProps } from "../form";
@@ -16,10 +17,8 @@ export function Basics({ onNext, onBack }: CryptoStepProps) {
   // Fields for this step - used for validation
   const stepFields = ["assetName", "symbol", "decimals"];
 
-  // Check if there are errors in the current step's fields
-  const hasStepErrors = stepFields.some(
-    (field) => !!formState.errors[field as keyof typeof formState.errors]
-  );
+  // Check if any touched fields in this step have errors
+  const hasStepErrors = hasStepFieldErrors(stepFields, formState);
 
   // Handle next button click - trigger validation before proceeding
   const handleNext = async () => {

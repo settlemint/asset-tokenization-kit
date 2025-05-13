@@ -4,6 +4,7 @@ import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
+import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import type { EquityStepProps } from "../form";
@@ -15,10 +16,8 @@ export function Basics({ onNext, onBack }: EquityStepProps) {
   // Fields for this step - used for validation
   const stepFields = ["assetName", "symbol", "decimals", "isin"];
 
-  // Check if there are errors in the current step's fields
-  const hasStepErrors = stepFields.some(
-    (field) => !!formState.errors[field as keyof typeof formState.errors]
-  );
+  // Check if any touched fields in this step have errors
+  const hasStepErrors = hasStepFieldErrors(stepFields, formState);
 
   // Handle next button click - trigger validation before proceeding
   const handleNext = async () => {
