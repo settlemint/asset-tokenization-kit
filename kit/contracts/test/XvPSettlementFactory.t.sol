@@ -145,7 +145,7 @@ contract XvPSettlementFactoryTest is Test {
         // Test initial state
         assertEq(settlement.cutoffDate(), cutoffDate, "CutoffDate should match");
         assertEq(settlement.autoExecute(), autoExecute, "AutoExecute should match");
-        assertFalse(settlement.claimed(), "Settlement should not be claimed initially");
+        assertFalse(settlement.executed(), "Settlement should not be executed initially");
         assertFalse(settlement.cancelled(), "Settlement should not be cancelled initially");
     }
 

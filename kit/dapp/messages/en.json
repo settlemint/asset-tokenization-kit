@@ -2,12 +2,12 @@
   "actions": {
     "name": {
       "ApproveXvPSettlement": "Approve XvP Settlement",
-      "ClaimXvPSettlement": "Claim XvP Settlement",
+      "ExecuteXvPSettlement": "Execute XvP Settlement",
       "MatureBond": "Mature Bond"
     },
     "description": {
       "ApproveXvPSettlement": "Approve the XvP Settlement contract to be able to transfer the assets.",
-      "ClaimXvPSettlement": "Execute the XvP Settlement.",
+      "ExecuteXvPSettlement": "Execute the XvP Settlement contract to transfer the assets to the parties as defined in the settlement.",
       "MatureBond": "Mark the bond as matured."
     },
     "columns": {
@@ -2555,18 +2555,26 @@
       "expired": "Expired",
       "approvals": "Approvals",
       "status": {
-        "approved": "Approved",
-        "cancelled": "Cancelled",
-        "claimed": "Claimed",
-        "expired": "Expired",
-        "pending": "Pending",
-        "not-approved": "Not approved"
+        "APPROVED": "Approved",
+        "CANCELLED": "Cancelled",
+        "EXECUTED": "Executed",
+        "EXPIRED": "Expired",
+        "PENDING": "Pending",
+        "NOT_APPROVED": "Not approved"
       },
       "manage": "Manage",
       "approve": "Approve",
       "approve-xvp-settlement": "Approve XvP Settlement",
       "approve-xvp-settlement-description": "Grant allowances to the XvP Settlement contract for the assets that will be transferred from your wallet.",
       "approve-description": "The XvP Settlement contract will be granted approval to transfer the assets configured in the settlement on your behalf. Then the settlement will be marked as approved by you.",
+      "execute": "Execute",
+      "execute-xvp-settlement": "Execute XvP Settlement",
+      "execute-xvp-settlement-description": "Processes all approved asset flows in this settlement.",
+      "execute-xvp-settlement-summary": "Execute this settlement to transfer assets between parties as defined in the settlement flows.",
+      "cancel": "Cancel",
+      "cancel-xvp-settlement": "Cancel XvP Settlement",
+      "cancel-xvp-settlement-summary": "Cancelling this settlement will permanently prevent it from being executed, and this action cannot be reversed. A new settlement will have to be created to exchange assets.",
+      "cancel-xvp-settlement-description": "Cancel this settlement to prevent it from being executed.",
       "asset": "Asset",
       "amount": "Amount",
       "to": "To",

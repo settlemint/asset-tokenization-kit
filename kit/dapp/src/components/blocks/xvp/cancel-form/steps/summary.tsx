@@ -12,7 +12,10 @@ export function Summary({ xvp }: SummaryProps) {
   const t = useTranslations("trade-management.xvp");
 
   return (
-    <FormStep title={t("approve")} description={t("approve-description")}>
+    <FormStep
+      title={t("cancel-xvp-settlement")}
+      description={t("cancel-xvp-settlement-summary")}
+    >
       <FormSummaryDetailItem
         label={t("xvp-settlement")}
         value={<EvmAddress address={xvp} />}

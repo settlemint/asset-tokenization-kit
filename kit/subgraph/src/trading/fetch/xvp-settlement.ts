@@ -72,7 +72,7 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     let endpoint = XvPSettlementContract.bind(id);
     let cutoffDate = endpoint.try_cutoffDate();
     let autoExecute = endpoint.try_autoExecute();
-    let claimed = endpoint.try_claimed();
+    let executed = endpoint.try_executed();
     let cancelled = endpoint.try_cancelled();
     let flows = endpoint.try_flows();
     let createdAt = endpoint.try_createdAt();
@@ -83,7 +83,7 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     xvpSettlement.autoExecute = autoExecute.reverted
       ? false
       : autoExecute.value;
-    xvpSettlement.claimed = claimed.reverted ? false : claimed.value;
+    xvpSettlement.executed = executed.reverted ? false : executed.value;
     xvpSettlement.cancelled = cancelled.reverted ? false : cancelled.value;
     xvpSettlement.createdAt = createdAt.reverted
       ? BigInt.zero()

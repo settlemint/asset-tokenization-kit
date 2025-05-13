@@ -50,7 +50,7 @@ export const OnChainXvPSettlementSchema = t.Object({
   id: t.EthereumAddress(),
   cutoffDate: t.String(),
   autoExecute: t.Boolean(),
-  claimed: t.Boolean(),
+  executed: t.Boolean(),
   cancelled: t.Boolean(),
   approvals: t.Array(XvPSettlementApprovalSchema),
   flows: t.Array(OnChainXvPSettlementFlowSchema),
@@ -82,3 +82,13 @@ export const XvPSettlementSchema = t.Intersect(
 );
 
 export type XvPSettlement = StaticDecode<typeof XvPSettlementSchema>;
+
+export const XvPStatusSchema = t.Union([
+  t.Literal("PENDING"),
+  t.Literal("APPROVED"),
+  t.Literal("EXECUTED"),
+  t.Literal("CANCELLED"),
+  t.Literal("EXPIRED"),
+]);
+
+export type XvPStatus = StaticDecode<typeof XvPStatusSchema>;

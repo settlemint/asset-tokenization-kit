@@ -29,7 +29,7 @@ export function ApprovalStatusBadge({
           <X className="size-4" />
         )}
       </span>
-      {hasApproved ? t("status.approved") : t("status.not-approved")}
+      {hasApproved ? t("status.APPROVED") : t("status.NOT_APPROVED")}
     </Badge>
   );
 }

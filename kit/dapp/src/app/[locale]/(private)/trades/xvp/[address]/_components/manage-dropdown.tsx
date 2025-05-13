@@ -1,6 +1,8 @@
 "use client";
 
 import { ApproveForm } from "@/components/blocks/xvp/approve-form/form";
+import { CancelForm } from "@/components/blocks/xvp/cancel-form/form";
+import { ExecuteForm } from "@/components/blocks/xvp/execute-form/form";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,11 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { authClient } from "@/lib/auth/client";
 import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
+import { isBefore } from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 
 interface ManageDropdownProps {
   xvp: XvPSettlement;
@@ -21,11 +25,33 @@ interface ManageDropdownProps {
 
 export function ManageDropdown({ xvp }: ManageDropdownProps) {
   const t = useTranslations("trade-management.xvp");
+  const user = authClient.useSession();
+  const userHasApproved = xvp.approvals.some(
+    (approval) =>
+      getAddress(approval.account.id) === user.data?.user.wallet &&
+      approval.approved
+  );
+  const isApproved = xvp.approvals.every((approval) => approval.approved);
+  const isExpired = isBefore(Number(xvp.cutoffDate) * 1000, new Date());
+  const isCancelled = xvp.cancelled;
+  const isExecuted = xvp.executed;
+  const actionsDisabled = isCancelled || isExpired || isExecuted;
 
   const menuItems = [
     {
       id: "approve",
       label: t("approve"),
+      disabled: userHasApproved || actionsDisabled,
+    },
+    {
+      id: "execute",
+      label: t("execute"),
+      disabled: !isApproved || actionsDisabled,
+    },
+    {
+      id: "cancel",
+      label: t("cancel"),
+      disabled: actionsDisabled,
     },
   ] as const;
 
@@ -56,6 +82,7 @@ export function ManageDropdown({ xvp }: ManageDropdownProps) {
             <DropdownMenuItem
               key={item.id}
               onSelect={() => setOpenMenuItem(item.id)}
+              disabled={item.disabled}
             >
               {item.label}
             </DropdownMenuItem>
@@ -66,6 +93,18 @@ export function ManageDropdown({ xvp }: ManageDropdownProps) {
       <ApproveForm
         xvp={xvp.id}
         open={openMenuItem === "approve"}
+        onOpenChange={onFormOpenChange}
+      />
+
+      <ExecuteForm
+        xvp={xvp.id}
+        open={openMenuItem === "execute"}
+        onOpenChange={onFormOpenChange}
+      />
+
+      <CancelForm
+        xvp={xvp.id}
+        open={openMenuItem === "cancel"}
         onOpenChange={onFormOpenChange}
       />
     </>

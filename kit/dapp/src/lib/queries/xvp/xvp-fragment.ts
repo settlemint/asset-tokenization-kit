@@ -47,7 +47,7 @@ export const XvPSettlementFragment = theGraphGraphqlKit(
     id
     cutoffDate
     autoExecute
-    claimed
+    executed
     cancelled
     createdAt
     approvals {
