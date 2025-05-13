@@ -21,7 +21,7 @@ import { OnChainXvPSettlementSchema, type XvPSettlement } from "./xvp-schema";
 const XvPSettlementList = theGraphGraphqlKit(
   `
   query XvPSettlementList($first: Int, $skip: Int, $user: String!) {
-    xvPSettlements(orderBy: cutoffDate, orderDirection: desc, first: $first, skip: $skip, where: { participants_contains: [$user] }) {
+    xvPSettlements(orderBy: createdAt, orderDirection: desc, first: $first, skip: $skip, where: { participants_contains: [$user] }) {
       ...XvPSettlementFragment
     }
   }

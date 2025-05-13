@@ -24,15 +24,19 @@ export function Summary() {
       >
         <FormSummaryDetailItem
           label={t("amount")}
-          value={formatNumber(values.offerAmount, {
-            locale,
-            decimals: values.offerAsset.decimals,
-            token: values.offerAsset.symbol,
-          })}
+          value={
+            values.offerAmount
+              ? formatNumber(values.offerAmount, {
+                  locale,
+                  decimals: values.offerAsset?.decimals,
+                  token: values.offerAsset?.symbol,
+                })
+              : null
+          }
         />
         <FormSummaryDetailItem
           label={t("to")}
-          value={<EvmAddress address={values.user} />}
+          value={values.user ? <EvmAddress address={values.user} /> : null}
         />
       </FormSummaryDetailCard>
 
@@ -43,15 +47,19 @@ export function Summary() {
       >
         <FormSummaryDetailItem
           label={t("amount")}
-          value={formatNumber(values.requestAmount, {
-            locale,
-            decimals: values.requestAsset.decimals,
-            token: values.requestAsset.symbol,
-          })}
+          value={
+            values.requestAmount
+              ? formatNumber(values.requestAmount, {
+                  locale,
+                  decimals: values.requestAsset?.decimals,
+                  token: values.requestAsset?.symbol,
+                })
+              : null
+          }
         />
         <FormSummaryDetailItem
           label={t("from")}
-          value={<EvmAddress address={values.user} />}
+          value={values.user ? <EvmAddress address={values.user} /> : null}
         />
       </FormSummaryDetailCard>
 
@@ -62,9 +70,7 @@ export function Summary() {
       >
         <FormSummaryDetailItem
           label={t("expiry")}
-          value={formatDate(values.expiry, {
-            locale,
-          })}
+          value={values.expiry ? formatDate(values.expiry, { locale }) : null}
         />
         <FormSummaryDetailItem
           label={t("auto-execute")}
