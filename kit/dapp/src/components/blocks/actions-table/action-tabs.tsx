@@ -28,7 +28,7 @@ const tabs = async ({
           {t("tabs.name.pending")}
           <Suspense fallback={<BadgeSpinner />}>
             <BadgeLoader
-              state="PENDING"
+              status="PENDING"
               type={type}
               userAddress={user.wallet}
             />
@@ -43,7 +43,7 @@ const tabs = async ({
           {t("tabs.name.upcoming")}
           <Suspense fallback={<BadgeSpinner />}>
             <BadgeLoader
-              state="UPCOMING"
+              status="UPCOMING"
               type={type}
               userAddress={user.wallet}
             />
@@ -58,7 +58,7 @@ const tabs = async ({
           {t("tabs.name.completed")}
           <Suspense fallback={<BadgeSpinner />}>
             <BadgeLoader
-              state="COMPLETED"
+              status="COMPLETED"
               type={type}
               userAddress={user.wallet}
             />

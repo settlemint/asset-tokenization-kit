@@ -16,33 +16,44 @@
       "description": "Description",
       "active-at": "Active at",
       "completed-on": "Completed on",
-      "executed-by": "Executed by"
+      "executed-by": "Executed by",
+      "status": "Status"
     },
     "page": {
       "actions": "Actions",
       "my-actions": "My actions"
     },
+    "status": {
+      "COMPLETED": "Completed",
+      "UPCOMING": "Upcoming",
+      "EXPIRED": "Expired",
+      "PENDING": "Pending"
+    },
     "tabs": {
       "name": {
         "completed": "Completed",
         "pending": "Pending",
-        "upcoming": "Upcoming"
+        "upcoming": "Upcoming",
+        "expired": "Expired"
       },
       "description": {
         "completed": "Completed actions",
         "pending": "Pending actions",
-        "upcoming": "Upcoming actions"
+        "upcoming": "Upcoming actions",
+        "expired": "Expired actions"
       },
       "empty-state": {
         "title": {
           "completed": "No completed actions",
           "pending": "No pending actions",
-          "upcoming": "No upcoming actions"
+          "upcoming": "No upcoming actions",
+          "expired": "No expired actions"
         },
         "description": {
           "completed": "You haven't completed any actions yet. Actions will appear here once they are completed.",
           "pending": "You don't have any actions that require your attention at this time.",
-          "upcoming": "You don't have any scheduled actions coming up."
+          "upcoming": "You don't have any scheduled actions coming up.",
+          "expired": "You don't have any expired actions. Expired actions are actions that should have been completed before their expiry date but can no longer be performed because they have expired."
         }
       }
     }
@@ -2579,7 +2590,8 @@
       "asset": "Asset",
       "amount": "Amount",
       "to": "To",
-      "xvp-settlement": "XvP Settlement"
+      "xvp-settlement": "XvP Settlement",
+      "actions": "Actions"
     }
   },
   "transactions": {
