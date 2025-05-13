@@ -2,7 +2,7 @@
 
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
-import { XvpStatus } from "@/components/blocks/xvp/status-pill";
+import { XvPStatusIndicator } from "@/components/blocks/xvp/xvp-status";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/routing";
 import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
@@ -30,7 +30,7 @@ export function columns() {
       id: "status",
       header: t("columns.status"),
       cell: ({ row }) => {
-        return <XvpStatus xvp={row.original} />;
+        return <XvPStatusIndicator xvp={row.original} />;
       },
     }),
     columnHelper.accessor("createdAt", {

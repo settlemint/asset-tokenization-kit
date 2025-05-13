@@ -6,15 +6,15 @@ import { CheckCircle, Clock, Rocket, TriangleAlert, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
 
-type XvpStatusPillProps = {
+type XvPStatusIndicatorProps = {
   xvp: XvPSettlement;
   asBadge?: boolean;
 };
 
-export function XvpStatus({
+export function XvPStatusIndicator({
   xvp,
   asBadge = false,
-}: XvpStatusPillProps): ReactElement {
+}: XvPStatusIndicatorProps): ReactElement {
   const t = useTranslations("trade-management.xvp");
   const getStatus = (item: XvPSettlement): XvPStatus => {
     if (item.executed) {
@@ -23,8 +23,7 @@ export function XvpStatus({
     if (item.cancelled) {
       return "CANCELLED";
     }
-    const cutoffTimeMs = Number(item.cutoffDate) * 1000;
-    const isExpired = isBefore(cutoffTimeMs, new Date().getTime());
+    const isExpired = isBefore(item.cutoffDate, new Date());
     if (isExpired) {
       return "EXPIRED";
     }

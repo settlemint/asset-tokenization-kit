@@ -4,7 +4,7 @@ import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import { XvpStatus } from "@/components/blocks/xvp/status-pill";
+import { XvPStatusIndicator } from "@/components/blocks/xvp/xvp-status";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
@@ -64,7 +64,7 @@ export default async function XvpPage({
           </EvmAddress>
         }
         section={t("page.xvp")}
-        pill={<XvpStatus xvp={xvpSettlement} asBadge={true} />}
+        pill={<XvPStatusIndicator xvp={xvpSettlement} asBadge={true} />}
         button={
           <ManageDropdown xvp={xvpSettlement} userAddress={user.wallet} />
         }
@@ -83,7 +83,7 @@ export default async function XvpPage({
           })}
         </DetailGridItem>
         <DetailGridItem label={t("xvp.columns.status")}>
-          <XvpStatus xvp={xvpSettlement} />
+          <XvPStatusIndicator xvp={xvpSettlement} />
         </DetailGridItem>
         <DetailGridItem
           label={t("xvp.auto-execute")}
