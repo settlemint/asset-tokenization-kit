@@ -76,6 +76,10 @@ export const getActionsList = withTracing(
       COMPLETED: {
         executed: true,
       },
+      EXPIRED: {
+        executed: false,
+        expiresAt_lte: nowSeconds,
+      },
     };
     const actionExecutors = await fetchAllTheGraphPages(async (first, skip) => {
       const result = await theGraphClientKit.request(

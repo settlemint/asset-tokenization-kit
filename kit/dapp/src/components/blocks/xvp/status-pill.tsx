@@ -50,7 +50,7 @@ export function XvpStatus({
     PENDING: {
       variant: "default",
       badgeClassName: "bg-warning/80 text-warning-foreground",
-      iconClassName: "size-4 text-warning-foreground",
+      iconClassName: "size-4 text-warning",
       icon: Clock,
     },
     READY: {

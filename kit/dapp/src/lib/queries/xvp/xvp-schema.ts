@@ -39,7 +39,7 @@ export const XvPSettlementApprovalSchema = t.Object({
   id: t.String(),
   account: t.Object({ id: t.EthereumAddress() }),
   approved: t.Boolean(),
-  timestamp: t.Nullable(t.String()),
+  timestamp: t.Nullable(t.Timestamp()),
 });
 
 export type XvPSettlementApproval = StaticDecode<
@@ -48,13 +48,13 @@ export type XvPSettlementApproval = StaticDecode<
 
 export const OnChainXvPSettlementSchema = t.Object({
   id: t.EthereumAddress(),
-  cutoffDate: t.String(),
+  cutoffDate: t.Timestamp(),
   autoExecute: t.Boolean(),
   executed: t.Boolean(),
   cancelled: t.Boolean(),
   approvals: t.Array(XvPSettlementApprovalSchema),
   flows: t.Array(OnChainXvPSettlementFlowSchema),
-  createdAt: t.String(),
+  createdAt: t.Timestamp(),
 });
 
 export type OnChainXvPSettlement = StaticDecode<

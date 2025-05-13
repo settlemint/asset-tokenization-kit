@@ -36,12 +36,12 @@ export function columns() {
     columnHelper.accessor("createdAt", {
       header: t("columns.created-at"),
       cell: ({ getValue }) =>
-        formatDate(getValue().toString(), { locale, type: "relative" }),
+        formatDate(getValue(), { locale, type: "relative" }),
     }),
     columnHelper.accessor("cutoffDate", {
       header: t("columns.expiry"),
       cell: ({ getValue }) =>
-        formatDate(getValue().toString(), {
+        formatDate(getValue(), {
           locale,
           type: "relative",
         }),

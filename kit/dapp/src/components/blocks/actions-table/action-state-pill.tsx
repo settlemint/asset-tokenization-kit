@@ -26,13 +26,14 @@ export function ActionStatePill({
       return "COMPLETED";
     }
     const isExpired = action.expiresAt
-      ? isBefore(action.expiresAt, new Date().getTime())
+      ? isBefore(action.expiresAt, new Date())
       : false;
+
     if (isExpired) {
       return "EXPIRED";
     }
 
-    const isUpcoming = isAfter(action.activeAt, new Date().getTime());
+    const isUpcoming = isAfter(action.activeAt, new Date());
     if (isUpcoming) {
       return "UPCOMING";
     }

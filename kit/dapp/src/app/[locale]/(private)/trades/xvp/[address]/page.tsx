@@ -12,7 +12,6 @@ import { getActionsForTarget } from "@/lib/queries/actions/actions-for-target";
 import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
-import { Clock } from "lucide-react";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -72,14 +71,13 @@ export default async function XvpPage({
       />
       <DetailGrid>
         <DetailGridItem label={t("xvp.columns.created-at")}>
-          {formatDate(xvpSettlement.createdAt.toString(), {
+          {formatDate(xvpSettlement.createdAt, {
             locale,
             type: "absolute",
           })}
         </DetailGridItem>
         <DetailGridItem label={t("xvp.columns.expiry")}>
-          <Clock className="size-4 inline-block mr-2 mb-1 text-muted-foreground" />
-          {formatDate(xvpSettlement.cutoffDate.toString(), {
+          {formatDate(xvpSettlement.cutoffDate, {
             locale,
             type: "absolute",
           })}

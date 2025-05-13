@@ -2,13 +2,13 @@ import { CheckCircle, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
 
-type ApprovalStatusBadgeProps = {
+type ApprovalStatusProps = {
   hasApproved: boolean;
 };
 
-export function ApprovalStatusBadge({
+export function ApprovalStatus({
   hasApproved,
-}: ApprovalStatusBadgeProps): ReactElement {
+}: ApprovalStatusProps): ReactElement {
   const t = useTranslations("trade-management.xvp");
 
   return (
