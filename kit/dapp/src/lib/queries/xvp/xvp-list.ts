@@ -9,6 +9,8 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import type { Address } from "viem";
 import { calculateXvPSettlement } from "./xvp-calculated";
 import { XvPSettlementFragment } from "./xvp-fragment";
 import { OnChainXvPSettlementSchema, type XvPSettlement } from "./xvp-schema";
@@ -18,8 +20,8 @@ import { OnChainXvPSettlementSchema, type XvPSettlement } from "./xvp-schema";
  */
 const XvPSettlementList = theGraphGraphqlKit(
   `
-  query XvPSettlementList($first: Int, $skip: Int) {
-    xvPSettlements(orderBy: cutoffDate, orderDirection: desc, first: $first, skip: $skip) {
+  query XvPSettlementList($first: Int, $skip: Int, $user: String!) {
+    xvPSettlements(orderBy: cutoffDate, orderDirection: desc, first: $first, skip: $skip, where: { participants_contains: [$user] }) {
       ...XvPSettlementFragment
     }
   }
@@ -36,15 +38,19 @@ const XvPSettlementList = theGraphGraphqlKit(
 export const getXvPSettlementList = withTracing(
   "queries",
   "getXvPSettlementList",
-  async (userCurrency: CurrencyCode): Promise<XvPSettlement[]> => {
-    // "use cache";
-    // cacheTag("trades");
+  async (
+    userCurrency: CurrencyCode,
+    userAddress: Address
+  ): Promise<XvPSettlement[]> => {
+    "use cache";
+    cacheTag("trades");
 
     const onChainSettlements = await fetchAllTheGraphPages(
       async (first, skip) => {
         const result = await theGraphClientKit.request(XvPSettlementList, {
           first,
           skip,
+          user: userAddress,
         });
 
         return safeParse(
