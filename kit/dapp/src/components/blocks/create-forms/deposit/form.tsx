@@ -1,5 +1,6 @@
 "use client";
 
+import type { UploadedDocument } from "@/components/blocks/form/inputs/form-document-upload";
 import { createDeposit } from "@/lib/mutations/deposit/create/create-action";
 import {
   CreateDepositSchema,
@@ -25,6 +26,7 @@ import {
   Configuration,
   stepDefinition as configurationStep,
 } from "./steps/configuration";
+import { Documents, stepDefinition as documentsStep } from "./steps/documents";
 import { DepositConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateDepositFormProps {
@@ -51,7 +53,9 @@ export function CreateDepositForm({
   onPrevStep,
   verificationWrapper,
 }: CreateDepositFormProps) {
-  const depositForm = useForm<CreateDepositInput>({
+  const depositForm = useForm<
+    CreateDepositInput & { documents?: UploadedDocument[] }
+  >({
     defaultValues: {
       assetName: "",
       symbol: "",
@@ -64,6 +68,7 @@ export function CreateDepositForm({
       },
       verificationType: "pincode",
       assetAdmins: [],
+      documents: [],
     },
     mode: "onChange", // Validate as fields change for real-time feedback
     resolver: typeboxResolver(CreateDepositSchema()),
@@ -75,6 +80,8 @@ export function CreateDepositForm({
         return <Basics onNext={onNextStep} onBack={onPrevStep} />;
       case "configuration":
         return <Configuration onNext={onNextStep} onBack={onPrevStep} />;
+      case "documents":
+        return <Documents onNext={onNextStep} onBack={onPrevStep} />;
       case "admins":
         return (
           <AssetAdmins
@@ -105,7 +112,13 @@ export function CreateDepositForm({
 CreateDepositForm.displayName = "CreateDepositForm";
 
 // Collect all the step definitions
-const depositSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
+const depositSteps = [
+  basicsStep,
+  configurationStep,
+  documentsStep,
+  adminsStep,
+  summaryStep,
+];
 
 // Export form definition for the asset designer
 export const depositFormDefinition: AssetFormDefinition = {
