@@ -73,6 +73,8 @@ test.describe("Cryptocurrency Creation Validation", () => {
     });
     test("validates decimals range", async () => {
       await createAssetForm.fillBasicFields({
+        name: "Test Cryptocurrency",
+        symbol: "TCC",
         decimals: "19",
       });
       await createAssetForm.clickOnContinueButton();

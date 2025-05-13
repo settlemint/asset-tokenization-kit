@@ -255,6 +255,7 @@ export const bondData = {
   assetType: "Bond",
   name: generateBondName(),
   symbol: generateSymbol(generateBondName()),
+  internalId: getUniqueId().substring(0, 12),
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
   maximumSupply: "1000",
   faceValue: "100",

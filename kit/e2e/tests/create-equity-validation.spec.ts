@@ -65,6 +65,8 @@ test.describe("Equity Creation Validation", () => {
     });
     test("validates ISIN format", async () => {
       await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "TEQ",
         isin: "invalid-isin",
       });
       await createAssetForm.clickOnContinueButton();
@@ -74,6 +76,8 @@ test.describe("Equity Creation Validation", () => {
     });
     test("validates ISIN length constraints", async () => {
       await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "TEQ",
         isin: "US0000000000000",
       });
       await createAssetForm.clickOnContinueButton();

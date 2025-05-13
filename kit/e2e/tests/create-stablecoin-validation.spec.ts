@@ -73,6 +73,8 @@ test.describe("Stablecoin Creation Validation", () => {
     });
     test("validates decimals range", async () => {
       await createAssetForm.fillBasicFields({
+        name: "Test Stablecoin",
+        symbol: "TSC",
         decimals: "19",
       });
       await createAssetForm.clickOnContinueButton();

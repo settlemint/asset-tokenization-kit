@@ -16,7 +16,12 @@ export class AdminPage extends BasePage {
     name: string,
     symbol: string
   ) {
-    await this.page.getByRole("button", { name: "Asset Designer" }).click();
+    await this.page
+      .locator(
+        'div[data-slot="sidebar-content"] > button:has-text("Asset Designer")'
+      )
+      .first()
+      .click();
     await this.page
       .locator(
         `[data-slot="card"] [data-slot="card-title"]:has-text("${assetType}")`
@@ -81,7 +86,7 @@ export class AdminPage extends BasePage {
       .click();
     await continueButton.click();
     await continueButton.click();
-    const buttonName = `Issue new ${options.assetType}`;
+    const buttonName = `Issue`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
@@ -110,7 +115,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole("option", { name: "EUR" }).click();
     await continueButton.click();
     await continueButton.click();
-    const buttonName = `Issue new ${options.assetType}`;
+    const buttonName = `Issue`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
@@ -154,7 +159,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole("option", { name: "EUR" }).click();
     await continueButton.click();
     await continueButton.click();
-    const buttonName = `Issue new ${options.assetType}`;
+    const buttonName = `Issue`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
@@ -198,7 +203,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole("option", { name: "EUR" }).click();
     await continueButton.click();
     await continueButton.click();
-    const buttonName = `Issue new ${options.assetType}`;
+    const buttonName = `Issue`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
@@ -230,7 +235,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole("option", { name: "EUR" }).click();
     await continueButton.click();
     await continueButton.click();
-    const buttonName = `Issue new ${options.assetType}`;
+    const buttonName = `Issue`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
@@ -264,7 +269,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole("option", { name: "EUR" }).click();
     await continueButton.click();
     await continueButton.click();
-    const buttonName = `Issue new ${options.assetType}`;
+    const buttonName = `Issue`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
