@@ -34,7 +34,6 @@ export function Configuration() {
               type="number"
               name="decimals"
               label={t("parameters.common.decimals-label")}
-              defaultValue={18}
               description={t("parameters.common.decimals-description")}
               required
             />

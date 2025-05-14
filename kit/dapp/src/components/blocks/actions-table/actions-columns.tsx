@@ -9,7 +9,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { defineMeta, filterFn } from "@/lib/filters";
-import type { Action, ActionState } from "@/lib/queries/actions/actions-schema";
+import type {
+  Action,
+  ActionStatus,
+} from "@/lib/queries/actions/actions-schema";
 import { addressNameFilter } from "@/lib/utils/address-name-cache";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -17,10 +20,17 @@ import { Info, Target, User } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { getAddress, isAddress } from "viem";
 import { ActionButton } from "./action-button";
+import { ActionStatusIndicator } from "./action-status";
 
 const columnHelper = createColumnHelper<Action>();
 
-export function Columns({ state }: { state: ActionState }) {
+export function Columns({
+  status,
+  statusAsColumn,
+}: {
+  status?: ActionStatus;
+  statusAsColumn?: boolean;
+}) {
   const t = useTranslations("actions");
   const locale = useLocale();
 
@@ -80,7 +90,19 @@ export function Columns({ state }: { state: ActionState }) {
             })
           : null,
     }),
-    ...(state === "COMPLETED"
+    ...(statusAsColumn
+      ? [
+          columnHelper.display({
+            id: "status",
+            header: t("columns.status"),
+            cell: ({ row }) => {
+              const action = row.original;
+              return <ActionStatusIndicator action={action} />;
+            },
+          }),
+        ]
+      : []),
+    ...(status === "COMPLETED"
       ? [
           columnHelper.accessor("executedAt", {
             header: t("columns.completed-on"),
@@ -90,21 +112,21 @@ export function Columns({ state }: { state: ActionState }) {
               }),
           }),
           columnHelper.accessor("executedBy.id", {
-            header: t("columns.executed-by"),
+            header: t("columns.completed-by"),
             cell: ({ getValue }) => (
               <EvmAddress address={getAddress(getValue())} prettyNames={false}>
                 <EvmAddressBalances address={getAddress(getValue())} />
               </EvmAddress>
             ),
             meta: defineMeta((row) => row.executedBy!.id, {
-              displayName: t("columns.executed-by"),
+              displayName: t("columns.completed-by"),
               icon: User,
               type: "text",
             }),
           }),
         ]
       : []),
-    ...(state === "PENDING"
+    ...(status === "PENDING"
       ? [
           columnHelper.display({
             id: "actions",

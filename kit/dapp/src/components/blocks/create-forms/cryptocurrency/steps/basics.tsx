@@ -48,7 +48,6 @@ export function Basics() {
               type="number"
               name="decimals"
               label={t("parameters.common.decimals-label")}
-              defaultValue={18}
               required
             />
           </div>

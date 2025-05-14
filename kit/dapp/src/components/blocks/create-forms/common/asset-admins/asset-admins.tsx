@@ -156,9 +156,6 @@ export function AssetAdmins({ userDetails }: AssetAdminsProps) {
   );
 }
 
-// Define validatedFields for the AssetAdmins component
-AssetAdmins.validatedFields = ["assetAdmins"];
-
 // Export step definition for the asset designer
 export const stepDefinition = {
   id: "admins",

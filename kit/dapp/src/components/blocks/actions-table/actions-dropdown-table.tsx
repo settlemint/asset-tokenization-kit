@@ -1,39 +1,32 @@
 import { getUser } from "@/lib/auth/utils";
 import { getActionsList } from "@/lib/queries/actions/actions-list";
-import type {
-  ActionStatus,
-  ActionType,
-} from "@/lib/queries/actions/actions-schema";
+import { ActionType } from "@/lib/queries/actions/actions-schema";
+import type { Address } from "viem";
 import type { DataTablePaginationOptions } from "../data-table/data-table-pagination";
 import type { DataTableToolbarOptions } from "../data-table/data-table-toolbar";
-import { ActionsClientTable } from "./actions-client-table";
+import { ActionsDropdownClientTable } from "./actions-dropdown-client-table";
 
-interface ActionsTableProps {
-  status: ActionStatus;
+interface ActionsDropdownTableProps {
   type: ActionType;
+  targetAddress?: Address;
   toolbar?: DataTableToolbarOptions;
   pagination?: DataTablePaginationOptions;
 }
 
-/**
- * Component that renders actions in a table
- */
-export async function ActionsTable({
-  status,
+export async function ActionsDropdownTable({
   type,
+  targetAddress,
   toolbar,
   pagination,
-}: ActionsTableProps) {
+}: ActionsDropdownTableProps) {
   const user = await getUser();
   const actionsList = await getActionsList({
-    status,
     userAddress: user.wallet,
     type,
+    targetAddress,
   });
-
   return (
-    <ActionsClientTable
-      status={status}
+    <ActionsDropdownClientTable
       actions={actionsList}
       toolbar={toolbar}
       pagination={pagination}

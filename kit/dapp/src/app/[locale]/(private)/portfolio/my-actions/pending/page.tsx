@@ -1,8 +1,10 @@
 import { ActionsTable } from "@/components/blocks/actions-table/actions-table";
+import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 
 export async function generateMetadata({
   params,
@@ -25,5 +27,9 @@ export async function generateMetadata({
 }
 
 export default async function ActionsPage() {
-  return <ActionsTable state="PENDING" actionType="User" />;
+  return (
+    <Suspense fallback={<DataTableSkeleton />}>
+      <ActionsTable status="PENDING" type="User" />;
+    </Suspense>
+  );
 }

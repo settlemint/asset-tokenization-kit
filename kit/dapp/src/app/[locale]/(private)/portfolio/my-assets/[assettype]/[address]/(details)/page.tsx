@@ -1,5 +1,4 @@
 import { Details } from "@/app/[locale]/(private)/assets/[assettype]/[address]/(details)/_components/details";
-import { AssetEventsSkeleton } from "@/components/blocks/asset-events-table/asset-events-skeleton";
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
 import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
@@ -8,6 +7,7 @@ import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supp
 import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
 import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
 import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-distribution";
+import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
 import { getUser } from "@/lib/auth/utils";
 import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -56,7 +56,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
       </ChartGrid>
 
       <div className="mt-8">
-        <Suspense fallback={<AssetEventsSkeleton />}>
+        <Suspense fallback={<DataTableSkeleton />}>
           <AssetEventsTable asset={address} sender={user.wallet} />
         </Suspense>
       </div>

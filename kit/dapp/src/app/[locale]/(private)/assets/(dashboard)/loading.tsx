@@ -1,4 +1,4 @@
-import { AssetEventsSkeleton } from "@/components/blocks/asset-events-table/asset-events-skeleton";
+import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
 import { PageHeaderSkeleton } from "@/components/layout/page-header.skeleton";
 import { AssetActivitySkeleton } from "./_components/charts/asset-activity-skeleton";
 import { AssetsSupplySkeleton } from "./_components/charts/assets-supply-skeleton";
@@ -24,7 +24,7 @@ export default function Loading() {
         <TransactionsHistorySkeleton />
       </div>
       <div className="mt-8 mb-4 h-8 w-48 animate-pulse rounded-md bg-muted" />
-      <AssetEventsSkeleton />
+      <DataTableSkeleton />
       <div className="mt-4 h-5 w-24 animate-pulse rounded-md bg-muted" />
     </>
   );

@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export function AssetEventsSkeleton() {
+export function DataTableSkeleton() {
   return (
     <>
       <div className="rounded-md border">
