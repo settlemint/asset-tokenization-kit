@@ -61,6 +61,15 @@ test.describe.serial("Bond Creation Validation", () => {
         "Expected string to match 'asset-symbol' format"
       );
     });
+    test("validates symbol field can not contain special characters", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Bond",
+        symbol: "TBO$",
+      });
+      await createAssetForm.expectErrorMessage(
+        "Expected string to match 'asset-symbol' format"
+      );
+    });
     //Update this check name constraint after this ticket is fixed jelena/eng-3108-asset-designerno-constraint-in-asset-name-field
     test("verifies Symbol field length constraints", async () => {
       // await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
