@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteDocument } from "@/app/actions/delete-document";
 import { uploadDocument } from "@/app/actions/upload-document";
 import {
   AlertCircleIcon,
@@ -349,6 +350,17 @@ export function FormDocumentUpload<
 
     try {
       processingFilesRef.current = true;
+
+      // If it's a real file (not just a File object), delete it from storage
+      if (!(fileToRemove.file instanceof File)) {
+        const metadata = fileToRemove.file as any;
+        const objectName = metadata.objectName || metadata.id;
+
+        if (objectName) {
+          console.log(`Deleting file from storage: ${objectName}`);
+          await deleteDocument(objectName, documentType, metadata.name);
+        }
+      }
 
       // Remove from UI
       internalRemoveFile(id);
