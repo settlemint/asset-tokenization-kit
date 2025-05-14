@@ -1,5 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
+import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
@@ -100,7 +101,13 @@ export const approveXvpFunction = async ({
     if (!result.XvPSettlementApprove) {
       throw new Error("Failed to approve XVP");
     }
-    return safeParse(t.Hashes(), [result.XvPSettlementApprove.transactionHash]);
+    const hashes = safeParse(t.Hashes(), [
+      result.XvPSettlementApprove.transactionHash,
+    ]);
+    const receipts = await waitForTransactions(hashes);
+    const lastBlockNumber = Number(receipts.at(-1)?.blockNumber);
+    await waitForIndexing(lastBlockNumber);
+    return receipts;
   }
 
   const result = await portalClient.request(XvpRevoke, {
@@ -112,7 +119,11 @@ export const approveXvpFunction = async ({
   if (!result.XvPSettlementRevokeApproval) {
     throw new Error("Failed to revoke XVP");
   }
-  return safeParse(t.Hashes(), [
+  const hashes = safeParse(t.Hashes(), [
     result.XvPSettlementRevokeApproval.transactionHash,
   ]);
+  const receipts = await waitForTransactions(hashes);
+  const lastBlockNumber = Number(receipts.at(-1)?.blockNumber);
+  await waitForIndexing(lastBlockNumber);
+  return receipts;
 };
