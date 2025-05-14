@@ -242,6 +242,10 @@ export function Form<
           format: error.schema.format,
         });
       case ValueErrorType.StringFormat:
+        console.log(error);
+        if (error.schema.format === "asset-symbol") {
+          return t("error.string-format-asset-symbol");
+        }
         return t("error.string-format", { format: error.schema.format });
       case ValueErrorType.StringMaxLength:
         return t("error.string-max-length", {
