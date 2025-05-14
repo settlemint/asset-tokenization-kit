@@ -1,4 +1,3 @@
-import { logger } from "@/lib/api/utils/api-logger";
 import { opentelemetry } from "@elysiajs/opentelemetry";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
@@ -118,22 +117,6 @@ export const api = new Elysia({
       error
     );
     return elysiaStatus(500, "Internal server error");
-  })
-  .ws("/ws/test", {
-    error: (error) => {
-      logger.error("Websocket error occurred", error);
-    },
-    close: (_ws, code, reason) => {
-      logger.info(`Websocket closed: ${code} ${reason}`);
-    },
-    open: (ws) => {
-      logger.info(`Websocket opened: ${ws.id}`);
-      ws.send("Hello Client!");
-    },
-    message: (ws, message) => {
-      logger.info(`Websocket message received: ${message}`);
-      ws.send("Message received!");
-    },
   })
   .group("/application-setup", (app) => app.use(ApplicationSetupApi))
   .group("/bond", (app) => app.use(BondApi))
