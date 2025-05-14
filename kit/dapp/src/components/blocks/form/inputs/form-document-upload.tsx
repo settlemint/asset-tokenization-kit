@@ -38,6 +38,21 @@ export type UploadedDocument = {
   description?: string;
 };
 
+// Simple progress tracking type
+type UploadProgress = {
+  fileName: string;
+  progress: number;
+  error?: string;
+};
+
+// Type for tracking files during upload
+type UploadingFile = {
+  id: string;
+  file: File;
+  progress: number;
+  error?: string;
+};
+
 export type FormDocumentUploadProps<
   TFieldValues extends FieldValues = FieldValues,
 > = {
@@ -90,13 +105,6 @@ const getFileIcon = (file: { file: File | { type: string; name: string } }) => {
   return <FileIcon className="size-4 opacity-60" />;
 };
 
-// Type for tracking upload progress
-type UploadProgress = {
-  fileName: string;
-  progress: number;
-  error?: string;
-};
-
 export function FormDocumentUpload<
   TFieldValues extends FieldValues = FieldValues,
 >({
@@ -120,8 +128,13 @@ export function FormDocumentUpload<
   const [isUploading, setIsUploading] = useState(false);
   const processingFilesRef = useRef(false);
 
-  // Track currently uploading files with progress
-  const [uploadingFiles, setUploadingFiles] = useState<UploadProgress[]>([]);
+  // Track files that are currently being uploaded
+  const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
+
+  // Current file being processed
+  const [currentUpload, setCurrentUpload] = useState<UploadProgress | null>(
+    null
+  );
 
   // Convert the field.value to the format expected by useFileUpload
   const initialFiles = Array.isArray(field.value)
@@ -153,45 +166,42 @@ export function FormDocumentUpload<
     maxSize,
     accept,
     initialFiles,
-    onFilesChange: () => {
-      /* This callback is now handled by the useEffect below */
-    },
+    // Empty callback here to prevent immediate state updates during render
+    onFilesChange: () => {},
   });
 
-  // Effect to sync successfully uploaded files back to the React Hook Form field
+  // Use useEffect to synchronize the file state with the form
   useEffect(() => {
-    // Only update the form if files are not currently being processed (e.g., uploading)
-    if (!processingFilesRef.current) {
-      const uploadedDocs = files // 'files' is the current state from useFileUpload
-        .filter(
-          (fileWithPreview) =>
-            !(fileWithPreview.file instanceof File) && fileWithPreview.file // Ensure it's uploaded metadata
-        )
-        .map((fileWithPreview) => {
-          const fileData = fileWithPreview.file as UploadedDocument; // Type assertion for clarity
-          return {
-            id: fileData.id || fileWithPreview.id, // Fallback to fileWithPreview.id if needed
-            name: fileData.name,
-            url: fileData.url,
-            size: fileData.size,
-            type: fileData.type,
-            objectName: fileData.objectName, // Assumes objectName is on fileData
-            uploadedAt: fileData.uploadedAt || new Date().toISOString(),
-            title: fileData.title || fileData.name,
-            description: fileData.description || "",
-          } as UploadedDocument;
-        });
+    // Skip synchronization if we're actively processing files
+    if (processingFilesRef.current) return;
 
-      // To prevent unnecessary re-renders or potential loops,
-      // compare current field value with the new docs before calling onChange.
-      // JSON.stringify is a simple way for deep comparison of simple objects/arrays.
-      if (JSON.stringify(field.value) !== JSON.stringify(uploadedDocs)) {
-        field.onChange(uploadedDocs);
-      }
+    const uploadedDocs = files
+      .filter((file) => !(file.file instanceof File))
+      .map((file) => {
+        const fileData = file.file as any;
+        return {
+          id: fileData.id || file.id,
+          name: fileData.name,
+          url: fileData.url,
+          size: fileData.size,
+          type: fileData.type,
+          objectName: fileData.objectName || fileData.id,
+          uploadedAt: fileData.uploadedAt || new Date().toISOString(),
+          title: fileData.title || fileData.name,
+          description: fileData.description || "",
+        } as UploadedDocument;
+      });
+
+    // Only update form state if the values are different
+    const currentValue = field.value || [];
+    const hasChanges =
+      uploadedDocs.length !== currentValue.length ||
+      uploadedDocs.some((doc, i) => doc.id !== (currentValue[i]?.id || ""));
+
+    if (hasChanges) {
+      field.onChange(uploadedDocs);
     }
-  }, [files, field.onChange]); // Rerun when files from useFileUpload or field.onChange changes
-  // processingFilesRef.current is a ref, its change doesn't trigger useEffect directly,
-  // but its value is checked inside. This is a common pattern.
+  }, [field, files]);
 
   // Process newly added files
   const processNewFiles = async (newFiles: File[]) => {
@@ -201,25 +211,30 @@ export function FormDocumentUpload<
       processingFilesRef.current = true;
       setIsUploading(true);
 
-      // Add files to the UI first, which gives them IDs
-      const fileObjects = newFiles.map((file) => ({ file }));
-      internalAddFiles(newFiles);
-
-      // Initialize progress tracking for the files being uploaded
-      const initialProgress: UploadProgress[] = newFiles.map((file) => ({
-        fileName: file.name,
+      // Add files to our uploading state to show progress
+      const newUploadingFiles = newFiles.map((file) => ({
+        id: `temp-${file.name}-${Date.now()}`,
+        file,
         progress: 0,
       }));
 
-      setUploadingFiles(initialProgress);
+      setUploadingFiles((prev) => [...prev, ...newUploadingFiles]);
 
       const uploadedFiles: UploadedDocument[] = [];
 
-      for (const file of newFiles) {
-        // Update progress to show upload starting
+      for (const uploadingFile of newUploadingFiles) {
+        const file = uploadingFile.file;
+
+        // Start showing progress for this file
+        setCurrentUpload({
+          fileName: file.name,
+          progress: 0,
+        });
+
+        // Update progress in uploading files state
         setUploadingFiles((prev) =>
-          prev.map((item) =>
-            item.fileName === file.name ? { ...item, progress: 10 } : item
+          prev.map((f) =>
+            f.id === uploadingFile.id ? { ...f, progress: 0 } : f
           )
         );
 
@@ -229,18 +244,37 @@ export function FormDocumentUpload<
         formData.append("type", documentType);
 
         try {
-          // Simulate progress updates while waiting for the server response
+          // Update initial progress
+          setCurrentUpload({
+            fileName: file.name,
+            progress: 10,
+          });
+
+          // Update progress in uploading files state
+          setUploadingFiles((prev) =>
+            prev.map((f) =>
+              f.id === uploadingFile.id ? { ...f, progress: 10 } : f
+            )
+          );
+
+          // Simulate progress updates
           let currentProgress = 10;
           const progressInterval = setInterval(() => {
             if (currentProgress < 90) {
               currentProgress += Math.floor(Math.random() * 10) + 5;
               currentProgress = Math.min(currentProgress, 90);
 
+              setCurrentUpload({
+                fileName: file.name,
+                progress: currentProgress,
+              });
+
+              // Update progress in uploading files state
               setUploadingFiles((prev) =>
-                prev.map((item) =>
-                  item.fileName === file.name
-                    ? { ...item, progress: currentProgress }
-                    : item
+                prev.map((f) =>
+                  f.id === uploadingFile.id
+                    ? { ...f, progress: currentProgress }
+                    : f
                 )
               );
             }
@@ -254,35 +288,56 @@ export function FormDocumentUpload<
           if (uploadedFile) {
             uploadedFiles.push(uploadedFile);
 
-            // Mark as completed with 100% progress
+            // Mark as completed
+            setCurrentUpload({
+              fileName: file.name,
+              progress: 100,
+            });
+
+            // Update progress in uploading files state
             setUploadingFiles((prev) =>
-              prev.map((item) =>
-                item.fileName === file.name ? { ...item, progress: 100 } : item
+              prev.map((f) =>
+                f.id === uploadingFile.id ? { ...f, progress: 100 } : f
               )
             );
           } else {
             // Handle failure case
+            setCurrentUpload({
+              fileName: file.name,
+              progress: 0,
+              error: "Upload failed",
+            });
+
+            // Update error in uploading files state
             setUploadingFiles((prev) =>
-              prev.map((item) =>
-                item.fileName === file.name
-                  ? { ...item, error: "Upload failed" }
-                  : item
+              prev.map((f) =>
+                f.id === uploadingFile.id
+                  ? { ...f, progress: 0, error: "Upload failed" }
+                  : f
               )
             );
           }
         } catch (error) {
           console.error("Error uploading file:", error);
 
-          // Update progress with error
+          // Update with error
+          setCurrentUpload({
+            fileName: file.name,
+            progress: 0,
+            error: error instanceof Error ? error.message : "Upload failed",
+          });
+
+          // Update error in uploading files state
           setUploadingFiles((prev) =>
-            prev.map((item) =>
-              item.fileName === file.name
+            prev.map((f) =>
+              f.id === uploadingFile.id
                 ? {
-                    ...item,
+                    ...f,
+                    progress: 0,
                     error:
                       error instanceof Error ? error.message : "Upload failed",
                   }
-                : item
+                : f
             )
           );
 
@@ -296,60 +351,55 @@ export function FormDocumentUpload<
         }
       }
 
-      // After all uploads are done, update the files list
+      // After all uploads are done, add all successfully uploaded files to the UI
       if (uploadedFiles.length > 0) {
-        // Add all successfully uploaded files to the UI
+        // Add the uploaded files with their proper metadata
         const fileMetadataList = uploadedFiles.map((doc) => ({
-          file: {
-            name: doc.name,
-            size: doc.size,
-            type: doc.type,
-            url: doc.url,
-            id: doc.id,
-            objectName: doc.objectName,
-            uploadedAt: doc.uploadedAt,
-            title: doc.title || doc.name,
-            description: doc.description || "",
-          },
+          name: doc.name,
+          size: doc.size,
+          type: doc.type,
+          url: doc.url,
           id: doc.id,
-          preview: doc.url,
+          objectName: doc.objectName,
+          uploadedAt: doc.uploadedAt,
+          title: doc.title || doc.name,
+          description: doc.description || "",
         }));
 
-        // Find and remove the original File objects that were added at the beginning
-        const filesToRemove = files.filter(
-          (f) =>
-            f.file instanceof File &&
-            uploadedFiles.some((u) => u.name === (f.file as File).name)
-        );
-
-        // Remove the temporary file objects
-        filesToRemove.forEach((f) => internalRemoveFile(f.id));
-
-        // Then add the uploaded files
-        fileMetadataList.forEach((metadata) => {
-          internalAddFiles([metadata.file] as any);
-        });
+        // Add the uploaded files to useFileUpload
+        internalAddFiles(fileMetadataList as any);
 
         if (onUploadSuccess) {
           onUploadSuccess(uploadedFiles);
         }
       }
+
+      // Clear uploading files after upload
+      setUploadingFiles([]);
+
+      // Clear progress indicator after upload
+      setTimeout(() => {
+        setCurrentUpload(null);
+      }, 1000);
     } catch (error) {
       console.error("Error in upload process:", error);
     } finally {
       setIsUploading(false);
       processingFilesRef.current = false;
-
-      // Remove upload progress indicators after a short delay
-      setTimeout(() => {
-        setUploadingFiles([]);
-      }, 2000);
     }
   };
 
-  // Handle file removal with safe state updates
+  // Handle file removal
   const removeFile = async (id: string) => {
     if (isUploading || disabled) return;
+
+    // Check if it's an uploading file or a completed file
+    const uploadingFile = uploadingFiles.find((f) => f.id === id);
+    if (uploadingFile) {
+      // Just remove from uploading files state
+      setUploadingFiles((prev) => prev.filter((f) => f.id !== id));
+      return;
+    }
 
     const fileToRemove = files.find((file) => file.id === id);
     if (!fileToRemove) return;
@@ -368,7 +418,7 @@ export function FormDocumentUpload<
         }
       }
 
-      // Remove from UI
+      // Remove from useFileUpload - will trigger onFilesChange
       internalRemoveFile(id);
     } catch (error) {
       console.error("Error removing file:", error);
@@ -377,7 +427,7 @@ export function FormDocumentUpload<
     }
   };
 
-  // Custom handlers for file operations to avoid infinite loops
+  // Custom handlers for file operations
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       processNewFiles(Array.from(e.target.files));
@@ -392,6 +442,24 @@ export function FormDocumentUpload<
       processNewFiles(Array.from(e.dataTransfer.files));
     }
   };
+
+  // Combine both uploading files and completed files for display
+  const allFiles = [
+    ...uploadingFiles.map((uf) => ({
+      id: uf.id,
+      file: uf.file,
+      isUploading: true,
+      progress: uf.progress,
+      error: uf.error,
+    })),
+    ...files.map((f) => ({
+      id: f.id,
+      file: f.file,
+      isUploading: false,
+      progress: 100,
+      error: undefined,
+    })),
+  ];
 
   return (
     <FormItem>
@@ -463,16 +531,13 @@ export function FormDocumentUpload<
         )}
 
         {/* File list with integrated progress */}
-        {files.length > 0 && (
+        {allFiles.length > 0 && (
           <div className="space-y-2">
-            {files.map((file) => {
-              // For File objects (being uploaded), check if there's progress info
+            {allFiles.map((file) => {
               const fileName =
                 file.file instanceof File ? file.file.name : file.file.name;
-              const fileProgress = uploadingFiles.find(
-                (p) => p.fileName === fileName
-              );
-              const isUploading = fileProgress !== undefined;
+              const fileSize =
+                file.file instanceof File ? file.file.size : file.file.size;
 
               return (
                 <div
@@ -482,18 +547,14 @@ export function FormDocumentUpload<
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-3 overflow-hidden">
                       <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded border">
-                        {getFileIcon(file)}
+                        {getFileIcon({ file: file.file })}
                       </div>
                       <div className="flex min-w-0 flex-col gap-0.5">
                         <p className="truncate text-[13px] font-medium">
                           {fileName}
                         </p>
                         <p className="text-muted-foreground text-xs">
-                          {formatBytes(
-                            file.file instanceof File
-                              ? file.file.size
-                              : file.file.size
-                          )}
+                          {formatBytes(fileSize)}
                         </p>
                       </div>
                     </div>
@@ -510,42 +571,50 @@ export function FormDocumentUpload<
                     </Button>
                   </div>
 
-                  {/* Show progress bar or error directly in the file item */}
-                  {fileProgress && (
-                    <>
-                      {fileProgress.error ? (
-                        <div className="text-destructive mt-1 flex items-center gap-1 text-xs">
+                  {/* Show progress bar inside file box when this file is uploading */}
+                  {file.isUploading && (
+                    <div className="mt-2 mb-1">
+                      {file.error ? (
+                        <div className="text-destructive flex items-center gap-1 text-xs">
                           <AlertCircleIcon className="size-3 shrink-0" />
-                          <span>{fileProgress.error}</span>
+                          <span>{file.error}</span>
                         </div>
                       ) : (
-                        <div className="mt-1 flex items-center gap-2">
-                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-xs text-muted-foreground">
+                              Uploading...
+                            </span>
+                            <span className="text-xs text-muted-foreground font-medium">
+                              {file.progress}%
+                            </span>
+                          </div>
+                          <div className="h-2.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                             <div
                               className="bg-primary h-full transition-all duration-300 ease-out"
-                              style={{ width: `${fileProgress.progress}%` }}
+                              style={{ width: `${file.progress}%` }}
                             />
                           </div>
-                          <span className="text-muted-foreground w-10 text-xs tabular-nums">
-                            {fileProgress.progress}%
-                          </span>
                         </div>
                       )}
-                    </>
+                    </div>
                   )}
                 </div>
               );
             })}
 
             {/* Remove all files button */}
-            {files.length > 1 && (
+            {allFiles.length > 1 && (
               <div>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => {
                     // Clear all files safely
-                    const fileIds = [...files.map((f) => f.id)];
+                    const fileIds = [
+                      ...uploadingFiles.map((f) => f.id),
+                      ...files.map((f) => f.id),
+                    ];
                     fileIds.forEach((id) => removeFile(id));
                   }}
                   disabled={isUploading || disabled}
