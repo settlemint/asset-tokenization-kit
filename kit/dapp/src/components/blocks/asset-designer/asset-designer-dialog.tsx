@@ -331,17 +331,15 @@ export function AssetDesignerDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[95vh] min-h-[70vh] h-auto w-[90vw] lg:w-[75vw] p-0 overflow-auto border-none right-0 !max-w-screen rounded-2xl"
+        className="h-[85vh] w-[90vw] lg:w-[75vw] border-none !max-w-screen rounded-2xl overflow-hidden p-0 m-0"
         onInteractOutside={(e) => {
           e.preventDefault();
         }}
         onOpenAutoFocus={(e) => e.preventDefault()}
         onFocusOutside={(e) => e.preventDefault()}
       >
-        <div className="relative">
+        <div className="h-full">
           <DialogTitle className="sr-only">Asset Designer</DialogTitle>
-          {/* TODO: Using 'as any' type assertions because dynamic translation keys from getAssetTitle/getAssetDescription
-              don't match the literal string types expected by next-intl's t function */}
           <StepWizard
             steps={allSteps}
             currentStepId={currentStepId}
