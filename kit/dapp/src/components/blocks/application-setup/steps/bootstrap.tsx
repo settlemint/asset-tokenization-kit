@@ -19,27 +19,10 @@ export function BootstrapStep({ onNext }: BootstrapStepProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const websocket = new WebSocket(
-      "ws://localhost:3000/api/application-setup/status",
-      "authtoken"
-    );
-    websocket.onopen = () => {
-      console.log("Websocket connection opened");
-    };
-    websocket.onclose = (event) => {
-      console.log("Websocket connection closed", event);
-    };
-    websocket.onmessage = (event) => {
-      console.log("Websocket message received", event);
-    };
-    websocket.onerror = (event) => {
-      console.log("Websocket error", event);
-    };
-
     let subscription: EdenWS;
     const fetchStatus = async () => {
       const statusChanges =
-        apiClient.api["application-setup"].status.subscribe();
+        apiClient.api["application-setup"].ws.status.subscribe();
       subscription = statusChanges.subscribe((message) => {
         if (isError(message.data)) {
           setError(message.data.error);

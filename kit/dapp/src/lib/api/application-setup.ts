@@ -79,16 +79,29 @@ export const ApplicationSetupApi = new Elysia({
           url: graphqlEndpoint.toString(),
         });
         portalWsConnections.set(ws.id, client);
+
         subscribeToApplicationSetupStatus(client, (status) => {
           ws.send(makeJsonStringifiable(status));
-        }).catch((error: Error) => {
-          logger.error("Error subscribing to application setup status", error);
-          ws.send({ error: error.message });
+        }).catch((event: CloseEvent) => {
+          if (event instanceof Error) {
+            logger.error(
+              "Error subscribing to application setup status",
+              event
+            );
+            ws.send({ error: event.message ?? "unknown error" });
+            return;
+          }
+          if (event.type === "close") {
+            ws.close(1000, "Websocket closed (connection timeout)");
+            return;
+          }
+          logger.error("Error subscribing to application setup status", event);
+          ws.send({ error: `${event.code} ${event.reason}` });
         });
       } catch (err) {
         const error = err as Error;
         logger.error("Error processing websocket message", error);
-        ws.send({ error: error.message });
+        ws.send({ error: error.message ?? "unknown error" });
       }
     },
   });
