@@ -31,6 +31,16 @@ export function CreateStablecoinSchema() {
         decimals: t.Decimals({
           description: "The number of decimal places for the token",
         }),
+        isin: t.Optional(
+          t.Isin({
+            description: "International Securities Identification Number",
+          })
+        ),
+        internalid: t.Optional(
+          t.String({
+            description: "Internal ID of the stablecoin",
+          })
+        ),
         collateralLivenessValue: t.Number({
           description: "The duration value for collateral validity",
           minimum: 1,

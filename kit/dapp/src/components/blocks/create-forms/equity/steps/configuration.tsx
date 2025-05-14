@@ -10,7 +10,7 @@ import { EquityCategoriesSelect } from "./_components/equity-categories";
 import { EquityClassesSelect } from "./_components/equity-classes";
 
 export function Configuration() {
-  const { control, formState, trigger } = useFormContext<CreateEquityInput>();
+  const { control } = useFormContext<CreateEquityInput>();
   const t = useTranslations("private.assets.create");
   const currencyOptions = fiatCurrencies.map((currency) => ({
     value: currency,

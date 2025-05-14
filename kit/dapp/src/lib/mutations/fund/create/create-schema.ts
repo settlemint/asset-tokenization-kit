@@ -36,6 +36,11 @@ export function CreateFundSchema() {
             "Optional International Securities Identification Number",
         })
       ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the fund",
+        })
+      ),
       verificationCode: t.VerificationCode({
         description:
           "The verification code (PIN, 2FA, or secret code) for signing the transaction",
