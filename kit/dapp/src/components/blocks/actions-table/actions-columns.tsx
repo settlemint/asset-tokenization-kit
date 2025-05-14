@@ -112,14 +112,14 @@ export function Columns({
               }),
           }),
           columnHelper.accessor("executedBy.id", {
-            header: t("columns.executed-by"),
+            header: t("columns.completed-by"),
             cell: ({ getValue }) => (
               <EvmAddress address={getAddress(getValue())} prettyNames={false}>
                 <EvmAddressBalances address={getAddress(getValue())} />
               </EvmAddress>
             ),
             meta: defineMeta((row) => row.executedBy!.id, {
-              displayName: t("columns.executed-by"),
+              displayName: t("columns.completed-by"),
               icon: User,
               type: "text",
             }),

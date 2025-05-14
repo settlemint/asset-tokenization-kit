@@ -1,5 +1,6 @@
 import { ActionsDropdownTable } from "@/components/blocks/actions-table/actions-dropdown-table";
 import { DataTable } from "@/components/blocks/data-table/data-table";
+import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
@@ -8,13 +9,13 @@ import { XvPStatusIndicator } from "@/components/blocks/xvp/xvp-status";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
-import { getActionsList } from "@/lib/queries/actions/actions-list";
 import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import type { Address } from "viem";
 import { columns as ApprovalColumns } from "./(approvals)/columns";
 import { columns as FlowColumns } from "./(flows)/columns";
@@ -54,11 +55,6 @@ export default async function XvpPage({
     getUser(),
   ]);
   const xvpSettlement = await getXvPSettlementDetail(address, user.currency);
-  const actions = await getActionsList({
-    targetAddress: address,
-    type: "User",
-    userAddress: user.wallet,
-  });
 
   return (
     <>
@@ -112,16 +108,18 @@ export default async function XvpPage({
       <div className="font-medium text-accent text-xl mt-6 mb-4">
         {t("xvp.actions")}
       </div>
-      <ActionsDropdownTable
-        actions={actions}
-        toolbar={{
-          enableToolbar: false,
-        }}
-        pagination={{
-          enablePagination: false,
-        }}
-      />
-
+      <Suspense fallback={<DataTableSkeleton />}>
+        <ActionsDropdownTable
+          targetAddress={address}
+          type="User"
+          toolbar={{
+            enableToolbar: false,
+          }}
+          pagination={{
+            enablePagination: false,
+          }}
+        />
+      </Suspense>
       <div className="font-medium text-accent text-xl mt-6 mb-4">
         {t("xvp.flows")}
       </div>
