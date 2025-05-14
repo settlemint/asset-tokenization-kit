@@ -136,10 +136,10 @@ export class CreateAssetForm extends BasePage {
     }
   }
 
-  async verifyCurrencyValue(expected: string) {
+  async verifyCurrencyValue(currencyValue: string) {
     await expect(
-      this.page.locator('select[name="price.currency"]')
-    ).toHaveValue(expected);
+      this.page.locator('button[id="price.currency"]')
+    ).toContainText(currencyValue);
   }
 
   async fillFundConfigurationFields(

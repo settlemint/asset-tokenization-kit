@@ -201,6 +201,10 @@ export function FormDocumentUpload<
       processingFilesRef.current = true;
       setIsUploading(true);
 
+      // Add files to the UI first, which gives them IDs
+      const fileObjects = newFiles.map((file) => ({ file }));
+      internalAddFiles(newFiles);
+
       // Initialize progress tracking for the files being uploaded
       const initialProgress: UploadProgress[] = newFiles.map((file) => ({
         fileName: file.name,
@@ -311,13 +315,15 @@ export function FormDocumentUpload<
           preview: doc.url,
         }));
 
-        // Clear any pending files and add the uploaded ones
-        const pendingFileIds = files
-          .filter((f) => f.file instanceof File)
-          .map((f) => f.id);
+        // Find and remove the original File objects that were added at the beginning
+        const filesToRemove = files.filter(
+          (f) =>
+            f.file instanceof File &&
+            uploadedFiles.some((u) => u.name === (f.file as File).name)
+        );
 
-        // Remove pending files first
-        pendingFileIds.forEach((id) => internalRemoveFile(id));
+        // Remove the temporary file objects
+        filesToRemove.forEach((f) => internalRemoveFile(f.id));
 
         // Then add the uploaded files
         fileMetadataList.forEach((metadata) => {
@@ -456,87 +462,80 @@ export function FormDocumentUpload<
           </div>
         )}
 
-        {/* Upload progress indicators */}
-        {uploadingFiles.length > 0 && (
-          <div className="space-y-2 mt-2 mb-2">
-            <h4 className="text-sm font-medium">Uploading files...</h4>
-            {uploadingFiles.map((file, index) => (
-              <div
-                key={`${file.fileName}-${index}`}
-                className="bg-background/50 rounded-lg border p-3"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className="flex aspect-square size-6 shrink-0 items-center justify-center rounded border">
-                      <FileIcon className="size-3 opacity-60" />
-                    </div>
-                    <p className="truncate text-sm font-medium">
-                      {file.fileName}
-                    </p>
-                  </div>
-                  <span className="text-xs text-muted-foreground tabular-nums">
-                    {file.progress}%
-                  </span>
-                </div>
-
-                {file.error ? (
-                  <div className="text-destructive flex items-center gap-1 text-xs">
-                    <AlertCircleIcon className="size-3 shrink-0" />
-                    <span>{file.error}</span>
-                  </div>
-                ) : (
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
-                    <div
-                      className="bg-primary h-full transition-all duration-300 ease-out"
-                      style={{ width: `${file.progress}%` }}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* File list */}
+        {/* File list with integrated progress */}
         {files.length > 0 && (
           <div className="space-y-2">
-            {files.map((file) => (
-              <div
-                key={file.id}
-                className="bg-background flex items-center justify-between gap-2 rounded-lg border p-2 pe-3"
-              >
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded border">
-                    {getFileIcon(file)}
-                  </div>
-                  <div className="flex min-w-0 flex-col gap-0.5">
-                    <p className="truncate text-[13px] font-medium">
-                      {file.file instanceof File
-                        ? file.file.name
-                        : file.file.name}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      {formatBytes(
-                        file.file instanceof File
-                          ? file.file.size
-                          : file.file.size
-                      )}
-                    </p>
-                  </div>
-                </div>
+            {files.map((file) => {
+              // For File objects (being uploaded), check if there's progress info
+              const fileName =
+                file.file instanceof File ? file.file.name : file.file.name;
+              const fileProgress = uploadingFiles.find(
+                (p) => p.fileName === fileName
+              );
+              const isUploading = fileProgress !== undefined;
 
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="text-muted-foreground/80 hover:text-foreground -me-2 size-8 hover:bg-transparent"
-                  onClick={() => removeFile(file.id)}
-                  aria-label="Remove file"
-                  disabled={isUploading || disabled}
+              return (
+                <div
+                  key={file.id}
+                  className="bg-background flex flex-col gap-1 rounded-lg border p-2 pe-3"
                 >
-                  <XIcon className="size-4" aria-hidden="true" />
-                </Button>
-              </div>
-            ))}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded border">
+                        {getFileIcon(file)}
+                      </div>
+                      <div className="flex min-w-0 flex-col gap-0.5">
+                        <p className="truncate text-[13px] font-medium">
+                          {fileName}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {formatBytes(
+                            file.file instanceof File
+                              ? file.file.size
+                              : file.file.size
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="text-muted-foreground/80 hover:text-foreground -me-2 size-8 hover:bg-transparent"
+                      onClick={() => removeFile(file.id)}
+                      aria-label="Remove file"
+                      disabled={isUploading || disabled}
+                    >
+                      <XIcon className="size-4" aria-hidden="true" />
+                    </Button>
+                  </div>
+
+                  {/* Show progress bar or error directly in the file item */}
+                  {fileProgress && (
+                    <>
+                      {fileProgress.error ? (
+                        <div className="text-destructive mt-1 flex items-center gap-1 text-xs">
+                          <AlertCircleIcon className="size-3 shrink-0" />
+                          <span>{fileProgress.error}</span>
+                        </div>
+                      ) : (
+                        <div className="mt-1 flex items-center gap-2">
+                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+                            <div
+                              className="bg-primary h-full transition-all duration-300 ease-out"
+                              style={{ width: `${fileProgress.progress}%` }}
+                            />
+                          </div>
+                          <span className="text-muted-foreground w-10 text-xs tabular-nums">
+                            {fileProgress.progress}%
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
 
             {/* Remove all files button */}
             {files.length > 1 && (
