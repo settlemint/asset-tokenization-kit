@@ -111,12 +111,7 @@ export function AssetAdmins({ userDetails, onNext, onBack }: AssetAdminsProps) {
   const hasStepErrors = !!form.formState.errors.assetAdmins;
 
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">{t("title")}</h3>

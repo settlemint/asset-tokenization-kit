@@ -64,6 +64,7 @@ interface FormProps<
       changedFieldName: Path<S extends Schema ? Infer<S> : any> | undefined;
     }
   ) => void;
+  onStepChange?: (newStep: number) => void;
   disablePreviousButton?: boolean;
 }
 
@@ -87,6 +88,7 @@ export function Form<
   onAnyFieldChange,
   secureForm = true,
   disablePreviousButton = false,
+  onStepChange,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations();
@@ -362,7 +364,9 @@ export function Form<
   const isLastStep = currentStep === totalSteps - 1;
 
   const handlePrev = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    const newStep = Math.max(currentStep - 1, 0);
+    setCurrentStep(newStep);
+    onStepChange?.(newStep);
   };
 
   const handleNext = useCallback(async () => {
@@ -378,7 +382,9 @@ export function Form<
       if (isLastStep && secureForm) {
         setShowFormSecurityConfirmation(true);
       }
-      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      const newStep = Math.min(currentStep + 1, totalSteps - 1);
+      setCurrentStep(newStep);
+      onStepChange?.(newStep);
       return;
     }
 
@@ -419,10 +425,20 @@ export function Form<
 
       // Prevent the form from being auto submitted when going to the final step
       setTimeout(() => {
-        setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+        const newStep = Math.min(currentStep + 1, totalSteps - 1);
+        setCurrentStep(newStep);
+        onStepChange?.(newStep);
       }, 10);
     }
-  }, [form, isLastStep, secureForm, currentStep, totalSteps, children]);
+  }, [
+    form,
+    isLastStep,
+    secureForm,
+    currentStep,
+    totalSteps,
+    children,
+    onStepChange,
+  ]);
 
   useEffect(() => {
     if (!onAnyFieldChange) {

@@ -9,7 +9,7 @@ import type { SafeActionResult } from "@/lib/mutations/safe-action";
 import { DollarSign, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import type { UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 
 interface AssetAdmin {
@@ -19,7 +19,6 @@ interface AssetAdmin {
 }
 
 interface SummaryProps {
-  form: UseFormReturn<any>;
   configurationCard: React.ReactNode;
   onSubmit: (data: any) => Promise<SafeActionResult<string[]> | any>;
   predictAddress: (values: any) => Promise<Address>;
@@ -28,13 +27,13 @@ interface SummaryProps {
 }
 
 export function Summary({
-  form,
   onBack,
   configurationCard,
   onSubmit,
   predictAddress,
   isAddressAvailable,
 }: SummaryProps) {
+  const form = useFormContext();
   const t = useTranslations("private.assets.create");
   const formValues = form.getValues();
   const isSubmitting = form.formState.isSubmitting;
@@ -102,20 +101,7 @@ export function Summary({
   };
 
   return (
-    <StepContent
-      onNext={handleSubmit}
-      onBack={onBack}
-      isNextDisabled={isSubmitting || isPredictingAddress}
-      nextLabel={
-        isPredictingAddress
-          ? "Predicting address..."
-          : isSubmitting
-            ? t("summary.creating")
-            : t("summary.issue")
-      }
-      className="max-w-3xl w-full mx-auto"
-      fixedButtons={true}
-    >
+    <StepContent className="max-w-3xl w-full mx-auto">
       <div className="space-y-6 pr-4">
         <div className="mb-6">
           <h2 className="text-xl font-semibold">{t("summary.title")}</h2>

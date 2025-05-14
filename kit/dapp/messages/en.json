@@ -814,6 +814,7 @@
     "string": "Please enter text",
     "string-format": "Please enter text in the correct {format} format",
     "string-format-unknown": "Unknown format '{format}'",
+    "string-format-asset-symbol": "Please enter a valid asset symbol (uppercase letters and numbers)",
     "string-max-length": "Please enter no more than {maxLength} characters",
     "string-min-length": "Please enter at least {minLength} characters",
     "string-pattern": "Please follow the required pattern",
