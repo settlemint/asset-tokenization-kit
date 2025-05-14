@@ -82,6 +82,11 @@ export function Basics() {
   );
 }
 
+Basics.validatedFields = [
+  "assetName",
+  "symbol",
+] satisfies (keyof CreateBondInput)[];
+
 // Export step definition for the asset designer
 export const stepDefinition = {
   id: "details",
