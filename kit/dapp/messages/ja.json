@@ -61,7 +61,8 @@
         "latest-events-heading": "最新のイベント",
         "stats-heading": "統計",
         "title": "ダッシュボード",
-        "platform-management": "プラットフォーム管理"
+        "platform-management": "プラットフォーム管理",
+        "actions-heading": "アクション"
       },
       "table": {
         "latest-events": {
@@ -149,7 +150,8 @@
         "api": "API",
         "my-contacts": "私の連絡先",
         "profile": "プロフィール",
-        "settings": "設定"
+        "settings": "設定",
+        "my-actions": "私のアクション"
       },
       "settings-management": {
         "group-title": "設定",
@@ -720,7 +722,8 @@
     "union": "有効な値を入力してください",
     "void": "このフィールドは空であるべきです",
     "kind": "無効な形式",
-    "unknown": "無効な値が入力されました"
+    "unknown": "無効な値が入力されました",
+    "string-format-asset-symbol": "有効な資産シンボル（大文字と数字）を入力してください"
   },
   "layout": {
     "header": {
@@ -780,7 +783,8 @@
       "latest-events": "最新のイベント",
       "my-assets": "私の資産",
       "page-title": "ポートフォリオ",
-      "portfolio-management": "ポートフォリオ管理"
+      "portfolio-management": "ポートフォリオ管理",
+      "my-actions-heading": "私のアクション"
     },
     "greeting": {
       "afternoon": "こんにちは",
@@ -1055,21 +1059,27 @@
       "asset-statistics-title": "統計",
       "create": {
         "basics": {
-          "description": "ブロックチェーンに保存されている識別情報で新しい資産を設定します。この日付は不変です。",
-          "title": "オンチェーン識別",
+          "description": "この資産の基本情報を指定してください。",
+          "title": "基本情報",
           "description-offchain": "この資産のために追加の識別情報を任意で入力してください。この情報はオフチェーンに保存され、このプラットフォームの外部からはアクセスできません。",
-          "title-offchain": "オフチェーン識別"
+          "title-offchain": "オフチェーン識別",
+          "description-onchain": "ブロックチェーンに保存される識別情報で新しい資産を構成します。このデータは不変です。",
+          "title-onchain": "オンチェーン識別"
         },
         "configuration": {
           "bonds": {
-            "description": "債券に特有のパラメータを設定します。",
+            "description": "この債券の特定のパラメータを構成します。",
             "title": "債券の設定",
             "description-lifecycle": "この債券のライフサイクルイベントに関連する日付を設定してください。",
             "description-supply": "この債券の供給と分割を設定してください。この情報は変更できません。",
             "description-value": "債券の単位として使用され、クーポンおよび満期の支払いに使用される資産を設定してください。",
             "title-lifecycle": "ライフサイクル",
             "title-supply": "供給",
-            "title-value": "単位"
+            "title-value": "単位",
+            "maximum-supply": "最大供給量",
+            "face-value": "額面価値",
+            "maturity-date": "満期日",
+            "underlying-asset": "基礎資産"
           },
           "cryptocurrencies": {
             "description": "暗号通貨に特有のパラメータを設定します。",
@@ -1137,7 +1147,9 @@
                 "admin": "管理者",
                 "user-manager": "ユーザー管理者",
                 "issuer": "供給管理者"
-              }
+              },
+              "asset-admins-title": "資産管理者",
+              "asset-admins-description": "この資産へのアクセス権とその利用方法を管理します。"
             }
           },
           "toast-action": {
@@ -1155,6 +1167,77 @@
             "equity": "これらのパラメータを持つ株式はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
             "fund": "これらのパラメータを持つファンドはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
             "stablecoin": "これらのパラメータを持つステーブルコインはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。"
+          },
+          "errors": {
+            "address-prediction-failed": "アドレスの予測に失敗しました。もう一度お試しください。",
+            "duplicate-asset": "これらのパラメータを持つ資産はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "validation-failed": "検証エラーが発生しました。"
+          },
+          "toasts": {
+            "submitting": "資産を作成中... このプロセスには少し時間がかかる場合があります。",
+            "failed": "資産の作成に失敗しました。もう一度お試しください。",
+            "success": "資産が正常に作成されました！",
+            "stablecoin": {
+              "submitting": "ステーブルコインを作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "ステーブルコインの作成に失敗しました。もう一度お試しください。",
+              "success": "ステーブルコインが正常に作成されました！"
+            },
+            "fund": {
+              "submitting": "ファンドを作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "ファンドの作成に失敗しました。もう一度お試しください。",
+              "success": "ファンドが正常に作成されました！"
+            },
+            "equity": {
+              "submitting": "株式を作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "株式の作成に失敗しました。もう一度お試しください。",
+              "success": "株式が正常に作成されました！"
+            },
+            "deposit": {
+              "submitting": "預金を作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "預金の作成に失敗しました。もう一度お試しください。",
+              "success": "預金が正常に作成されました！"
+            },
+            "cryptocurrency": {
+              "submitting": "暗号通貨を作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "暗号通貨の作成に失敗しました。もう一度お試しください。",
+              "success": "暗号通貨が正常に作成されました！"
+            },
+            "bond": {
+              "submitting": "債券を作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "債券の作成に失敗しました。もう一度お試しください。",
+              "success": "債券が正常に作成されました！"
+            }
+          },
+          "button-labels": {
+            "general": {
+              "next": "次へ",
+              "previous": "前へ",
+              "processing": "処理中..."
+            },
+            "stablecoin": {
+              "issue": "ステーブルコインを発行する",
+              "submitting": "ステーブルコインを発行中..."
+            },
+            "fund": {
+              "issue": "ファンドを発行する",
+              "submitting": "ファンドを発行中..."
+            },
+            "equity": {
+              "issue": "株式を発行する",
+              "submitting": "株式を発行中..."
+            },
+            "deposit": {
+              "issue": "デポジットを発行",
+              "submitting": "デポジットを発行中..."
+            },
+            "cryptocurrency": {
+              "issue": "暗号通貨を発行",
+              "submitting": "暗号通貨を発行中..."
+            },
+            "bond": {
+              "issue": "債券を発行",
+              "submitting": "債券を発行中..."
+            }
           }
         },
         "parameters": {
@@ -1243,10 +1326,39 @@
           "asset-basics-title": "基本情報",
           "configuration-description": "資産に特有のパラメータ。",
           "configuration-title": "設定",
-          "description": "これは資産を作成する前の最終ステップです。入力したすべての詳細を確認してください。",
+          "description": "入力したすべての詳細を確認してください。",
           "title": "概要",
           "asset-admins-description": "この資産を管理するための管理役割と権限。",
-          "asset-admins-title": "資産の権限"
+          "asset-admins-title": "資産の権限",
+          "creating": "作成中...",
+          "default-asset": "資産",
+          "disclaimer": "この資産を作成することにより、提供されたすべての情報が正確であり、この資産を展開するために必要な権限を持っていることを確認します。このアクションは、資産が作成されると元に戻すことはできません。",
+          "issue": "発行",
+          "not-specified": "指定されていません"
+        },
+        "general": {
+          "title": {
+            "default": "デジタル資産を作成する",
+            "bond": "新しい債券を作成する",
+            "cryptocurrency": "新しい暗号通貨を作成する",
+            "deposit": "新しい預金を作成する",
+            "equity": "新しい株式を作成する",
+            "fund": "新しいファンドを作成する",
+            "stablecoin": "新しいステーブルコインを作成する"
+          },
+          "description": {
+            "default": "数ステップでデジタル資産を作成します。",
+            "bond": "トークン化された証券として発行された債務商品。",
+            "cryptocurrency": "交換手段または価値の保存手段として使用される分散型デジタル資産。",
+            "deposit": "従来の資産の預金を表すデジタル資産。",
+            "equity": "企業の所有権を表す資産。",
+            "fund": "専門のマネージャーによってプールされた投資ビークル。",
+            "stablecoin": "USDのような安定した資産にペッグされたデジタル資産。"
+          }
+        },
+        "select-asset-type": {
+          "title": "資産タイプを選択",
+          "description": "作成したいデジタル資産のタイプを選択してください。"
         }
       },
       "detail": {
@@ -1839,7 +1951,8 @@
           "underlying-assets": "基礎資産",
           "yield": "利回り",
           "allowlist": "許可リスト",
-          "blocklist": "ブロックリスト"
+          "blocklist": "ブロックリスト",
+          "actions": "アクション"
         }
       },
       "fields": {
@@ -2748,7 +2861,7 @@
       },
       "button": {
         "dvp-swap": "DvPスワップを作成",
-        "xvp": "新しい決済を作成"
+        "xvp": "新しいXvP決済を作成"
       },
       "user": {
         "title": "ユーザー",
@@ -2788,7 +2901,10 @@
         "amount": "金額",
         "configuration": "設定",
         "configuration-description": "XvP決済の設定",
-        "expiry": "有効期限"
+        "expiry": "有効期限",
+        "auto-execute": "最後の承認時に自動実行",
+        "yes": "はい",
+        "no": "いいえ"
       }
     },
     "xvp": {
@@ -2799,7 +2915,14 @@
         "approved": "承認済み",
         "expired": "期限切れ",
         "claimed": "請求済み",
-        "cancelled": "キャンセル済み"
+        "cancelled": "キャンセル済み",
+        "READY": "準備完了",
+        "APPROVED": "承認済み",
+        "CANCELLED": "キャンセル",
+        "EXECUTED": "実行済み",
+        "EXPIRED": "期限切れ",
+        "PENDING": "保留中",
+        "NOT_APPROVED": "未承認"
       },
       "columns": {
         "id": "決済ID",
@@ -2807,8 +2930,41 @@
         "created-at": "作成日時",
         "expires-at": "有効期限",
         "assets": "資産",
-        "approvals": "承認"
-      }
+        "approvals": "承認",
+        "expiry": "有効期限",
+        "amount": "金額",
+        "asset": "資産",
+        "price": "価格",
+        "total-price": "合計価格",
+        "user": "ユーザー",
+        "approved-at": "承認日時",
+        "from": "から",
+        "to": "まで"
+      },
+      "ago": "前",
+      "total-price-description": "決済に関与する資産の合計価格。",
+      "flows": "フロー",
+      "auto-execute": "自動実行",
+      "auto-execute-description": "最後の承認時に決済を自動実行します。",
+      "approvals": "承認",
+      "manage": "管理",
+      "approve": "承認",
+      "approve-xvp-settlement": "XvP決済を承認",
+      "approve-xvp-settlement-description": "あなたのウォレットから転送される資産に対して、XvP決済契約に許可を付与します。",
+      "approve-description": "XvP決済契約は、あなたの代理として決済に設定された資産を転送するための承認を受けます。その後、決済はあなたによって承認されたものとしてマークされます。",
+      "execute": "実行",
+      "execute-xvp-settlement": "XvP決済を実行",
+      "execute-xvp-settlement-description": "この決済で承認されたすべての資産フローを処理します。",
+      "execute-xvp-settlement-summary": "この決済を実行して、決済フローで定義された当事者間で資産を転送します。",
+      "cancel": "キャンセル",
+      "cancel-xvp-settlement": "XvP決済をキャンセル",
+      "cancel-xvp-settlement-summary": "この決済をキャンセルすると、実行されることが永久に防止され、このアクションは元に戻すことができません。資産を交換するには新しい決済を作成する必要があります。",
+      "cancel-xvp-settlement-description": "この決済をキャンセルして、実行されることを防ぎます。",
+      "asset": "資産",
+      "amount": "金額",
+      "to": "まで",
+      "xvp-settlement": "XvP決済",
+      "actions": "アクション"
     }
   },
   "asset-designer": {
@@ -2864,12 +3020,39 @@
   },
   "actions": {
     "page": {
-      "actions": "アクション"
+      "actions": "アクション",
+      "my-actions": "私のアクション"
     },
     "tabs": {
       "pending": "保留中",
       "upcoming": "今後の予定",
-      "completed": "完了"
+      "completed": "完了",
+      "name": {
+        "completed": "完了",
+        "pending": "保留中",
+        "upcoming": "今後の",
+        "expired": "期限切れ"
+      },
+      "description": {
+        "completed": "完了したアクション",
+        "pending": "保留中のアクション",
+        "upcoming": "今後のアクション",
+        "expired": "期限切れのアクション"
+      },
+      "empty-state": {
+        "title": {
+          "completed": "完了したアクションはありません",
+          "pending": "保留中のアクションはありません",
+          "upcoming": "今後のアクションはありません",
+          "expired": "期限切れのアクションはありません"
+        },
+        "description": {
+          "completed": "まだアクションを完了していません。アクションが完了するとここに表示されます。",
+          "pending": "現在、あなたの注意を要するアクションはありません。",
+          "upcoming": "今後の予定されたアクションはありません。",
+          "expired": "期限切れのアクションはありません。期限切れのアクションは、期限日以前に完了すべきだったアクションですが、期限が切れたために実行できなくなったアクションです。"
+        }
+      }
     },
     "all-tasks-complete": "すべてのタスクが完了しました！",
     "all-tasks-complete-description": "保留中のアクションはありません。",
@@ -2890,6 +3073,31 @@
     },
     "completed-description": {
       "bond-mature": "債券は正常に満期を迎えました。"
+    },
+    "name": {
+      "ApproveXvPSettlement": "XvP和解を承認する",
+      "ExecuteXvPSettlement": "XvP和解を実行する",
+      "MatureBond": "債券を満期にする"
+    },
+    "description": {
+      "ApproveXvPSettlement": "資産を移転できるようにXvP和解契約を承認します。",
+      "ExecuteXvPSettlement": "和解で定義された当事者に資産を移転するためにXvP和解契約を実行します。",
+      "MatureBond": "債券を満期としてマークします。"
+    },
+    "columns": {
+      "name": "名前",
+      "subject": "件名",
+      "description": "説明",
+      "active-at": "アクティブ時",
+      "completed-on": "完了日",
+      "completed-by": "完了者",
+      "status": "ステータス"
+    },
+    "status": {
+      "COMPLETED": "完了",
+      "UPCOMING": "今後の",
+      "EXPIRED": "期限切れ",
+      "PENDING": "保留中"
     }
   },
   "regulations": {
