@@ -16,7 +16,7 @@
       "description": "Description",
       "active-at": "Active at",
       "completed-on": "Completed on",
-      "executed-by": "Executed by",
+      "completed-by": "Completed by",
       "status": "Status"
     },
     "page": {
@@ -194,6 +194,7 @@
         "latest-events-heading": "Latest events",
         "platform-management": "Platform management",
         "stats-heading": "Stats",
+        "actions-heading": "Actions",
         "title": "Dashboard"
       },
       "table": {
@@ -1030,9 +1031,10 @@
     "assets-count-assets": "assets",
     "dashboard": {
       "latest-events": "Latest events",
-      "my-assets": "My Assets",
+      "my-assets": "My assets",
       "page-title": "Portfolio",
-      "portfolio-management": "Portfolio management"
+      "portfolio-management": "Portfolio management",
+      "my-actions-heading": "My actions"
     },
     "greeting": {
       "afternoon": "Good afternoon",

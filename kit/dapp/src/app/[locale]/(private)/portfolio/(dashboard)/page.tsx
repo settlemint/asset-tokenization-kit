@@ -1,5 +1,6 @@
 import { MyAssetsHeader } from "@/app/[locale]/(private)/portfolio/(dashboard)/_components/header/my-assets-header";
 import { TransferForm } from "@/app/[locale]/(private)/portfolio/_components/transfer-form/form";
+import { ActionsTable } from "@/components/blocks/actions-table/actions-table";
 import { AssetDistribution } from "@/components/blocks/charts/assets/asset-distribution";
 import MyAssetsTable from "@/components/blocks/my-assets-table/my-assets-table-mini";
 import { PageHeader } from "@/components/layout/page-header";
@@ -64,6 +65,8 @@ export default async function PortfolioDashboard({
         />
         <TransactionsChart walletAddress={user.wallet} />
       </div>
+      <PageHeader title={t("dashboard.my-actions-heading")} className="mt-8" />
+      <ActionsTable status="PENDING" type="User" />
       <PageHeader title={t("dashboard.latest-events")} className="mt-8 mb-4" />
       <LatestEvents sender={user.wallet} />
     </>
