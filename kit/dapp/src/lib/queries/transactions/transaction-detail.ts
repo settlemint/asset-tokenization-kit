@@ -1,4 +1,4 @@
-import "server-only";
+import "@/lib/utils/server-only";
 
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";

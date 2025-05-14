@@ -1,4 +1,4 @@
-import "server-only";
+import "@/lib/utils/server-only";
 
 import { ROLES, type Role } from "@/lib/config/roles";
 import { fetchAllTheGraphPages } from "@/lib/pagination";

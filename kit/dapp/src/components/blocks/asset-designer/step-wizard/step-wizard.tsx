@@ -43,6 +43,7 @@ export function StepWizard({
       backgroundSize: "cover",
       backgroundPosition: "top",
       backgroundRepeat: "no-repeat",
+      minWidth: "200px",
     };
   }, [theme]);
 

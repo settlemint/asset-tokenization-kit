@@ -112,13 +112,13 @@ export const applicationSetupFunction = withAccessControl(
       user: User;
     };
   }): Promise<{ started: boolean }> => {
-    setupApplication({ user, verificationCode, verificationType })
+    /*setupApplication({ user, verificationCode, verificationType })
       .then(() => {
         console.log("Application setup completed successfully");
       })
       .catch((error: Error) => {
         console.error(`Application setup failed: ${error.message}`, error);
-      });
+      });*/
     return {
       started: true,
     };

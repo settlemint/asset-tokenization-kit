@@ -6,12 +6,14 @@ import {
 } from "@/lib/queries/application-setup/application-setup-status";
 import { tryParseJson } from "@settlemint/sdk-utils";
 import { Elysia, t } from "elysia";
+import { BunAdapter } from "elysia/adapter/bun";
 import { createClient, type Client } from "graphql-ws";
 import { logger } from "./utils/api-logger";
 
 const portalWsConnections = new Map<string, Client>();
 
 export const ApplicationSetupApi = new Elysia({
+  adapter: typeof Bun !== "undefined" ? BunAdapter : undefined, // TODO: use node adapter (when compatible with elysiajs v1.3)
   detail: {
     security: [
       {
@@ -23,6 +25,7 @@ export const ApplicationSetupApi = new Elysia({
   .get(
     "/status",
     async () => {
+      debugger;
       return getApplicationSetupStatus();
     },
     {
@@ -38,7 +41,7 @@ export const ApplicationSetupApi = new Elysia({
       },
     }
   )
-  .ws("/status", {
+  .ws("/ws/status", {
     response: t.Union([
       ApplicationSetupStatusSchema,
       t.Object({ error: t.String() }),
@@ -55,7 +58,8 @@ export const ApplicationSetupApi = new Elysia({
         portalWsConnections.delete(ws.id);
       }
     },
-    message: async (ws) => {
+    open: (ws) => {
+      logger.info(`Websocket opened: ${ws.id}`);
       try {
         // TODO: security check
         logger.info(`Websocket message received`);
@@ -66,16 +70,25 @@ export const ApplicationSetupApi = new Elysia({
           return;
         }
 
+        const graphqlEndpoint = new URL(
+          process.env.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT
+        );
+        graphqlEndpoint.protocol =
+          graphqlEndpoint.protocol === "http:" ? "ws:" : "wss:";
         const client = createClient({
-          url: process.env.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT,
+          url: graphqlEndpoint.toString(),
         });
         portalWsConnections.set(ws.id, client);
         subscribeToApplicationSetupStatus(client, (status) => {
           ws.send(makeJsonStringifiable(status));
+        }).catch((error: Error) => {
+          logger.error("Error subscribing to application setup status", error);
+          ws.send({ error: error.message });
         });
-      } catch (error) {
+      } catch (err) {
+        const error = err as Error;
         logger.error("Error processing websocket message", error);
-        ws.send(makeJsonStringifiable(error));
+        ws.send({ error: error.message });
       }
     },
   });

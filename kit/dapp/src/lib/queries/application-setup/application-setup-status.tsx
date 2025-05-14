@@ -1,3 +1,4 @@
+import { SMART_DEPLOYMENT_REGISTRY_ADDRESS } from "@/lib/contracts";
 import {
   ApplicationSetupStatusSchema,
   type ApplicationSetupStatus,
@@ -5,7 +6,6 @@ import {
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { ResultOf } from "@settlemint/sdk-portal";
 import type { Client } from "graphql-ws";
-import { fetchAllPortalPages } from "../../pagination";
 import { safeParse } from "../../utils/typebox";
 
 const ABI_NAMES = [
@@ -23,9 +23,12 @@ const ABI_NAMES = [
   "SMARTTrustedIssuersRegistry",
 ];
 
-const getContractsQuery = portalGraphql(`
-  query getContracts($abiNames: [String!]!) {
-    getContracts(abiNames: $abiNames) {
+const getApplicationStatusQuery = portalGraphql(`
+  query getApplicationStatus($smartDeploymentRegistryAddress: String!, $abiNames: [String!]!) {
+    SMARTDeploymentRegistry(address: $smartDeploymentRegistryAddress) {
+      areDependenciesRegistered
+    }
+    getContractsDeployStatus(abiNames: $abiNames) {
       count
       records {
         createdAt
@@ -37,35 +40,27 @@ const getContractsQuery = portalGraphql(`
 `);
 
 export async function getApplicationSetupStatus() {
-  const contracts = await fetchAllPortalPages(async ({ page, pageSize }) => {
-    const response = await portalClient.request(
-      getContractsQuery,
-      {
-        abiNames: ABI_NAMES,
-        pageSize,
-        page,
-      },
-      {
-        "X-GraphQL-Operation-Name": "getContracts",
-        "X-GraphQL-Operation-Type": "query",
-      }
-    );
+  const response = await portalClient.request(
+    getApplicationStatusQuery,
+    {
+      abiNames: ABI_NAMES,
+      smartDeploymentRegistryAddress: SMART_DEPLOYMENT_REGISTRY_ADDRESS,
+    },
+    {
+      "X-GraphQL-Operation-Name": "getApplicationStatus",
+      "X-GraphQL-Operation-Type": "query",
+    }
+  );
 
-    return {
-      count: response.getContracts?.count ?? 0,
-      records: response.getContracts?.records ?? [],
-    };
-  });
-
-  return getApplicationStatus(contracts);
+  return getApplicationStatus(response);
 }
 
 export async function subscribeToApplicationSetupStatus(
   client: Client,
   onStatusChange: (status: ApplicationSetupStatus) => void
 ) {
-  const query = `subscription getContracts($abiNames: [String!]!) {
-    getContracts(abiNames: $abiNames) {
+  const query = `subscription getContractsDeployStatus($abiNames: [String!]!) {
+    getContractsDeployStatus(abiNames: $abiNames) {
       count
       records {
         createdAt
@@ -74,10 +69,12 @@ export async function subscribeToApplicationSetupStatus(
       }
     }
   }` as const;
-  type getContractsQuery = typeof portalGraphql<typeof query, []>;
-  type GetContractsQueryResponse = ResultOf<ReturnType<getContractsQuery>>;
+  type getContractsDeployStatusQuery = typeof portalGraphql<typeof query, []>;
+  type GetContractsDeployStatusQueryResponse = ResultOf<
+    ReturnType<getContractsDeployStatusQuery>
+  >;
 
-  const subscription = client.iterate<GetContractsQueryResponse>({
+  const subscription = client.iterate<GetContractsDeployStatusQueryResponse>({
     query,
     variables: {
       abiNames: ABI_NAMES,
@@ -85,17 +82,26 @@ export async function subscribeToApplicationSetupStatus(
   });
 
   for await (const result of subscription) {
-    if (Array.isArray(result?.data?.getContracts?.records)) {
-      onStatusChange(getApplicationStatus(result?.data?.getContracts));
+    if (Array.isArray(result?.data?.getContractsDeployStatus?.records)) {
+      onStatusChange(
+        getApplicationStatus({
+          ...result?.data,
+          SMARTDeploymentRegistry: {
+            areDependenciesRegistered: false, // TODO: when do we know this?
+          },
+        })
+      );
     }
   }
 }
 
 function getApplicationStatus(
-  contracts: ResultOf<typeof getContractsQuery>["getContracts"]
+  status: NonNullable<ResultOf<typeof getApplicationStatusQuery>>
 ) {
+  const isSetup =
+    status.SMARTDeploymentRegistry?.areDependenciesRegistered ?? false;
   return safeParse(ApplicationSetupStatusSchema, {
-    isSetup: (contracts?.count ?? 0) > 0,
-    deployedContracts: contracts?.records ?? [],
+    isSetup,
+    deployedContracts: status.getContractsDeployStatus?.records ?? [],
   });
 }

@@ -1,4 +1,4 @@
-import "server-only";
+import "@/lib/utils/server-only";
 
 import { TransactionFragment } from "@/lib/queries/transactions/transaction-fragment";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";

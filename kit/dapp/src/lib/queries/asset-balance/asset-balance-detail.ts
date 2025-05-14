@@ -1,4 +1,4 @@
-import "server-only";
+import "@/lib/utils/server-only";
 
 import {
   theGraphClientKit,

@@ -3,11 +3,11 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import "@/lib/utils/server-only";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { getUnixTime, startOfDay, subDays } from "date-fns";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import "server-only";
 import { type Address, getAddress } from "viem";
 import { AssetStatsFragment } from "./asset-stats-fragment";
 import { AssetStatsSchema } from "./asset-stats-schema";

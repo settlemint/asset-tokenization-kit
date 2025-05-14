@@ -1,4 +1,4 @@
-import "server-only";
+import "@/lib/utils/server-only";
 
 import { fetchAllPortalPages } from "@/lib/pagination";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";

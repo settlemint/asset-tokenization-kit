@@ -1,4 +1,4 @@
-import "server-only";
+import "@/lib/utils/server-only";
 
 import { getUser } from "@/lib/auth/utils";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";

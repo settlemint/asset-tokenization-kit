@@ -42,7 +42,7 @@
       "view-all": "View All"
     },
     "application-setup": {
-      "title": "Application Setup",
+      "title": "Application setup",
       "description": "Setup your application to get started",
       "steps": {
         "intro": {
@@ -63,8 +63,8 @@
         }
       },
       "intro": {
-        "title": "Welcome to your asset tokenization platform",
-        "description": "This guide will walk you through setting up the asset tokenization platform.\n\nDuring setup, necessary contracts will be deployed to the network. You'll need to confirm these deployments several times using your verification method (PIN or Authenticator app).\n\nYou will also need to set the default application settings (e.g., currency). After completing these steps, the application will be ready to use.",
+        "title": "Asset tokenization platform setup",
+        "description": "Welcome to the setup process for your asset tokenization platform.\n\nThis wizard will guide you through the initial configuration, including deploying essential smart contracts to the blockchain network and configuring your application settings such as default currency.\n\nOnce completed, your platform will be fully operational and ready to tokenize assets.",
         "start-failed": "Failed to start the application setup process ({error}). Please try again."
       },
       "bootstrap": {

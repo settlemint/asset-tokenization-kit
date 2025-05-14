@@ -1,4 +1,4 @@
-import "server-only";
+import "@/lib/utils/server-only";
 
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";

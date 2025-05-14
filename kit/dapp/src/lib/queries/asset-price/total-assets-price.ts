@@ -1,4 +1,4 @@
-import "server-only";
+import "@/lib/utils/server-only";
 
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { theGraphClientKit, theGraphGraphql } from "@/lib/settlemint/the-graph";

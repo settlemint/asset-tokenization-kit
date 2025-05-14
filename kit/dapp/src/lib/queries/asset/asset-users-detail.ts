@@ -1,4 +1,4 @@
-import "server-only";
+import "@/lib/utils/server-only";
 
 import type { Role } from "@/lib/config/roles";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
