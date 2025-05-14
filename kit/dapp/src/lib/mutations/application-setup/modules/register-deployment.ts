@@ -1,11 +1,11 @@
-import type { User } from "@/lib/auth/types";
+import { handleChallenge } from "@/lib/challenge";
 import { SMART_DEPLOYMENT_REGISTRY_ADDRESS } from "@/lib/contracts";
-import { waitForTransactionToBeMined } from "@/lib/mutations/application-setup/utils/contract-deployment";
+import { waitForTransactionToBeMined } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
+import type { SetupApplicationArgs } from "../application-setup-function";
 
-interface RegisterDeploymentModuleArgs {
-  user: User;
+interface RegisterDeploymentModuleArgs extends SetupApplicationArgs {
   compliance: Address;
   identityRegistryStorage: Address;
   identityFactory: Address;
@@ -15,16 +15,40 @@ interface RegisterDeploymentModuleArgs {
 }
 
 const registerDeploymentMutation = portalGraphql(`
-  mutation RegisterDeployment($from: String!, $address: String!, $input: SMARTDeploymentRegistryRegisterDeploymentInput!) {
-    SMARTDeploymentRegistryRegisterDeployment(from: $from, address: $address, input: $input) {
+  mutation RegisterDeployment(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $address: String!,
+    $input: SMARTDeploymentRegistryRegisterDeploymentInput!
+  ) {
+    SMARTDeploymentRegistryRegisterDeployment(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      address: $address,
+      input: $input
+    ) {
       transactionHash
     }
   }
 `);
 
 const registerTokenRegistryMutation = portalGraphql(`
-  mutation RegisterTokenRegistry($from: String!, $address: String!, $input: SMARTDeploymentRegistryRegisterTokenRegistryInput!) {
-    SMARTDeploymentRegistryRegisterTokenRegistry(from: $from, address: $address, input: $input) {
+  mutation RegisterTokenRegistry(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $address: String!,
+    $input: SMARTDeploymentRegistryRegisterTokenRegistryInput!
+  ) {
+    SMARTDeploymentRegistryRegisterTokenRegistry(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      address: $address,
+      input: $input
+    ) {
       transactionHash
     }
   }
@@ -32,6 +56,8 @@ const registerTokenRegistryMutation = portalGraphql(`
 
 export const registerDeploymentModule = async ({
   user,
+  verificationCode,
+  verificationType,
   compliance,
   identityRegistryStorage,
   identityFactory,
@@ -42,6 +68,12 @@ export const registerDeploymentModule = async ({
   const registerDeploymentResult = await portalClient.request(
     registerDeploymentMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       address: SMART_DEPLOYMENT_REGISTRY_ADDRESS,
       input: {
@@ -62,6 +94,12 @@ export const registerDeploymentModule = async ({
   const registerTokenRegistryResult = await portalClient.request(
     registerTokenRegistryMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       address: SMART_DEPLOYMENT_REGISTRY_ADDRESS,
       input: {

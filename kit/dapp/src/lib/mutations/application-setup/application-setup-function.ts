@@ -1,6 +1,8 @@
 import type { User } from "@/lib/auth/types";
 import { withAccessControl } from "@/lib/utils/access-control";
+import type { VerificationType } from "@/lib/utils/typebox/verification-type";
 import { getAddress, zeroAddress } from "viem";
+import type { ApplicationSetupInput } from "./application-setup-schema";
 import { complianceModule } from "./modules/compliance";
 import { configurationModule } from "./modules/configuration";
 import { identityFactoryModule } from "./modules/identity-factory";
@@ -10,37 +12,39 @@ import { registerDeploymentModule } from "./modules/register-deployment";
 import { tokenRegistryModule } from "./modules/token-registry";
 import { trustedIssuersRegistryModule } from "./modules/trusted-issuer-registry";
 
-async function setupApplication(user: User) {
+export interface SetupApplicationArgs {
+  user: User;
+  verificationCode: string;
+  verificationType: VerificationType;
+}
+
+async function setupApplication(args: SetupApplicationArgs) {
   const forwarder = getAddress(
     process.env.SETTLEMINT_HD_PRIVATE_KEY_FORWARDER_ADDRESS || zeroAddress
   );
+
   const phase1 = await Promise.allSettled([
     identityRegistryStorageModule({
-      user,
+      ...args,
       forwarder,
     }),
     trustedIssuersRegistryModule({
-      user,
+      ...args,
       forwarder,
     }),
     complianceModule({
-      user,
+      ...args,
       forwarder,
     }),
     identityFactoryModule({
-      user,
+      ...args,
       forwarder,
     }),
     tokenRegistryModule({
-      user,
+      ...args,
       forwarder,
     }),
   ]);
-
-  const isValid = validateDeployResults(phase1);
-  if (!isValid) {
-    return;
-  }
 
   const [
     identityRegistryStorageModuleResult,
@@ -56,11 +60,17 @@ async function setupApplication(user: User) {
     identityFactoryModuleResult.status !== "fulfilled" ||
     tokenRegistryModuleResult.status !== "fulfilled"
   ) {
-    return;
+    console.error(
+      "Application setup failed: Contract deployment failed",
+      phase1.map((result) =>
+        result.status === "rejected" ? result.reason?.toString() : null
+      )
+    );
+    throw new Error("Contract deployment failed");
   }
 
   const { identityRegistryProxy } = await identityRegistryModule({
-    user,
+    ...args,
     forwarder,
     identityRegistryStorageProxy:
       identityRegistryStorageModuleResult.value.identityRegistryStorageProxy,
@@ -68,14 +78,14 @@ async function setupApplication(user: User) {
       trustedIssuersRegistryModuleResult.value.trustedIssuersRegistryProxy,
   });
   await configurationModule({
-    user,
+    ...args,
     identityRegistry: identityRegistryProxy,
     identityRegistryStorage:
       identityRegistryStorageModuleResult.value.identityRegistryStorageProxy,
   });
 
   await registerDeploymentModule({
-    user,
+    ...args,
     compliance: complianceModuleResult.value.complianceProxy,
     identityRegistryStorage:
       identityRegistryStorageModuleResult.value.identityRegistryStorageProxy,
@@ -87,19 +97,6 @@ async function setupApplication(user: User) {
   });
 }
 
-function validateDeployResults(deployResults: PromiseSettledResult<unknown>[]) {
-  if (deployResults.some((result) => result.status === "rejected")) {
-    console.error(
-      "Application setup failed: Contract deployment failed",
-      deployResults.map((result) =>
-        result.status === "rejected" ? result.reason?.toString() : null
-      )
-    );
-    return false;
-  }
-  return true;
-}
-
 export const applicationSetupFunction = withAccessControl(
   {
     requiredPermissions: {
@@ -107,13 +104,15 @@ export const applicationSetupFunction = withAccessControl(
     },
   },
   async ({
+    parsedInput: { verificationCode, verificationType },
     ctx: { user },
   }: {
+    parsedInput: ApplicationSetupInput;
     ctx: {
       user: User;
     };
   }): Promise<{ started: boolean }> => {
-    setupApplication(user)
+    setupApplication({ user, verificationCode, verificationType })
       .then(() => {
         console.log("Application setup completed successfully");
       })

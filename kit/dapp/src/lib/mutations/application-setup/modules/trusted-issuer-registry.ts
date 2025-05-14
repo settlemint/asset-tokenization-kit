@@ -1,48 +1,88 @@
-import type { User } from "@/lib/auth/types";
+import { handleChallenge } from "@/lib/challenge";
 import {
   waitForContractToBeDeployed,
   waitForTransactionToBeMined,
-} from "@/lib/mutations/application-setup/utils/contract-deployment";
+} from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
+import type { SetupApplicationArgs } from "../application-setup-function";
 
 const deployContractSMARTTrustedIssuersRegistryMutation = portalGraphql(`
-  mutation deployContractSMARTTrustedIssuersRegistry($from: String!, $constructorArguments: DeployContractSMARTTrustedIssuersRegistryInput!) {
-    DeployContract: DeployContractSMARTTrustedIssuersRegistry(from: $from, constructorArguments: $constructorArguments) {
+  mutation deployContractSMARTTrustedIssuersRegistry(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $constructorArguments: DeployContractSMARTTrustedIssuersRegistryInput!
+  ) {
+    DeployContract: DeployContractSMARTTrustedIssuersRegistry(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      constructorArguments: $constructorArguments
+    ) {
       transactionHash
     }
   }
 `);
 
 const deployContractSMARTProxyMutation = portalGraphql(`
-  mutation deployContractSMARTProxy($from: String!, $constructorArguments: DeployContractSMARTProxyInput!) {
-    DeployContract: DeployContractSMARTProxy(from: $from, constructorArguments: $constructorArguments) {
+  mutation deployContractSMARTProxy(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $constructorArguments: DeployContractSMARTProxyInput!
+  ) {
+    DeployContract: DeployContractSMARTProxy(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      constructorArguments: $constructorArguments
+    ) {
       transactionHash
     }
   }
 `);
 
 const initializeIssuersRegistryMutation = portalGraphql(`
-  mutation SMARTTrustedIssuersRegistryInitialize($from: String!, $address: String!, $input: SMARTTrustedIssuersRegistryInitializeInput!) {
-    SMARTTrustedIssuersRegistryInitialize(from: $from, address: $address, input: $input) {
+  mutation SMARTTrustedIssuersRegistryInitialize(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $address: String!,
+    $input: SMARTTrustedIssuersRegistryInitializeInput!
+  ) {
+    SMARTTrustedIssuersRegistryInitialize(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      address: $address,
+      input: $input
+    ) {
       transactionHash
     }
   }
 `);
 
-interface TrustedIssuersRegistryModuleArgs {
+interface TrustedIssuersRegistryModuleArgs extends SetupApplicationArgs {
   forwarder: Address;
-  user: User;
 }
 
 export const trustedIssuersRegistryModule = async ({
   forwarder,
   user,
+  verificationCode,
+  verificationType,
 }: TrustedIssuersRegistryModuleArgs) => {
   // Deploy implementation contract, passing the forwarder address
   const deploySmartTrustedIssuersRegistryResult = await portalClient.request(
     deployContractSMARTTrustedIssuersRegistryMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       constructorArguments: {
         trustedForwarder: forwarder,
@@ -58,6 +98,12 @@ export const trustedIssuersRegistryModule = async ({
   const deploySmartProxyResult = await portalClient.request(
     deployContractSMARTProxyMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       constructorArguments: {
         _data: issuersImpl,
@@ -73,6 +119,12 @@ export const trustedIssuersRegistryModule = async ({
   const initializeIssuersRegistryResult = await portalClient.request(
     initializeIssuersRegistryMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       address: issuersProxy,
       input: {

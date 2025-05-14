@@ -1,14 +1,25 @@
-import type { User } from "@/lib/auth/types";
+import { handleChallenge } from "@/lib/challenge";
 import {
   waitForContractToBeDeployed,
   waitForTransactionToBeMined,
-} from "@/lib/mutations/application-setup/utils/contract-deployment";
+} from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { zeroAddress, type Address } from "viem";
+import type { SetupApplicationArgs } from "../application-setup-function";
 
 const deployContractIdentityMutation = portalGraphql(`
-  mutation deployContractSMARTIdentity($from: String!, $constructorArguments: DeployContractSMARTIdentityInput!) {
-    DeployContract: DeployContractSMARTIdentity(from: $from, constructorArguments: $constructorArguments) {
+  mutation deployContractSMARTIdentity(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $constructorArguments: DeployContractSMARTIdentityInput!
+  ) {
+    DeployContract: DeployContractSMARTIdentity(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      constructorArguments: $constructorArguments
+    ) {
       transactionHash
     }
   }
@@ -16,49 +27,98 @@ const deployContractIdentityMutation = portalGraphql(`
 
 const deployContractSMARTIdentityImplementationAuthorityMutation =
   portalGraphql(`
-    mutation deployContractSMARTIdentityImplementationAuthority($from: String!, $constructorArguments: DeployContractSMARTIdentityImplementationAuthorityInput!) {
-      DeployContract: DeployContractSMARTIdentityImplementationAuthority(from: $from, constructorArguments: $constructorArguments) {
-        transactionHash
-      }
+  mutation deployContractSMARTIdentityImplementationAuthority(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $constructorArguments: DeployContractSMARTIdentityImplementationAuthorityInput!
+  ) {
+    DeployContract: DeployContractSMARTIdentityImplementationAuthority(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      constructorArguments: $constructorArguments
+    ) {
+      transactionHash
     }
-  `);
+  }
+`);
 
 const deployContractSMARTIdentityFactoryMutation = portalGraphql(`
-  mutation deployContractSMARTIdentityFactory($from: String!, $constructorArguments: DeployContractSMARTIdentityFactoryInput!) {
-    DeployContract: DeployContractSMARTIdentityFactory(from: $from, constructorArguments: $constructorArguments) {
+  mutation deployContractSMARTIdentityFactory(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $constructorArguments: DeployContractSMARTIdentityFactoryInput!
+  ) {
+    DeployContract: DeployContractSMARTIdentityFactory(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      constructorArguments: $constructorArguments
+    ) {
       transactionHash
     }
   }
 `);
 
 const deployContractSMARTProxyMutation = portalGraphql(`
-  mutation deployContractSMARTProxy($from: String!, $constructorArguments: DeployContractSMARTProxyInput!) {
-    DeployContract: DeployContractSMARTProxy(from: $from, constructorArguments: $constructorArguments) {
+  mutation deployContractSMARTProxy(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $constructorArguments: DeployContractSMARTProxyInput!
+  ) {
+    DeployContract: DeployContractSMARTProxy(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      constructorArguments: $constructorArguments
+    ) {
       transactionHash
     }
   }
 `);
 
 const initializeIdentityFactoryMutation = portalGraphql(`
-  mutation SMARTIdentityFactoryInitialize($from: String!, $address: String!, $input: SMARTIdentityFactoryInitializeInput!) {
-    SMARTIdentityFactoryInitialize(from: $from, address: $address, input: $input) {
+  mutation SMARTIdentityFactoryInitialize(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $address: String!,
+    $input: SMARTIdentityFactoryInitializeInput!
+  ) {
+    SMARTIdentityFactoryInitialize(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      address: $address,
+      input: $input
+    ) {
       transactionHash
     }
   }
 `);
 
-interface IdentityFactoryModuleArgs {
+interface IdentityFactoryModuleArgs extends SetupApplicationArgs {
   forwarder: Address;
-  user: User;
 }
 
 export const identityFactoryModule = async ({
   forwarder,
   user,
+  verificationCode,
+  verificationType,
 }: IdentityFactoryModuleArgs) => {
   const deploySmartIdentityRegistryStorageResult = await portalClient.request(
     deployContractIdentityMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       constructorArguments: {
         initialManagementKey: zeroAddress,
@@ -73,6 +133,12 @@ export const identityFactoryModule = async ({
   const deployImplementationAuthorityResult = await portalClient.request(
     deployContractSMARTIdentityImplementationAuthorityMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       constructorArguments: {
         implementation: identityImpl,
@@ -87,6 +153,12 @@ export const identityFactoryModule = async ({
   const deploySmartIdentityFactoryResult = await portalClient.request(
     deployContractSMARTIdentityFactoryMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       constructorArguments: {
         trustedForwarder: forwarder,
@@ -102,6 +174,12 @@ export const identityFactoryModule = async ({
   const deploySmartProxyResult = await portalClient.request(
     deployContractSMARTProxyMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       constructorArguments: {
         _data: factoryImpl,
@@ -117,6 +195,12 @@ export const identityFactoryModule = async ({
   const initializeIdentityFactoryResult = await portalClient.request(
     initializeIdentityFactoryMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       address: factoryProxy,
       input: {

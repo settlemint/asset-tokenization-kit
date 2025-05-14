@@ -1,48 +1,88 @@
-import type { User } from "@/lib/auth/types";
+import { handleChallenge } from "@/lib/challenge";
 import {
   waitForContractToBeDeployed,
   waitForTransactionToBeMined,
-} from "@/lib/mutations/application-setup/utils/contract-deployment";
+} from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
+import type { SetupApplicationArgs } from "../application-setup-function";
 
 const deployContractSMARTComplianceMutation = portalGraphql(`
-  mutation deployContractSMARTCompliance($from: String!, $constructorArguments: DeployContractSMARTComplianceInput!) {
-    DeployContract: DeployContractSMARTCompliance(from: $from, constructorArguments: $constructorArguments) {
+  mutation deployContractSMARTCompliance(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $constructorArguments: DeployContractSMARTComplianceInput!
+  ) {
+    DeployContract: DeployContractSMARTCompliance(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      constructorArguments: $constructorArguments
+    ) {
       transactionHash
     }
   }
 `);
 
 const deployContractSMARTProxyMutation = portalGraphql(`
-  mutation deployContractSMARTProxy($from: String!, $constructorArguments: DeployContractSMARTProxyInput!) {
-    DeployContract: DeployContractSMARTProxy(from: $from, constructorArguments: $constructorArguments) {
+  mutation deployContractSMARTProxy(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $constructorArguments: DeployContractSMARTProxyInput!
+  ) {
+    DeployContract: DeployContractSMARTProxy(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      constructorArguments: $constructorArguments
+    ) {
       transactionHash
     }
   }
 `);
 
 const initializeComplianceMutation = portalGraphql(`
-  mutation SMARTComplianceInitialize($from: String!, $address: String!, $input: SMARTComplianceInitializeInput!) {
-    SMARTComplianceInitialize(from: $from, address: $address, input: $input) {
+  mutation SMARTComplianceInitialize(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $address: String!,
+    $input: SMARTComplianceInitializeInput!
+  ) {
+    SMARTComplianceInitialize(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      address: $address,
+      input: $input
+    ) {
       transactionHash
     }
   }
 `);
 
-interface ComplianceModuleArgs {
+interface ComplianceModuleArgs extends SetupApplicationArgs {
   forwarder: Address;
-  user: User;
 }
 
 export const complianceModule = async ({
   forwarder,
   user,
+  verificationCode,
+  verificationType,
 }: ComplianceModuleArgs) => {
   // Deploy implementation contract, passing the forwarder address
   const deploySmartComplianceResult = await portalClient.request(
     deployContractSMARTComplianceMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       constructorArguments: {
         trustedForwarder: forwarder,
@@ -58,6 +98,12 @@ export const complianceModule = async ({
   const deploySmartProxyResult = await portalClient.request(
     deployContractSMARTProxyMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       constructorArguments: {
         _data: complianceImpl,
@@ -73,6 +119,12 @@ export const complianceModule = async ({
   const initializeComplianceResult = await portalClient.request(
     initializeComplianceMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       address: complianceProxy,
       input: {

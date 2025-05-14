@@ -1,36 +1,30 @@
-/*
-const ConfigurationModule = buildModule("ConfigurationModule", (m) => {
-  // Import dependencies. Parameters are passed implicitly.
-  const { identityRegistry } = m.useModule(IdentityRegistryModule);
-
-  const { identityRegistryStorage } = m.useModule(
-    IdentityRegistryStorageModule
-  );
-
-  // Bind the identity registry to the storage contract
-  m.call(identityRegistryStorage, "bindIdentityRegistry", [identityRegistry], {
-    id: "BindRegistryToStorage",
-  });
-
-  return {};
-});
-*/
-
-import { waitForTransactionToBeMined } from "@/lib/mutations/application-setup/utils/contract-deployment";
+import { handleChallenge } from "@/lib/challenge";
+import { waitForTransactionToBeMined } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
-import type { User } from "../../../auth/types";
+import type { SetupApplicationArgs } from "../application-setup-function";
 
 const smartIdentityRegistryStorageBindIdentityRegistryMutation = portalGraphql(`
-  mutation SMARTIdentityRegistryStorageBindIdentityRegistry($from: String!, $address: String!, $input: SMARTIdentityRegistryStorageBindIdentityRegistryInput!) {
-    SMARTIdentityRegistryStorageBindIdentityRegistry(from: $from, address: $address, input: $input) {
+  mutation SMARTIdentityRegistryStorageBindIdentityRegistry(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $address: String!,
+    $input: SMARTIdentityRegistryStorageBindIdentityRegistryInput!
+  ) {
+    SMARTIdentityRegistryStorageBindIdentityRegistry(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      address: $address,
+      input: $input
+    ) {
       transactionHash
     }
   }
 `);
 
-interface ConfigurationModuleArgs {
-  user: User;
+interface ConfigurationModuleArgs extends SetupApplicationArgs {
   identityRegistry: Address;
   identityRegistryStorage: Address;
 }
@@ -39,11 +33,19 @@ export const configurationModule = async ({
   user,
   identityRegistry,
   identityRegistryStorage,
+  verificationCode,
+  verificationType,
 }: ConfigurationModuleArgs) => {
   // Bind the identity registry to the storage contract
   const bindIdentityRegistryResult = await portalClient.request(
     smartIdentityRegistryStorageBindIdentityRegistryMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       address: identityRegistryStorage,
       input: {

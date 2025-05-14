@@ -1,28 +1,46 @@
-import type { User } from "@/lib/auth/types";
-import { waitForContractToBeDeployed } from "@/lib/mutations/application-setup/utils/contract-deployment";
+import { handleChallenge } from "@/lib/challenge";
+import { waitForContractToBeDeployed } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
+import type { SetupApplicationArgs } from "../application-setup-function";
 
 const deployContractTokenRegistryMutation = portalGraphql(`
-  mutation deployContractSMARTTokenRegistry($from: String!, $constructorArguments: DeployContractSMARTTokenRegistryInput!) {
-    DeployContract: DeployContractSMARTTokenRegistry(from: $from, constructorArguments: $constructorArguments) {
+  mutation deployContractSMARTTokenRegistry(
+    $challengeResponse: String!,
+    $verificationId: String,
+    $from: String!,
+    $constructorArguments: DeployContractSMARTTokenRegistryInput!
+  ) {
+    DeployContract: DeployContractSMARTTokenRegistry(
+      challengeResponse: $challengeResponse,
+      verificationId: $verificationId,
+      from: $from,
+      constructorArguments: $constructorArguments
+    ) {
       transactionHash
     }
   }
 `);
 
-interface TokenRegistryModuleArgs {
+interface TokenRegistryModuleArgs extends SetupApplicationArgs {
   forwarder: Address;
-  user: User;
 }
 
 export const tokenRegistryModule = async ({
   forwarder,
   user,
+  verificationCode,
+  verificationType,
 }: TokenRegistryModuleArgs) => {
   const deploySmartTokenRegistryResult = await portalClient.request(
     deployContractTokenRegistryMutation,
     {
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
       from: user.wallet,
       constructorArguments: {
         initialAdmin: user.wallet,

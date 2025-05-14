@@ -94,16 +94,8 @@ export async function subscribeToApplicationSetupStatus(
 function getApplicationStatus(
   contracts: ResultOf<typeof getContractsQuery>["getContracts"]
 ) {
-  const deployedContracts =
-    contracts?.records
-      .filter((record) => record.address && record.abiName)
-      .map((record) => ({
-        address: record.address!,
-        abiName: record.abiName!,
-      })) ?? [];
-
   return safeParse(ApplicationSetupStatusSchema, {
     isSetup: (contracts?.count ?? 0) > 0,
-    deployedContracts,
+    deployedContracts: contracts?.records ?? [],
   });
 }
