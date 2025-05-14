@@ -1,6 +1,8 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { XVP_SETTLEMENT_FACTORY_ADDRESS } from "@/lib/contracts";
+import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -81,5 +83,9 @@ export const createXvpFunction = async ({
   if (!createTxHash) {
     throw new Error("Failed to create XVP: no transaction hash received");
   }
-  return safeParse(t.Hashes(), [createTxHash]);
+  const hashes = safeParse(t.Hashes(), [createTxHash]);
+  const receipts = await waitForTransactions(hashes);
+  const lastBlockNumber = Number(receipts.at(-1)?.blockNumber);
+  await waitForIndexing(lastBlockNumber);
+  return receipts;
 };
