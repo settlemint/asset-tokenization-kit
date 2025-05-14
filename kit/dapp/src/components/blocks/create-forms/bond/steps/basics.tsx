@@ -4,41 +4,15 @@ import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
-import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-interface BasicsProps {
-  onNext?: () => void;
-  onBack?: () => void;
-}
-
-export function Basics({ onNext, onBack }: BasicsProps) {
-  const { control, formState, trigger } = useFormContext<CreateBondInput>();
+export function Basics() {
+  const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
 
-  // Fields for this step - used for validation
-  const stepFields = ["assetName", "symbol", "decimals", "isin"] as const;
-
-  // Check if any touched fields in this step have errors
-  const hasStepErrors = hasStepFieldErrors(stepFields, formState);
-
-  // Handle next button click - trigger validation before proceeding
-  const handleNext = async () => {
-    // Trigger validation for just these fields
-    const isValid = await trigger(stepFields);
-    if (isValid && onNext) {
-      onNext();
-    }
-  };
-
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">{t("basics.title")}</h3>
@@ -107,6 +81,11 @@ export function Basics({ onNext, onBack }: BasicsProps) {
     </StepContent>
   );
 }
+
+Basics.validatedFields = [
+  "assetName",
+  "symbol",
+] satisfies (keyof CreateBondInput)[];
 
 // Export step definition for the asset designer
 export const stepDefinition = {

@@ -3,17 +3,14 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import {
   SummaryRow,
   formatUnderlyingAsset,
 } from "../../common/summary/summary";
 
-interface BondConfigurationCardProps {
-  form: UseFormReturn<any>;
-}
-
-export function BondConfigurationCard({ form }: BondConfigurationCardProps) {
+export function BondConfigurationCard() {
+  const form = useFormContext();
   const formValues = form.getValues();
   const t = useTranslations("private.assets.create.configuration.bonds");
 

@@ -3,16 +3,13 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
-import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { timeUnits } from "@/lib/utils/typebox/time-units";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
-import type { StablecoinStepProps } from "../form";
 
-export function Configuration({ onNext, onBack }: StablecoinStepProps) {
-  const { control, formState, trigger } =
-    useFormContext<CreateStablecoinInput>();
+export function Configuration() {
+  const { control } = useFormContext<CreateStablecoinInput>();
   const t = useTranslations("private.assets.create");
   const collateralLivenessValue = useWatch({
     control,
@@ -30,35 +27,8 @@ export function Configuration({ onNext, onBack }: StablecoinStepProps) {
     label: currency,
   }));
 
-  // Fields for this step - used for validation
-  const stepFields = [
-    "collateralLivenessValue",
-    "collateralLivenessTimeUnit",
-    "price.amount",
-    "price.currency",
-  ];
-
-  // Check if any touched fields in this step have errors
-  const hasStepErrors = hasStepFieldErrors(stepFields, formState);
-
-  // Handle next button click - trigger validation before proceeding
-  const handleNext = async () => {
-    // Trigger validation for just these fields
-    const isValid = await trigger(
-      stepFields as (keyof CreateStablecoinInput)[]
-    );
-    if (isValid && onNext) {
-      onNext();
-    }
-  };
-
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">

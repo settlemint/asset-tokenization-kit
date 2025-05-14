@@ -1,17 +1,15 @@
 "use client";
 
+import { Form } from "@/components/blocks/form/form";
+import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createBond } from "@/lib/mutations/bond/create/create-action";
-import {
-  CreateBondSchema,
-  type CreateBondInput,
-} from "@/lib/mutations/bond/create/create-schema";
-import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { FormProvider, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
@@ -24,45 +22,16 @@ interface CreateBondFormProps {
   currentStepId: string;
   onNextStep: () => void;
   onPrevStep: () => void;
-  verificationWrapper: <T = SafeActionResult<string[]>>(
-    fn: (data: any) => Promise<T>
-  ) => (data: any) => Promise<void>;
+  onOpenChange?: (open: boolean) => void;
 }
-
-// Define the interface that all steps will implement
-export interface BondStepProps {
-  onNext?: () => void;
-  onBack?: () => void;
-  userDetails?: User;
-}
-
 export function CreateBondForm({
   userDetails,
   currentStepId,
   onNextStep,
   onPrevStep,
-  verificationWrapper,
+  onOpenChange,
 }: CreateBondFormProps) {
-  const bondForm = useForm<CreateBondInput>({
-    defaultValues: {
-      assetName: "",
-      symbol: "",
-      decimals: 18,
-      isin: "",
-      assetAdmins: [],
-      selectedRegulations: [],
-      maturityDate: getTomorrowMidnight(),
-      verificationType: "pincode",
-      predictedAddress: "0x0000000000000000000000000000000000000000",
-    },
-    mode: "onTouched",
-    resolver: (...args) =>
-      typeboxResolver(
-        CreateBondSchema({
-          decimals: args[0].decimals,
-        })
-      )(...args),
-  });
+  const t = useTranslations("private.assets.create.form");
 
   // Create component instances for each step
   const BasicsComponent = basicsStep.component;
@@ -70,39 +39,70 @@ export function CreateBondForm({
   const AdminsComponent = adminsStep.component;
   const SummaryComponent = summaryStep.component;
 
-  const renderCurrentStep = () => {
-    switch (currentStepId) {
-      case "details":
-        return <BasicsComponent onNext={onNextStep} onBack={onPrevStep} />;
-      case "configuration":
-        return (
-          <ConfigurationComponent onNext={onNextStep} onBack={onPrevStep} />
-        );
-      case "admins":
-        return (
-          <AdminsComponent
-            userDetails={userDetails}
-            onNext={onNextStep}
-            onBack={onPrevStep}
-          />
-        );
-      case "summary":
-        return (
-          <SummaryComponent
-            configurationCard={<BondConfigurationCard form={bondForm} />}
-            form={bondForm}
-            onBack={onPrevStep}
-            onSubmit={verificationWrapper(createBond)}
-            predictAddress={getPredictedAddress}
-            isAddressAvailable={isAddressAvailable}
-          />
-        );
-      default:
-        return <div>Unknown step: {currentStepId}</div>;
-    }
+  // Create an array of all step components in order for Form to manage
+  const allStepComponents = [
+    <BasicsComponent key="details" />,
+    <ConfigurationComponent key="configuration" />,
+    <AdminsComponent key="admins" userDetails={userDetails} />,
+    <SummaryComponent
+      key="summary"
+      configurationCard={<BondConfigurationCard />}
+      predictAddress={getPredictedAddress}
+      isAddressAvailable={isAddressAvailable}
+    />,
+  ];
+
+  // Define step order and mapping
+  const stepIdToIndex = {
+    details: 0,
+    configuration: 1,
+    admins: 2,
+    summary: 3,
   };
 
-  return <FormProvider {...bondForm}>{renderCurrentStep()}</FormProvider>;
+  // Use the step synchronization hook
+  const { isLastStep, onStepChange, onAnyFieldChange } = useFormStepSync({
+    currentStepId,
+    stepIdToIndex,
+    onNextStep,
+    onPrevStep,
+  });
+
+  return (
+    <Form
+      action={createBond}
+      resolver={typeboxResolver(CreateBondSchema())}
+      defaultValues={{
+        assetName: "",
+        symbol: "",
+        decimals: 18,
+        isin: "",
+        assetAdmins: [],
+        selectedRegulations: [],
+        maturityDate: getTomorrowMidnight(),
+        verificationType: "pincode",
+        predictedAddress: "0x0000000000000000000000000000000000000000",
+      }}
+      buttonLabels={{
+        label: isLastStep
+          ? t("button-labels.bond.issue")
+          : t("button-labels.general.next"),
+        submittingLabel: t("button-labels.bond.submitting"),
+        processingLabel: t("button-labels.general.processing"),
+      }}
+      secureForm={true}
+      hideStepProgress={true}
+      toastMessages={{
+        loading: t("toasts.bond.submitting"),
+        success: t("toasts.bond.success"),
+      }}
+      onStepChange={onStepChange}
+      onAnyFieldChange={onAnyFieldChange}
+      onOpenChange={onOpenChange}
+    >
+      {allStepComponents}
+    </Form>
+  );
 }
 
 CreateBondForm.displayName = "CreateBondForm";

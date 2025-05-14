@@ -3,15 +3,13 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
-import { hasStepFieldErrors } from "@/lib/utils/form-steps";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import type { EquityStepProps } from "../form";
 import { EquityCategoriesSelect } from "./_components/equity-categories";
 import { EquityClassesSelect } from "./_components/equity-classes";
 
-export function Configuration({ onNext, onBack }: EquityStepProps) {
+export function Configuration() {
   const { control, formState, trigger } = useFormContext<CreateEquityInput>();
   const t = useTranslations("private.assets.create");
   const currencyOptions = fiatCurrencies.map((currency) => ({
@@ -19,33 +17,8 @@ export function Configuration({ onNext, onBack }: EquityStepProps) {
     label: currency,
   }));
 
-  // Fields for this step - used for validation
-  const stepFields = [
-    "equityCategory",
-    "equityClass",
-    "price.amount",
-    "price.currency",
-  ];
-
-  // Check if any touched fields in this step have errors
-  const hasStepErrors = hasStepFieldErrors(stepFields, formState);
-
-  // Handle next button click - trigger validation before proceeding
-  const handleNext = async () => {
-    // Trigger validation for just these fields
-    const isValid = await trigger(stepFields as (keyof CreateEquityInput)[]);
-    if (isValid && onNext) {
-      onNext();
-    }
-  };
-
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">

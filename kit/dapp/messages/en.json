@@ -826,6 +826,7 @@
     "string": "Please enter text",
     "string-format": "Please enter text in the correct {format} format",
     "string-format-unknown": "Unknown format '{format}'",
+    "string-format-asset-symbol": "Please enter a valid asset symbol (uppercase letters and numbers)",
     "string-max-length": "Please enter no more than {maxLength} characters",
     "string-min-length": "Please enter at least {minLength} characters",
     "string-pattern": "Please follow the required pattern",
@@ -1417,7 +1418,68 @@
           "toasts": {
             "submitting": "Creating asset... This process may take a moment.",
             "failed": "Failed to create asset. Please try again.",
-            "success": "Asset was created successfully!"
+            "success": "Asset was created successfully!",
+            "stablecoin": {
+              "submitting": "Creating stablecoin... This process may take a moment.",
+              "failed": "Failed to create stablecoin. Please try again.",
+              "success": "Stablecoin was created successfully!"
+            },
+            "fund": {
+              "submitting": "Creating fund... This process may take a moment.",
+              "failed": "Failed to create fund. Please try again.",
+              "success": "Fund was created successfully!"
+            },
+            "equity": {
+              "submitting": "Creating equity... This process may take a moment.",
+              "failed": "Failed to create equity. Please try again.",
+              "success": "Equity was created successfully!"
+            },
+            "deposit": {
+              "submitting": "Creating deposit... This process may take a moment.",
+              "failed": "Failed to create deposit. Please try again.",
+              "success": "Deposit was created successfully!"
+            },
+            "cryptocurrency": {
+              "submitting": "Creating cryptocurrency... This process may take a moment.",
+              "failed": "Failed to create cryptocurrency. Please try again.",
+              "success": "Cryptocurrency was created successfully!"
+            },
+            "bond": {
+              "submitting": "Creating bond... This process may take a moment.",
+              "failed": "Failed to create bond. Please try again.",
+              "success": "Bond was created successfully!"
+            }
+          },
+          "button-labels": {
+            "general": {
+              "next": "Next",
+              "previous": "Previous",
+              "processing": "Processing..."
+            },
+            "stablecoin": {
+              "issue": "Issue stablecoin",
+              "submitting": "Issueing stablecoin..."
+            },
+            "fund": {
+              "issue": "Issue fund",
+              "submitting": "Issueing fund..."
+            },
+            "equity": {
+              "issue": "Issue equity",
+              "submitting": "Issueing equity..."
+            },
+            "deposit": {
+              "issue": "Issue deposit",
+              "submitting": "Issueing deposit..."
+            },
+            "cryptocurrency": {
+              "issue": "Issue cryptocurrency",
+              "submitting": "Issueing cryptocurrency..."
+            },
+            "bond": {
+              "issue": "Issue bond",
+              "submitting": "Issueing bond..."
+            }
           },
           "toast-action": {
             "bonds": "View bond",

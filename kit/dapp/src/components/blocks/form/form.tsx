@@ -44,6 +44,7 @@ interface FormProps<
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
   hideButtons?: boolean | ((step: number) => boolean);
+  hideStepProgress?: boolean;
   toastMessages?: {
     loading?: string;
     success?: string;
@@ -64,6 +65,7 @@ interface FormProps<
       changedFieldName: Path<S extends Schema ? Infer<S> : any> | undefined;
     }
   ) => void;
+  onStepChange?: (newStep: number) => void;
   disablePreviousButton?: boolean;
 }
 
@@ -87,6 +89,8 @@ export function Form<
   onAnyFieldChange,
   secureForm = true,
   disablePreviousButton = false,
+  onStepChange,
+  hideStepProgress = false,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations();
@@ -238,6 +242,10 @@ export function Form<
           format: error.schema.format,
         });
       case ValueErrorType.StringFormat:
+        console.log(error);
+        if (error.schema.format === "asset-symbol") {
+          return t("error.string-format-asset-symbol");
+        }
         return t("error.string-format", { format: error.schema.format });
       case ValueErrorType.StringMaxLength:
         return t("error.string-max-length", {
@@ -362,7 +370,9 @@ export function Form<
   const isLastStep = currentStep === totalSteps - 1;
 
   const handlePrev = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    const newStep = Math.max(currentStep - 1, 0);
+    setCurrentStep(newStep);
+    onStepChange?.(newStep);
   };
 
   const handleNext = useCallback(async () => {
@@ -378,7 +388,9 @@ export function Form<
       if (isLastStep && secureForm) {
         setShowFormSecurityConfirmation(true);
       }
-      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      const newStep = Math.min(currentStep + 1, totalSteps - 1);
+      setCurrentStep(newStep);
+      onStepChange?.(newStep);
       return;
     }
 
@@ -419,10 +431,20 @@ export function Form<
 
       // Prevent the form from being auto submitted when going to the final step
       setTimeout(() => {
-        setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+        const newStep = Math.min(currentStep + 1, totalSteps - 1);
+        setCurrentStep(newStep);
+        onStepChange?.(newStep);
       }, 10);
     }
-  }, [form, isLastStep, secureForm, currentStep, totalSteps, children]);
+  }, [
+    form,
+    isLastStep,
+    secureForm,
+    currentStep,
+    totalSteps,
+    children,
+    onStepChange,
+  ]);
 
   useEffect(() => {
     if (!onAnyFieldChange) {
@@ -466,7 +488,7 @@ export function Form<
             noValidate
             className="flex flex-1 flex-col"
           >
-            {totalSteps > 1 && (
+            {totalSteps > 1 && !hideStepProgress && (
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
             )}
             <div className="flex-1">
