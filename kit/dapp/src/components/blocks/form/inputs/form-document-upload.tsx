@@ -1,6 +1,5 @@
 "use client";
 
-import { deleteDocument } from "@/app/actions/delete-document";
 import { uploadDocument } from "@/app/actions/upload-document";
 import {
   AlertCircleIcon,
@@ -14,7 +13,7 @@ import {
   VideoIcon,
   XIcon,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useController, type Control, type FieldValues } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -90,6 +89,13 @@ const getFileIcon = (file: { file: File | { type: string; name: string } }) => {
   return <FileIcon className="size-4 opacity-60" />;
 };
 
+// Type for tracking upload progress
+type UploadProgress = {
+  fileName: string;
+  progress: number;
+  error?: string;
+};
+
 export function FormDocumentUpload<
   TFieldValues extends FieldValues = FieldValues,
 >({
@@ -112,6 +118,9 @@ export function FormDocumentUpload<
   });
   const [isUploading, setIsUploading] = useState(false);
   const processingFilesRef = useRef(false);
+
+  // Track currently uploading files with progress
+  const [uploadingFiles, setUploadingFiles] = useState<UploadProgress[]>([]);
 
   // Convert the field.value to the format expected by useFileUpload
   const initialFiles = Array.isArray(field.value)
@@ -143,32 +152,47 @@ export function FormDocumentUpload<
     maxSize,
     accept,
     initialFiles,
-    onFilesChange: (updatedFiles) => {
-      // Only sync back to the form when files are not being processed
-      if (!processingFilesRef.current) {
-        const uploadedDocs = updatedFiles
-          .filter((file) => file.file instanceof File === false)
-          .map((file) => {
-            const fileData = file.file as any;
-            return {
-              id: fileData.id || file.id,
-              name: fileData.name,
-              url: fileData.url,
-              size: fileData.size,
-              type: fileData.type,
-              objectName: fileData.objectName || fileData.id,
-              uploadedAt: fileData.uploadedAt || new Date().toISOString(),
-              title: fileData.title || fileData.name,
-              description: fileData.description || "",
-            } as UploadedDocument;
-          });
-
-        field.onChange(uploadedDocs);
-      }
+    onFilesChange: () => {
+      /* This callback is now handled by the useEffect below */
     },
   });
 
-  // Process newly added files - we'll use this instead of a useEffect
+  // Effect to sync successfully uploaded files back to the React Hook Form field
+  useEffect(() => {
+    // Only update the form if files are not currently being processed (e.g., uploading)
+    if (!processingFilesRef.current) {
+      const uploadedDocs = files // 'files' is the current state from useFileUpload
+        .filter(
+          (fileWithPreview) =>
+            !(fileWithPreview.file instanceof File) && fileWithPreview.file // Ensure it's uploaded metadata
+        )
+        .map((fileWithPreview) => {
+          const fileData = fileWithPreview.file as UploadedDocument; // Type assertion for clarity
+          return {
+            id: fileData.id || fileWithPreview.id, // Fallback to fileWithPreview.id if needed
+            name: fileData.name,
+            url: fileData.url,
+            size: fileData.size,
+            type: fileData.type,
+            objectName: fileData.objectName, // Assumes objectName is on fileData
+            uploadedAt: fileData.uploadedAt || new Date().toISOString(),
+            title: fileData.title || fileData.name,
+            description: fileData.description || "",
+          } as UploadedDocument;
+        });
+
+      // To prevent unnecessary re-renders or potential loops,
+      // compare current field value with the new docs before calling onChange.
+      // JSON.stringify is a simple way for deep comparison of simple objects/arrays.
+      if (JSON.stringify(field.value) !== JSON.stringify(uploadedDocs)) {
+        field.onChange(uploadedDocs);
+      }
+    }
+  }, [files, field.onChange]); // Rerun when files from useFileUpload or field.onChange changes
+  // processingFilesRef.current is a ref, its change doesn't trigger useEffect directly,
+  // but its value is checked inside. This is a common pattern.
+
+  // Process newly added files
   const processNewFiles = async (newFiles: File[]) => {
     if (newFiles.length === 0 || isUploading || disabled) return;
 
@@ -176,21 +200,87 @@ export function FormDocumentUpload<
       processingFilesRef.current = true;
       setIsUploading(true);
 
+      // Initialize progress tracking for the files being uploaded
+      const initialProgress: UploadProgress[] = newFiles.map((file) => ({
+        fileName: file.name,
+        progress: 0,
+      }));
+
+      setUploadingFiles(initialProgress);
+
       const uploadedFiles: UploadedDocument[] = [];
 
       for (const file of newFiles) {
+        // Update progress to show upload starting
+        setUploadingFiles((prev) =>
+          prev.map((item) =>
+            item.fileName === file.name ? { ...item, progress: 10 } : item
+          )
+        );
+
         const formData = new FormData();
         formData.append("file", file);
         formData.append("title", file.name);
         formData.append("type", documentType);
 
         try {
+          // Simulate progress updates while waiting for the server response
+          let currentProgress = 10;
+          const progressInterval = setInterval(() => {
+            if (currentProgress < 90) {
+              currentProgress += Math.floor(Math.random() * 10) + 5;
+              currentProgress = Math.min(currentProgress, 90);
+
+              setUploadingFiles((prev) =>
+                prev.map((item) =>
+                  item.fileName === file.name
+                    ? { ...item, progress: currentProgress }
+                    : item
+                )
+              );
+            }
+          }, 300);
+
           const uploadedFile = await uploadDocument(formData);
+
+          // Clear the interval once the upload is complete
+          clearInterval(progressInterval);
+
           if (uploadedFile) {
             uploadedFiles.push(uploadedFile);
+
+            // Mark as completed with 100% progress
+            setUploadingFiles((prev) =>
+              prev.map((item) =>
+                item.fileName === file.name ? { ...item, progress: 100 } : item
+              )
+            );
+          } else {
+            // Handle failure case
+            setUploadingFiles((prev) =>
+              prev.map((item) =>
+                item.fileName === file.name
+                  ? { ...item, error: "Upload failed" }
+                  : item
+              )
+            );
           }
         } catch (error) {
           console.error("Error uploading file:", error);
+
+          // Update progress with error
+          setUploadingFiles((prev) =>
+            prev.map((item) =>
+              item.fileName === file.name
+                ? {
+                    ...item,
+                    error:
+                      error instanceof Error ? error.message : "Upload failed",
+                  }
+                : item
+            )
+          );
+
           if (onUploadError) {
             onUploadError(
               error instanceof Error
@@ -242,6 +332,11 @@ export function FormDocumentUpload<
     } finally {
       setIsUploading(false);
       processingFilesRef.current = false;
+
+      // Remove upload progress indicators after a short delay
+      setTimeout(() => {
+        setUploadingFiles([]);
+      }, 2000);
     }
   };
 
@@ -254,16 +349,6 @@ export function FormDocumentUpload<
 
     try {
       processingFilesRef.current = true;
-
-      // If it's a real file (not just a File object), delete it from storage
-      if (!(fileToRemove.file instanceof File)) {
-        const metadata = fileToRemove.file as any;
-        const objectName = metadata.objectName || metadata.id;
-
-        if (objectName) {
-          await deleteDocument(objectName, documentType, metadata.name);
-        }
-      }
 
       // Remove from UI
       internalRemoveFile(id);
@@ -313,6 +398,7 @@ export function FormDocumentUpload<
           aria-disabled={isUploading || disabled}
         >
           <input
+            {...getInputProps()}
             type="file"
             className="sr-only"
             aria-label="Upload files"
@@ -355,6 +441,47 @@ export function FormDocumentUpload<
           >
             <AlertCircleIcon className="size-3 shrink-0" />
             <span>{errors[0] || fieldState.error?.message}</span>
+          </div>
+        )}
+
+        {/* Upload progress indicators */}
+        {uploadingFiles.length > 0 && (
+          <div className="space-y-2 mt-2 mb-2">
+            <h4 className="text-sm font-medium">Uploading files...</h4>
+            {uploadingFiles.map((file, index) => (
+              <div
+                key={`${file.fileName}-${index}`}
+                className="bg-background/50 rounded-lg border p-3"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="flex aspect-square size-6 shrink-0 items-center justify-center rounded border">
+                      <FileIcon className="size-3 opacity-60" />
+                    </div>
+                    <p className="truncate text-sm font-medium">
+                      {file.fileName}
+                    </p>
+                  </div>
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {file.progress}%
+                  </span>
+                </div>
+
+                {file.error ? (
+                  <div className="text-destructive flex items-center gap-1 text-xs">
+                    <AlertCircleIcon className="size-3 shrink-0" />
+                    <span>{file.error}</span>
+                  </div>
+                ) : (
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+                    <div
+                      className="bg-primary h-full transition-all duration-300 ease-out"
+                      style={{ width: `${file.progress}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
 
