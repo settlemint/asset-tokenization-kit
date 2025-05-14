@@ -87,8 +87,6 @@ export function CreateStablecoinForm({
     <SummaryComponent
       key="summary"
       configurationCard={<StablecoinConfigurationCard />}
-      onBack={onPrevStep}
-      onSubmit={createStablecoin}
       predictAddress={getPredictedAddress}
       isAddressAvailable={isAddressAvailable}
     />,

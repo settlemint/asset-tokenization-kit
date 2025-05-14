@@ -1,30 +1,20 @@
 "use client";
 
+import { Form } from "@/components/blocks/form/form";
+import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createEquity } from "@/lib/mutations/equity/create/create-action";
-import {
-  CreateEquitySchema,
-  type CreateEquityInput,
-} from "@/lib/mutations/equity/create/create-schema";
-import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/equity-factory/equity-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/equity-factory/equity-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { FormProvider, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import type { AssetFormDefinition } from "../../asset-designer/types";
-import {
-  AssetAdmins,
-  stepDefinition as adminsStep,
-} from "../common/asset-admins/asset-admins";
-import {
-  Summary,
-  stepDefinition as summaryStep,
-} from "../common/summary/summary";
-import { Basics, stepDefinition as basicsStep } from "./steps/basics";
-import {
-  Configuration,
-  stepDefinition as configurationStep,
-} from "./steps/configuration";
+import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
+import { stepDefinition as summaryStep } from "../common/summary/summary";
+import { stepDefinition as basicsStep } from "./steps/basics";
+import { stepDefinition as configurationStep } from "./steps/configuration";
 import { EquityConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateEquityFormProps {
@@ -32,9 +22,7 @@ interface CreateEquityFormProps {
   currentStepId: string;
   onNextStep: () => void;
   onPrevStep: () => void;
-  verificationWrapper: <T = SafeActionResult<string[]>>(
-    fn: (data: any) => Promise<T>
-  ) => (data: any) => Promise<void>;
+  onOpenChange?: (open: boolean) => void;
 }
 // Define the interface that all steps will implement
 export interface EquityStepProps {
@@ -48,57 +36,100 @@ export function CreateEquityForm({
   currentStepId,
   onNextStep,
   onPrevStep,
-  verificationWrapper,
+  onOpenChange,
 }: CreateEquityFormProps) {
-  const equityForm = useForm<CreateEquityInput>({
-    defaultValues: {
-      assetName: "",
-      symbol: "",
-      decimals: 18,
-      equityClass: "",
-      equityCategory: "",
-      price: {
-        amount: 1,
-        currency: userDetails.currency,
-      },
-      verificationType: "pincode",
-      assetAdmins: [],
-    },
-    mode: "onTouched",
-    resolver: typeboxResolver(CreateEquitySchema()),
-  });
+  const t = useTranslations("private.assets.create.form");
 
-  const renderCurrentStep = () => {
-    switch (currentStepId) {
-      case "details":
-        return <Basics onNext={onNextStep} onBack={onPrevStep} />;
-      case "configuration":
-        return <Configuration onNext={onNextStep} onBack={onPrevStep} />;
-      case "admins":
-        return (
-          <AssetAdmins
-            userDetails={userDetails}
-            onNext={onNextStep}
-            onBack={onPrevStep}
-          />
-        );
-      case "summary":
-        return (
-          <Summary
-            configurationCard={<EquityConfigurationCard form={equityForm} />}
-            form={equityForm}
-            onBack={onPrevStep}
-            onSubmit={verificationWrapper(createEquity)}
-            predictAddress={getPredictedAddress}
-            isAddressAvailable={isAddressAvailable}
-          />
-        );
-      default:
-        return <div>Unknown step: {currentStepId}</div>;
-    }
+  // Create component instances for each step
+  const BasicsComponent = basicsStep.component;
+  const ConfigurationComponent = configurationStep.component;
+  const AdminsComponent = adminsStep.component;
+  const SummaryComponent = summaryStep.component;
+
+  // Create an array of all step components in order for Form to manage
+  const allStepComponents = [
+    <BasicsComponent key="details" onNext={onNextStep} onBack={onPrevStep} />,
+    <ConfigurationComponent
+      key="configuration"
+      onNext={onNextStep}
+      onBack={onPrevStep}
+    />,
+    <AdminsComponent
+      key="admins"
+      userDetails={userDetails}
+      onNext={onNextStep}
+      onBack={onPrevStep}
+    />,
+    <SummaryComponent
+      key="summary"
+      configurationCard={<EquityConfigurationCard />}
+      predictAddress={getPredictedAddress}
+      isAddressAvailable={isAddressAvailable}
+    />,
+  ];
+
+  // Define step order and mapping
+  const stepIdToIndex = {
+    details: 0,
+    configuration: 1,
+    admins: 2,
+    summary: 3,
   };
 
-  return <FormProvider {...equityForm}>{renderCurrentStep()}</FormProvider>;
+  // Use the step synchronization hook
+  const { currentStepIndex, isLastStep, onStepChange, onAnyFieldChange } =
+    useFormStepSync({
+      currentStepId,
+      stepIdToIndex,
+      onNextStep,
+      onPrevStep,
+    });
+
+  const [internalCurrentStep, setInternalCurrentStep] =
+    useState(currentStepIndex);
+
+  // Update internal step when parent step changes
+  useEffect(() => {
+    setInternalCurrentStep(currentStepIndex);
+  }, [currentStepIndex]);
+
+  return (
+    <Form
+      action={createEquity}
+      resolver={typeboxResolver(CreateEquitySchema())}
+      defaultValues={{
+        assetName: "",
+        symbol: "",
+        decimals: 18,
+        equityClass: "",
+        equityCategory: "",
+        price: {
+          amount: 1,
+          currency: userDetails.currency,
+        },
+        verificationType: "pincode",
+        assetAdmins: [],
+      }}
+      buttonLabels={{
+        label: isLastStep
+          ? t("button-labels.equity.issue")
+          : t("button-labels.general.next"),
+        submittingLabel: t("button-labels.equity.submitting"),
+        processingLabel: t("button-labels.general.processing"),
+      }}
+      secureForm={true}
+      hideStepProgress={true}
+      toastMessages={{
+        loading: t("toasts.equity.submitting"),
+        success: t("toasts.equity.success"),
+      }}
+      onStepChange={onStepChange}
+      onAnyFieldChange={onAnyFieldChange}
+      onOpenChange={onOpenChange}
+    >
+      {allStepComponents}
+    </Form>
+  );
 }
 
 CreateEquityForm.displayName = "CreateEquityForm";

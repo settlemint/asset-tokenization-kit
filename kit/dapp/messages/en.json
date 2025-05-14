@@ -1410,6 +1410,31 @@
               "submitting": "Creating stablecoin... This process may take a moment.",
               "failed": "Failed to create stablecoin. Please try again.",
               "success": "Stablecoin was created successfully!"
+            },
+            "fund": {
+              "submitting": "Creating fund... This process may take a moment.",
+              "failed": "Failed to create fund. Please try again.",
+              "success": "Fund was created successfully!"
+            },
+            "equity": {
+              "submitting": "Creating equity... This process may take a moment.",
+              "failed": "Failed to create equity. Please try again.",
+              "success": "Equity was created successfully!"
+            },
+            "deposit": {
+              "submitting": "Creating deposit... This process may take a moment.",
+              "failed": "Failed to create deposit. Please try again.",
+              "success": "Deposit was created successfully!"
+            },
+            "cryptocurrency": {
+              "submitting": "Creating cryptocurrency... This process may take a moment.",
+              "failed": "Failed to create cryptocurrency. Please try again.",
+              "success": "Cryptocurrency was created successfully!"
+            },
+            "bond": {
+              "submitting": "Creating bond... This process may take a moment.",
+              "failed": "Failed to create bond. Please try again.",
+              "success": "Bond was created successfully!"
             }
           },
           "button-labels": {
@@ -1421,6 +1446,26 @@
             "stablecoin": {
               "issue": "Issue stablecoin",
               "submitting": "Issueing stablecoin..."
+            },
+            "fund": {
+              "issue": "Issue fund",
+              "submitting": "Issueing fund..."
+            },
+            "equity": {
+              "issue": "Issue equity",
+              "submitting": "Issueing equity..."
+            },
+            "deposit": {
+              "issue": "Issue deposit",
+              "submitting": "Issueing deposit..."
+            },
+            "cryptocurrency": {
+              "issue": "Issue cryptocurrency",
+              "submitting": "Issueing cryptocurrency..."
+            },
+            "bond": {
+              "issue": "Issue bond",
+              "submitting": "Issueing bond..."
             }
           },
           "toast-action": {

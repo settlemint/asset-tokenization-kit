@@ -5,7 +5,6 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/client";
-import type { SafeActionResult } from "@/lib/mutations/safe-action";
 import { DollarSign, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -20,16 +19,12 @@ interface AssetAdmin {
 
 interface SummaryProps {
   configurationCard: React.ReactNode;
-  onSubmit: (data: any) => Promise<SafeActionResult<string[]> | any>;
   predictAddress: (values: any) => Promise<Address>;
   isAddressAvailable: (address: Address) => Promise<boolean>;
-  onBack?: () => void;
 }
 
 export function Summary({
-  onBack,
   configurationCard,
-  onSubmit,
   predictAddress,
   isAddressAvailable,
 }: SummaryProps) {
@@ -87,17 +82,6 @@ export function Summary({
       setIsPredictingAddress(false);
       return false;
     }
-  };
-
-  const handleSubmit = async () => {
-    // Validate and set the predicted address before submission if applicable
-    const isAddressValid = await validatePredictedAddress();
-    if (!isAddressValid) {
-      return;
-    }
-
-    // At this point the form should have a valid predictedAddress set
-    await onSubmit(form.getValues());
   };
 
   return (

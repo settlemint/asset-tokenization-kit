@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useSettings } from "@/hooks/use-settings";
+import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -9,11 +10,13 @@ import { useFormContext } from "react-hook-form";
 import { SummaryRow } from "../../common/summary/summary";
 
 export function CryptoConfigurationCard() {
-  const form = useFormContext();
-  const formValues = form.getValues();
+  const { getValues } = useFormContext<CreateCryptoCurrencyInput>();
   const t = useTranslations("private.assets.create");
   const baseCurrency = useSettings("baseCurrency");
   const locale = useLocale();
+
+  // Get form values
+  const formValues = getValues();
 
   return (
     <Card>

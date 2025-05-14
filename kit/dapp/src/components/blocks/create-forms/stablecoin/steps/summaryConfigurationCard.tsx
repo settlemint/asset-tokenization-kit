@@ -10,13 +10,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { Settings } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { SummaryRow } from "../../common/summary/summary";
 
 export function StablecoinConfigurationCard() {
   const { getValues } = useFormContext<CreateStablecoinInput>();
-  const t = useTranslations("private.assets.create");
   const locale = useLocale();
 
   // Get form values

@@ -1,30 +1,43 @@
 "use client";
 
+/*
+ * Architectural Note: Form-Managed Steps with Parent Coordination
+ *
+ * This component uses a hybrid approach to step management:
+ *
+ * 1. The Form component manages step state internally, with all validation
+ *    and verification logic working properly for each step.
+ *
+ * 2. We pass ALL step components to the Form to enable its built-in
+ *    multi-step features, including proper validation and pincode verification.
+ *
+ * 3. We use the onStepChange callback to notify the parent (AssetDesignerDialog)
+ *    when the Form's step changes, allowing the sidebar and other external
+ *    UI elements to stay in sync.
+ *
+ * 4. When we receive the currentStepId from the parent, we update the Form's
+ *    internal step state to keep them synchronized.
+ *
+ * This approach gives us the best of both worlds: Form's validation and
+ * security features work correctly while the parent maintains control over
+ * the overall process flow.
+ */
+
+import { Form } from "@/components/blocks/form/form";
+import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createFund } from "@/lib/mutations/fund/create/create-action";
-import {
-  CreateFundSchema,
-  type CreateFundInput,
-} from "@/lib/mutations/fund/create/create-schema";
-import type { SafeActionResult } from "@/lib/mutations/safe-action";
+import { CreateFundSchema } from "@/lib/mutations/fund/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/fund-factory/fund-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/fund-factory/fund-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { FormProvider, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import type { AssetFormDefinition } from "../../asset-designer/types";
-import {
-  AssetAdmins,
-  stepDefinition as adminsStep,
-} from "../common/asset-admins/asset-admins";
-import {
-  Summary,
-  stepDefinition as summaryStep,
-} from "../common/summary/summary";
-import { Basics, stepDefinition as basicsStep } from "./steps/basics";
-import {
-  Configuration,
-  stepDefinition as configurationStep,
-} from "./steps/configuration";
+import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
+import { stepDefinition as summaryStep } from "../common/summary/summary";
+import { stepDefinition as basicsStep } from "./steps/basics";
+import { stepDefinition as configurationStep } from "./steps/configuration";
 import { FundConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateFundFormProps {
@@ -32,9 +45,7 @@ interface CreateFundFormProps {
   currentStepId: string;
   onNextStep: () => void;
   onPrevStep: () => void;
-  verificationWrapper: <T = SafeActionResult<string[]>>(
-    fn: (data: any) => Promise<T>
-  ) => (data: any) => Promise<void>;
+  onOpenChange?: (open: boolean) => void;
 }
 
 // Define the interface that all steps will implement
@@ -49,58 +60,101 @@ export function CreateFundForm({
   currentStepId,
   onNextStep,
   onPrevStep,
-  verificationWrapper,
+  onOpenChange,
 }: CreateFundFormProps) {
-  const fundForm = useForm<CreateFundInput>({
-    defaultValues: {
-      assetName: "",
-      symbol: "",
-      decimals: 18,
-      fundClass: "",
-      fundCategory: "",
-      managementFeeBps: 100, // Default 1% management fee
-      price: {
-        amount: 1,
-        currency: userDetails.currency,
-      },
-      verificationType: "pincode",
-      assetAdmins: [],
-    },
-    mode: "onChange", // Validate as fields change for real-time feedback
-    resolver: typeboxResolver(CreateFundSchema()),
-  });
+  const t = useTranslations("private.assets.create.form");
 
-  const renderCurrentStep = () => {
-    switch (currentStepId) {
-      case "details":
-        return <Basics onNext={onNextStep} onBack={onPrevStep} />;
-      case "configuration":
-        return <Configuration onNext={onNextStep} onBack={onPrevStep} />;
-      case "admins":
-        return (
-          <AssetAdmins
-            userDetails={userDetails}
-            onNext={onNextStep}
-            onBack={onPrevStep}
-          />
-        );
-      case "summary":
-        return (
-          <Summary
-            configurationCard={<FundConfigurationCard form={fundForm} />}
-            form={fundForm}
-            onBack={onPrevStep}
-            onSubmit={verificationWrapper(createFund)}
-            predictAddress={getPredictedAddress}
-            isAddressAvailable={isAddressAvailable}
-          />
-        );
-      default:
-        return <div>Unknown step: {currentStepId}</div>;
-    }
+  // Create component instances for each step
+  const BasicsComponent = basicsStep.component;
+  const ConfigurationComponent = configurationStep.component;
+  const AdminsComponent = adminsStep.component;
+  const SummaryComponent = summaryStep.component;
+
+  // Create an array of all step components in order for Form to manage
+  const allStepComponents = [
+    <BasicsComponent key="details" onNext={onNextStep} onBack={onPrevStep} />,
+    <ConfigurationComponent
+      key="configuration"
+      onNext={onNextStep}
+      onBack={onPrevStep}
+    />,
+    <AdminsComponent
+      key="admins"
+      userDetails={userDetails}
+      onNext={onNextStep}
+      onBack={onPrevStep}
+    />,
+    <SummaryComponent
+      key="summary"
+      configurationCard={<FundConfigurationCard />}
+      predictAddress={getPredictedAddress}
+      isAddressAvailable={isAddressAvailable}
+    />,
+  ];
+
+  // Define step order and mapping
+  const stepIdToIndex = {
+    details: 0,
+    configuration: 1,
+    admins: 2,
+    summary: 3,
   };
 
-  return <FormProvider {...fundForm}>{renderCurrentStep()}</FormProvider>;
+  // Use the step synchronization hook
+  const { currentStepIndex, isLastStep, onStepChange, onAnyFieldChange } =
+    useFormStepSync({
+      currentStepId,
+      stepIdToIndex,
+      onNextStep,
+      onPrevStep,
+    });
+
+  const [internalCurrentStep, setInternalCurrentStep] =
+    useState(currentStepIndex);
+
+  // Update internal step when parent step changes
+  useEffect(() => {
+    setInternalCurrentStep(currentStepIndex);
+  }, [currentStepIndex]);
+
+  return (
+    <Form
+      action={createFund}
+      resolver={typeboxResolver(CreateFundSchema())}
+      defaultValues={{
+        assetName: "",
+        symbol: "",
+        decimals: 18,
+        fundClass: "",
+        fundCategory: "",
+        managementFeeBps: 100, // Default 1% management fee
+        price: {
+          amount: 1,
+          currency: userDetails.currency,
+        },
+        verificationType: "pincode",
+        assetAdmins: [],
+      }}
+      buttonLabels={{
+        label: isLastStep
+          ? t("button-labels.fund.issue")
+          : t("button-labels.general.next"),
+        submittingLabel: t("button-labels.fund.submitting"),
+        processingLabel: t("button-labels.general.processing"),
+      }}
+      secureForm={true}
+      hideStepProgress={true}
+      toastMessages={{
+        loading: t("toasts.fund.submitting"),
+        success: t("toasts.fund.success"),
+      }}
+      onStepChange={onStepChange}
+      onAnyFieldChange={onAnyFieldChange}
+      onOpenChange={onOpenChange}
+    >
+      {allStepComponents}
+    </Form>
+  );
 }
 
 CreateFundForm.displayName = "CreateFundForm";
