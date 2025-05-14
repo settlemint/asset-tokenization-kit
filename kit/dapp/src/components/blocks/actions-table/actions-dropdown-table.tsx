@@ -1,5 +1,3 @@
-"use client";
-
 import { getUser } from "@/lib/auth/utils";
 import { getActionsList } from "@/lib/queries/actions/actions-list";
 import { ActionType } from "@/lib/queries/actions/actions-schema";
