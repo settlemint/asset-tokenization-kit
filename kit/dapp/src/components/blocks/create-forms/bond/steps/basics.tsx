@@ -7,40 +7,12 @@ import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema"
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-interface BasicsProps {
-  onNext?: () => void;
-  onBack?: () => void;
-}
-
-export function Basics({ onNext, onBack }: BasicsProps) {
-  const { control, formState, trigger } = useFormContext<CreateBondInput>();
+export function Basics() {
+  const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
 
-  // Fields for this step - used for validation
-  const stepFields = ["assetName", "symbol", "decimals", "isin"];
-
-  // We can directly use formState.isValid for the whole form (resolver validates everything)
-  // But for a multi-step form, we only want to check the current step's fields
-  const hasStepErrors = stepFields.some(
-    (field) => !!formState.errors[field as keyof typeof formState.errors]
-  );
-
-  // Handle next button click - trigger validation before proceeding
-  const handleNext = async () => {
-    // Trigger validation for just these fields
-    const isValid = await trigger(stepFields as (keyof CreateBondInput)[]);
-    if (isValid && onNext) {
-      onNext();
-    }
-  };
-
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">{t("basics.title")}</h3>

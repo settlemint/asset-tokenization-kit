@@ -10,7 +10,6 @@ import type { User } from "@/lib/queries/user/user-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
@@ -24,13 +23,6 @@ interface CreateBondFormProps {
   onNextStep: () => void;
   onPrevStep: () => void;
   onOpenChange?: (open: boolean) => void;
-}
-
-// Define the interface that all steps will implement
-export interface BondStepProps {
-  onNext?: () => void;
-  onBack?: () => void;
-  userDetails?: User;
 }
 export function CreateBondForm({
   userDetails,
@@ -49,18 +41,9 @@ export function CreateBondForm({
 
   // Create an array of all step components in order for Form to manage
   const allStepComponents = [
-    <BasicsComponent key="details" onNext={onNextStep} onBack={onPrevStep} />,
-    <ConfigurationComponent
-      key="configuration"
-      onNext={onNextStep}
-      onBack={onPrevStep}
-    />,
-    <AdminsComponent
-      key="admins"
-      userDetails={userDetails}
-      onNext={onNextStep}
-      onBack={onPrevStep}
-    />,
+    <BasicsComponent key="details" />,
+    <ConfigurationComponent key="configuration" />,
+    <AdminsComponent key="admins" userDetails={userDetails} />,
     <SummaryComponent
       key="summary"
       configurationCard={<BondConfigurationCard />}
@@ -78,21 +61,12 @@ export function CreateBondForm({
   };
 
   // Use the step synchronization hook
-  const { currentStepIndex, isLastStep, onStepChange, onAnyFieldChange } =
-    useFormStepSync({
-      currentStepId,
-      stepIdToIndex,
-      onNextStep,
-      onPrevStep,
-    });
-
-  const [internalCurrentStep, setInternalCurrentStep] =
-    useState(currentStepIndex);
-
-  // Update internal step when parent step changes
-  useEffect(() => {
-    setInternalCurrentStep(currentStepIndex);
-  }, [currentStepIndex]);
+  const { isLastStep, onStepChange, onAnyFieldChange } = useFormStepSync({
+    currentStepId,
+    stepIdToIndex,
+    onNextStep,
+    onPrevStep,
+  });
 
   return (
     <Form

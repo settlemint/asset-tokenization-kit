@@ -6,39 +6,13 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import type { CryptoStepProps } from "../form";
 
-export function Basics({ onNext, onBack }: CryptoStepProps) {
-  const { control, formState, trigger } =
-    useFormContext<CreateCryptoCurrencyInput>();
+export function Basics() {
+  const { control } = useFormContext<CreateCryptoCurrencyInput>();
   const t = useTranslations("private.assets.create");
 
-  // Fields for this step - used for validation
-  const stepFields = ["assetName", "symbol", "decimals"];
-
-  // Check if there are errors in the current step's fields
-  const hasStepErrors = stepFields.some(
-    (field) => !!formState.errors[field as keyof typeof formState.errors]
-  );
-
-  // Handle next button click - trigger validation before proceeding
-  const handleNext = async () => {
-    // Trigger validation for just these fields
-    const isValid = await trigger(
-      stepFields as (keyof CreateCryptoCurrencyInput)[]
-    );
-    if (isValid && onNext) {
-      onNext();
-    }
-  };
-
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">{t("basics.title")}</h3>

@@ -1,7 +1,6 @@
 "use client";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { useRouter } from "@/i18n/routing";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
@@ -39,8 +38,6 @@ export function AssetDesignerDialog({
   const [assetForm, setAssetForm] = useState<AssetFormDefinition | null>(null);
   const [formComponent, setFormComponent] =
     useState<React.ComponentType<any> | null>(null);
-  const [verifiedFormData, setVerifiedFormData] = useState<any>(null);
-  const router = useRouter();
 
   // Create a unified representation of all steps
   const allSteps: Step[] = [
@@ -58,7 +55,6 @@ export function AssetDesignerDialog({
       setCurrentStepId("type");
       setAssetForm(null);
       setFormComponent(null);
-      setVerifiedFormData(null);
     }
   }, [open]);
 

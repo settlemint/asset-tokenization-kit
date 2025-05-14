@@ -31,58 +31,51 @@ export function Summary({
   const form = useFormContext();
   const t = useTranslations("private.assets.create");
   const formValues = form.getValues();
-  const isSubmitting = form.formState.isSubmitting;
   const { data: session } = authClient.useSession();
   const assetAdmins = formValues.assetAdmins || [];
-  const [isPredictingAddress, setIsPredictingAddress] = useState(false);
   const [predictionError, setPredictionError] = useState<string | null>(null);
 
   // Fetch and validate predicted address on initial load
   useEffect(() => {
-    validatePredictedAddress();
-  }, []);
-
-  // Validate predicted address before form submission if the functions are provided
-  const validatePredictedAddress = async () => {
-    // If prediction functions aren't provided, skip validation and return success
+    // Skip validation if prediction functions aren't provided
     if (!predictAddress || !isAddressAvailable) {
-      return true;
+      return;
     }
 
-    try {
-      setIsPredictingAddress(true);
-      setPredictionError(null);
+    // Validate predicted address
+    const validateAddress = async () => {
+      try {
+        setPredictionError(null);
 
-      const values = form.getValues();
-      const predictedAddress = await predictAddress(values);
-      const isAvailable = await isAddressAvailable(predictedAddress);
+        const values = form.getValues();
+        const predictedAddress = await predictAddress(values);
+        const isAvailable = await isAddressAvailable(predictedAddress);
 
-      if (!isAvailable) {
+        if (!isAvailable) {
+          form.setError("predictedAddress", {
+            message: "private.assets.create.form.errors.duplicate-asset",
+          });
+          setPredictionError(
+            "This asset name and symbol combination is already taken"
+          );
+          return;
+        }
+
+        // Set the predicted address in the form
+        form.setValue("predictedAddress", predictedAddress);
+        form.clearErrors("predictedAddress");
+      } catch (error) {
+        console.error("Error validating address:", error);
         form.setError("predictedAddress", {
-          message: "private.assets.create.form.errors.duplicate-asset",
+          message:
+            "private.assets.create.form.errors.address-prediction-failed",
         });
-        setPredictionError(
-          "This asset name and symbol combination is already taken"
-        );
-        setIsPredictingAddress(false);
-        return false;
+        setPredictionError("Failed to predict contract address");
       }
+    };
 
-      // Set the predicted address in the form
-      form.setValue("predictedAddress", predictedAddress);
-      form.clearErrors("predictedAddress");
-      setIsPredictingAddress(false);
-      return true;
-    } catch (error) {
-      console.error("Error validating address:", error);
-      form.setError("predictedAddress", {
-        message: "private.assets.create.form.errors.address-prediction-failed",
-      });
-      setPredictionError("Failed to predict contract address");
-      setIsPredictingAddress(false);
-      return false;
-    }
-  };
+    validateAddress();
+  }, [form, predictAddress, isAddressAvailable]);
 
   return (
     <>

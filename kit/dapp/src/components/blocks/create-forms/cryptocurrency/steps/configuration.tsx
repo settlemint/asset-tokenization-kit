@@ -8,47 +8,17 @@ import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/c
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import type { CryptoStepProps } from "../form";
 
-export function Configuration({ onNext, onBack }: CryptoStepProps) {
-  const { control, formState, trigger } =
-    useFormContext<CreateCryptoCurrencyInput>();
+export function Configuration() {
+  const { control } = useFormContext<CreateCryptoCurrencyInput>();
   const t = useTranslations("private.assets.create");
   const currencyOptions = fiatCurrencies.map((currency) => ({
     value: currency,
     label: currency,
   }));
 
-  // Fields for this step - used for validation
-  const stepFields = ["initialSupply", "price.amount", "price.currency"];
-
-  // Check if there are errors in the current step's fields
-  const hasStepErrors = stepFields.some((field) => {
-    const [parent, child] = field.split(".");
-    if (child) {
-      return !!(
-        formState.errors[parent as keyof typeof formState.errors] as any
-      )?.[child];
-    }
-    return !!formState.errors[field as keyof typeof formState.errors];
-  });
-
-  // Handle next button click - trigger validation before proceeding
-  const handleNext = async () => {
-    // Trigger validation for just these fields
-    const isValid = await trigger(stepFields as any);
-    if (isValid && onNext) {
-      onNext();
-    }
-  };
-
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">Cryptocurrency Configuration</h3>
