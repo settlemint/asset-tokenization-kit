@@ -38,7 +38,7 @@ export function StablecoinConfigurationCard() {
   const livenessDisplay = `${collateralLivenessValue} ${timeUnitDisplay}`;
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 border-none shadow-none">
       <CardHeader>
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">

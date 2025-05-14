@@ -5,16 +5,11 @@ import { useSettings } from "@/hooks/use-settings";
 import { formatNumber } from "@/lib/utils/number";
 import { Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import type { UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { SummaryRow } from "../../common/summary/summary";
 
-interface CryptoConfigurationCardProps {
-  form: UseFormReturn<any>;
-}
-
-export function CryptoConfigurationCard({
-  form,
-}: CryptoConfigurationCardProps) {
+export function CryptoConfigurationCard() {
+  const form = useFormContext();
   const formValues = form.getValues();
   const t = useTranslations("private.assets.create");
   const baseCurrency = useSettings("baseCurrency");

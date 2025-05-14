@@ -80,14 +80,6 @@ export function FormButton({
   };
 
   const getButtonContent = () => {
-    console.log("Button state:", {
-      isLastStep,
-      currentStep,
-      totalSteps,
-      finalLabels,
-      defaultTranslation: t("next"),
-    });
-
     if (isSubmitting) {
       return (
         <>

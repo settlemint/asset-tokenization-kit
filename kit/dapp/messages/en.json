@@ -1405,7 +1405,23 @@
           "toasts": {
             "submitting": "Creating asset... This process may take a moment.",
             "failed": "Failed to create asset. Please try again.",
-            "success": "Asset was created successfully!"
+            "success": "Asset was created successfully!",
+            "stablecoin": {
+              "submitting": "Creating stablecoin... This process may take a moment.",
+              "failed": "Failed to create stablecoin. Please try again.",
+              "success": "Stablecoin was created successfully!"
+            }
+          },
+          "button-labels": {
+            "general": {
+              "next": "Next",
+              "previous": "Previous",
+              "processing": "Processing..."
+            },
+            "stablecoin": {
+              "issue": "Issue stablecoin",
+              "submitting": "Issueing stablecoin..."
+            }
           },
           "toast-action": {
             "bonds": "View bond",

@@ -44,6 +44,7 @@ interface FormProps<
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
   hideButtons?: boolean | ((step: number) => boolean);
+  hideStepProgress?: boolean;
   toastMessages?: {
     loading?: string;
     success?: string;
@@ -89,6 +90,7 @@ export function Form<
   secureForm = true,
   disablePreviousButton = false,
   onStepChange,
+  hideStepProgress = false,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations();
@@ -482,7 +484,7 @@ export function Form<
             noValidate
             className="flex flex-1 flex-col"
           >
-            {totalSteps > 1 && (
+            {totalSteps > 1 && !hideStepProgress && (
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
             )}
             <div className="flex-1">

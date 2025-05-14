@@ -187,6 +187,7 @@ export function AssetDesignerDialog({
           currentStepId={currentStepId}
           onNextStep={handleNextStep}
           onPrevStep={handlePreviousStep}
+          onOpenChange={onOpenChange}
         />
       );
     }

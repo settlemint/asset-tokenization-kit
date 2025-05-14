@@ -32,6 +32,7 @@ interface CreateCryptoCurrencyFormProps {
   currentStepId: string;
   onNextStep: () => void;
   onPrevStep: () => void;
+  onOpenChange?: (open: boolean) => void;
   verificationWrapper: <T = SafeActionResult<string[]>>(
     fn: (data: any) => Promise<T>
   ) => (data: any) => Promise<void>;
@@ -49,6 +50,7 @@ export function CreateCryptoCurrencyForm({
   currentStepId,
   onNextStep,
   onPrevStep,
+  onOpenChange,
   verificationWrapper,
 }: CreateCryptoCurrencyFormProps) {
   const cryptoForm = useForm<CreateCryptoCurrencyInput>({

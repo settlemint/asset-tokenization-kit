@@ -21,6 +21,7 @@ interface CreateBondFormProps {
   currentStepId: string;
   onNextStep: () => void;
   onPrevStep: () => void;
+  onOpenChange?: (open: boolean) => void;
 }
 
 // Define the interface that all steps will implement
@@ -34,6 +35,7 @@ export function CreateBondForm({
   currentStepId,
   onNextStep,
   onPrevStep,
+  onOpenChange,
 }: CreateBondFormProps) {
   const form = useFormContext();
 
@@ -63,8 +65,7 @@ export function CreateBondForm({
       case "summary":
         return (
           <SummaryComponent
-            form={form}
-            configurationCard={<BondConfigurationCard form={form} />}
+            configurationCard={<BondConfigurationCard />}
             onSubmit={(data) => createBond(data)}
             predictAddress={getPredictedAddress}
             isAddressAvailable={isAddressAvailable}
@@ -102,6 +103,7 @@ export function CreateBondForm({
         loading: "Creating bond...",
         success: "Bond created successfully!",
       }}
+      onOpenChange={onOpenChange}
     >
       {getCurrentStep()}
     </Form>

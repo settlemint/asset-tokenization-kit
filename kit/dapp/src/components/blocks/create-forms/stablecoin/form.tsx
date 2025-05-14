@@ -1,6 +1,30 @@
 "use client";
 
+/*
+ * Architectural Note: Form-Managed Steps with Parent Coordination
+ *
+ * This component uses a hybrid approach to step management:
+ *
+ * 1. The Form component manages step state internally, with all validation
+ *    and verification logic working properly for each step.
+ *
+ * 2. We pass ALL step components to the Form to enable its built-in
+ *    multi-step features, including proper validation and pincode verification.
+ *
+ * 3. We use the onStepChange callback to notify the parent (AssetDesignerDialog)
+ *    when the Form's step changes, allowing the sidebar and other external
+ *    UI elements to stay in sync.
+ *
+ * 4. When we receive the currentStepId from the parent, we update the Form's
+ *    internal step state to keep them synchronized.
+ *
+ * This approach gives us the best of both worlds: Form's validation and
+ * security features work correctly while the parent maintains control over
+ * the overall process flow.
+ */
+
 import { Form } from "@/components/blocks/form/form";
+import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
 import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
@@ -8,6 +32,7 @@ import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin
 import type { User } from "@/lib/queries/user/user-schema";
 import type { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
@@ -21,6 +46,7 @@ interface CreateStablecoinFormProps {
   currentStepId: string;
   onNextStep: () => void;
   onPrevStep: () => void;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export interface StablecoinStepProps {
@@ -34,7 +60,10 @@ export function CreateStablecoinForm({
   currentStepId,
   onNextStep,
   onPrevStep,
+  onOpenChange,
 }: CreateStablecoinFormProps) {
+  const t = useTranslations("private.assets.create.form");
+
   // Create component instances for each step
   const BasicsComponent = basicsStep.component;
   const ConfigurationComponent = configurationStep.component;
@@ -73,10 +102,15 @@ export function CreateStablecoinForm({
     summary: 3,
   };
 
-  // Get current step index
-  const currentStepIndex =
-    stepIdToIndex[currentStepId as keyof typeof stepIdToIndex] || 0;
-  const isLastStep = currentStepIndex === Object.keys(stepIdToIndex).length - 1;
+  // Use the step synchronization hook
+  const { currentStepIndex, isLastStep, onStepChange, onAnyFieldChange } =
+    useFormStepSync({
+      currentStepId,
+      stepIdToIndex,
+      onNextStep,
+      onPrevStep,
+    });
+
   const [internalCurrentStep, setInternalCurrentStep] =
     useState(currentStepIndex);
 
@@ -85,28 +119,6 @@ export function CreateStablecoinForm({
     setInternalCurrentStep(currentStepIndex);
   }, [currentStepIndex]);
 
-  /*
-   * Architectural Note: Form-Managed Steps with Parent Coordination
-   *
-   * This component uses a hybrid approach to step management:
-   *
-   * 1. The Form component manages step state internally, with all validation
-   *    and verification logic working properly for each step.
-   *
-   * 2. We pass ALL step components to the Form to enable its built-in
-   *    multi-step features, including proper validation and pincode verification.
-   *
-   * 3. We use the onStepChange callback to notify the parent (AssetDesignerDialog)
-   *    when the Form's step changes, allowing the sidebar and other external
-   *    UI elements to stay in sync.
-   *
-   * 4. When we receive the currentStepId from the parent, we update the Form's
-   *    internal step state to keep them synchronized.
-   *
-   * This approach gives us the best of both worlds: Form's validation and
-   * security features work correctly while the parent maintains control over
-   * the overall process flow.
-   */
   return (
     <Form
       action={createStablecoin}
@@ -125,38 +137,21 @@ export function CreateStablecoinForm({
         assetAdmins: [],
       }}
       buttonLabels={{
-        label: currentStepId === "summary" ? "Issue Stablecoin" : "Next",
-        submittingLabel: "Issuing Stablecoin...",
-        processingLabel: "Processing...",
+        label: isLastStep
+          ? t("button-labels.stablecoin.issue")
+          : t("button-labels.general.next"),
+        submittingLabel: t("button-labels.stablecoin.submitting"),
+        processingLabel: t("button-labels.general.processing"),
       }}
       secureForm={true}
+      hideStepProgress={true}
       toastMessages={{
-        loading: "Creating stablecoin...",
-        success: "Stablecoin created successfully!",
+        loading: t("toasts.stablecoin.submitting"),
+        success: t("toasts.stablecoin.success"),
       }}
-      // Notify parent when form step changes
-      onStepChange={(newStepIndex) => {
-        // Map step index back to step ID
-        const stepId = Object.entries(stepIdToIndex).find(
-          ([_, index]) => index === newStepIndex
-        )?.[0];
-
-        // Notify parent of step change
-        if (stepId && stepId !== currentStepId) {
-          if (newStepIndex > currentStepIndex) {
-            onNextStep();
-          } else {
-            onPrevStep();
-          }
-        }
-      }}
-      // Keep Form's internal step in sync with parent
-      onAnyFieldChange={(_, context) => {
-        // If the parent step doesn't match Form's internal step, update Form's step
-        if (context.step !== currentStepIndex && currentStepIndex >= 0) {
-          context.goToStep(currentStepIndex);
-        }
-      }}
+      onStepChange={onStepChange}
+      onAnyFieldChange={onAnyFieldChange}
+      onOpenChange={onOpenChange}
     >
       {allStepComponents}
     </Form>
