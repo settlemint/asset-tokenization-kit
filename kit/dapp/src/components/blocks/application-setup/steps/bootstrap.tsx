@@ -19,7 +19,7 @@ export function BootstrapStep({ onNext }: BootstrapStepProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let subscription: EdenWS;
+    let subscription: EdenWS | undefined = undefined;
     const fetchStatus = async () => {
       const statusChanges =
         apiClient.api["application-setup"].ws.status.subscribe();
@@ -31,19 +31,17 @@ export function BootstrapStep({ onNext }: BootstrapStepProps) {
         }
       });
       subscription.on("error", (event) => {
+        if (event.type === "close") {
+          return;
+        }
         setError(`Websocket connection error: ${JSON.stringify(event)}`);
       });
-      /*
-      subscription.on("close", (event) => {
-        console.log(`Websocket connection closed`, event);
-      });
-      subscription.on("open", (event) => {
-        console.log("Websocket connection opened", event);
-      });*/
     };
-    fetchStatus();
+    // Wait 1 second before fetching the status
+    const timeout = window.setTimeout(fetchStatus, 1000);
     return () => {
-      subscription.close();
+      subscription?.close();
+      window.clearTimeout(timeout);
     };
   }, []);
 

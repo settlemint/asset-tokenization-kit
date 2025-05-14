@@ -7,10 +7,18 @@ import {
 import { tryParseJson } from "@settlemint/sdk-utils";
 import { Elysia, t } from "elysia";
 import { BunAdapter } from "elysia/adapter/bun";
+import type { ElysiaWS } from "elysia/ws";
 import { createClient, type Client } from "graphql-ws";
 import { logger } from "./utils/api-logger";
 
-const portalWsConnections = new Map<string, Client>();
+const portalWsConnections = new Map<string, { client: Client; ws: ElysiaWS }>();
+
+export function sendApplicationSetupError(error: Error) {
+  const clients = Array.from(portalWsConnections.values());
+  clients.forEach(({ ws }) => {
+    ws.send(makeJsonStringifiable({ error: error.message }));
+  });
+}
 
 export const ApplicationSetupApi = new Elysia({
   adapter: typeof Bun !== "undefined" ? BunAdapter : undefined, // TODO: use node adapter (when compatible with elysiajs v1.3)
@@ -25,7 +33,6 @@ export const ApplicationSetupApi = new Elysia({
   .get(
     "/status",
     async () => {
-      debugger;
       return getApplicationSetupStatus();
     },
     {
@@ -51,10 +58,10 @@ export const ApplicationSetupApi = new Elysia({
     },
     close: (ws, code, reason) => {
       logger.info(`Websocket closed: ${code} ${reason}`);
-      const client = portalWsConnections.get(ws.id);
-      if (client) {
-        client.terminate();
-        client.dispose();
+      const connection = portalWsConnections.get(ws.id);
+      if (connection) {
+        connection.client.terminate();
+        connection.client.dispose();
         portalWsConnections.delete(ws.id);
       }
     },
@@ -78,7 +85,7 @@ export const ApplicationSetupApi = new Elysia({
         const client = createClient({
           url: graphqlEndpoint.toString(),
         });
-        portalWsConnections.set(ws.id, client);
+        portalWsConnections.set(ws.id, { client, ws });
 
         subscribeToApplicationSetupStatus(client, (status) => {
           ws.send(makeJsonStringifiable(status));

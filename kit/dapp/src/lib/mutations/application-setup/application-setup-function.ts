@@ -1,3 +1,4 @@
+import { sendApplicationSetupError } from "@/lib/api/application-setup";
 import type { User } from "@/lib/auth/types";
 import { withAccessControl } from "@/lib/utils/access-control";
 import type { VerificationType } from "@/lib/utils/typebox/verification-type";
@@ -112,13 +113,14 @@ export const applicationSetupFunction = withAccessControl(
       user: User;
     };
   }): Promise<{ started: boolean }> => {
-    /*setupApplication({ user, verificationCode, verificationType })
+    setupApplication({ user, verificationCode, verificationType })
       .then(() => {
         console.log("Application setup completed successfully");
       })
       .catch((error: Error) => {
+        sendApplicationSetupError(error);
         console.error(`Application setup failed: ${error.message}`, error);
-      });*/
+      });
     return {
       started: true,
     };
