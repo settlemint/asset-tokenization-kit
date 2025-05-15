@@ -284,6 +284,67 @@ To modify database schema:
 > [Better Auth database core schema](https://www.better-auth.com/docs/concepts/database#core-schema)
 > for more information.
 
+### Generating Artifacts
+
+When developing with the kit, you may need to generate various artifacts for
+contracts, subgraphs, and database schemas. These processes create necessary
+files for proper integration between components.
+
+#### Individual Artifact Generation
+
+1. **Genesis Output** - Generate contract deployment configuration:
+
+   ```bash
+   # Navigate to contracts directory
+   cd kit/contracts
+   bun run genesis
+   # Generates genesis-output.json file
+   ```
+
+2. **Subgraph Hash** - Build and hash the subgraph:
+
+   ```bash
+   # Navigate to subgraph directory
+   cd kit/subgraph
+   bun run build
+   # Generates subgraph-output.txt file
+   ```
+
+3. **Portal ABIs** - Generate contract ABIs for the portal:
+
+   ```bash
+   # Navigate to contracts directory
+   cd kit/contracts
+   bun run abi-output
+   # Generates ABIs for portal integration
+   ```
+
+   You can also follow the instructions in the
+   [portal repository](https://github.com/settlemint/portal#generate-pre-deployed-abis-for-the-kits)
+   for alternative methods.
+
+4. **Database Schema** - Generate Hasura database schema:
+
+   ```bash
+   # Navigate to dapp directory
+   cd kit/dapp
+   bun run db:generate
+   # Creates schema in kit/dapp/drizzle folder
+   ```
+
+#### Combined Artifact Generation
+
+To generate all artifacts in a single command, run the following from the root
+directory:
+
+```bash
+bunx turbo dependencies lint build test genesis abi-output
+```
+
+This command runs the entire build pipeline, including dependency installation,
+linting, building, testing, and generating all required artifacts (genesis
+output, subgraph hash, database schema, and portal ABIs).
+
 ### Performance Monitoring
 
 The kit includes a performance monitoring system that collects and visualizes
