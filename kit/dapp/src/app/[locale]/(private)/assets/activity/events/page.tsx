@@ -1,5 +1,5 @@
-import { AssetEventsSkeleton } from "@/components/blocks/asset-events-table/asset-events-skeleton";
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
+import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
@@ -33,7 +33,7 @@ export default async function ActivityPage({
 }) {
   const { sender } = await searchParams;
   return (
-    <Suspense fallback={<AssetEventsSkeleton />}>
+    <Suspense fallback={<DataTableSkeleton />}>
       <AssetEventsTable
         initialColumnFilters={sender ? [{ id: "sender", value: [sender] }] : []}
       />

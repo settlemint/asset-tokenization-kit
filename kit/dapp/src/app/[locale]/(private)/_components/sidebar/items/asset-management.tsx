@@ -112,7 +112,7 @@ export async function AssetManagement() {
           icon: (
             <MailCheckIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
           ),
-          path: "/actions/pending",
+          path: "/assets/actions/pending",
         },
         {
           label: t("asset-activity"),

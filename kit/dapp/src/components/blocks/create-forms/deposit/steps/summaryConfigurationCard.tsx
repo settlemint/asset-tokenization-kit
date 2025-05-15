@@ -1,20 +1,17 @@
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
 import { Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { SummaryRow } from "../../common/summary/summary";
 
-interface DepositConfigurationCardProps {
-  form: UseFormReturn<any>;
-}
-
-export function DepositConfigurationCard({
-  form,
-}: DepositConfigurationCardProps) {
-  const formValues = form.getValues();
+export function DepositConfigurationCard() {
+  const { getValues } = useFormContext<CreateDepositInput>();
   const t = useTranslations("private.assets.create");
+
+  const formValues = getValues();
 
   return (
     <Card>

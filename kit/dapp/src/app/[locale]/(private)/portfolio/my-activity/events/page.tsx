@@ -1,5 +1,5 @@
-import { AssetEventsSkeleton } from "@/components/blocks/asset-events-table/asset-events-skeleton";
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
+import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
@@ -31,7 +31,7 @@ export default async function ActivityPage() {
   const user = await getUser();
 
   return (
-    <Suspense fallback={<AssetEventsSkeleton />}>
+    <Suspense fallback={<DataTableSkeleton />}>
       <AssetEventsTable sender={user.wallet} />
     </Suspense>
   );

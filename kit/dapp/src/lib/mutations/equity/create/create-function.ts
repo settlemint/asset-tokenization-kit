@@ -76,6 +76,7 @@ export const createEquityFunction = withAccessControl(
       predictedAddress,
       price,
       assetAdmins,
+      internalid,
     },
     ctx: { user },
   }: {
@@ -85,6 +86,7 @@ export const createEquityFunction = withAccessControl(
     await hasuraClient.request(CreateOffchainEquity, {
       id: predictedAddress,
       isin: isin,
+      internalid: internalid,
     });
 
     await hasuraClient.request(AddAssetPrice, {

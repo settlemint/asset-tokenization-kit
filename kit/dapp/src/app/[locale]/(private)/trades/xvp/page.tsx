@@ -41,7 +41,7 @@ export default async function XvpPage({
     }),
     getUser(),
   ]);
-  const xvpSettlements = await getXvPSettlementList(user.currency);
+  const xvpSettlements = await getXvPSettlementList(user.currency, user.wallet);
 
   return (
     <>
