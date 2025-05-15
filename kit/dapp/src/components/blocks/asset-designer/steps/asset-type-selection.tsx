@@ -27,7 +27,7 @@ interface AssetTypeInfo {
 const assetTypesInfo: AssetTypeInfo[] = [
   {
     type: "bond",
-    descriptionKey: "private.assets.create.form.description.bonds",
+    descriptionKey: "private.assets.table.topinfo-title.bond",
     extendedDescriptionKey: "private.assets.table.topinfo-description.bond",
     featureKeys: [
       {
@@ -58,8 +58,9 @@ const assetTypesInfo: AssetTypeInfo[] = [
   },
   {
     type: "cryptocurrency",
-    descriptionKey: "private.assets.create.form.description.cryptocurrencies",
-    extendedDescriptionKey: "private.assets.table.topinfo-title.cryptocurrency",
+    descriptionKey: "private.assets.table.topinfo-title.cryptocurrency",
+    extendedDescriptionKey:
+      "private.assets.table.topinfo-description.cryptocurrency",
     featureKeys: [
       {
         status: true,
@@ -89,8 +90,8 @@ const assetTypesInfo: AssetTypeInfo[] = [
   },
   {
     type: "equity",
-    descriptionKey: "private.assets.create.form.description.equities",
-    extendedDescriptionKey: "private.assets.table.topinfo-title.equity",
+    descriptionKey: "private.assets.table.topinfo-title.equity",
+    extendedDescriptionKey: "private.assets.table.topinfo-description.equity",
     featureKeys: [
       {
         status: true,
@@ -120,8 +121,8 @@ const assetTypesInfo: AssetTypeInfo[] = [
   },
   {
     type: "fund",
-    descriptionKey: "private.assets.create.form.description.funds",
-    extendedDescriptionKey: "private.assets.table.topinfo-title.fund",
+    descriptionKey: "private.assets.table.topinfo-title.fund",
+    extendedDescriptionKey: "private.assets.table.topinfo-description.fund",
     featureKeys: [
       {
         status: true,
@@ -151,8 +152,9 @@ const assetTypesInfo: AssetTypeInfo[] = [
   },
   {
     type: "stablecoin",
-    descriptionKey: "private.assets.create.form.description.stablecoins",
-    extendedDescriptionKey: "private.assets.table.topinfo-title.stablecoin",
+    descriptionKey: "private.assets.table.topinfo-title.stablecoin",
+    extendedDescriptionKey:
+      "private.assets.table.topinfo-description.stablecoin",
     featureKeys: [
       {
         status: true,
@@ -182,8 +184,8 @@ const assetTypesInfo: AssetTypeInfo[] = [
   },
   {
     type: "deposit",
-    descriptionKey: "private.assets.create.form.description.deposits",
-    extendedDescriptionKey: "private.assets.table.topinfo-title.deposit",
+    descriptionKey: "private.assets.table.topinfo-title.deposit",
+    extendedDescriptionKey: "private.assets.table.topinfo-description.deposit",
     featureKeys: [
       {
         status: true,
@@ -230,13 +232,13 @@ export function AssetTypeSelection({
         </p>
       </div>
       <div className="flex-1 overflow-y-auto pr-4 px-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8 mb-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4">
           {assetTypesInfo.map((assetInfo) => (
             <div key={assetInfo.type} className="pl-2">
               <Card
                 className={cn(
                   "flex flex-col h-full cursor-pointer transition-all duration-200 overflow-hidden",
-                  "border relative",
+                  "border relative gap-2",
                   selectedType === assetInfo.type
                     ? "border-primary shadow-[0_2px_8px_rgba(0,0,0,0.05)] ring-1 ring-primary/20"
                     : "border-muted hover:border-primary/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]",
@@ -273,11 +275,11 @@ export function AssetTypeSelection({
                       </HoverCardContent>
                     </HoverCard>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-4">
+                  <p className="hidden xl:block text-xs text-muted-foreground mt-2">
                     {t(assetInfo.descriptionKey as any)}
                   </p>
                 </CardHeader>
-                <CardContent className="space-y-4 mt-auto relative z-10">
+                <CardContent className="mt-auto relative z-10">
                   <div className="space-y-2">
                     <h4 className="text-xs font-medium text-foreground">
                       {t("asset-designer.type-selection.key-features")}
