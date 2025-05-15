@@ -151,8 +151,8 @@ export function AssetDesignerDialog({
   const sidebarStyle = {
     backgroundImage:
       theme === "dark"
-        ? "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)), url('/backgrounds/sidebar-bg.png')"
-        : "url('/backgrounds/sidebar-bg.png')",
+        ? "linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5))"
+        : "linear-gradient(45deg, rgba(52, 110, 238, 0.5), rgba(137, 214, 162, 0.8))",
     backgroundSize: "cover",
     backgroundPosition: "top",
     backgroundRepeat: "no-repeat",
