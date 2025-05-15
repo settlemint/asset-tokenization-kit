@@ -2559,6 +2559,22 @@
         "max-amount-to-send": "Amount available to offer: {maxAmount}",
         "title": "Amount to exchange"
       },
+      "asset-flows": {
+        "add-flow": "Add flow",
+        "amount": "Amount",
+        "amount-placeholder": "Enter amount",
+        "asset": "Asset",
+        "asset-placeholder": "Select asset",
+        "description": "Configure the asset flows for this settlement. Each flow represents an asset transfer from one wallet to another.",
+        "flow": "Flow {index}",
+        "from-address": "From address",
+        "from-placeholder": "Select sender",
+        "max-amount": "Available balance: {maxAmount}",
+        "remove-flow": "Remove flow",
+        "title": "Asset flows",
+        "to-address": "To address",
+        "to-placeholder": "Select recipient"
+      },
       "button": {
         "xvp": "Create a new XvP Settlement"
       },
