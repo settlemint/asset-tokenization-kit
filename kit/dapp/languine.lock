@@ -592,6 +592,7 @@ files:
     error.sending: e4b0c2b6d59cb4cf3e169a9886008087
     error.string: 087bfafc45b86ce28faf6f6334562382
     error.string-format: fe83c3f5bda6191d84177a49a53fd647
+    error.string-format-isin: 4863c3c81c61bd0ee03b55c38efc9c87
     error.string-format-unknown: 8c77eb811f7be3ca1b8b4a6e379d8115
     error.string-format-asset-symbol: cd69bdfe7b8a1b454505c6f739232e60
     error.string-max-length: ff3d75ca62a4371adc7764f3973f713b
@@ -608,9 +609,16 @@ files:
     error.uint8array-min-byte-length: 7694642c2923adc52fad9d9df064dba2
     error.undefined: b1d80863b3cc102de85a83a8c78c4ee2
     error.union: f23738594f51d25753c0e679535529d5
+    error.union-min-max: 87b12354ce4427f3639bafd2d8cc86bb
     error.unknown: 13e39826b98706157ee4ceb641c7199f
     error.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
     error.void: b1d80863b3cc102de85a83a8c78c4ee2
+    error.at-least-two-asset-flows: 66b76661bebe0c9e9139599e9459b073
+    error.asset-required: 0e8984da5743af889492d8e8e6ede0cb
+    error.amount-required: 04c73a8b97196e75a41a29a9185ebfca
+    error.from-address-required: 6564ea3a487b40f9ef1e5493ff4d9cc3
+    error.to-address-required: a5501746fe25cacad64672433a505d80
+    error.expiry-required: da67440c690a4bc92c34bedb1960fc54
     error-pages.forbidden.description: 69154cdfbbcadc574167117ce993f49d
     error-pages.forbidden.go-back: 22b653bd8d2edcebb9e0036b4ac79262
     error-pages.forbidden.go-home: 382c69628e6c1c196feec18cba47b6a9
@@ -956,14 +964,42 @@ files:
     private.assets.create.configuration.bonds.underlying-asset: 7b350ed595b03937afb12262eb0f0960
     private.assets.create.configuration.cryptocurrencies.description: 5a22678bbfb6fcec396c1855270ca184
     private.assets.create.configuration.cryptocurrencies.title: 44764afbcf743e84c03b70140bbfc3ce
+    private.assets.create.configuration.cryptocurrencies.title-supply: 4288e091a848e12c896ef09f489affec
+    private.assets.create.configuration.cryptocurrencies.title-value: 089de4f8c31f363927bca21027ad3f54
+    private.assets.create.configuration.cryptocurrencies.description-supply: 0aa24a5c582a9f1d83acddcca9a95777
+    private.assets.create.configuration.cryptocurrencies.description-value: 563d90a62fe15ee46d10c6edbb6868b0
     private.assets.create.configuration.deposits.description: 4f0d76c3bd15037645733fd62d580200
     private.assets.create.configuration.deposits.title: 57f45ffd9c076e41ccf67cda23718317
+    private.assets.create.configuration.deposits.title-collateral: 20288cb4d28958851ff9f7678b6dab3c
+    private.assets.create.configuration.deposits.description-collateral: 4877a471be312b0b9bfd3e788a8fdb61
+    private.assets.create.configuration.deposits.title-value: 089de4f8c31f363927bca21027ad3f54
+    private.assets.create.configuration.deposits.description-value: edd075f69467e2bf5ef5ddfb15770039
+    private.assets.create.configuration.deposits.title-supply: 4288e091a848e12c896ef09f489affec
+    private.assets.create.configuration.deposits.description-supply: c35e161541e83458d303e4fc6730047e
     private.assets.create.configuration.equities.description: 986b100905522cc1045fc68b9a8009b9
     private.assets.create.configuration.equities.title: 2331a7544b6e4a76694035fbe7076b12
+    private.assets.create.configuration.equities.title-supply: 4288e091a848e12c896ef09f489affec
+    private.assets.create.configuration.equities.title-value: 089de4f8c31f363927bca21027ad3f54
+    private.assets.create.configuration.equities.description-supply: b9aa1285077896afd473fdac04a748d9
+    private.assets.create.configuration.equities.description-value: bcd3e6ed056345c43e3c938ab7b4c2d7
+    private.assets.create.configuration.equities.title-classification: 5c9335b28e6277ddbe0137f04e5e58a7
+    private.assets.create.configuration.equities.description-classification: 4a01bc1cabd8659193320a1d2df3bb20
     private.assets.create.configuration.funds.description: daa85f2b27e42014e5e3d998800a818a
     private.assets.create.configuration.funds.title: ed3c174c5ab27c9a6d7463c03999738c
+    private.assets.create.configuration.funds.title-supply: 4288e091a848e12c896ef09f489affec
+    private.assets.create.configuration.funds.title-value: 089de4f8c31f363927bca21027ad3f54
+    private.assets.create.configuration.funds.description-supply: 646dfd1ccc538648bf2d9d1f10e1ade3
+    private.assets.create.configuration.funds.description-value: dc6edb186a6b1e2fbf5f738e232172d9
+    private.assets.create.configuration.funds.title-classification: 5c9335b28e6277ddbe0137f04e5e58a7
+    private.assets.create.configuration.funds.description-classification: 48e42d7acc7237d0b3903edcde7e1d0b
     private.assets.create.configuration.stablecoins.description: 5d359c8358adac5ae5bebc0db4b3208b
     private.assets.create.configuration.stablecoins.title: 0482bcd85f9853057d42cff7b465f753
+    private.assets.create.configuration.stablecoins.title-supply: 4288e091a848e12c896ef09f489affec
+    private.assets.create.configuration.stablecoins.title-value: 089de4f8c31f363927bca21027ad3f54
+    private.assets.create.configuration.stablecoins.description-supply: fe6afc6ded5c640e692f566484b4ff25
+    private.assets.create.configuration.stablecoins.description-value: e60712536e43563e700241bb9caf2000
+    private.assets.create.configuration.stablecoins.title-collateral: 20288cb4d28958851ff9f7678b6dab3c
+    private.assets.create.configuration.stablecoins.description-collateral: f5b0f821e79862a02ce0911f93d89af7
     private.assets.create.form.description.bonds: bdb9183e095ebcb93de50baa8e378fb9
     private.assets.create.form.description.cryptocurrencies: 5bf2cdca2254d8b43d775972670e5b7e
     private.assets.create.form.description.deposits: 456962f77003b5a7886d3cb9e7214635
@@ -1016,17 +1052,17 @@ files:
     private.assets.create.form.button-labels.general.previous: dd1f775e443ff3b9a89270713580a51b
     private.assets.create.form.button-labels.general.processing: 21d104a54fc71a19a325c7305327f1d2
     private.assets.create.form.button-labels.stablecoin.issue: fedfef81ba8d00a6bfd3479bc88ad8a5
-    private.assets.create.form.button-labels.stablecoin.submitting: f0818c6b167ded89f85a66997c2f32e4
+    private.assets.create.form.button-labels.stablecoin.submitting: 9908b332a3ed0e3ca0021056ca4ee109
     private.assets.create.form.button-labels.fund.issue: b7ac17d6360b5e4efd2c8582714f4884
-    private.assets.create.form.button-labels.fund.submitting: 090cf18ce80ae482637268412e2d7844
+    private.assets.create.form.button-labels.fund.submitting: 79d8052117c1cde65c2cba819c712128
     private.assets.create.form.button-labels.equity.issue: 853abf74e41c699ca7a523770779c223
-    private.assets.create.form.button-labels.equity.submitting: 481c72d28258aa98d929e2e407aa0fb8
+    private.assets.create.form.button-labels.equity.submitting: 345b5b01fbb5a349396ba39923e2ebc1
     private.assets.create.form.button-labels.deposit.issue: 6667d709f189e7157efddb089de200e1
-    private.assets.create.form.button-labels.deposit.submitting: 9eab6553575124a7ed29f3752cb9262d
+    private.assets.create.form.button-labels.deposit.submitting: ca7a29892ecf462ea4ee5d5f21573421
     private.assets.create.form.button-labels.cryptocurrency.issue: a8def0aef204c942c29e76904e1ac125
-    private.assets.create.form.button-labels.cryptocurrency.submitting: 25fc72251620534fe1da6e8ebddaf86e
+    private.assets.create.form.button-labels.cryptocurrency.submitting: 6eeaaca6e17db4fb3345a7691a659cb2
     private.assets.create.form.button-labels.bond.issue: 4ebd0cab5ef9ac04037d2e055d8440fb
-    private.assets.create.form.button-labels.bond.submitting: 9373508c35a6f8100ed6a5772bfa4234
+    private.assets.create.form.button-labels.bond.submitting: d94e573c2b8bdcacafa51c104155e6f5
     private.assets.create.form.toast-action.bonds: 3b4d0cc0df76587812f4df47e7800a92
     private.assets.create.form.toast-action.cryptocurrencies: ff864f5d8a8f67a0fdb6caf2fcc8ddf8
     private.assets.create.form.toast-action.deposits: cfba7eed5f59c6ce04850642e0936280
@@ -1050,8 +1086,9 @@ files:
     private.assets.create.parameters.bonds.symbol-placeholder: 844bf3255c5c016dd9fd937e61c07a80
     private.assets.create.parameters.bonds.underlying-asset-description: 1925f8f66c852c579a49dd45ece2ea92
     private.assets.create.parameters.bonds.underlying-asset-label: 7b350ed595b03937afb12262eb0f0960
+    private.assets.create.parameters.bonds.symbol-description: 313c510c884bd2b720cb0824a91ffd4e
     private.assets.create.parameters.common.collateral-proof-validity-label: 4f48427723be78cbcfd4953a0bd8a5e0
-    private.assets.create.parameters.common.decimals-description: a1654d545304699116fdc9d26d585620
+    private.assets.create.parameters.common.decimals-description: 09f826a0b637670d6dd6ef49a4f155ef
     private.assets.create.parameters.common.decimals-label: 2b417805040de3a3df31c8fd3626b57c
     private.assets.create.parameters.common.internalid-label: 7e45bd3d0f499fe6fcd68cfaa873072f
     private.assets.create.parameters.common.isin-label: d03440b351474d0b1a3f851c3453e8de
@@ -1069,18 +1106,21 @@ files:
     private.assets.create.parameters.common.time-units.singular.months: 7436f942d5ea836cb84f1bb2527d8286
     private.assets.create.parameters.common.time-units.singular.seconds: a9f0e61a137d86aa9db53465e0801612
     private.assets.create.parameters.common.time-units.singular.weeks: 172a8327fcd3685ab3c0f740d031da09
-    private.assets.create.parameters.cryptocurrencies.initial-supply-description: 8f5ca70ca6d541e60a57b8d3f745f07c
+    private.assets.create.parameters.cryptocurrencies.initial-supply-description: 120a5c5a6496e2fe28b6ee58da3df828
     private.assets.create.parameters.cryptocurrencies.initial-supply-label: 642a2cc0832a64da551484c62bbd7f8a
     private.assets.create.parameters.cryptocurrencies.name-placeholder: d023ec040f79f1a9b2ac960b43785089
     private.assets.create.parameters.cryptocurrencies.symbol-placeholder: 4b9169eb3e07e0e885eb62f7bfc41a33
+    private.assets.create.parameters.cryptocurrencies.symbol-description: 153560ac243e51d1c102475445351757
     private.assets.create.parameters.deposits.isin-placeholder: a487e613b2a3912fc26973bb2ced0f36
     private.assets.create.parameters.deposits.name-placeholder: 47c5fe3d9a84cd5a91fa7e93813a46a9
     private.assets.create.parameters.deposits.symbol-placeholder: 893e38d663b275febd2f1a35a605d68b
+    private.assets.create.parameters.deposits.symbol-description: 313c510c884bd2b720cb0824a91ffd4e
     private.assets.create.parameters.equities.equity-category-label: fdb027a3b405bf4cdc86b0f6d507234d
     private.assets.create.parameters.equities.equity-class-label: 0163ad4205645faaec8bdb1351fed3eb
     private.assets.create.parameters.equities.isin-placeholder: 0dfa559977db1e6a4345aec498b77112
     private.assets.create.parameters.equities.name-placeholder: e13b591494c8b09125e52b9de6e448af
     private.assets.create.parameters.equities.symbol-placeholder: bbf472b37eeddcdfdbca7cd3e6d8ca94
+    private.assets.create.parameters.equities.symbol-description: db61005bbdc969aaf4249697130f078f
     private.assets.create.parameters.funds.basis-points: ecf6fbc4690b6ecd2245d8db1602bda7
     private.assets.create.parameters.funds.fund-category-label: 00ec85caa7a16f98ba1150ea269c8b89
     private.assets.create.parameters.funds.fund-class-label: c78550dbd69c657ef2b6679247e09dd0
@@ -1089,9 +1129,11 @@ files:
     private.assets.create.parameters.funds.management-fee-label: 41940e0bb13b498388d5316bcf3d108c
     private.assets.create.parameters.funds.name-placeholder: 7271f9a544b0a7782c7c66951fe270b0
     private.assets.create.parameters.funds.symbol-placeholder: ce5b8b6bda60deed2b234d93562954b8
+    private.assets.create.parameters.funds.symbol-description: f40da693dd9293ae5d2a3267e880cff3
     private.assets.create.parameters.stablecoins.isin-placeholder: 5ce6498408e628e24d0adaa3f05d99c9
     private.assets.create.parameters.stablecoins.name-placeholder: 1d69fd574e2cc5d6c75e6250671fe4cf
     private.assets.create.parameters.stablecoins.symbol-placeholder: 9ff0ceaed2d507591981be28fa7bfa59
+    private.assets.create.parameters.stablecoins.symbol-description: bd1626fe8280db8438e7380376899003
     private.assets.create.summary.asset-admins-description: c443561070f6af91da3ec79a82ebd335
     private.assets.create.summary.asset-admins-title: dc61fb9d41fb8271b2ba255c77310859
     private.assets.create.summary.asset-basics-description: d87da276592069e9d771d427802ca78c
@@ -1827,6 +1869,22 @@ files:
     trade-management.forms.amounts.description: 8de95c4ca84e432696da84508dc972f4
     trade-management.forms.amounts.max-amount-to-send: cc521903c94bc4bdd85ffc0a66e6de2b
     trade-management.forms.amounts.title: d8db79f4fdae5de73504ec3bd1724e5c
+    trade-management.forms.asset-flows.add: ec211f7c20af43e742bf2570c3cb84f9
+    trade-management.forms.asset-flows.amount: b2f40690858b404ed10e62bdf422c704
+    trade-management.forms.asset-flows.amount-placeholder: b532ac7cec0ae5c3f43336a77ac1ed25
+    trade-management.forms.asset-flows.asset: 26e9054be7f40079575582b7ad3f7363
+    trade-management.forms.asset-flows.asset-placeholder: 237949bcc88eeadea12cf3b097925981
+    trade-management.forms.asset-flows.description: 9bdeb1fdb22812afb0f995870f58b134
+    trade-management.forms.asset-flows.flow: 95268892fe65116b71a55b993081bf6c
+    trade-management.forms.asset-flows.flows: c647c38e64bd84c0fe9fe165f3fff0eb
+    trade-management.forms.asset-flows.flows-summary: f2242bd538fee18c411cbc7ed77cb38f
+    trade-management.forms.asset-flows.from: 5da618e8e4b89c66fe86e32cdafde142
+    trade-management.forms.asset-flows.from-placeholder: 5f8f82f678fd7ddaed9526994ada4f01
+    trade-management.forms.asset-flows.max-amount: b21cceed8c6948e527f07859a6d7f29c
+    trade-management.forms.asset-flows.remove: 1063e38cb53d94d386f21227fcd84717
+    trade-management.forms.asset-flows.title: 72012a8aac4e42961998a1ea053863d4
+    trade-management.forms.asset-flows.to: e12167aa0a7698e6ebc92b4ce3909b53
+    trade-management.forms.asset-flows.to-placeholder: 8874514d5a5785a774a05021d6891f45
     trade-management.forms.button.xvp: c908e958fede0f7152eadc8c943d33cd
     trade-management.forms.configuration.auto-execute: 31e74595beaf9b61c93c691346e8bec3
     trade-management.forms.configuration.auto-execute-description: d2f9ffb93a45bcdd8474a24529e2a2ae

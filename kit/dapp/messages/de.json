@@ -723,7 +723,15 @@
     "void": "Dieses Feld sollte leer sein",
     "kind": "Ungültiges Format",
     "unknown": "Ungültiger Wert eingegeben",
-    "string-format-asset-symbol": "Bitte geben Sie ein gültiges Vermögenssymbol ein (Großbuchstaben und Zahlen)"
+    "string-format-asset-symbol": "Bitte geben Sie ein gültiges Vermögenssymbol ein (Großbuchstaben und Zahlen)",
+    "string-format-isin": "Bitte geben Sie eine gültige ISIN ein. Format: 2 Buchstaben (Ländercode), 9 alphanumerische Zeichen und 1 Prüfziffer (z. B. US0378331005)",
+    "union-min-max": "Bitte geben Sie einen Wert zwischen {min} und {max} ein",
+    "at-least-two-asset-flows": "Bitte stellen Sie mindestens zwei Flüsse zur Verfügung, um fortzufahren",
+    "asset-required": "Vermögenswert ist erforderlich",
+    "amount-required": "Betrag ist erforderlich",
+    "from-address-required": "Die Absenderadresse ist erforderlich und muss eine gültige EVM-Adresse sein",
+    "to-address-required": "Die Empfängeradresse ist erforderlich und muss eine gültige EVM-Adresse sein",
+    "expiry-required": "Ablaufdatum ist erforderlich"
   },
   "layout": {
     "header": {
@@ -1083,19 +1091,41 @@
           },
           "cryptocurrencies": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre Kryptowährung sind.",
-            "title": "Kryptowährungs-Konfiguration"
+            "title": "Kryptowährungs-Konfiguration",
+            "title-supply": "Angebot",
+            "title-value": "Nennwert",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieser Kryptowährung. Diese Informationen sind unveränderlich.",
+            "description-value": "Konfigurieren Sie den Preis für Ihre Kryptowährung."
           },
           "equities": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihr Eigenkapital sind.",
-            "title": "Eigenkapital-Konfiguration"
+            "title": "Eigenkapital-Konfiguration",
+            "title-supply": "Angebot",
+            "title-value": "Nennwert",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieses Eigenkapitals. Diese Informationen sind unveränderlich.",
+            "description-value": "Konfigurieren Sie den Preis für Ihr Eigenkapital.",
+            "title-classification": "Klassifizierung",
+            "description-classification": "Konfigurieren Sie die Klassifizierung für Ihr Eigenkapital."
           },
           "funds": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihren Fonds sind.",
-            "title": "Fonds-Konfiguration"
+            "title": "Fonds-Konfiguration",
+            "title-supply": "Angebot",
+            "title-value": "Nennwert",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieses Fonds. Diese Informationen sind unveränderlich.",
+            "description-value": "Konfigurieren Sie den Preis für Ihren Fonds.",
+            "title-classification": "Klassifizierung",
+            "description-classification": "Konfigurieren Sie die Klassifizierung für Ihren Fonds."
           },
           "stablecoins": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre Stable Coin sind.",
-            "title": "Stable Coin-Konfiguration"
+            "title": "Stable Coin-Konfiguration",
+            "title-supply": "Angebot",
+            "title-value": "Nennwert",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieses Stablecoins. Diese Informationen sind unveränderlich.",
+            "description-value": "Konfigurieren Sie den Preis für Ihren Stablecoin.",
+            "title-collateral": "Sicherheit",
+            "description-collateral": "Konfigurieren Sie die Sicherheit für Ihren Stablecoin."
           },
           "tokenizeddeposits": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre tokenisierte Einzahlung sind.",
@@ -1103,7 +1133,13 @@
           },
           "deposits": {
             "description": "Legen Sie parameter fest, die spezifisch für Ihre einzahlung sind.",
-            "title": "Einzahlungs konfiguration"
+            "title": "Einzahlungs konfiguration",
+            "title-collateral": "Sicherheit",
+            "description-collateral": "Konfigurieren Sie die Sicherheit für Ihre Einzahlung.",
+            "title-value": "Nennwert",
+            "description-value": "Konfigurieren Sie den Preis für Ihre Einzahlung.",
+            "title-supply": "Angebot",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieser Einzahlung. Diese Informationen sind unveränderlich."
           }
         },
         "form": {
@@ -1228,15 +1264,15 @@
             },
             "deposit": {
               "issue": "Einzahlung ausstellen",
-              "submitting": "Einzahlung wird ausgestellt..."
+              "submitting": "Einzahlung wird ausgegeben..."
             },
             "cryptocurrency": {
               "issue": "Kryptowährung ausstellen",
-              "submitting": "Kryptowährung wird ausgestellt..."
+              "submitting": "Kryptowährung wird ausgegeben..."
             },
             "bond": {
               "issue": "Anleihe ausstellen",
-              "submitting": "Anleihe wird ausgestellt..."
+              "submitting": "Anleihe wird ausgegeben..."
             }
           }
         },
@@ -1252,7 +1288,8 @@
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "Adresse des Vermögenswerts, der diese Anleihe absichert",
             "underlying-asset-label": "Unterliegender Vermögenswert",
-            "maturity-date-error": "Das Fälligkeitsdatum muss mindestens 1 Stunde in der Zukunft liegen"
+            "maturity-date-error": "Das Fälligkeitsdatum muss mindestens 1 Stunde in der Zukunft liegen",
+            "symbol-description": "Das Symbol der Anleihe. Dies ist ein eindeutiger Identifikator für die Anleihe zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           },
           "common": {
             "collateral-proof-validity-label": "Gültigkeit des Sicherheitennachweises",
@@ -1280,20 +1317,22 @@
             },
             "price-label": "Preis",
             "internalid-label": "Interne ID",
-            "decimals-description": "Die Anzahl der Dezimalstellen, die für die Anleihe verwendet werden sollen. Dies wird verwendet, um die Genauigkeit der Anleihe zu bestimmen."
+            "decimals-description": "Die Anzahl der Dezimalstellen, die für den Vermögenswert verwendet werden sollen. Dies wird verwendet, um die Genauigkeit des Vermögenswerts zu bestimmen."
           },
           "cryptocurrencies": {
-            "initial-supply-description": "Anfangsbetrag an Assets, die geprägt werden sollen",
+            "initial-supply-description": "Anfänglicher Betrag der zu prägenden Vermögenswerte.",
             "initial-supply-label": "Anfängliche Menge",
             "name-placeholder": "Bitcoin",
-            "symbol-placeholder": "BTC"
+            "symbol-placeholder": "BTC",
+            "symbol-description": "Das Symbol der Kryptowährung. Dies ist ein eindeutiger Identifikator für die Kryptowährung zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           },
           "equities": {
             "equity-category-label": "Eigenkapitalkategorie",
             "equity-class-label": "Eigenkapitalklasse",
             "isin-placeholder": "US1234567890",
             "name-placeholder": "Globale Eigenkapital",
-            "symbol-placeholder": "GLEQ"
+            "symbol-placeholder": "GLEQ",
+            "symbol-description": "Das Symbol des Eigenkapitals. Dies ist ein eindeutiger Identifikator für das Eigenkapital zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           },
           "funds": {
             "basis-points": "bps",
@@ -1303,12 +1342,14 @@
             "management-fee-description": "Jährliche Verwaltungsgebühr in Basispunkten (100 bps = 1%)",
             "management-fee-label": "Verwaltungsgebühr",
             "name-placeholder": "Global Growth Fund",
-            "symbol-placeholder": "GGF"
+            "symbol-placeholder": "GGF",
+            "symbol-description": "Das Symbol des Fonds. Dies ist ein eindeutiger Identifikator für den Fonds zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           },
           "stablecoins": {
             "isin-placeholder": "DEFI4EVER2024",
             "name-placeholder": "TotallyNotTether",
-            "symbol-placeholder": "SAFU"
+            "symbol-placeholder": "SAFU",
+            "symbol-description": "Das Symbol des Stablecoins. Dies ist ein eindeutiger Identifikator für den Stablecoin zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           },
           "tokenizeddeposits": {
             "isin-placeholder": "EU1234567890",
@@ -1318,7 +1359,8 @@
           "deposits": {
             "isin-placeholder": "EU1234567890",
             "name-placeholder": "Eingezahlter Euro",
-            "symbol-placeholder": "EURD"
+            "symbol-placeholder": "EURD",
+            "symbol-description": "Das Symbol der Anleihe. Dies ist ein eindeutiger Identifikator für die Anleihe zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           }
         },
         "summary": {
@@ -2905,6 +2947,24 @@
         "auto-execute": "Automatisch bei letzter Genehmigung ausführen",
         "yes": "Ja",
         "no": "Nein"
+      },
+      "asset-flows": {
+        "add": "Hinzufügen",
+        "amount": "Betrag",
+        "amount-placeholder": "Betrag eingeben",
+        "asset": "Vermögenswert",
+        "asset-placeholder": "Vermögenswert auswählen",
+        "description": "Konfigurieren Sie die Vermögensfluss für diese Abwicklung. Jeder Fluss stellt einen Vermögensübertrag von einer Brieftasche zur anderen dar.",
+        "flow": "Fluss {index}",
+        "flows": "Flüsse",
+        "flows-summary": "Die Flüsse definieren die Vermögenswerte, die von einer Brieftasche zur anderen übertragen werden.",
+        "from": "Von",
+        "from-placeholder": "Absender auswählen",
+        "max-amount": "Verfügbarer Saldo: {maxAmount}",
+        "remove": "Entfernen",
+        "title": "Vermögensflüsse",
+        "to": "An",
+        "to-placeholder": "Empfänger auswählen"
       }
     },
     "xvp": {

@@ -723,7 +723,15 @@
     "void": "このフィールドは空であるべきです",
     "kind": "無効な形式",
     "unknown": "無効な値が入力されました",
-    "string-format-asset-symbol": "有効な資産シンボル（大文字と数字）を入力してください"
+    "string-format-asset-symbol": "有効な資産シンボル（大文字と数字）を入力してください",
+    "string-format-isin": "有効なISINを入力してください。形式：2文字（国コード）、9文字の英数字、1桁のチェックデジット（例：US0378331005）",
+    "union-min-max": "値を{min}と{max}の間で入力してください",
+    "at-least-two-asset-flows": "続行するには少なくとも2つのフローを提供してください",
+    "asset-required": "資産は必須です",
+    "amount-required": "金額は必須です",
+    "from-address-required": "送信先アドレスは必須で、有効なEVMアドレスでなければなりません",
+    "to-address-required": "受信先アドレスは必須で、有効なEVMアドレスでなければなりません",
+    "expiry-required": "有効期限は必須です"
   },
   "layout": {
     "header": {
@@ -1083,19 +1091,41 @@
           },
           "cryptocurrencies": {
             "description": "暗号通貨に特有のパラメータを設定します。",
-            "title": "暗号通貨の設定"
+            "title": "暗号通貨の設定",
+            "title-supply": "供給",
+            "title-value": "単位",
+            "description-supply": "この暗号通貨の供給と分割を設定します。この情報は不変です。",
+            "description-value": "あなたの暗号通貨の価格を設定します。"
           },
           "equities": {
             "description": "株式に特有のパラメータを設定します。",
-            "title": "株式の設定"
+            "title": "株式の設定",
+            "title-supply": "供給",
+            "title-value": "単位",
+            "description-supply": "この株式の供給と分割を設定します。この情報は不変です。",
+            "description-value": "あなたの株式の価格を設定します。",
+            "title-classification": "分類",
+            "description-classification": "あなたの株式の分類を設定します。"
           },
           "funds": {
             "description": "ファンドに特有のパラメータを設定します。",
-            "title": "ファンドの設定"
+            "title": "ファンドの設定",
+            "title-supply": "供給",
+            "title-value": "単位",
+            "description-supply": "このファンドの供給と分割を設定します。この情報は不変です。",
+            "description-value": "あなたのファンドの価格を設定します。",
+            "title-classification": "分類",
+            "description-classification": "あなたのファンドの分類を設定します。"
           },
           "stablecoins": {
             "description": "ステーブルコインに特有のパラメータを設定します。",
-            "title": "ステーブルコインの設定"
+            "title": "ステーブルコインの設定",
+            "title-supply": "供給",
+            "title-value": "単位",
+            "description-supply": "このステーブルコインの供給と分割を設定します。この情報は不変です。",
+            "description-value": "あなたのステーブルコインの価格を設定します。",
+            "title-collateral": "担保",
+            "description-collateral": "あなたのステーブルコインの担保を設定します。"
           },
           "tokenizeddeposits": {
             "description": "トークン化された預金に特有のパラメータを設定します。",
@@ -1103,7 +1133,13 @@
           },
           "deposits": {
             "description": "特定の預金に関するパラメータを設定します。",
-            "title": "預金設定"
+            "title": "預金設定",
+            "title-collateral": "担保",
+            "description-collateral": "あなたの預金の担保を設定します。",
+            "title-value": "単位",
+            "description-value": "あなたの預金の価格を設定します。",
+            "title-supply": "供給",
+            "description-supply": "この預金の供給と分割を設定します。この情報は不変です。"
           }
         },
         "form": {
@@ -1216,27 +1252,27 @@
             },
             "stablecoin": {
               "issue": "ステーブルコインを発行する",
-              "submitting": "ステーブルコインを発行中..."
+              "submitting": "ステーブルコインを発行しています..."
             },
             "fund": {
               "issue": "ファンドを発行する",
-              "submitting": "ファンドを発行中..."
+              "submitting": "ファンドを発行しています..."
             },
             "equity": {
               "issue": "株式を発行する",
-              "submitting": "株式を発行中..."
+              "submitting": "株式を発行しています..."
             },
             "deposit": {
               "issue": "デポジットを発行",
-              "submitting": "デポジットを発行中..."
+              "submitting": "預金を発行しています..."
             },
             "cryptocurrency": {
               "issue": "暗号通貨を発行",
-              "submitting": "暗号通貨を発行中..."
+              "submitting": "暗号通貨を発行しています..."
             },
             "bond": {
               "issue": "債券を発行",
-              "submitting": "債券を発行中..."
+              "submitting": "債券を発行しています..."
             }
           }
         },
@@ -1252,7 +1288,8 @@
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "この債券を裏付ける資産のアドレス",
             "underlying-asset-label": "基礎資産",
-            "maturity-date-error": "満期日は少なくとも1時間先でなければなりません"
+            "maturity-date-error": "満期日は少なくとも1時間先でなければなりません",
+            "symbol-description": "債券のシンボル。このシンボルは、オンチェーン目的のための債券の一意の識別子です。最大10文字までで、作成後は変更できません。"
           },
           "common": {
             "collateral-proof-validity-label": "担保証明の有効性",
@@ -1280,20 +1317,22 @@
             },
             "price-label": "価格",
             "internalid-label": "内部ID",
-            "decimals-description": "債券に使用する小数点以下の桁数。この桁数は債券の精度を決定するために使用されます。"
+            "decimals-description": "資産に使用する小数点以下の桁数。これは資産の精度を決定するために使用されます。"
           },
           "cryptocurrencies": {
-            "initial-supply-description": "発行される資産の初期量",
+            "initial-supply-description": "鋳造される資産の初期量。",
             "initial-supply-label": "初期供給量",
             "name-placeholder": "ビットコイン",
-            "symbol-placeholder": "BTC"
+            "symbol-placeholder": "BTC",
+            "symbol-description": "暗号通貨のシンボル。このシンボルは、オンチェーン目的のための暗号通貨の一意の識別子です。最大10文字までで、作成後は変更できません。"
           },
           "equities": {
             "equity-category-label": "株式カテゴリ",
             "equity-class-label": "株式クラス",
             "isin-placeholder": "US1234567890",
             "name-placeholder": "グローバル株式",
-            "symbol-placeholder": "GLEQ"
+            "symbol-placeholder": "GLEQ",
+            "symbol-description": "株式のシンボル。このシンボルは、オンチェーン目的のための株式の一意の識別子です。最大10文字までで、作成後は変更できません。"
           },
           "funds": {
             "basis-points": "bps",
@@ -1303,12 +1342,14 @@
             "management-fee-description": "基準ポイントでの年間管理手数料（100 bps = 1%）",
             "management-fee-label": "管理手数料",
             "name-placeholder": "グローバル成長ファンド",
-            "symbol-placeholder": "GGF"
+            "symbol-placeholder": "GGF",
+            "symbol-description": "ファンドのシンボル。このシンボルは、オンチェーン目的のためのファンドの一意の識別子です。最大10文字までで、作成後は変更できません。"
           },
           "stablecoins": {
             "isin-placeholder": "DEFI4EVER2024",
             "name-placeholder": "TotallyNotTether",
-            "symbol-placeholder": "SAFU"
+            "symbol-placeholder": "SAFU",
+            "symbol-description": "ステーブルコインのシンボル。このシンボルは、オンチェーン目的のためのステーブルコインの一意の識別子です。最大10文字までで、作成後は変更できません。"
           },
           "tokenizeddeposits": {
             "isin-placeholder": "EU1234567890",
@@ -1318,7 +1359,8 @@
           "deposits": {
             "isin-placeholder": "EU1234567890",
             "name-placeholder": "預金されたユーロ",
-            "symbol-placeholder": "EURD"
+            "symbol-placeholder": "EURD",
+            "symbol-description": "債券のシンボル。このシンボルは、オンチェーン目的のための債券の一意の識別子です。最大10文字までで、作成後は変更できません。"
           }
         },
         "summary": {
@@ -2905,6 +2947,24 @@
         "auto-execute": "最後の承認時に自動実行",
         "yes": "はい",
         "no": "いいえ"
+      },
+      "asset-flows": {
+        "add": "追加",
+        "amount": "金額",
+        "amount-placeholder": "金額を入力",
+        "asset": "資産",
+        "asset-placeholder": "資産を選択",
+        "description": "この決済のための資産フローを設定します。各フローは、1つのウォレットから別のウォレットへの資産移転を表します。",
+        "flow": "フロー {index}",
+        "flows": "フロー",
+        "flows-summary": "フローは、1つのウォレットから別のウォレットに転送される資産を定義します。",
+        "from": "送信元",
+        "from-placeholder": "送信者を選択",
+        "max-amount": "利用可能残高：{maxAmount}",
+        "remove": "削除",
+        "title": "資産フロー",
+        "to": "受信先",
+        "to-placeholder": "受信者を選択"
       }
     },
     "xvp": {

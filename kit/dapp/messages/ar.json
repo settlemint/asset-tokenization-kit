@@ -723,7 +723,15 @@
     "void": "يجب أن يكون هذا الحقل فارغًا",
     "kind": "تنسيق غير صالح",
     "unknown": "تم إدخال قيمة غير صالحة",
-    "string-format-asset-symbol": "يرجى إدخال رمز أصل صالح (حروف كبيرة وأرقام)"
+    "string-format-asset-symbol": "يرجى إدخال رمز أصل صالح (حروف كبيرة وأرقام)",
+    "string-format-isin": "يرجى إدخال ISIN صالح. التنسيق: حرفان (رمز الدولة)، 9 أحرف أبجدية رقمية، و 1 رقم تحقق (مثل: US0378331005)",
+    "union-min-max": "يرجى إدخال قيمة بين {min} و {max}",
+    "at-least-two-asset-flows": "يرجى تقديم ما لا يقل عن تدفقين للمتابعة",
+    "asset-required": "الأصل مطلوب",
+    "amount-required": "المبلغ مطلوب",
+    "from-address-required": "عنوان الإرسال مطلوب ويجب أن يكون عنوان EVM صالح",
+    "to-address-required": "عنوان الاستلام مطلوب ويجب أن يكون عنوان EVM صالح",
+    "expiry-required": "تاريخ الانتهاء مطلوب"
   },
   "layout": {
     "header": {
@@ -1083,19 +1091,41 @@
           },
           "cryptocurrencies": {
             "description": "حدد المعلمات الخاصة بالعملة المشفرة الخاصة بك.",
-            "title": "تكوين العملة المشفرة"
+            "title": "تكوين العملة المشفرة",
+            "title-supply": "الإمداد",
+            "title-value": "العملة",
+            "description-supply": "قم بتكوين الإمداد والتجزئة لهذه العملة المشفرة. هذه المعلومات غير قابلة للتغيير.",
+            "description-value": "قم بتكوين السعر لعملتك المشفرة."
           },
           "equities": {
             "description": "حدد المعلمات الخاصة بأسهمك.",
-            "title": "تكوين الأسهم"
+            "title": "تكوين الأسهم",
+            "title-supply": "الإمداد",
+            "title-value": "العملة",
+            "description-supply": "قم بتكوين الإمداد والتجزئة لهذا السهم. هذه المعلومات غير قابلة للتغيير.",
+            "description-value": "قم بتكوين السعر لسهمك.",
+            "title-classification": "التصنيف",
+            "description-classification": "قم بتكوين التصنيف لسهمك."
           },
           "funds": {
             "description": "حدد المعلمات الخاصة بصندوقك.",
-            "title": "تكوين الصندوق"
+            "title": "تكوين الصندوق",
+            "title-supply": "الإمداد",
+            "title-value": "العملة",
+            "description-supply": "قم بتكوين الإمداد والتجزئة لهذا الصندوق. هذه المعلومات غير قابلة للتغيير.",
+            "description-value": "قم بتكوين السعر لصندوقك.",
+            "title-classification": "التصنيف",
+            "description-classification": "قم بتكوين التصنيف لصندوقك."
           },
           "stablecoins": {
             "description": "حدد المعلمات الخاصة بالعملة المستقرة الخاصة بك.",
-            "title": "تكوين العملة المستقرة"
+            "title": "تكوين العملة المستقرة",
+            "title-supply": "الإمداد",
+            "title-value": "العملة",
+            "description-supply": "قم بتكوين الإمداد والتجزئة لهذه العملة المستقرة. هذه المعلومات غير قابلة للتغيير.",
+            "description-value": "قم بتكوين السعر لعملتك المستقرة.",
+            "title-collateral": "الضمان",
+            "description-collateral": "قم بتكوين الضمان لعملتك المستقرة."
           },
           "tokenizeddeposits": {
             "description": "حدد المعلمات الخاصة بالإيداع المرمز الخاص بك.",
@@ -1103,7 +1133,13 @@
           },
           "deposits": {
             "description": "حدد المعلمات الخاصة بإيداعك.",
-            "title": "تكوين الإيداع"
+            "title": "تكوين الإيداع",
+            "title-collateral": "الضمان",
+            "description-collateral": "قم بتكوين الضمان لإيداعك.",
+            "title-value": "العملة",
+            "description-value": "قم بتكوين السعر لإيداعك.",
+            "title-supply": "الإمداد",
+            "description-supply": "قم بتكوين الإمداد والتجزئة لهذا الإيداع. هذه المعلومات غير قابلة للتغيير."
           }
         },
         "form": {
@@ -1224,19 +1260,19 @@
             },
             "equity": {
               "issue": "إصدار الأسهم",
-              "submitting": "جارٍ إصدار الأسهم..."
+              "submitting": "جارٍ إصدار السهم..."
             },
             "deposit": {
               "issue": "إصدار إيداع",
-              "submitting": "يتم إصدار الإيداع..."
+              "submitting": "جارٍ إصدار الإيداع..."
             },
             "cryptocurrency": {
               "issue": "إصدار عملة مشفرة",
-              "submitting": "يتم إصدار العملة المشفرة..."
+              "submitting": "جارٍ إصدار العملة المشفرة..."
             },
             "bond": {
               "issue": "إصدار سند",
-              "submitting": "يتم إصدار السند..."
+              "submitting": "جارٍ إصدار السند..."
             }
           }
         },
@@ -1252,7 +1288,8 @@
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "عنوان الأصل الذي يدعم هذا السند",
             "underlying-asset-label": "الأصل الأساسي",
-            "maturity-date-error": "يجب أن يكون تاريخ الاستحقاق على الأقل ساعة واحدة في المستقبل"
+            "maturity-date-error": "يجب أن يكون تاريخ الاستحقاق على الأقل ساعة واحدة في المستقبل",
+            "symbol-description": "رمز السند. هذا هو معرف فريد للسند لأغراض السلسلة. يمكن أن يصل طوله إلى 10 أحرف ولا يمكن تغييره بعد الإنشاء."
           },
           "common": {
             "collateral-proof-validity-label": "صلاحية إثبات الضمان",
@@ -1280,20 +1317,22 @@
             },
             "price-label": "السعر",
             "internalid-label": "معرف داخلي",
-            "decimals-description": "عدد الأرقام العشرية التي يجب استخدامها للسند. يُستخدم ذلك لتحديد دقة السند."
+            "decimals-description": "عدد الأرقام العشرية المستخدمة للأصل. يتم استخدامه لتحديد دقة الأصل."
           },
           "cryptocurrencies": {
-            "initial-supply-description": "المبلغ الأولي من الأصول التي سيتم سكها",
+            "initial-supply-description": "المبلغ الأولي من الأصول التي سيتم سكها.",
             "initial-supply-label": "الإمداد الأولي",
             "name-placeholder": "بيتكوين",
-            "symbol-placeholder": "BTC"
+            "symbol-placeholder": "BTC",
+            "symbol-description": "رمز العملة المشفرة. هذا هو معرف فريد للعملة المشفرة لأغراض السلسلة. يمكن أن يصل طوله إلى 10 أحرف ولا يمكن تغييره بعد الإنشاء."
           },
           "equities": {
             "equity-category-label": "فئة الأسهم",
             "equity-class-label": "فئة الأسهم",
             "isin-placeholder": "US1234567890",
             "name-placeholder": "الأسهم العالمية",
-            "symbol-placeholder": "GLEQ"
+            "symbol-placeholder": "GLEQ",
+            "symbol-description": "رمز السهم. هذا هو معرف فريد للسهم لأغراض السلسلة. يمكن أن يصل طوله إلى 10 أحرف ولا يمكن تغييره بعد الإنشاء."
           },
           "funds": {
             "basis-points": "نقاط الأساس",
@@ -1303,12 +1342,14 @@
             "management-fee-description": "رسوم الإدارة السنوية بالنقاط الأساسية (100 نقطة أساس = 1%)",
             "management-fee-label": "رسوم الإدارة",
             "name-placeholder": "صندوق النمو العالمي",
-            "symbol-placeholder": "GGF"
+            "symbol-placeholder": "GGF",
+            "symbol-description": "رمز الصندوق. هذا هو معرف فريد للصندوق لأغراض السلسلة. يمكن أن يصل طوله إلى 10 أحرف ولا يمكن تغييره بعد الإنشاء."
           },
           "stablecoins": {
             "isin-placeholder": "DEFI4EVER2024",
             "name-placeholder": "TotallyNotTether",
-            "symbol-placeholder": "SAFU"
+            "symbol-placeholder": "SAFU",
+            "symbol-description": "رمز العملة المستقرة. هذا هو معرف فريد للعملة المستقرة لأغراض السلسلة. يمكن أن يصل طوله إلى 10 أحرف ولا يمكن تغييره بعد الإنشاء."
           },
           "tokenizeddeposits": {
             "isin-placeholder": "EU1234567890",
@@ -1318,7 +1359,8 @@
           "deposits": {
             "isin-placeholder": "EU1234567890",
             "name-placeholder": "اليورو المودع",
-            "symbol-placeholder": "EURD"
+            "symbol-placeholder": "EURD",
+            "symbol-description": "رمز السند. هذا هو معرف فريد للسند لأغراض السلسلة. يمكن أن يصل طوله إلى 10 أحرف ولا يمكن تغييره بعد الإنشاء."
           }
         },
         "summary": {
@@ -2906,6 +2948,24 @@
         "auto-execute": "تنفيذ تلقائي عند الموافقة الأخيرة",
         "yes": "نعم",
         "no": "لا"
+      },
+      "asset-flows": {
+        "add": "أضف",
+        "amount": "المبلغ",
+        "amount-placeholder": "أدخل المبلغ",
+        "asset": "الأصل",
+        "asset-placeholder": "اختر الأصل",
+        "description": "قم بتكوين تدفقات الأصول لهذا التسوية. يمثل كل تدفق نقل أصل من محفظة إلى أخرى.",
+        "flow": "تدفق {index}",
+        "flows": "التدفقات",
+        "flows-summary": "تحدد التدفقات الأصول التي سيتم نقلها من محفظة إلى أخرى.",
+        "from": "من",
+        "from-placeholder": "اختر المرسل",
+        "max-amount": "الرصيد المتاح: {maxAmount}",
+        "remove": "إزالة",
+        "title": "تدفقات الأصول",
+        "to": "إلى",
+        "to-placeholder": "اختر المستلم"
       }
     },
     "xvp": {
