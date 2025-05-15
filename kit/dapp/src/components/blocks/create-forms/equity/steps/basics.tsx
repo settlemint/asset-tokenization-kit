@@ -84,7 +84,6 @@ export function Basics() {
 Basics.validatedFields = [
   "assetName",
   "symbol",
-  "decimals",
   "isin",
 ] satisfies (keyof CreateEquityInput)[];
 

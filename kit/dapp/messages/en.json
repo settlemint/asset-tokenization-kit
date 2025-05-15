@@ -825,6 +825,7 @@
     "sending": "Sending",
     "string": "Please enter text",
     "string-format": "Please enter text in the correct {format} format",
+    "string-format-isin": "Please enter a valid ISIN. Format: 2 letters (country code), 9 alphanumeric characters, and 1 check digit (e.g., US0378331005)",
     "string-format-unknown": "Unknown format '{format}'",
     "string-format-asset-symbol": "Please enter a valid asset symbol (uppercase letters and numbers)",
     "string-max-length": "Please enter no more than {maxLength} characters",
@@ -841,6 +842,7 @@
     "uint8array-min-byte-length": "File is too small",
     "undefined": "This field should be empty",
     "union": "Please enter a valid value",
+    "union-min-max": "Please enter a value between {min} and {max}",
     "unknown": "Invalid value entered",
     "validation-errors": "Validation error",
     "void": "This field should be empty"

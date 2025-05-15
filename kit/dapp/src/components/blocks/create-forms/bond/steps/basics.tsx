@@ -85,6 +85,7 @@ export function Basics() {
 Basics.validatedFields = [
   "assetName",
   "symbol",
+  "isin",
 ] satisfies (keyof CreateBondInput)[];
 
 // Export step definition for the asset designer

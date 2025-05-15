@@ -89,7 +89,7 @@ export function Basics() {
 Basics.validatedFields = [
   "assetName",
   "symbol",
-  "decimals",
+  "isin",
 ] satisfies (keyof CreateCryptoCurrencyInput)[];
 
 // Export step definition for the asset designer

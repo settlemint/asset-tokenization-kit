@@ -82,7 +82,7 @@ export function Basics() {
 Basics.validatedFields = [
   "assetName",
   "symbol",
-  "decimals",
+  "isin",
 ] satisfies (keyof CreateStablecoinInput)[];
 
 // Export step definition for the asset designer
