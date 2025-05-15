@@ -9,10 +9,9 @@ import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { timeUnits } from "@/lib/utils/typebox/time-units";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
-import type { DepositStepProps } from "../form";
 
-export function Configuration({ onNext, onBack }: DepositStepProps) {
-  const { control, formState, trigger } = useFormContext<CreateDepositInput>();
+export function Configuration() {
+  const { control } = useFormContext<CreateDepositInput>();
   const t = useTranslations("private.assets.create");
   const collateralLivenessValue = useWatch({
     control,

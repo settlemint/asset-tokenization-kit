@@ -6,10 +6,9 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import type { DepositStepProps } from "../form";
 
-export function Basics({ onNext, onBack }: DepositStepProps) {
-  const { control, formState, trigger } = useFormContext<CreateDepositInput>();
+export function Basics() {
+  const { control } = useFormContext<CreateDepositInput>();
   const t = useTranslations("private.assets.create");
 
   return (

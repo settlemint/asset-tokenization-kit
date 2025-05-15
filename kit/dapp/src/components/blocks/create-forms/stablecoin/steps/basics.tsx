@@ -4,11 +4,9 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import type { StablecoinStepProps } from "../form";
 
-export function Basics({ onNext, onBack }: StablecoinStepProps) {
-  const { control, formState, trigger } =
-    useFormContext<CreateStablecoinInput>();
+export function Basics() {
+  const { control } = useFormContext<CreateStablecoinInput>();
   const t = useTranslations("private.assets.create");
 
   return (

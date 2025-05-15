@@ -6,10 +6,9 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import type { EquityStepProps } from "../form";
 
-export function Basics({ onNext, onBack }: EquityStepProps) {
-  const { control, formState, trigger } = useFormContext<CreateEquityInput>();
+export function Basics() {
+  const { control } = useFormContext<CreateEquityInput>();
   const t = useTranslations("private.assets.create");
 
   return (

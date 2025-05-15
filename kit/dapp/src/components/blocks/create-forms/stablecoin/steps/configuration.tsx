@@ -7,11 +7,9 @@ import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { timeUnits } from "@/lib/utils/typebox/time-units";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
-import type { StablecoinStepProps } from "../form";
 
-export function Configuration({ onNext, onBack }: StablecoinStepProps) {
-  const { control, formState, trigger } =
-    useFormContext<CreateStablecoinInput>();
+export function Configuration() {
+  const { control } = useFormContext<CreateStablecoinInput>();
   const t = useTranslations("private.assets.create");
   const collateralLivenessValue = useWatch({
     control,

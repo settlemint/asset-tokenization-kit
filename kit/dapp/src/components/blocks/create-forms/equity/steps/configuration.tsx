@@ -6,12 +6,11 @@ import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-sch
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import type { EquityStepProps } from "../form";
 import { EquityCategoriesSelect } from "./_components/equity-categories";
 import { EquityClassesSelect } from "./_components/equity-classes";
 
-export function Configuration({ onNext, onBack }: EquityStepProps) {
-  const { control, formState, trigger } = useFormContext<CreateEquityInput>();
+export function Configuration() {
+  const { control } = useFormContext<CreateEquityInput>();
   const t = useTranslations("private.assets.create");
   const currencyOptions = fiatCurrencies.map((currency) => ({
     value: currency,

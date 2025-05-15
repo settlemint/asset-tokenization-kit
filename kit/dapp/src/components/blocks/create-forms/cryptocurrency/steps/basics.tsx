@@ -6,11 +6,9 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import type { CryptoStepProps } from "../form";
 
-export function Basics({ onNext, onBack }: CryptoStepProps) {
-  const { control, formState, trigger } =
-    useFormContext<CreateCryptoCurrencyInput>();
+export function Basics() {
+  const { control } = useFormContext<CreateCryptoCurrencyInput>();
   const t = useTranslations("private.assets.create");
 
   return (

@@ -8,11 +8,9 @@ import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/c
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import type { CryptoStepProps } from "../form";
 
-export function Configuration({ onNext, onBack }: CryptoStepProps) {
-  const { control, formState, trigger } =
-    useFormContext<CreateCryptoCurrencyInput>();
+export function Configuration() {
+  const { control } = useFormContext<CreateCryptoCurrencyInput>();
   const t = useTranslations("private.assets.create");
   const currencyOptions = fiatCurrencies.map((currency) => ({
     value: currency,
