@@ -57,7 +57,7 @@ export function AssetFlows() {
         onClick={addFlow}
       >
         <Plus className="h-4 w-4 mr-2" />
-        {t("add-flow")}
+        {t("add")}
       </Button>
     </FormStep>
   );
@@ -80,57 +80,60 @@ function AssetFlowCard({
   });
 
   return (
-    <div className="border rounded-lg bg-card/30 p-4 space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-sm font-medium">
-          {t("flow", { index: index + 1 })}
-        </h3>
+    <div className="border border-muted rounded-lg pt-4 px-4 pb-2">
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormUsers
+            control={control}
+            name={`flows.${index}.from`}
+            label={t("from")}
+            placeholder={t("from-placeholder")}
+            required
+          />
+
+          <FormUsers
+            control={control}
+            name={`flows.${index}.to`}
+            label={t("to")}
+            placeholder={t("to-placeholder")}
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormAssets
+            control={control}
+            name={`flows.${index}.asset`}
+            label={t("asset")}
+            placeholder={t("asset-placeholder")}
+            required
+          />
+
+          <FormInput
+            control={control}
+            name={`flows.${index}.amount`}
+            label={t("amount")}
+            placeholder={t("amount-placeholder")}
+            required
+            type="number"
+            step={asset?.decimals ? 10 ** -asset.decimals : 1}
+            postfix={asset?.symbol}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-start mt-2 -ml-2">
         <Button
           type="button"
           variant="ghost"
-          size="icon"
+          size="sm"
           onClick={onRemove}
-          className="h-8 w-8"
+          className="text-xs text-muted-foreground hover:text-foreground"
         >
-          <Trash2 className="h-4 w-4" />
-          <span className="sr-only">{t("remove-flow")}</span>
+          <Trash2 className="size-3.5" />
+          {t("remove")}
         </Button>
       </div>
-
-      <FormAssets
-        control={control}
-        name={`flows.${index}.asset`}
-        label={t("asset")}
-        placeholder={t("asset-placeholder")}
-        required
-      />
-
-      <FormInput
-        control={control}
-        name={`flows.${index}.amount`}
-        label={t("amount")}
-        placeholder={t("amount-placeholder")}
-        required
-        type="number"
-        step={asset?.decimals ? 10 ** -asset.decimals : 1}
-        postfix={asset?.symbol}
-      />
-
-      <FormUsers
-        control={control}
-        name={`flows.${index}.from`}
-        label={t("from-address")}
-        placeholder={t("from-placeholder")}
-        required
-      />
-
-      <FormUsers
-        control={control}
-        name={`flows.${index}.to`}
-        label={t("to-address")}
-        placeholder={t("to-placeholder")}
-        required
-      />
     </div>
   );
 }

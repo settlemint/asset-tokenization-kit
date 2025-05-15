@@ -2560,19 +2560,19 @@
         "title": "Amount to exchange"
       },
       "asset-flows": {
-        "add-flow": "Add flow",
+        "add": "Add",
         "amount": "Amount",
         "amount-placeholder": "Enter amount",
         "asset": "Asset",
         "asset-placeholder": "Select asset",
         "description": "Configure the asset flows for this settlement. Each flow represents an asset transfer from one wallet to another.",
         "flow": "Flow {index}",
-        "from-address": "From address",
+        "from": "From",
         "from-placeholder": "Select sender",
         "max-amount": "Available balance: {maxAmount}",
-        "remove-flow": "Remove flow",
+        "remove": "Remove",
         "title": "Asset flows",
-        "to-address": "To address",
+        "to": "To",
         "to-placeholder": "Select recipient"
       },
       "button": {

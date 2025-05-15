@@ -45,11 +45,11 @@ export function Summary() {
             }
           />
           <FormSummaryDetailItem
-            label={t("asset-flows.from-address")}
+            label={t("asset-flows.from")}
             value={flow.from ? <EvmAddress address={flow.from} /> : null}
           />
           <FormSummaryDetailItem
-            label={t("asset-flows.to-address")}
+            label={t("asset-flows.to")}
             value={flow.to ? <EvmAddress address={flow.to} /> : null}
           />
         </FormSummaryDetailCard>
