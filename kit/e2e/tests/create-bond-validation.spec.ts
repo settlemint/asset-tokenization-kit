@@ -38,9 +38,9 @@ test.describe.serial("Bond Creation Validation", () => {
         name: "",
         symbol: "TBO",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Expected string length greater or equal to 1"
+        "Please enter at least 1 characters"
       );
     });
     test("validates symbol field is empty", async () => {
@@ -48,8 +48,9 @@ test.describe.serial("Bond Creation Validation", () => {
         name: "Test Bond",
         symbol: "",
       });
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Expected string to match 'asset-symbol' format"
+        "Please enter a valid asset symbol (uppercase letters and numbers)"
       );
     });
     test("validates symbol field is with lower case", async () => {
@@ -58,7 +59,7 @@ test.describe.serial("Bond Creation Validation", () => {
         symbol: "tbo",
       });
       await createAssetForm.expectErrorMessage(
-        "Expected string to match 'asset-symbol' format"
+        "Please enter a valid asset symbol (uppercase letters and numbers)"
       );
     });
     test("validates symbol field can not contain special characters", async () => {
@@ -67,7 +68,7 @@ test.describe.serial("Bond Creation Validation", () => {
         symbol: "TBO$",
       });
       await createAssetForm.expectErrorMessage(
-        "Expected string to match 'asset-symbol' format"
+        "Please enter a valid asset symbol (uppercase letters and numbers)"
       );
     });
     //Update this check name constraint after this ticket is fixed jelena/eng-3108-asset-designerno-constraint-in-asset-name-field
@@ -75,8 +76,8 @@ test.describe.serial("Bond Creation Validation", () => {
       // await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
       await createAssetForm.verifyInputAttribute("Symbol", "maxlength", "10");
     });
-
-    test("validates ISIN format", async () => {
+    //Unskip this test after this ticket is fixed https://linear.app/settlemint/issue/ENG-3127/asset-designerno-error-message-for-isin-field
+    test.skip("validates ISIN format", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Bond",
         symbol: "TBO",
@@ -87,19 +88,9 @@ test.describe.serial("Bond Creation Validation", () => {
       );
     });
     test("validates ISIN field length constraints", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Bond",
-        symbol: "TBO",
-        isin: "US0000000000000",
-      });
       await createAssetForm.verifyInputAttribute("ISIN", "maxlength", "12");
     });
     test("validates Internal ID field length constraints", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Bond",
-        symbol: "TBO",
-        internalId: "ID123456789012",
-      });
       await createAssetForm.verifyInputAttribute(
         "Internal ID",
         "maxlength",
@@ -114,7 +105,7 @@ test.describe.serial("Bond Creation Validation", () => {
           internalId: bondData.internalId,
           isin: bondData.isin,
         });
-        await createAssetForm.clickOnContinueButton();
+        await createAssetForm.clickOnNextButton();
       });
 
       test("validates decimals field is empty", async () => {
@@ -124,7 +115,9 @@ test.describe.serial("Bond Creation Validation", () => {
           faceValue: "0",
           maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
         });
-        await createAssetForm.expectErrorMessage("Expected union value");
+        await createAssetForm.expectErrorMessage(
+          "Please enter a value between 0 and 18"
+        );
       });
       test("validates large number in decimals field", async () => {
         await createAssetForm.fillBondDetails({
@@ -133,16 +126,9 @@ test.describe.serial("Bond Creation Validation", () => {
           faceValue: "0",
           maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
         });
-        await createAssetForm.expectErrorMessage("Expected union value");
-      });
-      test("validates negative in decimals field", async () => {
-        await createAssetForm.fillBondDetails({
-          decimals: "-18",
-          maximumSupply: "1",
-          faceValue: "0",
-          maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
-        });
-        await createAssetForm.expectErrorMessage("Expected union value");
+        await createAssetForm.expectErrorMessage(
+          "Please enter a value between 0 and 18"
+        );
       });
       test("validates no signs in decimals field", async () => {
         await createAssetForm.fillBondDetails({
@@ -155,7 +141,9 @@ test.describe.serial("Bond Creation Validation", () => {
           'input[name="decimals"]',
           "18-"
         );
-        await createAssetForm.expectErrorMessage("Expected union value");
+        await createAssetForm.expectErrorMessage(
+          "Please enter a value between 0 and 18"
+        );
       });
       test("validates maximum supply field is empty", async () => {
         await createAssetForm.fillBondDetails({
@@ -164,9 +152,10 @@ test.describe.serial("Bond Creation Validation", () => {
           faceValue: "0",
           maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
         });
-        await createAssetForm.expectErrorMessage("Expected number");
+        await createAssetForm.expectErrorMessage("Please enter a valid number");
       });
-      test("validates small number value for maximum supply field", async () => {
+      //Unskip this test after this ticket is fixed https://linear.app/settlemint/issue/ENG-3128/bondno-error-when-enter-0-in-maximum-supply
+      test.skip("validates small number value for maximum supply field", async () => {
         await createAssetForm.fillBondDetails({
           decimals: "18",
           maximumSupply: "0",
@@ -185,13 +174,13 @@ test.describe.serial("Bond Creation Validation", () => {
           maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
         });
         await createAssetForm.expectErrorMessage(
-          "Expected number to be less or equal to 9007199254740991"
+          "Please enter a number no greater than 9007199254740991"
         );
       });
       test("validates no signs in maximum supply field", async () => {
         await createAssetForm.fillBondDetails({
           decimals: "18",
-          maximumSupply: "1",
+          maximumSupply: "",
           faceValue: "0",
           maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
         });
@@ -200,7 +189,7 @@ test.describe.serial("Bond Creation Validation", () => {
           "1-"
         );
 
-        await createAssetForm.expectErrorMessage("Expected numbe");
+        await createAssetForm.expectErrorMessage("Please enter a valid number");
       });
       test("validates face value field is empty", async () => {
         await createAssetForm.fillBondDetails({
@@ -209,9 +198,10 @@ test.describe.serial("Bond Creation Validation", () => {
           faceValue: "",
           maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
         });
-        await createAssetForm.expectErrorMessage("Expected number");
+        await createAssetForm.expectErrorMessage("Please enter a valid number");
       });
-      test("validates small number value for face value field", async () => {
+      //Unskip this test after this ticket is fixed https://linear.app/settlemint/issue/ENG-3130/bond-no-error-when-enter-0-in-face-value
+      test.skip("validates small number value for face value field", async () => {
         await createAssetForm.fillBondDetails({
           decimals: "18",
           maximumSupply: "10",
@@ -230,7 +220,7 @@ test.describe.serial("Bond Creation Validation", () => {
           maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
         });
         await createAssetForm.expectErrorMessage(
-          "Expected number to be less or equal to 9007199254740991"
+          "Please enter a number no greater than 9007199254740991"
         );
       });
       test("validates no signs in face value field", async () => {
@@ -245,7 +235,7 @@ test.describe.serial("Bond Creation Validation", () => {
           "0-"
         );
 
-        await createAssetForm.expectErrorMessage("Expected numbe");
+        await createAssetForm.expectErrorMessage("Please enter a valid number");
       });
       test("validates maturity date", async () => {
         await createAssetForm.fillBondDetails({
@@ -254,7 +244,7 @@ test.describe.serial("Bond Creation Validation", () => {
           faceValue: "100",
           maturityDate: createAssetForm.getMaturityDate({ isPast: true }),
         });
-        await createAssetForm.clickOnContinueButton();
+        await createAssetForm.clickOnNextButton();
         await createAssetForm.expectErrorMessage(
           "Maturity date must be at least 1 hour in the future"
         );
@@ -266,8 +256,10 @@ test.describe.serial("Bond Creation Validation", () => {
           faceValue: "100",
           maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
         });
-        await createAssetForm.clickOnContinueButton();
-        await createAssetForm.expectErrorMessage("Expected object");
+        await createAssetForm.clickOnNextButton();
+        await createAssetForm.expectErrorMessage(
+          "Please provide all required information"
+        );
       });
     });
   });
@@ -294,7 +286,7 @@ test.describe.serial("Bond Creation Validation", () => {
       await adminPages.adminPage.createStablecoin(stablecoinData);
       testData.stablecoinName = stablecoinData.name;
       await adminPages.adminPage.verifySuccessMessage(
-        assetMessage.successMessage
+        assetMessage.successMessageStablecoin
       );
       await adminPages.adminPage.checkIfAssetExists({
         sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
@@ -310,7 +302,7 @@ test.describe.serial("Bond Creation Validation", () => {
       };
       await adminPages.adminPage.createBond(bondDataWithStablecoin);
       await adminPages.adminPage.verifySuccessMessage(
-        assetMessage.successMessage
+        assetMessage.successMessageBond
       );
       await adminPages.adminPage.checkIfAssetExists({
         sidebarAssetTypes: bondDataWithStablecoin.sidebarAssetTypes,

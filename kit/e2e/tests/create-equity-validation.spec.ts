@@ -32,9 +32,8 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "",
         symbol: "TEQ",
-        decimals: "18",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Expected string length greater or equal to 1"
       );
@@ -43,10 +42,9 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "Test Equity",
         symbol: "",
-        decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Expected string to match 'asset-symbol' format"
       );
@@ -55,10 +53,9 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "Test Equity",
         symbol: "teq",
-        decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Expected string to match 'asset-symbol' format"
       );
@@ -67,7 +64,6 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "Test Equity",
         symbol: "TEQ$",
-        decimals: "18",
       });
       await createAssetForm.expectErrorMessage(
         "Expected string to match 'asset-symbol' format"
@@ -88,8 +84,7 @@ test.describe("Equity Creation Validation", () => {
         "Expected string to match 'isin' format"
       );
     });
-    //Unskip this test after this ticket is fixed jelena/eng-3120-equitymissing-maxlength-attribute-for-isin-field
-    test.skip("validates ISIN field length constraints", async () => {
+    test("validates ISIN field length constraints", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Equity",
         symbol: "TEQ",
@@ -101,7 +96,6 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "Test Equity",
         symbol: "TEQ",
-        decimals: "",
       });
       await createAssetForm.expectErrorMessage("Expected union value");
     });
@@ -109,7 +103,6 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "Test Equity",
         symbol: "TEQ",
-        decimals: "20",
       });
       await createAssetForm.expectErrorMessage("Expected union value");
     });
@@ -117,7 +110,6 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "Test Equity",
         symbol: "TEQ",
-        decimals: "-18",
       });
       await createAssetForm.expectErrorMessage("Expected union value");
     });
@@ -125,7 +117,6 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "Test Equity",
         symbol: "TEQ",
-        decimals: "-18",
       });
       await createAssetForm.setInvalidValueInNumberInput(
         'input[name="decimals"]',
@@ -140,13 +131,12 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: equityData.name,
         symbol: equityData.symbol,
-        decimals: equityData.decimals,
         isin: equityData.isin,
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
     });
     test("validates required fields are empty", async () => {
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Expected string length greater or equal to 1"
       );

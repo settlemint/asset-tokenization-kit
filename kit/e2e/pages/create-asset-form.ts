@@ -2,12 +2,12 @@ import { expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class CreateAssetForm extends BasePage {
-  async clickOnContinueButton() {
-    const continueButton = this.page.locator(
-      'button[data-slot="button"]:has-text("Continue")'
+  async clickOnNextButton() {
+    const nextButton = this.page.locator(
+      'button[data-slot="button"]:has-text("Next")'
     );
-    await continueButton.focus();
-    await continueButton.click();
+    await nextButton.focus();
+    await nextButton.click();
   }
 
   async fillBasicFields(options: {
@@ -15,16 +15,12 @@ export class CreateAssetForm extends BasePage {
     symbol: string;
     isin?: string;
     internalId?: string;
-    decimals?: string;
   }) {
     await this.page.getByLabel("Name").fill(options.name);
 
     await this.page.getByLabel("Symbol").fill(options.symbol);
     if (options.isin !== undefined) {
       await this.page.getByLabel("ISIN").fill(options.isin);
-    }
-    if (options.decimals !== undefined) {
-      await this.page.getByLabel("Decimals").fill(options.decimals);
     }
     if (options.internalId !== undefined) {
       await this.page.getByLabel("Internal ID").fill(options.internalId);
@@ -101,9 +97,13 @@ export class CreateAssetForm extends BasePage {
   }
 
   async fillCryptocurrencyDetails(options: {
+    decimals?: string;
     initialSupply?: string;
     price?: string;
   }) {
+    if (options.decimals !== undefined) {
+      await this.page.getByLabel("Decimals").fill(options.decimals);
+    }
     if (options.initialSupply !== undefined) {
       await this.page.getByLabel("Initial supply").fill(options.initialSupply);
     }

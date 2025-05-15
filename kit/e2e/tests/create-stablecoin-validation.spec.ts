@@ -33,27 +33,24 @@ test.describe("Stablecoin Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "",
         symbol: "TSC",
-        decimals: "18",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is empty", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Stablecoin",
         symbol: "",
-        decimals: "18",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is with lower case", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Stablecoin",
         symbol: "tsc",
-        decimals: "18",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct asset-symbol format"
       );
@@ -66,18 +63,16 @@ test.describe("Stablecoin Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "Test Stablecoin",
         symbol: "TSC",
-        decimals: "",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates decimals range", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Stablecoin",
         symbol: "TSC",
-        decimals: "19",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
 
@@ -91,9 +86,8 @@ test.describe("Stablecoin Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: stablecoinData.name,
         symbol: stablecoinData.symbol,
-        decimals: stablecoinData.decimals,
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
     });
 
     test("validates collateral proof validity field is empty", async () => {
@@ -104,7 +98,7 @@ test.describe("Stablecoin Creation Validation", () => {
         priceAmount: "1",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
     test("validates collateral proof validity field is less than 1", async () => {
@@ -114,7 +108,7 @@ test.describe("Stablecoin Creation Validation", () => {
         priceAmount: "1",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no less than 1"
       );
@@ -128,7 +122,7 @@ test.describe("Stablecoin Creation Validation", () => {
         priceAmount: "1",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );
@@ -140,7 +134,7 @@ test.describe("Stablecoin Creation Validation", () => {
         priceAmount: "",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
     test("validates large number for price amount field", async () => {
@@ -149,7 +143,7 @@ test.describe("Stablecoin Creation Validation", () => {
         priceAmount: "10000000000000000000",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );

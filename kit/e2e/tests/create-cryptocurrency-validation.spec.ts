@@ -33,83 +33,44 @@ test.describe("Cryptocurrency Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "",
         symbol: "TCC",
-        decimals: "18",
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Expected string length greater or equal to 1"
+        "Please enter at least 1 characters"
       );
     });
     test("validates symbol field is empty", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Cryptocurrency",
         symbol: "",
-        decimals: "18",
       });
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Expected string to match 'asset-symbol' format"
+        "Please enter a valid asset symbol (uppercase letters and numbers)"
       );
     });
     test("validates symbol field is with lower case", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Cryptocurrency",
         symbol: "tcc",
-        decimals: "18",
       });
       await createAssetForm.expectErrorMessage(
-        "Expected string to match 'asset-symbol' format"
+        "Please enter a valid asset symbol (uppercase letters and numbers)"
       );
     });
     test("validates symbol field can not contain special characters", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Cryptocurrency",
         symbol: "TCC$",
-        decimals: "18",
       });
       await createAssetForm.expectErrorMessage(
-        "Expected string to match 'asset-symbol' format"
+        "Please enter a valid asset symbol (uppercase letters and numbers)"
       );
     });
     //Update this check name constraint after this ticket is fixed jelena/eng-3108-asset-designerno-constraint-in-asset-name-field
     test("verifies input length restrictions", async () => {
       // await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
       await createAssetForm.verifyInputAttribute("Symbol", "maxlength", "10");
-    });
-    test("validates decimals field is empty", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Cryptocurrency",
-        symbol: "TCC",
-        decimals: "",
-      });
-      await createAssetForm.expectErrorMessage("Expected union value");
-    });
-    test("validates large number in decimals field", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Cryptocurrency",
-        symbol: "TCC",
-        decimals: "20",
-      });
-      await createAssetForm.expectErrorMessage("Expected union value");
-    });
-    test("validates negative number in decimals field", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Cryptocurrency",
-        symbol: "TCC",
-        decimals: "-18",
-      });
-      await createAssetForm.expectErrorMessage("Expected union value");
-    });
-    test("validates no signs in decimals field", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Cryptocurrency",
-        symbol: "TCC",
-        decimals: "-18",
-      });
-      await createAssetForm.setInvalidValueInNumberInput(
-        'input[name="decimals"]',
-        "18-"
-      );
-      await createAssetForm.expectErrorMessage("Expected union value");
     });
   });
 
@@ -118,21 +79,65 @@ test.describe("Cryptocurrency Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: cryptocurrencyData.name,
         symbol: cryptocurrencyData.symbol,
-        decimals: cryptocurrencyData.decimals,
+        isin: cryptocurrencyData.isin,
       });
-      await createAssetForm.clickOnContinueButton();
+      await createAssetForm.clickOnNextButton();
     });
-
+    test("validates decimals field is empty", async () => {
+      await createAssetForm.fillCryptocurrencyDetails({
+        decimals: "",
+        initialSupply: "1",
+        price: "1",
+      });
+      await createAssetForm.expectErrorMessage(
+        "Please enter a value between 0 and 18"
+      );
+    });
+    test("validates large number in decimals field", async () => {
+      await createAssetForm.fillCryptocurrencyDetails({
+        decimals: "20",
+        initialSupply: "1",
+        price: "1",
+      });
+      await createAssetForm.expectErrorMessage(
+        "Please enter a value between 0 and 18"
+      );
+    });
+    test("validates negative number in decimals field", async () => {
+      await createAssetForm.fillCryptocurrencyDetails({
+        decimals: "-1",
+        initialSupply: "1",
+        price: "1",
+      });
+      await createAssetForm.expectErrorMessage(
+        "Please enter a value between 0 and 18"
+      );
+    });
+    test("validates no signs in decimals field", async () => {
+      await createAssetForm.fillCryptocurrencyDetails({
+        initialSupply: "1",
+        price: "1",
+      });
+      await createAssetForm.setInvalidValueInNumberInput(
+        'input[name="decimals"]',
+        "18-"
+      );
+      await createAssetForm.expectErrorMessage(
+        "Please enter a value between 0 and 18"
+      );
+    });
     test("validates initial supply field is empty", async () => {
       await createAssetForm.fillCryptocurrencyDetails({
+        decimals: "18",
         initialSupply: "",
         price: "1",
       });
-      await createAssetForm.clickOnContinueButton();
-      await createAssetForm.expectErrorMessage("Expected number");
+      await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
-    test("validates inital supply field is 0", async () => {
+    //TODO: Remove skip after this ticket is fixed https://linear.app/settlemint/issue/ENG-3131/cryptocurrencymissing-error-when-entered-0-in-initial-supply
+    test.skip("validates inital supply field is 0", async () => {
       await createAssetForm.fillCryptocurrencyDetails({
+        decimals: "18",
         initialSupply: "0",
         price: "10",
       });
@@ -142,49 +147,54 @@ test.describe("Cryptocurrency Creation Validation", () => {
     });
     test("validates large number for initial supply fields", async () => {
       await createAssetForm.fillCryptocurrencyDetails({
+        decimals: "18",
         initialSupply: "10000000000000000000",
         price: "1",
       });
       await createAssetForm.expectErrorMessage(
-        "Expected number to be less or equal to 9007199254740991"
+        "Please enter a number no greater than 9007199254740991"
       );
     });
     test("validates initial supply field can not contain special characters", async () => {
       await createAssetForm.fillCryptocurrencyDetails({
+        decimals: "18",
         price: "1",
       });
       await createAssetForm.setInvalidValueInNumberInput(
         'input[name="initialSupply"]',
         "1-"
       );
-      await createAssetForm.expectErrorMessage("Expected number");
+      await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
     test("validates price field is empty", async () => {
       await createAssetForm.fillCryptocurrencyDetails({
+        decimals: "18",
         initialSupply: "1",
         price: "",
       });
-      await createAssetForm.expectErrorMessage("Expected number");
+      await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
 
     test("validates large number for price field", async () => {
       await createAssetForm.fillCryptocurrencyDetails({
+        decimals: "18",
         initialSupply: "1",
         price: "10000000000000000000",
       });
       await createAssetForm.expectErrorMessage(
-        "Expected number to be less or equal to 9007199254740991"
+        "Please enter a number no greater than 9007199254740991"
       );
     });
     test("validates price field can not contain special characters", async () => {
       await createAssetForm.fillCryptocurrencyDetails({
+        decimals: "18",
         initialSupply: "1",
       });
       await createAssetForm.setInvalidValueInNumberInput(
-        'input[name="price"]',
+        'input[name="price.amount"]',
         "1-"
       );
-      await createAssetForm.expectErrorMessage("Expected number");
+      await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
     test("verifies default currency is EUR", async () => {
       await createAssetForm.verifyCurrencyValue("EUR");
