@@ -1,0 +1,104 @@
+# --------------------------------------------------
+# SMART Indexer
+# --------------------------------------------------
+
+type Account @entity(immutable: false) {
+  id: Bytes!
+  isContract: Boolean!
+  identity: Identity
+}
+
+type Identity @entity(immutable: false) {
+  id: Bytes!
+  account: Account
+  wallet: Account
+}
+
+type Event @entity(immutable: true) {
+  id: Bytes!
+  # Identifying the event
+  eventName: String!
+  # Default event fields
+  txIndex: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+  # List of accounts involved in the event
+  emitter: Account!
+  sender: Account!
+  involved: [Account!]!
+  # List of values involved in the event
+  values: [Internal_EventValue!]! @derivedFrom(field: "entry")
+}
+
+type Internal_EventValue @entity(immutable: true) {
+  id: Bytes!
+  name: String!
+  value: String!
+  entry: Event!
+}
+
+type Internal_AccessControl @entity(immutable: false) {
+  id: Bytes!
+  admin: [Account!]!
+  burner: [Account!]!
+  complianceAdmin: [Account!]!
+  deploymentOwner: [Account!]!
+  freezer: [Account!]!
+  forcedTransfer: [Account!]!
+  minter: [Account!]!
+  pauser: [Account!]!
+  recovery: [Account!]!
+  signer: [Account!]!
+  storageModifier: [Account!]!
+  verificationAdmin: [Account!]!
+}
+
+type System @entity(immutable: false) {
+  id: Bytes!
+  accessControl: Internal_AccessControl!
+  compliance: System_Compliance
+  identityRegistryStorage: System_IdentityRegistryStorage
+  identityFactory: System_IdentityFactory
+  identityRegistry: System_IdentityRegistry
+  trustedIssuersRegistry: System_TrustedIssuersRegistry
+  tokenRegistries: [System_TokenRegistry!]!
+    @derivedFrom(field: "deploymentRegistry")
+}
+
+type System_Compliance @entity(immutable: false) {
+  id: Bytes!
+  accessControl: Internal_AccessControl!
+  account: Account
+}
+
+type System_IdentityRegistryStorage @entity(immutable: false) {
+  id: Bytes!
+  accessControl: Internal_AccessControl!
+  account: Account
+}
+
+type System_IdentityFactory @entity(immutable: false) {
+  id: Bytes!
+  account: Account
+}
+
+type System_IdentityRegistry @entity(immutable: false) {
+  id: Bytes!
+  accessControl: Internal_AccessControl!
+  account: Account
+}
+
+type System_TrustedIssuersRegistry @entity(immutable: false) {
+  id: Bytes!
+  accessControl: Internal_AccessControl!
+  account: Account
+}
+
+type System_TokenRegistry @entity(immutable: false) {
+  id: Bytes!
+  accessControl: Internal_AccessControl!
+  typeName: String!
+  deploymentRegistry: System!
+  account: Account
+}
