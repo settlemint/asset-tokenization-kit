@@ -3,9 +3,9 @@ import { SMART_DEPLOYMENT_REGISTRY_ADDRESS } from "@/lib/contracts";
 import { waitForTransactionToBeMined } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
-import type { SetupApplicationArgs } from "../application-setup-function";
+import type { DeployContractArgs } from "../application-setup-function";
 
-interface RegisterDeploymentModuleArgs extends SetupApplicationArgs {
+interface RegisterDeploymentModuleArgs extends DeployContractArgs {
   compliance: Address;
   identityRegistryStorage: Address;
   identityFactory: Address;

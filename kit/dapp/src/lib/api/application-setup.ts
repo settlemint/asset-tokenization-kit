@@ -6,22 +6,13 @@ import {
 } from "@/lib/queries/application-setup/application-setup-status";
 import { tryParseJson } from "@settlemint/sdk-utils";
 import { Elysia, t } from "elysia";
-import { BunAdapter } from "elysia/adapter/bun";
 import type { ElysiaWS } from "elysia/ws";
 import { createClient, type Client } from "graphql-ws";
 import { logger } from "./utils/api-logger";
 
 const portalWsConnections = new Map<string, { client: Client; ws: ElysiaWS }>();
 
-export function sendApplicationSetupError(error: Error) {
-  const clients = Array.from(portalWsConnections.values());
-  clients.forEach(({ ws }) => {
-    ws.send(makeJsonStringifiable({ error: error.message }));
-  });
-}
-
 export const ApplicationSetupApi = new Elysia({
-  adapter: typeof Bun !== "undefined" ? BunAdapter : undefined, // TODO: use node adapter (when compatible with elysiajs v1.3)
   detail: {
     security: [
       {
@@ -82,8 +73,9 @@ export const ApplicationSetupApi = new Elysia({
         );
         graphqlEndpoint.protocol =
           graphqlEndpoint.protocol === "http:" ? "ws:" : "wss:";
+        const accessToken = process.env.SETTLEMINT_ACCESS_TOKEN;
         const client = createClient({
-          url: graphqlEndpoint.toString(),
+          url: `${graphqlEndpoint.protocol}//${graphqlEndpoint.host}/${accessToken}${graphqlEndpoint.pathname}${graphqlEndpoint.search}`,
         });
         portalWsConnections.set(ws.id, { client, ws });
 

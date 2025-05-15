@@ -5,20 +5,22 @@ import {
 } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
-import type { SetupApplicationArgs } from "../application-setup-function";
+import type { DeployContractArgs } from "../application-setup-function";
 
 const deployContractSMARTTrustedIssuersRegistryMutation = portalGraphql(`
   mutation deployContractSMARTTrustedIssuersRegistry(
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTTrustedIssuersRegistryInput!
+    $constructorArguments: DeployContractSMARTTrustedIssuersRegistryInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTTrustedIssuersRegistry(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -30,13 +32,15 @@ const deployContractSMARTProxyMutation = portalGraphql(`
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTProxyInput!
+    $constructorArguments: DeployContractSMARTProxyInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTProxy(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -63,7 +67,7 @@ const initializeIssuersRegistryMutation = portalGraphql(`
   }
 `);
 
-interface TrustedIssuersRegistryModuleArgs extends SetupApplicationArgs {
+interface TrustedIssuersRegistryModuleArgs extends DeployContractArgs {
   forwarder: Address;
 }
 
@@ -72,6 +76,7 @@ export const trustedIssuersRegistryModule = async ({
   user,
   verificationCode,
   verificationType,
+  gasLimit,
 }: TrustedIssuersRegistryModuleArgs) => {
   // Deploy implementation contract, passing the forwarder address
   const deploySmartTrustedIssuersRegistryResult = await portalClient.request(
@@ -87,6 +92,7 @@ export const trustedIssuersRegistryModule = async ({
       constructorArguments: {
         trustedForwarder: forwarder,
       },
+      gasLimit,
     }
   );
   const issuersImpl = await waitForContractToBeDeployed(
@@ -109,6 +115,7 @@ export const trustedIssuersRegistryModule = async ({
         _data: issuersImpl,
         _logic: emptyInitData,
       },
+      gasLimit,
     }
   );
   const issuersProxy = await waitForContractToBeDeployed(

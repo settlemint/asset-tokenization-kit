@@ -5,20 +5,22 @@ import {
 } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { zeroAddress, type Address } from "viem";
-import type { SetupApplicationArgs } from "../application-setup-function";
+import type { DeployContractArgs } from "../application-setup-function";
 
 const deployContractIdentityMutation = portalGraphql(`
   mutation deployContractSMARTIdentity(
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTIdentityInput!
+    $constructorArguments: DeployContractSMARTIdentityInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTIdentity(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -31,13 +33,15 @@ const deployContractSMARTIdentityImplementationAuthorityMutation =
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTIdentityImplementationAuthorityInput!
+    $constructorArguments: DeployContractSMARTIdentityImplementationAuthorityInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTIdentityImplementationAuthority(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -49,13 +53,15 @@ const deployContractSMARTIdentityFactoryMutation = portalGraphql(`
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTIdentityFactoryInput!
+    $constructorArguments: DeployContractSMARTIdentityFactoryInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTIdentityFactory(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -67,13 +73,15 @@ const deployContractSMARTProxyMutation = portalGraphql(`
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTProxyInput!
+    $constructorArguments: DeployContractSMARTProxyInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTProxy(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -100,7 +108,7 @@ const initializeIdentityFactoryMutation = portalGraphql(`
   }
 `);
 
-interface IdentityFactoryModuleArgs extends SetupApplicationArgs {
+interface IdentityFactoryModuleArgs extends DeployContractArgs {
   forwarder: Address;
 }
 
@@ -109,6 +117,7 @@ export const identityFactoryModule = async ({
   user,
   verificationCode,
   verificationType,
+  gasLimit,
 }: IdentityFactoryModuleArgs) => {
   const deploySmartIdentityRegistryStorageResult = await portalClient.request(
     deployContractIdentityMutation,
@@ -124,6 +133,7 @@ export const identityFactoryModule = async ({
         initialManagementKey: zeroAddress,
         _isLibrary: true,
       },
+      gasLimit,
     }
   );
   const identityImpl = await waitForContractToBeDeployed(
@@ -143,6 +153,7 @@ export const identityFactoryModule = async ({
       constructorArguments: {
         implementation: identityImpl,
       },
+      gasLimit,
     }
   );
   const implementationAuthorityImpl = await waitForContractToBeDeployed(
@@ -163,6 +174,7 @@ export const identityFactoryModule = async ({
       constructorArguments: {
         trustedForwarder: forwarder,
       },
+      gasLimit,
     }
   );
   const factoryImpl = await waitForContractToBeDeployed(
@@ -185,6 +197,7 @@ export const identityFactoryModule = async ({
         _data: factoryImpl,
         _logic: emptyInitData,
       },
+      gasLimit,
     }
   );
   const factoryProxy = await waitForContractToBeDeployed(

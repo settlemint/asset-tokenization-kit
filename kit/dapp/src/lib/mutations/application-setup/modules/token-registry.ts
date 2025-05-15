@@ -2,27 +2,29 @@ import { handleChallenge } from "@/lib/challenge";
 import { waitForContractToBeDeployed } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
-import type { SetupApplicationArgs } from "../application-setup-function";
+import type { DeployContractArgs } from "../application-setup-function";
 
 const deployContractTokenRegistryMutation = portalGraphql(`
   mutation deployContractSMARTTokenRegistry(
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTTokenRegistryInput!
+    $constructorArguments: DeployContractSMARTTokenRegistryInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTTokenRegistry(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
   }
 `);
 
-interface TokenRegistryModuleArgs extends SetupApplicationArgs {
+interface TokenRegistryModuleArgs extends DeployContractArgs {
   forwarder: Address;
 }
 
@@ -31,6 +33,7 @@ export const tokenRegistryModule = async ({
   user,
   verificationCode,
   verificationType,
+  gasLimit,
 }: TokenRegistryModuleArgs) => {
   const deploySmartTokenRegistryResult = await portalClient.request(
     deployContractTokenRegistryMutation,
@@ -46,6 +49,7 @@ export const tokenRegistryModule = async ({
         initialAdmin: user.wallet,
         forwarder: forwarder,
       },
+      gasLimit,
     }
   );
   const tokenRegistry = await waitForContractToBeDeployed(

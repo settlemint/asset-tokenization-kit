@@ -8,20 +8,21 @@ import type { ResultOf } from "@settlemint/sdk-portal";
 import type { Client } from "graphql-ws";
 import { safeParse } from "../../utils/typebox";
 
-const ABI_NAMES = [
-  "CountryAllowListComplianceModule",
-  "CountryBlockListComplianceModule",
-  "SMARTCompliance",
-  "SMARTDeploymentRegistry",
-  "SMARTIdentity",
-  "SMARTIdentityFactory",
-  "SMARTIdentityImplementationAuthority",
-  "SMARTIdentityRegistry",
-  "SMARTIdentityRegistryStorage",
-  "SMARTProxy",
-  "SMARTTokenRegistry",
-  "SMARTTrustedIssuersRegistry",
+const CONTRACTS = [
+  { abiName: "CountryAllowListComplianceModule", trackStatus: false },
+  { abiName: "CountryBlockListComplianceModule", trackStatus: false },
+  { abiName: "SMARTCompliance", trackStatus: true },
+  { abiName: "SMARTDeploymentRegistry", trackStatus: false },
+  { abiName: "SMARTIdentity", trackStatus: false },
+  { abiName: "SMARTIdentityFactory", trackStatus: true },
+  { abiName: "SMARTIdentityImplementationAuthority", trackStatus: false },
+  { abiName: "SMARTIdentityRegistry", trackStatus: true },
+  { abiName: "SMARTIdentityRegistryStorage", trackStatus: true },
+  { abiName: "SMARTProxy", trackStatus: false },
+  { abiName: "SMARTTokenRegistry", trackStatus: true },
+  { abiName: "SMARTTrustedIssuersRegistry", trackStatus: true },
 ];
+const ABI_NAMES = CONTRACTS.map((contract) => contract.abiName);
 
 const getApplicationStatusQuery = portalGraphql(`
   query getApplicationStatus($smartDeploymentRegistryAddress: String!, $abiNames: [String!]!) {
@@ -34,6 +35,8 @@ const getApplicationStatusQuery = portalGraphql(`
         createdAt
         address
         abiName
+        revertedAt
+        deployedAt
       }
     }
   }
@@ -66,6 +69,8 @@ export async function subscribeToApplicationSetupStatus(
         createdAt
         address
         abiName
+        revertedAt
+        deployedAt
       }
     }
   }` as const;
@@ -102,6 +107,19 @@ function getApplicationStatus(
     status.SMARTDeploymentRegistry?.areDependenciesRegistered ?? false;
   return safeParse(ApplicationSetupStatusSchema, {
     isSetup,
+    contractStatus: CONTRACTS.filter((contract) => contract.trackStatus).map(
+      (record) => {
+        const mostRecentRecord = status.getContractsDeployStatus?.records.find(
+          (record) => record.abiName === record.abiName
+        );
+        const isDeployed = mostRecentRecord?.deployedAt !== null;
+        const isReverted = mostRecentRecord?.revertedAt !== null;
+        return {
+          name: record.abiName,
+          status: isDeployed ? "deployed" : isReverted ? "reverted" : "pending",
+        };
+      }
+    ),
     deployedContracts: status.getContractsDeployStatus?.records ?? [],
   });
 }

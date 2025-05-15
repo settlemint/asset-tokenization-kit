@@ -5,7 +5,7 @@ import {
 } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
-import type { SetupApplicationArgs } from "../application-setup-function";
+import type { DeployContractArgs } from "../application-setup-function";
 
 const deployContractSMARTIdentityRegistryStorageMutation = portalGraphql(`
   mutation deployContractSMARTIdentityRegistryStorage(
@@ -13,12 +13,14 @@ const deployContractSMARTIdentityRegistryStorageMutation = portalGraphql(`
     $verificationId: String,
     $from: String!,
     $constructorArguments: DeployContractSMARTIdentityRegistryStorageInput!
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTIdentityRegistryStorage(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -31,12 +33,14 @@ const deployContractSMARTProxyMutation = portalGraphql(`
     $verificationId: String,
     $from: String!,
     $constructorArguments: DeployContractSMARTProxyInput!
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTProxy(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -63,7 +67,7 @@ const initializeIdentityRegistryStorageMutation = portalGraphql(`
   }
 `);
 
-interface IdentityRegistryStorageModuleArgs extends SetupApplicationArgs {
+interface IdentityRegistryStorageModuleArgs extends DeployContractArgs {
   forwarder: Address;
 }
 
@@ -72,6 +76,7 @@ export async function identityRegistryStorageModule({
   user,
   verificationCode,
   verificationType,
+  gasLimit,
 }: IdentityRegistryStorageModuleArgs) {
   // Deploy implementation contract, passing the forwarder address
   const deploySmartIdentityRegistryStorageResult = await portalClient.request(
@@ -87,6 +92,7 @@ export async function identityRegistryStorageModule({
       constructorArguments: {
         trustedForwarder: forwarder,
       },
+      gasLimit,
     }
   );
   const storageImpl = await waitForContractToBeDeployed(
@@ -109,6 +115,7 @@ export async function identityRegistryStorageModule({
         _data: storageImpl,
         _logic: emptyInitData,
       },
+      gasLimit,
     }
   );
   const storageProxy = await waitForContractToBeDeployed(

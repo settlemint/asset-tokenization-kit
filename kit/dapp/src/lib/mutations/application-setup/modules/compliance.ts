@@ -5,20 +5,22 @@ import {
 } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
-import type { SetupApplicationArgs } from "../application-setup-function";
+import type { DeployContractArgs } from "../application-setup-function";
 
 const deployContractSMARTComplianceMutation = portalGraphql(`
   mutation deployContractSMARTCompliance(
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTComplianceInput!
+    $constructorArguments: DeployContractSMARTComplianceInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTCompliance(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -30,13 +32,15 @@ const deployContractSMARTProxyMutation = portalGraphql(`
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTProxyInput!
+    $constructorArguments: DeployContractSMARTProxyInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTProxy(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -49,7 +53,7 @@ const initializeComplianceMutation = portalGraphql(`
     $verificationId: String,
     $from: String!,
     $address: String!,
-    $input: SMARTComplianceInitializeInput!
+    $input: SMARTComplianceInitializeInput!,
   ) {
     SMARTComplianceInitialize(
       challengeResponse: $challengeResponse,
@@ -63,7 +67,7 @@ const initializeComplianceMutation = portalGraphql(`
   }
 `);
 
-interface ComplianceModuleArgs extends SetupApplicationArgs {
+interface ComplianceModuleArgs extends DeployContractArgs {
   forwarder: Address;
 }
 
@@ -72,6 +76,7 @@ export const complianceModule = async ({
   user,
   verificationCode,
   verificationType,
+  gasLimit,
 }: ComplianceModuleArgs) => {
   // Deploy implementation contract, passing the forwarder address
   const deploySmartComplianceResult = await portalClient.request(
@@ -87,6 +92,7 @@ export const complianceModule = async ({
       constructorArguments: {
         trustedForwarder: forwarder,
       },
+      gasLimit,
     }
   );
   const complianceImpl = await waitForContractToBeDeployed(
@@ -109,6 +115,7 @@ export const complianceModule = async ({
         _data: complianceImpl,
         _logic: emptyInitData,
       },
+      gasLimit,
     }
   );
   const complianceProxy = await waitForContractToBeDeployed(

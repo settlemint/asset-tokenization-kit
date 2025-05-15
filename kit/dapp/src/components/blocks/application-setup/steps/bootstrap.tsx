@@ -3,7 +3,11 @@
 import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { apiClient } from "@/lib/api/client";
-import type { ApplicationSetupStatus } from "@/lib/queries/application-setup/application-setup-schema";
+import {
+  ApplicationSetupStatusSchema,
+  type ApplicationSetupStatus,
+} from "@/lib/queries/application-setup/application-setup-schema";
+import { safeParse } from "@/lib/utils/typebox";
 import type { EdenWS } from "@elysiajs/eden/treaty";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -27,7 +31,7 @@ export function BootstrapStep({ onNext }: BootstrapStepProps) {
         if (isError(message.data)) {
           setError(message.data.error);
         } else {
-          setStatus(message.data);
+          setStatus(safeParse(ApplicationSetupStatusSchema, message.data));
         }
       });
       subscription.on("error", (event) => {
@@ -62,11 +66,14 @@ export function BootstrapStep({ onNext }: BootstrapStepProps) {
         {status && (
           <div className="flex flex-col gap-2">
             <p>{status.isSetup ? "Setup" : "Not setup"}</p>
-            <p>
-              {status.deployedContracts
-                .map((contract) => contract.abiName)
-                .join(", ")}
-            </p>
+            <ul>
+              {status.contractStatus.map((contract) => (
+                <li key={contract.name}>
+                  <p>{contract.name}</p>
+                  <p>{contract.status}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>

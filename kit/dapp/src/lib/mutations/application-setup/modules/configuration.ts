@@ -2,7 +2,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { waitForTransactionToBeMined } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
-import type { SetupApplicationArgs } from "../application-setup-function";
+import type { DeployContractArgs } from "../application-setup-function";
 
 const smartIdentityRegistryStorageBindIdentityRegistryMutation = portalGraphql(`
   mutation SMARTIdentityRegistryStorageBindIdentityRegistry(
@@ -24,7 +24,7 @@ const smartIdentityRegistryStorageBindIdentityRegistryMutation = portalGraphql(`
   }
 `);
 
-interface ConfigurationModuleArgs extends SetupApplicationArgs {
+interface ConfigurationModuleArgs extends DeployContractArgs {
   identityRegistry: Address;
   identityRegistryStorage: Address;
 }

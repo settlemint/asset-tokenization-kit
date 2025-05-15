@@ -5,20 +5,22 @@ import {
 } from "@/lib/mutations/application-setup/utils/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { Address } from "viem";
-import type { SetupApplicationArgs } from "../application-setup-function";
+import type { DeployContractArgs } from "../application-setup-function";
 
 const deployContractSMARTIdentityRegistryMutation = portalGraphql(`
   mutation deployContractSMARTIdentityRegistry(
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTIdentityRegistryInput!
+    $constructorArguments: DeployContractSMARTIdentityRegistryInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTIdentityRegistry(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -30,13 +32,15 @@ const deployContractSMARTProxyMutation = portalGraphql(`
     $challengeResponse: String!,
     $verificationId: String,
     $from: String!,
-    $constructorArguments: DeployContractSMARTProxyInput!
+    $constructorArguments: DeployContractSMARTProxyInput!,
+    $gasLimit: String
   ) {
     DeployContract: DeployContractSMARTProxy(
       challengeResponse: $challengeResponse,
       verificationId: $verificationId,
       from: $from,
-      constructorArguments: $constructorArguments
+      constructorArguments: $constructorArguments,
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -63,7 +67,7 @@ const initializeIdentityRegistryMutation = portalGraphql(`
   }
 `);
 
-interface IdentityRegistryModuleArgs extends SetupApplicationArgs {
+interface IdentityRegistryModuleArgs extends DeployContractArgs {
   forwarder: Address;
   identityRegistryStorageProxy: Address;
   trustedIssuersRegistryProxy: Address;
@@ -74,6 +78,7 @@ export const identityRegistryModule = async ({
   user,
   verificationCode,
   verificationType,
+  gasLimit,
   identityRegistryStorageProxy,
   trustedIssuersRegistryProxy,
 }: IdentityRegistryModuleArgs) => {
@@ -91,6 +96,7 @@ export const identityRegistryModule = async ({
       constructorArguments: {
         trustedForwarder: forwarder,
       },
+      gasLimit,
     }
   );
   const registryImpl = await waitForContractToBeDeployed(
@@ -113,6 +119,7 @@ export const identityRegistryModule = async ({
         _data: registryImpl,
         _logic: emptyInitData,
       },
+      gasLimit,
     }
   );
   const registryProxy = await waitForContractToBeDeployed(
