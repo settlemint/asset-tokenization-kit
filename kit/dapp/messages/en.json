@@ -1494,27 +1494,27 @@
             },
             "stablecoin": {
               "issue": "Issue stablecoin",
-              "submitting": "Issueing stablecoin..."
+              "submitting": "Issuing stablecoin..."
             },
             "fund": {
               "issue": "Issue fund",
-              "submitting": "Issueing fund..."
+              "submitting": "Issuing fund..."
             },
             "equity": {
               "issue": "Issue equity",
-              "submitting": "Issueing equity..."
+              "submitting": "Issuing equity..."
             },
             "deposit": {
               "issue": "Issue deposit",
-              "submitting": "Issueing deposit..."
+              "submitting": "Issuing deposit..."
             },
             "cryptocurrency": {
               "issue": "Issue cryptocurrency",
-              "submitting": "Issueing cryptocurrency..."
+              "submitting": "Issuing cryptocurrency..."
             },
             "bond": {
               "issue": "Issue bond",
-              "submitting": "Issueing bond..."
+              "submitting": "Issuing bond..."
             }
           },
           "toast-action": {
