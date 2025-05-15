@@ -1,4 +1,6 @@
 import { Badge } from "@/components/ui/badge";
+import { getUser } from "@/lib/auth/utils";
+import { getActionsList } from "@/lib/queries/actions/actions-list";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
@@ -14,7 +16,8 @@ interface BadgeLoaderProps {
     | "events"
     | "allowlist"
     | "blocklist"
-    | "underlying-assets";
+    | "underlying-assets"
+    | "actions";
 }
 
 // Simple spinner for fallback
@@ -62,6 +65,15 @@ export async function BadgeLoader({
         // Revisit this logic if needed based on exact requirement.
         const balances = await getAssetBalanceList({ wallet: address });
         count = balances.length;
+        break;
+      case "actions":
+        const user = await getUser();
+        const actions = await getActionsList({
+          targetAddress: address,
+          type: "Admin",
+          userAddress: user.wallet,
+        });
+        count = actions.length;
         break;
     }
   } catch (error) {

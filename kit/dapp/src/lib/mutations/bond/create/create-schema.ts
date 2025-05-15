@@ -30,7 +30,7 @@ export function CreateBondSchema({
       assetName: t.String({
         description: "The name of the bond",
         minLength: 1,
-        maxLength: 50,
+        maxLength: 32,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the bond (ticker)",
@@ -59,10 +59,12 @@ export function CreateBondSchema({
       cap: t.Amount({
         decimals,
         description: "Maximum issuance amount",
+        minimum: 1,
       }),
       faceValue: t.Amount({
         decimals,
         description: "Face value of the bond",
+        minimum: 1,
       }),
       maturityDate: t.String({
         description: "Maturity date of the bond",

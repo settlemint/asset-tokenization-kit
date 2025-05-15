@@ -21,7 +21,7 @@ export function CreateFundSchema() {
       assetName: t.String({
         description: "The name of the fund",
         minLength: 1,
-        maxLength: 50,
+        maxLength: 32,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the fund (ticker)",
@@ -34,6 +34,11 @@ export function CreateFundSchema() {
         t.Isin({
           description:
             "Optional International Securities Identification Number",
+        })
+      ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the fund",
         })
       ),
       verificationCode: t.VerificationCode({

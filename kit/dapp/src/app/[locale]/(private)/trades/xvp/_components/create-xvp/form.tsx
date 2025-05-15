@@ -7,10 +7,9 @@ import { CreateXvpSchema } from "@/lib/mutations/xvp/create/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Amount } from "./steps/amount";
+import { AssetFlows } from "./steps/asset-flows";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
-import { User } from "./steps/user";
 
 interface CreateXvPFormProps {
   asButton?: boolean;
@@ -55,8 +54,7 @@ export function CreateXvPForm({
           autoExecute: true,
         }}
       >
-        <User />
-        <Amount />
+        <AssetFlows />
         <Configuration />
         <Summary />
       </Form>

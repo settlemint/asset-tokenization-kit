@@ -11,32 +11,8 @@ export function Basics({ onNext, onBack }: StablecoinStepProps) {
     useFormContext<CreateStablecoinInput>();
   const t = useTranslations("private.assets.create");
 
-  // Fields for this step - used for validation
-  const stepFields = ["assetName", "symbol", "decimals"];
-
-  // Check if there are errors in the current step's fields
-  const hasStepErrors = stepFields.some(
-    (field) => !!formState.errors[field as keyof typeof formState.errors]
-  );
-
-  // Handle next button click - trigger validation before proceeding
-  const handleNext = async () => {
-    // Trigger validation for just these fields
-    const isValid = await trigger(
-      stepFields as (keyof CreateStablecoinInput)[]
-    );
-    if (isValid && onNext) {
-      onNext();
-    }
-  };
-
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">{t("basics.title")}</h3>
@@ -46,39 +22,58 @@ export function Basics({ onNext, onBack }: StablecoinStepProps) {
         </div>
 
         <FormStep
-          title={t("basics.title")}
-          description={t("basics.description")}
+          title={t("basics.title-onchain")}
+          description={t("basics.description-onchain")}
           className="w-full"
           contentClassName="w-full"
         >
-          <div className="grid grid-cols-1 gap-6">
-            <FormInput
-              control={control}
-              name="assetName"
-              label={t("parameters.common.name-label")}
-              placeholder={t("parameters.stablecoins.name-placeholder")}
-              required
-              maxLength={50}
-            />
+          <div className="grid grid-cols-1 gap-6 w-full">
             <div className="grid grid-cols-2 gap-6">
+              <FormInput
+                control={control}
+                name="assetName"
+                label={t("parameters.common.name-label")}
+                placeholder={t("parameters.bonds.name-placeholder")}
+                description="The name of the bond. This is used to identify the bond in the UI and cannot be changed after creation."
+                required
+                maxLength={50}
+              />
               <FormInput
                 control={control}
                 name="symbol"
                 label={t("parameters.common.symbol-label")}
                 placeholder={t("parameters.stablecoins.symbol-placeholder")}
-                textOnly
+                description={t("parameters.stablecoins.symbol-description")}
                 required
                 maxLength={10}
               />
             </div>
-            <FormInput
-              control={control}
-              type="number"
-              name="decimals"
-              label={t("parameters.common.decimals-label")}
-              defaultValue={6}
-              required
-            />
+          </div>
+        </FormStep>
+        <FormStep
+          title={t("basics.title-offchain")}
+          description={t("basics.description-offchain")}
+          className="w-full"
+          contentClassName="w-full"
+        >
+          <div className="grid grid-cols-1 gap-6 w-full">
+            <div className="grid grid-cols-2 gap-6">
+              <FormInput
+                control={control}
+                name="isin"
+                label={t("parameters.common.isin-label")}
+                placeholder={t("parameters.bonds.isin-placeholder")}
+                description="The ISIN of the bond. This is an optional unique identifier for the bond in the financial system."
+                maxLength={12}
+              />
+              <FormInput
+                control={control}
+                name="internalid"
+                label={t("parameters.common.internalid-label")}
+                description="The internal ID of the bond. This is an optional unique identifier for the bond in your internal system."
+                maxLength={12}
+              />
+            </div>
           </div>
         </FormStep>
       </div>
@@ -89,7 +84,7 @@ export function Basics({ onNext, onBack }: StablecoinStepProps) {
 Basics.validatedFields = [
   "assetName",
   "symbol",
-  "decimals",
+  "isin",
 ] satisfies (keyof CreateStablecoinInput)[];
 
 // Export step definition for the asset designer

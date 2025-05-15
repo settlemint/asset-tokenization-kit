@@ -30,41 +30,8 @@ export function Configuration({ onNext, onBack }: DepositStepProps) {
     label: currency,
   }));
 
-  // Fields for this step - used for validation
-  const stepFields = [
-    "collateralLivenessValue",
-    "collateralLivenessTimeUnit",
-    "price.amount",
-    "price.currency",
-  ];
-
-  // Check if there are errors in the current step's fields
-  const hasStepErrors = stepFields.some((field) => {
-    const [parent, child] = field.split(".");
-    if (child) {
-      return !!(
-        formState.errors[parent as keyof typeof formState.errors] as any
-      )?.[child];
-    }
-    return !!formState.errors[field as keyof typeof formState.errors];
-  });
-
-  // Handle next button click - trigger validation before proceeding
-  const handleNext = async () => {
-    // Trigger validation for just these fields
-    const isValid = await trigger(stepFields as any);
-    if (isValid && onNext) {
-      onNext();
-    }
-  };
-
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">
@@ -76,12 +43,49 @@ export function Configuration({ onNext, onBack }: DepositStepProps) {
         </div>
 
         <FormStep
-          title={t("configuration.deposits.title")}
-          description={t("configuration.deposits.description")}
-          className="w-full"
-          contentClassName="w-full"
+          title={t("configuration.deposits.title-supply")}
+          description={t("configuration.deposits.description-supply")}
         >
-          <div className="grid grid-cols-2 gap-6 w-full">
+          <div className="grid grid-cols-2 gap-6">
+            <FormInput
+              control={control}
+              type="number"
+              name="decimals"
+              label={t("parameters.common.decimals-label")}
+              description={t("parameters.common.decimals-description")}
+              required
+            />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.deposits.title-value")}
+          description={t("configuration.deposits.description-value")}
+        >
+          <div className="grid grid-cols-2 gap-6">
+            <FormInput
+              control={control}
+              type="number"
+              name="price.amount"
+              required
+              label={t("parameters.common.price-label")}
+              postfix={
+                <FormSelect
+                  name="price.currency"
+                  control={control}
+                  options={currencyOptions}
+                  className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
+                />
+              }
+            />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.deposits.title-collateral")}
+          description={t("configuration.deposits.description-collateral")}
+        >
+          <div className="grid grid-cols-2 gap-6">
             <FormInput
               control={control}
               type="number"
@@ -94,21 +98,6 @@ export function Configuration({ onNext, onBack }: DepositStepProps) {
                   control={control}
                   options={timeUnitOptions}
                   defaultValue="months"
-                  className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
-                />
-              }
-            />
-            <FormInput
-              control={control}
-              type="number"
-              name="price.amount"
-              required
-              label={t("parameters.common.price-label")}
-              postfix={
-                <FormSelect
-                  name="price.currency"
-                  control={control}
-                  options={currencyOptions}
                   className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
                 />
               }

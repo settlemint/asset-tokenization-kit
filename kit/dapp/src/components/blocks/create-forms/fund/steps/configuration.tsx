@@ -6,48 +6,19 @@ import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema"
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import type { FundStepProps } from "../form";
 import { FundCategoriesSelect } from "./_components/fund-categories";
 import { FundClassesSelect } from "./_components/fund-classes";
 
-export function Configuration({ onNext, onBack }: FundStepProps) {
-  const { control, formState, trigger } = useFormContext<CreateFundInput>();
+export function Configuration() {
+  const { control } = useFormContext<CreateFundInput>();
   const t = useTranslations("private.assets.create");
   const currencyOptions = fiatCurrencies.map((currency) => ({
     value: currency,
     label: currency,
   }));
 
-  // Fields for this step - used for validation
-  const stepFields = [
-    "fundCategory",
-    "fundClass",
-    "managementFeeBps",
-    "price.amount",
-    "price.currency",
-  ];
-
-  // Check if there are errors in the current step's fields
-  const hasStepErrors = stepFields.some(
-    (field) => !!formState.errors[field as keyof typeof formState.errors]
-  );
-
-  // Handle next button click - trigger validation before proceeding
-  const handleNext = async () => {
-    // Trigger validation for just these fields
-    const isValid = await trigger(stepFields as (keyof CreateFundInput)[]);
-    if (isValid && onNext) {
-      onNext();
-    }
-  };
-
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">
@@ -59,23 +30,26 @@ export function Configuration({ onNext, onBack }: FundStepProps) {
         </div>
 
         <FormStep
-          title={t("configuration.funds.title")}
-          description={t("configuration.funds.description")}
+          title={t("configuration.stablecoins.title-supply")}
+          description={t("configuration.stablecoins.description-supply")}
         >
           <div className="grid grid-cols-2 gap-6">
-            <FundCategoriesSelect
-              label={t("parameters.funds.fund-category-label")}
-            />
-            <FundClassesSelect label={t("parameters.funds.fund-class-label")} />
             <FormInput
               control={control}
               type="number"
-              name="managementFeeBps"
-              label={t("parameters.funds.management-fee-label")}
-              description={t("parameters.funds.management-fee-description")}
-              postfix={t("parameters.funds.basis-points")}
+              name="decimals"
+              label={t("parameters.common.decimals-label")}
+              description={t("parameters.common.decimals-description")}
               required
             />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.funds.title-value")}
+          description={t("configuration.funds.description-value")}
+        >
+          <div className="grid grid-cols-2 gap-6">
             <FormInput
               control={control}
               type="number"
@@ -91,6 +65,31 @@ export function Configuration({ onNext, onBack }: FundStepProps) {
                 />
               }
             />
+            <FormInput
+              control={control}
+              type="number"
+              name="managementFeeBps"
+              label={t("parameters.funds.management-fee-label")}
+              description={t("parameters.funds.management-fee-description")}
+              postfix={t("parameters.funds.basis-points")}
+              required
+            />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.funds.title-classification")}
+          description={t("configuration.funds.description-classification")}
+        >
+          <div className="grid grid-cols-2 gap-6">
+            <FundCategoriesSelect
+              label={t("parameters.funds.fund-category-label")}
+              className="w-full"
+            />
+            <FundClassesSelect
+              label={t("parameters.funds.fund-class-label")}
+              className="w-full"
+            />
           </div>
         </FormStep>
       </div>
@@ -99,6 +98,7 @@ export function Configuration({ onNext, onBack }: FundStepProps) {
 }
 
 Configuration.validatedFields = [
+  "decimals",
   "fundCategory",
   "fundClass",
   "managementFeeBps",

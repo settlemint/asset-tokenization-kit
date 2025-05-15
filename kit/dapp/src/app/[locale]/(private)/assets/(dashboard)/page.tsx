@@ -1,3 +1,4 @@
+import { ActionsTable } from "@/components/blocks/actions-table/actions-table";
 import { PageHeader } from "@/components/layout/page-header";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
@@ -82,6 +83,8 @@ export default async function AdminDashboard({
           <TransactionsHistory />
         </Suspense>
       </div>
+      <p className="mt-8 mb-4 font-semibold text-2xl">{t("actions-heading")}</p>
+      <ActionsTable status="PENDING" type="Admin" />
       <p className="mt-8 mb-4 font-semibold text-2xl">
         {t("latest-events-heading")}
       </p>
