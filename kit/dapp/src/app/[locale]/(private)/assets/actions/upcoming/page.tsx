@@ -29,7 +29,7 @@ export async function generateMetadata({
 export default async function ActionsPage() {
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      <ActionsTable status="UPCOMING" type="Admin" />;
+      <ActionsTable status="UPCOMING" type="Admin" />
     </Suspense>
   );
 }
