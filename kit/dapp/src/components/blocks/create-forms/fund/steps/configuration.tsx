@@ -30,22 +30,6 @@ export function Configuration() {
         </div>
 
         <FormStep
-          title={t("configuration.funds.title-supply")}
-          description={t("configuration.funds.description-supply")}
-        >
-          <div className="grid grid-cols-2 gap-6">
-            <FormInput
-              control={control}
-              type="number"
-              name="decimals"
-              label={t("parameters.common.decimals-label")}
-              description={t("parameters.common.decimals-description")}
-              required
-            />
-          </div>
-        </FormStep>
-
-        <FormStep
           title={t("configuration.stablecoins.title-supply")}
           description={t("configuration.stablecoins.description-supply")}
         >
