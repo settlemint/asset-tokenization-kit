@@ -1,4 +1,3 @@
-import { sendApplicationSetupError } from "@/lib/api/application-setup";
 import type { User } from "@/lib/auth/types";
 import { withAccessControl } from "@/lib/utils/access-control";
 import type { VerificationType } from "@/lib/utils/typebox/verification-type";
@@ -13,7 +12,11 @@ import { registerDeploymentModule } from "./modules/register-deployment";
 import { tokenRegistryModule } from "./modules/token-registry";
 import { trustedIssuersRegistryModule } from "./modules/trusted-issuer-registry";
 
-export interface SetupApplicationArgs {
+export interface DeployContractArgs extends SetupApplicationArgs {
+  gasLimit?: string;
+}
+
+interface SetupApplicationArgs {
   user: User;
   verificationCode: string;
   verificationType: VerificationType;
@@ -23,27 +26,32 @@ async function setupApplication(args: SetupApplicationArgs) {
   const forwarder = getAddress(
     process.env.SETTLEMINT_HD_PRIVATE_KEY_FORWARDER_ADDRESS || zeroAddress
   );
-
+  const gasLimit = "0x3d0900"; // TODO: get from env like hardhat?
   const phase1 = await Promise.allSettled([
     identityRegistryStorageModule({
       ...args,
       forwarder,
+      gasLimit,
     }),
     trustedIssuersRegistryModule({
       ...args,
       forwarder,
+      gasLimit,
     }),
     complianceModule({
       ...args,
       forwarder,
+      gasLimit,
     }),
     identityFactoryModule({
       ...args,
       forwarder,
+      gasLimit,
     }),
     tokenRegistryModule({
       ...args,
       forwarder,
+      gasLimit,
     }),
   ]);
 
@@ -83,6 +91,7 @@ async function setupApplication(args: SetupApplicationArgs) {
     identityRegistry: identityRegistryProxy,
     identityRegistryStorage:
       identityRegistryStorageModuleResult.value.identityRegistryStorageProxy,
+    gasLimit,
   });
 
   await registerDeploymentModule({
@@ -95,6 +104,7 @@ async function setupApplication(args: SetupApplicationArgs) {
     trustedIssuersRegistry:
       trustedIssuersRegistryModuleResult.value.trustedIssuersRegistryProxy,
     tokenRegistry: tokenRegistryModuleResult.value.tokenRegistry,
+    gasLimit,
   });
 }
 
@@ -113,12 +123,16 @@ export const applicationSetupFunction = withAccessControl(
       user: User;
     };
   }): Promise<{ started: boolean }> => {
-    setupApplication({ user, verificationCode, verificationType })
+    setupApplication({
+      user,
+      verificationCode,
+      verificationType,
+    })
       .then(() => {
         console.log("Application setup completed successfully");
       })
       .catch((error: Error) => {
-        sendApplicationSetupError(error);
+        // TODO: Store the error in the database
         console.error(`Application setup failed: ${error.message}`, error);
       });
     return {

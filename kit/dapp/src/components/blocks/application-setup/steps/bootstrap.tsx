@@ -33,21 +33,32 @@ export function BootstrapStep({ onNext }: BootstrapStepProps) {
         return;
       }
       for await (const statusUpdate of data) {
-        const parsedStatusUpdate = tryParseJson(statusUpdate);
+        const parsedStatusUpdate =
+          typeof statusUpdate === "string"
+            ? tryParseJson(statusUpdate)
+            : statusUpdate;
+        if (statusUpdate === undefined || statusUpdate === null) {
+          continue;
+        }
         if (isError(parsedStatusUpdate)) {
           setError(parsedStatusUpdate.error);
           return;
         } else {
-          const status = safeParse(
-            ApplicationSetupStatusSchema,
-            parsedStatusUpdate
-          );
-          setStatus(status);
-          if (status.isSetup) {
-            return;
+          try {
+            const status = safeParse(
+              ApplicationSetupStatusSchema,
+              parsedStatusUpdate
+            );
+            setStatus(status);
+            if (status.isSetup) {
+              return;
+            }
+          } catch (err) {
+            console.error(err);
           }
         }
       }
+      debugger;
     };
     // Wait 1 second before fetching the status
     const timeout = window.setTimeout(fetchStatus, 1000);
