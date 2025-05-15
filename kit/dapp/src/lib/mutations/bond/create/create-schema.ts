@@ -64,6 +64,7 @@ export function CreateBondSchema({
       faceValue: t.Amount({
         decimals,
         description: "Face value of the bond",
+        minimum: 1,
       }),
       maturityDate: t.String({
         description: "Maturity date of the bond",
