@@ -1,3 +1,5 @@
 export const assetMessage = {
-  successMessage: "Success",
+  successMessage: "was created successfully",
+  successMessageStablecoin: "Stablecoin was created successfully!",
+  successMessageBond: "Bond was created successfully!",
 };

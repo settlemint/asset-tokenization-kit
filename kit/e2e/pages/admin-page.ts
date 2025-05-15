@@ -48,6 +48,7 @@ export class AdminPage extends BasePage {
     name: string;
     symbol: string;
     isin: string;
+    decimals: string;
     maximumSupply: string;
     faceValue: string;
     underlyingAsset: string;
@@ -59,11 +60,13 @@ export class AdminPage extends BasePage {
       options.symbol
     );
     await this.page.getByLabel("ISIN").fill(options.isin);
-    const continueButton = this.page.locator(
-      'button[data-slot="button"]:has-text("Continue")'
-    );
-    await continueButton.focus();
-    await continueButton.click();
+    const nextButton = this.page.getByRole("button", {
+      name: "Next",
+      exact: true,
+    });
+    await nextButton.focus();
+    await nextButton.click();
+    await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page.getByLabel("Maximum supply").fill(options.maximumSupply);
     await this.page.getByLabel("Face value").fill(options.faceValue);
     const today = new Date();
@@ -84,9 +87,9 @@ export class AdminPage extends BasePage {
     await this.page
       .getByRole("option", { name: `Avatar ${options.underlyingAsset}` })
       .click();
-    await continueButton.click();
-    await continueButton.click();
-    const buttonName = `Issue`;
+    await nextButton.click();
+    await nextButton.click();
+    const buttonName = `Issue ${options.assetType.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
@@ -104,18 +107,19 @@ export class AdminPage extends BasePage {
       options.name,
       options.symbol
     );
-    const continueButton = this.page.locator(
-      'button[data-slot="button"]:has-text("Continue")'
+    const nextButton = this.page.locator(
+      'button[data-slot="button"]:has-text("Next")'
     );
-    await continueButton.focus();
-    await continueButton.click();
+    await nextButton.focus();
+    await nextButton.click();
+    await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page.getByLabel("Initial supply").fill(options.initialSupply);
     await this.page.getByLabel("Price").fill(options.price);
     await this.page.locator("#price\\.currency").click();
     await this.page.getByRole("option", { name: "EUR" }).click();
-    await continueButton.click();
-    await continueButton.click();
-    const buttonName = `Issue`;
+    await nextButton.click();
+    await nextButton.click();
+    const buttonName = `Issue ${options.assetType.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
@@ -159,7 +163,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole("option", { name: "EUR" }).click();
     await continueButton.click();
     await continueButton.click();
-    const buttonName = `Issue`;
+    const buttonName = `Issue ${options.assetType.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
@@ -203,7 +207,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole("option", { name: "EUR" }).click();
     await continueButton.click();
     await continueButton.click();
-    const buttonName = `Issue`;
+    const buttonName = `Issue ${options.assetType.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
@@ -221,21 +225,21 @@ export class AdminPage extends BasePage {
       options.name,
       options.symbol
     );
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    const continueButton = this.page.locator(
-      'button[data-slot="button"]:has-text("Continue")'
+    const nextButton = this.page.locator(
+      'button[data-slot="button"]:has-text("Next")'
     );
-    await continueButton.focus();
-    await continueButton.click();
-    await this.page
-      .getByLabel("Collateral Proof Validity")
-      .fill(options.validityPeriod);
+    await nextButton.focus();
+    await nextButton.click();
+    await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page.getByLabel("Price").fill(options.price);
     await this.page.locator("#price\\.currency").click();
     await this.page.getByRole("option", { name: "EUR" }).click();
-    await continueButton.click();
-    await continueButton.click();
-    const buttonName = `Issue`;
+    await this.page
+      .getByLabel("Collateral Proof Validity")
+      .fill(options.validityPeriod);
+    await nextButton.click();
+    await nextButton.click();
+    const buttonName = `Issue ${options.assetType.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
@@ -269,7 +273,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole("option", { name: "EUR" }).click();
     await continueButton.click();
     await continueButton.click();
-    const buttonName = `Issue`;
+    const buttonName = `Issue ${options.assetType.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
 
