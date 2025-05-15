@@ -4,6 +4,7 @@ import { XVP_SETTLEMENT_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { parseUnits } from "viem";
 import type { CreateXvpInput } from "./create-schema";
 
 const XvpFactoryCreate = portalGraphql(`
@@ -22,11 +23,7 @@ const XvpFactoryCreate = portalGraphql(`
 
 export const createXvpFunction = async ({
   parsedInput: {
-    offerAsset,
-    offerAmount,
-    requestAsset,
-    requestAmount,
-    user: receiver,
+    flows,
     expiry,
     autoExecute,
     verificationCode,
@@ -37,10 +34,12 @@ export const createXvpFunction = async ({
   parsedInput: CreateXvpInput;
   ctx: { user: User };
 }) => {
-  const offerAssetId = offerAsset.id;
-  const offerAssetDecimals = offerAsset.decimals;
-  const requestAssetId = requestAsset.id;
-  const requestAssetDecimals = requestAsset.decimals;
+  const transformedFlows = flows.map((flow) => ({
+    from: flow.from,
+    to: flow.to,
+    asset: flow.asset.id,
+    amount: parseUnits(flow.amount.toString(), flow.asset.decimals).toString(),
+  }));
 
   const result = await portalClient.request(XvpFactoryCreate, {
     address: XVP_SETTLEMENT_FACTORY_ADDRESS,
@@ -50,24 +49,7 @@ export const createXvpFunction = async ({
       cutoffDate: formatDate(expiry, {
         type: "unixSeconds",
       }),
-      flows: [
-        {
-          from: user.wallet,
-          to: receiver,
-          asset: offerAssetId,
-          amount: (
-            BigInt(offerAmount) * BigInt(10 ** offerAssetDecimals)
-          ).toString(),
-        },
-        {
-          from: receiver,
-          to: user.wallet,
-          asset: requestAssetId,
-          amount: (
-            BigInt(requestAmount) * BigInt(10 ** requestAssetDecimals)
-          ).toString(),
-        },
-      ],
+      flows: transformedFlows,
     },
     ...(await handleChallenge(
       user,

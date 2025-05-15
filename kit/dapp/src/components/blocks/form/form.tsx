@@ -98,7 +98,19 @@ export function Form<
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
 
-  SetErrorFunction((error) => {
+  SetErrorFunction((error): string => {
+    // First check if there's a custom error message defined in the schema
+    if (
+      error.schema.error !== undefined &&
+      typeof error.schema.error === "string" &&
+      // Type assertion is safe here as we're verifying at runtime with t.has()
+      // that the key exists in our translations before using it
+      t.has(error.schema.error as any)
+    ) {
+      return t(error.schema.error as any);
+    }
+
+    // Otherwise fall back to default error messages
     switch (error.errorType) {
       case ValueErrorType.ArrayContains:
         return t("error.array-contains");

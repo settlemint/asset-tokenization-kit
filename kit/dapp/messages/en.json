@@ -845,7 +845,13 @@
     "union-min-max": "Please enter a value between {min} and {max}",
     "unknown": "Invalid value entered",
     "validation-errors": "Validation error",
-    "void": "This field should be empty"
+    "void": "This field should be empty",
+    "at-least-two-asset-flows": "Please provide at least two flows to proceed",
+    "asset-required": "Asset is required",
+    "amount-required": "Amount is required",
+    "from-address-required": "From address is required and must be a valid EVM address",
+    "to-address-required": "To address is required and must be a valid EVM address",
+    "expiry-required": "Expiry is required"
   },
   "error-pages": {
     "forbidden": {
@@ -2594,6 +2600,24 @@
         "description": "Enter the asset and amount of assets that you wish to exchange.",
         "max-amount-to-send": "Amount available to offer: {maxAmount}",
         "title": "Amount to exchange"
+      },
+      "asset-flows": {
+        "add": "Add",
+        "amount": "Amount",
+        "amount-placeholder": "Enter amount",
+        "asset": "Asset",
+        "asset-placeholder": "Select asset",
+        "description": "Configure the asset flows for this settlement. Each flow represents an asset transfer from one wallet to another.",
+        "flow": "Flow {index}",
+        "flows": "Flows",
+        "flows-summary": "The flows define the assets that will be transferred from one wallet to another.",
+        "from": "From",
+        "from-placeholder": "Select sender",
+        "max-amount": "Available balance: {maxAmount}",
+        "remove": "Remove",
+        "title": "Asset flows",
+        "to": "To",
+        "to-placeholder": "Select recipient"
       },
       "button": {
         "xvp": "Create a new XvP Settlement"
