@@ -1,4 +1,4 @@
-import "@/lib/utils/server-only";
+import "server-only";
 
 import { PortfolioStatsDataFragment } from "@/lib/queries/portfolio/portfolio-fragment";
 import {

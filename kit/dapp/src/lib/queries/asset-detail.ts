@@ -1,4 +1,4 @@
-import "@/lib/utils/server-only";
+import "server-only";
 
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";

@@ -1,4 +1,4 @@
-import "@/lib/utils/server-only";
+import "server-only";
 
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";

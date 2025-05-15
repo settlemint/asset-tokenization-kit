@@ -1,4 +1,4 @@
-import "@/lib/utils/server-only";
+import "server-only";
 
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";

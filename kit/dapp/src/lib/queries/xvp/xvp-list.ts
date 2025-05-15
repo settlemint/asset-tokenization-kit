@@ -1,4 +1,4 @@
-import "@/lib/utils/server-only";
+import "server-only";
 
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllTheGraphPages } from "@/lib/pagination";
