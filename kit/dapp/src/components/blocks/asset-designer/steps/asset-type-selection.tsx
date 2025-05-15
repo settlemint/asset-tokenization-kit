@@ -238,7 +238,7 @@ export function AssetTypeSelection({
               <Card
                 className={cn(
                   "flex flex-col h-full cursor-pointer transition-all duration-200 overflow-hidden",
-                  "border relative gap-2",
+                  "border relative gap-3",
                   selectedType === assetInfo.type
                     ? "border-primary shadow-[0_2px_8px_rgba(0,0,0,0.05)] ring-1 ring-primary/20"
                     : "border-muted hover:border-primary/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]",
