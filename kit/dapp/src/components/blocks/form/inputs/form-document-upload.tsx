@@ -193,7 +193,9 @@ export function FormDocumentUpload<
       });
 
     // Only update form state if the values are different
-    const currentValue = field.value || [];
+    const currentValue = (
+      Array.isArray(field.value) ? field.value : []
+    ) as UploadedDocument[];
     const hasChanges =
       uploadedDocs.length !== currentValue.length ||
       uploadedDocs.some((doc, i) => doc.id !== (currentValue[i]?.id || ""));
