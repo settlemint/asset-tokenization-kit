@@ -61,7 +61,8 @@
         "latest-events-heading": "Neueste Ereignisse",
         "stats-heading": "Statistiken",
         "title": "Dashboard",
-        "platform-management": "Plattformverwaltung"
+        "platform-management": "Plattformverwaltung",
+        "actions-heading": "Aktionen"
       },
       "table": {
         "latest-events": {
@@ -149,7 +150,8 @@
         "api": "API",
         "my-contacts": "Meine Kontakte",
         "profile": "Profil",
-        "settings": "Einstellungen"
+        "settings": "Einstellungen",
+        "my-actions": "Meine Aktionen"
       },
       "settings-management": {
         "group-title": "Einstellungen",
@@ -720,7 +722,16 @@
     "union": "Bitte geben Sie einen gültigen Wert ein",
     "void": "Dieses Feld sollte leer sein",
     "kind": "Ungültiges Format",
-    "unknown": "Ungültiger Wert eingegeben"
+    "unknown": "Ungültiger Wert eingegeben",
+    "string-format-asset-symbol": "Bitte geben Sie ein gültiges Vermögenssymbol ein (Großbuchstaben und Zahlen)",
+    "string-format-isin": "Bitte geben Sie eine gültige ISIN ein. Format: 2 Buchstaben (Ländercode), 9 alphanumerische Zeichen und 1 Prüfziffer (z. B. US0378331005)",
+    "union-min-max": "Bitte geben Sie einen Wert zwischen {min} und {max} ein",
+    "at-least-two-asset-flows": "Bitte stellen Sie mindestens zwei Flüsse zur Verfügung, um fortzufahren",
+    "asset-required": "Vermögenswert ist erforderlich",
+    "amount-required": "Betrag ist erforderlich",
+    "from-address-required": "Die Absenderadresse ist erforderlich und muss eine gültige EVM-Adresse sein",
+    "to-address-required": "Die Empfängeradresse ist erforderlich und muss eine gültige EVM-Adresse sein",
+    "expiry-required": "Ablaufdatum ist erforderlich"
   },
   "layout": {
     "header": {
@@ -780,7 +791,8 @@
       "latest-events": "Neueste Ereignisse",
       "my-assets": "Meine Vermögenswerte",
       "page-title": "Portfolio",
-      "portfolio-management": "Portfoliomanagement"
+      "portfolio-management": "Portfoliomanagement",
+      "my-actions-heading": "Meine Aktionen"
     },
     "greeting": {
       "afternoon": "Guten Nachmittag",
@@ -1055,37 +1067,65 @@
       "asset-statistics-title": "Statistiken",
       "create": {
         "basics": {
-          "description": "Konfigurieren Sie Ihr neues Asset mit Identifikationsinformationen, die auf der Blockchain gespeichert sind. Dieses Datum ist unveränderlich.",
-          "title": "Onchain-Identifikation",
-          "description-offchain": "Geben Sie optional zusätzliche Identifikationsinformationen für dieses Asset ein. Diese Informationen werden offchain gespeichert und sind außerhalb dieser Plattform nicht zugänglich.",
-          "title-offchain": "Offchain-Identifikation"
+          "description": "Geben Sie die grundlegenden Informationen für dieses Vermögen an.",
+          "title": "Grundlegende Informationen",
+          "description-offchain": "Geben Sie optional zusätzliche identifizierende Informationen für dieses Vermögen ein. Diese Informationen werden offchain gespeichert und sind außerhalb dieser Plattform nicht zugänglich.",
+          "title-offchain": "Offchain-Identifikation",
+          "description-onchain": "Konfigurieren Sie Ihr neues Vermögen mit identifizierenden Informationen, die auf der Blockchain gespeichert sind. Diese Daten sind unveränderlich.",
+          "title-onchain": "Onchain-Identifikation"
         },
         "configuration": {
           "bonds": {
-            "description": "Legen Sie Parameter fest, die spezifisch für Ihre Anleihe sind.",
+            "description": "Konfigurieren Sie spezifische Parameter für diese Anleihe.",
             "title": "Anleihekonfiguration",
             "description-lifecycle": "Konfigurieren Sie die relevanten Daten für Lebenszyklusereignisse für diese Anleihe.",
             "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieser Anleihe. Diese Informationen sind unveränderlich.",
             "description-value": "Konfigurieren Sie, welches Vermögen als Nennwert der Anleihe verwendet wird und für Zins- und Rückzahlungszahlungen genutzt wird.",
             "title-lifecycle": "Lebenszyklus",
             "title-supply": "Angebot",
-            "title-value": "Nennwert"
+            "title-value": "Nennwert",
+            "maximum-supply": "Maximale Ausgabe",
+            "face-value": "Nennwert",
+            "maturity-date": "Fälligkeitsdatum",
+            "underlying-asset": "Unterliegendes Vermögen"
           },
           "cryptocurrencies": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre Kryptowährung sind.",
-            "title": "Kryptowährungs-Konfiguration"
+            "title": "Kryptowährungs-Konfiguration",
+            "title-supply": "Angebot",
+            "title-value": "Nennwert",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieser Kryptowährung. Diese Informationen sind unveränderlich.",
+            "description-value": "Konfigurieren Sie den Preis für Ihre Kryptowährung."
           },
           "equities": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihr Eigenkapital sind.",
-            "title": "Eigenkapital-Konfiguration"
+            "title": "Eigenkapital-Konfiguration",
+            "title-supply": "Angebot",
+            "title-value": "Nennwert",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieses Eigenkapitals. Diese Informationen sind unveränderlich.",
+            "description-value": "Konfigurieren Sie den Preis für Ihr Eigenkapital.",
+            "title-classification": "Klassifizierung",
+            "description-classification": "Konfigurieren Sie die Klassifizierung für Ihr Eigenkapital."
           },
           "funds": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihren Fonds sind.",
-            "title": "Fonds-Konfiguration"
+            "title": "Fonds-Konfiguration",
+            "title-supply": "Angebot",
+            "title-value": "Nennwert",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieses Fonds. Diese Informationen sind unveränderlich.",
+            "description-value": "Konfigurieren Sie den Preis für Ihren Fonds.",
+            "title-classification": "Klassifizierung",
+            "description-classification": "Konfigurieren Sie die Klassifizierung für Ihren Fonds."
           },
           "stablecoins": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre Stable Coin sind.",
-            "title": "Stable Coin-Konfiguration"
+            "title": "Stable Coin-Konfiguration",
+            "title-supply": "Angebot",
+            "title-value": "Nennwert",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieses Stablecoins. Diese Informationen sind unveränderlich.",
+            "description-value": "Konfigurieren Sie den Preis für Ihren Stablecoin.",
+            "title-collateral": "Sicherheit",
+            "description-collateral": "Konfigurieren Sie die Sicherheit für Ihren Stablecoin."
           },
           "tokenizeddeposits": {
             "description": "Legen Sie Parameter fest, die spezifisch für Ihre tokenisierte Einzahlung sind.",
@@ -1093,7 +1133,13 @@
           },
           "deposits": {
             "description": "Legen Sie parameter fest, die spezifisch für Ihre einzahlung sind.",
-            "title": "Einzahlungs konfiguration"
+            "title": "Einzahlungs konfiguration",
+            "title-collateral": "Sicherheit",
+            "description-collateral": "Konfigurieren Sie die Sicherheit für Ihre Einzahlung.",
+            "title-value": "Nennwert",
+            "description-value": "Konfigurieren Sie den Preis für Ihre Einzahlung.",
+            "title-supply": "Angebot",
+            "description-supply": "Konfigurieren Sie das Angebot und die Fraktionierung dieser Einzahlung. Diese Informationen sind unveränderlich."
           }
         },
         "form": {
@@ -1137,7 +1183,9 @@
                 "admin": "Administrator",
                 "user-manager": "Benutzermanager",
                 "issuer": "Versorgungsmanager"
-              }
+              },
+              "asset-admins-title": "Vermögensadministratoren",
+              "asset-admins-description": "Verwalten Sie, wer Zugriff auf dieses Vermögen hat und was er damit tun kann."
             }
           },
           "toast-action": {
@@ -1155,6 +1203,77 @@
             "equity": "Ein Eigenkapital mit diesen Parametern existiert bereits. Bitte ändern Sie mindestens einen Parameter und versuchen Sie es erneut.",
             "fund": "Ein Fonds mit diesen Parametern existiert bereits. Bitte ändern Sie mindestens einen Parameter und versuchen Sie es erneut.",
             "stablecoin": "Ein Stablecoin mit diesen Parametern existiert bereits. Bitte ändern Sie mindestens einen Parameter und versuchen Sie es erneut."
+          },
+          "errors": {
+            "address-prediction-failed": "Adresse konnte nicht vorhergesagt werden. Bitte versuchen Sie es erneut.",
+            "duplicate-asset": "Ein Vermögen mit diesen Parametern existiert bereits. Bitte ändern Sie mindestens einen Parameter und versuchen Sie es erneut.",
+            "validation-failed": "Ein Validierungsfehler ist aufgetreten."
+          },
+          "toasts": {
+            "submitting": "Vermögen wird erstellt... Dieser Prozess kann einen Moment dauern.",
+            "failed": "Erstellung des Vermögens fehlgeschlagen. Bitte versuchen Sie es erneut.",
+            "success": "Vermögen wurde erfolgreich erstellt!",
+            "stablecoin": {
+              "submitting": "Stablecoin wird erstellt... Dieser Prozess kann einen Moment dauern.",
+              "failed": "Erstellung des Stablecoins fehlgeschlagen. Bitte versuchen Sie es erneut.",
+              "success": "Stablecoin wurde erfolgreich erstellt!"
+            },
+            "fund": {
+              "submitting": "Fonds wird erstellt... Dieser Prozess kann einen Moment dauern.",
+              "failed": "Erstellung des Fonds fehlgeschlagen. Bitte versuchen Sie es erneut.",
+              "success": "Fonds wurde erfolgreich erstellt!"
+            },
+            "equity": {
+              "submitting": "Eigenkapital wird erstellt... Dieser Prozess kann einen Moment dauern.",
+              "failed": "Erstellung des Eigenkapitals fehlgeschlagen. Bitte versuchen Sie es erneut.",
+              "success": "Eigenkapital wurde erfolgreich erstellt!"
+            },
+            "deposit": {
+              "submitting": "Einzahlung wird erstellt... Dieser Prozess kann einen Moment dauern.",
+              "failed": "Erstellung der Einzahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+              "success": "Einzahlung wurde erfolgreich erstellt!"
+            },
+            "cryptocurrency": {
+              "submitting": "Kryptowährung wird erstellt... Dieser Prozess kann einen Moment dauern.",
+              "failed": "Erstellung der Kryptowährung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+              "success": "Kryptowährung wurde erfolgreich erstellt!"
+            },
+            "bond": {
+              "submitting": "Anleihe wird erstellt... Dieser Prozess kann einen Moment dauern.",
+              "failed": "Erstellung der Anleihe fehlgeschlagen. Bitte versuchen Sie es erneut.",
+              "success": "Anleihe wurde erfolgreich erstellt!"
+            }
+          },
+          "button-labels": {
+            "general": {
+              "next": "Weiter",
+              "previous": "Zurück",
+              "processing": "Wird verarbeitet..."
+            },
+            "stablecoin": {
+              "issue": "Stablecoin ausgeben",
+              "submitting": "Stablecoin wird ausgegeben..."
+            },
+            "fund": {
+              "issue": "Fonds ausgeben",
+              "submitting": "Fonds wird ausgegeben..."
+            },
+            "equity": {
+              "issue": "Eigenkapital ausgeben",
+              "submitting": "Eigenkapital wird ausgegeben..."
+            },
+            "deposit": {
+              "issue": "Einzahlung ausstellen",
+              "submitting": "Einzahlung wird ausgegeben..."
+            },
+            "cryptocurrency": {
+              "issue": "Kryptowährung ausstellen",
+              "submitting": "Kryptowährung wird ausgegeben..."
+            },
+            "bond": {
+              "issue": "Anleihe ausstellen",
+              "submitting": "Anleihe wird ausgegeben..."
+            }
           }
         },
         "parameters": {
@@ -1169,7 +1288,8 @@
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "Adresse des Vermögenswerts, der diese Anleihe absichert",
             "underlying-asset-label": "Unterliegender Vermögenswert",
-            "maturity-date-error": "Das Fälligkeitsdatum muss mindestens 1 Stunde in der Zukunft liegen"
+            "maturity-date-error": "Das Fälligkeitsdatum muss mindestens 1 Stunde in der Zukunft liegen",
+            "symbol-description": "Das Symbol der Anleihe. Dies ist ein eindeutiger Identifikator für die Anleihe zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           },
           "common": {
             "collateral-proof-validity-label": "Gültigkeit des Sicherheitennachweises",
@@ -1197,20 +1317,22 @@
             },
             "price-label": "Preis",
             "internalid-label": "Interne ID",
-            "decimals-description": "Die Anzahl der Dezimalstellen, die für die Anleihe verwendet werden sollen. Dies wird verwendet, um die Genauigkeit der Anleihe zu bestimmen."
+            "decimals-description": "Die Anzahl der Dezimalstellen, die für den Vermögenswert verwendet werden sollen. Dies wird verwendet, um die Genauigkeit des Vermögenswerts zu bestimmen."
           },
           "cryptocurrencies": {
-            "initial-supply-description": "Anfangsbetrag an Assets, die geprägt werden sollen",
+            "initial-supply-description": "Anfänglicher Betrag der zu prägenden Vermögenswerte.",
             "initial-supply-label": "Anfängliche Menge",
             "name-placeholder": "Bitcoin",
-            "symbol-placeholder": "BTC"
+            "symbol-placeholder": "BTC",
+            "symbol-description": "Das Symbol der Kryptowährung. Dies ist ein eindeutiger Identifikator für die Kryptowährung zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           },
           "equities": {
             "equity-category-label": "Eigenkapitalkategorie",
             "equity-class-label": "Eigenkapitalklasse",
             "isin-placeholder": "US1234567890",
             "name-placeholder": "Globale Eigenkapital",
-            "symbol-placeholder": "GLEQ"
+            "symbol-placeholder": "GLEQ",
+            "symbol-description": "Das Symbol des Eigenkapitals. Dies ist ein eindeutiger Identifikator für das Eigenkapital zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           },
           "funds": {
             "basis-points": "bps",
@@ -1220,12 +1342,14 @@
             "management-fee-description": "Jährliche Verwaltungsgebühr in Basispunkten (100 bps = 1%)",
             "management-fee-label": "Verwaltungsgebühr",
             "name-placeholder": "Global Growth Fund",
-            "symbol-placeholder": "GGF"
+            "symbol-placeholder": "GGF",
+            "symbol-description": "Das Symbol des Fonds. Dies ist ein eindeutiger Identifikator für den Fonds zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           },
           "stablecoins": {
             "isin-placeholder": "DEFI4EVER2024",
             "name-placeholder": "TotallyNotTether",
-            "symbol-placeholder": "SAFU"
+            "symbol-placeholder": "SAFU",
+            "symbol-description": "Das Symbol des Stablecoins. Dies ist ein eindeutiger Identifikator für den Stablecoin zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           },
           "tokenizeddeposits": {
             "isin-placeholder": "EU1234567890",
@@ -1235,7 +1359,8 @@
           "deposits": {
             "isin-placeholder": "EU1234567890",
             "name-placeholder": "Eingezahlter Euro",
-            "symbol-placeholder": "EURD"
+            "symbol-placeholder": "EURD",
+            "symbol-description": "Das Symbol der Anleihe. Dies ist ein eindeutiger Identifikator für die Anleihe zu Onchain-Zwecken. Es kann bis zu 10 Zeichen lang sein und kann nach der Erstellung nicht mehr geändert werden."
           }
         },
         "summary": {
@@ -1243,10 +1368,39 @@
           "asset-basics-title": "Grundinformationen",
           "configuration-description": "Spezifische Parameter für Ihr Vermögen.",
           "configuration-title": "Konfiguration",
-          "description": "Dies ist der letzte Schritt, bevor Sie Ihr Vermögen erstellen. Bitte überprüfen Sie alle eingegebenen Details.",
+          "description": "Überprüfen Sie alle eingegebenen Details.",
           "title": "Zusammenfassung",
           "asset-admins-description": "Administrative Rollen und Berechtigungen für die Verwaltung dieses Assets.",
-          "asset-admins-title": "Asset-Berechtigungen"
+          "asset-admins-title": "Asset-Berechtigungen",
+          "creating": "Erstellen...",
+          "default-asset": "Vermögenswert",
+          "disclaimer": "Durch die Erstellung dieses Vermögenswerts bestätigen Sie, dass alle angegebenen Informationen korrekt sind und dass Sie die erforderlichen Berechtigungen haben, um diesen Vermögenswert bereitzustellen. Diese Aktion kann nicht rückgängig gemacht werden, sobald der Vermögenswert erstellt wurde.",
+          "issue": "Ausstellen",
+          "not-specified": "Nicht angegeben"
+        },
+        "general": {
+          "title": {
+            "default": "Erstellen Sie ein digitales Vermögen",
+            "bond": "Erstellen Sie eine neue Anleihe",
+            "cryptocurrency": "Erstellen Sie eine neue Kryptowährung",
+            "deposit": "Erstellen Sie eine neue Einzahlung",
+            "equity": "Erstellen Sie ein neues Eigenkapital",
+            "fund": "Erstellen Sie einen neuen Fonds",
+            "stablecoin": "Erstellen Sie einen neuen Stablecoin"
+          },
+          "description": {
+            "default": "Erstellen Sie Ihr digitales Vermögen in wenigen Schritten.",
+            "bond": "Schuldtitel, die als tokenisierte Wertpapiere ausgegeben werden.",
+            "cryptocurrency": "Dezentralisierte digitale Vermögenswerte, die als Tauschmittel oder Wertspeicher verwendet werden.",
+            "deposit": "Digitale Vermögenswerte, die eine Einzahlung eines traditionellen Vermögenswerts darstellen.",
+            "equity": "Vermögenswerte, die Eigentum an einem Unternehmen repräsentieren.",
+            "fund": "Anlagevehikel, die von professionellen Managern gebündelt werden.",
+            "stablecoin": "Digitale Vermögenswerte, die an einen stabilen Vermögenswert wie USD gebunden sind."
+          }
+        },
+        "select-asset-type": {
+          "title": "Vermögensart auswählen",
+          "description": "Wählen Sie die Art des digitalen Vermögenswerts, den Sie erstellen möchten."
         }
       },
       "detail": {
@@ -1839,7 +1993,8 @@
           "underlying-assets": "Zugrunde liegende Vermögenswerte",
           "yield": "Ertrag",
           "allowlist": "Blockiert seit",
-          "blocklist": "Blockliste"
+          "blocklist": "Blockliste",
+          "actions": "Aktionen"
         }
       },
       "fields": {
@@ -2748,7 +2903,7 @@
       },
       "button": {
         "dvp-swap": "Einen DvP Swap erstellen",
-        "xvp": "Einen neuen Vergleich erstellen"
+        "xvp": "Erstellen Sie eine neue XvP-Abrechnung"
       },
       "user": {
         "title": "Benutzer",
@@ -2788,7 +2943,28 @@
         "amount": "Betrag",
         "configuration": "Konfiguration",
         "configuration-description": "Die Konfiguration für die XvP-Abwicklung",
-        "expiry": "Ablauf"
+        "expiry": "Ablauf",
+        "auto-execute": "Automatisch bei letzter Genehmigung ausführen",
+        "yes": "Ja",
+        "no": "Nein"
+      },
+      "asset-flows": {
+        "add": "Hinzufügen",
+        "amount": "Betrag",
+        "amount-placeholder": "Betrag eingeben",
+        "asset": "Vermögenswert",
+        "asset-placeholder": "Vermögenswert auswählen",
+        "description": "Konfigurieren Sie die Vermögensfluss für diese Abwicklung. Jeder Fluss stellt einen Vermögensübertrag von einer Brieftasche zur anderen dar.",
+        "flow": "Fluss {index}",
+        "flows": "Flüsse",
+        "flows-summary": "Die Flüsse definieren die Vermögenswerte, die von einer Brieftasche zur anderen übertragen werden.",
+        "from": "Von",
+        "from-placeholder": "Absender auswählen",
+        "max-amount": "Verfügbarer Saldo: {maxAmount}",
+        "remove": "Entfernen",
+        "title": "Vermögensflüsse",
+        "to": "An",
+        "to-placeholder": "Empfänger auswählen"
       }
     },
     "xvp": {
@@ -2799,7 +2975,14 @@
         "approved": "Genehmigt",
         "expired": "Abgelaufen",
         "claimed": "Beansprucht",
-        "cancelled": "Storniert"
+        "cancelled": "Storniert",
+        "READY": "Bereit",
+        "APPROVED": "Genehmigt",
+        "CANCELLED": "Storniert",
+        "EXECUTED": "Ausgeführt",
+        "EXPIRED": "Abgelaufen",
+        "PENDING": "Ausstehend",
+        "NOT_APPROVED": "Nicht genehmigt"
       },
       "columns": {
         "id": "Abwicklungs-ID",
@@ -2807,8 +2990,41 @@
         "created-at": "Erstellt am",
         "expires-at": "Läuft ab am",
         "assets": "Vermögenswerte",
-        "approvals": "Genehmigungen"
-      }
+        "approvals": "Genehmigungen",
+        "expiry": "Ablauf",
+        "amount": "Betrag",
+        "asset": "Vermögenswert",
+        "price": "Preis",
+        "total-price": "Gesamtpreis",
+        "user": "Benutzer",
+        "approved-at": "Genehmigt am",
+        "from": "Von",
+        "to": "An"
+      },
+      "ago": "vor",
+      "total-price-description": "Der Gesamtpreis der an der Abrechnung beteiligten Vermögenswerte.",
+      "flows": "Flüsse",
+      "auto-execute": "Automatisch ausführen",
+      "auto-execute-description": "Die Abrechnung automatisch bei letzter Genehmigung ausführen.",
+      "approvals": "Genehmigungen",
+      "manage": "Verwalten",
+      "approve": "Genehmigen",
+      "approve-xvp-settlement": "XvP-Abrechnung genehmigen",
+      "approve-xvp-settlement-description": "Erteilen Sie dem XvP-Abrechnungsvertrag Genehmigungen für die Vermögenswerte, die von Ihrem Wallet übertragen werden.",
+      "approve-description": "Dem XvP-Abrechnungsvertrag wird die Genehmigung erteilt, die in der Abrechnung konfigurierten Vermögenswerte in Ihrem Namen zu übertragen. Dann wird die Abrechnung von Ihnen als genehmigt markiert.",
+      "execute": "Ausführen",
+      "execute-xvp-settlement": "XvP-Abrechnung ausführen",
+      "execute-xvp-settlement-description": "Verarbeitet alle genehmigten Vermögensfluss in dieser Abrechnung.",
+      "execute-xvp-settlement-summary": "Führen Sie diese Abrechnung aus, um Vermögenswerte zwischen den Parteien gemäß den in den Abrechnungsflüssen definierten Bedingungen zu übertragen.",
+      "cancel": "Stornieren",
+      "cancel-xvp-settlement": "XvP-Abrechnung stornieren",
+      "cancel-xvp-settlement-summary": "Das Stornieren dieser Abrechnung verhindert dauerhaft, dass sie ausgeführt wird, und diese Aktion kann nicht rückgängig gemacht werden. Eine neue Abrechnung muss erstellt werden, um Vermögenswerte auszutauschen.",
+      "cancel-xvp-settlement-description": "Stornieren Sie diese Abrechnung, um zu verhindern, dass sie ausgeführt wird.",
+      "asset": "Vermögenswert",
+      "amount": "Betrag",
+      "to": "An",
+      "xvp-settlement": "XvP-Abrechnung",
+      "actions": "Aktionen"
     }
   },
   "asset-designer": {
@@ -2864,12 +3080,39 @@
   },
   "actions": {
     "page": {
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "my-actions": "Meine Aktionen"
     },
     "tabs": {
       "pending": "Ausstehend",
       "upcoming": "Bevorstehend",
-      "completed": "Abgeschlossen"
+      "completed": "Abgeschlossen",
+      "name": {
+        "completed": "Abgeschlossen",
+        "pending": "Ausstehend",
+        "upcoming": "Bevorstehend",
+        "expired": "Abgelaufen"
+      },
+      "description": {
+        "completed": "Abgeschlossene Aktionen",
+        "pending": "Ausstehende Aktionen",
+        "upcoming": "Bevorstehende Aktionen",
+        "expired": "Abgelaufene Aktionen"
+      },
+      "empty-state": {
+        "title": {
+          "completed": "Keine abgeschlossenen Aktionen",
+          "pending": "Keine ausstehenden Aktionen",
+          "upcoming": "Keine bevorstehenden Aktionen",
+          "expired": "Keine abgelaufenen Aktionen"
+        },
+        "description": {
+          "completed": "Sie haben noch keine Aktionen abgeschlossen. Aktionen erscheinen hier, sobald sie abgeschlossen sind.",
+          "pending": "Sie haben derzeit keine Aktionen, die Ihre Aufmerksamkeit erfordern.",
+          "upcoming": "Sie haben keine bevorstehenden Aktionen.",
+          "expired": "Sie haben keine abgelaufenen Aktionen. Abgelaufene Aktionen sind Aktionen, die vor ihrem Ablaufdatum abgeschlossen sein sollten, aber nicht mehr durchgeführt werden können, da sie abgelaufen sind."
+        }
+      }
     },
     "all-tasks-complete": "Alle Aufgaben abgeschlossen!",
     "all-tasks-complete-description": "Sie haben keine ausstehenden Aktionen.",
@@ -2890,6 +3133,31 @@
     },
     "completed-description": {
       "bond-mature": "Die Anleihe wurde erfolgreich fällig."
+    },
+    "name": {
+      "ApproveXvPSettlement": "Genehmigen Sie die XvP-Vereinbarung",
+      "ExecuteXvPSettlement": "Führen Sie die XvP-Vereinbarung aus",
+      "MatureBond": "Fällige Anleihe"
+    },
+    "description": {
+      "ApproveXvPSettlement": "Genehmigen Sie den Vertrag zur XvP-Vereinbarung, um die Vermögenswerte übertragen zu können.",
+      "ExecuteXvPSettlement": "Führen Sie den Vertrag zur XvP-Vereinbarung aus, um die Vermögenswerte an die im Vergleich definierten Parteien zu übertragen.",
+      "MatureBond": "Markieren Sie die Anleihe als fällig."
+    },
+    "columns": {
+      "name": "Name",
+      "subject": "Betreff",
+      "description": "Beschreibung",
+      "active-at": "Aktiv seit",
+      "completed-on": "Abgeschlossen am",
+      "completed-by": "Abgeschlossen von",
+      "status": "Status"
+    },
+    "status": {
+      "COMPLETED": "Abgeschlossen",
+      "UPCOMING": "Bevorstehend",
+      "EXPIRED": "Abgelaufen",
+      "PENDING": "Ausstehend"
     }
   },
   "regulations": {

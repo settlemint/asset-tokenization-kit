@@ -1,7 +1,7 @@
 "use client";
 
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { ApprovalStatusBadge } from "@/components/blocks/xvp-status/approval-status-badge";
+import { ApprovalStatus } from "@/components/blocks/xvp/approval-status";
 import type { XvPSettlementApproval } from "@/lib/queries/xvp/xvp-schema";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
@@ -21,7 +21,7 @@ export function columns() {
     }),
     columnHelper.accessor("approved", {
       header: t("columns.status"),
-      cell: ({ getValue }) => <ApprovalStatusBadge hasApproved={getValue()} />,
+      cell: ({ getValue }) => <ApprovalStatus hasApproved={getValue()} />,
     }),
   ];
 }

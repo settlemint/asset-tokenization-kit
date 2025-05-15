@@ -1,32 +1,61 @@
 {
   "actions": {
-    "action-type": {
-      "bond-mature": "Mature Bond"
+    "name": {
+      "ApproveXvPSettlement": "Approve XvP Settlement",
+      "ExecuteXvPSettlement": "Execute XvP Settlement",
+      "MatureBond": "Mature Bond"
     },
-    "action-type-header": "Action type",
-    "active-on-header": "Active on",
-    "all-tasks-complete": "All tasks complete!",
-    "all-tasks-complete-description": "You have no pending actions.",
-    "completed-description": {
-      "bond-mature": "The bond has been matured successfully."
+    "description": {
+      "ApproveXvPSettlement": "Approve the XvP Settlement contract to be able to transfer the assets.",
+      "ExecuteXvPSettlement": "Execute the XvP Settlement contract to transfer the assets to the parties as defined in the settlement.",
+      "MatureBond": "Mark the bond as matured."
     },
-    "completed-on-header": "Completed on",
-    "description-header": "Description",
+    "columns": {
+      "name": "Name",
+      "subject": "Subject",
+      "description": "Description",
+      "active-at": "Active at",
+      "completed-on": "Completed on",
+      "completed-by": "Completed by",
+      "status": "Status"
+    },
     "page": {
-      "actions": "Actions"
+      "actions": "Actions",
+      "my-actions": "My actions"
     },
-    "pending-description": {
-      "bond-mature": "You need to send the transaction to mature the bond."
+    "status": {
+      "COMPLETED": "Completed",
+      "UPCOMING": "Upcoming",
+      "EXPIRED": "Expired",
+      "PENDING": "Pending"
     },
-    "sender-header": "Sender",
-    "subject": "Subject",
     "tabs": {
-      "completed": "Completed",
-      "pending": "Pending",
-      "upcoming": "Upcoming"
-    },
-    "upcoming-description": {
-      "bond-mature": "You will need to send the transaction to mature the bond."
+      "name": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "upcoming": "Upcoming",
+        "expired": "Expired"
+      },
+      "description": {
+        "completed": "Completed actions",
+        "pending": "Pending actions",
+        "upcoming": "Upcoming actions",
+        "expired": "Expired actions"
+      },
+      "empty-state": {
+        "title": {
+          "completed": "No completed actions",
+          "pending": "No pending actions",
+          "upcoming": "No upcoming actions",
+          "expired": "No expired actions"
+        },
+        "description": {
+          "completed": "You haven't completed any actions yet. Actions will appear here once they are completed.",
+          "pending": "You don't have any actions that require your attention at this time.",
+          "upcoming": "You don't have any scheduled actions coming up.",
+          "expired": "You don't have any expired actions. Expired actions are actions that should have been completed before their expiry date but can no longer be performed because they have expired."
+        }
+      }
     }
   },
   "active": "Active",
@@ -165,6 +194,7 @@
         "latest-events-heading": "Latest events",
         "platform-management": "Platform management",
         "stats-heading": "Stats",
+        "actions-heading": "Actions",
         "title": "Dashboard"
       },
       "table": {
@@ -257,7 +287,8 @@
         "my-assets": "My assets",
         "my-contacts": "My contacts",
         "profile": "Profile",
-        "settings": "Settings"
+        "settings": "Settings",
+        "my-actions": "My actions"
       },
       "settings-management": {
         "api": "API",
@@ -794,7 +825,9 @@
     "sending": "Sending",
     "string": "Please enter text",
     "string-format": "Please enter text in the correct {format} format",
+    "string-format-isin": "Please enter a valid ISIN. Format: 2 letters (country code), 9 alphanumeric characters, and 1 check digit (e.g., US0378331005)",
     "string-format-unknown": "Unknown format '{format}'",
+    "string-format-asset-symbol": "Please enter a valid asset symbol (uppercase letters and numbers)",
     "string-max-length": "Please enter no more than {maxLength} characters",
     "string-min-length": "Please enter at least {minLength} characters",
     "string-pattern": "Please follow the required pattern",
@@ -809,9 +842,16 @@
     "uint8array-min-byte-length": "File is too small",
     "undefined": "This field should be empty",
     "union": "Please enter a valid value",
+    "union-min-max": "Please enter a value between {min} and {max}",
     "unknown": "Invalid value entered",
     "validation-errors": "Validation error",
-    "void": "This field should be empty"
+    "void": "This field should be empty",
+    "at-least-two-asset-flows": "Please provide at least two flows to proceed",
+    "asset-required": "Asset is required",
+    "amount-required": "Amount is required",
+    "from-address-required": "From address is required and must be a valid EVM address",
+    "to-address-required": "To address is required and must be a valid EVM address",
+    "expiry-required": "Expiry is required"
   },
   "error-pages": {
     "forbidden": {
@@ -1000,9 +1040,10 @@
     "assets-count-assets": "assets",
     "dashboard": {
       "latest-events": "Latest events",
-      "my-assets": "My Assets",
+      "my-assets": "My assets",
       "page-title": "Portfolio",
-      "portfolio-management": "Portfolio management"
+      "portfolio-management": "Portfolio management",
+      "my-actions-heading": "My actions"
     },
     "greeting": {
       "afternoon": "Good afternoon",
@@ -1323,23 +1364,51 @@
           },
           "cryptocurrencies": {
             "description": "Set parameters specific to your cryptocurrency.",
-            "title": "Cryptocurrency configuration"
+            "title": "Cryptocurrency configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
+            "description-supply": "Configure the supply and franctionalization of this cryptocurrency. This information is immutable.",
+            "description-value": "Configure the price for your cryptocurrency."
           },
           "deposits": {
             "description": "Set parameters specific to your deposit.",
-            "title": "Deposit configuration"
+            "title": "Deposit configuration",
+            "title-collateral": "Collateral",
+            "description-collateral": "Configure the collateral for your deposit.",
+            "title-value": "Denomination",
+            "description-value": "Configure the price for your deposit.",
+            "title-supply": "Supply",
+            "description-supply": "Configure the supply and franctionalization of this deposit. This information is immutable."
           },
           "equities": {
             "description": "Set parameters specific to your equity.",
-            "title": "Equity configuration"
+            "title": "Equity configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
+            "description-supply": "Configure the supply and franctionalization of this equity. This information is immutable.",
+            "description-value": "Configure the price for your equity.",
+            "title-classification": "Classification",
+            "description-classification": "Configure the classification for your equity."
           },
           "funds": {
             "description": "Set parameters specific to your fund.",
-            "title": "Fund configuration"
+            "title": "Fund configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
+            "description-supply": "Configure the supply and franctionalization of this fund. This information is immutable.",
+            "description-value": "Configure the price for your fund.",
+            "title-classification": "Classification",
+            "description-classification": "Configure the classification for your fund."
           },
           "stablecoins": {
             "description": "Set parameters specific to your stable coin.",
-            "title": "Stable coin configuration"
+            "title": "Stable coin configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
+            "description-supply": "Configure the supply and franctionalization of this stable coin. This information is immutable.",
+            "description-value": "Configure the price for your stable coin.",
+            "title-collateral": "Collateral",
+            "description-collateral": "Configure the collateral for your stable coin."
           }
         },
         "form": {
@@ -1385,7 +1454,68 @@
           "toasts": {
             "submitting": "Creating asset... This process may take a moment.",
             "failed": "Failed to create asset. Please try again.",
-            "success": "Asset was created successfully!"
+            "success": "Asset was created successfully!",
+            "stablecoin": {
+              "submitting": "Creating stablecoin... This process may take a moment.",
+              "failed": "Failed to create stablecoin. Please try again.",
+              "success": "Stablecoin was created successfully!"
+            },
+            "fund": {
+              "submitting": "Creating fund... This process may take a moment.",
+              "failed": "Failed to create fund. Please try again.",
+              "success": "Fund was created successfully!"
+            },
+            "equity": {
+              "submitting": "Creating equity... This process may take a moment.",
+              "failed": "Failed to create equity. Please try again.",
+              "success": "Equity was created successfully!"
+            },
+            "deposit": {
+              "submitting": "Creating deposit... This process may take a moment.",
+              "failed": "Failed to create deposit. Please try again.",
+              "success": "Deposit was created successfully!"
+            },
+            "cryptocurrency": {
+              "submitting": "Creating cryptocurrency... This process may take a moment.",
+              "failed": "Failed to create cryptocurrency. Please try again.",
+              "success": "Cryptocurrency was created successfully!"
+            },
+            "bond": {
+              "submitting": "Creating bond... This process may take a moment.",
+              "failed": "Failed to create bond. Please try again.",
+              "success": "Bond was created successfully!"
+            }
+          },
+          "button-labels": {
+            "general": {
+              "next": "Next",
+              "previous": "Previous",
+              "processing": "Processing..."
+            },
+            "stablecoin": {
+              "issue": "Issue stablecoin",
+              "submitting": "Issuing stablecoin..."
+            },
+            "fund": {
+              "issue": "Issue fund",
+              "submitting": "Issuing fund..."
+            },
+            "equity": {
+              "issue": "Issue equity",
+              "submitting": "Issuing equity..."
+            },
+            "deposit": {
+              "issue": "Issue deposit",
+              "submitting": "Issuing deposit..."
+            },
+            "cryptocurrency": {
+              "issue": "Issue cryptocurrency",
+              "submitting": "Issuing cryptocurrency..."
+            },
+            "bond": {
+              "issue": "Issue bond",
+              "submitting": "Issuing bond..."
+            }
           },
           "toast-action": {
             "bonds": "View bond",
@@ -1416,11 +1546,12 @@
             "name-placeholder": "Company XYZ Bond 2023",
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "Address of the asset that backs this bond",
-            "underlying-asset-label": "Underlying asset"
+            "underlying-asset-label": "Underlying asset",
+            "symbol-description": "The symbol of the bond. This a unique identifier for the bond for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "common": {
             "collateral-proof-validity-label": "Collateral proof validity",
-            "decimals-description": "The number of decimals to use for the bond. This is used to determine the precision of the bond.",
+            "decimals-description": "The number of decimals to use for the asset. This is used to determine the precision of the asset.",
             "decimals-label": "Decimals",
             "internalid-label": "Internal ID",
             "isin-label": "ISIN",
@@ -1446,22 +1577,25 @@
             }
           },
           "cryptocurrencies": {
-            "initial-supply-description": "Initial amount of assets to be minted",
+            "initial-supply-description": "Initial amount of assets to be minted.",
             "initial-supply-label": "Initial supply",
             "name-placeholder": "Bitcoin",
-            "symbol-placeholder": "BTC"
+            "symbol-placeholder": "BTC",
+            "symbol-description": "The symbol of the cryptocurrency. This a unique identifier for the cryptocurrency for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "deposits": {
             "isin-placeholder": "EU1234567890",
             "name-placeholder": "Deposited Euro",
-            "symbol-placeholder": "EURD"
+            "symbol-placeholder": "EURD",
+            "symbol-description": "The symbol of the bond. This a unique identifier for the bond for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "equities": {
             "equity-category-label": "Equity category",
             "equity-class-label": "Equity class",
             "isin-placeholder": "US1234567890",
             "name-placeholder": "Global Equity",
-            "symbol-placeholder": "GLEQ"
+            "symbol-placeholder": "GLEQ",
+            "symbol-description": "The symbol of the equity. This a unique identifier for the equity for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "funds": {
             "basis-points": "bps",
@@ -1471,12 +1605,14 @@
             "management-fee-description": "Annual management fee in basis points (100 bps = 1%)",
             "management-fee-label": "Management fee",
             "name-placeholder": "Global Growth Fund",
-            "symbol-placeholder": "GGF"
+            "symbol-placeholder": "GGF",
+            "symbol-description": "The symbol of the fund. This a unique identifier for the fund for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "stablecoins": {
             "isin-placeholder": "DEFI4EVER2024",
             "name-placeholder": "TotallyNotTether",
-            "symbol-placeholder": "SAFU"
+            "symbol-placeholder": "SAFU",
+            "symbol-description": "The symbol of the stablecoin. This a unique identifier for the stablecoin for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           }
         },
         "summary": {
@@ -1792,7 +1928,8 @@
           "holders": "Holders",
           "permissions": "Permissions",
           "underlying-assets": "Underlying assets",
-          "yield": "Yield"
+          "yield": "Yield",
+          "actions": "Actions"
         }
       },
       "fields": {
@@ -2464,6 +2601,24 @@
         "max-amount-to-send": "Amount available to offer: {maxAmount}",
         "title": "Amount to exchange"
       },
+      "asset-flows": {
+        "add": "Add",
+        "amount": "Amount",
+        "amount-placeholder": "Enter amount",
+        "asset": "Asset",
+        "asset-placeholder": "Select asset",
+        "description": "Configure the asset flows for this settlement. Each flow represents an asset transfer from one wallet to another.",
+        "flow": "Flow {index}",
+        "flows": "Flows",
+        "flows-summary": "The flows define the assets that will be transferred from one wallet to another.",
+        "from": "From",
+        "from-placeholder": "Select sender",
+        "max-amount": "Available balance: {maxAmount}",
+        "remove": "Remove",
+        "title": "Asset flows",
+        "to": "To",
+        "to-placeholder": "Select recipient"
+      },
       "button": {
         "xvp": "Create a new XvP Settlement"
       },
@@ -2536,13 +2691,32 @@
       "expired": "Expired",
       "approvals": "Approvals",
       "status": {
-        "approved": "Approved",
-        "cancelled": "Cancelled",
-        "claimed": "Claimed",
-        "expired": "Expired",
-        "pending": "Pending",
-        "not-approved": "Not approved"
-      }
+        "READY": "Ready",
+        "APPROVED": "Approved",
+        "CANCELLED": "Cancelled",
+        "EXECUTED": "Executed",
+        "EXPIRED": "Expired",
+        "PENDING": "Pending",
+        "NOT_APPROVED": "Not approved"
+      },
+      "manage": "Manage",
+      "approve": "Approve",
+      "approve-xvp-settlement": "Approve XvP Settlement",
+      "approve-xvp-settlement-description": "Grant allowances to the XvP Settlement contract for the assets that will be transferred from your wallet.",
+      "approve-description": "The XvP Settlement contract will be granted approval to transfer the assets configured in the settlement on your behalf. Then the settlement will be marked as approved by you.",
+      "execute": "Execute",
+      "execute-xvp-settlement": "Execute XvP Settlement",
+      "execute-xvp-settlement-description": "Processes all approved asset flows in this settlement.",
+      "execute-xvp-settlement-summary": "Execute this settlement to transfer assets between parties as defined in the settlement flows.",
+      "cancel": "Cancel",
+      "cancel-xvp-settlement": "Cancel XvP Settlement",
+      "cancel-xvp-settlement-summary": "Cancelling this settlement will permanently prevent it from being executed, and this action cannot be reversed. A new settlement will have to be created to exchange assets.",
+      "cancel-xvp-settlement-description": "Cancel this settlement to prevent it from being executed.",
+      "asset": "Asset",
+      "amount": "Amount",
+      "to": "To",
+      "xvp-settlement": "XvP Settlement",
+      "actions": "Actions"
     }
   },
   "transactions": {

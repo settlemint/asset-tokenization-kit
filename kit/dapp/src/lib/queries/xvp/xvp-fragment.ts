@@ -18,6 +18,7 @@ export const XvPSettlementFlowFragment = theGraphGraphqlKit(
       id
       symbol
       type
+      decimals
     }
   }
 `
@@ -46,7 +47,7 @@ export const XvPSettlementFragment = theGraphGraphqlKit(
     id
     cutoffDate
     autoExecute
-    claimed
+    executed
     cancelled
     createdAt
     approvals {

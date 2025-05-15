@@ -14,7 +14,7 @@ jobs:
   test:
     name: Test
     runs-on: namespace-profile-atk
-    environment: staging
+    environment: ${{ github.base_ref == 'v1' && 'v1' || 'staging' }}
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7

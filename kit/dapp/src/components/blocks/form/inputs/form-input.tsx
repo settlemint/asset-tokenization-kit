@@ -107,7 +107,7 @@ export function FormInput<T extends FieldValues>({
                 <span>
                   {label}
                   {inputProps.required && (
-                    <span className="text-destructive">*</span>
+                    <span className="ml-1 text-destructive">*</span>
                   )}
                 </span>
               </FormLabel>
