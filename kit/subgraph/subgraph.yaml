@@ -1,829 +1,271 @@
 specVersion: 1.2.0
 indexerHints:
   prune: auto
-features:
-  - nonFatalErrors
-  - fullTextSearch
-  - ipfsOnEthereumContracts
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: BondFactory
+    name: Forwarder
     network: settlemint
     source:
-      address: "0x5e771e1417100000000000000000000000000004"
-      abi: BondFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Factory
-      abis:
-        - name: BondFactory
-          file: ../contracts/artifacts/contracts/v1/BondFactory.sol/BondFactory.json
-        - name: Bond
-          file: ../contracts/artifacts/contracts/v1/Bond.sol/Bond.json
-      eventHandlers:
-        - event: BondCreated(indexed address,indexed address)
-          handler: handleBondCreated
-      file: ./src/factories/bond-factory.ts
-  - kind: ethereum/contract
-    name: CryptoCurrencyFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000001"
-      abi: CryptoCurrencyFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Factory
-      abis:
-        - name: CryptoCurrencyFactory
-          file: ../contracts/artifacts/contracts/v1/CryptoCurrencyFactory.sol/CryptoCurrencyFactory.json
-        - name: CryptoCurrency
-          file: ../contracts/artifacts/contracts/v1/CryptoCurrency.sol/CryptoCurrency.json
-      eventHandlers:
-        - event: CryptoCurrencyCreated(indexed address,indexed address)
-          handler: handleCryptoCurrencyCreated
-      file: ./src/factories/cryptocurrency-factory.ts
-  - kind: ethereum/contract
-    name: EquityFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000003"
-      abi: EquityFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Factory
-      abis:
-        - name: EquityFactory
-          file: ../contracts/artifacts/contracts/v1/EquityFactory.sol/EquityFactory.json
-        - name: Equity
-          file: ../contracts/artifacts/contracts/v1/Equity.sol/Equity.json
-      eventHandlers:
-        - event: EquityCreated(indexed address,indexed address)
-          handler: handleEquityCreated
-      file: ./src/factories/equity-factory.ts
-  - kind: ethereum/contract
-    name: StableCoinFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000002"
-      abi: StableCoinFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Factory
-      abis:
-        - name: StableCoinFactory
-          file: ../contracts/artifacts/contracts/v1/StableCoinFactory.sol/StableCoinFactory.json
-        - name: StableCoin
-          file: ../contracts/artifacts/contracts/v1/StableCoin.sol/StableCoin.json
-      eventHandlers:
-        - event: StableCoinCreated(indexed address,indexed address)
-          handler: handleStableCoinCreated
-      file: ./src/factories/stablecoin-factory.ts
-  - kind: ethereum/contract
-    name: FundFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000005"
-      abi: FundFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Factory
-      abis:
-        - name: FundFactory
-          file: ../contracts/artifacts/contracts/v1/FundFactory.sol/FundFactory.json
-        - name: Fund
-          file: ../contracts/artifacts/contracts/v1/Fund.sol/Fund.json
-      eventHandlers:
-        - event: FundCreated(indexed address,indexed address)
-          handler: handleFundCreated
-      file: ./src/factories/fund-factory.ts
-  - kind: ethereum/contract
-    name: FixedYieldFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000006"
-      abi: FixedYieldFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Factory
-      abis:
-        - name: FixedYieldFactory
-          file: ../contracts/artifacts/contracts/v1/FixedYieldFactory.sol/FixedYieldFactory.json
-        - name: FixedYield
-          file: ../contracts/artifacts/contracts/v1/FixedYield.sol/FixedYield.json
-      eventHandlers:
-        - event: FixedYieldCreated(indexed address,indexed address)
-          handler: handleFixedYieldCreated
-      file: ./src/factories/fixedyield-factory.ts
-  - kind: ethereum/contract
-    name: DepositFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000007"
-      abi: DepositFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Factory
-      abis:
-        - name: DepositFactory
-          file: ../contracts/artifacts/contracts/v1/DepositFactory.sol/DepositFactory.json
-        - name: Deposit
-          file: ../contracts/artifacts/contracts/v1/Deposit.sol/Deposit.json
-      eventHandlers:
-        - event: DepositCreated(indexed address,indexed address)
-          handler: handleDepositCreated
-      file: ./src/factories/deposit-factory.ts
-  - kind: ethereum/contract
-    name: XvPSettlementFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000008"
-      abi: XvPSettlementFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Factory
-      abis:
-        - name: XvPSettlementFactory
-          file: ../contracts/artifacts/contracts/v1/XvPSettlementFactory.sol/XvPSettlementFactory.json
-        - name: XvPSettlement
-          file: ../contracts/artifacts/contracts/v1/XvPSettlement.sol/XvPSettlement.json
-      eventHandlers:
-        - event: XvPSettlementCreated(indexed address,indexed address)
-          handler: handleXvPSettlementCreated
-      file: ./src/factories/xvp-settlement-factory.ts
-  - kind: ethereum/contract
-    name: AirdropFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000009"
-      abi: AirdropFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - AirdropFactory
-        - StandardAirdrop
-        - VestingAirdrop
-        - LinearVestingStrategy
-        - Account
-        - Asset
-        - AirdropStatsData
-        - AirdropStats
-        - VestingStatsData
-        - VestingStats
-        - AirdropPerformanceSummary
-      abis:
-        - name: AirdropFactory
-          file: ../contracts/artifacts/contracts/v1/AirdropFactory.sol/AirdropFactory.json
-        - name: StandardAirdrop
-          file: ../contracts/artifacts/contracts/v1/StandardAirdrop.sol/StandardAirdrop.json
-        - name: VestingAirdrop
-          file: ../contracts/artifacts/contracts/v1/VestingAirdrop.sol/VestingAirdrop.json
-        - name: LinearVestingStrategy
-          file: ../contracts/artifacts/contracts/v1/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
-      eventHandlers:
-        - event:
-            StandardAirdropDeployed(indexed address,indexed address,indexed
-            address)
-          handler: handleStandardAirdropDeployed
-        - event:
-            VestingAirdropDeployed(indexed address,indexed address,indexed
-            address,address)
-          handler: handleVestingAirdropDeployed
-        - event:
-            PushAirdropDeployed(indexed address,indexed address,indexed address)
-          handler: handlePushAirdropDeployed
-      file: ./src/factories/airdrop-factory.ts
-  - kind: ethereum/contract
-    name: VaultFactory
-    network: settlemint
-    source:
-      address: "0x5e771e141710000000000000000000000000000a"
-      abi: VaultFactory
+      address: "0x5e771e1417100000000000000000000000000099"
+      abi: Forwarder
       startBlock: 0
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Vault
+        - Address
+        - Event
       abis:
-        - name: VaultFactory
-          file: ../contracts/artifacts/contracts/v1/VaultFactory.sol/VaultFactory.json
-        - name: Vault
-          file: ../contracts/artifacts/contracts/v1/Vault.sol/Vault.json
+        - name: Forwarder
+          file: ../contracts/artifacts/contracts/Forwarder.sol/Forwarder.json
       eventHandlers:
-        - event: VaultCreated(indexed address,indexed address,address[],uint256)
-          handler: handleVaultCreated
-      file: ./src/factories/vault-factory.ts
+        - event: ExecutedForwardRequest(indexed address,uint256,bool)
+          handler: handleExecutedForwardRequest
+      file: ./src/event-handlers/forwarder.ts
+  - kind: ethereum/contract
+    name: SMARTDeploymentRegistry
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000020001"
+      abi: SMARTDeploymentRegistry
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: SMARTDeploymentRegistry
+          file: ../contracts/artifacts/contracts/SMARTDeploymentRegistry.sol/SMARTDeploymentRegistry.json
+        - name: Compliance
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTCompliance.sol/SMARTCompliance.json
+        - name: IdentityRegistryStorage
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityRegistryStorage.sol/SMARTIdentityRegistryStorage.json
+        - name: IdentityRegistry
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityRegistry.sol/SMARTIdentityRegistry.json
+        - name: TrustedIssuersRegistry
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTTrustedIssuersRegistry.sol/SMARTTrustedIssuersRegistry.json
+        - name: TokenRegistry
+          file: ../contracts/artifacts/contracts/SMARTTokenRegistry.sol/SMARTTokenRegistry.json
+      eventHandlers:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: SMARTComplianceModuleRegistered(indexed address,indexed address,uint256)
+          handler: handleSMARTComplianceModuleRegistered
+        - event: SMARTDeploymentRegistered(indexed
+            address,uint256,address,address,address,address,address)
+          handler: handleSMARTDeploymentRegistered
+        - event: SMARTTokenRegistryRegistered(indexed address,string,indexed
+            bytes32,indexed address,uint256)
+          handler: handleSMARTTokenRegistryRegistered
+      file: ./src/event-handlers/deployment-registry.ts
 templates:
   - kind: ethereum/contract
-    name: XvPSettlement
-    network: settlemint
+    name: IdentityRegistryStorage
     source:
-      abi: XvPSettlement
+      abi: IdentityRegistryStorage
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Account
-        - XvPSettlement
-        - XvPSettlementEntity
+        - Address
+        - Event
       abis:
-        - name: XvPSettlement
-          file: ../contracts/artifacts/contracts/v1/XvPSettlement.sol/XvPSettlement.json
-        - name: XvPSettlement
-          file: ../contracts/artifacts/contracts/v1/XvPSettlement.sol/XvPSettlement.json
+        - name: IdentityRegistryStorage
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityRegistryStorage.sol/SMARTIdentityRegistryStorage.json
       eventHandlers:
-        - event: XvPSettlementApproved(indexed address)
-          handler: handleXvPSettlementApproved
-        - event: XvPSettlementApprovalRevoked(indexed address)
-          handler: handleXvPSettlementApprovalRevoked
-        - event: XvPSettlementExecuted(indexed address)
-          handler: handleXvPSettlementExecuted
-        - event: XvPSettlementCancelled(indexed address)
-          handler: handleXvPSettlementCancelled
-      file: ./src/trading/xvp-settlement.ts
-  - kind: ethereum/contract
-    name: FixedYield
-    network: settlemint
-    source:
-      abi: FixedYield
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - YieldPeriod
-        - YieldMetricsData
-        - YieldMetricsStats
-      abis:
-        - name: FixedYield
-          file: ../contracts/artifacts/contracts/v1/FixedYield.sol/FixedYield.json
-      eventHandlers:
-        - event:
-            YieldClaimed(indexed
-            address,uint256,uint256,uint256,uint256[],uint256)
-          handler: handleYieldClaimed
-        - event: UnderlyingAssetTopUp(indexed address,uint256)
-          handler: handleUnderlyingAssetTopUp
-        - event: UnderlyingAssetWithdrawn(indexed address,uint256)
-          handler: handleUnderlyingAssetWithdrawn
-      file: ./src/assets/fixed-yield.ts
-  - kind: ethereum/contract
-    name: Bond
-    network: settlemint
-    source:
-      abi: Bond
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Asset
-        - Account
-        - Factory
-        - Bond
-        - CryptoCurrency
-        - Equity
-        - StableCoin
-        - Fund
-        - Deposit
-        - AssetStats
-        - AssetStatsData
-        - PortfolioStats
-        - PortfolioStatsData
-        - BondStats
-        - BondStatsData
-        - TransferData
-        - AccountActivityData
-        - RoleActivityData
-        - BondActivityData
-        - TransferStats
-        - AccountActivityStats
-        - RoleActivityStats
-        - BondActivityStats
-      abis:
-        - name: Bond
-          file: ../contracts/artifacts/contracts/v1/Bond.sol/Bond.json
-        - name: FixedYield
-          file: ../contracts/artifacts/contracts/v1/FixedYield.sol/FixedYield.json
-      eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-        - event: BondMatured(uint256,indexed address)
-          handler: handleBondMatured
-        - event: BondRedeemed(indexed address,uint256,uint256,indexed address)
-          handler: handleBondRedeemed
-        - event: Paused(address)
-          handler: handlePaused
-        - event: TokensFrozen(indexed address,uint256)
-          handler: handleTokensFrozen
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-        - event: Unpaused(address)
-          handler: handleUnpaused
-        - event: UserBlocked(indexed address)
-          handler: handleUserBlocked
-        - event: UserUnblocked(indexed address)
-          handler: handleUserUnblocked
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-        - event: UnderlyingAssetTopUp(indexed address,uint256)
-          handler: handleUnderlyingAssetTopUp
-        - event: UnderlyingAssetWithdrawn(indexed address,uint256)
-          handler: handleUnderlyingAssetWithdrawn
-        - event:
-            Clawback(indexed address,indexed address,uint256,indexed address)
-          handler: handleClawback
-      file: ./src/assets/bond.ts
-  - kind: ethereum/contract
-    name: CryptoCurrency
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: CountryModified(indexed address,uint16)
+          handler: handleCountryModified
+        - event: IdentityModified(indexed address,indexed address)
+          handler: handleIdentityModified
+        - event: IdentityRegistryUnbound(indexed address)
+          handler: handleIdentityRegistryUnbound
+        - event: IdentityStored(indexed address,indexed address)
+          handler: handleIdentityStored
+      file: ./src/event-handlers/identity-registry-storage.ts
     network: settlemint
+  - kind: ethereum/contract
+    name: Identity
     source:
-      abi: CryptoCurrency
+      abi: Identity
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Asset
-        - Account
-        - Factory
-        - CryptoCurrency
-        - Bond
-        - Equity
-        - StableCoin
-        - Fund
-        - Deposit
-        - AssetStats
-        - AssetStatsData
-        - PortfolioStats
-        - PortfolioStatsData
-        - CryptoCurrencyStats
-        - CryptoCurrencyStatsData
-        - TransferData
-        - AccountActivityData
-        - RoleActivityData
-        - CryptoCurrencyActivityData
-        - TransferStats
-        - AccountActivityStats
-        - RoleActivityStats
-        - CryptoCurrencyActivityStats
+        - Address
+        - Event
       abis:
-        - name: CryptoCurrency
-          file: ../contracts/artifacts/contracts/v1/CryptoCurrency.sol/CryptoCurrency.json
+        - name: Identity
+          file: ../contracts/artifacts/@onchainid/contracts/Identity.sol/Identity.json
       eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: Approved(indexed uint256,bool)
+          handler: handleApproved
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
+          handler: handleClaimAdded
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
+          handler: handleClaimChanged
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
+          handler: handleClaimRemoved
+        - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
+          handler: handleExecuted
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
+          handler: handleExecutionFailed
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
+          handler: handleExecutionRequested
+        - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
+          handler: handleKeyAdded
+        - event: KeyRemoved(indexed bytes32,indexed uint256,indexed uint256)
+          handler: handleKeyRemoved
+      file: ./src/event-handlers/identity.ts
+    network: settlemint
+  - kind: ethereum/contract
+    name: TrustedIssuersRegistry
+    source:
+      abi: TrustedIssuersRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: TrustedIssuersRegistry
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTTrustedIssuersRegistry.sol/SMARTTrustedIssuersRegistry.json
+      eventHandlers:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-      file: ./src/assets/cryptocurrency.ts
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[])
+          handler: handleClaimTopicsUpdated
+        - event: TrustedIssuerAdded(indexed address,indexed address,uint256[])
+          handler: handleTrustedIssuerAdded
+        - event: TrustedIssuerRemoved(indexed address,indexed address)
+          handler: handleTrustedIssuerRemoved
+      file: ./src/event-handlers/trusted-issuers-registry.ts
+    network: settlemint
   - kind: ethereum/contract
-    name: Equity
+    name: IdentityFactory
     network: settlemint
     source:
-      abi: Equity
+      abi: IdentityFactory
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Asset
-        - Account
-        - Factory
-        - Equity
-        - Bond
-        - CryptoCurrency
-        - StableCoin
-        - Fund
-        - Deposit
-        - AssetStats
-        - AssetStatsData
-        - PortfolioStats
-        - PortfolioStatsData
-        - EquityStats
-        - EquityStatsData
-        - TransferData
-        - AccountActivityData
-        - RoleActivityData
-        - EquityActivityData
-        - TransferStats
-        - AccountActivityStats
-        - RoleActivityStats
-        - EquityActivityStats
+        - Address
+        - Event
       abis:
-        - name: Equity
-          file: ../contracts/artifacts/contracts/v1/Equity.sol/Equity.json
+        - name: IdentityFactory
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityFactory.sol/SMARTIdentityFactory.json
       eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-        - event: Paused(address)
-          handler: handlePaused
-        - event: TokensFrozen(indexed address,uint256)
-          handler: handleTokensFrozen
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-        - event: Unpaused(address)
-          handler: handleUnpaused
-        - event: UserBlocked(indexed address)
-          handler: handleUserBlocked
-        - event: UserUnblocked(indexed address)
-          handler: handleUserUnblocked
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: IdentityCreated(indexed address,indexed address,indexed address)
+          handler: handleIdentityCreated
+        - event: TokenIdentityCreated(indexed address,indexed address,indexed address)
+          handler: handleTokenIdentityCreated
+      file: ./src/event-handlers/identity-factory.ts
+  - kind: ethereum/contract
+    name: IdentityRegistry
+    network: settlemint
+    source:
+      abi: IdentityRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: IdentityRegistry
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTIdentityRegistry.sol/SMARTIdentityRegistry.json
+      eventHandlers:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-        - event:
-            Clawback(indexed address,indexed address,uint256,indexed address)
-          handler: handleClawback
-      file: ./src/assets/equity.ts
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: CountryUpdated(indexed address,indexed address,indexed uint16)
+          handler: handleCountryUpdated
+        - event: IdentityRegistered(indexed address,indexed address,indexed address)
+          handler: handleIdentityRegistered
+        - event: IdentityRemoved(indexed address,indexed address,indexed address)
+          handler: handleIdentityRemoved
+        - event: IdentityUpdated(indexed address,indexed address,indexed address)
+          handler: handleIdentityUpdated
+      file: ./src/event-handlers/identity-registry.ts
   - kind: ethereum/contract
-    name: StableCoin
+    name: Compliance
     network: settlemint
     source:
-      abi: StableCoin
+      abi: Compliance
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Asset
-        - Account
-        - Factory
-        - StableCoin
-        - Bond
-        - CryptoCurrency
-        - Equity
-        - Fund
-        - Deposit
-        - AssetStats
-        - AssetStatsData
-        - PortfolioStats
-        - PortfolioStatsData
-        - StableCoinStats
-        - StableCoinStatsData
-        - TransferData
-        - AccountActivityData
-        - RoleActivityData
-        - StableCoinActivityData
-        - TransferStats
-        - AccountActivityStats
-        - RoleActivityStats
-        - StableCoinActivityStats
+        - Address
+        - Event
       abis:
-        - name: StableCoin
-          file: ../contracts/artifacts/contracts/v1/StableCoin.sol/StableCoin.json
+        - name: Compliance
+          file: ../contracts/artifacts/smart-protocol/contracts/SMARTCompliance.sol/SMARTCompliance.json
       eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-        - event: Paused(address)
-          handler: handlePaused
-        - event: TokensFrozen(indexed address,uint256)
-          handler: handleTokensFrozen
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-        - event: Unpaused(address)
-          handler: handleUnpaused
-        - event: UserBlocked(indexed address)
-          handler: handleUserBlocked
-        - event: UserUnblocked(indexed address)
-          handler: handleUserUnblocked
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-        - event: CollateralUpdated(uint256,uint256,uint256,indexed address)
-          handler: handleCollateralUpdated
-        - event:
-            Clawback(indexed address,indexed address,uint256,indexed address)
-          handler: handleClawback
-      file: ./src/assets/stablecoin.ts
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+      file: ./src/event-handlers/compliance.ts
   - kind: ethereum/contract
-    name: Fund
+    name: TokenRegistry
     network: settlemint
     source:
-      abi: Fund
+      abi: TokenRegistry
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Asset
-        - Account
-        - Factory
-        - Fund
-        - Bond
-        - CryptoCurrency
-        - Equity
-        - StableCoin
-        - Deposit
-        - AssetStats
-        - AssetStatsData
-        - PortfolioStats
-        - PortfolioStatsData
-        - FundStats
-        - FundStatsData
-        - TransferData
-        - AccountActivityData
-        - RoleActivityData
-        - FundActivityData
-        - TransferStats
-        - AccountActivityStats
-        - RoleActivityStats
-        - FundActivityStats
+        - Address
+        - Event
       abis:
-        - name: Fund
-          file: ../contracts/artifacts/contracts/v1/Fund.sol/Fund.json
+        - name: TokenRegistry
+          file: ../contracts/artifacts/contracts/SMARTTokenRegistry.sol/SMARTTokenRegistry.json
       eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-        - event: Paused(address)
-          handler: handlePaused
-        - event: TokensFrozen(indexed address,uint256)
-          handler: handleTokensFrozen
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-        - event: Unpaused(address)
-          handler: handleUnpaused
-        - event: UserBlocked(indexed address)
-          handler: handleUserBlocked
-        - event: UserUnblocked(indexed address)
-          handler: handleUserUnblocked
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-        - event: ManagementFeeCollected(uint256,uint256)
-          handler: handleManagementFeeCollected
-        - event: PerformanceFeeCollected(uint256,uint256)
-          handler: handlePerformanceFeeCollected
-        - event:
-            TokenWithdrawn(indexed address,indexed address,uint256,indexed
-            address)
-          handler: handleTokenWithdrawn
-        - event:
-            Clawback(indexed address,indexed address,uint256,indexed address)
-          handler: handleClawback
-      file: ./src/assets/fund.ts
-  - kind: ethereum/contract
-    name: Deposit
-    network: settlemint
-    source:
-      abi: Deposit
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Asset
-        - Account
-        - Factory
-        - Deposit
-        - AssetStats
-        - AssetStatsData
-        - PortfolioStats
-        - PortfolioStatsData
-        - DepositStats
-        - DepositStatsData
-        - TransferData
-        - AccountActivityData
-        - RoleActivityData
-        - DepositActivityData
-        - TransferStats
-        - AccountActivityStats
-        - RoleActivityStats
-        - DepositActivityStats
-      abis:
-        - name: Deposit
-          file: ../contracts/artifacts/contracts/v1/Deposit.sol/Deposit.json
-      eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-        - event: Paused(address)
-          handler: handlePaused
-        - event: TokensFrozen(indexed address,uint256)
-          handler: handleTokensFrozen
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-        - event: Unpaused(address)
-          handler: handleUnpaused
-        - event: UserAllowed(indexed address)
-          handler: handleUserAllowed
-        - event: UserDisallowed(indexed address)
-          handler: handleUserDisallowed
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event:
-            TokenWithdrawn(indexed address,indexed address,uint256,indexed
-            address)
-          handler: handleTokenWithdrawn
-        - event: CollateralUpdated(uint256,uint256,uint256,indexed address)
-          handler: handleCollateralUpdated
-        - event:
-            Clawback(indexed address,indexed address,uint256,indexed address)
-          handler: handleClawback
-      file: ./src/assets/deposit.ts
-  - kind: ethereum/contract
-    name: StandardAirdropTemplate
-    network: settlemint
-    source:
-      abi: StandardAirdrop
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - StandardAirdrop
-        - AirdropClaim
-        - AirdropRecipient
-        - AirdropClaimIndex
-        - Account
-        - Asset
-        - AirdropStatsData
-        - AirdropStats
-        - AirdropPerformanceSummary
-      abis:
-        - name: StandardAirdrop
-          file: ../contracts/artifacts/contracts/v1/StandardAirdrop.sol/StandardAirdrop.json
-      eventHandlers:
-        - event: Claimed(indexed address,uint256)
-          handler: handleClaimed
-        - event: BatchClaimed(indexed address,uint256,uint256[],uint256[])
-          handler: handleBatchClaimed
-        - event: TokensWithdrawn(indexed address,uint256)
-          handler: handleTokensWithdrawn
-      file: ./src/distribution/standard-airdrop.ts
-  - kind: ethereum/contract
-    name: VestingAirdropTemplate
-    network: settlemint
-    source:
-      abi: VestingAirdrop
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - VestingAirdrop
-        - LinearVestingStrategy
-        - AirdropClaim
-        - AirdropRecipient
-        - AirdropClaimIndex
-        - UserVestingData
-        - Account
-        - Asset
-        - AirdropStatsData
-        - AirdropStats
-        - VestingStatsData
-        - VestingStats
-        - AirdropPerformanceSummary
-      abis:
-        - name: VestingAirdrop
-          file: ../contracts/artifacts/contracts/v1/VestingAirdrop.sol/VestingAirdrop.json
-        - name: LinearVestingStrategy
-          file: ../contracts/artifacts/contracts/v1/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
-      eventHandlers:
-        - event: Claimed(indexed address,uint256)
-          handler: handleClaimed
-        - event: BatchClaimed(indexed address,uint256,uint256[],uint256[])
-          handler: handleBatchClaimed
-        - event: TokensWithdrawn(indexed address,uint256)
-          handler: handleTokensWithdrawn
-        - event: ClaimInitialized(indexed address,uint256)
-          handler: handleClaimInitialized
-      file: ./src/distribution/vesting-airdrop.ts
-  - kind: ethereum/contract
-    name: PushAirdropTemplate
-    network: settlemint
-    source:
-      abi: PushAirdrop
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - PushAirdrop
-        - PushDistribution
-        - PushBatchDistribution
-        - Account
-        - AirdropStatsData
-        - AirdropStats
-        - AirdropPerformanceSummary
-      abis:
-        - name: PushAirdrop
-          file: ../contracts/artifacts/contracts/v1/PushAirdrop.sol/PushAirdrop.json
-      eventHandlers:
-        - event: TokensDistributed(indexed address,uint256)
-          handler: handleTokensDistributed
-        - event: BatchDistributed(uint256,uint256)
-          handler: handleBatchDistributed
-        - event: TokensWithdrawn(indexed address,uint256)
-          handler: handleTokensWithdrawn
-        - event: MerkleRootUpdated(indexed bytes32,indexed bytes32)
-          handler: handleMerkleRootUpdated
-        - event: DistributionCapUpdated(uint256,uint256)
-          handler: handleDistributionCapUpdated
-      file: ./src/distribution/push-airdrop.ts
-  - kind: ethereum
-    name: Vault
-    network: settlemint
-    source:
-      abi: Vault
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - ConfirmTransaction
-        - Deposit
-        - ExecuteTransaction
-      abis:
-        - name: Vault
-          file: ../contracts/artifacts/contracts/v1/Vault.sol/Vault.json
-        - name: ERC20
-          file: ../contracts/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json
-      eventHandlers:
-        - event: ConfirmTransaction(indexed address,indexed uint256)
-          handler: handleConfirmTransaction
-        - event: ExecuteTransaction(indexed address,indexed uint256)
-          handler: handleExecuteTransaction
-        - event: RevokeConfirmation(indexed address,indexed uint256)
-          handler: handleRevokeConfirmation
-        - event:
-            SubmitContractCallTransaction(indexed address,indexed
-            uint256,indexed address,uint256,bytes4,bytes,string)
-          handler: handleSubmitContractCallTransaction
-        - event:
-            SubmitERC20TransferTransaction(indexed address,indexed
-            uint256,indexed address,address,uint256,string)
-          handler: handleSubmitERC20TransferTransaction
-        - event:
-            SubmitTransaction(indexed address,indexed uint256,indexed
-            address,uint256,bytes,string)
-          handler: handleSubmitTransaction
-        - event: Deposit(indexed address,uint256,uint256)
-          handler: handleDeposit
-        - event: RequirementChanged(indexed address,uint256)
-          handler: handleRequirementChanged
-        - event: Paused(address)
-          handler: handlePaused
-        - event: Unpaused(address)
-          handler: handleUnpaused
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-      file: ./src/custody/vault.ts
+        - event: TokenRegistered(indexed address,indexed address)
+          handler: handleTokenRegistered
+        - event: TokenUnregistered(indexed address,indexed address)
+          handler: handleTokenUnregistered
+      file: ./src/event-handlers/token-registry.ts

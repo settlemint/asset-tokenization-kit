@@ -1,5 +1,5 @@
 {
-  "name": "subgraph-v2",
+  "name": "subgraph",
   "version": "1.0.0",
   "license": "FSL-1.1-MIT",
   "author": {
@@ -10,8 +10,8 @@
   "scripts": {
     "codegen:graph": "settlemint scs subgraph codegen",
     "build": "graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt",
-    "deploy:local": "bash graph-deploy.sh --local",
-    "deploy:remote": "bash graph-deploy.sh --remote",
+    "deploy:local": "bash graph-local-deploy.sh",
+    "deploy:remote": "bash graph-remote-deploy.sh",
     "format": "prettier --write .",
     "subgraph:deploy": "settlemint scs subgraph deploy",
     "lint": "eslint src/ --ext .ts"
@@ -19,7 +19,7 @@
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.0",
     "@graphprotocol/graph-ts": "0.38.0",
-    "@typescript-eslint/parser": "8.32.1",
+    "@typescript-eslint/parser": "8.32.0",
     "contracts": "workspace:*",
     "eslint": "9.26.0",
     "eslint-plugin-import": "2.31.0"
