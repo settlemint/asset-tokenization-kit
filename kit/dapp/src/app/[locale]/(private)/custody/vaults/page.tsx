@@ -3,7 +3,6 @@ import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { CreateVaultForm } from "./_components/create-form/form";
 
 export async function generateMetadata({
   params,
@@ -39,7 +38,13 @@ export default async function XvpPage({
 
   return (
     <>
-      <PageHeader title={t("vaults")} button={<CreateVaultForm asButton />} />
+      <PageHeader
+        title={t("vaults")}
+
+        // button={
+        //   <CreateVaultForm asButton />
+        //   }
+      />
       {/* <DataTable columns={columns} data={xvpSettlements} name={t("xvp")} /> */}
     </>
   );
