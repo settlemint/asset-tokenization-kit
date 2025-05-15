@@ -22,7 +22,7 @@ export function CreateStablecoinSchema() {
         assetName: t.String({
           description: "The name of the stablecoin",
           minLength: 1,
-          maxLength: 50,
+          maxLength: 32,
         }),
         symbol: t.AssetSymbol({
           description: "The symbol of the stablecoin (ticker)",
