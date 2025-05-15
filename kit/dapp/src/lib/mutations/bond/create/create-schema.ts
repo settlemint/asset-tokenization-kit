@@ -30,7 +30,7 @@ export function CreateBondSchema({
       assetName: t.String({
         description: "The name of the bond",
         minLength: 1,
-        maxLength: 50,
+        maxLength: 32,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the bond (ticker)",
