@@ -82,9 +82,6 @@ jobs:
           yq: latest
 
       - name: Install Bun dependencies
-        run: bun install
-
-      - name: Generate text-based lockfile
         run: bun install --lockfile
 
       - name: Languine Action

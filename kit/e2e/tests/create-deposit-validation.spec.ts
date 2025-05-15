@@ -75,6 +75,8 @@ test.describe("Deposit Creation Validation", () => {
     });
     test("validates ISIN length constraints", async () => {
       await createAssetForm.fillBasicFields({
+        name: "Test Deposit",
+        symbol: "TDEP",
         isin: "US0000000000000",
       });
       await createAssetForm.clickOnContinueButton();

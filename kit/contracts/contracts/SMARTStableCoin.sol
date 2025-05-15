@@ -76,6 +76,9 @@ contract SMARTStableCoin is
         ERC20Permit(name_)
         ERC2771Context(forwarder)
         SMARTCollateral(SMARTConstants.CLAIM_TOPIC_COLLATERAL)
+        SMARTCustodian()
+        SMARTPausable()
+        SMARTBurnable()
     {
         // Grant standard admin role
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());

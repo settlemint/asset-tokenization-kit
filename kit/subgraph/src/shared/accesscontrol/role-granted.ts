@@ -1,5 +1,5 @@
 import { Address, Bytes, ethereum, Value } from "@graphprotocol/graph-ts";
-import { RoleArrayMapping } from "../../enums/role";
+import { getRoleConfigFromBytes } from "../../enums/role";
 import { fetchAccessControl } from "../../fetch/accesscontrol";
 import { fetchAccount } from "../../fetch/account";
 import { processEvent } from "../event";
@@ -13,8 +13,10 @@ export function roleGrantedHandler(
   const roleHolder = fetchAccount(account);
   const accessControl = fetchAccessControl(event.address);
 
+  const roleConfig = getRoleConfigFromBytes(role);
+
   let found = false;
-  const value = accessControl.get(RoleArrayMapping(role));
+  const value = accessControl.get(roleConfig.fieldName);
   let newValue: Bytes[] = [];
   if (!value) {
     newValue = [];
@@ -29,7 +31,7 @@ export function roleGrantedHandler(
   }
   if (!found) {
     accessControl.set(
-      RoleArrayMapping(role),
+      roleConfig.fieldName,
       Value.fromBytesArray(newValue.concat([roleHolder.id]))
     );
   }

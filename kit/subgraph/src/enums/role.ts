@@ -1,63 +1,70 @@
-import { ByteArray, Bytes, crypto, log } from "@graphprotocol/graph-ts";
+import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
 
-const DEFAULT_ADMIN_ROLE =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
-const SUPPLY_MANAGEMENT_ROLE = crypto
-  .keccak256(ByteArray.fromUTF8("SUPPLY_MANAGEMENT_ROLE"))
-  .toHexString();
-const USER_MANAGEMENT_ROLE = crypto
-  .keccak256(ByteArray.fromUTF8("USER_MANAGEMENT_ROLE"))
-  .toHexString();
-const SIGNER_ROLE = crypto
-  .keccak256(ByteArray.fromUTF8("SIGNER_ROLE"))
-  .toHexString();
-const DEPLOYMENT_OWNER_ROLE = crypto
-  .keccak256(ByteArray.fromUTF8("DEPLOYMENT_OWNER_ROLE"))
-  .toHexString();
-const STORAGE_MODIFIER_ROLE = crypto
-  .keccak256(ByteArray.fromUTF8("STORAGE_MODIFIER_ROLE"))
-  .toHexString();
+class RoleConfig {
+  _name: string;
+  _bytes: Bytes;
+  _hexString: string;
+  _fieldName: string;
 
-export class Role {
-  static DEFAULT_ADMIN_ROLE: string = DEFAULT_ADMIN_ROLE;
-  static SUPPLY_MANAGEMENT_ROLE: string = SUPPLY_MANAGEMENT_ROLE;
-  static USER_MANAGEMENT_ROLE: string = USER_MANAGEMENT_ROLE;
-  static SIGNER_ROLE: string = SIGNER_ROLE;
-  static DEPLOYMENT_OWNER_ROLE: string = DEPLOYMENT_OWNER_ROLE;
-  static STORAGE_MODIFIER_ROLE: string = STORAGE_MODIFIER_ROLE;
+  constructor(name: string, fieldName: string) {
+    this._name = name;
+    if (name === "DEFAULT_ADMIN_ROLE") {
+      this._hexString =
+        "0x0000000000000000000000000000000000000000000000000000000000000000";
+    } else {
+      this._hexString = crypto
+        .keccak256(ByteArray.fromUTF8(name))
+        .toHexString();
+    }
+    this._bytes = Bytes.fromHexString(this._hexString);
+    this._fieldName = fieldName;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+
+  get bytes(): Bytes {
+    return this._bytes;
+  }
+
+  get hexString(): string {
+    return this._hexString;
+  }
+
+  get fieldName(): string {
+    return this._fieldName;
+  }
 }
 
-export function RoleArrayMapping(role: Bytes): string {
-  const roleHex = role.toHexString();
-  if (roleHex == Role.DEFAULT_ADMIN_ROLE) {
-    return "admins";
+export const Roles = [
+  new RoleConfig("DEFAULT_ADMIN_ROLE", "admin"),
+  new RoleConfig("SIGNER_ROLE", "signer"),
+  new RoleConfig("DEPLOYMENT_OWNER_ROLE", "deploymentOwner"),
+  new RoleConfig("STORAGE_MODIFIER_ROLE", "storageModifier"),
+  new RoleConfig("COMPLIANCE_ADMIN_ROLE", "complianceAdmin"),
+  new RoleConfig("VERIFICATION_ADMIN_ROLE", "verificationAdmin"),
+  new RoleConfig("BURNER_ROLE", "burner"),
+  new RoleConfig("MINTER_ROLE", "minter"),
+  new RoleConfig("FREEZER_ROLE", "freezer"),
+  new RoleConfig("FORCED_TRANSFER_ROLE", "forcedTransfer"),
+  new RoleConfig("RECOVERY_ROLE", "recovery"),
+  new RoleConfig("PAUSER_ROLE", "pauser"),
+];
+
+export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {
+  const hexString = bytes.toHexString();
+  let role: RoleConfig | null = null;
+  for (let i = 0; i < Roles.length; i++) {
+    if (Roles[i].hexString == hexString) {
+      role = Roles[i];
+      break;
+    }
   }
-  if (roleHex == Role.SUPPLY_MANAGEMENT_ROLE) {
-    return "supplyManagers";
+
+  if (!role) {
+    throw new Error(`Unconfigured role: ${hexString}`);
   }
-  if (roleHex == Role.USER_MANAGEMENT_ROLE) {
-    return "userManagers";
-  }
-  if (roleHex == Role.SIGNER_ROLE) {
-    return "signers";
-  }
-  if (roleHex == Role.DEPLOYMENT_OWNER_ROLE) {
-    return "deploymentOwners";
-  }
-  if (roleHex == Role.STORAGE_MODIFIER_ROLE) {
-    return "storageModifiers";
-  }
-  log.error(
-    "Invalid role -> roleHex: {}, DEFAULT_ADMIN_ROLE: {}, SUPPLY_MANAGEMENT_ROLE: {}, USER_MANAGEMENT_ROLE: {}, SIGNER_ROLE: {}, DEPLOYMENT_OWNER_ROLE: {}, STORAGE_MODIFIER_ROLE: {}",
-    [
-      roleHex,
-      Role.DEFAULT_ADMIN_ROLE,
-      Role.SUPPLY_MANAGEMENT_ROLE,
-      Role.USER_MANAGEMENT_ROLE,
-      Role.SIGNER_ROLE,
-      Role.DEPLOYMENT_OWNER_ROLE,
-      Role.STORAGE_MODIFIER_ROLE,
-    ]
-  );
-  throw new Error("Invalid role");
+
+  return role;
 }
