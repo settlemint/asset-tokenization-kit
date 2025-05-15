@@ -16,7 +16,10 @@ import type { Address } from "viem";
 
 export function AssetFlows() {
   const t = useTranslations("trade-management.forms.asset-flows");
-  const { control } = useFormContext<CreateXvpInput>();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext<CreateXvpInput>();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -36,7 +39,6 @@ export function AssetFlows() {
   if (fields.length === 0) {
     addFlow();
   }
-
   return (
     <FormStep title={t("title")} description={t("description")}>
       <div className="space-y-6">
@@ -59,6 +61,10 @@ export function AssetFlows() {
         <Plus className="h-4 w-4 mr-2" />
         {t("add")}
       </Button>
+
+      {errors.flows && !Array.isArray(errors.flows) && (
+        <p className="text-destructive text-sm mt-2">{errors.flows.message}</p>
+      )}
     </FormStep>
   );
 }

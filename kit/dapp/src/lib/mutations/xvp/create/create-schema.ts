@@ -16,7 +16,7 @@ export const AssetFlowSchema = t.Object(
       {
         id: t.EthereumAddress({
           minLength: 1,
-          errorMessage: "Asset is required",
+          errorMessage: "error.asset-required",
         }),
         decimals: t.Number({
           description: "The number of decimal places for the asset",
@@ -30,13 +30,13 @@ export const AssetFlowSchema = t.Object(
       }
     ),
     amount: t.Amount({
-      error: "Amount is required",
+      error: "error.amount-required",
     }),
     from: t.EthereumAddress({
-      error: "From address is required and must be a valid EVM address",
+      error: "error.from-address-required",
     }),
     to: t.EthereumAddress({
-      error: "To address is required and must be a valid EVM address",
+      error: "error.to-address-required",
     }),
   },
   {
@@ -51,11 +51,11 @@ export const CreateXvpSchema = t.Object(
     flows: t.Array(AssetFlowSchema, {
       description: "Asset flows for the settlement",
       minItems: 2,
-      error: "At least two asset flows are required",
+      error: "error.at-least-two-asset-flows",
     }),
     expiry: t.String({
       description: "The time until which the settlement can be executed.",
-      error: "Expiry is required",
+      error: "error.expiry-required",
     }),
     autoExecute: t.Boolean({
       description:
