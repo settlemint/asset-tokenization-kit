@@ -1,5 +1,5 @@
 import { default as createIntlMiddleware } from "next-intl/middleware";
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 // Create the Next Intl middleware outside the main middleware function
 const intlMiddleware = createIntlMiddleware({
@@ -10,9 +10,6 @@ const intlMiddleware = createIntlMiddleware({
 });
 
 export default function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/auth-api")) {
-    return NextResponse.next();
-  }
   // Handle the internationalization routing
   return intlMiddleware(request);
 }

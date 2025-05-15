@@ -9,10 +9,10 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "dev": "concurrently \"next dev --turbopack\" \"bun --bun src/api-server.ts\"",
+    "dev": "next dev --turbopack",
     "prod:local": "next build --turbopack && cp -r .next/static .next/standalone/kit/dapp/.next/static && cp -r public .next/standalone/public && node .next/standalone/kit/dapp/server.js",
     "build": "next build --turbopack",
-    "start": "concurrently \"next start\" \"NODE_ENV=production bun --bun src/api-server.ts\"",
+    "start": "next start",
     "test": "bun test",
     "format": "prettier --write .",
     "lint": "next lint",
@@ -78,7 +78,6 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
-    "concurrently": "9.1.2",
     "date-fns": "4.1.0",
     "drizzle-orm": "0.43.1",
     "elysia": "1.3.1",

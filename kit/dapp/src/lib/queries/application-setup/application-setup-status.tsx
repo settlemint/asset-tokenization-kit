@@ -58,10 +58,7 @@ export async function getApplicationSetupStatus() {
   return getApplicationStatus(response);
 }
 
-export async function subscribeToApplicationSetupStatus(
-  client: Client,
-  onStatusChange: (status: ApplicationSetupStatus) => void
-) {
+export function subscribeToApplicationSetupStatus(client: Client) {
   const query = `subscription getContractsDeployStatus($abiNames: [String!]!) {
     getContractsDeployStatus(abiNames: $abiNames) {
       count
@@ -86,18 +83,33 @@ export async function subscribeToApplicationSetupStatus(
     },
   });
 
-  for await (const result of subscription) {
-    if (Array.isArray(result?.data?.getContractsDeployStatus?.records)) {
-      onStatusChange(
-        getApplicationStatus({
-          ...result?.data,
-          SMARTDeploymentRegistry: {
-            areDependenciesRegistered: false, // TODO: when do we know this?
-          },
-        })
-      );
-    }
-  }
+  return {
+    [Symbol.asyncIterator]() {
+      return {
+        async next() {
+          let previousResult: ApplicationSetupStatus | undefined;
+          const iteratorResult = await subscription.next();
+          if (iteratorResult.done) {
+            return { done: true, value: previousResult };
+          }
+
+          const result = iteratorResult.value;
+          if (Array.isArray(result?.data?.getContractsDeployStatus?.records)) {
+            const status = getApplicationStatus({
+              ...result?.data,
+              SMARTDeploymentRegistry: {
+                areDependenciesRegistered: false, // TODO: when do we know this?
+              },
+            });
+            previousResult = status;
+            return { done: false, value: status };
+          }
+
+          return { done: false, value: previousResult };
+        },
+      };
+    },
+  };
 }
 
 function getApplicationStatus(

@@ -8,7 +8,7 @@ import {
   type ApplicationSetupStatus,
 } from "@/lib/queries/application-setup/application-setup-schema";
 import { safeParse } from "@/lib/utils/typebox";
-import type { EdenWS } from "@elysiajs/eden/treaty";
+import { tryParseJson } from "@settlemint/sdk-utils";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
@@ -23,28 +23,35 @@ export function BootstrapStep({ onNext }: BootstrapStepProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let subscription: EdenWS | undefined = undefined;
     const fetchStatus = async () => {
-      const statusChanges =
-        apiClient.api["application-setup"].ws.status.subscribe();
-      subscription = statusChanges.subscribe((message) => {
-        if (isError(message.data)) {
-          setError(message.data.error);
-        } else {
-          setStatus(safeParse(ApplicationSetupStatusSchema, message.data));
-        }
-      });
-      subscription.on("error", (event) => {
-        if (event.type === "close") {
+      const { data, error } =
+        await apiClient.api["application-setup"].stream.status.get();
+      if (error) {
+        setError(
+          typeof error?.value === "string" ? error.value : "Unknown error"
+        );
+        return;
+      }
+      for await (const statusUpdate of data) {
+        const parsedStatusUpdate = tryParseJson(statusUpdate);
+        if (isError(parsedStatusUpdate)) {
+          setError(parsedStatusUpdate.error);
           return;
+        } else {
+          const status = safeParse(
+            ApplicationSetupStatusSchema,
+            parsedStatusUpdate
+          );
+          setStatus(status);
+          if (status.isSetup) {
+            return;
+          }
         }
-        setError(`Websocket connection error: ${JSON.stringify(event)}`);
-      });
+      }
     };
     // Wait 1 second before fetching the status
     const timeout = window.setTimeout(fetchStatus, 1000);
     return () => {
-      subscription?.close();
       window.clearTimeout(timeout);
     };
   }, []);
