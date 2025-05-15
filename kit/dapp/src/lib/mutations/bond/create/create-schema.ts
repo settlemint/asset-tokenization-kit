@@ -59,6 +59,7 @@ export function CreateBondSchema({
       cap: t.Amount({
         decimals,
         description: "Maximum issuance amount",
+        minimum: 1,
       }),
       faceValue: t.Amount({
         decimals,

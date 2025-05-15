@@ -40,8 +40,47 @@ export function Configuration() {
         </div>
 
         <FormStep
-          title={t("configuration.stablecoins.title")}
-          description={t("configuration.stablecoins.description")}
+          title={t("configuration.stablecoins.title-supply")}
+          description={t("configuration.stablecoins.description-supply")}
+        >
+          <div className="grid grid-cols-2 gap-6">
+            <FormInput
+              control={control}
+              type="number"
+              name="decimals"
+              label={t("parameters.common.decimals-label")}
+              description={t("parameters.common.decimals-description")}
+              required
+            />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.stablecoins.title-value")}
+          description={t("configuration.stablecoins.description-value")}
+        >
+          <div className="grid grid-cols-2 gap-6">
+            <FormInput
+              control={control}
+              type="number"
+              name="price.amount"
+              required
+              label={t("parameters.common.price-label")}
+              postfix={
+                <FormSelect
+                  name="price.currency"
+                  control={control}
+                  options={currencyOptions}
+                  className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
+                />
+              }
+            />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.stablecoins.title-collateral")}
+          description={t("configuration.stablecoins.description-collateral")}
         >
           <div className="grid grid-cols-2 gap-6">
             <FormInput
@@ -56,21 +95,6 @@ export function Configuration() {
                   control={control}
                   options={timeUnitOptions}
                   defaultValue="months"
-                  className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
-                />
-              }
-            />
-            <FormInput
-              control={control}
-              type="number"
-              name="price.amount"
-              required
-              label={t("parameters.common.price-label")}
-              postfix={
-                <FormSelect
-                  name="price.currency"
-                  control={control}
-                  options={currencyOptions}
                   className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
                 />
               }

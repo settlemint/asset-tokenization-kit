@@ -78,6 +78,7 @@ export const createFundFunction = withAccessControl(
       predictedAddress,
       price,
       assetAdmins,
+      internalid,
     },
     ctx: { user },
   }: {
@@ -87,6 +88,7 @@ export const createFundFunction = withAccessControl(
     await hasuraClient.request(CreateOffchainFund, {
       id: predictedAddress,
       isin,
+      internalid,
     });
 
     await hasuraClient.request(AddAssetPrice, {

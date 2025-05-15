@@ -246,6 +246,9 @@ export function Form<
         if (error.schema.format === "asset-symbol") {
           return t("error.string-format-asset-symbol");
         }
+        if (error.schema.format === "isin") {
+          return t("error.string-format-isin");
+        }
         return t("error.string-format", { format: error.schema.format });
       case ValueErrorType.StringMaxLength:
         return t("error.string-max-length", {
@@ -280,6 +283,21 @@ export function Form<
       case ValueErrorType.Undefined:
         return t("error.undefined");
       case ValueErrorType.Union:
+        // Check for min/max in anyOf schemas
+        if (error.schema.anyOf) {
+          const integerSchema = error.schema.anyOf.find(
+            (schema: any) => schema.type === "integer"
+          );
+          if (
+            integerSchema?.minimum !== undefined &&
+            integerSchema?.maximum !== undefined
+          ) {
+            return t("error.union-min-max", {
+              min: integerSchema.minimum,
+              max: integerSchema.maximum,
+            });
+          }
+        }
         return t("error.union");
       case ValueErrorType.Void:
         return t("error.void");

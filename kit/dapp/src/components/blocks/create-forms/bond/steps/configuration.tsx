@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Configuration() {
-  const { control, getValues, setError } = useFormContext<CreateBondInput>();
+  const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
 
   return (

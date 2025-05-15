@@ -28,6 +28,16 @@ export function CreateCryptoCurrencySchema({
         description: "The symbol of the cryptocurrency (ticker)",
         maxLength: 10,
       }),
+      isin: t.Optional(
+        t.Isin({
+          description: "International Securities Identification Number",
+        })
+      ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the bond",
+        })
+      ),
       decimals: t.Decimals({
         description: "The number of decimal places for the token",
       }),

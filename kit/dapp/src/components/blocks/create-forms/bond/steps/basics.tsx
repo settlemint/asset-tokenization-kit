@@ -43,7 +43,7 @@ export function Basics() {
                 name="symbol"
                 label={t("parameters.common.symbol-label")}
                 placeholder={t("parameters.bonds.symbol-placeholder")}
-                description="The symbol of the bond. This a unique identifier for the bond for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
+                description={t("parameters.bonds.symbol-description")}
                 alphanumeric
                 required
                 maxLength={10}
@@ -85,6 +85,7 @@ export function Basics() {
 Basics.validatedFields = [
   "assetName",
   "symbol",
+  "isin",
 ] satisfies (keyof CreateBondInput)[];
 
 // Export step definition for the asset designer

@@ -73,6 +73,7 @@ export const createDepositFunction = withAccessControl(
       predictedAddress,
       price,
       assetAdmins,
+      internalid,
     },
     ctx: { user },
   }: {
@@ -82,6 +83,7 @@ export const createDepositFunction = withAccessControl(
     await hasuraClient.request(CreateOffchainDeposit, {
       id: predictedAddress,
       isin,
+      internalid,
     });
 
     await hasuraClient.request(AddAssetPrice, {
