@@ -51,7 +51,7 @@ export function CreateCryptoCurrencySchema({
       initialSupply: t.Amount({
         decimals,
         description: "Initial supply of tokens",
-        default: 0,
+        minimum: 1,
       }),
       predictedAddress: t.EthereumAddress({
         description: "Predicted address of the cryptocurrency",
