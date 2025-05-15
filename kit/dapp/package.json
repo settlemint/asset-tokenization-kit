@@ -22,7 +22,7 @@
     "db:pull": "drizzle-kit pull",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "rm -rf ./drizzle && drizzle-kit generate"
   },
   "dependencies": {
     "@daveyplate/better-auth-ui": "1.5.18",
