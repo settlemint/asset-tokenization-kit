@@ -2573,6 +2573,8 @@
         "asset-placeholder": "Select asset",
         "description": "Configure the asset flows for this settlement. Each flow represents an asset transfer from one wallet to another.",
         "flow": "Flow {index}",
+        "flows": "Flows",
+        "flows-summary": "The flows define the assets that will be transferred from one wallet to another.",
         "from": "From",
         "from-placeholder": "Select sender",
         "max-amount": "Available balance: {maxAmount}",
