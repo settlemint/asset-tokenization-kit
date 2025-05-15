@@ -30,16 +30,26 @@ export function Configuration() {
         </div>
 
         <FormStep
-          title={t("configuration.equities.title")}
-          description={t("configuration.equities.description")}
+          title={t("configuration.equities.title-supply")}
+          description={t("configuration.equities.description-supply")}
         >
-          <div className="grid grid-cols-1 gap-6">
-            <EquityClassesSelect
-              label={t("parameters.equities.equity-class-label")}
+          <div className="grid grid-cols-2 gap-6">
+            <FormInput
+              control={control}
+              type="number"
+              name="decimals"
+              label={t("parameters.common.decimals-label")}
+              description={t("parameters.common.decimals-description")}
+              required
             />
-            <EquityCategoriesSelect
-              label={t("parameters.equities.equity-category-label")}
-            />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.equities.title-value")}
+          description={t("configuration.equities.description-value")}
+        >
+          <div className="grid grid-cols-2 gap-6">
             <FormInput
               control={control}
               type="number"
@@ -57,12 +67,29 @@ export function Configuration() {
             />
           </div>
         </FormStep>
+
+        <FormStep
+          title={t("configuration.equities.title-classification")}
+          description={t("configuration.equities.description-classification")}
+        >
+          <div className="grid grid-cols-2 gap-6">
+            <EquityClassesSelect
+              label={t("parameters.equities.equity-class-label")}
+              className="w-full"
+            />
+            <EquityCategoriesSelect
+              label={t("parameters.equities.equity-category-label")}
+              className="w-full"
+            />
+          </div>
+        </FormStep>
       </div>
     </StepContent>
   );
 }
 
 Configuration.validatedFields = [
+  "decimals",
   "equityCategory",
   "equityClass",
   "price",

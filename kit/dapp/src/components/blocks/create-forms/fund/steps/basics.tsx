@@ -40,8 +40,8 @@ export function Basics() {
                 control={control}
                 name="symbol"
                 label={t("parameters.common.symbol-label")}
-                placeholder={t("parameters.bonds.symbol-placeholder")}
-                description="The symbol of the bond. This a unique identifier for the bond for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
+                placeholder={t("parameters.funds.symbol-placeholder")}
+                description={t("parameters.funds.symbol-description")}
                 alphanumeric
                 required
                 maxLength={10}

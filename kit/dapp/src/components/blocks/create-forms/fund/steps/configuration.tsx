@@ -30,23 +30,42 @@ export function Configuration() {
         </div>
 
         <FormStep
-          title={t("configuration.funds.title")}
-          description={t("configuration.funds.description")}
+          title={t("configuration.funds.title-supply")}
+          description={t("configuration.funds.description-supply")}
         >
           <div className="grid grid-cols-2 gap-6">
-            <FundCategoriesSelect
-              label={t("parameters.funds.fund-category-label")}
-            />
-            <FundClassesSelect label={t("parameters.funds.fund-class-label")} />
             <FormInput
               control={control}
               type="number"
-              name="managementFeeBps"
-              label={t("parameters.funds.management-fee-label")}
-              description={t("parameters.funds.management-fee-description")}
-              postfix={t("parameters.funds.basis-points")}
+              name="decimals"
+              label={t("parameters.common.decimals-label")}
+              description={t("parameters.common.decimals-description")}
               required
             />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.stablecoins.title-supply")}
+          description={t("configuration.stablecoins.description-supply")}
+        >
+          <div className="grid grid-cols-2 gap-6">
+            <FormInput
+              control={control}
+              type="number"
+              name="decimals"
+              label={t("parameters.common.decimals-label")}
+              description={t("parameters.common.decimals-description")}
+              required
+            />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.funds.title-value")}
+          description={t("configuration.funds.description-value")}
+        >
+          <div className="grid grid-cols-2 gap-6">
             <FormInput
               control={control}
               type="number"
@@ -62,6 +81,31 @@ export function Configuration() {
                 />
               }
             />
+            <FormInput
+              control={control}
+              type="number"
+              name="managementFeeBps"
+              label={t("parameters.funds.management-fee-label")}
+              description={t("parameters.funds.management-fee-description")}
+              postfix={t("parameters.funds.basis-points")}
+              required
+            />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.funds.title-classification")}
+          description={t("configuration.funds.description-classification")}
+        >
+          <div className="grid grid-cols-2 gap-6">
+            <FundCategoriesSelect
+              label={t("parameters.funds.fund-category-label")}
+              className="w-full"
+            />
+            <FundClassesSelect
+              label={t("parameters.funds.fund-class-label")}
+              className="w-full"
+            />
           </div>
         </FormStep>
       </div>
@@ -70,6 +114,7 @@ export function Configuration() {
 }
 
 Configuration.validatedFields = [
+  "decimals",
   "fundCategory",
   "fundClass",
   "managementFeeBps",

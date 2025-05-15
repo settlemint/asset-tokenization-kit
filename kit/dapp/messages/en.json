@@ -1356,23 +1356,51 @@
           },
           "cryptocurrencies": {
             "description": "Set parameters specific to your cryptocurrency.",
-            "title": "Cryptocurrency configuration"
+            "title": "Cryptocurrency configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
+            "description-supply": "Configure the supply and franctionalization of this cryptocurrency. This information is immutable.",
+            "description-value": "Configure the price for your cryptocurrency."
           },
           "deposits": {
             "description": "Set parameters specific to your deposit.",
-            "title": "Deposit configuration"
+            "title": "Deposit configuration",
+            "title-collateral": "Collateral",
+            "description-collateral": "Configure the collateral for your deposit.",
+            "title-value": "Denomination",
+            "description-value": "Configure the price for your deposit.",
+            "title-supply": "Supply",
+            "description-supply": "Configure the supply and franctionalization of this deposit. This information is immutable."
           },
           "equities": {
             "description": "Set parameters specific to your equity.",
-            "title": "Equity configuration"
+            "title": "Equity configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
+            "description-supply": "Configure the supply and franctionalization of this equity. This information is immutable.",
+            "description-value": "Configure the price for your equity.",
+            "title-classification": "Classification",
+            "description-classification": "Configure the classification for your equity."
           },
           "funds": {
             "description": "Set parameters specific to your fund.",
-            "title": "Fund configuration"
+            "title": "Fund configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
+            "description-supply": "Configure the supply and franctionalization of this fund. This information is immutable.",
+            "description-value": "Configure the price for your fund.",
+            "title-classification": "Classification",
+            "description-classification": "Configure the classification for your fund."
           },
           "stablecoins": {
             "description": "Set parameters specific to your stable coin.",
-            "title": "Stable coin configuration"
+            "title": "Stable coin configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
+            "description-supply": "Configure the supply and franctionalization of this stable coin. This information is immutable.",
+            "description-value": "Configure the price for your stable coin.",
+            "title-collateral": "Collateral",
+            "description-collateral": "Configure the collateral for your stable coin."
           }
         },
         "form": {
@@ -1510,11 +1538,12 @@
             "name-placeholder": "Company XYZ Bond 2023",
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "Address of the asset that backs this bond",
-            "underlying-asset-label": "Underlying asset"
+            "underlying-asset-label": "Underlying asset",
+            "symbol-description": "The symbol of the bond. This a unique identifier for the bond for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "common": {
             "collateral-proof-validity-label": "Collateral proof validity",
-            "decimals-description": "The number of decimals to use for the bond. This is used to determine the precision of the bond.",
+            "decimals-description": "The number of decimals to use for the asset. This is used to determine the precision of the asset.",
             "decimals-label": "Decimals",
             "internalid-label": "Internal ID",
             "isin-label": "ISIN",
@@ -1540,22 +1569,25 @@
             }
           },
           "cryptocurrencies": {
-            "initial-supply-description": "Initial amount of assets to be minted",
+            "initial-supply-description": "Initial amount of assets to be minted.",
             "initial-supply-label": "Initial supply",
             "name-placeholder": "Bitcoin",
-            "symbol-placeholder": "BTC"
+            "symbol-placeholder": "BTC",
+            "symbol-description": "The symbol of the cryptocurrency. This a unique identifier for the cryptocurrency for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "deposits": {
             "isin-placeholder": "EU1234567890",
             "name-placeholder": "Deposited Euro",
-            "symbol-placeholder": "EURD"
+            "symbol-placeholder": "EURD",
+            "symbol-description": "The symbol of the bond. This a unique identifier for the bond for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "equities": {
             "equity-category-label": "Equity category",
             "equity-class-label": "Equity class",
             "isin-placeholder": "US1234567890",
             "name-placeholder": "Global Equity",
-            "symbol-placeholder": "GLEQ"
+            "symbol-placeholder": "GLEQ",
+            "symbol-description": "The symbol of the equity. This a unique identifier for the equity for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "funds": {
             "basis-points": "bps",
@@ -1565,12 +1597,14 @@
             "management-fee-description": "Annual management fee in basis points (100 bps = 1%)",
             "management-fee-label": "Management fee",
             "name-placeholder": "Global Growth Fund",
-            "symbol-placeholder": "GGF"
+            "symbol-placeholder": "GGF",
+            "symbol-description": "The symbol of the fund. This a unique identifier for the fund for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "stablecoins": {
             "isin-placeholder": "DEFI4EVER2024",
             "name-placeholder": "TotallyNotTether",
-            "symbol-placeholder": "SAFU"
+            "symbol-placeholder": "SAFU",
+            "symbol-description": "The symbol of the stablecoin. This a unique identifier for the stablecoin for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           }
         },
         "summary": {
