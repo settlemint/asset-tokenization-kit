@@ -18,12 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import { useController, type Control, type FieldValues } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
-import {
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormDescription, FormItem, FormLabel } from "@/components/ui/form";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 
 export type UploadedDocument = {
@@ -630,7 +625,6 @@ export function FormDocumentUpload<
       </div>
 
       {description && <FormDescription>{description}</FormDescription>}
-      <FormMessage />
     </FormItem>
   );
 }
