@@ -275,7 +275,7 @@ export function AssetTypeSelection({
                       </HoverCardContent>
                     </HoverCard>
                   </div>
-                  <p className="hidden xl:block text-xs text-muted-foreground mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     {t(assetInfo.descriptionKey as any)}
                   </p>
                 </CardHeader>
