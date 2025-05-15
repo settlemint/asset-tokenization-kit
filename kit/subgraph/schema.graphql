@@ -1,17 +1,308 @@
 # --------------------------------------------------
-# SMART Indexer
+# Grouping Contracts by Contract Type
+# --------------------------------------------------
+
+interface Asset {
+  id: Bytes!
+  type: String!
+  asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  lastActivity: BigInt!
+  creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  deployedOn: BigInt!
+  # Concentration
+  concentration: BigDecimal!
+}
+
+type Factory @entity(immutable: false) {
+  id: Bytes!
+  type: String!
+  asAccount: Account!
+}
+
+# --------------------------------------------------
+# Assets
+# --------------------------------------------------
+
+type Bond implements Asset @entity(immutable: false) {
+  id: Bytes!
+  type: String!
+  asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  lastActivity: BigInt!
+  creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
+  deployedOn: BigInt!
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
+  # Bond-Specific Fields
+  cap: BigDecimal!
+  capExact: BigInt!
+  maturityDate: BigInt!
+  isMatured: Boolean!
+  paused: Boolean!
+  faceValue: BigInt!
+  underlyingAsset: Asset!
+  underlyingAssetDecimals: Int! # Storing decimals directly to avoid having to always query the underlying asset
+  redeemedAmount: BigDecimal!
+  redeemedAmountExact: BigInt!
+  underlyingBalance: BigDecimal!
+  underlyingBalanceExact: BigInt!
+  yieldSchedule: FixedYield
+  totalUnderlyingNeeded: BigDecimal!
+  totalUnderlyingNeededExact: BigInt!
+  hasSufficientUnderlying: Boolean!
+}
+
+type Equity implements Asset @entity(immutable: false) {
+  id: Bytes!
+  type: String!
+  asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  lastActivity: BigInt!
+  creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
+  deployedOn: BigInt!
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
+  # Equity-Specific Fields
+  equityClass: String!
+  equityCategory: String!
+  paused: Boolean!
+}
+
+type Fund implements Asset @entity(immutable: false) {
+  id: Bytes!
+  type: String!
+  asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  lastActivity: BigInt!
+  creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
+  deployedOn: BigInt!
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
+  # Fund-Specific Fields
+  fundClass: String!
+  fundCategory: String!
+  paused: Boolean!
+  managementFeeBps: Int!
+  lastFeeCollection: BigInt!
+}
+
+type StableCoin implements Asset @entity(immutable: false) {
+  id: Bytes!
+  type: String!
+  asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  lastActivity: BigInt!
+  creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
+  deployedOn: BigInt!
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  auditors: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
+  # StableCoin-Specific Fields
+  collateral: BigDecimal!
+  collateralExact: BigInt!
+  collateralRatio: BigDecimal!
+  freeCollateral: BigDecimal!
+  freeCollateralExact: BigInt!
+  liveness: BigInt!
+  lastCollateralUpdate: BigInt!
+  paused: Boolean!
+}
+
+type CryptoCurrency implements Asset @entity(immutable: false) {
+  id: Bytes!
+  type: String!
+  asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  lastActivity: BigInt!
+  creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalHolders: BigInt!
+  deployedOn: BigInt!
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
+  # CryptoCurrency-Specific Fields
+}
+
+type Deposit implements Asset @entity(immutable: false) {
+  id: Bytes!
+  type: String!
+  asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  lastActivity: BigInt!
+  creator: Account!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalHolders: BigInt!
+  deployedOn: BigInt!
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  auditors: [Account!]!
+  blocklist: [BlockedUser!]! @derivedFrom(field: "asset")
+  allowlist: [AllowedUser!]! @derivedFrom(field: "asset")
+  # Concentration
+  concentration: BigDecimal!
+  # Deposit-Specific Fields
+  paused: Boolean!
+  # Collateral Fields
+  collateral: BigDecimal!
+  collateralExact: BigInt!
+  collateralRatio: BigDecimal!
+  freeCollateral: BigDecimal!
+  freeCollateralExact: BigInt!
+  liveness: BigInt!
+  lastCollateralUpdate: BigInt!
+}
+
+# --------------------------------------------------
+# Accounts
 # --------------------------------------------------
 
 type Account @entity(immutable: false) {
   id: Bytes!
   isContract: Boolean!
-  identity: Identity
+  asAsset: Asset
+  balancesCount: BigInt!
+  totalBalanceExact: BigInt!
+  totalBalance: BigDecimal!
+  pausedBalancesCount: Int!
+  pausedBalanceExact: BigInt!
+  pausedBalance: BigDecimal!
+  balances: [AssetBalance!]! @derivedFrom(field: "account")
+  nativeBalance: BigDecimal!
+  nativeBalanceExact: BigInt!
+  lastActivity: BigInt!
 }
 
-type Identity @entity(immutable: false) {
+type AssetBalance @entity(immutable: false) {
   id: Bytes!
-  account: Account
-  wallet: Account
+  asset: Asset!
+  account: Account!
+  value: BigDecimal!
+  valueExact: BigInt!
+  approved: BigDecimal!
+  approvedExact: BigInt!
+  blocked: Boolean!
+  frozen: BigDecimal!
+  frozenExact: BigInt!
+  lastActivity: BigInt!
 }
 
 # --------------------------------------------------
@@ -507,14 +798,14 @@ type ActivityLogEntry @entity(immutable: true) {
   sender: Account!
   involved: [Account!]!
   # List of values involved in the event
-  values: [Internal_EventValue!]! @derivedFrom(field: "entry")
+  values: [ActivityLogEntryValue!]! @derivedFrom(field: "entry")
 }
 
-type Internal_EventValue @entity(immutable: true) {
+type ActivityLogEntryValue @entity(immutable: true) {
   id: Bytes!
   name: String!
   value: String!
-  entry: Event!
+  entry: ActivityLogEntry!
 }
 
 # --------------------------------------------------
@@ -548,65 +839,60 @@ type ActionExecutor @entity(immutable: false) {
 
 type Vault @entity(immutable: false) {
   id: Bytes!
-  admin: [Account!]!
-  burner: [Account!]!
-  complianceAdmin: [Account!]!
-  deploymentOwner: [Account!]!
-  freezer: [Account!]!
-  forcedTransfer: [Account!]!
-  minter: [Account!]!
-  pauser: [Account!]!
-  recovery: [Account!]!
-  signer: [Account!]!
-  storageModifier: [Account!]!
-  verificationAdmin: [Account!]!
+  creator: Account!
+  admins: [Account!]!
+  signers: [Account!]!
+  requiredSigners: BigInt!
+  totalSigners: BigInt!
+  paused: Boolean!
+  deployedOn: BigInt!
+  lastActivity: BigInt!
+  asAccount: Account!
+  transactions: [VaultTransaction!]! @derivedFrom(field: "vault")
+  pendingTransactionsCount: Int!
+  executedTransactionsCount: Int!
 }
 
-type System @entity(immutable: false) {
-  id: Bytes!
-  accessControl: Internal_AccessControl!
-  compliance: System_Compliance
-  identityRegistryStorage: System_IdentityRegistryStorage
-  identityFactory: System_IdentityFactory
-  identityRegistry: System_IdentityRegistry
-  trustedIssuersRegistry: System_TrustedIssuersRegistry
-  tokenRegistries: [System_TokenRegistry!]!
-    @derivedFrom(field: "deploymentRegistry")
+# --------------------------------------------------
+# Vault Transactions
+# --------------------------------------------------
+
+type VaultTransaction @entity(immutable: false) {
+  id: Bytes! # vaultAddress-txIndex
+  vault: Vault!
+  txIndex: BigInt!
+  type: String! # "NativeCurrencyTransfer", "ERC20Transfer", "ContractCall"
+  submitter: Account! # Signer who submitted the transaction
+  createdAt: BigInt! # Timestamp of submission
+  comment: String!
+  executed: Boolean!
+  executedAt: BigInt # Timestamp of execution, null if not executed
+  executor: Account # Signer who triggered execution, null if not executed
+  confirmationsCount: Int!
+  confirmations: [VaultTransactionConfirmation!]!
+    @derivedFrom(field: "transaction")
+
+  # NativeCurrencyTransfer specific fields (optional)
+  # For NativeCurrencyTransfer, 'to' and 'value'/'valueExact' are primary.
+  # 'data' can be used for more complex native transactions not involving contract calls.
+  to: Account # Recipient for native currency or ERC20 transfer. For contract call, this is the target.
+  value: BigDecimal # ETH value sent with native transfer/contract call OR ERC20 amount for ERC20 transfer
+  valueExact: BigInt # ETH value sent with native transfer/contract call OR ERC20 amount for ERC20 transfer
+  data: Bytes # Optional raw data for native currency transaction (e.g., if not a simple transfer to EOA)
+  # ERC20Transfer specific fields (optional)
+  # 'to', 'value'/'valueExact' are reused. 'token' specifies the ERC20 contract.
+  token: Account # The ERC20 token contract address
+  # ContractCall specific fields (optional)
+  # 'to' (as target), 'value'/'valueExact' (for ETH sent) are reused.
+  # 'selector' and 'abiEncodedArguments' are specific to contract calls.
+  # 'target' field is aliased to 'to' for consistency.
+  selector: Bytes # Function selector (bytes4)
+  abiEncodedArguments: Bytes # Arguments for the call
 }
 
-type System_Compliance @entity(immutable: false) {
-  id: Bytes!
-  accessControl: Internal_AccessControl!
-  account: Account
-}
-
-type System_IdentityRegistryStorage @entity(immutable: false) {
-  id: Bytes!
-  accessControl: Internal_AccessControl!
-  account: Account
-}
-
-type System_IdentityFactory @entity(immutable: false) {
-  id: Bytes!
-  account: Account
-}
-
-type System_IdentityRegistry @entity(immutable: false) {
-  id: Bytes!
-  accessControl: Internal_AccessControl!
-  account: Account
-}
-
-type System_TrustedIssuersRegistry @entity(immutable: false) {
-  id: Bytes!
-  accessControl: Internal_AccessControl!
-  account: Account
-}
-
-type System_TokenRegistry @entity(immutable: false) {
-  id: Bytes!
-  accessControl: Internal_AccessControl!
-  typeName: String!
-  deploymentRegistry: System!
-  account: Account
+type VaultTransactionConfirmation @entity(immutable: false) {
+  id: Bytes! # txId-signerAddress
+  transaction: VaultTransaction! # Updated to point to the unified type
+  signer: Account!
+  confirmedAt: BigInt!
 }
