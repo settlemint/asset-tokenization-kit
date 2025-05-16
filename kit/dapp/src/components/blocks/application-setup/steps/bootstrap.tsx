@@ -1,6 +1,6 @@
 "use client";
 
-import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { apiClient } from "@/lib/api/client";
 import {

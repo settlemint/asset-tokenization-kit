@@ -1,7 +1,7 @@
 "use client";
 
-import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
 import { FormOtpDialog } from "@/components/blocks/form/inputs/form-otp-dialog";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import { applicationSetup } from "@/lib/mutations/application-setup/application-setup-action";
 import type { VerificationType } from "@/lib/utils/typebox/verification-type";
 import { useTranslations } from "next-intl";

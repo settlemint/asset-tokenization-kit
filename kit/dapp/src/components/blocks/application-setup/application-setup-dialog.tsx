@@ -1,16 +1,15 @@
 "use client";
 
+import MiniProgressBar from "@/components/blocks/step-wizard/mini-progress-bar";
 import {
   type Step,
   StepWizard,
-} from "@/components/blocks/asset-designer/step-wizard/step-wizard";
+} from "@/components/blocks/step-wizard/step-wizard";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { MiniProgressBar } from "../mini-progress-bar/mini-progress-bar";
 import { BootstrapStep } from "./steps/bootstrap";
 import { IntroStep } from "./steps/intro";
-
 interface ApplicationSetupDialogProps {
   open: boolean;
 }
