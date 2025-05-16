@@ -70,6 +70,40 @@
       },
       "view-all": "View All"
     },
+    "application-setup": {
+      "title": "Application setup",
+      "description": "Setup your application to get started",
+      "steps": {
+        "intro": {
+          "title": "Introduction",
+          "description": "Info about the application and the process of setting it up."
+        },
+        "bootstrap": {
+          "title": "Setup",
+          "description": "Getting the application ready."
+        },
+        "settings": {
+          "title": "Settings",
+          "description": "Configure the application settings."
+        },
+        "summary": {
+          "title": "Summary",
+          "description": "The application setup is complete"
+        }
+      },
+      "intro": {
+        "title": "Asset tokenization platform setup",
+        "description": "Welcome to the setup process for your asset tokenization platform.\n\nThis wizard will guide you through the initial configuration, including deploying essential smart contracts to the blockchain network and configuring your application settings such as default currency.\n\nOnce completed, your platform will be fully operational and ready to tokenize assets.",
+        "start-failed": "Failed to start the application setup process ({error}). Please try again."
+      },
+      "bootstrap": {
+        "title": "Getting the application ready",
+        "progress": {
+          "deploying-contracts": "Deploying contract {contractName} ({progress}/{total})"
+        }
+      },
+      "settings": {}
+    },
     "bonds": {
       "yield": {
         "contract-address": "Contract address",
