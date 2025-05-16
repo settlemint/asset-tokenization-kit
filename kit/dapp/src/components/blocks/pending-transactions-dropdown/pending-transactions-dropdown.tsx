@@ -2,10 +2,6 @@
 
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { TransactionHash } from "@/components/blocks/transaction-hash/transaction-hash";
-import {
-  SquareStackIcon,
-  type SquareStackIconHandle,
-} from "@/components/ui/animated-icons/square-stack";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  SquareStackIcon,
+  type SquareStackIconHandle,
+} from "@/components/ui/square-stack";
 import { Link } from "@/i18n/routing";
 import { usePendingTransactions } from "@/lib/hooks/use-pending-transactions";
 import { formatDate } from "@/lib/utils/date";
@@ -48,7 +48,7 @@ export function PendingTransactionsDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant={hasPendingTransactions ? "default" : "ghost"}
+          variant="ghost"
           size="icon"
           className="relative size-12 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:bg-sidebar-accent focus-visible:text-sidebar-accent-foreground dark:hover:bg-theme-accent-background dark:hover:text-foreground dark:focus-visible:bg-theme-accent-background dark:focus-visible:text-foreground focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
           aria-label={t("aria-label")}

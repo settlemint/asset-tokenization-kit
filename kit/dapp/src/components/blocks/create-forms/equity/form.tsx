@@ -1,89 +1,122 @@
 "use client";
 
 import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useRouter } from "@/i18n/routing";
-import { authClient } from "@/lib/auth/client";
+import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createEquity } from "@/lib/mutations/equity/create/create-action";
 import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
+import { isAddressAvailable } from "@/lib/queries/equity-factory/equity-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/equity-factory/equity-factory-predict-address";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
-import { AssetAdmins } from "../common/asset-admins/asset-admins";
-import { Basics } from "./steps/basics";
-import { Configuration } from "./steps/configuration";
-import { Summary } from "./steps/summary";
+import type { AssetFormDefinition } from "../../asset-designer/types";
+import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
+import { stepDefinition as summaryStep } from "../common/summary/summary";
+import { stepDefinition as basicsStep } from "./steps/basics";
+import { stepDefinition as configurationStep } from "./steps/configuration";
+import { EquityConfigurationCard } from "./steps/summaryConfigurationCard";
+
 interface CreateEquityFormProps {
-  open?: boolean;
+  userDetails: User;
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
   onOpenChange?: (open: boolean) => void;
-  asButton?: boolean;
 }
 
 export function CreateEquityForm({
-  open,
+  userDetails,
+  currentStepId,
+  onNextStep,
+  onPrevStep,
   onOpenChange,
-  asButton = false,
 }: CreateEquityFormProps) {
   const t = useTranslations("private.assets.create.form");
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [localOpen, setLocalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
-  const posthog = usePostHog();
 
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
-      posthog.capture("create_equity_form_opened");
-    }
-  }, [open, localOpen, posthog]);
+  // Create component instances for each step
+  const BasicsComponent = basicsStep.component;
+  const ConfigurationComponent = configurationStep.component;
+  const AdminsComponent = adminsStep.component;
+  const SummaryComponent = summaryStep.component;
+
+  // Create an array of all step components in order for Form to manage
+  const allStepComponents = [
+    <BasicsComponent key="details" />,
+    <ConfigurationComponent key="configuration" />,
+    <AdminsComponent key="admins" userDetails={userDetails} />,
+    <SummaryComponent
+      key="summary"
+      configurationCard={<EquityConfigurationCard />}
+      predictAddress={getPredictedAddress}
+      isAddressAvailable={isAddressAvailable}
+    />,
+  ];
+
+  // Define step order and mapping
+  const stepIdToIndex = {
+    details: 0,
+    configuration: 1,
+    admins: 2,
+    summary: 3,
+  };
+
+  // Use the step synchronization hook
+  const { isLastStep, onStepChange, onAnyFieldChange } = useFormStepSync({
+    currentStepId,
+    stepIdToIndex,
+    onNextStep,
+    onPrevStep,
+  });
 
   return (
-    <FormSheet
-      open={open ?? localOpen}
-      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t("title.equities")}
-      description={t("description.equities")}
-      asButton={asButton}
-      triggerLabel={
-        isExternallyControlled ? undefined : t("trigger-label.equities")
-      }
+    <Form
+      action={createEquity}
+      resolver={typeboxResolver(CreateEquitySchema())}
+      defaultValues={{
+        assetName: "",
+        symbol: "",
+        decimals: 18,
+        equityClass: "",
+        equityCategory: "",
+        price: {
+          amount: 1,
+          currency: userDetails.currency,
+        },
+        verificationType: "pincode",
+        assetAdmins: [],
+      }}
+      buttonLabels={{
+        label: isLastStep
+          ? t("button-labels.equity.issue")
+          : t("button-labels.general.next"),
+        submittingLabel: t("button-labels.equity.submitting"),
+        processingLabel: t("button-labels.general.processing"),
+      }}
+      secureForm={true}
+      hideStepProgress={true}
+      toastMessages={{
+        loading: t("toasts.equity.submitting"),
+        success: t("toasts.equity.success"),
+      }}
+      onStepChange={onStepChange}
+      onAnyFieldChange={onAnyFieldChange}
+      onOpenChange={onOpenChange}
     >
-      <Form
-        action={createEquity}
-        resolver={typeboxResolver(CreateEquitySchema())}
-        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-        buttonLabels={{
-          label: t("trigger-label.equities"),
-        }}
-        defaultValues={{
-          price: {
-            amount: 1,
-            currency: session?.user.currency,
-          },
-          assetAdmins: [],
-        }}
-        onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(["predictedAddress"]);
-        }}
-        toastMessages={{
-          action: (input) => {
-            const assetId = input?.predictedAddress;
-            return assetId
-              ? {
-                  label: t("toast-action.equities"),
-                  onClick: () => router.push(`/assets/equity/${assetId}`),
-                }
-              : undefined;
-          },
-        }}
-      >
-        <Basics />
-        <Configuration />
-        <AssetAdmins />
-        <Summary />
-      </Form>
-    </FormSheet>
+      {allStepComponents}
+    </Form>
   );
 }
+
+CreateEquityForm.displayName = "CreateEquityForm";
+
+// Collect all the step definitions
+const equitySteps = [basicsStep, configurationStep, adminsStep, summaryStep];
+
+// Export form definition for the asset designer
+export const equityFormDefinition: AssetFormDefinition = {
+  steps: equitySteps,
+  getStepComponent: (stepId: string) => {
+    const step = equitySteps.find((s) => s.id === stepId);
+    return step?.component || null;
+  },
+};

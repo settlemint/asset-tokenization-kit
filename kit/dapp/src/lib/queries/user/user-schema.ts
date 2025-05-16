@@ -21,16 +21,16 @@ export const UserSchema = t.Object(
     wallet: t.EthereumAddress({
       description: "The Ethereum wallet address of the user",
     }),
-    created_at: t.Date({
+    created_at: t.Timestamp({
       description: "The timestamp when the user was created",
     }),
-    updated_at: t.Optional(
-      t.Date({
+    updated_at: t.MaybeEmpty(
+      t.Timestamp({
         description: "The timestamp when the user was last updated",
       })
     ),
     kyc_verified_at: t.MaybeEmpty(
-      t.String({
+      t.Timestamp({
         description: "The timestamp when the user's KYC was verified",
       })
     ),
@@ -48,12 +48,12 @@ export const UserSchema = t.Object(
       })
     ),
     ban_expires: t.MaybeEmpty(
-      t.Date({
+      t.Timestamp({
         description: "The timestamp when the user's ban expires",
       })
     ),
     last_login_at: t.Optional(
-      t.String({
+      t.Timestamp({
         description: "The timestamp of the user's last login",
       })
     ),
@@ -82,15 +82,9 @@ export const AccountSchema = t.Object(
       description: "The Ethereum address of the account",
     }),
     balancesCount: t.Optional(
-      t.Number({
+      t.StringifiedBigInt({
         description:
           "The number of token balances associated with this account",
-      })
-    ),
-    activityEventsCount: t.Optional(
-      t.Number({
-        description:
-          "The number of activity events associated with this account",
       })
     ),
     lastActivity: t.String({
@@ -108,7 +102,7 @@ export type Account = StaticDecode<typeof AccountSchema>;
  */
 export const CalculatedUserSchema = t.Object(
   {
-    assetCount: t.Number({
+    assetCount: t.BigInt({
       description: "The number of assets held by the user",
     }),
     transactionCount: t.Number({

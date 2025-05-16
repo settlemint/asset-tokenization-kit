@@ -116,7 +116,7 @@ export async function BondsDetails({
       <DetailGridItem label={t("underlying-asset-balance")}>
         {formatNumber(bond.underlyingBalance, {
           token: bond.underlyingAsset.symbol,
-          decimals: 2,
+          decimals: bond.underlyingAsset.decimals,
           locale: locale,
         })}
       </DetailGridItem>

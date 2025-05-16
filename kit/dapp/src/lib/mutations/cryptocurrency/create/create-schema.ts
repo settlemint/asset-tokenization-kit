@@ -1,4 +1,3 @@
-import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 import { AssetAdminsSchemaFragment } from "../../common/asset-admins-schema";
 
@@ -23,12 +22,22 @@ export function CreateCryptoCurrencySchema({
       assetName: t.String({
         description: "The name of the cryptocurrency",
         minLength: 1,
-        maxLength: 50,
+        maxLength: 32,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the cryptocurrency (ticker)",
         maxLength: 10,
       }),
+      isin: t.Optional(
+        t.Isin({
+          description: "International Securities Identification Number",
+        })
+      ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the bond",
+        })
+      ),
       decimals: t.Decimals({
         description: "The number of decimal places for the token",
       }),
@@ -42,19 +51,16 @@ export function CreateCryptoCurrencySchema({
       initialSupply: t.Amount({
         decimals,
         description: "Initial supply of tokens",
-        default: 0,
+        minimum: 1,
       }),
       predictedAddress: t.EthereumAddress({
         description: "Predicted address of the cryptocurrency",
-        refinement: {
-          predicate: isAddressAvailable,
-          message: "Address already in use",
-        },
       }),
       price: t.Price({
         description: "Price of the cryptocurrency",
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
     },
     {
       description: "Schema for validating cryptocurrency creation inputs",

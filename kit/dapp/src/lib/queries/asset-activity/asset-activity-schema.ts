@@ -14,22 +14,22 @@ export const AssetActivitySchema = t.Object(
     totalSupply: t.BigDecimal({
       description: "Total supply of the asset",
     }),
-    burnEventCount: t.Number({
+    burnEventCount: t.StringifiedBigInt({
       description: "Number of burn events",
     }),
-    mintEventCount: t.Number({
+    mintEventCount: t.StringifiedBigInt({
       description: "Number of mint events",
     }),
-    transferEventCount: t.Number({
+    transferEventCount: t.StringifiedBigInt({
       description: "Number of transfer events",
     }),
-    frozenEventCount: t.Number({
+    frozenEventCount: t.StringifiedBigInt({
       description: "Number of token freezing events",
     }),
-    unfrozenEventCount: t.Number({
+    unfrozenEventCount: t.StringifiedBigInt({
       description: "Number of token unfreezing events",
     }),
-    clawbackEventCount: t.Number({
+    clawbackEventCount: t.StringifiedBigInt({
       description: "Number of token clawback events",
     }),
   },

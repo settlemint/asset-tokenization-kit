@@ -27,6 +27,8 @@ interface FormButtonProps {
   onNextStep: () => void;
   /** Handler for navigating to the last step */
   onLastStep?: () => void;
+  /** Override to explicitly control if this should behave as the last step (for external step management) */
+  forceLastStep?: boolean;
   labels?: ButtonLabels;
   hideButtons?: boolean;
   isSecurityDialogOpen?: boolean;
@@ -43,6 +45,7 @@ export function FormButton({
   totalSteps,
   onNextStep,
   onLastStep,
+  forceLastStep,
   labels = {
     label: undefined,
     submittingLabel: undefined,
@@ -55,7 +58,11 @@ export function FormButton({
   const {
     formState: { isSubmitting, errors },
   } = useFormContext();
-  const isLastStep = currentStep === totalSteps - 1;
+  // Allow external control of last step status
+  const isLastStep =
+    forceLastStep !== undefined
+      ? forceLastStep
+      : currentStep === totalSteps - 1;
   const t = useTranslations("components.form.button");
   if (hideButtons) {
     return null;

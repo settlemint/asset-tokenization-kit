@@ -1,7 +1,7 @@
 import { AssetTypeIcon } from "@/components/blocks/asset-type-icon/asset-type-icon";
 import { type NavItem, NavMain } from "@/components/layout/nav-main";
-import { ActivityIcon } from "@/components/ui/animated-icons/activity";
-import { ChartScatterIcon } from "@/components/ui/animated-icons/chart-scatter";
+import { ActivityIcon } from "@/components/ui/activity";
+import { ChartScatterIcon } from "@/components/ui/chart-scatter";
 import { getTranslations } from "next-intl/server";
 
 export async function AssetManagementSkeleton() {
@@ -55,13 +55,17 @@ export async function AssetManagementSkeleton() {
           items: [
             {
               label: t("dashboard"),
-              icon: <ChartScatterIcon className="size-4" />,
+              icon: (
+                <ChartScatterIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+              ),
               path: "/assets",
             },
             ...assetItems,
             {
               label: t("asset-activity"),
-              icon: <ActivityIcon className="size-4" />,
+              icon: (
+                <ActivityIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+              ),
               path: "/assets/activity",
             },
           ],

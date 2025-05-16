@@ -1,13 +1,13 @@
 "use client";
 
-import { EventDetailSheet } from "@/components/blocks/asset-events-table/detail-sheet";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
+import type { AssetEventListItem } from "@/lib/queries/asset-events/asset-events-schema";
 import { addressNameFilter } from "@/lib/utils/address-name-cache";
-import type { ColumnMeta } from "@tanstack/react-table";
-import { createColumnHelper } from "@tanstack/react-table";
+import { formatDate } from "@/lib/utils/date";
+import { createColumnHelper, type ColumnMeta } from "@tanstack/react-table";
 import {
   CalendarClock,
   CreditCard,
@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
+import { EventDetailSheet } from "./detail-sheet";
 
 // Create a column helper for the event type
 const columnHelper =
@@ -35,20 +36,17 @@ export const icons = {
 export function Columns() {
   const t = useTranslations("components.asset-events-table");
 
-  // For shorter type alias
-  type AssetEvent = Awaited<ReturnType<typeof getAssetEventsList>>[number];
-
   return [
-    columnHelper.accessor("timestamp", {
+    columnHelper.accessor("blockTimestamp", {
       header: t("timestamp"),
       cell: ({ getValue }) => (
-        <span className="first-letter:uppercase">{getValue()}</span>
+        <span className="first-letter:uppercase">{formatDate(getValue())}</span>
       ),
       enableColumnFilter: false,
     }),
 
     // Asset address column with name filtering
-    columnHelper.accessor("asset", {
+    columnHelper.accessor("emitter.id", {
       header: t("asset"),
       cell: ({ getValue }) => {
         const asset = getValue();
@@ -61,18 +59,18 @@ export function Columns() {
       },
       enableColumnFilter: true,
       filterFn: addressNameFilter,
-      meta: defineMeta((row) => row.asset, {
+      meta: defineMeta((row) => row.emitter.id, {
         displayName: t("asset"),
         icon: CreditCard,
         type: "text",
       }),
     }),
 
-    columnHelper.accessor("event", {
+    columnHelper.accessor("eventName", {
       header: t("event"),
       enableColumnFilter: true,
       filterFn: filterFn("text"),
-      meta: defineMeta((row) => row.event, {
+      meta: defineMeta((row) => row.eventName, {
         displayName: t("event"),
         icon: CalendarClock,
         type: "text",
@@ -80,7 +78,7 @@ export function Columns() {
     }),
 
     // Sender address column with name filtering
-    columnHelper.accessor("sender", {
+    columnHelper.accessor("sender.id", {
       header: t("sender"),
       cell: ({ getValue }) => {
         const senderId = getValue();
@@ -93,7 +91,7 @@ export function Columns() {
       },
       enableColumnFilter: true,
       filterFn: addressNameFilter,
-      meta: defineMeta((row) => row.sender, {
+      meta: defineMeta((row) => row.sender.id, {
         displayName: t("sender"),
         icon: User2Icon,
         type: "text",
@@ -103,23 +101,13 @@ export function Columns() {
     columnHelper.display({
       id: "actions",
       header: () => "",
-      cell: ({ row }) => (
-        <EventDetailSheet
-          event={row.original.event}
-          sender={row.original.sender}
-          asset={row.original.asset}
-          assetType={row.original.assetType}
-          timestamp={row.original.timestamp}
-          details={row.original.details}
-          transactionHash={row.original.transactionHash}
-        />
-      ),
+      cell: ({ row }) => <EventDetailSheet eventId={row.original.id} />,
       meta: {
         displayName: "Details",
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as ColumnMeta<AssetEvent, unknown>,
+      } as ColumnMeta<AssetEventListItem, unknown>,
     }),
   ];
 }

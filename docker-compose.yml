@@ -1,11 +1,13 @@
 services:
   anvil:
-    image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.3
+    image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.4
     restart: always
     ports:
-      - "8545:8545"
+      - "8545:8545" # Ethereum JSON-RPC
+
   postgres:
-    image: postgres:17
+    image: postgres:17.5-bookworm
+    user: postgres
     command:
       [
         "postgres",
@@ -18,14 +20,21 @@ services:
       POSTGRES_DB: graph-node
       PGDATA: "/var/lib/postgresql/data"
       POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U graph-node"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   graph-node:
-    image: graphprotocol/graph-node:fc80657
+    image: graphprotocol/graph-node:v0.38.0
+    platform: linux/amd64
     ports:
-      - "8000:8000"
-      - "8001:8001"
-      - "8020:8020"
-      - "8030:8030"
-      - "8040:8040"
+      - "8000:8000" # GraphQL HTTP
+      - "8001:8001" # Admin
+      - "8020:8020" # Index Node
+      - "8030:8030" # Query Node
+      - "8040:8040" # Subgraph
     depends_on:
       - anvil
       - postgres
@@ -41,28 +50,27 @@ services:
       GRAPH_IPFS_TIMEOUT: 60
       GRAPH_MAX_IPFS_FILE_BYTES: 52428800
       GRAPH_IPFS_REQUEST_RETRIES: 10
+      CARGO_TERM_COLOR: always
 
   # Jaeger
   jaeger-all-in-one:
-    image: jaegertracing/all-in-one:latest
-    restart: always
+    image: jaegertracing/jaeger:2.6.0
     ports:
-      - "16686:16686"
-      - "14268"
-      - "14250"
-
-  # Zipkin
-  zipkin-all-in-one:
-    image: openzipkin/zipkin:latest
-    restart: always
-    ports:
-      - "9411:9411"
+      - "16686:16686" # Jaeger UI
+      - "14268" # Jaeger collector HTTP
+      - "14250" # Jaeger collector gRPC
+      - "9411:9411" # Zipkin endpoint for OTEL collector
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:16686"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Collector
   otel-collector:
-    image: otel/opentelemetry-collector:0.123.0
+    image: otel/opentelemetry-collector:0.126.0
     restart: always
-    command: ["--config=/etc/otel-collector-config.yaml", "${OTELCOL_ARGS}"]
+    command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
       - ./.docker/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
@@ -75,13 +83,12 @@ services:
       - "55679:55679" # zpages extension
     depends_on:
       - jaeger-all-in-one
-      - zipkin-all-in-one
 
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:latest
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.117.1-scratch
     restart: always
-    volumes:
-      - ./.docker/prometheus.yaml:/etc/prometheus/prometheus.yml
     ports:
-      - "9090:9090"
+      - "8428:8428" # VictoriaMetrics HTTP API and UI
+      - "2003:2003" # Graphite protocol
+      - "4242:4242" # OpenTSDB protocol
+      - "8089:8089" # Prometheus remote write

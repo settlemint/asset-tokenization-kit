@@ -34,9 +34,19 @@ export async function uploadToStorage(
   }
 
   try {
+    // Special handling for MiCA/Regulations documents to keep a consistent path structure
+    let effectivePath = path;
+    const documentType = path.split("/")[1]; // Extract document type from the path
+
+    // For MiCA documents, ensure they are stored in the regulations/mica path
+    if (documentType === "mica" || path.includes("mica")) {
+      effectivePath = "regulations/mica";
+      console.log(`Using special MiCA documents path: ${effectivePath}`);
+    }
+
     // Use the imported uploadFile function from file-storage.ts
     // This function already handles creating the objectName and metadata internally
-    const uploadedMetadata = await uploadFile(file, path);
+    const uploadedMetadata = await uploadFile(file, effectivePath);
 
     if (!uploadedMetadata) {
       throw new Error("Upload function returned null");
@@ -44,17 +54,26 @@ export async function uploadToStorage(
 
     console.log(`File uploaded successfully: ${uploadedMetadata.id}`);
 
+    // For MiCA documents, ensure the objectName is properly formatted
+    let objectName = uploadedMetadata.id;
+    if (documentType === "mica" || path.includes("mica")) {
+      // Ensure the object name includes the regulations/mica prefix
+      if (!objectName.includes("regulations/mica")) {
+        objectName = `regulations/mica/${file.name}`;
+      }
+    }
+
     // Return metadata about the uploaded file
     // Adapt the structure slightly to match the return type if needed
     return {
-      id: uploadedMetadata.id.split("/").pop() || uploadedMetadata.id, // Extract ID part if needed
+      id: uploadedMetadata.id,
       name: uploadedMetadata.name,
       contentType: uploadedMetadata.contentType,
       size: uploadedMetadata.size,
       uploadedAt: new Date(uploadedMetadata.uploadedAt),
       etag: uploadedMetadata.etag,
       url: uploadedMetadata.url || "", // Ensure URL is provided
-      objectName: uploadedMetadata.id, // Use the full object path as objectName
+      objectName: objectName, // Use the modified object path if it's a MiCA document
       bucket: DEFAULT_BUCKET,
     };
   } catch (error) {
@@ -124,10 +143,15 @@ export async function listFiles(prefix: string = ""): Promise<FileMetadata[]> {
 /**
  * Delete a file by its ID or path
  *
+ * @deprecated Please use the new consolidated deleteFile function in /lib/actions/delete-file.ts
  * @param fileId - The ID or path of the file to delete
  * @returns True if the file was deleted successfully
  */
 export async function deleteFile(fileId: string): Promise<boolean> {
+  console.warn(
+    `DEPRECATED: Using old deleteFile implementation. Please update to use /lib/actions/delete-file.ts`
+  );
+
   try {
     // Use the imported minioClient to remove the object
     // Assume fileId might be the full object path/name

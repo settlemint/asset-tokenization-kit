@@ -56,9 +56,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "2.2.0",
+    "@settlemint/sdk-cli": "2.3.0",
     "prettier": "3.5.3",
-    "turbo": "2.5.2",
+    "turbo": "2.5.3",
     "typescript": "5.8.3"
   },
   "trustedDependencies": [
@@ -80,9 +80,9 @@
     "react-is": "19.1.0",
     "graphql": "16.11.0",
     "elliptic": "6.6.1",
-    "ws": "8.18.1",
+    "ws": "8.18.2",
     "adm-zip": "0.5.16",
-    "undici": "7.8.0",
+    "undici": "7.9.0",
     "prettier": "3.5.3"
   }
 }

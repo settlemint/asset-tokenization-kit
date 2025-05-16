@@ -1,94 +1,120 @@
 "use client";
 
 import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useRouter } from "@/i18n/routing";
+import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createBond } from "@/lib/mutations/bond/create/create-action";
 import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
+import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
+import type { User } from "@/lib/queries/user/user-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
-import { AssetAdmins } from "../common/asset-admins/asset-admins";
-import { Basics } from "./steps/basics";
-import { Configuration } from "./steps/configuration";
-import { Summary } from "./steps/summary";
+import type { AssetFormDefinition } from "../../asset-designer/types";
+import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
+import { stepDefinition as summaryStep } from "../common/summary/summary";
+import { stepDefinition as basicsStep } from "./steps/basics";
+import { stepDefinition as configurationStep } from "./steps/configuration";
+import { BondConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateBondFormProps {
-  open?: boolean;
+  userDetails: User;
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
   onOpenChange?: (open: boolean) => void;
-  asButton?: boolean;
 }
-
 export function CreateBondForm({
-  open,
+  userDetails,
+  currentStepId,
+  onNextStep,
+  onPrevStep,
   onOpenChange,
-  asButton = false,
 }: CreateBondFormProps) {
-  const router = useRouter();
   const t = useTranslations("private.assets.create.form");
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [localOpen, setLocalOpen] = useState(false);
-  const posthog = usePostHog();
 
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
-      posthog.capture("create_bond_form_opened");
-    }
-  }, [open, localOpen, posthog]);
+  // Create component instances for each step
+  const BasicsComponent = basicsStep.component;
+  const ConfigurationComponent = configurationStep.component;
+  const AdminsComponent = adminsStep.component;
+  const SummaryComponent = summaryStep.component;
+
+  // Create an array of all step components in order for Form to manage
+  const allStepComponents = [
+    <BasicsComponent key="details" />,
+    <ConfigurationComponent key="configuration" />,
+    <AdminsComponent key="admins" userDetails={userDetails} />,
+    <SummaryComponent
+      key="summary"
+      configurationCard={<BondConfigurationCard />}
+      predictAddress={getPredictedAddress}
+      isAddressAvailable={isAddressAvailable}
+    />,
+  ];
+
+  // Define step order and mapping
+  const stepIdToIndex = {
+    details: 0,
+    configuration: 1,
+    admins: 2,
+    summary: 3,
+  };
+
+  // Use the step synchronization hook
+  const { isLastStep, onStepChange, onAnyFieldChange } = useFormStepSync({
+    currentStepId,
+    stepIdToIndex,
+    onNextStep,
+    onPrevStep,
+  });
 
   return (
-    <FormSheet
-      open={open ?? localOpen}
-      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t("title.bonds")}
-      description={t("description.bonds")}
-      asButton={asButton}
-      triggerLabel={
-        isExternallyControlled ? undefined : t("trigger-label.bonds")
-      }
+    <Form
+      action={createBond}
+      resolver={typeboxResolver(CreateBondSchema())}
+      defaultValues={{
+        assetName: "",
+        symbol: "",
+        decimals: 18,
+        isin: "",
+        assetAdmins: [],
+        selectedRegulations: [],
+        maturityDate: getTomorrowMidnight(),
+        verificationType: "pincode",
+        predictedAddress: "0x0000000000000000000000000000000000000000",
+      }}
+      buttonLabels={{
+        label: isLastStep
+          ? t("button-labels.bond.issue")
+          : t("button-labels.general.next"),
+        submittingLabel: t("button-labels.bond.submitting"),
+        processingLabel: t("button-labels.general.processing"),
+      }}
+      secureForm={true}
+      hideStepProgress={true}
+      toastMessages={{
+        loading: t("toasts.bond.submitting"),
+        success: t("toasts.bond.success"),
+      }}
+      onStepChange={onStepChange}
+      onAnyFieldChange={onAnyFieldChange}
+      onOpenChange={onOpenChange}
     >
-      <Form
-        action={createBond}
-        resolver={(...args) =>
-          typeboxResolver(
-            CreateBondSchema({
-              decimals: args[0].decimals,
-            })
-          )(...args)
-        }
-        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-        buttonLabels={{
-          label: t("trigger-label.bonds"),
-        }}
-        defaultValues={{
-          maturityDate: getTomorrowMidnight(),
-          verificationType: "pincode",
-          predictedAddress: "0x0000000000000000000000000000000000000000",
-          assetAdmins: [],
-        }}
-        toastMessages={{
-          action: (input) => {
-            const assetId = input?.predictedAddress;
-            return assetId
-              ? {
-                  label: t("toast-action.bonds"),
-                  onClick: () => router.push(`/assets/bond/${assetId}`),
-                }
-              : undefined;
-          },
-        }}
-        onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(["predictedAddress"]);
-        }}
-      >
-        <Basics />
-        <Configuration />
-        <AssetAdmins />
-        <Summary />
-      </Form>
-    </FormSheet>
+      {allStepComponents}
+    </Form>
   );
 }
+
+CreateBondForm.displayName = "CreateBondForm";
+
+// Collect all the step definitions
+const bondSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
+
+// Export bond form definition for the asset designer
+export const bondFormDefinition: AssetFormDefinition = {
+  steps: bondSteps,
+  getStepComponent: (stepId: string) => {
+    const step = bondSteps.find((s) => s.id === stepId);
+    return step?.component || null;
+  },
+};

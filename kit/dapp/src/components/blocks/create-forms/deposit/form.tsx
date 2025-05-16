@@ -1,91 +1,122 @@
 "use client";
 
 import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { useRouter } from "@/i18n/routing";
-import { authClient } from "@/lib/auth/client";
+import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createDeposit } from "@/lib/mutations/deposit/create/create-action";
 import { CreateDepositSchema } from "@/lib/mutations/deposit/create/create-schema";
+import { isAddressAvailable } from "@/lib/queries/deposit-factory/deposit-factory-address-available";
+import { getPredictedAddress } from "@/lib/queries/deposit-factory/deposit-factory-predict-address";
+import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect, useState } from "react";
-import { AssetAdmins } from "../common/asset-admins/asset-admins";
-import { Basics } from "./steps/basics";
-import { Configuration } from "./steps/configuration";
-import { Summary } from "./steps/summary";
+import type { AssetFormDefinition } from "../../asset-designer/types";
+import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
+import { stepDefinition as summaryStep } from "../common/summary/summary";
+import { stepDefinition as basicsStep } from "./steps/basics";
+import { stepDefinition as configurationStep } from "./steps/configuration";
+import { DepositConfigurationCard } from "./steps/summaryConfigurationCard";
+
 interface CreateDepositFormProps {
-  open?: boolean;
+  userDetails: User;
+  currentStepId: string;
+  onNextStep: () => void;
+  onPrevStep: () => void;
   onOpenChange?: (open: boolean) => void;
-  asButton?: boolean;
 }
 
 export function CreateDepositForm({
-  open,
+  userDetails,
+  currentStepId,
+  onNextStep,
+  onPrevStep,
   onOpenChange,
-  asButton = false,
 }: CreateDepositFormProps) {
   const t = useTranslations("private.assets.create.form");
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [localOpen, setLocalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
-  const posthog = usePostHog();
 
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && (open || localOpen)) {
-      posthog.capture("create_deposit_form_opened");
-    }
-  }, [open, localOpen, posthog]);
+  // Create component instances for each step
+  const BasicsComponent = basicsStep.component;
+  const ConfigurationComponent = configurationStep.component;
+  const AdminsComponent = adminsStep.component;
+  const SummaryComponent = summaryStep.component;
+
+  // Create an array of all step components in order for Form to manage
+  const allStepComponents = [
+    <BasicsComponent key="details" />,
+    <ConfigurationComponent key="configuration" />,
+    <AdminsComponent key="admins" userDetails={userDetails} />,
+    <SummaryComponent
+      key="summary"
+      configurationCard={<DepositConfigurationCard />}
+      predictAddress={getPredictedAddress}
+      isAddressAvailable={isAddressAvailable}
+    />,
+  ];
+
+  // Define step order and mapping
+  const stepIdToIndex = {
+    details: 0,
+    configuration: 1,
+    admins: 2,
+    summary: 3,
+  };
+
+  // Use the step synchronization hook
+  const { isLastStep, onStepChange, onAnyFieldChange } = useFormStepSync({
+    currentStepId,
+    stepIdToIndex,
+    onNextStep,
+    onPrevStep,
+  });
 
   return (
-    <FormSheet
-      open={open ?? localOpen}
-      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t("title.deposits")}
-      description={t("description.deposits")}
-      asButton={asButton}
-      triggerLabel={
-        isExternallyControlled ? undefined : t("trigger-label.deposits")
-      }
+    <Form
+      action={createDeposit}
+      resolver={typeboxResolver(CreateDepositSchema())}
+      defaultValues={{
+        assetName: "",
+        symbol: "",
+        decimals: 18,
+        collateralLivenessValue: 12,
+        collateralLivenessTimeUnit: "months",
+        price: {
+          amount: 1,
+          currency: userDetails.currency,
+        },
+        verificationType: "pincode",
+        assetAdmins: [],
+      }}
+      buttonLabels={{
+        label: isLastStep
+          ? t("button-labels.deposit.issue")
+          : t("button-labels.general.next"),
+        submittingLabel: t("button-labels.deposit.submitting"),
+        processingLabel: t("button-labels.general.processing"),
+      }}
+      secureForm={true}
+      hideStepProgress={true}
+      toastMessages={{
+        loading: t("toasts.deposit.submitting"),
+        success: t("toasts.deposit.success"),
+      }}
+      onStepChange={onStepChange}
+      onAnyFieldChange={onAnyFieldChange}
+      onOpenChange={onOpenChange}
     >
-      <Form
-        action={createDeposit}
-        resolver={typeboxResolver(CreateDepositSchema())}
-        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-        buttonLabels={{
-          label: t("trigger-label.deposits"),
-        }}
-        onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(["predictedAddress"]);
-        }}
-        defaultValues={{
-          collateralLivenessValue: 12,
-          collateralLivenessTimeUnit: "months",
-          price: {
-            amount: 1,
-            currency: session?.user.currency,
-          },
-          assetAdmins: [],
-        }}
-        toastMessages={{
-          action: (input) => {
-            const assetId = input?.predictedAddress;
-            return assetId
-              ? {
-                  label: t("toast-action.deposits"),
-                  onClick: () => router.push(`/assets/deposit/${assetId}`),
-                }
-              : undefined;
-          },
-        }}
-      >
-        <Basics />
-        <Configuration />
-        <AssetAdmins />
-        <Summary />
-      </Form>
-    </FormSheet>
+      {allStepComponents}
+    </Form>
   );
 }
+
+CreateDepositForm.displayName = "CreateDepositForm";
+
+// Collect all the step definitions
+const depositSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
+
+// Export form definition for the asset designer
+export const depositFormDefinition: AssetFormDefinition = {
+  steps: depositSteps,
+  getStepComponent: (stepId: string) => {
+    const step = depositSteps.find((s) => s.id === stepId);
+    return step?.component || null;
+  },
+};

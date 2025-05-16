@@ -1,8 +1,9 @@
 import { NavMain } from "@/components/layout/nav-main";
-import { ActivityIcon } from "@/components/ui/animated-icons/activity";
-import { ChartScatterIcon } from "@/components/ui/animated-icons/chart-scatter";
-import { UsersIcon } from "@/components/ui/animated-icons/users";
-import { WalletIcon } from "@/components/ui/animated-icons/wallet";
+import { ActivityIcon } from "@/components/ui/activity";
+import { ChartScatterIcon } from "@/components/ui/chart-scatter";
+import { HandCoinsIcon } from "@/components/ui/hand-coins";
+import { MailCheckIcon } from "@/components/ui/mail-check";
+import { UsersIcon } from "@/components/ui/users";
 import { getTranslations } from "next-intl/server";
 
 export async function PortfolioManagement() {
@@ -12,27 +13,42 @@ export async function PortfolioManagement() {
     <NavMain
       items={[
         {
+          label: t("dashboard"),
+          icon: (
+            <ChartScatterIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
+          path: "/portfolio",
+        },
+        {
+          label: t("my-actions"),
+          icon: (
+            <MailCheckIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
+          path: "/portfolio/my-actions/pending",
+        },
+        {
+          label: t("my-activity"),
+          icon: (
+            <ActivityIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
+          path: "/portfolio/my-activity",
+        },
+        {
+          label: t("my-contacts"),
+          icon: (
+            <UsersIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
+          path: "/portfolio/my-contacts",
+        },
+        {
           groupTitle: t("group-title"),
           items: [
             {
-              label: t("dashboard"),
-              icon: <ChartScatterIcon className="size-4" />,
-              path: "/portfolio",
-            },
-            {
               label: t("my-assets"),
-              icon: <WalletIcon className="size-4" />,
+              icon: (
+                <HandCoinsIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+              ),
               path: "/portfolio/my-assets",
-            },
-            {
-              label: t("my-activity"),
-              icon: <ActivityIcon className="size-4" />,
-              path: "/portfolio/my-activity",
-            },
-            {
-              label: t("my-contacts"),
-              icon: <UsersIcon className="size-4" />,
-              path: "/portfolio/my-contacts",
             },
           ],
         },

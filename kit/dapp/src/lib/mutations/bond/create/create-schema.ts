@@ -1,6 +1,4 @@
 import { AssetAdminsSchemaFragment } from "@/lib/mutations/common/asset-admins-schema";
-import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
-import { isValidFutureDate } from "@/lib/utils/date";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 /**
@@ -32,7 +30,7 @@ export function CreateBondSchema({
       assetName: t.String({
         description: "The name of the bond",
         minLength: 1,
-        maxLength: 50,
+        maxLength: 32,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the bond (ticker)",
@@ -46,6 +44,11 @@ export function CreateBondSchema({
           description: "International Securities Identification Number",
         })
       ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the bond",
+        })
+      ),
       verificationCode: t.VerificationCode({
         description:
           "The verification code (PIN, 2FA, or secret code) for signing the transaction",
@@ -56,20 +59,15 @@ export function CreateBondSchema({
       cap: t.Amount({
         decimals,
         description: "Maximum issuance amount",
+        minimum: 1,
       }),
       faceValue: t.Amount({
         decimals,
         description: "Face value of the bond",
+        minimum: 1,
       }),
       maturityDate: t.String({
         description: "Maturity date of the bond",
-        // NOTE: This refinement validation doesn't work reliably with @hookform/typebox resolver.
-        // We implement a custom validation in the Configuration component using customValidation
-        // to ensure proper validation and error display.
-        refinement: {
-          predicate: (date: string | Date) => isValidFutureDate(date, 1),
-          message: "Maturity date must be at least 1 hour in the future",
-        },
       }),
       underlyingAsset: t.Object(
         {
@@ -84,12 +82,9 @@ export function CreateBondSchema({
       ),
       predictedAddress: t.EthereumAddress({
         description: "Predicted address of the bond",
-        refinement: {
-          predicate: isAddressAvailable,
-          message: "Address already in use",
-        },
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
     },
     {
       description: "Schema for validating bond creation inputs",

@@ -1,194 +1,89 @@
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import {
   BarChart3,
-  Building2,
-  Clock,
   Coins,
   FileJson,
   Layers,
   Settings,
   ShieldCheck,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import * as React from "react";
+import { getTranslations } from "next-intl/server";
+export async function Features() {
+  const t = await getTranslations("homepage");
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface BentoFeatureProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-const BentoFeatureSection = React.forwardRef<HTMLDivElement, BentoFeatureProps>(
-  ({ className, ...props }, ref) => {
-    const t = useTranslations("homepage");
-
-    return (
-      <section
-        ref={ref}
-        className={cn(
-          "relative z-10 mx-auto max-w-7xl px-4 py-24 mt-8 md:px-8",
-          className
-        )}
-        {...props}
-      >
-        <div className="mb-16 text-center">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
+  return (
+    <section className="py-12 md:py-20">
+      <div className="mx-auto max-w-5xl space-y-8 px-6 md:space-y-16">
+        <div className="relative z-10 mx-auto max-w-xl space-y-6 text-center md:space-y-12">
+          <h2 className="text-balance text-4xl font-medium lg:text-5xl">
             {t("features.title")}
           </h2>
-          <p className="mx-auto max-w-2xl text-muted-foreground">
-            {t("features.description")}
-          </p>
+          <p>{t("features.description")}</p>
         </div>
 
-        {/* Bento Grid for Platform Features */}
-        <div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 group">
-            {/* Full Asset Lifecycle */}
-            <Card className="transition-all hover:shadow-md duration-300 transform group-hover:scale-95 hover:!scale-105 hover:z-10">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
-                    <Coins className="h-6 w-6" />
-                  </div>
-                  <CardTitle>{t("features.asset-lifecycle.title")}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-sm">
-                  {t("features.asset-lifecycle.description")}
-                </CardDescription>
-              </CardContent>
-            </Card>
+        <div className="relative mx-auto grid max-w-4xl divide-x divide-y border *:p-12 sm:grid-cols-2 lg:grid-cols-3 rounded-2xl">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Coins className="size-4" />
+              <h3 className="text-sm font-semibold">
+                {t("features.asset-lifecycle.title")}
+              </h3>
+            </div>
+            <p className="text-sm">
+              {t("features.asset-lifecycle.description")}
+            </p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Layers className="size-4" />
 
-            {/* Deep Insights */}
-            <Card className="transition-all hover:shadow-md duration-300 transform group-hover:scale-95 hover:!scale-105 hover:z-10">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
-                    <BarChart3 className="h-6 w-6" />
-                  </div>
-                  <CardTitle>{t("features.insights.title")}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-sm">
-                  {t("features.insights.description")}
-                </CardDescription>
-              </CardContent>
-            </Card>
+              <h3 className="text-sm font-semibold">
+                {t("features.interface.title")}
+              </h3>
+            </div>
+            <p className="text-sm">{t("features.interface.description")}</p>
+          </div>
 
-            {/* Comprehensive Compliance */}
-            <Card className="transition-all hover:shadow-md duration-300 transform group-hover:scale-95 hover:!scale-105 hover:z-10">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
-                    <ShieldCheck className="h-6 w-6" />
-                  </div>
-                  <CardTitle>{t("features.compliance.title")}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-sm">
-                  {t("features.compliance.description")}
-                </CardDescription>
-              </CardContent>
-            </Card>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="size-4" />
 
-            {/* Intuitive Interface */}
-            <Card className="transition-all hover:shadow-md duration-300 transform group-hover:scale-95 hover:!scale-105 hover:z-10">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
-                    <Layers className="h-6 w-6" />
-                  </div>
-                  <CardTitle>{t("features.interface.title")}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-sm">
-                  {t("features.interface.description")}
-                </CardDescription>
-              </CardContent>
-            </Card>
+              <h3 className="text-sm font-semibold">
+                {t("features.compliance.title")}
+              </h3>
+            </div>
+            <p className="text-sm">{t("features.compliance.description")}</p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <FileJson className="size-4" />
 
-            {/* Complete API Coverage */}
-            <Card className="transition-all hover:shadow-md duration-300 transform group-hover:scale-95 hover:!scale-105 hover:z-10">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
-                    <FileJson className="h-6 w-6" />
-                  </div>
-                  <CardTitle>{t("features.api.title")}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-sm">
-                  {t("features.api.description")}
-                </CardDescription>
-              </CardContent>
-            </Card>
+              <h3 className="text-sm font-semibold">
+                {t("features.api.title")}
+              </h3>
+            </div>
+            <p className="text-sm">{t("features.api.description")}</p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="size-4" />
+              <h3 className="text-sm font-semibold">
+                {t("features.insights.title")}
+              </h3>
+            </div>
+            <p className="text-sm">{t("features.insights.description")}</p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Settings className="size-4" />
 
-            {/* 100% Customizable */}
-            <Card className="transition-all hover:shadow-md duration-300 transform group-hover:scale-95 hover:!scale-105 hover:z-10">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
-                    <Settings className="h-6 w-6" />
-                  </div>
-                  <CardTitle>{t("features.customizable.title")}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-sm">
-                  {t("features.customizable.description")}
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            {/* Shortest Time to Market */}
-            <Card className="transition-all hover:shadow-md duration-300 transform group-hover:scale-95 hover:!scale-105 hover:z-10">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
-                    <Clock className="h-6 w-6" />
-                  </div>
-                  <CardTitle>{t("features.time-to-market.title")}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-sm">
-                  {t("features.time-to-market.description")}
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            {/* Purpose-Built */}
-            <Card className="transition-all hover:shadow-md duration-300 transform group-hover:scale-95 hover:!scale-105 hover:z-10">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
-                    <Building2 className="h-6 w-6" />
-                  </div>
-                  <CardTitle>{t("features.purpose-built.title")}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-sm">
-                  {t("features.purpose-built.description")}
-                </CardDescription>
-              </CardContent>
-            </Card>
+              <h3 className="text-sm font-semibold">
+                {t("features.customizable.title")}
+              </h3>
+            </div>
+            <p className="text-sm">{t("features.customizable.description")}</p>
           </div>
         </div>
-      </section>
-    );
-  }
-);
-
-BentoFeatureSection.displayName = "BentoFeatureSection";
-
-export { BentoFeatureSection };
+      </div>
+    </section>
+  );
+}

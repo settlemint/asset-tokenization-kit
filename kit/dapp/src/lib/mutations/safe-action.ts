@@ -29,6 +29,12 @@ function consoleErrorValidationErrors(error: Error) {
   }
 }
 
+export interface SafeActionResult<T> {
+  data?: T;
+  validationErrors?: Record<string, string>;
+  serverError?: string;
+}
+
 export const action = createSafeActionClient({
   validationAdapter: typeboxAdapter(),
   throwValidationErrors: true,

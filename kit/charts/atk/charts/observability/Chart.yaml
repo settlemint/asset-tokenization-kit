@@ -11,11 +11,11 @@ maintainers:
     url: https://settlemint.com
 dependencies:
   - name: victoria-metrics-single
-    version: 0.18.0
+    version: 0.19.1
     repository: https://victoriametrics.github.io/helm-charts/
     condition: victoria-metrics-single.enabled
   - name: alloy
-    version: 1.0.2
+    version: 1.0.3
     repository: https://grafana.github.io/helm-charts
     condition: alloy.enabled
   - name: metrics-server
@@ -23,11 +23,11 @@ dependencies:
     repository: https://kubernetes-sigs.github.io/metrics-server/
     condition: metrics-server.enabled
   - name: kube-state-metrics
-    version: 5.33.0
+    version: 5.33.1
     repository: https://prometheus-community.github.io/helm-charts
     condition: kube-state-metrics.enabled
   - name: grafana
-    version: 8.14.0
+    version: 9.0.0
     repository: https://grafana.github.io/helm-charts
     condition: grafana.enabled
   - name: loki
@@ -35,10 +35,10 @@ dependencies:
     repository: https://grafana.github.io/helm-charts
     condition: loki.enabled
   - name: prometheus-node-exporter
-    version: 4.45.3
+    version: 4.46.0
     repository: https://prometheus-community.github.io/helm-charts
     condition: prometheus-node-exporter.enabled
   - name: tempo
-    version: 1.21.0
+    version: 1.21.1
     repository: https://grafana.github.io/helm-charts
     condition: tempo.enabled

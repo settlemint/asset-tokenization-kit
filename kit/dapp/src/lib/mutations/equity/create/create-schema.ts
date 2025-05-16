@@ -1,4 +1,3 @@
-import { isAddressAvailable } from "@/lib/queries/equity-factory/equity-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 import { AssetAdminsSchemaFragment } from "../../common/asset-admins-schema";
 
@@ -21,7 +20,7 @@ export function CreateEquitySchema() {
       assetName: t.String({
         description: "The name of the equity",
         minLength: 1,
-        maxLength: 50,
+        maxLength: 32,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the equity (ticker)",
@@ -32,8 +31,12 @@ export function CreateEquitySchema() {
       }),
       isin: t.Optional(
         t.Isin({
-          description:
-            "Optional International Securities Identification Number",
+          description: "International Securities Identification Number",
+        })
+      ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the bond",
         })
       ),
       verificationCode: t.VerificationCode({
@@ -53,13 +56,17 @@ export function CreateEquitySchema() {
       }),
       predictedAddress: t.EthereumAddress({
         description: "The predicted contract address",
-        refine: isAddressAvailable,
-        error: "equity.duplicate",
       }),
       price: t.Price({
         description: "Price of the equity",
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
+      cusip: t.Optional(
+        t.String({
+          description: "CUSIP of the equity",
+        })
+      ),
     },
     {
       description: "Schema for validating equity creation inputs",

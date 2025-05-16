@@ -1,4 +1,3 @@
-import { isAddressAvailable } from "@/lib/queries/fund-factory/fund-factory-address-available";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 import { AssetAdminsSchemaFragment } from "../../common/asset-admins-schema";
 
@@ -22,7 +21,7 @@ export function CreateFundSchema() {
       assetName: t.String({
         description: "The name of the fund",
         minLength: 1,
-        maxLength: 50,
+        maxLength: 32,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the fund (ticker)",
@@ -35,6 +34,11 @@ export function CreateFundSchema() {
         t.Isin({
           description:
             "Optional International Securities Identification Number",
+        })
+      ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the fund",
         })
       ),
       verificationCode: t.VerificationCode({
@@ -59,13 +63,12 @@ export function CreateFundSchema() {
       }),
       predictedAddress: t.EthereumAddress({
         description: "The predicted contract address",
-        refine: isAddressAvailable,
-        error: "fund.duplicate",
       }),
       price: t.Price({
         description: "Price of the fund",
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
     },
     {
       description: "Schema for validating fund creation inputs",

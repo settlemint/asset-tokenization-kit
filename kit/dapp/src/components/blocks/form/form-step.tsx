@@ -5,6 +5,7 @@ interface FormStepProps extends PropsWithChildren {
   title: string;
   description: string;
   contentClassName?: string;
+  className?: string;
 }
 
 export function FormStep({
@@ -12,14 +13,17 @@ export function FormStep({
   description,
   children,
   contentClassName,
+  className,
 }: FormStepProps) {
   return (
-    <Card>
-      <CardHeader>
-        <h2 className="font-semibold text-base">{title}</h2>
-        <p className="text-muted-foreground text-xs">{description}</p>
-      </CardHeader>
-      <CardContent className={contentClassName}>{children}</CardContent>
-    </Card>
+    <div className="pl-2">
+      <Card className={className}>
+        <CardHeader>
+          <h2 className="font-semibold text-base">{title}</h2>
+          <p className="text-muted-foreground text-sm -mt-1">{description}</p>
+        </CardHeader>
+        <CardContent className={contentClassName}>{children}</CardContent>
+      </Card>
+    </div>
   );
 }

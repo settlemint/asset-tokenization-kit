@@ -32,29 +32,26 @@ test.describe("Deposit Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "",
         symbol: "TDEP",
-        decimals: "18",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is empty", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Deposit",
         symbol: "",
-        decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter text");
     });
     test("validates symbol field is with lower case", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Deposit",
         symbol: "tdep",
-        decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Please enter text in the correct asset-symbol format"
       );
@@ -67,17 +64,18 @@ test.describe("Deposit Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "Test Deposit",
         symbol: "TDEP",
-        decimals: "18",
         isin: "invalid-isin",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates ISIN length constraints", async () => {
       await createAssetForm.fillBasicFields({
+        name: "Test Deposit",
+        symbol: "TDEP",
         isin: "US0000000000000",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates empty decimals", async () => {
@@ -85,9 +83,8 @@ test.describe("Deposit Creation Validation", () => {
         name: "Test Deposit",
         symbol: "TDEP",
         isin: "US1234567890",
-        decimals: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("validates decimals range", async () => {
@@ -95,9 +92,8 @@ test.describe("Deposit Creation Validation", () => {
         name: "Test Deposit",
         symbol: "TDEP",
         isin: "US1234567890",
-        decimals: "19",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid value");
     });
     test("verifies default decimals field", async () => {
@@ -109,10 +105,9 @@ test.describe("Deposit Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: depositData.name,
         symbol: depositData.symbol,
-        decimals: depositData.decimals,
         isin: depositData.isin,
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
     });
 
     test("validates collateral proof validity field is empty", async () => {
@@ -123,7 +118,7 @@ test.describe("Deposit Creation Validation", () => {
         priceAmount: "1",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
     test("validates collateral proof validity field is less than 1", async () => {
@@ -133,7 +128,7 @@ test.describe("Deposit Creation Validation", () => {
         priceAmount: "1",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no less than 1"
       );
@@ -147,7 +142,7 @@ test.describe("Deposit Creation Validation", () => {
         priceAmount: "1",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );
@@ -159,7 +154,7 @@ test.describe("Deposit Creation Validation", () => {
         priceAmount: "",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
     });
     test("validates large number for price amount field", async () => {
@@ -168,7 +163,7 @@ test.describe("Deposit Creation Validation", () => {
         priceAmount: "10000000000000000000",
         priceCurrency: "EUR",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );

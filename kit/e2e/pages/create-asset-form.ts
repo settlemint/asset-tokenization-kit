@@ -2,45 +2,42 @@ import { expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class CreateAssetForm extends BasePage {
-  async clickNext() {
-    await this.page.getByRole("button", { name: "Next" }).click();
+  async clickOnNextButton() {
+    const nextButton = this.page.locator(
+      'button[data-slot="button"]:has-text("Next")'
+    );
+    await nextButton.focus();
+    await nextButton.click();
   }
 
   async fillBasicFields(options: {
-    name?: string;
-    symbol?: string;
+    name: string;
+    symbol: string;
     isin?: string;
-    decimals?: string;
+    internalId?: string;
   }) {
-    if (options.name !== undefined) {
-      await this.page.getByLabel("Name").fill(options.name);
-    }
-    if (options.symbol !== undefined) {
-      await this.page.getByLabel("Symbol").fill(options.symbol);
-    }
+    await this.page.getByLabel("Name").fill(options.name);
+
+    await this.page.getByLabel("Symbol").fill(options.symbol);
     if (options.isin !== undefined) {
       await this.page.getByLabel("ISIN").fill(options.isin);
     }
-    if (options.decimals !== undefined) {
-      await this.page.getByLabel("Decimals").fill(options.decimals);
+    if (options.internalId !== undefined) {
+      await this.page.getByLabel("Internal ID").fill(options.internalId);
     }
   }
 
   async fillBondDetails(options: {
-    maximumSupply?: string;
-    faceValue?: string;
-    maturityDate?: string;
+    decimals: string;
+    maximumSupply: string;
+    faceValue: string;
+    maturityDate: string;
     underlyingAsset?: string;
   }) {
-    if (options.maximumSupply !== undefined) {
-      await this.page.getByLabel("Maximum supply").fill(options.maximumSupply);
-    }
-    if (options.faceValue !== undefined) {
-      await this.page.getByLabel("Face value").fill(options.faceValue);
-    }
-    if (options.maturityDate !== undefined) {
-      await this.page.getByLabel("Maturity date").fill(options.maturityDate);
-    }
+    await this.page.getByLabel("Decimals").fill(options.decimals);
+    await this.page.getByLabel("Maximum supply").fill(options.maximumSupply);
+    await this.page.getByLabel("Face value").fill(options.faceValue);
+    await this.page.getByLabel("Maturity date").fill(options.maturityDate);
     if (options.underlyingAsset !== undefined) {
       await this.page.getByLabel("Underlying asset").click();
       await this.page
@@ -86,14 +83,27 @@ export class CreateAssetForm extends BasePage {
   }
 
   async selectAssetType(assetType: string) {
-    await this.page.getByRole("button", { name: "Asset Designer" }).click();
-    await this.page.getByRole("menuitem", { name: assetType }).click();
+    await this.page
+      .locator(
+        'div[data-slot="sidebar-content"] > button:has-text("Asset Designer")'
+      )
+      .first()
+      .click();
+    await this.page
+      .locator(
+        `[data-slot="card"] [data-slot="card-title"]:has-text("${assetType}")`
+      )
+      .click();
   }
 
   async fillCryptocurrencyDetails(options: {
+    decimals?: string;
     initialSupply?: string;
     price?: string;
   }) {
+    if (options.decimals !== undefined) {
+      await this.page.getByLabel("Decimals").fill(options.decimals);
+    }
     if (options.initialSupply !== undefined) {
       await this.page.getByLabel("Initial supply").fill(options.initialSupply);
     }
@@ -126,10 +136,10 @@ export class CreateAssetForm extends BasePage {
     }
   }
 
-  async verifyCurrencyValue(expected: string) {
+  async verifyCurrencyValue(currencyValue: string) {
     await expect(
-      this.page.locator('select[name="price.currency"]')
-    ).toHaveValue(expected);
+      this.page.locator('button[id="price.currency"]')
+    ).toContainText(currencyValue);
   }
 
   async fillFundConfigurationFields(
@@ -203,5 +213,19 @@ export class CreateAssetForm extends BasePage {
 
   async clearField(label: string) {
     await this.page.getByLabel(label, { exact: false }).fill("");
+  }
+
+  async setInvalidValueInNumberInput(selector: string, invalidValue: string) {
+    await this.page.evaluate(
+      ({ selector, value }) => {
+        const input = document.querySelector(selector) as HTMLInputElement;
+        if (input) {
+          input.value = value;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          input.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      },
+      { selector, value: invalidValue }
+    );
   }
 }

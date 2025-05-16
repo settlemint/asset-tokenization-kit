@@ -11,7 +11,7 @@ graph-node:
     imagePullSecrets: []
     extraInitContainers:
       - name: wait-for-postgresql
-        image: ghcr.io/settlemint/btp-waitforit:v7.7.3
+        image: ghcr.io/settlemint/btp-waitforit:v7.7.4
         command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
     affinityPresets:
       # -- Create anti-affinity rule to deter scheduling replicas on the same host
@@ -111,7 +111,7 @@ job:
   # Image configuration
   image:
     repository: docker.io/node
-    tag: "23.11.0-slim"
+    tag: "23.11.1-slim"
     pullPolicy: IfNotPresent
 
   # Pod annotations

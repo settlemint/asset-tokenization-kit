@@ -1,17 +1,11 @@
 "use client";
 
 import { NavMain } from "@/components/layout/nav-main";
-import { ArrowRightLeft } from "lucide-react";
+import { RefreshCWIcon } from "@/components/ui/refresh-cw";
 import { useTranslations } from "next-intl";
-import { useFeatureFlagEnabled } from "posthog-js/react";
 
 export function TradeManagement() {
   const t = useTranslations("admin.sidebar.trade-management");
-  const flagEnabled = useFeatureFlagEnabled("trade-management");
-
-  if (process.env.NEXT_PUBLIC_POSTHOG_KEY && !flagEnabled) {
-    return null;
-  }
 
   return (
     <NavMain
@@ -20,9 +14,11 @@ export function TradeManagement() {
           groupTitle: t("group-title"),
           items: [
             {
-              label: t("dvp-swap"),
-              icon: <ArrowRightLeft className="size-4" />,
-              path: "/trades/dvp",
+              label: t("xvp-settlement"),
+              icon: (
+                <RefreshCWIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+              ),
+              path: "/trades/xvp",
             },
           ],
         },

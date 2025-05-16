@@ -1,11 +1,13 @@
+"use client";
+
+import type { AssetFormStep } from "@/components/blocks/asset-designer/types";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
-import { usePostHog } from "posthog-js/react";
-import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
 export function Configuration() {
@@ -15,52 +17,83 @@ export function Configuration() {
     value: currency,
     label: currency,
   }));
-  const posthog = usePostHog();
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-      posthog.capture("create_cryptocurrency_form_configuration_step_opened");
-    }
-  }, [posthog]);
 
   return (
-    <FormStep
-      title={t("configuration.cryptocurrencies.title")}
-      description={t("configuration.cryptocurrencies.description")}
-    >
-      <div className="grid grid-cols-2 gap-6">
-        <FormInput
-          control={control}
-          name="initialSupply"
-          type="number"
-          label={t("parameters.cryptocurrencies.initial-supply-label")}
-          description={t(
-            "parameters.cryptocurrencies.initial-supply-description"
-          )}
-          required
-        />
+    <StepContent>
+      <div className="space-y-6">
+        <div className="mb-6">
+          <h3 className="text-lg font-medium">Cryptocurrency Configuration</h3>
+          <p className="text-sm text-muted-foreground mt-2">
+            Set parameters specific to your cryptocurrency.
+          </p>
+        </div>
 
-        <FormInput
-          control={control}
-          type="number"
-          name="price.amount"
-          required
-          label={t("parameters.common.price-label")}
-          postfix={
-            <FormSelect
-              name="price.currency"
+        <FormStep
+          title={t("configuration.cryptocurrencies.title-supply")}
+          description={t("configuration.cryptocurrencies.description-supply")}
+        >
+          <div className="grid grid-cols-2 gap-6">
+            <FormInput
               control={control}
-              options={currencyOptions}
-              className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
+              type="number"
+              name="decimals"
+              label={t("parameters.common.decimals-label")}
+              description={t("parameters.common.decimals-description")}
+              required
             />
-          }
-        />
+            <FormInput
+              control={control}
+              name="initialSupply"
+              type="number"
+              label={t("parameters.cryptocurrencies.initial-supply-label")}
+              description={t(
+                "parameters.cryptocurrencies.initial-supply-description"
+              )}
+              required
+            />
+          </div>
+        </FormStep>
+
+        <FormStep
+          title={t("configuration.cryptocurrencies.title-value")}
+          description={t("configuration.cryptocurrencies.description-value")}
+        >
+          <div className="grid grid-cols-2 gap-6">
+            <FormInput
+              control={control}
+              type="number"
+              name="price.amount"
+              required
+              label={t("parameters.common.price-label")}
+              description="The initial price of the cryptocurrency."
+              postfix={
+                <FormSelect
+                  name="price.currency"
+                  control={control}
+                  options={currencyOptions}
+                  className="border-l-0 rounded-l-none w-26 shadow-none -mx-3"
+                />
+              }
+            />
+          </div>
+        </FormStep>
       </div>
-    </FormStep>
+    </StepContent>
   );
 }
 
 Configuration.validatedFields = [
+  "decimals",
   "initialSupply",
   "price",
 ] satisfies (keyof CreateCryptoCurrencyInput)[];
+
+// Export step definition for the asset designer
+export const stepDefinition: AssetFormStep & {
+  component: typeof Configuration;
+} = {
+  id: "configuration",
+  title: "configuration.cryptocurrencies.title",
+  description: "configuration.cryptocurrencies.description",
+  component: Configuration,
+};

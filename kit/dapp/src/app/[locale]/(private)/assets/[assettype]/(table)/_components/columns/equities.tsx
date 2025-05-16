@@ -9,7 +9,6 @@ import type { getEquityList } from "@/lib/queries/equity/equity-list";
 import { formatNumber } from "@/lib/utils/number";
 import { equityCategories } from "@/lib/utils/typebox/equity-categories";
 import { equityClasses } from "@/lib/utils/typebox/equity-classes";
-import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   ActivityIcon,
@@ -233,7 +232,7 @@ export function EquityColumns() {
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as ColumnMeta<Equity, unknown>,
+      },
     }),
   ];
 }

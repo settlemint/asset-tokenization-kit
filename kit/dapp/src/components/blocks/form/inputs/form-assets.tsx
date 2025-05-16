@@ -95,14 +95,14 @@ export function FormAssets<T extends FieldValues>({
                 <Button
                   variant="outline"
                   aria-expanded={open}
-                  className="w-full justify-between"
+                  className="w-full justify-between group"
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,
                     props.disabled
                   )}
                 >
-                  <div className="flex-1 truncate overflow-hidden text-left pr-2 text-muted-foreground">
+                  <div className="flex-1 truncate overflow-hidden text-left pr-2 text-foreground group-hover:text-accent-foreground">
                     {field.value ? (
                       <EvmAddress
                         address={field.value.id}

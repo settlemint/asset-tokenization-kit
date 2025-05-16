@@ -1,7 +1,8 @@
+import { auth } from "@/lib/auth/auth";
 import { opentelemetry } from "@elysiajs/opentelemetry";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
-import { Elysia, error as elysiaError } from "elysia";
+import { Elysia, status as elysiaStatus } from "elysia";
 import pkgjson from "../../../package.json";
 import { metadata } from "../config/metadata";
 import { siteConfig } from "../config/site";
@@ -26,6 +27,7 @@ import { SettingApi } from "./setting";
 import { StableCoinApi } from "./stablecoin";
 import { TransactionApi } from "./transaction";
 import { UserApi } from "./user";
+import { VaultApi } from "./vault";
 
 export const api = new Elysia({
   aot: true,
@@ -88,10 +90,10 @@ export const api = new Elysia({
   )
   .onError(({ code, error, path }) => {
     if (code === "NOT_FOUND") {
-      return elysiaError(404, "Not Found");
+      return elysiaStatus(404, "Not Found");
     }
     if (error instanceof AccessControlError) {
-      return elysiaError(error.statusCode, error.message);
+      return elysiaStatus(error.statusCode, error.message);
     }
 
     // Handle transaction-related errors more specifically
@@ -106,7 +108,7 @@ export const api = new Elysia({
         return []; // Return empty array instead of error for transaction endpoints
       }
 
-      return elysiaError(500, "Transaction processing error");
+      return elysiaStatus(500, "Transaction processing error");
     }
 
     // TODO: handle specific errors (hasura, postgres, thegraph, portal, etc)
@@ -114,25 +116,27 @@ export const api = new Elysia({
       `Unexpected error: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
       error
     );
-    return elysiaError(500, "Internal server error");
+    return elysiaStatus(500, "Internal server error");
   })
+  .mount(auth.handler)
   .group("/bond", (app) => app.use(BondApi))
   .group("/contact", (app) => app.use(ContactApi))
   .group("/cryptocurrency", (app) => app.use(CryptoCurrencyApi))
   .group("/equity", (app) => app.use(EquityApi))
-  .group("/fixed-yield", (app) => app.use(FixedYieldApi))
+  .group("/yield", (app) => app.use(FixedYieldApi))
   .group("/fund", (app) => app.use(FundApi))
   .group("/stablecoin", (app) => app.use(StableCoinApi))
   .group("/deposit", (app) => app.use(DepositApi))
   .group("/transaction", (app) => app.use(TransactionApi))
   .group("/user", (app) => app.use(UserApi))
   .group("/asset", (app) => app.use(AssetApi))
-  .group("/asset-stats", (app) => app.use(AssetStatsApi))
-  .group("/asset-events", (app) => app.use(AssetEventsApi))
-  .group("/asset-balance", (app) => app.use(AssetBalanceApi))
-  .group("/asset-activity", (app) => app.use(AssetActivityApi))
+  .group("/stats", (app) => app.use(AssetStatsApi))
+  .group("/events", (app) => app.use(AssetEventsApi))
+  .group("/balance", (app) => app.use(AssetBalanceApi))
+  .group("/vault", (app) => app.use(VaultApi))
+  .group("/activity", (app) => app.use(AssetActivityApi))
   .group("/setting", (app) => app.use(SettingApi))
-  .group("/providers/exchange-rates", (app) =>
+  .group("/providers/fx", (app) =>
     app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
   )
   .group("/providers/asset-price", (app) => app.use(AssetPriceApi))

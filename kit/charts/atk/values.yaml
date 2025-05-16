@@ -212,7 +212,7 @@ blockscout:
     frontend:
       image:
         repository: ghcr.io/blockscout/frontend
-        tag: "v1.38.2"
+        tag: "v2.0.2"
       ingress:
         hostname: explorer.k8s.orb.local
 
@@ -292,7 +292,7 @@ thegraph:
     fullnameOverride: graph
     image:
       repository: docker.io/node
-      tag: "23.11.0-slim"
+      tag: "23.11.1-slim"
       pullPolicy: IfNotPresent
     workspace:
       size: 1Gi
@@ -317,7 +317,7 @@ portal:
   enabled: true
   initContainers:
     - name: wait-for-postgres
-      image: ghcr.io/settlemint/btp-waitforit:v7.7.3
+      image: ghcr.io/settlemint/btp-waitforit:v7.7.4
       command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
   podLabels:
     app.kubernetes.io/component: portal
@@ -527,7 +527,7 @@ dapp:
       enabled: true
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: v7.7.3
+        tag: v7.7.4
         pullPolicy: IfNotPresent
       timeout: 0  # Timeout in seconds for each dependency check
       dependencies:

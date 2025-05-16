@@ -1,10 +1,11 @@
 import { Badge } from "@/components/ui/badge";
+import { getUser } from "@/lib/auth/utils";
+import { getActionsList } from "@/lib/queries/actions/actions-list";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { getLocale } from "next-intl/server";
 import type { Address } from "viem";
 
 interface BadgeLoaderProps {
@@ -15,7 +16,8 @@ interface BadgeLoaderProps {
     | "events"
     | "allowlist"
     | "blocklist"
-    | "underlying-assets";
+    | "underlying-assets"
+    | "actions";
 }
 
 // Simple spinner for fallback
@@ -42,11 +44,10 @@ export async function BadgeLoader({
     switch (badgeType) {
       case "holders":
         const details = await getAssetDetail({ address, assettype });
-        count = details.totalHolders;
+        count = details.totalHolders.toString();
         break;
       case "events":
-        const locale = await getLocale();
-        const events = await getAssetEventsList({ asset: address, locale });
+        const events = await getAssetEventsList({ asset: address });
         count = events.length;
         break;
       case "allowlist":
@@ -64,6 +65,15 @@ export async function BadgeLoader({
         // Revisit this logic if needed based on exact requirement.
         const balances = await getAssetBalanceList({ wallet: address });
         count = balances.length;
+        break;
+      case "actions":
+        const user = await getUser();
+        const actions = await getActionsList({
+          targetAddress: address,
+          type: "Admin",
+          userAddress: user.wallet,
+        });
+        count = actions.length;
         break;
     }
   } catch (error) {

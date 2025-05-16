@@ -76,11 +76,12 @@ export function ManageDropdown({
   if (assettype === "bond") {
     const bond = assetDetails as Awaited<ReturnType<typeof getBondDetail>>;
     hasUnderlyingAsset = true;
+
     canMature = Boolean(
       !bond.isMatured &&
         bond.hasSufficientUnderlying &&
         bond.maturityDate &&
-        new Date(Number(bond.maturityDate)) > new Date()
+        isBefore(new Date(Number(bond.maturityDate) * 1000), new Date())
     );
   }
 

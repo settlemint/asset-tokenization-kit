@@ -1,6 +1,5 @@
 "use client";
 
-import { LanguagesIcon } from "@/components/ui/animated-icons/languages";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LanguagesIcon } from "@/components/ui/languages";
 import { Skeleton } from "@/components/ui/skeleton";
 import { routing, usePathname, useRouter } from "@/i18n/routing";
 import { Check } from "lucide-react";

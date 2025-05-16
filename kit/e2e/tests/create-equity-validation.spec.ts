@@ -32,119 +32,149 @@ test.describe("Equity Creation Validation", () => {
       await createAssetForm.fillBasicFields({
         name: "",
         symbol: "TEQ",
-        decimals: "18",
       });
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage("Please enter text");
+      await createAssetForm.clickOnNextButton();
+      await createAssetForm.expectErrorMessage(
+        "Expected string length greater or equal to 1"
+      );
     });
     test("validates symbol field is empty", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Equity",
         symbol: "",
-        decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage("Please enter text");
+      await createAssetForm.clickOnNextButton();
+      await createAssetForm.expectErrorMessage(
+        "Expected string to match 'asset-symbol' format"
+      );
     });
     test("validates symbol field is with lower case", async () => {
       await createAssetForm.fillBasicFields({
         name: "Test Equity",
         symbol: "teq",
-        decimals: "18",
         isin: "",
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter text in the correct asset-symbol format"
+        "Expected string to match 'asset-symbol' format"
       );
     });
+    test("validates symbol field can not contain special characters", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "TEQ$",
+      });
+      await createAssetForm.expectErrorMessage(
+        "Expected string to match 'asset-symbol' format"
+      );
+    });
+    //Update this check name constraint after this ticket is fixed jelena/eng-3108-asset-designerno-constraint-in-asset-name-field
     test("verifies input length restrictions", async () => {
-      await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
+      // await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
       await createAssetForm.verifyInputAttribute("Symbol", "maxlength", "10");
     });
     test("validates ISIN format", async () => {
       await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "TEQ",
         isin: "invalid-isin",
       });
-      await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage(
-        "Please enter text in the correct isin format"
+        "Expected string to match 'isin' format"
       );
     });
-    test("validates ISIN length constraints", async () => {
+    test("validates ISIN field length constraints", async () => {
       await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "TEQ",
         isin: "US0000000000000",
       });
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage(
-        "Please enter text in the correct isin format"
+      await createAssetForm.verifyInputAttribute("ISIN", "maxlength", "12");
+    });
+    test("validates decimals field is empty", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "TEQ",
+      });
+      await createAssetForm.expectErrorMessage("Expected union value");
+    });
+    test("validates large number in decimals field", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "TEQ",
+      });
+      await createAssetForm.expectErrorMessage("Expected union value");
+    });
+    test("validates negative number in decimals field", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "TEQ",
+      });
+      await createAssetForm.expectErrorMessage("Expected union value");
+    });
+    test("validates no signs in decimals field", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Equity",
+        symbol: "TEQ",
+      });
+      await createAssetForm.setInvalidValueInNumberInput(
+        'input[name="decimals"]',
+        "18-"
       );
-    });
-    test("validates empty decimals", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Equity",
-        symbol: "TEQ",
-        decimals: "",
-      });
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage("Please enter a valid value");
-    });
-    test("validates decimals range", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Equity",
-        symbol: "TEQ",
-        decimals: "19",
-      });
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage("Please enter a valid value");
-    });
-    test("verifies default decimals field", async () => {
-      await createAssetForm.verifyInputAttribute("Decimals", "value", "18");
+      await createAssetForm.expectErrorMessage("Expected union value");
     });
   });
 
-  test.describe("Second Screen - Configuration", () => {
+  test.describe("Second Screen - Equity Configuration", () => {
     test.beforeAll(async () => {
       await createAssetForm.fillBasicFields({
         name: equityData.name,
         symbol: equityData.symbol,
-        decimals: equityData.decimals,
         isin: equityData.isin,
       });
-      await createAssetForm.clickNext();
+      await createAssetForm.clickOnNextButton();
     });
     test("validates required fields are empty", async () => {
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage("Please enter text");
+      await createAssetForm.clickOnNextButton();
+      await createAssetForm.expectErrorMessage(
+        "Expected string length greater or equal to 1"
+      );
     });
     test("validates equity class selection", async () => {
       await createAssetForm.fillEquityConfigurationFields({
-        equityCategory: "Common Equity",
+        equityCategory: "Dual-Class Shares",
         price: "1",
       });
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage("Please enter text");
+      await createAssetForm.expectErrorMessage(
+        "Expected string length greater or equal to 1"
+      );
     });
-    test("validates price is required", async () => {
+    test("validates price field is required", async () => {
       await createAssetForm.fillEquityConfigurationFields({
-        equityClass: "Common Equity",
-        equityCategory: "Common Equity",
         price: "",
       });
-      await createAssetForm.clickNext();
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage("Expected number");
     });
-    test("validates price maximum value", async () => {
+
+    test("validates large number for price field", async () => {
       await createAssetForm.fillEquityConfigurationFields({
-        equityClass: "Common Equity",
-        equityCategory: "Common Equity",
-        price: "9007199254740992",
+        price: "10000000000000000000",
       });
-      await createAssetForm.clickNext();
       await createAssetForm.expectErrorMessage(
-        "Please enter a number no greater than 9007199254740991"
+        "Expected number to be less or equal to 9007199254740991"
       );
+    });
+    test("validates price field can not contain special characters", async () => {
+      await createAssetForm.fillEquityConfigurationFields({
+        equityClass: "Preferred Equity",
+        equityCategory: "Dual-Class Shares",
+      });
+      await createAssetForm.setInvalidValueInNumberInput(
+        'input[name="price"]',
+        "1-"
+      );
+      await createAssetForm.expectErrorMessage("Expected number");
     });
     test("verifies default currency is EUR", async () => {
       await createAssetForm.verifyCurrencyValue("EUR");

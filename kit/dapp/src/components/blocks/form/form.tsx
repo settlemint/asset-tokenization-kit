@@ -1,7 +1,9 @@
 "use client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form as UIForm } from "@/components/ui/form";
+import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
+import { revalidate } from "@/lib/utils/revalidate";
 import { safeParse, t as tb } from "@/lib/utils/typebox";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { Kind } from "@sinclair/typebox";
@@ -40,6 +42,7 @@ interface FormProps<
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
   hideButtons?: boolean | ((step: number) => boolean);
+  hideStepProgress?: boolean;
   toastMessages?: {
     loading?: string;
     success?: string;
@@ -54,6 +57,7 @@ interface FormProps<
       changedFieldName: Path<S extends Schema ? Infer<S> : any> | undefined;
     }
   ) => void;
+  onStepChange?: (newStep: number) => void;
   disablePreviousButton?: boolean;
 }
 
@@ -77,6 +81,8 @@ export function Form<
   onAnyFieldChange,
   secureForm = true,
   disablePreviousButton = false,
+  onStepChange,
+  hideStepProgress = false,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations();
@@ -84,7 +90,19 @@ export function Form<
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
 
-  SetErrorFunction((error) => {
+  SetErrorFunction((error): string => {
+    // First check if there's a custom error message defined in the schema
+    if (
+      error.schema.error !== undefined &&
+      typeof error.schema.error === "string" &&
+      // Type assertion is safe here as we're verifying at runtime with t.has()
+      // that the key exists in our translations before using it
+      t.has(error.schema.error as any)
+    ) {
+      return t(error.schema.error as any);
+    }
+
+    // Otherwise fall back to default error messages
     switch (error.errorType) {
       case ValueErrorType.ArrayContains:
         return t("error.array-contains");
@@ -228,6 +246,13 @@ export function Form<
           format: error.schema.format,
         });
       case ValueErrorType.StringFormat:
+        console.log(error);
+        if (error.schema.format === "asset-symbol") {
+          return t("error.string-format-asset-symbol");
+        }
+        if (error.schema.format === "isin") {
+          return t("error.string-format-isin");
+        }
         return t("error.string-format", { format: error.schema.format });
       case ValueErrorType.StringMaxLength:
         return t("error.string-max-length", {
@@ -262,6 +287,21 @@ export function Form<
       case ValueErrorType.Undefined:
         return t("error.undefined");
       case ValueErrorType.Union:
+        // Check for min/max in anyOf schemas
+        if (error.schema.anyOf) {
+          const integerSchema = error.schema.anyOf.find(
+            (schema: any) => schema.type === "integer"
+          );
+          if (
+            integerSchema?.minimum !== undefined &&
+            integerSchema?.maximum !== undefined
+          ) {
+            return t("error.union-min-max", {
+              min: integerSchema.minimum,
+              max: integerSchema.maximum,
+            });
+          }
+        }
         return t("error.union");
       case ValueErrorType.Void:
         return t("error.void");
@@ -297,7 +337,11 @@ export function Form<
               const toastId = Date.now();
               toast.promise(waitForTransactions(hashes), {
                 loading: t("transactions.sending"),
-                success: () => {
+                success: async (results) => {
+                  const lastBlockNumber = Number(results.at(-1)?.blockNumber);
+                  await waitForIndexing(lastBlockNumber);
+                  await revalidate();
+
                   toast.dismiss(toastId);
                   return toast.success(successMessage, {
                     action,
@@ -346,31 +390,31 @@ export function Form<
   const isLastStep = currentStep === totalSteps - 1;
 
   const handlePrev = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    const newStep = Math.max(currentStep - 1, 0);
+    setCurrentStep(newStep);
+    onStepChange?.(newStep);
   };
 
   const handleNext = useCallback(async () => {
     const CurrentStep = Array.isArray(children)
       ? children[currentStep].type
       : children.type;
-    const fieldsToValidate = CurrentStep.validatedFields;
-    if (!fieldsToValidate?.length) {
+
+    const fieldsToValidate = CurrentStep.validatedFields ?? [];
+    const customValidation = CurrentStep.customValidation ?? [];
+
+    const shouldValidate = fieldsToValidate?.length || customValidation?.length;
+    if (!shouldValidate) {
       if (isLastStep && secureForm) {
         setShowFormSecurityConfirmation(true);
       }
-      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      const newStep = Math.min(currentStep + 1, totalSteps - 1);
+      setCurrentStep(newStep);
+      onStepChange?.(newStep);
       return;
     }
 
-    const beforeValidate = CurrentStep.beforeValidate ?? [];
-    await Promise.all(
-      beforeValidate.map((validate) =>
-        validate(form as UseFormReturn<Infer<S>>)
-      )
-    );
-
     // Validate using the custom validation function
-    const customValidation = CurrentStep.customValidation ?? [];
     const customValidationResults = await Promise.all(
       customValidation.map((validate) =>
         validate(form as UseFormReturn<Infer<S>>)
@@ -407,26 +451,40 @@ export function Form<
 
       // Prevent the form from being auto submitted when going to the final step
       setTimeout(() => {
-        setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+        const newStep = Math.min(currentStep + 1, totalSteps - 1);
+        setCurrentStep(newStep);
+        onStepChange?.(newStep);
       }, 10);
     }
-  }, [form, isLastStep, secureForm, currentStep, totalSteps, children]);
+  }, [
+    form,
+    isLastStep,
+    secureForm,
+    currentStep,
+    totalSteps,
+    children,
+    onStepChange,
+  ]);
 
   useEffect(() => {
     if (!onAnyFieldChange) {
       return;
     }
 
-    const subscription = form.watch((_value, { name }) => {
-      onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
-        changedFieldName: name,
-        step: currentStep,
-        goToStep: setCurrentStep,
-      });
+    const subscription = form.watch((value, { name, type }) => {
+      if (name) {
+        onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
+          changedFieldName: name,
+          step: currentStep,
+          goToStep: setCurrentStep,
+        });
+      }
     });
 
-    return () => subscription.unsubscribe();
-  }, [form, onAnyFieldChange, currentStep]);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [currentStep, onAnyFieldChange, form]);
 
   const hasError = Object.keys(form.formState.errors).length > 0;
   const formatError = (key: string, errorMessage?: string, type?: string) => {
@@ -448,7 +506,7 @@ export function Form<
             noValidate
             className="flex flex-1 flex-col"
           >
-            {totalSteps > 1 && (
+            {totalSteps > 1 && !hideStepProgress && (
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
             )}
             <div className="flex-1">

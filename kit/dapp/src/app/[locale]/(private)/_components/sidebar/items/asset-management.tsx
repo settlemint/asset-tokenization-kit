@@ -1,10 +1,11 @@
 import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
 import { AssetTypeIcon } from "@/components/blocks/asset-type-icon/asset-type-icon";
 import { type NavItem, NavMain } from "@/components/layout/nav-main";
-import { ActivityIcon } from "@/components/ui/animated-icons/activity";
-import { ChartScatterIcon } from "@/components/ui/animated-icons/chart-scatter";
+import { ActivityIcon } from "@/components/ui/activity";
+import { ChartScatterIcon } from "@/components/ui/chart-scatter";
+import { MailCheckIcon } from "@/components/ui/mail-check";
 import { getSidebarAssets } from "@/lib/queries/sidebar-assets/sidebar-assets";
-import { EllipsisIcon, Inbox } from "lucide-react";
+import { EllipsisIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 export async function AssetManagement() {
@@ -85,7 +86,9 @@ export async function AssetManagement() {
           id: "view-all",
           label: t("view-all"),
           path: section.path,
-          icon: <EllipsisIcon className="size-4" />,
+          icon: (
+            <EllipsisIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
         });
       }
     }
@@ -98,25 +101,29 @@ export async function AssetManagement() {
     <NavMain
       items={[
         {
+          label: t("dashboard"),
+          icon: (
+            <ChartScatterIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
+          path: "/assets",
+        },
+        {
+          label: t("actions"),
+          icon: (
+            <MailCheckIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
+          path: "/assets/actions/pending",
+        },
+        {
+          label: t("asset-activity"),
+          icon: (
+            <ActivityIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+          ),
+          path: "/assets/activity",
+        },
+        {
           groupTitle: t("group-title"),
-          items: [
-            {
-              label: t("dashboard"),
-              icon: <ChartScatterIcon className="size-4" />,
-              path: "/assets",
-            },
-            ...processedAssetItems,
-            {
-              label: t("actions"),
-              icon: <Inbox className="size-4" />,
-              path: "/actions/pending",
-            },
-            {
-              label: t("asset-activity"),
-              icon: <ActivityIcon className="size-4" />,
-              path: "/assets/activity",
-            },
-          ],
+          items: [...processedAssetItems],
         },
       ]}
     />

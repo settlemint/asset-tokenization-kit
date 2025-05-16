@@ -61,7 +61,8 @@
         "latest-events-heading": "最新のイベント",
         "stats-heading": "統計",
         "title": "ダッシュボード",
-        "platform-management": "プラットフォーム管理"
+        "platform-management": "プラットフォーム管理",
+        "actions-heading": "アクション"
       },
       "table": {
         "latest-events": {
@@ -113,7 +114,7 @@
     "sidebar": {
       "asset-designer": "資産デザイナー",
       "asset-management": {
-        "asset-activity": "資産アクティビティ",
+        "asset-activity": "アクティビティ",
         "bonds": "債券",
         "cryptocurrencies": "暗号通貨",
         "dashboard": "ダッシュボード",
@@ -122,7 +123,10 @@
         "group-title": "資産管理",
         "stablecoins": "ステーブルコイン",
         "tokenized-deposits": "預金",
-        "view-all": "すべて表示"
+        "view-all": "すべて表示",
+        "actions": "アクション",
+        "custody-group-title": "カストディ",
+        "multisig-vaults": "ボールト"
       },
       "asset-types": {
         "bond": "債券",
@@ -146,7 +150,8 @@
         "api": "API",
         "my-contacts": "私の連絡先",
         "profile": "プロフィール",
-        "settings": "設定"
+        "settings": "設定",
+        "my-actions": "私のアクション"
       },
       "settings-management": {
         "group-title": "設定",
@@ -157,7 +162,12 @@
       },
       "trade-management": {
         "group-title": "取引管理",
-        "dvp-swap": "DvPスワップ"
+        "dvp-swap": "DvPスワップ",
+        "xvp-settlement": "XvP"
+      },
+      "custody-management": {
+        "group-title": "カストディ管理",
+        "multisig-vaults": "ボールト"
       }
     },
     "bonds": {
@@ -288,7 +298,15 @@
         "details-button": "詳細",
         "details-for-event": "イベント {event} の詳細",
         "sender": "送信者",
-        "transaction-hash": "トランザクションハッシュ"
+        "transaction-hash": "トランザクションハッシュ",
+        "details": "イベント詳細",
+        "USER_MANAGEMENT_ROLE": "ユーザー管理ロール",
+        "SUPPLY_MANAGEMENT_ROLE": "サプライ管理ロール",
+        "AUDITOR_ROLE": "監査人ロール",
+        "SIGNER_ROLE": "署名者ロール",
+        "DEFAULT_ADMIN_ROLE": "デフォルト管理者ロール",
+        "event-details": "イベントの詳細",
+        "event-parameters": "イベントパラメータ"
       },
       "details": {
         "account": "アカウント",
@@ -479,7 +497,8 @@
         "valid-email": "有効なメールアドレスを入力してください",
         "max-value": "値は {max} より大きくすることはできません",
         "min-value": "値は {min} より小さくすることはできません",
-        "valid-number": "有効な数値を入力してください"
+        "valid-number": "有効な数値を入力してください",
+        "alphanumeric-only": "文字と数字のみを入力してください"
       },
       "pincode-dialog": {
         "description": "トランザクションに署名するには、確認と承認のためにピンコードを入力してください。",
@@ -528,6 +547,29 @@
           "use-secret-codes": "または、セキュアコードのいずれかを使用"
         },
         "switch-method": "方法を切り替え"
+      },
+      "document-upload": {
+        "add-document": "ドキュメントを追加",
+        "no-documents": "まだアップロードされたドキュメントはありません",
+        "delete-document": "ドキュメントを削除",
+        "uploading": "アップロード中",
+        "upload-document-title": "ドキュメントをアップロード",
+        "upload-document-description": "ホワイトペーパー、監査報告書、その他のコンプライアンス文書をアップロード",
+        "document-title": "ドキュメントタイトル",
+        "document-title-placeholder": "例: MiCAコンプライアンスホワイトペーパー",
+        "document-type": "ドキュメントタイプ",
+        "select-document-type": "ドキュメントタイプを選択",
+        "document-description": "説明",
+        "document-description-placeholder": "ドキュメントの簡単な説明",
+        "document-file": "ファイルをアップロード",
+        "choose-file": "ファイルを選択",
+        "no-file-chosen": "ファイルが選択されていません",
+        "accepted-format": "受け入れられる形式: {formats} (最大: {maxSize}MB)",
+        "invalid-file-format": "無効なファイル形式です。{formats}ファイルのみが受け入れられます。",
+        "file-too-large": "ファイルが大きすぎます。最大サイズは{maxSize}MBです。",
+        "cancel": "キャンセル",
+        "uploading-document": "アップロード中...",
+        "upload-document": "アップロード"
       }
     },
     "logo": {
@@ -680,7 +722,16 @@
     "union": "有効な値を入力してください",
     "void": "このフィールドは空であるべきです",
     "kind": "無効な形式",
-    "unknown": "無効な値が入力されました"
+    "unknown": "無効な値が入力されました",
+    "string-format-asset-symbol": "有効な資産シンボル（大文字と数字）を入力してください",
+    "string-format-isin": "有効なISINを入力してください。形式：2文字（国コード）、9文字の英数字、1桁のチェックデジット（例：US0378331005）",
+    "union-min-max": "値を{min}と{max}の間で入力してください",
+    "at-least-two-asset-flows": "続行するには少なくとも2つのフローを提供してください",
+    "asset-required": "資産は必須です",
+    "amount-required": "金額は必須です",
+    "from-address-required": "送信先アドレスは必須で、有効なEVMアドレスでなければなりません",
+    "to-address-required": "受信先アドレスは必須で、有効なEVMアドレスでなければなりません",
+    "expiry-required": "有効期限は必須です"
   },
   "layout": {
     "header": {
@@ -695,7 +746,11 @@
       "portfolio": "マイポートフォリオ",
       "title": "プライベート",
       "trade-management": "取引管理",
-      "dvp-swap": "DvPスワップ"
+      "dvp-swap": "DvPスワップ",
+      "actions": "アクション",
+      "xvp-settlement": "XvP",
+      "custody-management": "カストディ管理",
+      "vaults": "ボールト"
     },
     "user-dropdown": {
       "documentation": "ドキュメント",
@@ -736,7 +791,8 @@
       "latest-events": "最新のイベント",
       "my-assets": "私の資産",
       "page-title": "ポートフォリオ",
-      "portfolio-management": "ポートフォリオ管理"
+      "portfolio-management": "ポートフォリオ管理",
+      "my-actions-heading": "私のアクション"
     },
     "greeting": {
       "afternoon": "こんにちは",
@@ -1011,29 +1067,65 @@
       "asset-statistics-title": "統計",
       "create": {
         "basics": {
-          "description": "資産を定義するために必要な一般情報を提供してください。",
-          "title": "資産の基本"
+          "description": "この資産の基本情報を指定してください。",
+          "title": "基本情報",
+          "description-offchain": "この資産のために追加の識別情報を任意で入力してください。この情報はオフチェーンに保存され、このプラットフォームの外部からはアクセスできません。",
+          "title-offchain": "オフチェーン識別",
+          "description-onchain": "ブロックチェーンに保存される識別情報で新しい資産を構成します。このデータは不変です。",
+          "title-onchain": "オンチェーン識別"
         },
         "configuration": {
           "bonds": {
-            "description": "債券に特有のパラメータを設定します。",
-            "title": "債券の設定"
+            "description": "この債券の特定のパラメータを構成します。",
+            "title": "債券の設定",
+            "description-lifecycle": "この債券のライフサイクルイベントに関連する日付を設定してください。",
+            "description-supply": "この債券の供給と分割を設定してください。この情報は変更できません。",
+            "description-value": "債券の単位として使用され、クーポンおよび満期の支払いに使用される資産を設定してください。",
+            "title-lifecycle": "ライフサイクル",
+            "title-supply": "供給",
+            "title-value": "単位",
+            "maximum-supply": "最大供給量",
+            "face-value": "額面価値",
+            "maturity-date": "満期日",
+            "underlying-asset": "基礎資産"
           },
           "cryptocurrencies": {
             "description": "暗号通貨に特有のパラメータを設定します。",
-            "title": "暗号通貨の設定"
+            "title": "暗号通貨の設定",
+            "title-supply": "供給",
+            "title-value": "単位",
+            "description-supply": "この暗号通貨の供給と分割を設定します。この情報は不変です。",
+            "description-value": "あなたの暗号通貨の価格を設定します。"
           },
           "equities": {
             "description": "株式に特有のパラメータを設定します。",
-            "title": "株式の設定"
+            "title": "株式の設定",
+            "title-supply": "供給",
+            "title-value": "単位",
+            "description-supply": "この株式の供給と分割を設定します。この情報は不変です。",
+            "description-value": "あなたの株式の価格を設定します。",
+            "title-classification": "分類",
+            "description-classification": "あなたの株式の分類を設定します。"
           },
           "funds": {
             "description": "ファンドに特有のパラメータを設定します。",
-            "title": "ファンドの設定"
+            "title": "ファンドの設定",
+            "title-supply": "供給",
+            "title-value": "単位",
+            "description-supply": "このファンドの供給と分割を設定します。この情報は不変です。",
+            "description-value": "あなたのファンドの価格を設定します。",
+            "title-classification": "分類",
+            "description-classification": "あなたのファンドの分類を設定します。"
           },
           "stablecoins": {
             "description": "ステーブルコインに特有のパラメータを設定します。",
-            "title": "ステーブルコインの設定"
+            "title": "ステーブルコインの設定",
+            "title-supply": "供給",
+            "title-value": "単位",
+            "description-supply": "このステーブルコインの供給と分割を設定します。この情報は不変です。",
+            "description-value": "あなたのステーブルコインの価格を設定します。",
+            "title-collateral": "担保",
+            "description-collateral": "あなたのステーブルコインの担保を設定します。"
           },
           "tokenizeddeposits": {
             "description": "トークン化された預金に特有のパラメータを設定します。",
@@ -1041,18 +1133,24 @@
           },
           "deposits": {
             "description": "特定の預金に関するパラメータを設定します。",
-            "title": "預金設定"
+            "title": "預金設定",
+            "title-collateral": "担保",
+            "description-collateral": "あなたの預金の担保を設定します。",
+            "title-value": "単位",
+            "description-value": "あなたの預金の価格を設定します。",
+            "title-supply": "供給",
+            "description-supply": "この預金の供給と分割を設定します。この情報は不変です。"
           }
         },
         "form": {
           "description": {
-            "bonds": "トークン化された証券として発行された債務商品。",
-            "cryptocurrencies": "交換手段または価値の保存手段として使用される分散型デジタル資産。",
-            "equities": "企業の所有権を表す資産。",
-            "funds": "専門のマネージャーによってプールされた投資ビークル。",
-            "stablecoins": "USDのような安定した資産にペッグされたデジタル資産。",
+            "bonds": "債券は、発行者が投資家から資本を調達するためのデジタル債務証券であり、ブロックチェーンによって自動発行、透明な追跡、および効率的な決済が可能になります。",
+            "cryptocurrencies": "暗号通貨は、暗号技術によって保護されたデジタル資産であり、分散型のピアツーピア取引とプログラム可能な価値移転をブロックチェーンネットワーク上で可能にします。",
+            "equities": "株式は、資産または会社の所有権を表し、ブロックチェーン上ではフラクショナルオーナーシップ、透明なガバナンス、および効率的な譲渡を可能にするためにトークン化できます。",
+            "funds": "ファンドは、特定の財務目標を達成するために管理されたプール投資ビークルであり、ブロックチェーン上ではリアルタイムの透明性、プログラム可能な資産管理、および自動化されたコンプライアンスのためにトークン化できます。",
+            "stablecoins": "ステーブルコインは、法定通貨などの安定した価値にペッグされたブロックチェーンベースのデジタル資産であり、ボラティリティを最小限に抑え、信頼性のあるオンチェーン取引および決済を可能にするように設計されています。",
             "tokenizeddeposits": "従来の資産の預金を表すデジタル資産。",
-            "deposits": "従来の資産の預金を表すデジタル資産。"
+            "deposits": "預金は、アカウントまたはエスクローに預けられた金銭の合計であり、ブロックチェーン上では安全で透明、かつプログラム可能な保管または取引決済のためにトークン化できます。"
           },
           "title": {
             "bonds": "新しい債券を設計する",
@@ -1085,7 +1183,9 @@
                 "admin": "管理者",
                 "user-manager": "ユーザー管理者",
                 "issuer": "供給管理者"
-              }
+              },
+              "asset-admins-title": "資産管理者",
+              "asset-admins-description": "この資産へのアクセス権とその利用方法を管理します。"
             }
           },
           "toast-action": {
@@ -1095,6 +1195,85 @@
             "equities": "株式を表示",
             "funds": "ファンドを表示",
             "stablecoins": "ステーブルコインを表示"
+          },
+          "duplicate-errors": {
+            "bond": "これらのパラメータを持つボンドはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "cryptocurrency": "これらのパラメータを持つ暗号通貨はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "deposit": "これらのパラメータを持つ預金はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "equity": "これらのパラメータを持つ株式はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "fund": "これらのパラメータを持つファンドはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "stablecoin": "これらのパラメータを持つステーブルコインはすでに存在します。少なくとも1つのパラメータを変更して再試行してください。"
+          },
+          "errors": {
+            "address-prediction-failed": "アドレスの予測に失敗しました。もう一度お試しください。",
+            "duplicate-asset": "これらのパラメータを持つ資産はすでに存在します。少なくとも1つのパラメータを変更して再試行してください。",
+            "validation-failed": "検証エラーが発生しました。"
+          },
+          "toasts": {
+            "submitting": "資産を作成中... このプロセスには少し時間がかかる場合があります。",
+            "failed": "資産の作成に失敗しました。もう一度お試しください。",
+            "success": "資産が正常に作成されました！",
+            "stablecoin": {
+              "submitting": "ステーブルコインを作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "ステーブルコインの作成に失敗しました。もう一度お試しください。",
+              "success": "ステーブルコインが正常に作成されました！"
+            },
+            "fund": {
+              "submitting": "ファンドを作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "ファンドの作成に失敗しました。もう一度お試しください。",
+              "success": "ファンドが正常に作成されました！"
+            },
+            "equity": {
+              "submitting": "株式を作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "株式の作成に失敗しました。もう一度お試しください。",
+              "success": "株式が正常に作成されました！"
+            },
+            "deposit": {
+              "submitting": "預金を作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "預金の作成に失敗しました。もう一度お試しください。",
+              "success": "預金が正常に作成されました！"
+            },
+            "cryptocurrency": {
+              "submitting": "暗号通貨を作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "暗号通貨の作成に失敗しました。もう一度お試しください。",
+              "success": "暗号通貨が正常に作成されました！"
+            },
+            "bond": {
+              "submitting": "債券を作成中... このプロセスには少し時間がかかる場合があります。",
+              "failed": "債券の作成に失敗しました。もう一度お試しください。",
+              "success": "債券が正常に作成されました！"
+            }
+          },
+          "button-labels": {
+            "general": {
+              "next": "次へ",
+              "previous": "前へ",
+              "processing": "処理中..."
+            },
+            "stablecoin": {
+              "issue": "ステーブルコインを発行する",
+              "submitting": "ステーブルコインを発行しています..."
+            },
+            "fund": {
+              "issue": "ファンドを発行する",
+              "submitting": "ファンドを発行しています..."
+            },
+            "equity": {
+              "issue": "株式を発行する",
+              "submitting": "株式を発行しています..."
+            },
+            "deposit": {
+              "issue": "デポジットを発行",
+              "submitting": "預金を発行しています..."
+            },
+            "cryptocurrency": {
+              "issue": "暗号通貨を発行",
+              "submitting": "暗号通貨を発行しています..."
+            },
+            "bond": {
+              "issue": "債券を発行",
+              "submitting": "債券を発行しています..."
+            }
           }
         },
         "parameters": {
@@ -1109,7 +1288,8 @@
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "この債券を裏付ける資産のアドレス",
             "underlying-asset-label": "基礎資産",
-            "maturity-date-error": "満期日は少なくとも1時間先でなければなりません"
+            "maturity-date-error": "満期日は少なくとも1時間先でなければなりません",
+            "symbol-description": "債券のシンボル。このシンボルは、オンチェーン目的のための債券の一意の識別子です。最大10文字までで、作成後は変更できません。"
           },
           "common": {
             "collateral-proof-validity-label": "担保証明の有効性",
@@ -1135,20 +1315,24 @@
                 "months": "月"
               }
             },
-            "price-label": "価格"
+            "price-label": "価格",
+            "internalid-label": "内部ID",
+            "decimals-description": "資産に使用する小数点以下の桁数。これは資産の精度を決定するために使用されます。"
           },
           "cryptocurrencies": {
-            "initial-supply-description": "発行される資産の初期量",
+            "initial-supply-description": "鋳造される資産の初期量。",
             "initial-supply-label": "初期供給量",
             "name-placeholder": "ビットコイン",
-            "symbol-placeholder": "BTC"
+            "symbol-placeholder": "BTC",
+            "symbol-description": "暗号通貨のシンボル。このシンボルは、オンチェーン目的のための暗号通貨の一意の識別子です。最大10文字までで、作成後は変更できません。"
           },
           "equities": {
             "equity-category-label": "株式カテゴリ",
             "equity-class-label": "株式クラス",
             "isin-placeholder": "US1234567890",
             "name-placeholder": "グローバル株式",
-            "symbol-placeholder": "GLEQ"
+            "symbol-placeholder": "GLEQ",
+            "symbol-description": "株式のシンボル。このシンボルは、オンチェーン目的のための株式の一意の識別子です。最大10文字までで、作成後は変更できません。"
           },
           "funds": {
             "basis-points": "bps",
@@ -1158,12 +1342,14 @@
             "management-fee-description": "基準ポイントでの年間管理手数料（100 bps = 1%）",
             "management-fee-label": "管理手数料",
             "name-placeholder": "グローバル成長ファンド",
-            "symbol-placeholder": "GGF"
+            "symbol-placeholder": "GGF",
+            "symbol-description": "ファンドのシンボル。このシンボルは、オンチェーン目的のためのファンドの一意の識別子です。最大10文字までで、作成後は変更できません。"
           },
           "stablecoins": {
             "isin-placeholder": "DEFI4EVER2024",
             "name-placeholder": "TotallyNotTether",
-            "symbol-placeholder": "SAFU"
+            "symbol-placeholder": "SAFU",
+            "symbol-description": "ステーブルコインのシンボル。このシンボルは、オンチェーン目的のためのステーブルコインの一意の識別子です。最大10文字までで、作成後は変更できません。"
           },
           "tokenizeddeposits": {
             "isin-placeholder": "EU1234567890",
@@ -1173,7 +1359,8 @@
           "deposits": {
             "isin-placeholder": "EU1234567890",
             "name-placeholder": "預金されたユーロ",
-            "symbol-placeholder": "EURD"
+            "symbol-placeholder": "EURD",
+            "symbol-description": "債券のシンボル。このシンボルは、オンチェーン目的のための債券の一意の識別子です。最大10文字までで、作成後は変更できません。"
           }
         },
         "summary": {
@@ -1181,10 +1368,39 @@
           "asset-basics-title": "基本情報",
           "configuration-description": "資産に特有のパラメータ。",
           "configuration-title": "設定",
-          "description": "これは資産を作成する前の最終ステップです。入力したすべての詳細を確認してください。",
+          "description": "入力したすべての詳細を確認してください。",
           "title": "概要",
           "asset-admins-description": "この資産を管理するための管理役割と権限。",
-          "asset-admins-title": "資産の権限"
+          "asset-admins-title": "資産の権限",
+          "creating": "作成中...",
+          "default-asset": "資産",
+          "disclaimer": "この資産を作成することにより、提供されたすべての情報が正確であり、この資産を展開するために必要な権限を持っていることを確認します。このアクションは、資産が作成されると元に戻すことはできません。",
+          "issue": "発行",
+          "not-specified": "指定されていません"
+        },
+        "general": {
+          "title": {
+            "default": "デジタル資産を作成する",
+            "bond": "新しい債券を作成する",
+            "cryptocurrency": "新しい暗号通貨を作成する",
+            "deposit": "新しい預金を作成する",
+            "equity": "新しい株式を作成する",
+            "fund": "新しいファンドを作成する",
+            "stablecoin": "新しいステーブルコインを作成する"
+          },
+          "description": {
+            "default": "数ステップでデジタル資産を作成します。",
+            "bond": "トークン化された証券として発行された債務商品。",
+            "cryptocurrency": "交換手段または価値の保存手段として使用される分散型デジタル資産。",
+            "deposit": "従来の資産の預金を表すデジタル資産。",
+            "equity": "企業の所有権を表す資産。",
+            "fund": "専門のマネージャーによってプールされた投資ビークル。",
+            "stablecoin": "USDのような安定した資産にペッグされたデジタル資産。"
+          }
+        },
+        "select-asset-type": {
+          "title": "資産タイプを選択",
+          "description": "作成したいデジタル資産のタイプを選択してください。"
         }
       },
       "detail": {
@@ -1777,7 +1993,8 @@
           "underlying-assets": "基礎資産",
           "yield": "利回り",
           "allowlist": "許可リスト",
-          "blocklist": "ブロックリスト"
+          "blocklist": "ブロックリスト",
+          "actions": "アクション"
         }
       },
       "fields": {
@@ -2084,13 +2301,13 @@
           }
         },
         "topinfo-description": {
-          "bond": "デジタル債券は、実世界の担保によって裏付けられた伝統的な固定収入証券をブロックチェーン上で安全に表現します。ブロックチェーンの透明性と予測可能なリターン、満期時の償還、自動化された利回り分配を組み合わせています。この債券資産は、安全な発行、正確な満期管理、包括的なコンプライアンス機能、金融機関向けに特別に調整された投資家に優しい償還プロセスを保証します。",
-          "cryptocurrency": "暗号通貨資産は、制御されたミンティング、堅牢なセキュリティ、完全な規制遵守を提供するカスタマイズ可能なデジタルインストゥルメントであり、機関での使用に最適です。プログラム可能なトランザクション、強化された透明性、改善された使いやすさのための統合メタトランザクションを通じて、金融業務を合理化します。主な機能には、役割ベースのアクセス管理、安全な発行、機関の支払いプロセスへの簡単な統合が含まれます。",
-          "equity": "株式資産は、伝統的な株式証券をデジタル化し、先進的なブロックチェーン機能と堅牢なガバナンスおよびコンプライアンスツールを組み合わせています。機関投資家向けに設計されており、安全な株式発行、株主投票権、詳細なアクセス制御、規制遵守メカニズムを提供します。この資産は、株式管理を簡素化し、透明性を高め、安全な投資家参加を保証します。",
-          "fund": "ファンド資産は、投資ファンドの持分をデジタル化し、自動化された管理手数料の徴収、投資家ガバナンス、包括的な規制遵守を提供します。金融機関に最適で、管理プロセスを合理化し、透明な手数料管理を確保し、安全な投資家投票を可能にします。この契約は、強力なセキュリティ、カスタマイズ可能なファンド属性、強化された運用効率を提供します。",
-          "stablecoin": "ステーブルコインは、実世界の資産または準備金によって裏付けられ、安定した価値を維持するように設計されたデジタル通貨です。価格の変動性を回避しながら、デジタル資産の利点（スピード、透明性、プログラム可能性など）を提供します。このStableCoin契約は、発行されるすべてのトークンが完全に担保されていることを保証し、機関に安全で監査可能、信頼性の高いデジタルマネー管理を提供します。主な機能には、担保に裏付けられた発行、包括的な役割ベースの制御、堅牢な一時停止メカニズム、規制遵守機能が含まれます。",
+          "bond": "債券は、発行者が投資家から資本を調達するための債務証券であり、定義された期間内に元本を利息とともに返済することに同意します。ブロックチェーン上で発行されると、債券はプログラム可能な資産となり、透明な条件、自動化されたコンプライアンス、および発行から決済までの効率的なエンドツーエンドライフサイクル管理が可能になります。",
+          "cryptocurrency": "暗号通貨は、取引を保護し、中央当局から独立して運営するために暗号技術を使用するデジタル資産の一形態です。ブロックチェーンベースのプラットフォーム上では、暗号通貨はリアルタイムで信頼のない価値交換を可能にし、プログラム可能な金融商品やトークン化された資産の基盤として機能します。",
+          "equity": "株式は、会社または資産に対する所有権を指し、通常は保有者に利益の一部と投票権を与えます。ブロックチェーン上でトークン化されると、株式はプログラム可能なルールで発行、管理、および譲渡され、所有市場におけるアクセス、流動性、および運用効率が向上します。",
+          "fund": "ファンドは、複数の投資家から資本を集め、定義された戦略と管理構造に従って資産ポートフォリオに投資します。ブロックチェーン上でファンドをトークン化することで、詳細な所有権追跡、効率的なリターンの分配、およびスマートコントラクトとリアルタイム報告を通じた効率的な運営が可能になります。",
+          "stablecoin": "ステーブルコインは、安定した価値を維持するように設計された暗号通貨の一種であり、法定通貨や他の資産の準備金によって裏付けられることが多いです。ブロックチェーンプラットフォーム上では、ステーブルコインは信頼できる交換手段と価値の保存を提供し、シームレスで低ボラティリティの取引およびプログラム可能な金融操作を促進します。",
           "tokenizeddeposit": "トークン化された預金は、伝統的な銀行預金をデジタルで表現し、金融機関に強化されたセキュリティ、リアルタイムの透明性、厳格なコンプライアンス機能を提供します。主な機能には、カスタマイズ可能な許可リスト、保管監視、堅牢な役割ベースの管理、統合メタトランザクションが含まれ、機関の預金管理を簡素化します。",
-          "deposit": "預金は従来の銀行預金をデジタルで表現し、金融機関に対して強化されたセキュリティ、リアルタイムの透明性、および厳格なコンプライアンス機能を提供します。主な機能には、カスタマイズ可能な許可リスト、保管監視、堅牢な役割ベースの管理、および統合されたメタトランザクションが含まれ、機関の預金管理を簡素化します。"
+          "deposit": "預金は、通常は保管、将来の使用、または契約上の義務を果たすために、金融口座に資金を置く行為です。ブロックチェーンプラットフォーム上では、預金はデジタルトークンとして表現され、自動化された検証、条件付きリリース、および取引ライフサイクル全体での監査可能な保管を可能にします。"
         },
         "topinfo-title": {
           "bond": "デジタル固定収入証券資産",
@@ -2493,7 +2710,42 @@
     "UserBlockedEvent": "ブロック",
     "UserUnblockedEvent": "ブロック解除",
     "UserAllowedEvent": "許可",
-    "UserDisallowedEvent": "不許可"
+    "UserDisallowedEvent": "不許可",
+    "Transfer": "転送",
+    "Mint": "ミント",
+    "Burn": "バーン",
+    "RoleGranted": "ロール付与",
+    "RoleRevoked": "ロール取り消し",
+    "RoleAdminChanged": "ロール管理者変更",
+    "Approval": "承認",
+    "Pause": "一時停止",
+    "Unpause": "再開",
+    "Clawback": "クローバック",
+    "TokensFrozen": "トークン凍結",
+    "UserBlocked": "ユーザーブロック",
+    "UserUnblocked": "ユーザー解除",
+    "UserAllowed": "ユーザー許可",
+    "UserDisallowed": "ユーザー不許可",
+    "TokenWithdrawn": "トークン引き出し",
+    "CollateralUpdated": "担保更新",
+    "Matured": "満期",
+    "Redeemed": "償還",
+    "UnderlyingAssetTopUp": "基礎資産の追加",
+    "UnderlyingAssetWithdrawn": "基礎資産の引き出し",
+    "ManagementFeeCollected": "管理手数料徴収",
+    "PerformanceFeeCollected": "パフォーマンス手数料徴収",
+    "YieldClaimed": "利回り請求",
+    "AssetCreated": "資産作成",
+    "FixedYieldCreated": "固定利回り作成",
+    "XvPSettlementApproved": "決済承認",
+    "XvPSettlementApprovalRevoked": "決済承認取り消し",
+    "XvPSettlementClaimed": "決済請求",
+    "XvPSettlementExecuted": "決済実行",
+    "XvPSettlementCancelled": "決済キャンセル",
+    "Claimed": "請求済み",
+    "Distribution": "配分",
+    "BatchDistribution": "バッチ配分",
+    "MerkleRootUpdated": "マークルルート更新"
   },
   "homepage": {
     "asset-tokenization": "資産トークン化",
@@ -2511,10 +2763,10 @@
       },
       "compliance": {
         "description": "MiCA要件に完全に準拠し、規制フレームワークを簡単にナビゲートします。",
-        "title": "包括的なコンプライアンス"
+        "title": "設計によるコンプライアンス"
       },
       "customizable": {
-        "description": "プラットフォームのあらゆる側面を、あなたの機関の独自のニーズとワークフローに完璧に合わせて調整します。",
+        "description": "プラットフォームのすべての側面を、あなたの機関のニーズやワークフローに合わせて調整します。",
         "title": "100%カスタマイズ可能"
       },
       "description": "SettleMint資産トークン化キットは、デジタル資産プラットフォームの開発を加速するために設計されたフルスタックソリューションです。",
@@ -2534,7 +2786,7 @@
         "description": "展開を加速し、他のどのソリューションよりも早く市場に参入します。",
         "title": "最短の市場投入時間"
       },
-      "title": "完全な機能セット"
+      "title": "すべてのトークン化ニーズに対応するワンストップショップ"
     },
     "footer": {
       "company-description": "世界がトークン化された資産をブロックチェーン上で作成、管理、取引する方法を変革します。",
@@ -2542,7 +2794,8 @@
         "cookie-policy": "クッキーポリシー",
         "copyright": "© {year} SettleMint。機能的ソースライセンス、バージョン1.1、MIT未来ライセンス。",
         "privacy-policy": "プライバシーポリシー",
-        "terms-of-service": "利用規約"
+        "terms-of-service": "利用規約",
+        "title": "法務"
       },
       "sections": {
         "company": {
@@ -2563,7 +2816,7 @@
         "resources": {
           "documentation": "ドキュメンテーション",
           "partners": "パートナー",
-          "title": "リソース",
+          "title": "パブリック、プライベート、またはコンソーシアムチェーン上で、クラウドまたはオンプレミスで、ニーズに合わせて完全にカスタマイズ可能なエンタープライズグレードの資産トークン化プラットフォームを立ち上げます。",
           "usecases": "ユースケース"
         }
       }
@@ -2573,7 +2826,39 @@
     "issuer-portal": "発行者ポータル",
     "portfolio": "ポートフォリオ",
     "stablecoins": "ステーブルコイン",
-    "tokenized-deposits": "預金"
+    "tokenized-deposits": "預金",
+    "changelog-link-title": "SMARTプロトコルの紹介",
+    "pricing": {
+      "title": "あなたに合わせてスケールする価格設定",
+      "description": "Geminiはモデル以上の存在へ進化しています。開発者や企業が革新するのを助けるAPIやプラットフォーム全体をサポートしています。",
+      "starter": {
+        "title": "スターター",
+        "price": "€ 4.760 / 月",
+        "description": "非生産用途向けの月額料金",
+        "feature1": "SettleMintプラットフォームへの完全アクセス",
+        "feature2": "すべてのトークン化機能",
+        "feature3": "単一のバリデーターネットワーク",
+        "feature4": "無制限の資産",
+        "feature5": "無制限のユーザー",
+        "feature6": "無制限のボリューム",
+        "feature7": "SettleMintサポートへのアクセス",
+        "cta": "始める"
+      },
+      "enterprise": {
+        "badge": "生産準備完了",
+        "title": "エンタープライズ",
+        "price": "€ 19.988 / 月",
+        "description": "生産用途向けの月額料金",
+        "feature1": "スターターのすべて",
+        "feature2": "ビザンチン耐障害性ネットワーク",
+        "feature3": "高可用性",
+        "feature4": "99.99%の稼働時間SLA",
+        "feature5": "優先サポート",
+        "cta": "始める"
+      }
+    },
+    "hero-subtitle-subtitle": "チェーン上でトークン化することで資産を解放します",
+    "hero-subtitle-title": "チェーン上でトークン化して資産を解放する"
   },
   "not-found": {
     "description": "お探しのページは存在しないか、移動されました。",
@@ -2604,21 +2889,25 @@
   },
   "trade-management": {
     "page": {
-      "dvp-swap": "DvPスワップ"
+      "dvp-swap": "DvPスワップ",
+      "xvp": "XvP"
     },
     "forms": {
       "title": {
-        "dvp-swap": "DvPスワップを作成"
+        "dvp-swap": "DvPスワップを作成",
+        "xvp": "新しい決済を作成"
       },
       "description": {
-        "dvp-swap": "DvP（Delivery vs Payment）スワップは、2者間での資産の原子的な交換を可能にします。これにより、第三者を介さずに他のユーザーと信頼性のある資産交換ができます。"
+        "dvp-swap": "DvP（Delivery vs Payment）スワップは、2者間での資産の原子的な交換を可能にします。これにより、第三者を介さずに他のユーザーと信頼性のある資産交換ができます。",
+        "xvp": "XvP（デリバリー対支払いまたは支払い対支払い）決済は、当事者間での資産の原子的な交換を可能にします。これにより、第三者を介さずに他のユーザーと信頼性のある資産交換ができます。"
       },
       "button": {
-        "dvp-swap": "DvPスワップを作成"
+        "dvp-swap": "DvPスワップを作成",
+        "xvp": "新しいXvP決済を作成"
       },
       "user": {
         "title": "ユーザー",
-        "description": "資産を交換したいユーザーのウォレットを選択してください。",
+        "description": "資産を交換したいユーザーウォレットを選択します。",
         "user": "ユーザーウォレット"
       },
       "amounts": {
@@ -2632,17 +2921,19 @@
       },
       "configuration": {
         "title": "設定",
-        "description": "スワップの設定。",
+        "description": "決済のための設定。",
         "expiry": "有効期限",
-        "expiry-description": "スワップから資産を返金できない時間。スワップが実行されなかった場合、この時間以降に資産を返金できます。",
+        "expiry-description": "資産を決済から返金できないまでの時間。この時間を過ぎると、決済が実行されなかった場合に資産を返金できます。",
         "expiry-required": "有効期限は必須です",
         "past-expiry-error": "有効期限は未来の日付でなければなりません。",
         "secret": "秘密",
-        "secret-description": "この秘密を安全に保存してください。スワップから受け取った資産を解除するために必要です。"
+        "secret-description": "この秘密を安全に保存してください。決済から受け取った資産を解除するために必要です。",
+        "auto-execute": "自動実行",
+        "auto-execute-description": "最後の承認で決済を自動的に実行します。"
       },
       "summary": {
         "title": "概要",
-        "description": "DvPスワップの詳細を確認してください。受取人、金額、有効期限、秘密が正しいことを確認してください。",
+        "description": "XvP決済の詳細を確認します。受取人、金額、有効期限、および秘密が正しいことを確認してください。",
         "offer": "あなたのオファー",
         "offer-description": "ユーザーに提供している資産の金額。この金額はロックされます。",
         "request": "あなたのリクエスト",
@@ -2651,8 +2942,246 @@
         "from": "送信元",
         "amount": "金額",
         "configuration": "設定",
-        "configuration-description": "DvPスワップの設定",
-        "expiry": "有効期限"
+        "configuration-description": "XvP決済の設定",
+        "expiry": "有効期限",
+        "auto-execute": "最後の承認時に自動実行",
+        "yes": "はい",
+        "no": "いいえ"
+      },
+      "asset-flows": {
+        "add": "追加",
+        "amount": "金額",
+        "amount-placeholder": "金額を入力",
+        "asset": "資産",
+        "asset-placeholder": "資産を選択",
+        "description": "この決済のための資産フローを設定します。各フローは、1つのウォレットから別のウォレットへの資産移転を表します。",
+        "flow": "フロー {index}",
+        "flows": "フロー",
+        "flows-summary": "フローは、1つのウォレットから別のウォレットに転送される資産を定義します。",
+        "from": "送信元",
+        "from-placeholder": "送信者を選択",
+        "max-amount": "利用可能残高：{maxAmount}",
+        "remove": "削除",
+        "title": "資産フロー",
+        "to": "受信先",
+        "to-placeholder": "受信者を選択"
+      }
+    },
+    "xvp": {
+      "expired": "期限切れ",
+      "details": "詳細",
+      "status": {
+        "pending": "保留中",
+        "approved": "承認済み",
+        "expired": "期限切れ",
+        "claimed": "請求済み",
+        "cancelled": "キャンセル済み",
+        "READY": "準備完了",
+        "APPROVED": "承認済み",
+        "CANCELLED": "キャンセル",
+        "EXECUTED": "実行済み",
+        "EXPIRED": "期限切れ",
+        "PENDING": "保留中",
+        "NOT_APPROVED": "未承認"
+      },
+      "columns": {
+        "id": "決済ID",
+        "status": "ステータス",
+        "created-at": "作成日時",
+        "expires-at": "有効期限",
+        "assets": "資産",
+        "approvals": "承認",
+        "expiry": "有効期限",
+        "amount": "金額",
+        "asset": "資産",
+        "price": "価格",
+        "total-price": "合計価格",
+        "user": "ユーザー",
+        "approved-at": "承認日時",
+        "from": "から",
+        "to": "まで"
+      },
+      "ago": "前",
+      "total-price-description": "決済に関与する資産の合計価格。",
+      "flows": "フロー",
+      "auto-execute": "自動実行",
+      "auto-execute-description": "最後の承認時に決済を自動実行します。",
+      "approvals": "承認",
+      "manage": "管理",
+      "approve": "承認",
+      "approve-xvp-settlement": "XvP決済を承認",
+      "approve-xvp-settlement-description": "あなたのウォレットから転送される資産に対して、XvP決済契約に許可を付与します。",
+      "approve-description": "XvP決済契約は、あなたの代理として決済に設定された資産を転送するための承認を受けます。その後、決済はあなたによって承認されたものとしてマークされます。",
+      "execute": "実行",
+      "execute-xvp-settlement": "XvP決済を実行",
+      "execute-xvp-settlement-description": "この決済で承認されたすべての資産フローを処理します。",
+      "execute-xvp-settlement-summary": "この決済を実行して、決済フローで定義された当事者間で資産を転送します。",
+      "cancel": "キャンセル",
+      "cancel-xvp-settlement": "XvP決済をキャンセル",
+      "cancel-xvp-settlement-summary": "この決済をキャンセルすると、実行されることが永久に防止され、このアクションは元に戻すことができません。資産を交換するには新しい決済を作成する必要があります。",
+      "cancel-xvp-settlement-description": "この決済をキャンセルして、実行されることを防ぎます。",
+      "asset": "資産",
+      "amount": "金額",
+      "to": "まで",
+      "xvp-settlement": "XvP決済",
+      "actions": "アクション"
+    }
+  },
+  "asset-designer": {
+    "type-selection": {
+      "title": "資産タイプを選択",
+      "description": "作成したいデジタル資産のタイプを選んでください",
+      "key-features": "主な特徴:",
+      "features": {
+        "bond": {
+          "fixed-interest": "固定利息支払い",
+          "maturity-management": "満期日管理",
+          "transferable-ownership": "譲渡可能な所有権",
+          "principal-repayment": "元本返済"
+        },
+        "cryptocurrency": {
+          "secure-transactions": "安全な取引",
+          "decentralized-ownership": "分散型所有権",
+          "global-payments": "グローバルな支払い",
+          "programmable-money": "プログラム可能なお金"
+        },
+        "equity": {
+          "voting-rights": "投票権",
+          "dividend-distribution": "配当分配",
+          "fractional-ownership": "分割所有権",
+          "liquidity": "流動性"
+        },
+        "fund": {
+          "portfolio-diversification": "ポートフォリオの多様化",
+          "performance-tracking": "パフォーマンス追跡",
+          "redemption-rights": "償還権",
+          "lower-investment": "投資障壁の低減"
+        },
+        "stablecoin": {
+          "price-stability": "価格安定性",
+          "collateral-backing": "担保支援",
+          "transparent-reserves": "透明な準備金",
+          "fast-settlements": "迅速な決済"
+        },
+        "deposit": {
+          "interest-earning": "利息獲得",
+          "redeemable": "償還可能",
+          "term-options": "期間オプション",
+          "institutional-backing": "機関投資家の支援"
+        },
+        "one": "フルライフサイクル管理",
+        "two": "カストディアル機能",
+        "three": "最大上限",
+        "four": "投票権",
+        "five": "KYCが必要",
+        "six": "担保管理"
+      }
+    }
+  },
+  "actions": {
+    "page": {
+      "actions": "アクション",
+      "my-actions": "私のアクション"
+    },
+    "tabs": {
+      "pending": "保留中",
+      "upcoming": "今後の予定",
+      "completed": "完了",
+      "name": {
+        "completed": "完了",
+        "pending": "保留中",
+        "upcoming": "今後の",
+        "expired": "期限切れ"
+      },
+      "description": {
+        "completed": "完了したアクション",
+        "pending": "保留中のアクション",
+        "upcoming": "今後のアクション",
+        "expired": "期限切れのアクション"
+      },
+      "empty-state": {
+        "title": {
+          "completed": "完了したアクションはありません",
+          "pending": "保留中のアクションはありません",
+          "upcoming": "今後のアクションはありません",
+          "expired": "期限切れのアクションはありません"
+        },
+        "description": {
+          "completed": "まだアクションを完了していません。アクションが完了するとここに表示されます。",
+          "pending": "現在、あなたの注意を要するアクションはありません。",
+          "upcoming": "今後の予定されたアクションはありません。",
+          "expired": "期限切れのアクションはありません。期限切れのアクションは、期限日以前に完了すべきだったアクションですが、期限が切れたために実行できなくなったアクションです。"
+        }
+      }
+    },
+    "all-tasks-complete": "すべてのタスクが完了しました！",
+    "all-tasks-complete-description": "保留中のアクションはありません。",
+    "subject": "件名",
+    "action-type-header": "アクションタイプ",
+    "description-header": "説明",
+    "active-on-header": "アクティブ日",
+    "sender-header": "送信者",
+    "completed-on-header": "完了日",
+    "action-type": {
+      "bond-mature": "満期債券"
+    },
+    "pending-description": {
+      "bond-mature": "債券を満期にするために取引を送信する必要があります。"
+    },
+    "upcoming-description": {
+      "bond-mature": "債券を満期にするために、取引を送信する必要があります。"
+    },
+    "completed-description": {
+      "bond-mature": "債券は正常に満期を迎えました。"
+    },
+    "name": {
+      "ApproveXvPSettlement": "XvP和解を承認する",
+      "ExecuteXvPSettlement": "XvP和解を実行する",
+      "MatureBond": "債券を満期にする"
+    },
+    "description": {
+      "ApproveXvPSettlement": "資産を移転できるようにXvP和解契約を承認します。",
+      "ExecuteXvPSettlement": "和解で定義された当事者に資産を移転するためにXvP和解契約を実行します。",
+      "MatureBond": "債券を満期としてマークします。"
+    },
+    "columns": {
+      "name": "名前",
+      "subject": "件名",
+      "description": "説明",
+      "active-at": "アクティブ時",
+      "completed-on": "完了日",
+      "completed-by": "完了者",
+      "status": "ステータス"
+    },
+    "status": {
+      "COMPLETED": "完了",
+      "UPCOMING": "今後の",
+      "EXPIRED": "期限切れ",
+      "PENDING": "保留中"
+    }
+  },
+  "regulations": {
+    "mica": {
+      "name": "MiCA",
+      "description": "暗号資産に関する市場（MiCA）は、暗号通貨、ステーブルコイン、その他のデジタル資産を規制するために設計されたEUの包括的な規制枠組みであり、暗号資産の発行者およびサービス提供者に法的確実性を提供します。"
+    }
+  },
+  "custody": {
+    "vaults": {
+      "forms": {
+        "button": {
+          "vault": "新しいボールトを作成"
+        },
+        "description": {
+          "vault": "ボールトは、資産を安全に保管するためのマルチシグネチャ対応のスマートコントラクトです"
+        },
+        "title": {
+          "vault": "新しいボールトを作成"
+        }
+      },
+      "page": {
+        "vaults": "ボールト",
+        "vaults-description": "資産を安全に保管するためのマルチシグボールト"
       }
     }
   }
