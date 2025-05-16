@@ -31,9 +31,6 @@ export function StepWizard({
   onClose,
 }: StepWizardProps) {
   const { theme } = useTheme();
-
-  const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
-
   const sidebarStyle = useMemo(() => {
     return {
       backgroundImage:
@@ -46,6 +43,8 @@ export function StepWizard({
       minWidth: "200px",
     };
   }, [theme]);
+
+  const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
 
   return (
     <div className="flex h-full" tabIndex={-1}>

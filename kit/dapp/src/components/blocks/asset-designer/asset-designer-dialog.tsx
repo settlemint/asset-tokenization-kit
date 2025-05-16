@@ -1,14 +1,16 @@
 "use client";
 
+import MiniProgressBar from "@/components/blocks/step-wizard/mini-progress-bar";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
+import {
+  StepWizard,
+  type Step,
+} from "@/components/blocks/step-wizard/step-wizard";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
-import MiniProgressBar from "./components/mini-progress-bar";
-import { StepContent } from "./step-wizard/step-content";
-import type { Step } from "./step-wizard/step-wizard";
-import { StepWizard } from "./step-wizard/step-wizard";
 import { AssetTypeSelection } from "./steps/asset-type-selection";
 import {
   assetForms,
@@ -39,8 +41,16 @@ export function AssetDesignerDialog({
 
   // Create a unified representation of all steps
   const allSteps: Step[] = [
-    typeSelectionStep,
-    ...(assetForm?.steps || []),
+    {
+      ...typeSelectionStep,
+      description: t(typeSelectionStep.description),
+      title: t(typeSelectionStep.title),
+    },
+    ...(assetForm?.steps.map((step) => ({
+      ...step,
+      description: t(step.description),
+      title: t(step.title),
+    })) || []),
   ].filter((step) => step.id === "type" || selectedAssetType !== null);
 
   // Derive stepsOrder from allSteps for navigation
