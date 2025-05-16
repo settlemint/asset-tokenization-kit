@@ -112,6 +112,6 @@ function removeLeadingZerosAfterDecimalPoint(value: string) {
 
   const nonZeroIndex = decimalPart.search(/[1-9]/);
   if (nonZeroIndex === -1) return integerPart;
-  const trimmedDecimalPart = decimalPart.slice(nonZeroIndex);
+  const trimmedDecimalPart = decimalPart.slice(0, nonZeroIndex + 1);
   return `${integerPart}.${trimmedDecimalPart}`;
 }

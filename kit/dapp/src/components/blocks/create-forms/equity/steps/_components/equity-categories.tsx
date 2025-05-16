@@ -4,7 +4,13 @@ import type { equityCategories } from "@/lib/utils/typebox/equity-categories";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function EquityCategoriesSelect({ label }: { label: string }) {
+export function EquityCategoriesSelect({
+  label,
+  className,
+}: {
+  label: string;
+  className?: string;
+}) {
   const { control } = useFormContext<CreateEquityInput>();
   const t = useTranslations("private.assets.fields");
 
@@ -159,6 +165,7 @@ export function EquityCategoriesSelect({ label }: { label: string }) {
       control={control}
       name="equityCategory"
       label={label}
+      className={className}
       options={translatedEquityCategories.sort((a, b) =>
         a.label.localeCompare(b.label)
       )}

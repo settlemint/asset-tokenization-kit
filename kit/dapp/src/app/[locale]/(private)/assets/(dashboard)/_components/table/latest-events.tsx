@@ -1,5 +1,5 @@
-import { AssetEventsSkeleton } from "@/components/blocks/asset-events-table/asset-events-skeleton";
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
+import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Suspense } from "react";
@@ -14,7 +14,7 @@ export function LatestEvents({ sender }: LatestEventsProps) {
 
   return (
     <>
-      <Suspense fallback={<AssetEventsSkeleton />}>
+      <Suspense fallback={<DataTableSkeleton />}>
         <AssetEventsTable
           disableToolbarAndPagination={true}
           limit={5}

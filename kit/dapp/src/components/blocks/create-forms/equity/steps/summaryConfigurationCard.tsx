@@ -2,17 +2,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
 import { Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { SummaryRow } from "../../common/summary/summary";
 
-interface EquityConfigurationCardProps {
-  form: UseFormReturn<CreateEquityInput>;
-}
-
-export function EquityConfigurationCard({
-  form,
-}: EquityConfigurationCardProps) {
-  const { getValues } = form;
+export function EquityConfigurationCard() {
+  const { getValues } = useFormContext<CreateEquityInput>();
   const t = useTranslations("private.assets.create");
 
   // Get form values

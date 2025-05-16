@@ -4,7 +4,13 @@ import type { fundCategories } from "@/lib/utils/typebox/fund-categories";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function FundCategoriesSelect({ label }: { label: string }) {
+export function FundCategoriesSelect({
+  label,
+  className,
+}: {
+  label: string;
+  className?: string;
+}) {
   const { control } = useFormContext<CreateFundInput>();
   const t = useTranslations("private.assets.fields");
 
@@ -83,6 +89,7 @@ export function FundCategoriesSelect({ label }: { label: string }) {
       control={control}
       name="fundCategory"
       label={label}
+      className={className}
       options={translatedFundCategories.sort((a, b) =>
         a.label.localeCompare(b.label)
       )}

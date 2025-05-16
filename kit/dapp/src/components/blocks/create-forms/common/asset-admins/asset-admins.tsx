@@ -13,11 +13,9 @@ import { SelectedAdminsList, type AssetAdmin } from "./selected-admins-list";
 
 interface AssetAdminsProps {
   userDetails: User;
-  onNext?: () => void;
-  onBack?: () => void;
 }
 
-export function AssetAdmins({ userDetails, onNext, onBack }: AssetAdminsProps) {
+export function AssetAdmins({ userDetails }: AssetAdminsProps) {
   const t = useTranslations("private.assets.create.form.steps.asset-admins");
   const commonT = useTranslations("private.assets.details.forms.account");
   const form = useFormContext();
@@ -98,25 +96,8 @@ export function AssetAdmins({ userDetails, onNext, onBack }: AssetAdminsProps) {
     form.trigger("assetAdmins");
   };
 
-  // Handle next button click - trigger validation before proceeding
-  const handleNext = async () => {
-    // Trigger validation for assetAdmins field
-    const isValid = await form.trigger("assetAdmins");
-    if (isValid && onNext) {
-      onNext();
-    }
-  };
-
-  // Check if there are errors in the assetAdmins field
-  const hasStepErrors = !!form.formState.errors.assetAdmins;
-
   return (
-    <StepContent
-      onNext={handleNext}
-      onBack={onBack}
-      isNextDisabled={hasStepErrors}
-      showBackButton={!!onBack}
-    >
+    <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
           <h3 className="text-lg font-medium">{t("title")}</h3>
@@ -174,9 +155,6 @@ export function AssetAdmins({ userDetails, onNext, onBack }: AssetAdminsProps) {
     </StepContent>
   );
 }
-
-// Define validatedFields for the AssetAdmins component
-AssetAdmins.validatedFields = ["assetAdmins"];
 
 // Export step definition for the asset designer
 export const stepDefinition = {

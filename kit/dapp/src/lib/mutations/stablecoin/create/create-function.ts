@@ -87,6 +87,8 @@ export const createStablecoinFunction = withAccessControl(
       predictedAddress,
       price,
       assetAdmins,
+      isin,
+      internalid,
     },
     ctx: { user },
   }: {
@@ -95,6 +97,8 @@ export const createStablecoinFunction = withAccessControl(
   }) => {
     await hasuraClient.request(CreateOffchainStablecoin, {
       id: predictedAddress,
+      isin,
+      internalid,
     });
 
     await hasuraClient.request(AddAssetPrice, {

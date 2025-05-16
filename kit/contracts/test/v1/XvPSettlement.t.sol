@@ -28,7 +28,7 @@ contract XvPSettlementTest is Test {
     // Events from XvPSettlement to verify
     event XvPSettlementApproved(address indexed sender);
     event XvPSettlementApprovalRevoked(address indexed sender);
-    event XvPSettlementClaimed(address indexed sender);
+    event XvPSettlementExecuted(address indexed sender);
     event XvPSettlementCancelled(address indexed sender);
 
     function setUp() public {
@@ -102,7 +102,7 @@ contract XvPSettlementTest is Test {
         // Step 3: Execute settlement
         vm.prank(bob); // Anyone can execute (in this case bob)
         vm.expectEmit(true, false, false, false);
-        emit XvPSettlementClaimed(bob);
+        emit XvPSettlementExecuted(bob);
         bool executed = settlement.execute();
         assertTrue(executed, "Settlement execution should succeed");
 
@@ -245,7 +245,7 @@ contract XvPSettlementTest is Test {
         // Verify token transfer occurred from auto-execution
         assertEq(tokenZ.balanceOf(bob), 300 * 10 ** 18, "Bob should have received tokens");
         assertEq(tokenZ.balanceOf(alice), 700 * 10 ** 18, "Alice should have sent tokens");
-        assertTrue(settlement.claimed(), "Settlement should be marked as claimed");
+        assertTrue(settlement.executed(), "Settlement should be marked as executed");
     }
 
     function test_RevokeApproval() public {

@@ -16,12 +16,14 @@ export function FormStep({
   className,
 }: FormStepProps) {
   return (
-    <Card className={className}>
-      <CardHeader>
-        <h2 className="font-semibold text-base">{title}</h2>
-        <p className="text-muted-foreground text-sm -mt-1">{description}</p>
-      </CardHeader>
-      <CardContent className={contentClassName}>{children}</CardContent>
-    </Card>
+    <div className="pl-2">
+      <Card className={className}>
+        <CardHeader>
+          <h2 className="font-semibold text-base">{title}</h2>
+          <p className="text-muted-foreground text-sm -mt-1">{description}</p>
+        </CardHeader>
+        <CardContent className={contentClassName}>{children}</CardContent>
+      </Card>
+    </div>
   );
 }

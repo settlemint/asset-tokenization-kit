@@ -20,7 +20,7 @@ export function CreateEquitySchema() {
       assetName: t.String({
         description: "The name of the equity",
         minLength: 1,
-        maxLength: 50,
+        maxLength: 32,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the equity (ticker)",
@@ -31,8 +31,12 @@ export function CreateEquitySchema() {
       }),
       isin: t.Optional(
         t.Isin({
-          description:
-            "Optional International Securities Identification Number",
+          description: "International Securities Identification Number",
+        })
+      ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the bond",
         })
       ),
       verificationCode: t.VerificationCode({

@@ -20,7 +20,7 @@ export function CreateDepositSchema() {
       assetName: t.String({
         description: "The name of the tokenized deposit",
         minLength: 1,
-        maxLength: 50,
+        maxLength: 32,
       }),
       symbol: t.AssetSymbol({
         description: "The symbol of the tokenized deposit (ticker)",
@@ -30,23 +30,14 @@ export function CreateDepositSchema() {
         description: "The number of decimal places for the token",
       }),
       isin: t.Optional(
-        t.Union(
-          [
-            t.String({
-              pattern: "^$",
-              description: "Empty ISIN value",
-            }),
-            t.Isin({
-              description:
-                "Optional International Securities Identification Number",
-              error:
-                "Please enter text in the correct ISIN format or leave it empty",
-            }),
-          ],
-          {
-            description: "Either an empty string or a valid ISIN",
-          }
-        )
+        t.Isin({
+          description: "International Securities Identification Number",
+        })
+      ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the bond",
+        })
       ),
       verificationCode: t.VerificationCode({
         description:

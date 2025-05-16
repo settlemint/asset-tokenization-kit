@@ -27,7 +27,7 @@ interface AssetTypeInfo {
 const assetTypesInfo: AssetTypeInfo[] = [
   {
     type: "bond",
-    descriptionKey: "private.assets.create.form.description.bonds",
+    descriptionKey: "private.assets.table.topinfo-title.bond",
     extendedDescriptionKey: "private.assets.table.topinfo-description.bond",
     featureKeys: [
       {
@@ -58,8 +58,9 @@ const assetTypesInfo: AssetTypeInfo[] = [
   },
   {
     type: "cryptocurrency",
-    descriptionKey: "private.assets.create.form.description.cryptocurrencies",
-    extendedDescriptionKey: "private.assets.table.topinfo-title.cryptocurrency",
+    descriptionKey: "private.assets.table.topinfo-title.cryptocurrency",
+    extendedDescriptionKey:
+      "private.assets.table.topinfo-description.cryptocurrency",
     featureKeys: [
       {
         status: true,
@@ -89,8 +90,8 @@ const assetTypesInfo: AssetTypeInfo[] = [
   },
   {
     type: "equity",
-    descriptionKey: "private.assets.create.form.description.equities",
-    extendedDescriptionKey: "private.assets.table.topinfo-title.equity",
+    descriptionKey: "private.assets.table.topinfo-title.equity",
+    extendedDescriptionKey: "private.assets.table.topinfo-description.equity",
     featureKeys: [
       {
         status: true,
@@ -120,8 +121,8 @@ const assetTypesInfo: AssetTypeInfo[] = [
   },
   {
     type: "fund",
-    descriptionKey: "private.assets.create.form.description.funds",
-    extendedDescriptionKey: "private.assets.table.topinfo-title.fund",
+    descriptionKey: "private.assets.table.topinfo-title.fund",
+    extendedDescriptionKey: "private.assets.table.topinfo-description.fund",
     featureKeys: [
       {
         status: true,
@@ -151,8 +152,9 @@ const assetTypesInfo: AssetTypeInfo[] = [
   },
   {
     type: "stablecoin",
-    descriptionKey: "private.assets.create.form.description.stablecoins",
-    extendedDescriptionKey: "private.assets.table.topinfo-title.stablecoin",
+    descriptionKey: "private.assets.table.topinfo-title.stablecoin",
+    extendedDescriptionKey:
+      "private.assets.table.topinfo-description.stablecoin",
     featureKeys: [
       {
         status: true,
@@ -182,8 +184,8 @@ const assetTypesInfo: AssetTypeInfo[] = [
   },
   {
     type: "deposit",
-    descriptionKey: "private.assets.create.form.description.deposits",
-    extendedDescriptionKey: "private.assets.table.topinfo-title.deposit",
+    descriptionKey: "private.assets.table.topinfo-title.deposit",
+    extendedDescriptionKey: "private.assets.table.topinfo-description.deposit",
     featureKeys: [
       {
         status: true,
@@ -229,85 +231,80 @@ export function AssetTypeSelection({
           {t("asset-designer.type-selection.description")}
         </p>
       </div>
-      <div className="flex-1 overflow-y-auto pr-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex-1 overflow-y-auto pr-4 px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4">
           {assetTypesInfo.map((assetInfo) => (
-            <Card
-              key={assetInfo.type}
-              className={cn(
-                "flex flex-col h-full cursor-pointer transition-all hover:shadow-md hover:bg-accent focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
-              )}
-              style={
-                selectedType === assetInfo.type
-                  ? {
-                      borderWidth: "2px",
-                      borderStyle: "solid",
-                      borderColor: "var(--sm-accent)",
-                    }
-                  : {
-                      borderWidth: "2px",
-                      borderStyle: "solid",
-                      borderColor: "transparent",
-                    }
-              }
-              onClick={() => assetInfo.type && onSelect(assetInfo.type)}
-            >
-              <CardHeader>
-                <div className="flex flex-row items-center justify-between pb-0 flex-shrink-0">
-                  <div className="flex items-center space-x-2">
-                    {assetInfo.type && (
-                      <AssetTypeIcon type={assetInfo.type} size="md" />
-                    )}
-                    <CardTitle className="text-base font-medium capitalize">
-                      {assetInfo.type
-                        ? t(
-                            assetInfo.type === "cryptocurrency"
-                              ? "asset-type.cryptocurrencies"
-                              : assetInfo.type === "equity"
-                                ? "asset-type.equities"
-                                : (`asset-type.${assetInfo.type}s` as any)
-                          )
-                        : ""}
-                    </CardTitle>
+            <div key={assetInfo.type} className="pl-2">
+              <Card
+                className={cn(
+                  "flex flex-col h-full cursor-pointer transition-all duration-200 overflow-hidden",
+                  "border relative gap-3",
+                  selectedType === assetInfo.type
+                    ? "border-primary shadow-[0_2px_8px_rgba(0,0,0,0.05)] ring-1 ring-primary/20"
+                    : "border-muted hover:border-primary/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]",
+                  selectedType === assetInfo.type
+                    ? "after:absolute after:inset-0 after:bg-primary/5"
+                    : "hover:after:absolute hover:after:inset-0 hover:after:bg-accent/5"
+                )}
+                onClick={() => assetInfo.type && onSelect(assetInfo.type)}
+              >
+                <CardHeader className="relative z-10">
+                  <div className="flex flex-row items-center justify-between pb-0 flex-shrink-0">
+                    <div className="flex items-center space-x-2">
+                      {assetInfo.type && (
+                        <AssetTypeIcon type={assetInfo.type} size="md" />
+                      )}
+                      <CardTitle className="text-base font-medium capitalize">
+                        {assetInfo.type
+                          ? t(
+                              assetInfo.type === "cryptocurrency"
+                                ? "asset-type.cryptocurrencies"
+                                : assetInfo.type === "equity"
+                                  ? "asset-type.equities"
+                                  : (`asset-type.${assetInfo.type}s` as any)
+                            )
+                          : ""}
+                      </CardTitle>
+                    </div>
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </HoverCardTrigger>
+                      <HoverCardContent className="text-sm">
+                        <p>{t(assetInfo.extendedDescriptionKey as any)}</p>
+                      </HoverCardContent>
+                    </HoverCard>
                   </div>
-                  <HoverCard>
-                    <HoverCardTrigger asChild>
-                      <Info className="h-4 w-4 text-muted-foreground" />
-                    </HoverCardTrigger>
-                    <HoverCardContent className="text-sm">
-                      <p>{t(assetInfo.extendedDescriptionKey as any)}</p>
-                    </HoverCardContent>
-                  </HoverCard>
-                </div>
-                <p className="text-xs text-muted-foreground mt-4">
-                  {t(assetInfo.descriptionKey as any)}
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-4 mt-auto">
-                <div className="space-y-2">
-                  <h4 className="text-xs font-medium text-foreground">
-                    {t("asset-designer.type-selection.key-features")}
-                  </h4>
-                  <ul className="space-y-1.5">
-                    {assetInfo.featureKeys.map((featureKey) => (
-                      <li
-                        key={featureKey.label}
-                        className="flex items-center space-x-2"
-                      >
-                        {featureKey.status ? (
-                          <CheckCircle2 className="h-4 w-4 text-sm-state-success-background flex-shrink-0" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-sm-state-error-background flex-shrink-0" />
-                        )}
-                        <span className="text-xs text-muted-foreground">
-                          {t(featureKey.label as any)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {t(assetInfo.descriptionKey as any)}
+                  </p>
+                </CardHeader>
+                <CardContent className="mt-auto relative z-10">
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-medium text-foreground">
+                      {t("asset-designer.type-selection.key-features")}
+                    </h4>
+                    <ul className="space-y-1.5">
+                      {assetInfo.featureKeys.map((featureKey) => (
+                        <li
+                          key={featureKey.label}
+                          className="flex items-center space-x-2"
+                        >
+                          {featureKey.status ? (
+                            <CheckCircle2 className="h-4 w-4 text-sm-state-success-background flex-shrink-0" />
+                          ) : (
+                            <XCircle className="h-4 w-4 text-sm-state-error-background flex-shrink-0" />
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            {t(featureKey.label as any)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           ))}
         </div>
       </div>

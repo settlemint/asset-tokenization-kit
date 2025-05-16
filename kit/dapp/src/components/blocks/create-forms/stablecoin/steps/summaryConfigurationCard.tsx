@@ -1,20 +1,21 @@
+/**
+ * StablecoinConfigurationCard
+ *
+ * This component displays the configuration summary for a stablecoin.
+ * It uses useFormContext to access the form data rather than requiring a form prop.
+ * This makes it work seamlessly with the Form component when used within its context.
+ */
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { Settings } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import type { UseFormReturn } from "react-hook-form";
+import { useLocale } from "next-intl";
+import { useFormContext } from "react-hook-form";
 import { SummaryRow } from "../../common/summary/summary";
 
-interface StablecoinConfigurationCardProps {
-  form: UseFormReturn<CreateStablecoinInput>;
-}
-
-export function StablecoinConfigurationCard({
-  form,
-}: StablecoinConfigurationCardProps) {
-  const { getValues } = form;
-  const t = useTranslations("private.assets.create");
+export function StablecoinConfigurationCard() {
+  const { getValues } = useFormContext<CreateStablecoinInput>();
   const locale = useLocale();
 
   // Get form values
@@ -36,7 +37,7 @@ export function StablecoinConfigurationCard({
   const livenessDisplay = `${collateralLivenessValue} ${timeUnitDisplay}`;
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 border-none shadow-none">
       <CardHeader>
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">

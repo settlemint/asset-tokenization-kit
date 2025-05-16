@@ -3,15 +3,9 @@
 import { NavMain } from "@/components/layout/nav-main";
 import { RefreshCWIcon } from "@/components/ui/refresh-cw";
 import { useTranslations } from "next-intl";
-import { useFeatureFlagEnabled } from "posthog-js/react";
 
 export function TradeManagement() {
   const t = useTranslations("admin.sidebar.trade-management");
-  const flagEnabled = useFeatureFlagEnabled("trade-management");
-
-  if (process.env.NEXT_PUBLIC_POSTHOG_KEY && !flagEnabled) {
-    return null;
-  }
 
   return (
     <NavMain

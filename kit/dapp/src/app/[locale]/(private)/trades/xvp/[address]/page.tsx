@@ -1,22 +1,25 @@
+import { ActionsDropdownTable } from "@/components/blocks/actions-table/actions-dropdown-table";
 import { DataTable } from "@/components/blocks/data-table/data-table";
+import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import { XvpStatusPill } from "@/components/blocks/xvp-status/status-pill";
+import { XvPStatusIndicator } from "@/components/blocks/xvp/xvp-status";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
-import { Clock } from "lucide-react";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import type { Address } from "viem";
 import { columns as ApprovalColumns } from "./(approvals)/columns";
 import { columns as FlowColumns } from "./(flows)/columns";
+import { ManageDropdown } from "./_components/manage-dropdown";
 
 export async function generateMetadata({
   params,
@@ -44,11 +47,13 @@ export default async function XvpPage({
   params: Promise<{ locale: Locale; address: Address }>;
 }) {
   const { locale, address } = await params;
-  const t = await getTranslations({
-    locale,
-    namespace: "trade-management",
-  });
-  const user = await getUser();
+  const [t, user] = await Promise.all([
+    getTranslations({
+      locale,
+      namespace: "trade-management",
+    }),
+    getUser(),
+  ]);
   const xvpSettlement = await getXvPSettlementDetail(address, user.currency);
 
   return (
@@ -60,24 +65,26 @@ export default async function XvpPage({
           </EvmAddress>
         }
         section={t("page.xvp")}
-        pill={<XvpStatusPill xvp={xvpSettlement} />}
+        pill={<XvPStatusIndicator xvp={xvpSettlement} asBadge={true} />}
+        button={
+          <ManageDropdown xvp={xvpSettlement} userAddress={user.wallet} />
+        }
       />
       <DetailGrid>
         <DetailGridItem label={t("xvp.columns.created-at")}>
-          {formatDate(xvpSettlement.createdAt.toString(), {
+          {formatDate(xvpSettlement.createdAt, {
             locale,
             type: "absolute",
           })}
         </DetailGridItem>
         <DetailGridItem label={t("xvp.columns.expiry")}>
-          <Clock className="size-4 inline-block mr-2 mb-1 text-muted-foreground" />
-          {formatDate(xvpSettlement.cutoffDate.toString(), {
+          {formatDate(xvpSettlement.cutoffDate, {
             locale,
             type: "absolute",
           })}
         </DetailGridItem>
         <DetailGridItem label={t("xvp.columns.status")}>
-          <XvpStatusPill xvp={xvpSettlement} />
+          <XvPStatusIndicator xvp={xvpSettlement} />
         </DetailGridItem>
         <DetailGridItem
           label={t("xvp.auto-execute")}
@@ -98,6 +105,21 @@ export default async function XvpPage({
         </DetailGridItem>
       </DetailGrid>
 
+      <div className="font-medium text-accent text-xl mt-6 mb-4">
+        {t("xvp.actions")}
+      </div>
+      <Suspense fallback={<DataTableSkeleton />}>
+        <ActionsDropdownTable
+          targetAddress={address}
+          type="User"
+          toolbar={{
+            enableToolbar: false,
+          }}
+          pagination={{
+            enablePagination: false,
+          }}
+        />
+      </Suspense>
       <div className="font-medium text-accent text-xl mt-6 mb-4">
         {t("xvp.flows")}
       </div>

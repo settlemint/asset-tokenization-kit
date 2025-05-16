@@ -69,6 +69,8 @@ export const createCryptoCurrencyFunction = withAccessControl(
       assetName,
       symbol,
       decimals,
+      isin,
+      internalid,
       verificationCode,
       verificationType,
       initialSupply,
@@ -87,6 +89,8 @@ export const createCryptoCurrencyFunction = withAccessControl(
 
     await hasuraClient.request(CreateOffchainCryptoCurrency, {
       id: predictedAddress,
+      isin: isin,
+      internalid: internalid,
     });
 
     await hasuraClient.request(AddAssetPrice, {

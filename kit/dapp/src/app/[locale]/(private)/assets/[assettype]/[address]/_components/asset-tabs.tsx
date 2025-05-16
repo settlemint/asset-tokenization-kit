@@ -73,6 +73,21 @@ const tabs = async ({
       href: `/assets/${assettype}/${address}/events`,
     },
     {
+      name: (
+        <>
+          {t("tabs.actions")}
+          <Suspense fallback={<BadgeSpinner />}>
+            <BadgeLoader
+              address={address}
+              assettype={assettype}
+              badgeType="actions"
+            />
+          </Suspense>
+        </>
+      ),
+      href: `/assets/${assettype}/${address}/actions`,
+    },
+    {
       name: t("tabs.permissions"),
       href: `/assets/${assettype}/${address}/permissions`,
     },

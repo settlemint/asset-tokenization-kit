@@ -2,7 +2,7 @@
 
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
-import { XvpStatusPill } from "@/components/blocks/xvp-status/status-pill";
+import { XvPStatusIndicator } from "@/components/blocks/xvp/xvp-status";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/routing";
 import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
@@ -30,18 +30,18 @@ export function columns() {
       id: "status",
       header: t("columns.status"),
       cell: ({ row }) => {
-        return <XvpStatusPill xvp={row.original} />;
+        return <XvPStatusIndicator xvp={row.original} />;
       },
     }),
     columnHelper.accessor("createdAt", {
       header: t("columns.created-at"),
       cell: ({ getValue }) =>
-        formatDate(getValue().toString(), { locale, type: "relative" }),
+        formatDate(getValue(), { locale, type: "relative" }),
     }),
     columnHelper.accessor("cutoffDate", {
       header: t("columns.expiry"),
       cell: ({ getValue }) =>
-        formatDate(getValue().toString(), {
+        formatDate(getValue(), {
           locale,
           type: "relative",
         }),
@@ -60,11 +60,13 @@ export function columns() {
           approvalsRequiredCount > 0
             ? (actualApprovalsCount / approvalsRequiredCount) * 100
             : 0;
-
         return (
           <PercentageProgressBar
             percentage={percentage}
             label={`${actualApprovalsCount}/${approvalsRequiredCount}`}
+            mode="inverted"
+            warningThreshold={100}
+            errorThreshold={0}
           />
         );
       },
