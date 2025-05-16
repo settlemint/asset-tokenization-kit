@@ -1,8 +1,8 @@
 "use client";
 
-import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
 import type { AssetFormStep } from "@/components/blocks/asset-designer/types";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/client";

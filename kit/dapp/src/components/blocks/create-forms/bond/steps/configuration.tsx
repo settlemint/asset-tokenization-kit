@@ -1,10 +1,10 @@
 "use client";
 
-import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
 import type { AssetFormStep } from "@/components/blocks/asset-designer/types";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
