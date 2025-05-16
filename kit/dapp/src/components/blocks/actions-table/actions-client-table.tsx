@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { calculateActionStatus } from "@/lib/queries/actions/action-status";
 import type {
   Action,
   ActionStatus,
@@ -88,7 +89,10 @@ export function ActionsClientTable({
       exhaustiveGuard(status);
   }
 
-  const filteredActions = actions.filter((action) => action.status === status);
+  const filteredActions = actions.filter(
+    (action) => calculateActionStatus(action) === status
+  );
+
   if (filteredActions.length === 0) {
     return emptyState;
   }
@@ -104,6 +108,7 @@ export function ActionsClientTable({
     />
   );
 }
+
 interface EmptyStateProps {
   icon: LucideIcon;
   title: string;
