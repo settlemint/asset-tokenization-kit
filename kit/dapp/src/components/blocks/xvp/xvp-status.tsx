@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
-import type { XvPSettlement, XvPStatus } from "@/lib/queries/xvp/xvp-schema";
+import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
+import { calculateXvPStatus } from "@/lib/queries/xvp/xvp-status";
 import { cn } from "@/lib/utils";
-import { isBefore } from "date-fns";
 import { CheckCircle, Clock, Rocket, TriangleAlert, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
@@ -10,44 +10,6 @@ type XvPStatusIndicatorProps = {
   xvp: XvPSettlement;
   asBadge?: boolean;
 };
-
-/**
- * Calculates the status of an XvP settlement based on execution, cancellation, expiration, and approvals
- *
- * @param settlement - The raw settlement data from The Graph
- * @returns The calculated XvP status
- */
-function calculateXvPStatus(settlement: XvPSettlement): XvPStatus {
-  if (settlement.executed) {
-    return "EXECUTED";
-  }
-
-  if (settlement.cancelled) {
-    return "CANCELLED";
-  }
-
-  const isExpired = isBefore(settlement.cutoffDate, new Date());
-  if (isExpired) {
-    return "EXPIRED";
-  }
-
-  // Ensure flows is an array, default to empty if not present
-  const flows = Array.isArray(settlement.flows) ? settlement.flows : [];
-
-  const approvalsRequiredCount = flows.length;
-  const actualApprovalsCount = settlement.approvals.filter(
-    (approval) => approval.approved
-  ).length;
-
-  if (
-    approvalsRequiredCount > 0 &&
-    actualApprovalsCount === approvalsRequiredCount
-  ) {
-    return "READY";
-  }
-
-  return "PENDING";
-}
 
 export function XvPStatusIndicator({
   xvp,

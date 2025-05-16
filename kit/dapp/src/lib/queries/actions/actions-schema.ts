@@ -22,7 +22,7 @@ export type ActionStatus = StaticDecode<typeof ActionStatusSchema>;
 /**
  * Schema for a single action
  */
-export const OnchainActionSchema = t.Object(
+export const ActionSchema = t.Object(
   {
     id: t.String(),
     name: ActionName,
@@ -44,32 +44,12 @@ export const OnchainActionSchema = t.Object(
   { $id: "Action" }
 );
 
-/**
- * Type for raw onchain action
- */
-export type OnchainAction = StaticDecode<typeof OnchainActionSchema>;
-
-export const CalculatedActionSchema = t.Object(
-  {
-    status: ActionStatusSchema,
-  },
-  { $id: "CalculatedAction" }
-);
-
-export const ActionSchema = t.Intersect([
-  OnchainActionSchema,
-  CalculatedActionSchema,
-]);
-
-/**
- * Type for validated action
- */
 export type Action = StaticDecode<typeof ActionSchema>;
 
 /**
  * Schema for action executor with actions
  */
-export const OnchainActionExecutorSchema = t.Object(
+export const ActionExecutorSchema = t.Object(
   {
     id: t.String(),
     executors: t.Array(
@@ -77,7 +57,9 @@ export const OnchainActionExecutorSchema = t.Object(
         id: t.String(),
       })
     ),
-    actions: t.Array(OnchainActionSchema),
+    actions: t.Array(ActionSchema),
   },
   { $id: "ActionExecutor" }
 );
+
+export type ActionExecutor = StaticDecode<typeof ActionExecutorSchema>;
