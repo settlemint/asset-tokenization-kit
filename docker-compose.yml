@@ -85,7 +85,7 @@ services:
       - jaeger-all-in-one
 
   victoriametrics:
-    image: victoriametrics/victoria-metrics:v1.117.0-scratch
+    image: victoriametrics/victoria-metrics:v1.117.1-scratch
     restart: always
     ports:
       - "8428:8428" # VictoriaMetrics HTTP API and UI
