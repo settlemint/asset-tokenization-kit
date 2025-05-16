@@ -1,6 +1,7 @@
 "use client";
 
 import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
+import type { AssetFormStep } from "@/components/blocks/asset-designer/types";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
@@ -157,7 +158,9 @@ export function AssetAdmins({ userDetails }: AssetAdminsProps) {
 }
 
 // Export step definition for the asset designer
-export const stepDefinition = {
+export const stepDefinition: AssetFormStep & {
+  component: typeof AssetAdmins;
+} = {
   id: "admins",
   title: "form.steps.asset-admins.title",
   description: "form.steps.asset-admins.description",

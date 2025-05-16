@@ -105,7 +105,7 @@ export function CryptocurrencyColumns() {
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as any,
+      },
     }),
   ];
 }

@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
 import MiniProgressBar from "./components/mini-progress-bar";
 import { StepContent } from "./step-wizard/step-content";
@@ -30,7 +29,6 @@ export function AssetDesignerDialog({
   onOpenChange,
 }: AssetDesignerDialogProps) {
   const t = useTranslations("private.assets.create");
-  const { theme } = useTheme();
   const [selectedAssetType, setSelectedAssetType] = useState<AssetType | null>(
     null
   );
@@ -41,8 +39,16 @@ export function AssetDesignerDialog({
 
   // Create a unified representation of all steps
   const allSteps: Step[] = [
-    typeSelectionStep,
-    ...(assetForm?.steps || []),
+    {
+      ...typeSelectionStep,
+      description: t(typeSelectionStep.description),
+      title: t(typeSelectionStep.title),
+    },
+    ...(assetForm?.steps.map((step) => ({
+      ...step,
+      description: t(step.description),
+      title: t(step.title),
+    })) || []),
   ].filter((step) => step.id === "type" || selectedAssetType !== null);
 
   // Derive stepsOrder from allSteps for navigation
@@ -147,17 +153,6 @@ export function AssetDesignerDialog({
     }
   }, [currentStepId, stepsOrder]);
 
-  // Conditional sidebar style
-  const sidebarStyle = {
-    backgroundImage:
-      theme === "dark"
-        ? "linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5))"
-        : "linear-gradient(45deg, rgba(52, 110, 238, 0.5), rgba(137, 214, 162, 0.8))",
-    backgroundSize: "cover",
-    backgroundPosition: "top",
-    backgroundRepeat: "no-repeat",
-  };
-
   // Get current step index for the progress bar
   const currentStepIndex = stepsOrder.indexOf(currentStepId);
 
@@ -204,10 +199,9 @@ export function AssetDesignerDialog({
           <StepWizard
             steps={allSteps}
             currentStepId={currentStepId}
-            title={t(getAssetTitle(selectedAssetType) as any)}
-            description={t(getAssetDescription(selectedAssetType) as any)}
+            title={t(getAssetTitle(selectedAssetType))}
+            description={t(getAssetDescription(selectedAssetType))}
             onStepChange={handleStepChange}
-            sidebarStyle={sidebarStyle}
             onClose={() => onOpenChange(false)}
           >
             {renderStepContent()}
