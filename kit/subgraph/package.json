@@ -21,7 +21,7 @@
     "@graphprotocol/graph-ts": "0.38.0",
     "@typescript-eslint/parser": "8.32.1",
     "contracts": "workspace:*",
-    "eslint": "9.26.0",
+    "eslint": "9.27.0",
     "eslint-plugin-import": "2.31.0"
   },
   "devDependencies": {
