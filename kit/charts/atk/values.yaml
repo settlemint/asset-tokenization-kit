@@ -292,7 +292,7 @@ thegraph:
     fullnameOverride: graph
     image:
       repository: docker.io/node
-      tag: "23.11.0-slim"
+      tag: "23.11.1-slim"
       pullPolicy: IfNotPresent
     workspace:
       size: 1Gi
