@@ -21,8 +21,29 @@ rm -Rf "${ALL_ALLOCATIONS_FILE}"
 
 declare -A CONTRACT_ADDRESSES
 CONTRACT_ADDRESSES=(
-    ["Forwarder"]="0x5e771e1417100000000000000000000000000099"
-    ["SMARTDeploymentRegistry"]="0x5e771e1417100000000000000000000000020001"
+    ["ATKForwarder"]="0x5e771e1417100000000000000000000000020099"
+    # Implementations
+    ["ATKComplianceImplementation"]="0x5e771e1417100000000000000000000000020001"
+    ["ATKIdentityRegistryImplementation"]="0x5e771e1417100000000000000000000000020002"
+    ["ATKIdentityRegistryStorageImplementation"]="0x5e771e1417100000000000000000000000020003"
+    ["ATKTrustedIssuersRegistryImplementation"]="0x5e771e1417100000000000000000000000020004"
+    ["ATKIdentityFactoryImplementation"]="0x5e771e1417100000000000000000000000020005"
+    ["ATKIdentityImplementation"]="0x5e771e1417100000000000000000000000020006"
+    ["ATKTokenIdentityImplementation"]="0x5e771e1417100000000000000000000000020007"
+    # Factory
+    ["ATKSystemFactory"]="0x5e771e1417100000000000000000000000020088"
+)
+
+declare -A CONTRACT_ARGS
+CONTRACT_ARGS=(
+    # Implementations
+    ["ATKComplianceImplementation"]="${CONTRACT_ADDRESSES["ATKForwarder"]}"
+    ["ATKIdentityRegistryImplementation"]="${CONTRACT_ADDRESSES["ATKForwarder"]}"
+    ["ATKIdentityRegistryStorageImplementation"]="${CONTRACT_ADDRESSES["ATKForwarder"]}"
+    ["ATKTrustedIssuersRegistryImplementation"]="${CONTRACT_ADDRESSES["ATKForwarder"]}"
+    ["ATKIdentityFactoryImplementation"]="${CONTRACT_ADDRESSES["ATKForwarder"]}"
+    # Factory
+    ["ATKSystemFactory"]="${CONTRACT_ADDRESSES["ATKComplianceImplementation"]} ${CONTRACT_ADDRESSES["ATKIdentityRegistryImplementation"]} ${CONTRACT_ADDRESSES["ATKIdentityRegistryStorageImplementation"]} ${CONTRACT_ADDRESSES["ATKTrustedIssuersRegistryImplementation"]} ${CONTRACT_ADDRESSES["ATKIdentityFactoryImplementation"]} ${CONTRACT_ADDRESSES["ATKIdentityImplementation"]} ${CONTRACT_ADDRESSES["ATKTokenIdentityImplementation"]} ${CONTRACT_ADDRESSES["ATKForwarder"]}"
 )
 
 # Initialize an empty JSON object for all allocations
@@ -57,11 +78,11 @@ process_sol_file() {
     local BYTECODE_SIZE=$((${#CONTRACT_BYTECODE} / 2 - 1))  # Divide by 2 because hex, subtract 1 for '0x'
     echo "Contract $contract_name bytecode size: $BYTECODE_SIZE bytes"
 
-    # if [ $BYTECODE_SIZE -gt 24576 ]; then  # 24KB = 24576 bytes (EIP-170 limit)
-    #     echo "Error: $contract_name bytecode size ($BYTECODE_SIZE bytes) exceeds 24KB EIP-170 limit"
-    #     echo "Try using a proxy pattern or optimizing the contract"
-    #     return
-    # fi
+    if [ $BYTECODE_SIZE -gt 24576 ]; then  # 24KB = 24576 bytes (EIP-170 limit)
+        echo "Error: $contract_name bytecode size ($BYTECODE_SIZE bytes) exceeds 24KB EIP-170 limit"
+        echo "Try using a proxy pattern or optimizing the contract"
+        return
+    fi
 
     # Build forge arguments
     local forge_args=(
@@ -78,6 +99,10 @@ process_sol_file() {
     # Add constructor args if they exist
     if [[ -f "$args_file" ]]; then
         forge_args+=(--constructor-args-path "$args_file")
+    else
+        if [[ -n "${CONTRACT_ARGS[$contract_name]}" ]]; then
+            forge_args+=(--constructor-args ${CONTRACT_ARGS[$contract_name]})
+        fi
     fi
 
     # Deploy the contract to a temporary blockchain

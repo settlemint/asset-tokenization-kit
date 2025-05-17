@@ -39,7 +39,7 @@ rev = "e33f73d1957e46b9ed17c319ed607bb3c7137944"
 
 [[dependencies]]
 name = "smart-protocol"
-version = "8.0.10"
-url = "https://soldeer-revisions.s3.amazonaws.com/smart-protocol/8_0_10_12-05-2025_09:32:49_solidity-smart-protocol.zip"
-checksum = "d7363c4362452f3debc3b80cf920d6f7a740ba002af8147aa07e84ca0875152d"
-integrity = "153f0b196700b402d3f6f00e5cfd7b1ab75d8246173f383fd876fd09349112ff"
+version = "8.0.11"
+url = "https://soldeer-revisions.s3.amazonaws.com/smart-protocol/8_0_11_16-05-2025_15:04:07_solidity-smart-protocol.zip"
+checksum = "63bdae7202aba505f1544fca51481bfad6b4160e75cf592c024f4111e4eae314"
+integrity = "5965e70049aaec6f9fb4807ad77395febcec3afb745fdbddd7baeef23535c6ea"

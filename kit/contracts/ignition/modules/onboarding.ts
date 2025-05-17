@@ -1,66 +1,28 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ComplianceModule from "./implementations/compliance";
-import ConfigurationModule from "./implementations/configuration";
-import IdentityFactoryModule from "./implementations/identity-factory";
-import IdentityRegistryModule from "./implementations/identity-registry";
-import IdentityRegistryStorageModule from "./implementations/identity-registry-storage";
-import TokenRegistryModule from "./implementations/token-registry";
-import TrustedIssuersRegistryModule from "./implementations/trusted-issuer-registry";
-import AssetTokenizationModule from "./main";
+import ATKModule from "./main";
 
-const AssetTokenizationOnboardingModule = buildModule(
-  "AssetTokenizationOnboardingModule",
-  (m) => {
-    const { forwarder, deploymentRegistry } = m.useModule(
-      AssetTokenizationModule
-    );
-    const { identityRegistryStorage } = m.useModule(
-      IdentityRegistryStorageModule
-    );
-    const { trustedIssuersRegistry } = m.useModule(
-      TrustedIssuersRegistryModule
-    );
-    const { compliance } = m.useModule(ComplianceModule);
-    const { identityRegistry } = m.useModule(IdentityRegistryModule);
-    const { identityFactory } = m.useModule(IdentityFactoryModule);
-    m.useModule(ConfigurationModule);
+/**
+ * This module is used to deploy the SMART contracts, this should be used to
+ * bootstrap a public network. For SettleMint consortium networks this is handled
+ * by predeploying in the genesis file.
+ */
+const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
+  const { systemFactory } = m.useModule(ATKModule);
 
-    const { tokenRegistry } = m.useModule(TokenRegistryModule);
+  const createSystem = m.call(systemFactory, "createSystem");
+  const systemAddress = m.readEventArgument(
+    createSystem,
+    "SMARTSystemCreated",
+    "systemAddress",
+    { id: "systemAddress" }
+  );
+  const system = m.contractAt("SMARTSystem", systemAddress, {
+    id: "system",
+  });
 
-    const registerDeployment = m.call(
-      deploymentRegistry,
-      "registerDeployment",
-      [
-        compliance,
-        identityRegistryStorage,
-        identityFactory,
-        identityRegistry,
-        trustedIssuersRegistry,
-      ],
-      {
-        id: "RegisterDeployment",
-      }
-    );
+  return {
+    system,
+  };
+});
 
-    m.call(
-      deploymentRegistry,
-      "registerTokenRegistry",
-      ["deposit", tokenRegistry],
-      {
-        after: [registerDeployment],
-      }
-    );
-
-    return {
-      forwarder,
-      deploymentRegistry,
-      identityRegistryStorage,
-      trustedIssuersRegistry,
-      compliance,
-      identityRegistry,
-      identityFactory,
-    };
-  }
-);
-
-export default AssetTokenizationOnboardingModule;
+export default ATKOnboardingModule;
