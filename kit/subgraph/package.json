@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.0",
-    "@graphprotocol/graph-ts": "0.38.0",
+    "@graphprotocol/graph-ts": "0.38.1",
     "@typescript-eslint/parser": "8.32.1",
     "contracts": "workspace:*",
     "eslint": "9.27.0",
