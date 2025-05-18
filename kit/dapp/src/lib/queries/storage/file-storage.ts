@@ -138,6 +138,18 @@ export const uploadFile = withTracing(
   "uploadFile",
   async (file: File, path: string = ""): Promise<FileMetadata | null> => {
     try {
+      // Ensure the bucket exists before attempting to upload
+      const bucketExists = await minioClient.bucketExists(DEFAULT_BUCKET);
+      if (!bucketExists) {
+        console.log(
+          `Bucket "${DEFAULT_BUCKET}" does not exist. Attempting to create it.`
+        );
+        // Note: Adjust the region if necessary for your MinIO setup.
+        // "us-east-1" is a common default for S3-compatible services.
+        await minioClient.makeBucket(DEFAULT_BUCKET, "eu-central-1");
+        console.log(`Bucket "${DEFAULT_BUCKET}" created successfully.`);
+      }
+
       const fileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
       const objectName = path ? `${path}/${fileName}` : fileName;
 
