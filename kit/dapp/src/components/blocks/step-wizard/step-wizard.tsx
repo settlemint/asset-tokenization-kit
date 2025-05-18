@@ -2,9 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
-import * as React from "react";
+import { useTheme } from "next-themes";
+import { useMemo, type ReactNode } from "react";
 
 export interface Step {
   id: string;
@@ -19,7 +18,6 @@ interface StepWizardProps {
   description: string;
   onStepChange: (stepId: string) => void;
   children: ReactNode;
-  sidebarStyle?: React.CSSProperties;
   onClose?: () => void;
 }
 
@@ -30,11 +28,23 @@ export function StepWizard({
   description,
   onStepChange,
   children,
-  sidebarStyle,
   onClose,
 }: StepWizardProps) {
+  const { theme } = useTheme();
+  const sidebarStyle = useMemo(() => {
+    return {
+      backgroundImage:
+        theme === "dark"
+          ? "linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5))"
+          : "linear-gradient(45deg, rgba(52, 110, 238, 0.5), rgba(137, 214, 162, 0.8))",
+      backgroundSize: "cover",
+      backgroundPosition: "top",
+      backgroundRepeat: "no-repeat",
+      minWidth: "200px",
+    };
+  }, [theme]);
+
   const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
-  const t = useTranslations("private.assets.create");
 
   return (
     <div className="flex h-full" tabIndex={-1}>
@@ -185,9 +195,7 @@ export function StepWizard({
                             isCurrent ? "font-bold" : "font-medium"
                           )}
                         >
-                          {/* Using 'as any' type assertions because dynamic translation keys
-                          don't match the literal string types expected by next-intl's t function */}
-                          {t(step.title as any)}
+                          {step.title}
                         </span>
                       </div>
                       <p
@@ -198,9 +206,7 @@ export function StepWizard({
                             : "text-primary-foreground/70"
                         )}
                       >
-                        {/* Using 'as any' type assertions because dynamic translation keys
-                          don't match the literal string types expected by next-intl's t function */}
-                        {t(step.description as any)}
+                        {step.description}
                       </p>
                     </button>
                   </div>

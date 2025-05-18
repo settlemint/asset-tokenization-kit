@@ -1,7 +1,8 @@
-import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
+import type { AssetFormStep } from "@/components/blocks/asset-designer/types";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { useTranslations } from "next-intl";
@@ -96,7 +97,9 @@ Configuration.validatedFields = [
 ] satisfies (keyof CreateEquityInput)[];
 
 // Export step definition for the asset designer
-export const stepDefinition = {
+export const stepDefinition: AssetFormStep & {
+  component: typeof Configuration;
+} = {
   id: "configuration",
   title: "configuration.equities.title",
   description: "configuration.equities.description",

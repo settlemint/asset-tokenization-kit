@@ -1,13 +1,20 @@
 import { AssetType } from "@/lib/utils/typebox/asset-types";
+import { useTranslations } from "next-intl";
+
+type TranslationKeys = Parameters<
+  ReturnType<typeof useTranslations<"private.assets.create">>
+>[0];
+
+export interface AssetFormStep {
+  id: string;
+  title: TranslationKeys;
+  description: TranslationKeys;
+}
 
 // Interface that each asset form will implement
 export interface AssetFormDefinition {
   // Steps for this asset type
-  steps: {
-    id: string;
-    title: string;
-    description: string;
-  }[];
+  steps: AssetFormStep[];
   // Component for rendering each step
   getStepComponent: (stepId: string) => React.ComponentType<any> | null;
 }
@@ -44,7 +51,7 @@ export const assetForms: Record<
 };
 
 // Common step for asset type selection
-export const typeSelectionStep = {
+export const typeSelectionStep: AssetFormStep = {
   id: "type",
   title: "select-asset-type.title",
   description: "select-asset-type.description",
