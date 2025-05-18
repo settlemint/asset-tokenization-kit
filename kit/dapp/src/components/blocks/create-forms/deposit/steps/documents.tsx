@@ -1,11 +1,11 @@
 "use client";
 
-import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
 import { FormStep } from "@/components/blocks/form/form-step";
 import {
   FormDocumentUpload,
   type UploadedDocument,
 } from "@/components/blocks/form/inputs/form-document-upload";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import { Button } from "@/components/ui/button";
 import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
 import { t } from "@/lib/utils/typebox";
