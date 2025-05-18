@@ -20,7 +20,7 @@ dataSources:
         - Event
       abis:
         - name: Forwarder
-          file: ../contracts/artifacts/contracts/Forwarder.sol/Forwarder.json
+          file: ../contracts/artifacts/contracts/ATKForwarder.sol/ATKForwarder.json
       eventHandlers:
         - event: ExecutedForwardRequest(indexed address,uint256,bool)
           handler: handleExecutedForwardRequest
