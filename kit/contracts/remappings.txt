@@ -4,4 +4,4 @@
 @openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.2.0/
 @openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.2.0/
 forge-std/=dependencies/forge-std-1.9.6/src/
-smart-protocol/=dependencies/smart-protocol-8.0.10/
+smart-protocol/=dependencies/smart-protocol-8.0.12/
