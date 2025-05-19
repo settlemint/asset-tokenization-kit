@@ -10,8 +10,10 @@ type Account @entity(immutable: false) {
 
 type Identity @entity(immutable: false) {
   id: Bytes!
-  account: Account
-  wallet: Account
+}
+
+type TokenIdentity @entity(immutable: false) {
+  id: Bytes!
 }
 
 type Event @entity(immutable: true) {
