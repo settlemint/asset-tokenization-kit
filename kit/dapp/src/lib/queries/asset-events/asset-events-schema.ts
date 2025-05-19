@@ -88,6 +88,18 @@ export const AssetEventSchema = t.Object(
 
 export type AssetEvent = StaticDecode<typeof AssetEventSchema>;
 
+export const AssetEventValueSchema = t.Object({
+  name: t.String({
+    description: "Name of the value",
+  }),
+  value: t.String({
+    description: "Value of the value",
+  }),
+  formattedValue: t.Optional(t.String()),
+});
+
+export type AssetEventValue = StaticDecode<typeof AssetEventValueSchema>;
+
 /**
  * TypeBox schema for asset event detail
  */
@@ -126,16 +138,7 @@ export const AssetEventDetailSchema = t.Object(
     txIndex: t.StringifiedBigInt({
       description: "Transaction index of the event",
     }),
-    values: t.Array(
-      t.Object({
-        name: t.String({
-          description: "Name of the value",
-        }),
-        value: t.String({
-          description: "Value of the value",
-        }),
-      })
-    ),
+    values: t.Array(AssetEventValueSchema),
   },
   {
     description: "Asset event detail",
