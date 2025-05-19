@@ -1,10 +1,10 @@
 import { ActionsTable } from "@/components/blocks/actions-table/actions-table";
-import { getUser } from "@/lib/auth/utils";
+import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
 import { metadata } from "@/lib/config/metadata";
-import { getActionsList } from "@/lib/queries/actions/actions-list";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 
 export async function generateMetadata({
   params,
@@ -27,11 +27,9 @@ export async function generateMetadata({
 }
 
 export default async function ActionsPage() {
-  const user = await getUser();
-  const actions = await getActionsList({
-    status: "COMPLETED",
-    userAddress: user.wallet,
-    type: "User",
-  });
-  return <ActionsTable status="COMPLETED" actions={actions} />;
+  return (
+    <Suspense fallback={<DataTableSkeleton />}>
+      <ActionsTable status="COMPLETED" type="User" />
+    </Suspense>
+  );
 }

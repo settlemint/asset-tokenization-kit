@@ -76,7 +76,6 @@ export const CalculatedXvPSettlementSchema = t.Object({
   totalPrice: t.Price({
     description: "Total price of the settlement",
   }),
-  status: XvPStatusSchema,
 });
 
 /**

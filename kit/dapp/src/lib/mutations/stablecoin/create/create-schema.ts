@@ -22,7 +22,7 @@ export function CreateStablecoinSchema() {
         assetName: t.String({
           description: "The name of the stablecoin",
           minLength: 1,
-          maxLength: 50,
+          maxLength: 32,
         }),
         symbol: t.AssetSymbol({
           description: "The symbol of the stablecoin (ticker)",
@@ -31,6 +31,16 @@ export function CreateStablecoinSchema() {
         decimals: t.Decimals({
           description: "The number of decimal places for the token",
         }),
+        isin: t.Optional(
+          t.Isin({
+            description: "International Securities Identification Number",
+          })
+        ),
+        internalid: t.Optional(
+          t.String({
+            description: "Internal ID of the stablecoin",
+          })
+        ),
         collateralLivenessValue: t.Number({
           description: "The duration value for collateral validity",
           minimum: 1,

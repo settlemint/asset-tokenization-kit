@@ -40,6 +40,7 @@ interface FormProps<
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
   hideButtons?: boolean | ((step: number) => boolean);
+  hideStepProgress?: boolean;
   toastMessages?: {
     loading?: string;
     success?: string;
@@ -60,6 +61,7 @@ interface FormProps<
       changedFieldName: Path<S extends Schema ? Infer<S> : any> | undefined;
     }
   ) => void;
+  onStepChange?: (newStep: number) => void;
   disablePreviousButton?: boolean;
 }
 
@@ -83,6 +85,8 @@ export function Form<
   onAnyFieldChange,
   secureForm = true,
   disablePreviousButton = false,
+  onStepChange,
+  hideStepProgress = false,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations();
@@ -90,7 +94,19 @@ export function Form<
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
 
-  SetErrorFunction((error) => {
+  SetErrorFunction((error): string => {
+    // First check if there's a custom error message defined in the schema
+    if (
+      error.schema.error !== undefined &&
+      typeof error.schema.error === "string" &&
+      // Type assertion is safe here as we're verifying at runtime with t.has()
+      // that the key exists in our translations before using it
+      t.has(error.schema.error as any)
+    ) {
+      return t(error.schema.error as any);
+    }
+
+    // Otherwise fall back to default error messages
     switch (error.errorType) {
       case ValueErrorType.ArrayContains:
         return t("error.array-contains");
@@ -234,6 +250,13 @@ export function Form<
           format: error.schema.format,
         });
       case ValueErrorType.StringFormat:
+        console.log(error);
+        if (error.schema.format === "asset-symbol") {
+          return t("error.string-format-asset-symbol");
+        }
+        if (error.schema.format === "isin") {
+          return t("error.string-format-isin");
+        }
         return t("error.string-format", { format: error.schema.format });
       case ValueErrorType.StringMaxLength:
         return t("error.string-max-length", {
@@ -268,6 +291,21 @@ export function Form<
       case ValueErrorType.Undefined:
         return t("error.undefined");
       case ValueErrorType.Union:
+        // Check for min/max in anyOf schemas
+        if (error.schema.anyOf) {
+          const integerSchema = error.schema.anyOf.find(
+            (schema: any) => schema.type === "integer"
+          );
+          if (
+            integerSchema?.minimum !== undefined &&
+            integerSchema?.maximum !== undefined
+          ) {
+            return t("error.union-min-max", {
+              min: integerSchema.minimum,
+              max: integerSchema.maximum,
+            });
+          }
+        }
         return t("error.union");
       case ValueErrorType.Void:
         return t("error.void");
@@ -297,7 +335,9 @@ export function Form<
   const isLastStep = currentStep === totalSteps - 1;
 
   const handlePrev = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    const newStep = Math.max(currentStep - 1, 0);
+    setCurrentStep(newStep);
+    onStepChange?.(newStep);
   };
 
   const handleNext = useCallback(async () => {
@@ -313,7 +353,9 @@ export function Form<
       if (isLastStep && secureForm) {
         setShowFormSecurityConfirmation(true);
       }
-      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      const newStep = Math.min(currentStep + 1, totalSteps - 1);
+      setCurrentStep(newStep);
+      onStepChange?.(newStep);
       return;
     }
 
@@ -354,10 +396,20 @@ export function Form<
 
       // Prevent the form from being auto submitted when going to the final step
       setTimeout(() => {
-        setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+        const newStep = Math.min(currentStep + 1, totalSteps - 1);
+        setCurrentStep(newStep);
+        onStepChange?.(newStep);
       }, 10);
     }
-  }, [form, isLastStep, secureForm, currentStep, totalSteps, children]);
+  }, [
+    form,
+    isLastStep,
+    secureForm,
+    currentStep,
+    totalSteps,
+    children,
+    onStepChange,
+  ]);
 
   useEffect(() => {
     if (!onAnyFieldChange) {
@@ -401,7 +453,7 @@ export function Form<
             noValidate
             className="flex flex-1 flex-col"
           >
-            {totalSteps > 1 && (
+            {totalSteps > 1 && !hideStepProgress && (
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
             )}
             <div className="flex-1">

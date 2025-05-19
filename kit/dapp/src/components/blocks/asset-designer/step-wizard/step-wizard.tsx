@@ -37,11 +37,11 @@ export function StepWizard({
   const t = useTranslations("private.assets.create");
 
   return (
-    <div className="flex h-full min-h-[65vh] flex-col" tabIndex={-1}>
-      <div className="flex flex-1 overflow-hidden p-6" tabIndex={-1}>
+    <div className="flex h-full" tabIndex={-1}>
+      <div className="flex h-full w-full" tabIndex={-1}>
         {/* Sidebar / Steps */}
         <div
-          className="w-[25%] bg-primary p-6 flex flex-col rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
+          className="w-[250px] h-[calc(85vh-3rem)] flex-shrink-0 bg-primary m-6 mr-0 p-6 flex flex-col rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
           style={sidebarStyle}
           aria-hidden="true"
           tabIndex={-1}
@@ -57,7 +57,7 @@ export function StepWizard({
           </div>
 
           {/* Steps */}
-          <div className="space-y-0 flex-1 overflow-y-auto relative pt-1">
+          <div className="space-y-0 flex-1 relative pt-1">
             {steps.map((step, index) => {
               const isCurrent = currentStepId === step.id;
               const isCompleted = index < currentStepIndex;
@@ -223,8 +223,8 @@ export function StepWizard({
         </div>
 
         {/* Content area */}
-        <div className="flex flex-col flex-1 overflow-hidden bg-background ml-6 rounded-lg p-10 pt-6 pr-14">
-          {children}
+        <div className="h-[85vh] flex-1 overflow-y-auto bg-background py-6 rounded-lg">
+          <div className="p-10 pt-6">{children}</div>
         </div>
       </div>
     </div>

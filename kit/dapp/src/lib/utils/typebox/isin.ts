@@ -7,12 +7,14 @@
 import type { SchemaOptions } from "@sinclair/typebox";
 import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
 
+const ISIN_PATTERN = /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/;
+
 // ISIN format validator
 if (!FormatRegistry.Has("isin")) {
   FormatRegistry.Set("isin", (value) => {
     if (typeof value !== "string") return false;
     if (value === "") return true;
-    return /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(value);
+    return ISIN_PATTERN.test(value);
   });
 }
 
@@ -20,7 +22,7 @@ if (!TypeRegistry.Has("isin")) {
   TypeRegistry.Set<string>("isin", (_schema, value) => {
     if (typeof value !== "string") return false;
     if (value === "") return true;
-    return /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(value);
+    return ISIN_PATTERN.test(value);
   });
 }
 

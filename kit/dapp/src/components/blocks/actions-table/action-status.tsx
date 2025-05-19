@@ -1,4 +1,5 @@
 import type { badgeVariants } from "@/components/ui/badge";
+import { calculateActionStatus } from "@/lib/queries/actions/action-status";
 import type {
   Action,
   ActionStatus,
@@ -24,7 +25,7 @@ export function ActionStatusIndicator({
 }: ActionStatusIndicatorProps): ReactElement {
   const t = useTranslations("actions");
 
-  const status = action.status;
+  const status = calculateActionStatus(action);
 
   const statusConfig: Record<ActionStatus, StatusStyle> = {
     PENDING: {

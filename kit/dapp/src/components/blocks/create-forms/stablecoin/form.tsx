@@ -1,31 +1,43 @@
 "use client";
 
-import type { SafeActionResult } from "@/lib/mutations/safe-action";
+/*
+ * Architectural Note: Form-Managed Steps with Parent Coordination
+ *
+ * This component uses a hybrid approach to step management:
+ *
+ * 1. The Form component manages step state internally, with all validation
+ *    and verification logic working properly for each step.
+ *
+ * 2. We pass ALL step components to the Form to enable its built-in
+ *    multi-step features, including proper validation and pincode verification.
+ *
+ * 3. We use the onStepChange callback to notify the parent (AssetDesignerDialog)
+ *    when the Form's step changes, allowing the sidebar and other external
+ *    UI elements to stay in sync.
+ *
+ * 4. When we receive the currentStepId from the parent, we update the Form's
+ *    internal step state to keep them synchronized.
+ *
+ * This approach gives us the best of both worlds: Form's validation and
+ * security features work correctly while the parent maintains control over
+ * the overall process flow.
+ */
+
+import { Form } from "@/components/blocks/form/form";
+import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
-import {
-  CreateStablecoinSchema,
-  type CreateStablecoinInput,
-} from "@/lib/mutations/stablecoin/create/create-schema";
+import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import type { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { FormProvider, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import type { AssetFormDefinition } from "../../asset-designer/types";
-import {
-  AssetAdmins,
-  stepDefinition as adminsStep,
-} from "../common/asset-admins/asset-admins";
-import {
-  Summary,
-  stepDefinition as summaryStep,
-} from "../common/summary/summary";
-import { Basics, stepDefinition as basicsStep } from "./steps/basics";
-import {
-  Configuration,
-  stepDefinition as configurationStep,
-} from "./steps/configuration";
+import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
+import { stepDefinition as summaryStep } from "../common/summary/summary";
+import { stepDefinition as basicsStep } from "./steps/basics";
+import { stepDefinition as configurationStep } from "./steps/configuration";
 import { StablecoinConfigurationCard } from "./steps/summaryConfigurationCard";
 
 interface CreateStablecoinFormProps {
@@ -33,15 +45,7 @@ interface CreateStablecoinFormProps {
   currentStepId: string;
   onNextStep: () => void;
   onPrevStep: () => void;
-  verificationWrapper: <T = SafeActionResult<string[]>>(
-    fn: (data: any) => Promise<T>
-  ) => (data: any) => Promise<void>;
-}
-
-export interface StablecoinStepProps {
-  onNext?: () => void;
-  onBack?: () => void;
-  userDetails?: User;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function CreateStablecoinForm({
@@ -49,59 +53,82 @@ export function CreateStablecoinForm({
   currentStepId,
   onNextStep,
   onPrevStep,
-  verificationWrapper,
+  onOpenChange,
 }: CreateStablecoinFormProps) {
-  const stablecoinForm = useForm<CreateStablecoinInput>({
-    defaultValues: {
-      assetName: "",
-      symbol: "",
-      decimals: 18,
-      collateralLivenessValue: 12,
-      collateralLivenessTimeUnit: "months",
-      price: {
-        amount: 1,
-        currency: userDetails.currency as FiatCurrency,
-      },
-      verificationType: "pincode",
-      assetAdmins: [],
-    },
-    mode: "onTouched",
-    resolver: typeboxResolver(CreateStablecoinSchema()),
-  });
+  const t = useTranslations("private.assets.create.form");
 
-  const renderCurrentStep = () => {
-    switch (currentStepId) {
-      case "details":
-        return <Basics onNext={onNextStep} onBack={onPrevStep} />;
-      case "configuration":
-        return <Configuration onNext={onNextStep} onBack={onPrevStep} />;
-      case "admins":
-        return (
-          <AssetAdmins
-            userDetails={userDetails}
-            onNext={onNextStep}
-            onBack={onPrevStep}
-          />
-        );
-      case "summary":
-        return (
-          <Summary
-            configurationCard={
-              <StablecoinConfigurationCard form={stablecoinForm} />
-            }
-            form={stablecoinForm}
-            onBack={onPrevStep}
-            onSubmit={verificationWrapper(createStablecoin)}
-            predictAddress={getPredictedAddress}
-            isAddressAvailable={isAddressAvailable}
-          />
-        );
-      default:
-        return <div>Unknown step: {currentStepId}</div>;
-    }
+  // Create component instances for each step
+  const BasicsComponent = basicsStep.component;
+  const ConfigurationComponent = configurationStep.component;
+  const AdminsComponent = adminsStep.component;
+  const SummaryComponent = summaryStep.component;
+
+  // Create an array of all step components in order for Form to manage
+  const allStepComponents = [
+    <BasicsComponent key="details" />,
+    <ConfigurationComponent key="configuration" />,
+    <AdminsComponent key="admins" userDetails={userDetails} />,
+    <SummaryComponent
+      key="summary"
+      configurationCard={<StablecoinConfigurationCard />}
+      predictAddress={getPredictedAddress}
+      isAddressAvailable={isAddressAvailable}
+    />,
+  ];
+
+  // Define step order and mapping
+  const stepIdToIndex = {
+    details: 0,
+    configuration: 1,
+    admins: 2,
+    summary: 3,
   };
 
-  return <FormProvider {...stablecoinForm}>{renderCurrentStep()}</FormProvider>;
+  // Use the step synchronization hook
+  const { isLastStep, onStepChange, onAnyFieldChange } = useFormStepSync({
+    currentStepId,
+    stepIdToIndex,
+    onNextStep,
+    onPrevStep,
+  });
+
+  return (
+    <Form
+      action={createStablecoin}
+      resolver={typeboxResolver(CreateStablecoinSchema())}
+      defaultValues={{
+        assetName: "",
+        symbol: "",
+        decimals: 18,
+        collateralLivenessValue: 12,
+        collateralLivenessTimeUnit: "months",
+        price: {
+          amount: 1,
+          currency: userDetails.currency as FiatCurrency,
+        },
+        verificationType: "pincode",
+        assetAdmins: [],
+      }}
+      buttonLabels={{
+        label: isLastStep
+          ? t("button-labels.stablecoin.issue")
+          : t("button-labels.general.next"),
+        submittingLabel: t("button-labels.stablecoin.submitting"),
+        processingLabel: t("button-labels.general.processing"),
+      }}
+      secureForm={true}
+      hideStepProgress={true}
+      toastMessages={{
+        loading: t("toasts.stablecoin.submitting"),
+        success: t("toasts.stablecoin.success"),
+      }}
+      onStepChange={onStepChange}
+      onAnyFieldChange={onAnyFieldChange}
+      onOpenChange={onOpenChange}
+    >
+      {allStepComponents}
+    </Form>
+  );
 }
 
 CreateStablecoinForm.displayName = "CreateStablecoinForm";

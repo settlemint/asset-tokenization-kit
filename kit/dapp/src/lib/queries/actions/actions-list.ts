@@ -10,13 +10,11 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import type { Address } from "viem";
-import { calculateActions } from "./action-calculated";
 import { ActionExecutorFragment } from "./actions-fragment";
 import {
+  ActionExecutorSchema,
   ActionType,
-  OnchainActionExecutorSchema,
   type ActionStatus,
-  type OnchainAction,
 } from "./actions-schema";
 
 /**
@@ -46,7 +44,7 @@ export interface ActionsListProps {
   /** Action type to filter by */
   type: ActionType;
   /** Whether to filter by executed actions */
-  status: ActionStatus;
+  status?: ActionStatus;
   /** Target address to filter by */
   targetAddress?: Address;
 }
@@ -98,7 +96,7 @@ export const getActionsList = withTracing(
                 },
                 actions_: {
                   type,
-                  ...where[status],
+                  ...(status ? where[status] : {}),
                   ...(targetAddress ? { target: targetAddress } : {}),
                 },
               },
@@ -110,18 +108,15 @@ export const getActionsList = withTracing(
           );
 
           const actionExecutors = result.actionExecutors || [];
-          return safeParse(
-            t.Array(OnchainActionExecutorSchema),
-            actionExecutors
-          );
+          return safeParse(t.Array(ActionExecutorSchema), actionExecutors);
         }
       );
 
-      const onchainActions = actionExecutors.flatMap(
+      const actions = actionExecutors.flatMap(
         (actionExecutor) => actionExecutor.actions
-      ) as OnchainAction[];
+      );
 
-      return calculateActions(onchainActions);
+      return actions;
     }
   )
 );
