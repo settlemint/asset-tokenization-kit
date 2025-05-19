@@ -3,6 +3,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { AddAssetPrice } from "@/lib/mutations/asset/price/add-price";
 import { getAssetsPrice } from "@/lib/queries/asset-price/asset-price";
+import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
@@ -143,14 +144,14 @@ export const createBondFunction = withAccessControl(
     const hasMoreAdmins = assetAdmins.length > 0;
 
     if (!hasMoreAdmins) {
-      return safeParse(t.Hashes(), [createTxHash]);
+      return waitForIndexingTransactions(safeParse(t.Hashes(), [createTxHash]));
     }
 
     // Wait for the creation transaction to be mined
     await waitForTransactions([createTxHash]);
 
     // Grant roles to admins using the shared helper
-    const roleGrantHashes = await grantRolesToAdmins(
+    await grantRolesToAdmins(
       assetAdmins,
       predictedAddress,
       verificationCode,
@@ -158,9 +159,7 @@ export const createBondFunction = withAccessControl(
       "bond",
       user
     );
-    // Combine all transaction hashes
-    const allTransactionHashes = [createTxHash, ...roleGrantHashes];
 
-    return safeParse(t.Hashes(), allTransactionHashes);
+    return waitForIndexingTransactions(safeParse(t.Hashes(), [createTxHash]));
   }
 );

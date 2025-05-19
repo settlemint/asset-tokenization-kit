@@ -1,10 +1,7 @@
 "use client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form as UIForm } from "@/components/ui/form";
-import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
-import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { revalidate } from "@/lib/utils/revalidate";
-import { safeParse, t as tb } from "@/lib/utils/typebox";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { Kind } from "@sinclair/typebox";
 import { SetErrorFunction, ValueErrorType } from "@sinclair/typebox/errors";
@@ -16,7 +13,6 @@ import type {
   Control,
   DefaultValues,
   Path,
-  PathValue,
   Resolver,
   UseFormClearErrors,
   UseFormGetValues,
@@ -331,71 +327,38 @@ export function Form<
           shouldFocusError: false,
           defaultValues,
         },
-        actionProps: {
-          onSuccess: async ({ data, input }) => {
-            if (secureForm) {
-              const hashes = safeParse(tb.Hashes(), data);
-
-              const successMessage =
-                toastMessages?.success || t("transactions.success");
-              const action = toastMessages?.action
-                ? toastMessages.action(input)
-                : undefined;
-
-              const toastId = Date.now();
-              toast.promise(waitForTransactions(hashes), {
-                loading: t("transactions.sending"),
-                success: async (results) => {
-                  const lastBlockNumber = Number(results.at(-1)?.blockNumber);
-                  await waitForIndexing(lastBlockNumber);
-                  await revalidate();
-
-                  toast.dismiss(toastId);
-                  return toast.success(successMessage, {
-                    action,
-                    actionButtonStyle: {
-                      backgroundColor: "var(--success-fg-deep)",
-                      color: "var(--primary-foreground)",
-                    },
-                  });
-                },
-                error: (error) =>
-                  `Failed to submit: ${(error as Error).message}`,
-                id: toastId,
-              });
-            }
-
-            resetFormAndAction();
-            onOpenChange?.(false);
-          },
-          onError: (error) => {
-            let errorMessage = "Unknown error";
-
-            if (error?.error?.serverError) {
-              errorMessage = error.error.serverError as string;
-            } else if (error?.error?.validationErrors) {
-              errorMessage = "Validation error";
-            }
-
-            if (secureForm) {
-              form.setValue(
-                "verificationCode" as Path<
-                  S extends Schema ? Infer<S> : string
-                >,
-                "" as PathValue<
-                  S extends Schema ? Infer<S> : string,
-                  Path<S extends Schema ? Infer<S> : string>
-                >
-              );
-            }
-
-            toast.error(`Failed to submit: ${errorMessage}`);
-          },
-        },
       }
     );
 
   const { getValues, clearErrors, watch } = form;
+
+  const handleSubmit = async () => {
+    toast.promise(handleSubmitWithAction, {
+      ...(secureForm
+        ? {
+            loading: t("transactions.sending"),
+          }
+        : {}),
+      success: async () => {
+        await revalidate();
+        const successMessage =
+          toastMessages?.success || t("transactions.success");
+        return successMessage;
+      },
+      error: (error) => {
+        let errorMessage = "Unknown error";
+        if (error?.error?.serverError) {
+          errorMessage = error.error.serverError as string;
+        } else if (error?.error?.validationErrors) {
+          errorMessage = "Validation error";
+        }
+        return `Failed to submit: ${errorMessage}`;
+      },
+    });
+
+    onOpenChange?.(false);
+    resetFormAndAction();
+  };
 
   const isLastStep = currentStep === totalSteps - 1;
 
@@ -549,19 +512,7 @@ export function Form<
                   open={showFormSecurityConfirmation}
                   onOpenChange={setShowFormSecurityConfirmation}
                   control={form.control as Control<Infer<S>>}
-                  onSubmit={() =>
-                    handleSubmitWithAction()
-                      .catch((error: Error) => {
-                        console.error("Error submitting form:", error);
-                      })
-                      .finally(() => {
-                        form.resetField(
-                          "verificationCode" as Path<
-                            S extends Schema ? Infer<S> : any
-                          >
-                        );
-                      })
-                  }
+                  onSubmit={handleSubmit}
                 />
               )}
             </div>
@@ -581,7 +532,7 @@ export function Form<
                   });
                 }}
                 labels={buttonLabels}
-                onLastStep={secureForm ? handleNext : handleSubmitWithAction}
+                onLastStep={secureForm ? handleNext : handleSubmit}
                 isSecurityDialogOpen={showFormSecurityConfirmation}
                 disablePreviousButton={disablePreviousButton}
               />

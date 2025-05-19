@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
+import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
@@ -10,7 +11,6 @@ import { grantRolesToAdmins } from "@/lib/utils/role-granting";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateStablecoinInput } from "./create-schema";
-
 /**
  * GraphQL mutation for creating a new stablecoin
  *
@@ -143,14 +143,14 @@ export const createStablecoinFunction = withAccessControl(
     const hasMoreAdmins = assetAdmins.length > 0;
 
     if (!hasMoreAdmins) {
-      return safeParse(t.Hashes(), [createTxHash]);
+      return waitForIndexingTransactions(safeParse(t.Hashes(), [createTxHash]));
     }
 
     // Wait for the creation transaction to be mined
     await waitForTransactions([createTxHash]);
 
     // Grant roles to admins using the shared helper
-    const roleGrantHashes = await grantRolesToAdmins(
+    await grantRolesToAdmins(
       assetAdmins,
       predictedAddress,
       verificationCode,
@@ -159,9 +159,6 @@ export const createStablecoinFunction = withAccessControl(
       user
     );
 
-    // Combine all transaction hashes
-    const allTransactionHashes = [createTxHash, ...roleGrantHashes];
-
-    return safeParse(t.Hashes(), allTransactionHashes);
+    return waitForIndexingTransactions(safeParse(t.Hashes(), [createTxHash]));
   }
 );
