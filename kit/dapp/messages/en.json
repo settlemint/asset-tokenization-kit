@@ -400,6 +400,10 @@
     },
     "asset-events-table": {
       "asset": "Asset",
+      "empty-state": {
+        "title": "No activity yet",
+        "description": "Events will appear here once you perform actions."
+      },
       "detail-sheet": {
         "AUDITOR_ROLE": "Auditor Role",
         "DEFAULT_ADMIN_ROLE": "Default Admin Role",
@@ -747,6 +751,11 @@
         "function": "Function",
         "status": "Status",
         "transaction-hash": "Transaction Hash"
+      },
+      "title": "Transactions",
+      "empty-state": {
+        "title": "No recent transactions",
+        "description": "Recent transactions will appear here when you perform actions."
       }
     }
   },
