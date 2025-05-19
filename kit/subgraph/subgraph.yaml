@@ -25,3 +25,46 @@ dataSources:
         - event: SMARTSystemCreated(indexed address,indexed address)
           handler: handleSMARTSystemCreated
       file: ./src/event-handlers/system-factory.ts
+templates:
+  - kind: ethereum
+    name: System
+    network: settlemint
+    source:
+      abi: System
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: System
+          file: ../contracts/artifacts/smart-protocol/contracts/system/SMARTSystem.sol/SMARTSystem.json
+      eventHandlers:
+        - event: Bootstrapped(indexed address,indexed address,indexed
+            address,address,address)
+          handler: handleBootstrapped
+        - event: ComplianceImplementationUpdated(indexed address)
+          handler: handleComplianceImplementationUpdated
+        - event: EtherWithdrawn(indexed address,uint256)
+          handler: handleEtherWithdrawn
+        - event: IdentityFactoryImplementationUpdated(indexed address)
+          handler: handleIdentityFactoryImplementationUpdated
+        - event: IdentityImplementationUpdated(indexed address)
+          handler: handleIdentityImplementationUpdated
+        - event: IdentityRegistryImplementationUpdated(indexed address)
+          handler: handleIdentityRegistryImplementationUpdated
+        - event: IdentityRegistryStorageImplementationUpdated(indexed address)
+          handler: handleIdentityRegistryStorageImplementationUpdated
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: TokenIdentityImplementationUpdated(indexed address)
+          handler: handleTokenIdentityImplementationUpdated
+        - event: TrustedIssuersRegistryImplementationUpdated(indexed address)
+          handler: handleTrustedIssuersRegistryImplementationUpdated
+      file: ./src/event-handlers/system.ts
