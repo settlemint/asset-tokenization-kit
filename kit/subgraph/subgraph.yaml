@@ -4,27 +4,6 @@ indexerHints:
 schema:
   file: ./schema.graphql
 dataSources:
-  - kind: ethereum/contract
-    name: Forwarder
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000099"
-      abi: Forwarder
-      startBlock: 0
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Address
-        - Event
-      abis:
-        - name: Forwarder
-          file: ../contracts/artifacts/contracts/ATKForwarder.sol/ATKForwarder.json
-      eventHandlers:
-        - event: ExecutedForwardRequest(indexed address,uint256,bool)
-          handler: handleExecutedForwardRequest
-      file: ./src/event-handlers/forwarder.ts
 #   - kind: ethereum/contract
 #     name: SMARTDeploymentRegistry
 #     network: settlemint
