@@ -101,6 +101,19 @@ async function formatEventValues(event: AssetEventDetail) {
             }
           }
           break;
+        case "CollateralUpdated":
+          if (name === "newAmount") {
+            const assetDetail = await tryAssetDetail(emitter.id);
+            if (assetDetail?.decimals) {
+              formatted.formattedValue = formatNumber(value, {
+                decimals: assetDetail.decimals,
+                locale,
+                token: assetDetail.symbol,
+                adjustDecimals: true,
+              });
+            }
+          }
+          break;
       }
 
       values[index] = formatted;
