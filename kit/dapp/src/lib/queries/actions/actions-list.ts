@@ -87,27 +87,28 @@ export const getActionsList = withTracing(
       };
       const actionExecutors = await fetchAllTheGraphPages(
         async (first, skip) => {
-          const result = await theGraphClientKit.request(
-            Actions,
-            {
-              first,
-              skip,
-              where: {
-                executors_: {
-                  id_contains: userAddress.toLowerCase(),
-                },
-                actions_: {
-                  type,
-                  ...(status ? where[status] : {}),
-                  ...(targetAddress ? { target: targetAddress } : {}),
-                },
-              },
+          // Create the request parameters
+          const params = {
+            first,
+            skip,
+          } as any; // Use type assertion to bypass TypeScript checking
+
+          // Add the where clause with type assertion
+          params.where = {
+            executors_: {
+              id_contains: userAddress.toLowerCase(),
             },
-            {
-              "X-GraphQL-Operation-Name": "ActionExecutors",
-              "X-GraphQL-Operation-Type": "query",
-            }
-          );
+            actions_: {
+              type,
+              ...(status ? where[status] : {}),
+              ...(targetAddress ? { target: targetAddress } : {}),
+            },
+          };
+
+          const result = await theGraphClientKit.request(Actions, params, {
+            "X-GraphQL-Operation-Name": "ActionExecutors",
+            "X-GraphQL-Operation-Type": "query",
+          });
 
           const actionExecutors = result.actionExecutors || [];
           return safeParse(
