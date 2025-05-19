@@ -1,6 +1,6 @@
 type ExampleEntity @entity(immutable: true) {
   id: Bytes!
   count: BigInt!
-  systemAddress: Bytes! # address
-  initialAdmin: Bytes! # address
+  complianceProxy: Bytes! # address
+  identityRegistryProxy: Bytes! # address
 }
