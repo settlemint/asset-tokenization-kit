@@ -32,8 +32,7 @@ export function handleComplianceImplementationUpdated(
 ): void {
   processEvent(event, "ComplianceImplementationUpdated");
   const system = fetchSystem(event.address);
-  const compliance = fetchCompliance(event.params.newImplementation);
-  system.compliance = compliance.id;
+  system.compliance = fetchCompliance(event.params.newImplementation).id;
   system.save();
 }
 
