@@ -133,7 +133,7 @@ export const createBondFunction = withAccessControl(
     await waitForTransactions([createTxHash]);
 
     // Grant roles to admins using the shared helper
-    const roleGrantHashes = await grantRolesToAdmins(
+    await grantRolesToAdmins(
       assetAdmins,
       predictedAddress,
       verificationCode,
@@ -141,11 +141,7 @@ export const createBondFunction = withAccessControl(
       "bond",
       user
     );
-    // Combine all transaction hashes
-    const allTransactionHashes = [createTxHash, ...roleGrantHashes];
 
-    return waitForIndexingTransactions(
-      safeParse(t.Hashes(), allTransactionHashes)
-    );
+    return waitForIndexingTransactions(safeParse(t.Hashes(), [createTxHash]));
   }
 );

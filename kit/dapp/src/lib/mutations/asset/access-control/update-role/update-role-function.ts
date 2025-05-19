@@ -89,6 +89,7 @@ export const updateRolesFunction = withAccessControl(
       );
     }
 
-    await Promise.all(txns);
+    const blocks = await Promise.all(txns);
+    return blocks.at(-1) ?? 0;
   }
 );
