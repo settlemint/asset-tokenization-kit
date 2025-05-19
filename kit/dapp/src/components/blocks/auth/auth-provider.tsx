@@ -213,7 +213,7 @@ export const AuthProvider = ({
         passwordTooShort: t("password-too-short"),
       }}
     >
-      {children}
+      <div className="AuthProvider">{children}</div>
     </AuthUIProvider>
   );
 };
