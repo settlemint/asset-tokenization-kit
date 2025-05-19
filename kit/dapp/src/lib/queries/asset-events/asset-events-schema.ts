@@ -1,9 +1,57 @@
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
+export const AssetEventNameSchema = t.UnionEnum([
+  "Transfer",
+  "Mint",
+  "Burn",
+  "RoleGranted",
+  "RoleRevoked",
+  "RoleAdminChanged",
+  "Approval",
+  "Pause",
+  "Unpause",
+  "Clawback",
+  "TokensFrozen",
+  "UserBlocked",
+  "UserUnblocked",
+  "UserAllowed",
+  "UserDisallowed",
+  "TokenWithdrawn",
+  "CollateralUpdated",
+  "Matured",
+  "Redeemed",
+  "UnderlyingAssetTopUp",
+  "UnderlyingAssetWithdrawn",
+  "ManagementFeeCollected",
+  "PerformanceFeeCollected",
+  "YieldClaimed",
+  "AssetCreated",
+  "FixedYieldCreated",
+  "XvPSettlementCreated",
+  "XvPSettlementApproved",
+  "XvPSettlementApprovalRevoked",
+  "XvPSettlementClaimed",
+  "XvPSettlementExecuted",
+  "XvPSettlementCancelled",
+  "Claimed",
+  "Distribution",
+  "BatchDistribution",
+  "MerkleRootUpdated",
+  "VaultCreated",
+  "Deposit",
+  "RequirementChanged",
+  "SubmitTransaction",
+  "SubmitERC20TransferTransaction",
+  "SubmitContractCallTransaction",
+  "ConfirmTransaction",
+  "RevokeConfirmation",
+  "ExecuteTransaction",
+]);
+
 /**
  * Base TypeBox schema for asset events
  */
-export const AssetEventListSchema = t.Object(
+export const AssetEventSchema = t.Object(
   {
     id: t.String({
       description: "Unique identifier for the event",
@@ -28,9 +76,7 @@ export const AssetEventListSchema = t.Object(
         description: "Information about the event emitter",
       }
     ),
-    eventName: t.String({
-      description: "Name of the event",
-    }),
+    eventName: AssetEventNameSchema,
     blockTimestamp: t.Timestamp({
       description: "When the event occurred",
     }),
@@ -40,7 +86,7 @@ export const AssetEventListSchema = t.Object(
   }
 );
 
-export type AssetEventListItem = StaticDecode<typeof AssetEventListSchema>;
+export type AssetEvent = StaticDecode<typeof AssetEventSchema>;
 
 /**
  * TypeBox schema for asset event detail
@@ -67,9 +113,7 @@ export const AssetEventDetailSchema = t.Object(
         description: "Information about the event emitter",
       }
     ),
-    eventName: t.String({
-      description: "Name of the event",
-    }),
+    eventName: AssetEventNameSchema,
     blockTimestamp: t.Timestamp({
       description: "When the event occurred",
     }),
