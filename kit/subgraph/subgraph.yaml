@@ -68,3 +68,21 @@ templates:
         - event: TrustedIssuersRegistryImplementationUpdated(indexed address)
           handler: handleTrustedIssuersRegistryImplementationUpdated
       file: ./src/event-handlers/system.ts
+  - kind: ethereum
+    name: Compliance
+    network: settlemint
+    source:
+      abi: Compliance
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Initialized
+      abis:
+        - name: Compliance
+          file: ../contracts/artifacts/contracts/ATKComplianceImplementation.sol/ATKComplianceImplementation.json
+      eventHandlers:
+        - event: Initialized(uint64)
+          handler: handleInitialized
+      file: ./src/event-handlers/compliance.ts
