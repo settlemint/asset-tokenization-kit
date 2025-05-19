@@ -105,7 +105,7 @@ export const createBondFunction = withAccessControl(
 
     if (!underlyingAssetPrice) {
       throw new Error(
-        `Price not found for underlying asset, ${underlyingAsset.id}`
+        `Price not found for underlying asset: ${underlyingAsset.id}`
       );
     }
 
