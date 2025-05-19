@@ -400,6 +400,10 @@
     },
     "asset-events-table": {
       "asset": "Asset",
+      "empty-state": {
+        "title": "No activity yet",
+        "description": "Events will appear here once you perform actions."
+      },
       "detail-sheet": {
         "AUDITOR_ROLE": "Auditor Role",
         "DEFAULT_ADMIN_ROLE": "Default Admin Role",

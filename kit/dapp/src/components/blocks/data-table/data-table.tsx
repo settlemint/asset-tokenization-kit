@@ -29,6 +29,10 @@ import { type ComponentType, useMemo, useState } from "react";
 import { DataTableColumnCell } from "./data-table-column-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import {
+  DataTableEmptyState,
+  type DataTableEmptyStateProps,
+} from "./data-table-empty-state";
+import {
   DataTablePagination,
   type DataTablePaginationOptions,
 } from "./data-table-pagination";
@@ -55,6 +59,7 @@ interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   initialSorting?: SortingState;
   initialColumnFilters?: ColumnFiltersState;
   className?: string;
+  customEmptyState?: DataTableEmptyStateProps;
 }
 
 declare module "@tanstack/table-core" {
@@ -97,6 +102,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   initialSorting,
   initialColumnFilters,
   className,
+  customEmptyState,
 }: DataTableProps<TData, CParams>) {
   const t = useTranslations("components.data-table");
   const [rowSelection, setRowSelection] = useState({});
@@ -179,6 +185,10 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
       </TableRow>
     );
   };
+
+  if (data.length > 0 && customEmptyState) {
+    return <DataTableEmptyState {...customEmptyState} />;
+  }
 
   return (
     <div className="space-y-4">
