@@ -1,6 +1,8 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
+import { AddAssetPrice } from "@/lib/mutations/asset/price/add-price";
+import { getAssetsPrice } from "@/lib/queries/asset-price/asset-price";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
@@ -96,6 +98,22 @@ export const createBondFunction = withAccessControl(
       id: predictedAddress,
       isin: isin,
       internalid: internalid,
+    });
+
+    const underlyingAssetPrice = (
+      await getAssetsPrice([underlyingAsset.id])
+    ).get(underlyingAsset.id);
+
+    if (!underlyingAssetPrice) {
+      throw new Error(
+        `Price not found for underlying asset: ${underlyingAsset.id}`
+      );
+    }
+
+    await hasuraClient.request(AddAssetPrice, {
+      assetId: predictedAddress,
+      amount: String(underlyingAssetPrice.amount * faceValue),
+      currency: underlyingAssetPrice.currency,
     });
 
     const createBondResult = await portalClient.request(BondFactoryCreate, {
