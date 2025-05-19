@@ -332,28 +332,53 @@ export function Form<
 
   const { getValues, clearErrors, watch } = form;
 
-  const handleSubmit = async (toastId?: number) => {
-    onOpenChange?.(false);
-    return handleSubmitWithAction()
-      .catch((error) => {
-        let errorMessage = "Unknown error";
-        if (error?.error?.serverError) {
-          errorMessage = error.error.serverError as string;
-        } else if (error?.error?.validationErrors) {
-          errorMessage = "Validation error";
-        }
-        toast.error(`Failed to submit: ${errorMessage}`, {
-          id: toastId,
-        });
-      })
-      .finally(() => {
+  const handleSubmit = async () => {
+    const toastId = Date.now();
+    const action = toastMessages?.action
+      ? toastMessages.action(form.getValues())
+      : undefined;
+
+    toast.promise(
+      handleSubmitWithAction().finally(() => {
         if (secureForm) {
           form.resetField(
             "verificationCode" as Path<S extends Schema ? Infer<S> : string>
           );
         }
         resetFormAndAction();
-      });
+      }),
+      {
+        ...(secureForm
+          ? {
+              loading: t("transactions.sending"),
+            }
+          : {}),
+        success: async () => {
+          const successMessage =
+            toastMessages?.success || t("transactions.success");
+
+          toast.dismiss(toastId);
+          return toast.success(successMessage, {
+            action,
+            actionButtonStyle: {
+              backgroundColor: "var(--success-fg-deep)",
+              color: "var(--primary-foreground)",
+            },
+          });
+        },
+        error: (error) => {
+          let errorMessage = "Unknown error";
+          if (error?.error?.serverError) {
+            errorMessage = error.error.serverError as string;
+          } else if (error?.error?.validationErrors) {
+            errorMessage = "Validation error";
+          }
+          return `Failed to submit: ${errorMessage}`;
+        },
+        id: toastId,
+      }
+    );
+    onOpenChange?.(false);
   };
 
   const isLastStep = currentStep === totalSteps - 1;
@@ -513,7 +538,7 @@ export function Form<
                     const action = toastMessages?.action
                       ? toastMessages.action(form.getValues())
                       : undefined;
-                    toast.promise(handleSubmit(toastId), {
+                    toast.promise(handleSubmit(), {
                       loading: t("transactions.sending"),
                       success: async () => {
                         await revalidate();
