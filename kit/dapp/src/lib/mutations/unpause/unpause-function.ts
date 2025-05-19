@@ -1,11 +1,11 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
+import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { UnpauseInput } from "./unpause-schema";
-
 /**
  * GraphQL mutation for unpausing a bond contract
  */
@@ -127,30 +127,36 @@ export const unpauseFunction = withAccessControl(
     switch (assettype) {
       case "bond": {
         const response = await portalClient.request(BondUnpause, params);
-        return safeParse(t.Hashes(), [response.BondUnpause?.transactionHash]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.BondUnpause?.transactionHash])
+        );
       }
       case "cryptocurrency": {
         throw new Error("Cryptocurrency does not support unpause operations");
       }
       case "equity": {
         const response = await portalClient.request(EquityUnpause, params);
-        return safeParse(t.Hashes(), [response.EquityUnpause?.transactionHash]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.EquityUnpause?.transactionHash])
+        );
       }
       case "fund": {
         const response = await portalClient.request(FundUnpause, params);
-        return safeParse(t.Hashes(), [response.FundUnpause?.transactionHash]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.FundUnpause?.transactionHash])
+        );
       }
       case "stablecoin": {
         const response = await portalClient.request(StableCoinUnpause, params);
-        return safeParse(t.Hashes(), [
-          response.StableCoinUnpause?.transactionHash,
-        ]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.StableCoinUnpause?.transactionHash])
+        );
       }
       case "deposit": {
         const response = await portalClient.request(DepositUnpause, params);
-        return safeParse(t.Hashes(), [
-          response.DepositUnpause?.transactionHash,
-        ]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.DepositUnpause?.transactionHash])
+        );
       }
       default:
         throw new Error("Invalid asset type");

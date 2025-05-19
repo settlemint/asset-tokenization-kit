@@ -1,10 +1,10 @@
 "use server";
-import { t } from "@/lib/utils/typebox";
+import { ContactSchema } from "@/lib/queries/contact/contact-schema";
 import { action } from "../safe-action";
 import { addContactFunction } from "./add-contact-function";
 import { getAddContactFormSchema } from "./add-contact-schema";
 
 export const addContact = action
   .schema(getAddContactFormSchema())
-  .outputSchema(t.Array(t.String()))
+  .outputSchema(ContactSchema)
   .action(addContactFunction);

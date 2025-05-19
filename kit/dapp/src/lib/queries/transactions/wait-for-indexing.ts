@@ -5,6 +5,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
+import { revalidate } from "@/lib/utils/revalidate";
 import { Hashes } from "@/lib/utils/typebox/hash";
 import {
   IndexingFragment,
@@ -74,11 +75,15 @@ export async function waitForIndexingBlock(
   return indexedBlock.number;
 }
 
-export async function waitForIndexingTransactions(transactionHashes: Hashes) {
+export async function waitForIndexingTransactions(
+  transactionHashes: Hashes
+): Promise<number> {
   const receipts = await waitForTransactions(transactionHashes);
   const lastBlockNumber = Number(
     receipts.sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber)).at(0)
       ?.blockNumber
   );
-  await waitForIndexingBlock(lastBlockNumber);
+  const indexedBlock = await waitForIndexingBlock(lastBlockNumber);
+  await revalidate();
+  return indexedBlock;
 }
