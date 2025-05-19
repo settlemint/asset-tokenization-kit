@@ -333,39 +333,31 @@ export function Form<
   const { getValues, clearErrors, watch } = form;
 
   const handleSubmit = async () => {
-    toast.promise(
-      handleSubmitWithAction().finally(() => {
-        if (secureForm) {
-          form.resetField(
-            "verificationCode" as Path<S extends Schema ? Infer<S> : string>
-          );
-        }
-        resetFormAndAction();
-      }),
-      {
-        ...(secureForm
-          ? {
-              loading: t("transactions.sending"),
-            }
-          : {}),
-        success: async () => {
-          await revalidate();
-          const successMessage =
-            toastMessages?.success || t("transactions.success");
-          return successMessage;
-        },
-        error: (error) => {
-          let errorMessage = "Unknown error";
-          if (error?.error?.serverError) {
-            errorMessage = error.error.serverError as string;
-          } else if (error?.error?.validationErrors) {
-            errorMessage = "Validation error";
+    toast.promise(handleSubmitWithAction, {
+      ...(secureForm
+        ? {
+            loading: t("transactions.sending"),
           }
-          return `Failed to submit: ${errorMessage}`;
-        },
-      }
-    );
+        : {}),
+      success: async () => {
+        await revalidate();
+        const successMessage =
+          toastMessages?.success || t("transactions.success");
+        return successMessage;
+      },
+      error: (error) => {
+        let errorMessage = "Unknown error";
+        if (error?.error?.serverError) {
+          errorMessage = error.error.serverError as string;
+        } else if (error?.error?.validationErrors) {
+          errorMessage = "Validation error";
+        }
+        return `Failed to submit: ${errorMessage}`;
+      },
+    });
+
     onOpenChange?.(false);
+    resetFormAndAction();
   };
 
   const isLastStep = currentStep === totalSteps - 1;
