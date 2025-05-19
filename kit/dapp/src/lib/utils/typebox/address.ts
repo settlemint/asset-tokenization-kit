@@ -52,4 +52,5 @@ export const EthereumAddress = (options?: SchemaOptions) =>
           throw new Error(`Invalid Ethereum address: ${value}`);
         }
       })
+      .Encode((value) => value)
   );
