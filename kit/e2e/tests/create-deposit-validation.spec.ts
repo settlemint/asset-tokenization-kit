@@ -34,7 +34,9 @@ test.describe("Deposit Creation Validation", () => {
         symbol: "TDEP",
       });
       await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage("Please enter text");
+      await createAssetForm.expectErrorMessage(
+        "Please enter at least 1 characters"
+      );
     });
     test("validates symbol field is empty", async () => {
       await createAssetForm.fillBasicFields({
@@ -43,7 +45,9 @@ test.describe("Deposit Creation Validation", () => {
         isin: "",
       });
       await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage("Please enter text");
+      await createAssetForm.expectErrorMessage(
+        "Please enter a valid asset symbol (uppercase letters and numbers)"
+      );
     });
     test("validates symbol field is with lower case", async () => {
       await createAssetForm.fillBasicFields({
@@ -53,11 +57,23 @@ test.describe("Deposit Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter text in the correct asset-symbol format"
+        "Please enter a valid asset symbol (uppercase letters and numbers)"
       );
     });
-    test("verifies input length restrictions", async () => {
+    test("validates symbol field can not contain special characters", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Deposit",
+        symbol: "TDEP$",
+      });
+      await createAssetForm.expectErrorMessage(
+        "Please enter a valid asset symbol (uppercase letters and numbers)"
+      );
+    });
+    //Update this check name constraint after this ticket is fixed https://linear.app/settlemint/issue/ENG-3136/asset-designererror-message-is-wrong-for-asset-name-field
+    test("verifies name field length constraints", async () => {
       await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
+    });
+    test("verifies symbol field length constraints", async () => {
       await createAssetForm.verifyInputAttribute("Symbol", "maxlength", "10");
     });
     test("validates ISIN format", async () => {
@@ -67,40 +83,15 @@ test.describe("Deposit Creation Validation", () => {
         isin: "invalid-isin",
       });
       await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage("Please enter a valid value");
+      await createAssetForm.expectErrorMessage(
+        "Please enter a valid ISIN. Format: 2 letters (country code), 9 alphanumeric characters, and 1 check digit (e.g., US0378331005)"
+      );
     });
-    test("validates ISIN length constraints", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Deposit",
-        symbol: "TDEP",
-        isin: "US0000000000000",
-      });
-      await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage("Please enter a valid value");
-    });
-    test("validates empty decimals", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Deposit",
-        symbol: "TDEP",
-        isin: "US1234567890",
-      });
-      await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage("Please enter a valid value");
-    });
-    test("validates decimals range", async () => {
-      await createAssetForm.fillBasicFields({
-        name: "Test Deposit",
-        symbol: "TDEP",
-        isin: "US1234567890",
-      });
-      await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage("Please enter a valid value");
-    });
-    test("verifies default decimals field", async () => {
-      await createAssetForm.verifyInputAttribute("Decimals", "value", "6");
+    test("validates ISIN field length constraints", async () => {
+      await createAssetForm.verifyInputAttribute("ISIN", "maxlength", "12");
     });
   });
-  test.describe("Second Screen - Stablecoin Details", () => {
+  test.describe("Second Screen - Deposit Details", () => {
     test.beforeAll(async () => {
       await createAssetForm.fillBasicFields({
         name: depositData.name,
@@ -109,14 +100,86 @@ test.describe("Deposit Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
     });
-
+    test("validates decimals field is empty", async () => {
+      await createAssetForm.clearField("Decimals");
+      await createAssetForm.fillStablecoinConfigurationFields({
+        decimals: "",
+        price: depositData.price,
+      });
+      await createAssetForm.expectErrorMessage(
+        "Please enter a value between 0 and 18"
+      );
+    });
+    test("validates large number in decimals field", async () => {
+      await createAssetForm.fillStablecoinConfigurationFields({
+        decimals: "19",
+        price: depositData.price,
+      });
+      await createAssetForm.expectErrorMessage(
+        "Please enter a value between 0 and 18"
+      );
+    });
+    test("validates negative number in decimals field", async () => {
+      await createAssetForm.fillStablecoinConfigurationFields({
+        decimals: "-1",
+        price: depositData.price,
+      });
+      await createAssetForm.expectErrorMessage(
+        "Please enter a value between 0 and 18"
+      );
+    });
+    test("validates no signs in decimals field", async () => {
+      await createAssetForm.fillStablecoinConfigurationFields({
+        decimals: "",
+        price: depositData.price,
+      });
+      await createAssetForm.setInvalidValueInNumberInput(
+        'input[name="decimals"]',
+        "18-"
+      );
+      await createAssetForm.expectErrorMessage(
+        "Please enter a value between 0 and 18"
+      );
+    });
+    test("validates price field is empty", async () => {
+      await createAssetForm.clearField("Price");
+      await createAssetForm.fillStablecoinConfigurationFields({
+        decimals: "18",
+        price: "",
+      });
+      await createAssetForm.clickOnNextButton();
+      await createAssetForm.expectErrorMessage("Please enter a valid number");
+    });
+    test("validates large number in price field", async () => {
+      await createAssetForm.fillStablecoinConfigurationFields({
+        decimals: "18",
+        price: "10000000000000000000",
+      });
+      await createAssetForm.expectErrorMessage(
+        "Please enter a number no greater than 9007199254740991"
+      );
+    });
+    test("validates price field can not contain special characters", async () => {
+      await createAssetForm.clearField("Price");
+      await createAssetForm.fillStablecoinConfigurationFields({
+        decimals: "18",
+        price: "",
+      });
+      await createAssetForm.setInvalidValueInNumberInput(
+        'input[name="price"]',
+        "1-"
+      );
+      await createAssetForm.expectErrorMessage("Please enter a valid number");
+    });
+    test("verifies default currency is EUR", async () => {
+      await createAssetForm.verifyCurrencyValue("EUR");
+    });
     test("validates collateral proof validity field is empty", async () => {
       await createAssetForm.clearField("Collateral proof validity");
       await createAssetForm.fillStablecoinConfigurationFields({
         collateralProofValidity: "",
         collateralProofValidityTimeUnit: "months",
-        priceAmount: "1",
-        priceCurrency: "EUR",
+        price: "1",
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage("Please enter a valid number");
@@ -125,82 +188,38 @@ test.describe("Deposit Creation Validation", () => {
       await createAssetForm.fillStablecoinConfigurationFields({
         collateralProofValidity: "0",
         collateralProofValidityTimeUnit: "months",
-        priceAmount: "1",
-        priceCurrency: "EUR",
+        price: "1",
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no less than 1"
       );
     });
-
-    // Remove skip after this issue is fixed jelena/eng-2931-create-stablecoin-formlimit-collateral-proof-validity-field
+    //Remove skip after this issue is fixed https://linear.app/settlemint/issue/ENG-3152/asset-designerdeposit-missing-error-on-large-number-on-collateral
     test.skip("validates large number for collateral proof validity field", async () => {
       await createAssetForm.fillStablecoinConfigurationFields({
         collateralProofValidity: "10000000000000000000",
         collateralProofValidityTimeUnit: "months",
-        priceAmount: "1",
-        priceCurrency: "EUR",
+        price: "1",
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
         "Please enter a number no greater than 9007199254740991"
       );
     });
-    test("validates price amount field is empty", async () => {
-      await createAssetForm.clearField("Price");
-      await createAssetForm.fillStablecoinConfigurationFields({
-        collateralProofValidity: "1",
-        priceAmount: "",
-        priceCurrency: "EUR",
-      });
-      await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
-    });
-    test("validates large number for price amount field", async () => {
-      await createAssetForm.fillStablecoinConfigurationFields({
-        collateralProofValidity: "1",
-        priceAmount: "10000000000000000000",
-        priceCurrency: "EUR",
-      });
-      await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage(
-        "Please enter a number no greater than 9007199254740991"
+  });
+  test.describe("Create Deposit asset", () => {
+    test("Create Deposit asset", async () => {
+      await adminPages.adminPage.goto();
+      await adminPages.adminPage.createDeposit(depositData);
+      await adminPages.adminPage.verifySuccessMessage(
+        assetMessage.successMessageDeposit
       );
-    });
-    test("verifies default currency is EUR", async () => {
-      await createAssetForm.verifyCurrencyValue("EUR");
-    });
-  });
-});
-
-test.describe("Create Deposit asset", () => {
-  let adminContext: BrowserContext;
-  let adminPages: ReturnType<typeof Pages>;
-
-  test.beforeAll(async ({ browser }) => {
-    await ensureUserIsAdmin(adminUser.email);
-
-    adminContext = await browser.newContext();
-    const adminPage = await adminContext.newPage();
-    adminPages = Pages(adminPage);
-    await adminPages.signInPage.signInAsAdmin(adminUser);
-    await adminPages.adminPage.goto();
-  });
-
-  test.afterAll(async () => {
-    await adminContext.close();
-  });
-
-  test("Create Deposit asset", async () => {
-    await adminPages.adminPage.createDeposit(depositData);
-    await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
-    );
-    await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: depositData.sidebarAssetTypes,
-      name: depositData.name,
-      totalSupply: depositData.initialSupply,
+      await adminPages.adminPage.checkIfAssetExists({
+        sidebarAssetTypes: depositData.sidebarAssetTypes,
+        name: depositData.name,
+        totalSupply: depositData.initialSupply,
+      });
     });
   });
 });
