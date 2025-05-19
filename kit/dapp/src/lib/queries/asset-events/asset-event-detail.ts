@@ -96,6 +96,7 @@ async function formatEventValues(event: AssetEventDetail) {
                 decimals: assetDetail.decimals,
                 locale,
                 token: assetDetail.symbol,
+                adjustDecimals: true,
               });
             }
           }
