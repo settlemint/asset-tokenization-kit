@@ -4,6 +4,12 @@ import { TrustedIssuersRegistry as TrustedIssuersRegistryTemplate } from "../../
 import { fetchAccessControl } from "../shared/accesscontrol/fetch-accesscontrol";
 import { fetchAccount } from "../shared/account/fetch-account";
 
+/**
+ * Loads an existing System_TrustedIssuersRegistry entity for the given address, or creates and initializes one if it does not exist.
+ *
+ * @param address - The blockchain address identifying the trusted issuers registry.
+ * @returns The loaded or newly created System_TrustedIssuersRegistry entity.
+ */
 export function fetchTrustedIssuersRegistry(
   address: Address
 ): System_TrustedIssuersRegistry {

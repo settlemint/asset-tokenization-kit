@@ -4,6 +4,12 @@ import { IdentityFactory as IdentityFactoryTemplate } from "../../generated/temp
 import { fetchAccessControl } from "../shared/accesscontrol/fetch-accesscontrol";
 import { fetchAccount } from "../shared/account/fetch-account";
 
+/**
+ * Loads an existing `System_IdentityFactory` entity for the given address, or creates and initializes a new one if none exists.
+ *
+ * @param address - The address identifying the identity factory.
+ * @returns The loaded or newly created {@link System_IdentityFactory} entity.
+ */
 export function fetchIdentityFactory(address: Address): System_IdentityFactory {
   let identityFactory = System_IdentityFactory.load(address);
 
