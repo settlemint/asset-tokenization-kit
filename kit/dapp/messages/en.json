@@ -751,6 +751,11 @@
         "function": "Function",
         "status": "Status",
         "transaction-hash": "Transaction Hash"
+      },
+      "title": "Transactions",
+      "empty-state": {
+        "title": "No recent transactions",
+        "description": "Recent transactions will appear here when you perform actions."
       }
     }
   },

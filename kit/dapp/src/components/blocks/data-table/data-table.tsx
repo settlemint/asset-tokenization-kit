@@ -186,7 +186,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
     );
   };
 
-  if (data.length > 0 && customEmptyState) {
+  if (data.length == 0 && customEmptyState) {
     return <DataTableEmptyState {...customEmptyState} />;
   }
 
