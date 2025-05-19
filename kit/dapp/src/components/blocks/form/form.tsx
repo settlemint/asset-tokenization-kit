@@ -333,11 +333,6 @@ export function Form<
   const { getValues, clearErrors, watch } = form;
 
   const handleSubmit = async () => {
-    const toastId = Date.now();
-    const action = toastMessages?.action
-      ? toastMessages.action(form.getValues())
-      : undefined;
-
     toast.promise(
       handleSubmitWithAction().finally(() => {
         if (secureForm) {
@@ -354,17 +349,10 @@ export function Form<
             }
           : {}),
         success: async () => {
+          await revalidate();
           const successMessage =
             toastMessages?.success || t("transactions.success");
-
-          toast.dismiss(toastId);
-          return toast.success(successMessage, {
-            action,
-            actionButtonStyle: {
-              backgroundColor: "var(--success-fg-deep)",
-              color: "var(--primary-foreground)",
-            },
-          });
+          return successMessage;
         },
         error: (error) => {
           let errorMessage = "Unknown error";
@@ -375,7 +363,6 @@ export function Form<
           }
           return `Failed to submit: ${errorMessage}`;
         },
-        id: toastId,
       }
     );
     onOpenChange?.(false);
@@ -533,30 +520,7 @@ export function Form<
                   open={showFormSecurityConfirmation}
                   onOpenChange={setShowFormSecurityConfirmation}
                   control={form.control as Control<Infer<S>>}
-                  onSubmit={() => {
-                    const toastId = Date.now();
-                    const action = toastMessages?.action
-                      ? toastMessages.action(form.getValues())
-                      : undefined;
-                    toast.promise(handleSubmit(), {
-                      loading: t("transactions.sending"),
-                      success: async () => {
-                        await revalidate();
-                        const successMessage =
-                          toastMessages?.success || t("transactions.success");
-
-                        toast.dismiss(toastId);
-                        return toast.success(successMessage, {
-                          action,
-                          actionButtonStyle: {
-                            backgroundColor: "var(--success-fg-deep)",
-                            color: "var(--primary-foreground)",
-                          },
-                        });
-                      },
-                      id: toastId,
-                    });
-                  }}
+                  onSubmit={handleSubmit}
                 />
               )}
             </div>

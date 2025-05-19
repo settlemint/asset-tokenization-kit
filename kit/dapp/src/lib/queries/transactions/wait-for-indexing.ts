@@ -5,7 +5,6 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { revalidate } from "@/lib/utils/revalidate";
 import { Hashes } from "@/lib/utils/typebox/hash";
 import {
   IndexingFragment,
@@ -84,6 +83,5 @@ export async function waitForIndexingTransactions(
       ?.blockNumber
   );
   const indexedBlock = await waitForIndexingBlock(lastBlockNumber);
-  await revalidate();
   return indexedBlock;
 }
