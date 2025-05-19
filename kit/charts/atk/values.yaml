@@ -212,7 +212,7 @@ blockscout:
     frontend:
       image:
         repository: ghcr.io/blockscout/frontend
-        tag: "v2.0.2"
+        tag: "v2.0.3"
       ingress:
         hostname: explorer.k8s.orb.local
 
