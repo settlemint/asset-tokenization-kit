@@ -1,7 +1,7 @@
 import { Address, Bytes, ethereum, Value } from "@graphprotocol/graph-ts";
-import { Internal_AccessControl } from "../../generated/schema";
-import { Roles } from "../enums/role";
-import { fetchAccount } from "./account";
+import { Internal_AccessControl } from "../../../generated/schema";
+import { fetchAccount } from "../account/fetch-account";
+import { Roles } from "./role";
 
 export function fetchAccessControl(
   address: Address,

@@ -1,6 +1,6 @@
 import { Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { Event, Internal_EventValue } from "../../generated/schema";
-import { fetchAccount } from "../fetch/account";
+import { Event, Internal_EventValue } from "../../../generated/schema";
+import { fetchAccount } from "../account/fetch-account";
 
 export function processEvent(event: ethereum.Event, eventType: string): Event {
   const emitter = fetchAccount(event.address);
