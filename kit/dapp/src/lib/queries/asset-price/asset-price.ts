@@ -2,7 +2,6 @@ import "server-only";
 
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
-import type { AssetPrice } from "@/lib/queries/asset-price/asset-price-fragment";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
@@ -30,20 +29,6 @@ const AssetPrices = hasuraGraphql(
   [AssetPriceFragment]
 );
 
-const AssetPrice = hasuraGraphql(
-  `
-    query AssetPrice($assetId: String!) {
-      asset_price(
-        where: { asset_id: { _eq: $assetId } }
-        order_by: { created_at: desc }
-      ) {
-        ...AssetPriceFragment
-      }
-    }
-  `,
-  [AssetPriceFragment]
-);
-
 export const getAssetsPricesInUserCurrency = withTracing(
   "queries",
   "getAssetsPricesInUserCurrency",
@@ -52,59 +37,40 @@ export const getAssetsPricesInUserCurrency = withTracing(
       assetIds: string[],
       userCurrency: CurrencyCode
     ): Promise<Map<string, Price>> => {
-      "use cache";
-      cacheTag("asset");
-      const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
-      const assetPricesData = await fetchAllHasuraPages(
-        async (pageLimit, offset) => {
-          const assetIds = assetIdsWithoutDuplicates.map((address) => {
-            return getAddress(address);
-          });
-          const pageResult = await hasuraClient.request(
-            AssetPrices,
-            {
-              assetIds,
-              limit: pageLimit,
-              offset,
-            },
-            {
-              "X-GraphQL-Operation-Name": "AssetPrices",
-              "X-GraphQL-Operation-Type": "query",
-            }
-          );
-          return pageResult.asset_price ?? [];
-        }
-      );
+      const assetPrices = await getAssetsPrice(assetIds);
+
       const exchangeRates = await getExchangeRates(
-        assetPricesData,
+        Array.from(assetPrices.values()),
         userCurrency
       );
-      const pricesForAssetIds = new Map();
 
-      for (const assetId of assetIds) {
-        const assetPrice = assetPricesData.find(
-          (assetPrice) =>
-            getAddress(assetPrice.asset_id) === getAddress(assetId)
-        );
-        if (!assetPrice) {
-          pricesForAssetIds.set(assetId, {
+      // Convert prices to user currency
+      const pricesInUserCurrency = new Map<string, Price>();
+
+      for (const [assetId, price] of assetPrices.entries()) {
+        if (!price) {
+          console.log(`Asset price not found for ${assetId}`);
+          pricesInUserCurrency.set(assetId, {
             amount: 0,
             currency: userCurrency,
           });
-        } else {
-          const validatedPrice = safeParse(AssetPriceSchema, assetPrice);
-          const exchangeRate = exchangeRates.get(validatedPrice.currency);
-          if (!exchangeRate) {
-            throw new Error("Exchange rate not found");
-          }
-          pricesForAssetIds.set(assetId, {
-            amount: validatedPrice.amount * exchangeRate,
-            currency: userCurrency,
-          });
+          continue;
         }
+
+        const exchangeRate = exchangeRates.get(price.currency);
+        if (!exchangeRate) {
+          throw new Error(
+            `Exchange rate not found for currency: ${price.currency}`
+          );
+        }
+
+        pricesInUserCurrency.set(assetId, {
+          amount: price.amount * exchangeRate,
+          currency: userCurrency,
+        });
       }
 
-      return pricesForAssetIds;
+      return pricesInUserCurrency;
     }
   )
 );
@@ -112,7 +78,7 @@ export const getAssetsPricesInUserCurrency = withTracing(
 export const getAssetsPrice = withTracing(
   "queries",
   "getAssetsPrice",
-  cache(async (assetIds: string[]): Promise<Map<string, Price>> => {
+  cache(async (assetIds: string[]) => {
     "use cache";
     cacheTag("asset");
 
@@ -122,6 +88,7 @@ export const getAssetsPrice = withTracing(
         const assetIds = assetIdsWithoutDuplicates.map((address) => {
           return getAddress(address);
         });
+
         const pageResult = await hasuraClient.request(
           AssetPrices,
           {
@@ -134,16 +101,18 @@ export const getAssetsPrice = withTracing(
             "X-GraphQL-Operation-Type": "query",
           }
         );
+
         return pageResult.asset_price ?? [];
       }
     );
 
-    const pricesForAssetIds = new Map();
+    const pricesForAssetIds = new Map<string, Price>();
 
     for (const assetId of assetIds) {
       const assetPrice = assetPricesData.find(
         (assetPrice) => getAddress(assetPrice.asset_id) === getAddress(assetId)
       );
+
       if (!assetPrice) {
         console.log(`Asset price not found for ${assetId}`);
         continue;
@@ -160,13 +129,9 @@ export const getAssetsPrice = withTracing(
 const getExchangeRates = withTracing(
   "queries",
   "getExchangeRates",
-  cache(async (assetPrices: AssetPrice[], userCurrency: CurrencyCode) => {
-    "use cache";
-    cacheTag("asset");
+  cache(async (prices: Price[], userCurrency: CurrencyCode) => {
     const exchangeRates = new Map<string, number | null>();
-    const currencyCodes = assetPrices.map(
-      (assetPrice) => assetPrice.currency as CurrencyCode
-    );
+    const currencyCodes = prices.map((price) => price.currency);
     const uniqueCurrencies = Array.from(new Set<CurrencyCode>(currencyCodes));
     await Promise.all(
       uniqueCurrencies.map(async (currency) => {
