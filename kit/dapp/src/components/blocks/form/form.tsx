@@ -332,6 +332,30 @@ export function Form<
 
   const { getValues, clearErrors, watch } = form;
 
+  const handleSubmit = async (toastId?: number) => {
+    onOpenChange?.(false);
+    return handleSubmitWithAction()
+      .catch((error) => {
+        let errorMessage = "Unknown error";
+        if (error?.error?.serverError) {
+          errorMessage = error.error.serverError as string;
+        } else if (error?.error?.validationErrors) {
+          errorMessage = "Validation error";
+        }
+        toast.error(`Failed to submit: ${errorMessage}`, {
+          id: toastId,
+        });
+      })
+      .finally(() => {
+        if (secureForm) {
+          form.resetField(
+            "verificationCode" as Path<S extends Schema ? Infer<S> : string>
+          );
+        }
+        resetFormAndAction();
+      });
+  };
+
   const isLastStep = currentStep === totalSteps - 1;
 
   const handlePrev = () => {
@@ -489,37 +513,24 @@ export function Form<
                     const action = toastMessages?.action
                       ? toastMessages.action(form.getValues())
                       : undefined;
-                    toast.promise(
-                      handleSubmitWithAction().finally(() => {
-                        form.resetField(
-                          "verificationCode" as Path<
-                            S extends Schema ? Infer<S> : any
-                          >
-                        );
-                        resetFormAndAction();
-                      }),
-                      {
-                        loading: t("transactions.sending"),
-                        success: async () => {
-                          await revalidate();
-                          const successMessage =
-                            toastMessages?.success || t("transactions.success");
+                    toast.promise(handleSubmit(toastId), {
+                      loading: t("transactions.sending"),
+                      success: async () => {
+                        await revalidate();
+                        const successMessage =
+                          toastMessages?.success || t("transactions.success");
 
-                          toast.dismiss(toastId);
-                          return toast.success(successMessage, {
-                            action,
-                            actionButtonStyle: {
-                              backgroundColor: "var(--success-fg-deep)",
-                              color: "var(--primary-foreground)",
-                            },
-                          });
-                        },
-                        error: (error) =>
-                          `Failed to submit: ${(error as Error).message}`,
-                        id: toastId,
-                      }
-                    );
-                    onOpenChange?.(false);
+                        toast.dismiss(toastId);
+                        return toast.success(successMessage, {
+                          action,
+                          actionButtonStyle: {
+                            backgroundColor: "var(--success-fg-deep)",
+                            color: "var(--primary-foreground)",
+                          },
+                        });
+                      },
+                      id: toastId,
+                    });
                   }}
                 />
               )}
@@ -540,7 +551,7 @@ export function Form<
                   });
                 }}
                 labels={buttonLabels}
-                onLastStep={secureForm ? handleNext : handleSubmitWithAction}
+                onLastStep={secureForm ? handleNext : handleSubmit}
                 isSecurityDialogOpen={showFormSecurityConfirmation}
                 disablePreviousButton={disablePreviousButton}
               />
