@@ -109,6 +109,54 @@ export const getAssetsPricesInUserCurrency = withTracing(
   )
 );
 
+export const getAssetsPrice = withTracing(
+  "queries",
+  "getAssetsPrice",
+  cache(async (assetIds: string[]): Promise<Map<string, Price>> => {
+    "use cache";
+    cacheTag("asset");
+
+    const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
+    const assetPricesData = await fetchAllHasuraPages(
+      async (pageLimit, offset) => {
+        const assetIds = assetIdsWithoutDuplicates.map((address) => {
+          return getAddress(address);
+        });
+        const pageResult = await hasuraClient.request(
+          AssetPrices,
+          {
+            assetIds,
+            limit: pageLimit,
+            offset,
+          },
+          {
+            "X-GraphQL-Operation-Name": "AssetPrices",
+            "X-GraphQL-Operation-Type": "query",
+          }
+        );
+        return pageResult.asset_price ?? [];
+      }
+    );
+
+    const pricesForAssetIds = new Map();
+
+    for (const assetId of assetIds) {
+      const assetPrice = assetPricesData.find(
+        (assetPrice) => getAddress(assetPrice.asset_id) === getAddress(assetId)
+      );
+      if (!assetPrice) {
+        console.log(`Asset price not found for ${assetId}`);
+        continue;
+      }
+
+      const validatedPrice = safeParse(AssetPriceSchema, assetPrice);
+      pricesForAssetIds.set(assetId, validatedPrice);
+    }
+
+    return pricesForAssetIds;
+  })
+);
+
 const getExchangeRates = withTracing(
   "queries",
   "getExchangeRates",

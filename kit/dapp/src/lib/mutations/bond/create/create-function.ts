@@ -2,7 +2,7 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { AddAssetPrice } from "@/lib/mutations/asset/price/add-price";
-import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
+import { getAssetsPrice } from "@/lib/queries/asset-price/asset-price";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
@@ -100,7 +100,7 @@ export const createBondFunction = withAccessControl(
     });
 
     const underlyingAssetPrice = (
-      await getAssetsPricesInUserCurrency([underlyingAsset.id], user.currency)
+      await getAssetsPrice([underlyingAsset.id])
     ).get(underlyingAsset.id);
 
     if (!underlyingAssetPrice) {
