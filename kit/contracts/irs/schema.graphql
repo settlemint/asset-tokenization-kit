@@ -1,6 +1,0 @@
-type ExampleEntity @entity(immutable: true) {
-  id: Bytes!
-  count: BigInt!
-  _identityWallet: Bytes! # address
-  _country: Int! # uint16
-}

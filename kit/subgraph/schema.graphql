@@ -80,6 +80,7 @@ type System_IdentityRegistryStorage @entity(immutable: false) {
 
 type System_IdentityFactory @entity(immutable: false) {
   id: Bytes!
+  accessControl: Internal_AccessControl!
   account: Account
 }
 
