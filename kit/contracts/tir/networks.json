@@ -1,0 +1,8 @@
+{
+  "mainnet": {
+    "TrustedIssuersRegistry": {
+      "address": "0x5e771e1417100000000000000000000000020088",
+      "startBlock": 0
+    }
+  }
+}
