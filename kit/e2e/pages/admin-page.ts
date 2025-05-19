@@ -35,6 +35,7 @@ export class AdminPage extends BasePage {
     const button = this.page.getByRole("button", { name: buttonName });
 
     await button.waitFor({ state: "attached" });
+    await button.focus();
     await button.scrollIntoViewIfNeeded();
     await button.click();
 
@@ -48,6 +49,7 @@ export class AdminPage extends BasePage {
     name: string;
     symbol: string;
     isin: string;
+    internalId: string;
     decimals: string;
     maximumSupply: string;
     faceValue: string;
@@ -60,6 +62,7 @@ export class AdminPage extends BasePage {
       options.symbol
     );
     await this.page.getByLabel("ISIN").fill(options.isin);
+    await this.page.getByLabel("Internal ID").fill(options.internalId);
     const nextButton = this.page.getByRole("button", {
       name: "Next",
       exact: true,
@@ -97,6 +100,8 @@ export class AdminPage extends BasePage {
     assetType: string;
     name: string;
     symbol: string;
+    isin: string;
+    internalId: string;
     decimals: string;
     initialSupply: string;
     price: string;
@@ -140,12 +145,15 @@ export class AdminPage extends BasePage {
       options.symbol
     );
     await this.page.getByLabel("ISIN").fill(options.isin);
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    const continueButton = this.page.locator(
-      'button[data-slot="button"]:has-text("Continue")'
+    const nextButton = this.page.locator(
+      'button[data-slot="button"]:has-text("Next")'
     );
-    await continueButton.focus();
-    await continueButton.click();
+    await nextButton.focus();
+    await nextButton.click();
+    await this.page.getByLabel("Decimals").fill(options.decimals);
+    await this.page.getByLabel("Price").fill(options.price);
+    await this.page.locator("#price\\.currency").click();
+    await this.page.getByRole("option", { name: "EUR" }).click();
     await this.page.getByRole("combobox", { name: "Equity class" }).click();
     await this.page
       .getByRole("option", { name: options.equityClass })
@@ -158,11 +166,8 @@ export class AdminPage extends BasePage {
     await this.page
       .getByRole("option", { name: options.equityCategory })
       .click();
-    await this.page.getByLabel("Price").fill(options.price);
-    await this.page.locator("#price\\.currency").click();
-    await this.page.getByRole("option", { name: "EUR" }).click();
-    await continueButton.click();
-    await continueButton.click();
+    await nextButton.click();
+    await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
@@ -185,12 +190,16 @@ export class AdminPage extends BasePage {
       options.symbol
     );
     await this.page.getByLabel("ISIN").fill(options.isin);
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    const continueButton = this.page.locator(
-      'button[data-slot="button"]:has-text("Continue")'
+    const nextButton = this.page.locator(
+      'button[data-slot="button"]:has-text("Next")'
     );
-    await continueButton.focus();
-    await continueButton.click();
+    await nextButton.focus();
+    await nextButton.click();
+    await this.page.getByLabel("Decimals").fill(options.decimals);
+    await this.page.getByLabel("Price").fill(options.price);
+    await this.page.locator("#price\\.currency").click();
+    await this.page.getByRole("option", { name: "EUR" }).click();
+    await this.page.getByLabel("Management fee").fill(options.managementFee);
     await this.page.getByRole("combobox", { name: "Fund category" }).click();
     await this.page
       .getByRole("option", { name: options.fundCategory })
@@ -201,12 +210,8 @@ export class AdminPage extends BasePage {
       .getByRole("option", { name: options.fundClass })
       .waitFor({ state: "visible" });
     await this.page.getByRole("option", { name: options.fundClass }).click();
-    await this.page.getByLabel("Management fee").fill(options.managementFee);
-    await this.page.getByLabel("Price").fill(options.price);
-    await this.page.locator("#price\\.currency").click();
-    await this.page.getByRole("option", { name: "EUR" }).click();
-    await continueButton.click();
-    await continueButton.click();
+    await nextButton.click();
+    await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }
@@ -259,20 +264,20 @@ export class AdminPage extends BasePage {
       options.symbol
     );
     await this.page.getByLabel("ISIN").fill(options.isin);
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    const continueButton = this.page.locator(
-      'button[data-slot="button"]:has-text("Continue")'
+    const nextButton = this.page.locator(
+      'button[data-slot="button"]:has-text("Next")'
     );
-    await continueButton.focus();
-    await continueButton.click();
+    await nextButton.focus();
+    await nextButton.click();
+    await this.page.getByLabel("Decimals").fill(options.decimals);
     await this.page
       .getByLabel("Collateral Proof Validity")
       .fill(options.validityPeriod);
     await this.page.getByLabel("Price").fill(options.price);
     await this.page.locator("#price\\.currency").click();
     await this.page.getByRole("option", { name: "EUR" }).click();
-    await continueButton.click();
-    await continueButton.click();
+    await nextButton.click();
+    await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
     await this.completeAssetCreation(buttonName, options.pincode);
   }

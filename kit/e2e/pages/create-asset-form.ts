@@ -113,10 +113,17 @@ export class CreateAssetForm extends BasePage {
   }
 
   async fillEquityConfigurationFields(options: {
+    decimals?: string;
+    price?: string;
     equityClass?: string;
     equityCategory?: string;
-    price?: string;
   }) {
+    if (options.decimals !== undefined) {
+      await this.page.getByLabel("Decimals").fill(options.decimals);
+    }
+    if (options.price !== undefined) {
+      await this.page.getByLabel("Price").fill(options.price);
+    }
     if (options.equityClass !== undefined) {
       await this.page.getByRole("combobox", { name: "Equity class" }).click();
       await this.page
@@ -131,9 +138,6 @@ export class CreateAssetForm extends BasePage {
         .getByRole("option", { name: options.equityCategory })
         .click();
     }
-    if (options.price !== undefined) {
-      await this.page.getByLabel("Price").fill(options.price);
-    }
   }
 
   async verifyCurrencyValue(currencyValue: string) {
@@ -144,13 +148,25 @@ export class CreateAssetForm extends BasePage {
 
   async fillFundConfigurationFields(
     options: {
+      decimals?: string;
+      price?: string;
+      managementFeeBps?: string;
       fundCategory?: string;
       fundClass?: string;
-      managementFeeBps?: string;
-      price?: string;
     } = {}
   ) {
     const actions: Record<string, (value: string) => Promise<void>> = {
+      decimals: async (value) => {
+        await this.page.getByLabel("Decimals", { exact: false }).fill(value);
+      },
+      price: async (value) => {
+        await this.page.getByLabel("Price", { exact: false }).fill(value);
+      },
+      managementFeeBps: async (value) => {
+        await this.page
+          .getByLabel("Management fee", { exact: false })
+          .fill(value);
+      },
       fundCategory: async (value) => {
         await this.page.getByLabel("Fund category", { exact: false }).click();
         await this.page.getByRole("option", { name: value }).click();
@@ -158,14 +174,6 @@ export class CreateAssetForm extends BasePage {
       fundClass: async (value) => {
         await this.page.getByLabel("Fund class", { exact: false }).click();
         await this.page.getByRole("option", { name: value }).click();
-      },
-      managementFeeBps: async (value) => {
-        await this.page
-          .getByLabel("Management fee", { exact: false })
-          .fill(value);
-      },
-      price: async (value) => {
-        await this.page.getByLabel("Price", { exact: false }).fill(value);
       },
     };
     for (const key in options) {
@@ -178,13 +186,24 @@ export class CreateAssetForm extends BasePage {
 
   async fillStablecoinConfigurationFields(
     options: {
+      decimals?: string;
+      price?: string;
+      priceCurrency?: string;
       collateralProofValidity?: string;
       collateralProofValidityTimeUnit?: string;
-      priceAmount?: string;
-      priceCurrency?: string;
     } = {}
   ) {
     const actions: Record<string, (value: string) => Promise<void>> = {
+      decimals: async (value) => {
+        await this.page.getByLabel("Decimals", { exact: false }).fill(value);
+      },
+      price: async (value) => {
+        await this.page.getByLabel("Price", { exact: false }).fill(value);
+      },
+      priceCurrency: async (value) => {
+        await this.page.locator("#price\\.currency").click();
+        await this.page.getByRole("option", { name: value }).click();
+      },
       collateralProofValidity: async (value) => {
         await this.page
           .getByLabel("Collateral proof validity", { exact: false })
@@ -192,13 +211,6 @@ export class CreateAssetForm extends BasePage {
       },
       collateralProofValidityTimeUnit: async (value) => {
         await this.page.locator("#collateralLivenessTimeUnit").click();
-        await this.page.getByRole("option", { name: value }).click();
-      },
-      priceAmount: async (value) => {
-        await this.page.getByLabel("Price", { exact: false }).fill(value);
-      },
-      priceCurrency: async (value) => {
-        await this.page.locator("#price\\.currency").click();
         await this.page.getByRole("option", { name: value }).click();
       },
     };
