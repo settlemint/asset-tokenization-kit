@@ -221,3 +221,83 @@ templates:
         - event: TrustedIssuerRemoved(indexed address,indexed address)
           handler: handleTrustedIssuerRemoved
       file: ./src/event-handlers/trusted-issuers-registry.ts
+  - kind: ethereum
+    name: Identity
+    network: settlemint
+    source:
+      abi: Identity
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: Identity
+          file: ../contracts/artifacts/contracts/ATKIdentityImplementation.sol/ATKIdentityImplementation.json
+      eventHandlers:
+        - event: Approved(indexed uint256,bool)
+          handler: handleApproved
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
+          handler: handleClaimAdded
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
+          handler: handleClaimChanged
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
+          handler: handleClaimRemoved
+        - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
+          handler: handleExecuted
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
+          handler: handleExecutionFailed
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
+          handler: handleExecutionRequested
+        - event: Initialized(uint64)
+          handler: handleInitialized
+        - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
+          handler: handleKeyAdded
+        - event: KeyRemoved(indexed bytes32,indexed uint256,indexed uint256)
+          handler: handleKeyRemoved
+      file: ./src/event-handlers/identity.ts
+  - kind: ethereum
+    name: TokenIdentity
+    network: settlemint
+    source:
+      abi: TokenIdentity
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: TokenIdentity
+          file: ../contracts/artifacts/contracts/ATKTokenIdentityImplementation.sol/ATKTokenIdentityImplementation.json
+      eventHandlers:
+        - event: Approved(indexed uint256,bool)
+          handler: handleApproved
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
+          handler: handleClaimAdded
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
+          handler: handleClaimChanged
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
+          handler: handleClaimRemoved
+        - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
+          handler: handleExecuted
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
+          handler: handleExecutionFailed
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
+          handler: handleExecutionRequested
+        - event: Initialized(uint64)
+          handler: handleInitialized
+        - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
+          handler: handleKeyAdded
+        - event: KeyRemoved(indexed bytes32,indexed uint256,indexed uint256)
+          handler: handleKeyRemoved
+      file: ./src/event-handlers/token-identity.ts
