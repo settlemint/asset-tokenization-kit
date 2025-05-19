@@ -57,6 +57,7 @@ type Internal_AccessControl @entity(immutable: false) {
 type System @entity(immutable: false) {
   id: Bytes!
   accessControl: Internal_AccessControl!
+  account: Account
   compliance: System_Compliance
   identityRegistryStorage: System_IdentityRegistryStorage
   identityFactory: System_IdentityFactory
@@ -68,7 +69,6 @@ type System @entity(immutable: false) {
 
 type System_Compliance @entity(immutable: false) {
   id: Bytes!
-  accessControl: Internal_AccessControl!
   account: Account
 }
 
