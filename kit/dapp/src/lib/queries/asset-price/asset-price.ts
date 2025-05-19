@@ -8,7 +8,7 @@ import { safeParse } from "@/lib/utils/typebox";
 import type { Price } from "@/lib/utils/typebox/price";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
-import { getAddress } from "viem";
+import { getAddress, type Address } from "viem";
 import type { CurrencyCode } from "../../db/schema-settings";
 import { AssetPriceFragment } from "./asset-price-fragment";
 import { AssetPriceSchema } from "./asset-price-schema";
@@ -36,7 +36,7 @@ export const getAssetsPricesInUserCurrency = withTracing(
     async (
       assetIds: string[],
       userCurrency: CurrencyCode
-    ): Promise<Map<string, Price>> => {
+    ): Promise<Map<Address, Price>> => {
       const assetPrices = await getAssetsPrice(assetIds);
 
       const exchangeRates = await getExchangeRates(
@@ -45,18 +45,9 @@ export const getAssetsPricesInUserCurrency = withTracing(
       );
 
       // Convert prices to user currency
-      const pricesInUserCurrency = new Map<string, Price>();
+      const pricesInUserCurrency = new Map<Address, Price>();
 
       for (const [assetId, price] of assetPrices.entries()) {
-        if (!price) {
-          console.log(`Asset price not found for ${assetId}`);
-          pricesInUserCurrency.set(assetId, {
-            amount: 0,
-            currency: userCurrency,
-          });
-          continue;
-        }
-
         const exchangeRate = exchangeRates.get(price.currency);
         if (!exchangeRate) {
           throw new Error(
@@ -78,17 +69,15 @@ export const getAssetsPricesInUserCurrency = withTracing(
 export const getAssetsPrice = withTracing(
   "queries",
   "getAssetsPrice",
-  cache(async (assetIds: string[]) => {
+  cache(async (assets: string[]) => {
     "use cache";
     cacheTag("asset");
 
-    const assetIdsWithoutDuplicates = Array.from(new Set(assetIds));
+    const assetIds = Array.from(new Set(assets)).map((address) => {
+      return getAddress(address);
+    });
     const assetPricesData = await fetchAllHasuraPages(
       async (pageLimit, offset) => {
-        const assetIds = assetIdsWithoutDuplicates.map((address) => {
-          return getAddress(address);
-        });
-
         const pageResult = await hasuraClient.request(
           AssetPrices,
           {
@@ -105,13 +94,12 @@ export const getAssetsPrice = withTracing(
         return pageResult.asset_price ?? [];
       }
     );
-
-    const pricesForAssetIds = new Map<string, Price>();
+    const pricesForAssetIds = new Map<Address, Price>();
 
     for (const assetId of assetIds) {
-      const assetPrice = assetPricesData.find(
-        (assetPrice) => getAddress(assetPrice.asset_id) === getAddress(assetId)
-      );
+      const assetPrice = assetPricesData.find((assetPrice) => {
+        return assetPrice.asset_id === assetId;
+      });
 
       if (!assetPrice) {
         console.log(`Asset price not found for ${assetId}`);
