@@ -36,14 +36,7 @@ export const EventDetailContent = React.memo(function EventDetailContent({
   );
 
   // Define EventParameterValue as an internal helper function
-  const renderEventParameterValue = (
-    value: unknown,
-    formattedValue?: string
-  ) => {
-    if (formattedValue) {
-      return <span>{formattedValue}</span>;
-    }
-
+  const renderEventParameterValue = (value: unknown) => {
     if (isAddress(value as Hash)) {
       return <EvmAddress address={value as Hash} />;
     }
@@ -130,7 +123,7 @@ export const EventDetailContent = React.memo(function EventDetailContent({
                 </CardHeader>
                 <CardContent>
                   <dl className="grid grid-cols-[1fr_2fr] gap-4">
-                    {event.values.map(({ name, value, formattedValue }) => [
+                    {event.values.map(({ name, value }) => [
                       <dt
                         key={`${name}-dt`}
                         className="text-muted-foreground text-sm capitalize"
@@ -138,7 +131,7 @@ export const EventDetailContent = React.memo(function EventDetailContent({
                         {name}:
                       </dt>,
                       <dd key={`${name}-dd`} className="text-sm break-all">
-                        {renderEventParameterValue(value, formattedValue)}
+                        {renderEventParameterValue(value)}
                       </dd>,
                     ])}
                   </dl>
