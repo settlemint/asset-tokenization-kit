@@ -1,8 +1,8 @@
 import { Badge } from "@/components/ui/badge";
+import { Link } from "@/i18n/routing";
 import type { RegulationType } from "@/lib/db/regulations/schema-base-regulation-configs";
 import { CheckCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import type { ReactElement } from "react";
 
 interface RegulationPillProps {
