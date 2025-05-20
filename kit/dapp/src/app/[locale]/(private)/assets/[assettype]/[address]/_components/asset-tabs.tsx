@@ -30,8 +30,13 @@ const tabs = async ({
     namespace: "private.assets.details",
   });
 
-  // Check MICA availability first since it's async
-  const isMicaEnabled = await hasMica(assettype, address);
+  let isMicaEnabled = false; // Default to false to hide the tab in case of error
+  try {
+    isMicaEnabled = await hasMica(assettype, address);
+  } catch (error) {
+    console.error("Failed to check MICA availability:", error);
+  }
+
   const tabItems = [
     {
       name: t("tabs.details"),
