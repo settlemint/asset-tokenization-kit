@@ -9,6 +9,7 @@ import { BadgeLoader, BadgeSpinner } from "./badge-loader"; // Assuming badge-lo
 import {
   hasAllowlist,
   hasBlocklist,
+  hasMica,
   hasUnderlyingAsset,
   hasYield,
 } from "./features-enabled";
@@ -29,7 +30,14 @@ const tabs = async ({
     namespace: "private.assets.details",
   });
 
-  return [
+  let isMicaEnabled = false; // Default to false to hide the tab in case of error
+  try {
+    isMicaEnabled = await hasMica(assettype, address);
+  } catch (error) {
+    console.error("Failed to check MICA availability:", error);
+  }
+
+  const tabItems = [
     {
       name: t("tabs.details"),
       href: `/assets/${assettype}/${address}`,
@@ -148,7 +156,17 @@ const tabs = async ({
           },
         ]
       : []),
+    ...(isMicaEnabled
+      ? [
+          {
+            name: t("tabs.mica"),
+            href: `/assets/${assettype}/${address}/regulations/mica`,
+          },
+        ]
+      : []),
   ];
+
+  return tabItems;
 };
 
 export async function AssetTabs(params: AssetTabsProps) {
