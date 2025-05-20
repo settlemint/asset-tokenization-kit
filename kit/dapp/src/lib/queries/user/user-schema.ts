@@ -21,46 +21,64 @@ export const UserSchema = t.Object(
     wallet: t.EthereumAddress({
       description: "The Ethereum wallet address of the user",
     }),
-    created_at: t.Timestamp({
-      description: "The timestamp when the user was created",
-    }),
-    updated_at: t.MaybeEmpty(
-      t.Timestamp({
-        description: "The timestamp when the user was last updated",
-      })
+    created_at: t.Optional(
+      t.MaybeEmpty(
+        t.Timestamp({
+          description: "The timestamp when the user was created",
+        })
+      )
     ),
-    kyc_verified_at: t.MaybeEmpty(
-      t.Timestamp({
-        description: "The timestamp when the user's KYC was verified",
-      })
+    updated_at: t.Optional(
+      t.MaybeEmpty(
+        t.Timestamp({
+          description: "The timestamp when the user was last updated",
+        })
+      )
+    ),
+    kyc_verified_at: t.Optional(
+      t.MaybeEmpty(
+        t.Timestamp({
+          description: "The timestamp when the user's KYC was verified",
+        })
+      )
     ),
     role: t.UserRoles({
       description: "The role of the user in the system",
     }),
-    banned: t.MaybeEmpty(
-      t.Boolean({
-        description: "Whether the user is banned from the platform",
-      })
+    banned: t.Optional(
+      t.MaybeEmpty(
+        t.Boolean({
+          description: "Whether the user is banned from the platform",
+        })
+      )
     ),
-    ban_reason: t.MaybeEmpty(
-      t.String({
-        description: "The reason why the user was banned",
-      })
+    ban_reason: t.Optional(
+      t.MaybeEmpty(
+        t.String({
+          description: "The reason why the user was banned",
+        })
+      )
     ),
-    ban_expires: t.MaybeEmpty(
-      t.Timestamp({
-        description: "The timestamp when the user's ban expires",
-      })
+    ban_expires: t.Optional(
+      t.MaybeEmpty(
+        t.Timestamp({
+          description: "The timestamp when the user's ban expires",
+        })
+      )
     ),
     last_login_at: t.Optional(
-      t.Timestamp({
-        description: "The timestamp of the user's last login",
-      })
+      t.MaybeEmpty(
+        t.Timestamp({
+          description: "The timestamp of the user's last login",
+        })
+      )
     ),
-    image: t.MaybeEmpty(
-      t.String({
-        description: "The URL of the user's profile image",
-      })
+    image: t.Optional(
+      t.MaybeEmpty(
+        t.String({
+          description: "The URL of the user's profile image",
+        })
+      )
     ),
     currency: t.FiatCurrency({
       description: "The preferred currency of the user",
@@ -82,10 +100,12 @@ export const AccountSchema = t.Object(
       description: "The Ethereum address of the account",
     }),
     balancesCount: t.Optional(
-      t.StringifiedBigInt({
-        description:
-          "The number of token balances associated with this account",
-      })
+      t.MaybeEmpty(
+        t.StringifiedBigInt({
+          description:
+            "The number of token balances associated with this account",
+        })
+      )
     ),
     lastActivity: t.String({
       description: "The timestamp of the user's last activity",
