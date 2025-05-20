@@ -9,7 +9,7 @@ const config: HardhatUserConfig = {
       {
         version: "0.8.28",
         settings: {
-          evmVersion: "paris",
+          evmVersion: "cancun",
           viaIR: true,
           optimizer: {
             enabled: true,

@@ -17,7 +17,7 @@ export async function revokeSession(
   );
   const newSession = await ctx.context.internalAdapter.createSession(
     user.id,
-    ctx.request,
+    ctx,
     false,
     ctx.context.session.session
   );

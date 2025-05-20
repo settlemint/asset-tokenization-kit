@@ -1,8 +1,8 @@
 import { Address, Bytes, ethereum, Value } from "@graphprotocol/graph-ts";
-import { getRoleConfigFromBytes } from "../../enums/role";
-import { fetchAccessControl } from "../../fetch/accesscontrol";
-import { fetchAccount } from "../../fetch/account";
-import { processEvent } from "../event";
+import { fetchAccount } from "../account/fetch-account";
+import { processEvent } from "../event/event";
+import { fetchAccessControl } from "./fetch-accesscontrol";
+import { getRoleConfigFromBytes } from "./role";
 
 export function roleGrantedHandler(
   event: ethereum.Event,

@@ -19,6 +19,22 @@ const getRandomString = (length: number): string => {
   return result;
 };
 
+const limitNameLength = (name: string, maxLength: number = 50): string => {
+  if (name.length <= maxLength) {
+    return name;
+  }
+  const lastSpaceIndex = name.lastIndexOf(" ", maxLength - 10);
+
+  if (lastSpaceIndex === -1) {
+    return name.substring(0, maxLength);
+  }
+
+  const lastDashIndex = name.lastIndexOf("-");
+  const uniqueId = lastDashIndex !== -1 ? name.substring(lastDashIndex) : "";
+
+  return name.substring(0, lastSpaceIndex) + uniqueId;
+};
+
 const prefixes = [
   "Neo",
   "Astra",
@@ -163,61 +179,59 @@ const suffixes = [
 ];
 
 const bondTerms = ["1Y", "2Y", "3Y", "5Y", "7Y", "10Y", "15Y", "20Y", "30Y"];
-const bondTypes = ["Treasury", "Corp", "Municipal", "Sovereign", "High-Yield"];
+const bondTypes = ["TR", "Corp", "Muni", "SOV", "HY"];
 
-const fundStrategies = ["Growth", "Value", "Income", "Balanced", "Opportunity"];
-const fundAssetClasses = ["Equity", "Fixed Income", "Multi-Asset", "Global"];
+const fundStrategies = ["Growth", "Value", "Income", "Balanced", "Opp"];
+const fundAssetClasses = ["Equity", "Fixed", "Multi", "Global"];
 
-const stableCurrencies = ["Dollar", "Euro", "Pound", "Yen", "Franc"];
+const stableCurrencies = ["USD", "EUR", "GBP", "JPY", "CHF"];
 
 const depositCurrencies = [
-  "Dollar",
-  "Euro",
-  "Pound",
-  "Yen",
-  "Franc",
-  "Swiss Franc",
-  "Yuan",
-  "Rupee",
-  "Real",
-  "Peso",
+  "USD",
+  "EUR",
+  "GBP",
+  "JPY",
+  "CHF",
+  "CNY",
+  "INR",
+  "BRL",
+  "MXN",
 ];
 
 const getUniqueId = (): string => {
   sequenceCounter++;
-  return `${sequenceCounter}-${getRandomString(3)}-${getRandomInt(100, 999)}`;
+  return `${sequenceCounter}-${getRandomString(2)}-${getRandomInt(10, 99)}`;
 };
 
 export const generateBondName = (): string => {
-  const companyName = `${getRandomElement(prefixes)}${getRandomElement(middles)} ${getRandomElement(suffixes)}`;
+  const companyName = `${getRandomElement(prefixes)}${getRandomElement(middles)}`;
   const type = getRandomElement(bondTypes);
   const term = getRandomElement(bondTerms);
   const uniqueId = getUniqueId();
 
-  return `${companyName} ${type} ${term} Bond-${uniqueId}`;
+  return limitNameLength(`${companyName} ${type} ${term}-${uniqueId}`);
 };
 
 export const generateCryptoName = (): string => {
   const name = `${getRandomElement(prefixes)}${getRandomElement(middles)}`;
   const uniqueId = getUniqueId();
 
-  return `${name} Asset-${uniqueId}`;
+  return limitNameLength(`${name}-${uniqueId}`);
 };
 
 export const generateEquityName = (): string => {
-  const name = `${getRandomElement(prefixes)}${getRandomElement(middles)} ${getRandomElement(suffixes)}`;
+  const name = `${getRandomElement(prefixes)}${getRandomElement(middles)}`;
   const uniqueId = getUniqueId();
 
-  return `${name} Equity-${uniqueId}`;
+  return limitNameLength(`${name} Eq-${uniqueId}`);
 };
 
 export const generateFundName = (): string => {
   const manager = `${getRandomElement(prefixes)}${getRandomElement(middles)}`;
   const strategy = getRandomElement(fundStrategies);
-  const assetClass = getRandomElement(fundAssetClasses);
   const uniqueId = getUniqueId();
 
-  return `${manager} ${assetClass} ${strategy} Fund-${uniqueId}`;
+  return limitNameLength(`${manager} ${strategy}-${uniqueId}`);
 };
 
 export const generateStablecoinName = (): string => {
@@ -225,7 +239,7 @@ export const generateStablecoinName = (): string => {
   const currency = getRandomElement(stableCurrencies);
   const uniqueId = getUniqueId();
 
-  return `${prefix}${currency} Stable-${uniqueId}`;
+  return limitNameLength(`${prefix}${currency}-${uniqueId}`);
 };
 
 export const generateDepositName = (): string => {
@@ -233,7 +247,7 @@ export const generateDepositName = (): string => {
   const currency = getRandomElement(depositCurrencies);
   const uniqueId = getUniqueId();
 
-  return `${prefix}${currency} Deposit-${uniqueId}`;
+  return limitNameLength(`${prefix}${currency} Dep-${uniqueId}`);
 };
 
 const generateSymbol = (name: string): string => {
@@ -255,8 +269,8 @@ export const bondData = {
   assetType: "Bond",
   name: generateBondName(),
   symbol: generateSymbol(generateBondName()),
-  internalId: getUniqueId().substring(0, 12),
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
+  internalId: getUniqueId().substring(0, 12),
   decimals: "18",
   maximumSupply: "1000",
   faceValue: "100",
@@ -270,6 +284,7 @@ export const cryptocurrencyData = {
   name: generateCryptoName(),
   symbol: generateSymbol(generateCryptoName()),
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
+  internalId: getUniqueId().substring(0, 12),
   decimals: "6",
   initialSupply: "100",
   price: "10",
@@ -359,6 +374,7 @@ export const stablecoinData = {
   assetType: "Stablecoin",
   name: generateStablecoinName(),
   symbol: generateSymbol(generateStablecoinName()),
+  isin: `US${getRandomInt(1000000000, 9999999999)}`,
   decimals: "16",
   validityPeriod: "600",
   price: "3",
@@ -373,8 +389,9 @@ export const depositData = {
   symbol: generateSymbol(generateDepositName()),
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
   decimals: "16",
-  validityPeriod: "600",
   price: "3",
+  validityPeriod: "600",
+  validityPeriodTimeUnit: "months",
   pincode: pincode,
   sidebarAssetTypes: "Deposits",
   initialSupply: "0",

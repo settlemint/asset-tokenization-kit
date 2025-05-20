@@ -200,33 +200,18 @@ test.describe("Cryptocurrency Creation Validation", () => {
       await createAssetForm.verifyCurrencyValue("EUR");
     });
   });
-});
-
-test.describe("Create cryptocurrency asset", () => {
-  let adminContext: BrowserContext;
-  let adminPages: ReturnType<typeof Pages>;
-
-  test.beforeAll(async ({ browser }) => {
-    await ensureUserIsAdmin(adminUser.email);
-    adminContext = await browser.newContext();
-    const adminPage = await adminContext.newPage();
-    adminPages = Pages(adminPage);
-    await adminPages.signInPage.signInAsAdmin(adminUser);
-    await adminPages.adminPage.goto();
-  });
-
-  test.afterAll(async () => {
-    await adminContext.close();
-  });
-  test("Create Cryptocurrency asset", async () => {
-    await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
-    await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
-    );
-    await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
-      name: cryptocurrencyData.name,
-      totalSupply: cryptocurrencyData.initialSupply,
+  test.describe("Create cryptocurrency asset", () => {
+    test("Create Cryptocurrency asset", async () => {
+      await adminPages.adminPage.goto();
+      await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
+      await adminPages.adminPage.verifySuccessMessage(
+        assetMessage.successMessageCryptocurrency
+      );
+      await adminPages.adminPage.checkIfAssetExists({
+        sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
+        name: cryptocurrencyData.name,
+        totalSupply: cryptocurrencyData.initialSupply,
+      });
     });
   });
 });

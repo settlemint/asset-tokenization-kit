@@ -6,10 +6,10 @@ import {
   Executed,
   ExecutionFailed,
   ExecutionRequested,
+  Initialized,
   KeyAdded,
-  KeyRemoved,
 } from "../../generated/templates/Identity/Identity";
-import { processEvent } from "../shared/event";
+import { processEvent } from "../shared/event/event";
 
 export function handleApproved(event: Approved): void {
   processEvent(event, "Approved");
@@ -39,10 +39,10 @@ export function handleExecutionRequested(event: ExecutionRequested): void {
   processEvent(event, "ExecutionRequested");
 }
 
-export function handleKeyAdded(event: KeyAdded): void {
-  processEvent(event, "KeyAdded");
+export function handleInitialized(event: Initialized): void {
+  processEvent(event, "Initialized");
 }
 
-export function handleKeyRemoved(event: KeyRemoved): void {
-  processEvent(event, "KeyRemoved");
+export function handleKeyAdded(event: KeyAdded): void {
+  processEvent(event, "KeyAdded");
 }
