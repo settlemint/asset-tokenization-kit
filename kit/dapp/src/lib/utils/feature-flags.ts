@@ -10,7 +10,7 @@
  * Key features:
  * - Uses the authenticated user's ID for personalized feature flag evaluation
  * - Falls back to a "server" identifier when no user is authenticated
- * - Returns false when PostHog is not configured (matching client-side behavior)
+ * - Returns true when PostHog is not configured (matching client-side behavior)
  *
  * @example
  * ```typescript
