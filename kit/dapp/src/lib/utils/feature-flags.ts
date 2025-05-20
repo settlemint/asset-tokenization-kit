@@ -40,8 +40,6 @@ const posthog = process.env.NEXT_PUBLIC_POSTHOG_KEY
  * @returns True if the feature flag is enabled, false otherwise
  */
 export async function isFeatureEnabled(key: string): Promise<boolean> {
-  console.log("posthog", posthog);
-
   // If PostHog is not configured, feature flags are enabled
   if (!posthog) {
     return true;

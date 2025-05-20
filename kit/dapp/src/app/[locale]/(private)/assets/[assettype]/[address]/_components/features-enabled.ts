@@ -23,9 +23,6 @@ export const hasFreeze = (assettype: AssetType) =>
  */
 export const hasMica = async (assettype: AssetType, assetId: string) => {
   const flagEnabled = await isFeatureEnabled("mica");
-
-  console.log("flagEnabled", flagEnabled);
-
   if (!flagEnabled) {
     return false;
   }
