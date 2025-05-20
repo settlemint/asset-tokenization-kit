@@ -1,6 +1,5 @@
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import console from "console";
 import type { Locale } from "next-intl";
 import type { Address } from "viem";
 
