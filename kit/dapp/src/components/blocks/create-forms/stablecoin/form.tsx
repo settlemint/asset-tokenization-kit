@@ -33,12 +33,35 @@ import type { User } from "@/lib/queries/user/user-schema";
 import type { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
 import { stepDefinition as basicsStep } from "./steps/basics";
 import { stepDefinition as configurationStep } from "./steps/configuration";
+import { stepDefinition as regulationStep } from "./steps/regulation";
 import { StablecoinConfigurationCard } from "./steps/summaryConfigurationCard";
+
+// Wrapper component for the regulation step to access form context
+function RegulationStepWrapper({
+  onBack,
+  onNext,
+}: {
+  onBack: () => void;
+  onNext: () => void;
+}) {
+  const form = useFormContext();
+  const RegulationComponent = regulationStep.component;
+
+  return (
+    <RegulationComponent
+      assetType="stablecoin"
+      form={form}
+      onBack={onBack}
+      onNext={onNext}
+    />
+  );
+}
 
 interface CreateStablecoinFormProps {
   userDetails: User;
@@ -68,6 +91,11 @@ export function CreateStablecoinForm({
     <BasicsComponent key="details" />,
     <ConfigurationComponent key="configuration" />,
     <AdminsComponent key="admins" userDetails={userDetails} />,
+    <RegulationStepWrapper
+      key="regulation"
+      onBack={onPrevStep}
+      onNext={onNextStep}
+    />,
     <SummaryComponent
       key="summary"
       configurationCard={<StablecoinConfigurationCard />}
@@ -81,7 +109,8 @@ export function CreateStablecoinForm({
     details: 0,
     configuration: 1,
     admins: 2,
-    summary: 3,
+    regulation: 3,
+    summary: 4,
   };
 
   // Use the step synchronization hook
@@ -138,6 +167,7 @@ const stablecoinSteps = [
   basicsStep,
   configurationStep,
   adminsStep,
+  regulationStep,
   summaryStep,
 ];
 
