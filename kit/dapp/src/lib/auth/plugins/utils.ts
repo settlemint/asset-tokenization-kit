@@ -6,7 +6,7 @@ export async function revokeSession(
   ctx: GenericEndpointContext,
   updatedUserFields: Partial<User>
 ) {
-  if (!ctx.context.session || !ctx.request) {
+  if (!ctx.context.session) {
     return;
   }
   const user = ctx.context.session.user;
@@ -17,7 +17,7 @@ export async function revokeSession(
   );
   const newSession = await ctx.context.internalAdapter.createSession(
     user.id,
-    ctx.request,
+    ctx,
     false,
     ctx.context.session.session
   );
