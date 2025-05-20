@@ -1,6 +1,7 @@
 import { ActivePill } from "@/components/blocks/active-pill/active-pill";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import { RegulationPill } from "@/components/blocks/regulation-pill/regulation-pill";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
@@ -25,6 +26,14 @@ interface DetailPageHeaderProps {
     userAddress: Address;
   }) => ReactNode;
 }
+
+// Example regulations - in a real app, this would come from the API/backend
+const EXAMPLE_REGULATIONS = [
+  {
+    id: "MiCA-2023-12345-EU",
+    certificateUrl: "https://example.com/certificates/mica-2023-12345",
+  },
+];
 
 export async function DetailPageHeader({
   address,
@@ -66,9 +75,14 @@ export async function DetailPageHeader({
       }
       section={t("asset-management")}
       pill={
-        <ActivePill
-          paused={"paused" in assetDetails ? assetDetails.paused : false}
-        />
+        <div className="flex gap-2">
+          <ActivePill
+            paused={"paused" in assetDetails ? assetDetails.paused : false}
+          />
+          {EXAMPLE_REGULATIONS.map((regulation) => (
+            <RegulationPill key={regulation.id} {...regulation} />
+          ))}
+        </div>
       }
       button={manageDropdown({
         assetDetails,
