@@ -18,7 +18,8 @@ import type {
   UseFormGetValues,
   UseFormReturn,
 } from "react-hook-form";
-import { toast, type Action } from "sonner";
+import type { Action } from "sonner";
+import { toast as sonnerToast } from "sonner";
 import { FormButton, type ButtonLabels } from "./form-button";
 import { FormProgress } from "./form-progress";
 import { FormOtpDialog } from "./inputs/form-otp-dialog";
@@ -41,10 +42,11 @@ interface FormProps<
   onOpenChange?: (open: boolean) => void;
   hideButtons?: boolean | ((step: number) => boolean);
   hideStepProgress?: boolean;
-  toastMessages?: {
+  toast?: {
     loading?: string;
     success?: string;
     action?: (input?: Infer<S>) => Action | undefined;
+    disabled?: boolean;
   };
   secureForm?: boolean;
   onAnyFieldChange?: (
@@ -62,6 +64,7 @@ interface FormProps<
     }
   ) => void;
   onStepChange?: (newStep: number) => void;
+  onSuccess?: () => void;
   disablePreviousButton?: boolean;
 }
 
@@ -80,13 +83,14 @@ export function Form<
   resolver,
   buttonLabels,
   onOpenChange,
-  toastMessages,
+  toast,
   hideButtons,
   onAnyFieldChange,
   secureForm = true,
   disablePreviousButton = false,
   onStepChange,
   hideStepProgress = false,
+  onSuccess,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations();
@@ -333,28 +337,34 @@ export function Form<
   const { getValues, clearErrors, watch } = form;
 
   const handleSubmit = async () => {
-    toast.promise(handleSubmitWithAction, {
-      ...(secureForm
-        ? {
-            loading: t("transactions.sending"),
+    if (toast?.disabled) {
+      await handleSubmitWithAction();
+      onSuccess?.();
+    } else {
+      const showLoading = secureForm;
+      sonnerToast.promise(handleSubmitWithAction, {
+        ...(showLoading
+          ? {
+              loading: toast?.loading || t("transactions.sending"),
+            }
+          : {}),
+        success: async () => {
+          await revalidate();
+          onSuccess?.();
+          const successMessage = toast?.success || t("transactions.success");
+          return successMessage;
+        },
+        error: (error) => {
+          let errorMessage = "Unknown error";
+          if (error?.error?.serverError) {
+            errorMessage = error.error.serverError as string;
+          } else if (error?.error?.validationErrors) {
+            errorMessage = "Validation error";
           }
-        : {}),
-      success: async () => {
-        await revalidate();
-        const successMessage =
-          toastMessages?.success || t("transactions.success");
-        return successMessage;
-      },
-      error: (error) => {
-        let errorMessage = "Unknown error";
-        if (error?.error?.serverError) {
-          errorMessage = error.error.serverError as string;
-        } else if (error?.error?.validationErrors) {
-          errorMessage = "Validation error";
-        }
-        return `Failed to submit: ${errorMessage}`;
-      },
-    });
+          return `Failed to submit: ${errorMessage}`;
+        },
+      });
+    }
 
     onOpenChange?.(false);
     resetFormAndAction();
