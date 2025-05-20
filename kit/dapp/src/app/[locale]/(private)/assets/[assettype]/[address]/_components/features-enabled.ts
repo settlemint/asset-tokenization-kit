@@ -1,3 +1,4 @@
+import { isFeatureEnabled } from "@/lib/utils/feature-flags";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { checkMicaEnabled } from "./mica-server";
 
@@ -21,5 +22,13 @@ export const hasFreeze = (assettype: AssetType) =>
  * @returns True if MICA is available and enabled for this asset
  */
 export const hasMica = async (assettype: AssetType, assetId: string) => {
+  const flagEnabled = await isFeatureEnabled("mica");
+
+  console.log("flagEnabled", flagEnabled);
+
+  if (!flagEnabled) {
+    return false;
+  }
+
   return await checkMicaEnabled(assettype, assetId);
 };
