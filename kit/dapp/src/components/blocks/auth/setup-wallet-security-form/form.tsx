@@ -51,6 +51,9 @@ export function SetupWalletSecurityForm() {
             refetch();
           }
         }}
+        onSuccess={() => {
+          refetch();
+        }}
         disablePreviousButton
       >
         <SelectMethod key="select-method" />

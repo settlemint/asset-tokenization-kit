@@ -62,6 +62,7 @@ interface FormProps<
     }
   ) => void;
   onStepChange?: (newStep: number) => void;
+  onSuccess?: () => void;
   disablePreviousButton?: boolean;
 }
 
@@ -87,6 +88,7 @@ export function Form<
   disablePreviousButton = false,
   onStepChange,
   hideStepProgress = false,
+  onSuccess,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations();
@@ -341,6 +343,7 @@ export function Form<
         : {}),
       success: async () => {
         await revalidate();
+        onSuccess?.();
         const successMessage =
           toastMessages?.success || t("transactions.success");
         return successMessage;
