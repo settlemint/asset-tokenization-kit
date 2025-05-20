@@ -2677,6 +2677,61 @@
             }
           }
         }
+      },
+      "dashboard": {
+        "reserve-status": {
+          "title": "Reserve status",
+          "form": {
+            "trigger-label": "Update",
+            "title": "Reserve management",
+            "description": "Update reserve information and compliance data",
+            "fields": {
+              "token-type": {
+                "title": "Token type",
+                "description": "Defines the regulatory category of your stablecoin",
+                "options": {
+                  "electronic-money": "Electronic Money Token (EMT) - Single currency",
+                  "asset-referenced-token": "Asset-Referenced Token (ART) - Multi-asset"
+                }
+              },
+              "reserve-composition": {
+                "title": "Reserve composition",
+                "total-percentage": "Total",
+                "description": "Only assets with non-zero percentages will be shown in the reserve status. Active composition items must total 100%.",
+                "fields": {
+                  "bank-deposits": {
+                    "title": "Bank deposits",
+                    "description": "Cash deposits held at credit institutions in segregated accounts"
+                  },
+                  "government-bonds": {
+                    "title": "Government bonds",
+                    "description": "Sovereign debt instruments issued by governmental entities"
+                  },
+                  "high-quality-liquid-assets": {
+                    "title": "High quality liquid assets",
+                    "description": "Highly liquid financial instruments with minimal risk"
+                  },
+                  "corporate-bonds": {
+                    "title": "Corporate bonds",
+                    "description": "High-grade corporate debt or covered bonds (limited to 10%)"
+                  },
+                  "central-bank-assets": {
+                    "title": "Central bank assets",
+                    "description": "Assets held directly at central banks"
+                  },
+                  "commodities": {
+                    "title": "Commodities",
+                    "description": "Physical commodities like gold, held in custody"
+                  },
+                  "other-assets": {
+                    "title": "Other assets",
+                    "description": "Other eligible assets that meet regulatory requirements"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
