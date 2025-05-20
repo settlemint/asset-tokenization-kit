@@ -410,6 +410,10 @@
         "XvPSettlementExecuted": "Settlement executed",
         "YieldClaimed": "Yield claimed"
       },
+      "empty-state": {
+        "title": "No activity yet",
+        "description": "Events will appear here once you perform actions."
+      },
       "detail-sheet": {
         "AUDITOR_ROLE": "Auditor Role",
         "DEFAULT_ADMIN_ROLE": "Default Admin Role",
@@ -757,6 +761,11 @@
         "function": "Function",
         "status": "Status",
         "transaction-hash": "Transaction Hash"
+      },
+      "title": "Transactions",
+      "empty-state": {
+        "title": "No recent transactions",
+        "description": "Recent transactions will appear here when you perform actions."
       }
     }
   },
@@ -880,7 +889,7 @@
   "homepage": {
     "asset-tokenization": "asset tokenization",
     "bonds-funds-equities": "bonds, funds, equities",
-    "changelog-link-title": "Introducing the SMART protocol",
+    "changelog-link-title": "Introducing X vs Payment",
     "cryptocurrencies": "cryptocurrencies",
     "documentation": "Documentation",
     "features": {
