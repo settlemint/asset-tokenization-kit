@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { Check, Info, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
 
@@ -77,6 +77,20 @@ export function AssetRegulationStep({
 
   // Get currently selected regulations from form
   const selectedRegulations = form.watch("selectedRegulations") || [];
+
+  // Remove disabled regulations from form state if present (now in useEffect)
+  const EU_DISABLED_IDS = ["eu-mifid", "eu-prospectus"];
+  useEffect(() => {
+    if (selectedRegion === "EU") {
+      const selectedRegulations = form.getValues("selectedRegulations") || [];
+      const filtered = selectedRegulations.filter(
+        (id: string) => !EU_DISABLED_IDS.includes(id)
+      );
+      if (filtered.length !== selectedRegulations.length) {
+        form.setValue("selectedRegulations", filtered);
+      }
+    }
+  }, [selectedRegion, form]);
 
   // Handle region selection
   const handleRegionSelect = (region: string) => {
@@ -276,147 +290,197 @@ export function AssetRegulationStep({
             <FormProvider {...form}>
               {selectedRegion && (
                 <div className="space-y-6">
-                  {regionRegulations[selectedRegion].map((regulation) => (
-                    <div
-                      key={regulation.id}
-                      className="border border-border rounded-lg overflow-hidden"
-                    >
-                      <div className="p-4 flex items-start gap-3 bg-muted/30">
-                        <Checkbox
-                          id={regulation.id}
-                          checked={selectedRegulations.includes(regulation.id)}
-                          onCheckedChange={(checked) =>
-                            handleRegulationSelect(
-                              regulation.id,
-                              checked as boolean
-                            )
-                          }
-                          className="mt-1"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <label
-                              htmlFor={regulation.id}
-                              className="text-base font-medium cursor-pointer"
-                            >
-                              {regulation.name}
-                            </label>
-                            <Badge variant="outline" className="ml-2">
-                              <span className="inline-flex items-center text-xs">
-                                <span className="mr-1">{selectedRegion}</span>
-                              </span>
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {regulation.description}
-                          </p>
-                        </div>
-                      </div>
+                  {regionRegulations[selectedRegion].map((regulation) => {
+                    // Check if this is a disabled regulation for EU or US
+                    const isEU = selectedRegion === "EU";
+                    const isUS = selectedRegion === "US";
+                    const isDisabledRegulation =
+                      (isEU &&
+                        (regulation.id === "eu-mifid" ||
+                          regulation.id === "eu-prospectus")) ||
+                      (isUS && regulation.id === "us-sec");
 
-                      {/* Display requirements if regulation is selected and it's MiCA */}
-                      {selectedRegulations.includes(regulation.id) &&
-                        regulation.id === "mica" && (
-                          <div className="p-4 border-t border-border bg-background">
-                            <h4 className="text-sm font-medium mb-0">
-                              Key Requirements
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                              {micaRegulationRequirements.map((req) => (
-                                <div
-                                  key={req.id}
-                                  className="flex items-start gap-2"
-                                >
-                                  <div className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full bg-success flex items-center justify-center">
-                                    <Check className="h-3 w-3 text-white" />
-                                  </div>
-                                  <div>
-                                    <div className="flex items-center gap-1">
-                                      <span className="text-sm font-medium">
-                                        {req.title}
-                                      </span>
-                                      {req.required && (
-                                        <span className="text-xs text-primary">
-                                          *
-                                        </span>
-                                      )}
-                                    </div>
-                                    <p className="text-xs text-muted-foreground">
-                                      {req.description}
-                                    </p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-
-                            {/* Document Upload Section */}
-                            <div className="mt-4 border-t border-border pt-3">
-                              <div className="flex justify-between items-center mb-2">
-                                <h4 className="text-sm font-medium">
-                                  Supporting Documents
-                                </h4>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleShowUploadDialog(regulation.id)
-                                  }
-                                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs px-3 py-1.5 rounded-md"
-                                >
-                                  Upload Document
-                                </button>
+                    // Custom rendering based on if it's a disabled regulation
+                    if (isDisabledRegulation) {
+                      return (
+                        <div
+                          key={regulation.id}
+                          className="border border-border rounded-lg overflow-hidden opacity-50"
+                        >
+                          <div className="p-4 flex items-start gap-3 bg-muted/30">
+                            {/* Fixed unchecked and disabled checkbox for disabled regulations */}
+                            <div className="w-4 h-4 mt-1 border border-border rounded bg-muted flex-shrink-0" />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-base font-medium">
+                                  {regulation.name}
+                                </span>
+                                <Badge variant="outline" className="ml-2">
+                                  <span className="inline-flex items-center text-xs">
+                                    <span className="mr-1">
+                                      {selectedRegion}
+                                    </span>
+                                  </span>
+                                </Badge>
                               </div>
-
-                              {/* List of uploaded documents */}
-                              <div className="space-y-2">
-                                {uploadedDocuments[regulation.id]?.length >
-                                0 ? (
-                                  uploadedDocuments[regulation.id].map(
-                                    (document) => (
-                                      <div
-                                        key={document.id}
-                                        className="bg-muted/30 p-3 rounded-md flex items-center justify-between"
-                                      >
-                                        <div>
-                                          <span className="font-medium text-sm">
-                                            {document.title}
-                                          </span>
-                                          <p className="text-xs text-muted-foreground">
-                                            {document.type}
-                                          </p>
-                                        </div>
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            handleDeleteDocument(
-                                              regulation.id,
-                                              document.id
-                                            )
-                                          }
-                                          className="text-destructive hover:text-destructive/80 flex items-center gap-1 text-xs"
-                                        >
-                                          <span>Delete</span>
-                                        </button>
-                                      </div>
-                                    )
-                                  )
-                                ) : (
-                                  <p className="text-xs text-muted-foreground italic">
-                                    No documents uploaded yet. Upload supporting
-                                    documents for compliance verification.
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="mt-2 flex items-start gap-2 text-muted-foreground border-t border-border pt-2">
-                              <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                              <p className="text-xs">
-                                * Required by regulation
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {regulation.description}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1 italic">
+                                This regulation is currently disabled
                               </p>
                             </div>
                           </div>
-                        )}
-                    </div>
-                  ))}
+                        </div>
+                      );
+                    }
+
+                    // Standard rendering for enabled regulations (MiCA)
+                    return (
+                      <div
+                        key={regulation.id}
+                        className="border border-border rounded-lg overflow-hidden"
+                      >
+                        <div className="p-4 flex items-start gap-3 bg-muted/30">
+                          <Checkbox
+                            id={regulation.id}
+                            checked={selectedRegulations.includes(
+                              regulation.id
+                            )}
+                            onCheckedChange={(checked) =>
+                              handleRegulationSelect(
+                                regulation.id,
+                                checked as boolean
+                              )
+                            }
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <label
+                                htmlFor={regulation.id}
+                                className="text-base font-medium cursor-pointer"
+                              >
+                                {regulation.name}
+                              </label>
+                              <Badge variant="outline" className="ml-2">
+                                <span className="inline-flex items-center text-xs">
+                                  <span className="mr-1">{selectedRegion}</span>
+                                </span>
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {regulation.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Display requirements if regulation is selected and it's MiCA */}
+                        {selectedRegulations.includes(regulation.id) &&
+                          regulation.id === "mica" && (
+                            <div className="p-4 border-t border-border bg-background">
+                              <h4 className="text-sm font-medium mb-0">
+                                Key Requirements
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                {micaRegulationRequirements.map((req) => (
+                                  <div
+                                    key={req.id}
+                                    className="flex items-start gap-2"
+                                  >
+                                    <div className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full bg-success flex items-center justify-center">
+                                      <Check className="h-3 w-3 text-white" />
+                                    </div>
+                                    <div>
+                                      <div className="flex items-center gap-1">
+                                        <span className="text-sm font-medium">
+                                          {req.title}
+                                        </span>
+                                        {req.required && (
+                                          <span className="text-xs text-primary">
+                                            *
+                                          </span>
+                                        )}
+                                      </div>
+                                      <p className="text-xs text-muted-foreground">
+                                        {req.description}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* Document Upload Section */}
+                              <div className="mt-4 border-t border-border pt-3">
+                                <div className="flex justify-between items-center mb-2">
+                                  <h4 className="text-sm font-medium">
+                                    Supporting Documents
+                                  </h4>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleShowUploadDialog(regulation.id)
+                                    }
+                                    className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs px-3 py-1.5 rounded-md"
+                                  >
+                                    Upload Document
+                                  </button>
+                                </div>
+
+                                {/* List of uploaded documents */}
+                                <div className="space-y-2">
+                                  {uploadedDocuments[regulation.id]?.length >
+                                  0 ? (
+                                    uploadedDocuments[regulation.id].map(
+                                      (document) => (
+                                        <div
+                                          key={document.id}
+                                          className="bg-muted/30 p-3 rounded-md flex items-center justify-between"
+                                        >
+                                          <div>
+                                            <span className="font-medium text-sm">
+                                              {document.title}
+                                            </span>
+                                            <p className="text-xs text-muted-foreground">
+                                              {document.type}
+                                            </p>
+                                          </div>
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              handleDeleteDocument(
+                                                regulation.id,
+                                                document.id
+                                              )
+                                            }
+                                            className="text-destructive hover:text-destructive/80 flex items-center gap-1 text-xs"
+                                          >
+                                            <span>Delete</span>
+                                          </button>
+                                        </div>
+                                      )
+                                    )
+                                  ) : (
+                                    <p className="text-xs text-muted-foreground italic">
+                                      No documents uploaded yet. Upload
+                                      supporting documents for compliance
+                                      verification.
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="mt-2 flex items-start gap-2 text-muted-foreground border-t border-border pt-2">
+                                <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                <p className="text-xs">
+                                  * Required by regulation
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </FormProvider>
