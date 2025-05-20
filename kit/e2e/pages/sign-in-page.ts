@@ -13,13 +13,17 @@ export class SignInPage extends BasePage {
     password: string;
     name: string;
     pincode: string;
+    rememberMe?: boolean;
   }) {
     const pages = Pages(this.page);
 
-    await this.page.locator('input[name="email"]').clear();
-    await this.page.getByPlaceholder("Enter your password").clear();
+    const emailInput = this.page.locator('input[type="email"][name="email"]');
+    const passwordInput = this.page.locator(
+      'input[type="password"][name="password"]'
+    );
 
-    const emailInput = this.page.locator('input[name="email"]');
+    await emailInput.clear();
+    await passwordInput.clear();
 
     let retries = 0;
     const maxRetries = 3;
@@ -50,7 +54,6 @@ export class SignInPage extends BasePage {
       expect(inputValue).toBe(options.email);
     }).toPass({ timeout: 20000 });
 
-    const passwordInput = this.page.getByPlaceholder("Enter your password");
     await passwordInput.click({ force: true });
     await passwordInput.focus();
     await passwordInput.fill("");
@@ -61,12 +64,17 @@ export class SignInPage extends BasePage {
       expect(inputValue.length).toBeGreaterThan(0);
     }).toPass({ timeout: 20000 });
 
-    const loginButton = this.page.getByRole("button", {
-      name: "Login",
-      exact: true,
-    });
-    await loginButton.waitFor({ state: "visible" });
+    if (options.rememberMe) {
+      const rememberMeCheckbox = this.page.locator('button[role="checkbox"]');
+      await rememberMeCheckbox.click();
 
+      await expect(rememberMeCheckbox).toHaveAttribute("data-state", "checked");
+    }
+
+    const loginButton = this.page
+      .locator('button[type="submit"]')
+      .filter({ hasText: "Login" });
+    await loginButton.waitFor({ state: "visible" });
     await loginButton.click();
 
     try {
@@ -102,6 +110,7 @@ export class SignInPage extends BasePage {
     pincodeName?: string;
     pincode?: string;
     role?: string;
+    rememberMe?: boolean;
   }) {
     const existingRole = await getUserRole(options.email);
 
@@ -120,7 +129,11 @@ export class SignInPage extends BasePage {
     }
 
     await this.goto();
-    await this.signIn({ ...options, pincode: options.pincode ?? "123456" });
+    await this.signIn({
+      ...options,
+      pincode: options.pincode ?? "123456",
+      rememberMe: options.rememberMe,
+    });
   }
 
   async signInAsAdmin(options: {
@@ -129,6 +142,7 @@ export class SignInPage extends BasePage {
     name: string;
     pincodeName?: string;
     pincode?: string;
+    rememberMe?: boolean;
   }) {
     await this.signInWithRole({ ...options, role: "admin" });
   }
@@ -139,6 +153,7 @@ export class SignInPage extends BasePage {
     name: string;
     pincodeName?: string;
     pincode?: string;
+    rememberMe?: boolean;
   }) {
     await this.signInWithRole(options);
   }

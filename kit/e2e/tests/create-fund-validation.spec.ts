@@ -2,7 +2,10 @@ import { type BrowserContext, test } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { fundData } from "../test-data/asset-data";
-import { assetMessage } from "../test-data/success-msg-data";
+import {
+  successMessageData,
+  errorMessageData,
+} from "../test-data/message-data";
 import { adminUser } from "../test-data/user-data";
 import { ensureUserIsAdmin } from "../utils/db-utils";
 test.describe("Fund Creation Validation", () => {
@@ -35,7 +38,7 @@ test.describe("Fund Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter at least 1 characters"
+        errorMessageData.errorMessageName
       );
     });
     test("validates symbol field is empty", async () => {
@@ -46,7 +49,7 @@ test.describe("Fund Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter a valid asset symbol (uppercase letters and numbers)"
+        errorMessageData.errorMessageSymbol
       );
     });
     test("validates symbol field is with lower case", async () => {
@@ -56,7 +59,7 @@ test.describe("Fund Creation Validation", () => {
         isin: "",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a valid asset symbol (uppercase letters and numbers)"
+        errorMessageData.errorMessageSymbol
       );
     });
     test("validates symbol field can not contain special characters", async () => {
@@ -65,7 +68,7 @@ test.describe("Fund Creation Validation", () => {
         symbol: "TFU^",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a valid asset symbol (uppercase letters and numbers)"
+        errorMessageData.errorMessageSymbol
       );
     });
     //Update this check name constraint after this ticket is fixed https://linear.app/settlemint/issue/ENG-3136/asset-designererror-message-is-wrong-for-asset-name-field
@@ -83,11 +86,30 @@ test.describe("Fund Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter a valid ISIN. Format: 2 letters (country code), 9 alphanumeric characters, and 1 check digit (e.g., US0378331005)"
+        errorMessageData.errorMessageISIN
+      );
+    });
+    test("validates ISIN no special characters", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Fund",
+        symbol: "TFU",
+        isin: "RO03$833%005",
+      });
+      await createAssetForm.clickOnNextButton();
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageISIN
       );
     });
     test("validates ISIN field length constraints", async () => {
       await createAssetForm.verifyInputAttribute("ISIN", "maxlength", "12");
+    });
+    // Additional steps after this ticket is fixed https://linear.app/settlemint/issue/ENG-3160/internalidwhen-enter-internalid-failed-to-create-asset
+    test("validates Internal ID field length constraints", async () => {
+      await createAssetForm.verifyInputAttribute(
+        "Internal ID",
+        "maxlength",
+        "12"
+      );
     });
   });
 
@@ -107,7 +129,7 @@ test.describe("Fund Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates large number in decimals field", async () => {
@@ -115,7 +137,7 @@ test.describe("Fund Creation Validation", () => {
         decimals: "19",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates negative number in decimals field", async () => {
@@ -123,7 +145,7 @@ test.describe("Fund Creation Validation", () => {
         decimals: "-1",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates no signs in decimals field", async () => {
@@ -133,7 +155,7 @@ test.describe("Fund Creation Validation", () => {
         "18-"
       );
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates price field is empty", async () => {
@@ -142,7 +164,9 @@ test.describe("Fund Creation Validation", () => {
         price: "",
       });
       await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageOnlyValidNumber
+      );
     });
     test("validates price field can not contain special characters", async () => {
       await createAssetForm.fillEquityConfigurationFields({
@@ -153,7 +177,9 @@ test.describe("Fund Creation Validation", () => {
         'input[name="price"]',
         "1-"
       );
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageOnlyValidNumber
+      );
     });
     test("verifies default currency is EUR", async () => {
       await createAssetForm.verifyCurrencyValue("EUR");
@@ -165,7 +191,7 @@ test.describe("Fund Creation Validation", () => {
         managementFeeBps: "",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 10000"
+        errorMessageData.errorMessageManagementFee
       );
     });
     test("validates large number for management fee", async () => {
@@ -174,7 +200,7 @@ test.describe("Fund Creation Validation", () => {
         managementFeeBps: "9007199254740992",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 10000"
+        errorMessageData.errorMessageManagementFee
       );
     });
     test("validates management fee field can not contain special characters", async () => {
@@ -186,7 +212,7 @@ test.describe("Fund Creation Validation", () => {
         "1-"
       );
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 10000"
+        errorMessageData.errorMessageManagementFee
       );
     });
     test("validates fund class selection", async () => {
@@ -196,7 +222,7 @@ test.describe("Fund Creation Validation", () => {
         price: "1",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter at least 1 characters"
+        errorMessageData.errorMessageName
       );
     });
   });
@@ -205,7 +231,7 @@ test.describe("Fund Creation Validation", () => {
       await adminPages.adminPage.goto();
       await adminPages.adminPage.createFund(fundData);
       await adminPages.adminPage.verifySuccessMessage(
-        assetMessage.successMessageFund
+        successMessageData.successMessageFund
       );
       await adminPages.adminPage.checkIfAssetExists({
         sidebarAssetTypes: fundData.sidebarAssetTypes,
