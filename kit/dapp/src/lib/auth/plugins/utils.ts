@@ -6,7 +6,7 @@ export async function revokeSession(
   ctx: GenericEndpointContext,
   updatedUserFields: Partial<User>
 ) {
-  if (!ctx.context.session) {
+  if (!ctx.context.session || !ctx.request) {
     return;
   }
   const user = ctx.context.session.user;
