@@ -1933,7 +1933,8 @@
           "holders": "Holders",
           "permissions": "Permissions",
           "underlying-assets": "Underlying assets",
-          "yield": "Yield"
+          "yield": "Yield",
+          "mica": "MiCA compliance"
         }
       },
       "fields": {
@@ -2617,8 +2618,70 @@
   "regular": "User",
   "regulations": {
     "mica": {
+      "name": "MiCA",
       "description": "Markets in Crypto-Assets (MiCA) is the EU's comprehensive regulatory framework designed to regulate cryptocurrencies, stablecoins, and other digital assets, providing legal certainty for crypto-asset issuers and service providers.",
-      "name": "MiCA"
+      "not_configured": "MICA regulation has not been configured for this asset yet.",
+      "basic_info": "Basic Information",
+      "created_at": "Created At",
+      "updated_at": "Last Updated",
+      "token_info": "Token Information",
+      "token_type": "Token Type",
+      "reserve_status": "Reserve Status",
+      "last_audit": "Last Audit Date",
+      "documents": {
+        "title": "Compliance Documents",
+        "description": "Upload and manage compliance documents required by MICA regulation",
+        "upload": "Upload Document",
+        "no_documents": "No documents uploaded yet",
+        "upload_success": "Document uploaded successfully",
+        "delete_success": "Document deleted successfully",
+        "delete_error": "Failed to delete document",
+        "types": {
+          "white_paper": "White Paper",
+          "audit": "Audit Report",
+          "policy": "Policy Document",
+          "governance": "Governance Document",
+          "procedure": "Procedure Document"
+        }
+      },
+      "compliance": {
+        "title": "Compliance Form",
+        "description": "Update MICA compliance information",
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "save_success": "Changes saved successfully",
+        "save_error": "Failed to save changes",
+        "sections": {
+          "reserve": {
+            "title": "Reserve Composition",
+            "description": "Specify the composition of your reserve assets",
+            "fields": {
+              "bankDeposits": "Bank Deposits",
+              "governmentBonds": "Government Bonds",
+              "highQualityLiquidAssets": "High Quality Liquid Assets",
+              "corporateBonds": "Corporate Bonds",
+              "centralBankAssets": "Central Bank Assets",
+              "commodities": "Commodities",
+              "otherAssets": "Other Assets"
+            }
+          },
+          "legal_entity": {
+            "title": "Legal Entity Information",
+            "description": "Provide information about your legal entity",
+            "fields": {
+              "leiCode": "LEI Code",
+              "registrationNumber": "Registration Number",
+              "registeredOffice": {
+                "title": "Registered Office Address",
+                "street": "Street",
+                "city": "City",
+                "postalCode": "Postal Code",
+                "country": "Country"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "supply-manager": "Supply Manager",
