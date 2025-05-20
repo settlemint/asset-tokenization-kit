@@ -95,7 +95,6 @@ export const AssetEventValueSchema = t.Object({
   value: t.String({
     description: "Value of the value",
   }),
-  formattedValue: t.Optional(t.String()),
 });
 
 export type AssetEventValue = StaticDecode<typeof AssetEventValueSchema>;
