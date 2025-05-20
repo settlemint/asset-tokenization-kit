@@ -177,15 +177,26 @@ function FormAssetsList({
           searchTerm: debounced,
         },
       });
-
       // Filter by user wallet if provided
       if (userWallet) {
         return data?.filter((asset) =>
-          asset.holders.some(
-            (holder) =>
-              holder.account.id.toLowerCase() === userWallet.toLowerCase() &&
-              BigInt(holder.value) > 0n
-          )
+          asset.holders.some((holder) => {
+            try {
+              const holderAddress = holder.account.id.toLowerCase();
+              const userAddress = userWallet.toLowerCase();
+
+              // Check if addresses match and holder has a positive balance
+              // Use Number comparison for decimals instead of BigInt
+              return (
+                holderAddress === userAddress &&
+                holder.value &&
+                Number(holder.value) > 0
+              );
+            } catch (error) {
+              console.error("Error processing holder value:", error);
+              return false;
+            }
+          })
         );
       } else {
         return data;
