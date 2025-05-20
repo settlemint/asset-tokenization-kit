@@ -127,8 +127,8 @@ spec:
 
               # Replace localhost with dynamically determined graph-node service
               echo "Configuring subgraph deployment to use service: http://${SERVICE_NAME}:8020"
-              sed -i "s|http://localhost:8020|http://${SERVICE_NAME}:8020|g" /workspace/kit/subgraph/graph-local-deploy.sh
-              sed -i 's/yq -i/yq -i -y/g' /workspace/kit/subgraph/graph-local-deploy.sh
+              sed -i "s|http://localhost:8020|http://${SERVICE_NAME}:8020|g" /workspace/kit/subgraph/graph-deploy.sh
+              sed -i 's/yq -i/yq -i -y/g' /workspace/kit/subgraph/graph-deploy.sh
 
               echo "Build forge contracts..."
               cd /workspace/kit/contracts
@@ -155,7 +155,7 @@ spec:
               npx graph codegen
               graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt
 
-              /bin/bash /workspace/kit/subgraph/graph-local-deploy.sh
+              /bin/bash /workspace/kit/subgraph/graph-deploy.sh
 
           volumeMounts:
             - name: workspace

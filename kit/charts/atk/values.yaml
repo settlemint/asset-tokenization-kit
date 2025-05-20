@@ -182,7 +182,7 @@ blockscout:
     blockscout:
       image:
         repository: ghcr.io/blockscout/blockscout
-        tag: "8.0.1"
+        tag: "8.0.2"
       # Add an extra init container to wait for PostgreSQL
       init:
         enabled: true
@@ -465,14 +465,24 @@ observability:
 
 # Transaction Signer Configuration
 txsigner:
-  enabled: false
+  enabled: true
   # Configuration for the txsigner subchart
   # Define environment variables directly here
   env:
+    - name: MODE
+      value: standalone
     - name: RPC_ENDPOINT
-      value: "http://erpc:4000"
+      value: "http://besu-node-rpc-1.atk.svc.cluster.local:8545"
+    - name: WS_ENDPOINT
+      value: "ws://besu-node-rpc-1.atk.svc.cluster.local:8546"
+    - name: DB_CONNECTION_STRING
+      value: "postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable"
+    - name: PRIVATE_KEY_MNEMONIC
+      value: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
+    - name: PRIVATE_KEY_DERIVATION_PATH
+      value: "m/44'/60'/0'/0/0"
   image:
-    tag: "7.6.8"
+    tag: "sha-65e9178"
   replicaCount: 1
   # resources:
   #   limits:
