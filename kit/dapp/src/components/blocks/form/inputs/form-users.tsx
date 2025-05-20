@@ -182,12 +182,7 @@ function FormUsersList({
           term: debounced,
         },
       });
-      const results = data || [];
-      return role
-        ? results.filter(
-            (user: User | Contact) => isUser(user) && user.role === role
-          )
-        : results;
+      return data || [];
     },
     {
       revalidateOnFocus: false,
@@ -286,8 +281,4 @@ function FormUsersList({
       )}
     </CommandList>
   );
-}
-
-function isUser(user: User | Contact): user is User {
-  return "role" in user;
 }
