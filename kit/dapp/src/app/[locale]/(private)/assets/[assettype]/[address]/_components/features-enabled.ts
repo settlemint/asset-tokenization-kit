@@ -1,6 +1,6 @@
+import { isRegulationEnabled } from "@/lib/queries/regulations/regulation-enabled";
 import { isFeatureEnabled } from "@/lib/utils/feature-flags";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { checkMicaEnabled } from "./mica-server";
 
 export const hasBlocklist = (assettype: AssetType) =>
   assettype !== "cryptocurrency" && assettype !== "deposit";
@@ -27,5 +27,10 @@ export const hasMica = async (assettype: AssetType, assetId: string) => {
     return false;
   }
 
-  return await checkMicaEnabled(assettype, assetId);
+  const isAvailable = assettype === "deposit" || assettype === "stablecoin";
+  if (!isAvailable) {
+    return false;
+  }
+
+  return await isRegulationEnabled(assetId, "mica");
 };
