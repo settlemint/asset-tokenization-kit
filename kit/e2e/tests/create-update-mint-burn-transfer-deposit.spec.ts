@@ -7,7 +7,7 @@ import {
   depositBurnData,
   depositTransferData,
 } from "../test-data/asset-data";
-import { assetMessage } from "../test-data/success-msg-data";
+import { successMessageData } from "../test-data/message-data";
 import {
   adminUser,
   signUpTransferUserData,
@@ -74,7 +74,7 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
     await adminPages.adminPage.createDeposit(depositData);
     testData.depositName = depositData.name;
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageDeposit
     );
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: depositData.sidebarAssetTypes,
@@ -86,7 +86,7 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       ...depositUpdateCollateralData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageDeposit
     );
     await adminPages.adminPage.verifyCollateral(
       depositUpdateCollateralData.amount
@@ -96,7 +96,7 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       ...depositMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageDeposit
     );
     await adminPages.adminPage.verifyTotalSupply(depositMintData.amount);
     await adminPages.adminPage.redeemBurnAsset({
@@ -113,7 +113,7 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       pincode: depositData.pincode,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageDeposit
     );
   });
   test("Admin user transfers deposits to regular transfer user", async () => {
@@ -124,7 +124,7 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
       ...depositTransferData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageDeposit
     );
 
     const transferAmount = Number.parseFloat(

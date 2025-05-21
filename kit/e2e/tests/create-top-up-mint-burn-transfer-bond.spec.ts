@@ -10,7 +10,7 @@ import {
   topUpData,
   bondBurnData,
 } from "../test-data/asset-data";
-import { assetMessage } from "../test-data/success-msg-data";
+import { successMessageData } from "../test-data/message-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
 import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
 
@@ -75,7 +75,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     await adminPages.adminPage.createStablecoin(stablecoinData);
     testData.stablecoinName = stablecoinData.name;
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageStablecoin
     );
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
@@ -93,7 +93,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     testData.bondName = bondDataWithStablecoin.name;
 
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageBond
     );
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: bondData.sidebarAssetTypes,
@@ -113,7 +113,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       ...stableCoinUpdateCollateralData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageStablecoin
     );
     await adminPages.adminPage.verifyCollateral(
       stableCoinUpdateCollateralData.amount
@@ -124,7 +124,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       ...stableCoinMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageStablecoin
     );
     await adminPages.adminPage.verifyTotalSupply(stableCoinMintData.amount);
   });
@@ -143,14 +143,14 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       pincode: topUpData.pincode,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageBond
     );
     await adminPages.adminPage.mintAsset({
       user: adminUser.name,
       ...bondMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageBond
     );
     await adminPages.adminPage.verifyTotalSupply(topUpData.amount);
     await adminPages.adminPage.redeemBurnAsset({
@@ -171,7 +171,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       ...bondTransferData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageBond
     );
 
     const transferAmount = Number.parseFloat(bondTransferData.transferAmount);
