@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { Check, Info, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
@@ -74,23 +75,33 @@ export function AssetRegulationStep({
   const [uploadedDocuments, setUploadedDocuments] = useState<{
     [regulationId: string]: UploadedDocument[];
   }>({});
+  const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
+  // In development, default to true if PostHog isn't fully initialized
+  const isMicaEnabled =
+    process.env.NODE_ENV === "development" ? true : micaFlagFromPostHog;
 
   // Get currently selected regulations from form
   const selectedRegulations = form.watch("selectedRegulations") || [];
 
   // Remove disabled regulations from form state if present (now in useEffect)
   const EU_DISABLED_IDS = ["eu-mifid", "eu-prospectus"];
+  // Add MICA to disabled IDs if feature flag is disabled
   useEffect(() => {
+    const disabledIds = [...EU_DISABLED_IDS];
+    if (!isMicaEnabled) {
+      disabledIds.push("mica");
+    }
+
     if (selectedRegion === "EU") {
       const selectedRegulations = form.getValues("selectedRegulations") || [];
       const filtered = selectedRegulations.filter(
-        (id: string) => !EU_DISABLED_IDS.includes(id)
+        (id: string) => !disabledIds.includes(id)
       );
       if (filtered.length !== selectedRegulations.length) {
         form.setValue("selectedRegulations", filtered);
       }
     }
-  }, [selectedRegion, form]);
+  }, [selectedRegion, form, isMicaEnabled]);
 
   // Handle region selection
   const handleRegionSelect = (region: string) => {
@@ -222,14 +233,15 @@ export function AssetRegulationStep({
 
   return (
     <StepContent>
-      <div className="flex flex-col space-y-6">
-        <div>
-          <h2 className="text-2xl font-semibold mb-0">Regulation</h2>
-          <p className="text-sm text-muted-foreground mb-6">
+      <div className="space-y-8 pb-4">
+        <div className="space-y-6">
+          <h2 className="text-2xl font-semibold tracking-tight">Regulation</h2>
+          <p className="text-muted-foreground">
             Select regions and configure the regulations your asset needs to
             adhere to.
           </p>
-
+        </div>
+        <div>
           {/* Select Regions Section */}
           <Card className="mb-6 p-6">
             <h3 className="text-lg font-medium thank you. ">Select Regions</h3>
@@ -297,7 +309,8 @@ export function AssetRegulationStep({
                     const isDisabledRegulation =
                       (isEU &&
                         (regulation.id === "eu-mifid" ||
-                          regulation.id === "eu-prospectus")) ||
+                          regulation.id === "eu-prospectus" ||
+                          (regulation.id === "mica" && !isMicaEnabled))) ||
                       (isUS && regulation.id === "us-sec");
 
                     // Custom rendering based on if it's a disabled regulation
@@ -327,7 +340,9 @@ export function AssetRegulationStep({
                                 {regulation.description}
                               </p>
                               <p className="text-xs text-muted-foreground mt-1 italic">
-                                This regulation is currently disabled
+                                {regulation.id === "mica" && !isMicaEnabled
+                                  ? "This regulation is currently disabled via feature flag"
+                                  : "This regulation is currently disabled"}
                               </p>
                             </div>
                           </div>
