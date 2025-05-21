@@ -24,30 +24,10 @@ import { FormProvider } from "react-hook-form";
 const regionRegulations = {
   EU: [
     {
-      id: "eu-mifid",
-      name: "MiFID II",
-      description: "Markets in Financial Instruments Directive II",
-      requiredDocuments: ["prospectus", "kiid"],
-    },
-    {
-      id: "eu-prospectus",
-      name: "Prospectus Regulation",
-      description: "EU Prospectus Regulation",
-      requiredDocuments: ["prospectus"],
-    },
-    {
       id: "mica",
       name: "MiCA",
       description: "Markets in Crypto-Assets Regulation",
       requiredDocuments: ["white-paper", "audit", "policy"],
-    },
-  ],
-  US: [
-    {
-      id: "us-sec",
-      name: "SEC Regulations",
-      description: "Securities and Exchange Commission Regulations",
-      requiredDocuments: ["offering-memorandum", "form-d"],
     },
   ],
 } as const;
@@ -55,11 +35,382 @@ const regionRegulations = {
 type Region = keyof typeof regionRegulations;
 type Regulation = (typeof regionRegulations)[Region][number];
 
+// MiCA regulation requirements specific to the EU
+const micaRegulationRequirements = [
+  {
+    id: "asset-referenced-token",
+    title: "Asset-referenced token provisions",
+    description:
+      "Requirements for stablecoins backed by multiple currencies or assets",
+    required: true,
+  },
+  {
+    id: "reserve-requirements",
+    title: "Reserve requirements",
+    description: "Mandatory reserve assets and management policies",
+    required: true,
+  },
+  {
+    id: "authorization-procedure",
+    title: "Authorization procedure",
+    description: "Process for obtaining regulatory approval",
+    required: true,
+  },
+  {
+    id: "anti-market-abuse",
+    title: "Anti-market abuse rules",
+    description: "Provisions against market manipulation and insider trading",
+    required: true,
+  },
+  {
+    id: "e-money-token",
+    title: "E-money token regulation",
+    description: "Specific rules for tokens pegged to a single fiat currency",
+    required: true,
+  },
+  {
+    id: "transparency-obligations",
+    title: "Transparency obligations",
+    description: "Public disclosure requirements and reporting standards",
+    required: true,
+  },
+  {
+    id: "consumer-protection",
+    title: "Consumer protection",
+    description: "Safeguards for retail investors and users",
+    required: true,
+  },
+];
+
+// EU disabled regulations (now empty since we only have MiCA)
+const EU_DISABLED_IDS: string[] = [];
+
 interface AssetRegulationStepProps {
   assetType: AssetType;
   form: UseFormReturn<any>;
   onBack: () => void;
   onNext: () => void;
+}
+
+// Region selection component
+interface RegionSelectorProps {
+  regions: string[];
+  selectedRegion: Region | null;
+  onRegionSelect: (region: string) => void;
+}
+
+function RegionSelector({
+  regions,
+  selectedRegion,
+  onRegionSelect,
+}: RegionSelectorProps) {
+  return (
+    <Card className="mb-6 p-6">
+      <h3 className="text-lg font-medium">Select Regions</h3>
+      <p className="text-sm text-muted-foreground -mt-6">
+        Choose the regions where your asset will operate to see applicable
+        regulations.
+      </p>
+
+      <div className="grid grid-cols-1 gap-4">
+        {regions.map((region) => (
+          <Card
+            key={region}
+            className={cn(
+              "relative p-4 cursor-pointer border hover:border-primary transition-colors",
+              selectedRegion === region
+                ? "border-primary bg-accent-hover"
+                : "border-border"
+            )}
+            onClick={() => onRegionSelect(region)}
+          >
+            {selectedRegion === region && (
+              <Check className="absolute top-2 right-2 h-4 w-4 text-primary" />
+            )}
+            <div className="flex items-start p-1">
+              <MapPin className="h-4 w-4 mr-2 flex-shrink-0 mt-0.5" />
+              <div>
+                <div className="font-medium">{region}</div>
+                <div className="text-xs">European Union</div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+// Disabled regulation component
+interface DisabledRegulationProps {
+  regulation: Regulation;
+  selectedRegion: Region;
+  isMicaEnabled?: boolean;
+}
+
+function DisabledRegulation({
+  regulation,
+  selectedRegion,
+  isMicaEnabled,
+}: DisabledRegulationProps) {
+  return (
+    <div className="border border-border rounded-lg overflow-hidden opacity-50">
+      <div className="p-4 flex items-start gap-3 bg-muted/30">
+        <div className="w-4 h-4 mt-1 border border-border rounded bg-muted flex-shrink-0" />
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-base font-medium">{regulation.name}</span>
+            <Badge variant="outline" className="ml-2">
+              <span className="inline-flex items-center text-xs">
+                <span className="mr-1">{selectedRegion}</span>
+              </span>
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            {regulation.description}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1 italic">
+            {regulation.id === "mica" && !isMicaEnabled
+              ? "This regulation is currently disabled via feature flag"
+              : "This regulation is currently disabled"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// MiCA requirements component
+interface MiCARequirementsProps {
+  requirements: typeof micaRegulationRequirements;
+}
+
+function MiCARequirements({ requirements }: MiCARequirementsProps) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+      {requirements.map((req) => (
+        <div key={req.id} className="flex items-start gap-2">
+          <div className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full bg-success flex items-center justify-center">
+            <Check className="h-3 w-3 text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1">
+              <span className="text-sm font-medium">{req.title}</span>
+              {req.required && <span className="text-xs text-primary">*</span>}
+            </div>
+            <p className="text-xs text-muted-foreground">{req.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Document upload section component
+interface DocumentUploadSectionProps {
+  regulationId: string;
+  uploadedDocuments: {
+    [regulationId: string]: UploadedDocument[];
+  };
+  onShowUploadDialog: (regulationId: string) => void;
+  onDeleteDocument: (regulationId: string, documentId: string) => void;
+}
+
+function DocumentUploadSection({
+  regulationId,
+  uploadedDocuments,
+  onShowUploadDialog,
+  onDeleteDocument,
+}: DocumentUploadSectionProps) {
+  return (
+    <div className="mt-4 border-t border-border pt-3">
+      <div className="flex justify-between items-center mb-2">
+        <h4 className="text-sm font-medium">Supporting Documents</h4>
+        <button
+          type="button"
+          onClick={() => onShowUploadDialog(regulationId)}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs px-3 py-1.5 rounded-md"
+        >
+          Upload Document
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        {uploadedDocuments[regulationId]?.length > 0 ? (
+          uploadedDocuments[regulationId].map((document) => (
+            <div
+              key={document.id}
+              className="bg-muted/30 p-3 rounded-md flex items-center justify-between"
+            >
+              <div>
+                <span className="font-medium text-sm">{document.title}</span>
+                <p className="text-xs text-muted-foreground">{document.type}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onDeleteDocument(regulationId, document.id)}
+                className="text-destructive hover:text-destructive/80 flex items-center gap-1 text-xs"
+              >
+                <span>Delete</span>
+              </button>
+            </div>
+          ))
+        ) : (
+          <p className="text-xs text-muted-foreground italic">
+            No documents uploaded yet. Upload supporting documents for
+            compliance verification.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// MiCA regulation component
+interface MiCARegulationProps {
+  regulation: Regulation;
+  selectedRegion: Region;
+  isSelected: boolean;
+  uploadedDocuments: {
+    [regulationId: string]: UploadedDocument[];
+  };
+  onShowUploadDialog: (regulationId: string) => void;
+  onDeleteDocument: (regulationId: string, documentId: string) => void;
+}
+
+function MiCARegulation({
+  regulation,
+  selectedRegion,
+  isSelected,
+  uploadedDocuments,
+  onShowUploadDialog,
+  onDeleteDocument,
+}: MiCARegulationProps) {
+  return (
+    <div className="p-4 border-t border-border bg-background">
+      <h4 className="text-sm font-medium mb-0">Key Requirements</h4>
+      <MiCARequirements requirements={micaRegulationRequirements} />
+
+      <DocumentUploadSection
+        regulationId={regulation.id}
+        uploadedDocuments={uploadedDocuments}
+        onShowUploadDialog={onShowUploadDialog}
+        onDeleteDocument={onDeleteDocument}
+      />
+
+      <div className="mt-2 flex items-start gap-2 text-muted-foreground border-t border-border pt-2">
+        <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+        <p className="text-xs">* Required by regulation</p>
+      </div>
+    </div>
+  );
+}
+
+// Main regulation list component
+interface RegulationListProps {
+  selectedRegion: Region | null;
+  isMicaEnabled: boolean;
+  selectedRegulations: string[];
+  form: UseFormReturn<any>;
+  uploadedDocuments: {
+    [regulationId: string]: UploadedDocument[];
+  };
+  onShowUploadDialog: (regulationId: string) => void;
+  onDeleteDocument: (regulationId: string, documentId: string) => void;
+  onRegulationSelect: (regulationId: string, isChecked: boolean) => void;
+}
+
+function RegulationList({
+  selectedRegion,
+  isMicaEnabled,
+  selectedRegulations,
+  form,
+  uploadedDocuments,
+  onShowUploadDialog,
+  onDeleteDocument,
+  onRegulationSelect,
+}: RegulationListProps) {
+  if (!selectedRegion) return null;
+
+  return (
+    <Card className="p-6">
+      <h3 className="text-lg font-medium">Available Regulations</h3>
+      <p className="text-sm text-muted-foreground -mt-6">
+        Regulations applicable to selected regions:
+      </p>
+
+      <FormProvider {...form}>
+        <div className="space-y-6">
+          {regionRegulations[selectedRegion].map((regulation) => {
+            // Check if regulation is disabled based on feature flag
+            const isDisabled = regulation.id === "mica" && !isMicaEnabled;
+
+            // Render disabled regulation
+            if (isDisabled) {
+              return (
+                <DisabledRegulation
+                  key={regulation.id}
+                  regulation={regulation}
+                  selectedRegion={selectedRegion}
+                  isMicaEnabled={isMicaEnabled}
+                />
+              );
+            }
+
+            // Render active regulation
+            return (
+              <div
+                key={regulation.id}
+                className="border border-border rounded-lg overflow-hidden"
+              >
+                <div className="p-4 flex items-start gap-3 bg-muted/30">
+                  <Checkbox
+                    id={regulation.id}
+                    checked={selectedRegulations.includes(regulation.id)}
+                    onCheckedChange={(value) =>
+                      onRegulationSelect(regulation.id, !!value)
+                    }
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <label
+                        htmlFor={regulation.id}
+                        className="text-base font-medium cursor-pointer"
+                      >
+                        {regulation.name}
+                      </label>
+                      <Badge variant="outline" className="ml-2">
+                        <span className="inline-flex items-center text-xs">
+                          <span className="mr-1">{selectedRegion}</span>
+                        </span>
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {regulation.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Display requirements if regulation is selected and it's MiCA */}
+                {selectedRegulations.includes(regulation.id) &&
+                  regulation.id === "mica" && (
+                    <MiCARegulation
+                      regulation={regulation}
+                      selectedRegion={selectedRegion}
+                      isSelected={selectedRegulations.includes(regulation.id)}
+                      uploadedDocuments={uploadedDocuments}
+                      onShowUploadDialog={onShowUploadDialog}
+                      onDeleteDocument={onDeleteDocument}
+                    />
+                  )}
+              </div>
+            );
+          })}
+        </div>
+      </FormProvider>
+    </Card>
+  );
 }
 
 export function AssetRegulationStep({
@@ -78,30 +429,23 @@ export function AssetRegulationStep({
   const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
   // In development, default to true if PostHog isn't fully initialized
   const isMicaEnabled =
-    process.env.NODE_ENV === "development" ? true : micaFlagFromPostHog;
+    process.env.NODE_ENV === "development" ? true : !!micaFlagFromPostHog;
 
   // Get currently selected regulations from form
   const selectedRegulations = form.watch("selectedRegulations") || [];
 
-  // Remove disabled regulations from form state if present (now in useEffect)
-  const EU_DISABLED_IDS = ["eu-mifid", "eu-prospectus"];
-  // Add MICA to disabled IDs if feature flag is disabled
+  // Remove MiCA from selected regulations if feature flag is disabled
   useEffect(() => {
-    const disabledIds = [...EU_DISABLED_IDS];
     if (!isMicaEnabled) {
-      disabledIds.push("mica");
-    }
-
-    if (selectedRegion === "EU") {
       const selectedRegulations = form.getValues("selectedRegulations") || [];
       const filtered = selectedRegulations.filter(
-        (id: string) => !disabledIds.includes(id)
+        (id: string) => id !== "mica"
       );
       if (filtered.length !== selectedRegulations.length) {
         form.setValue("selectedRegulations", filtered);
       }
     }
-  }, [selectedRegion, form, isMicaEnabled]);
+  }, [isMicaEnabled, form]);
 
   // Handle region selection
   const handleRegionSelect = (region: string) => {
@@ -184,53 +528,6 @@ export function AssetRegulationStep({
   // Available regions
   const regions = Object.keys(regionRegulations);
 
-  // MiCA regulation requirements specific to the EU
-  const micaRegulationRequirements = [
-    {
-      id: "asset-referenced-token",
-      title: "Asset-referenced token provisions",
-      description:
-        "Requirements for stablecoins backed by multiple currencies or assets",
-      required: true,
-    },
-    {
-      id: "reserve-requirements",
-      title: "Reserve requirements",
-      description: "Mandatory reserve assets and management policies",
-      required: true,
-    },
-    {
-      id: "authorization-procedure",
-      title: "Authorization procedure",
-      description: "Process for obtaining regulatory approval",
-      required: true,
-    },
-    {
-      id: "anti-market-abuse",
-      title: "Anti-market abuse rules",
-      description: "Provisions against market manipulation and insider trading",
-      required: true,
-    },
-    {
-      id: "e-money-token",
-      title: "E-money token regulation",
-      description: "Specific rules for tokens pegged to a single fiat currency",
-      required: true,
-    },
-    {
-      id: "transparency-obligations",
-      title: "Transparency obligations",
-      description: "Public disclosure requirements and reporting standards",
-      required: true,
-    },
-    {
-      id: "consumer-protection",
-      title: "Consumer protection",
-      description: "Safeguards for retail investors and users",
-      required: true,
-    },
-  ];
-
   return (
     <StepContent>
       <div className="space-y-8 pb-4">
@@ -242,264 +539,24 @@ export function AssetRegulationStep({
           </p>
         </div>
         <div>
-          {/* Select Regions Section */}
-          <Card className="mb-6 p-6">
-            <h3 className="text-lg font-medium thank you. ">Select Regions</h3>
-            <p className="text-sm text-muted-foreground -mt-6">
-              Choose the regions where your asset will operate to see applicable
-              regulations.
-            </p>
+          {/* Region Selection Component */}
+          <RegionSelector
+            regions={regions}
+            selectedRegion={selectedRegion}
+            onRegionSelect={handleRegionSelect}
+          />
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {regions.map((region) => (
-                <Card
-                  key={region}
-                  className={cn(
-                    "relative p-4 cursor-pointer border hover:border-primary transition-colors",
-                    selectedRegion === region
-                      ? "border-primary bg-accent-hover"
-                      : "border-border"
-                  )}
-                  onClick={() => handleRegionSelect(region)}
-                >
-                  {selectedRegion === region && (
-                    <Check className="absolute top-2 right-2 h-4 w-4 text-primary" />
-                  )}
-                  <div className="flex items-start p-1">
-                    <MapPin className="h-4 w-4 mr-2 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <div className="font-medium">{region}</div>
-                      {region === "EU" && (
-                        <div className="text-xs">European Union</div>
-                      )}
-                      {region === "US" && (
-                        <div className="text-xs">United States</div>
-                      )}
-                      {region === "UK" && (
-                        <div className="text-xs">United Kingdom</div>
-                      )}
-                      {region === "SG" && (
-                        <div className="text-xs">Singapore</div>
-                      )}
-                      {region === "JP" && <div className="text-xs">Japan</div>}
-                      {region === "CH" && (
-                        <div className="text-xs">Switzerland</div>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </Card>
-
-          {/* Available Regulations Section */}
-          <Card className="p-6">
-            <h3 className="text-lg font-medium">Available Regulations</h3>
-            <p className="text-sm text-muted-foreground -mt-6">
-              Regulations applicable to selected regions:
-            </p>
-
-            <FormProvider {...form}>
-              {selectedRegion && (
-                <div className="space-y-6">
-                  {regionRegulations[selectedRegion].map((regulation) => {
-                    // Check if this is a disabled regulation for EU or US
-                    const isEU = selectedRegion === "EU";
-                    const isUS = selectedRegion === "US";
-                    const isDisabledRegulation =
-                      (isEU &&
-                        (regulation.id === "eu-mifid" ||
-                          regulation.id === "eu-prospectus" ||
-                          (regulation.id === "mica" && !isMicaEnabled))) ||
-                      (isUS && regulation.id === "us-sec");
-
-                    // Custom rendering based on if it's a disabled regulation
-                    if (isDisabledRegulation) {
-                      return (
-                        <div
-                          key={regulation.id}
-                          className="border border-border rounded-lg overflow-hidden opacity-50"
-                        >
-                          <div className="p-4 flex items-start gap-3 bg-muted/30">
-                            {/* Fixed unchecked and disabled checkbox for disabled regulations */}
-                            <div className="w-4 h-4 mt-1 border border-border rounded bg-muted flex-shrink-0" />
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-base font-medium">
-                                  {regulation.name}
-                                </span>
-                                <Badge variant="outline" className="ml-2">
-                                  <span className="inline-flex items-center text-xs">
-                                    <span className="mr-1">
-                                      {selectedRegion}
-                                    </span>
-                                  </span>
-                                </Badge>
-                              </div>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {regulation.description}
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-1 italic">
-                                {regulation.id === "mica" && !isMicaEnabled
-                                  ? "This regulation is currently disabled via feature flag"
-                                  : "This regulation is currently disabled"}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    }
-
-                    // Standard rendering for enabled regulations (MiCA)
-                    return (
-                      <div
-                        key={regulation.id}
-                        className="border border-border rounded-lg overflow-hidden"
-                      >
-                        <div className="p-4 flex items-start gap-3 bg-muted/30">
-                          <Checkbox
-                            id={regulation.id}
-                            checked={selectedRegulations.includes(
-                              regulation.id
-                            )}
-                            onCheckedChange={(checked) =>
-                              handleRegulationSelect(
-                                regulation.id,
-                                checked as boolean
-                              )
-                            }
-                            className="mt-1"
-                          />
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <label
-                                htmlFor={regulation.id}
-                                className="text-base font-medium cursor-pointer"
-                              >
-                                {regulation.name}
-                              </label>
-                              <Badge variant="outline" className="ml-2">
-                                <span className="inline-flex items-center text-xs">
-                                  <span className="mr-1">{selectedRegion}</span>
-                                </span>
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {regulation.description}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Display requirements if regulation is selected and it's MiCA */}
-                        {selectedRegulations.includes(regulation.id) &&
-                          regulation.id === "mica" && (
-                            <div className="p-4 border-t border-border bg-background">
-                              <h4 className="text-sm font-medium mb-0">
-                                Key Requirements
-                              </h4>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                                {micaRegulationRequirements.map((req) => (
-                                  <div
-                                    key={req.id}
-                                    className="flex items-start gap-2"
-                                  >
-                                    <div className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full bg-success flex items-center justify-center">
-                                      <Check className="h-3 w-3 text-white" />
-                                    </div>
-                                    <div>
-                                      <div className="flex items-center gap-1">
-                                        <span className="text-sm font-medium">
-                                          {req.title}
-                                        </span>
-                                        {req.required && (
-                                          <span className="text-xs text-primary">
-                                            *
-                                          </span>
-                                        )}
-                                      </div>
-                                      <p className="text-xs text-muted-foreground">
-                                        {req.description}
-                                      </p>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-
-                              {/* Document Upload Section */}
-                              <div className="mt-4 border-t border-border pt-3">
-                                <div className="flex justify-between items-center mb-2">
-                                  <h4 className="text-sm font-medium">
-                                    Supporting Documents
-                                  </h4>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      handleShowUploadDialog(regulation.id)
-                                    }
-                                    className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs px-3 py-1.5 rounded-md"
-                                  >
-                                    Upload Document
-                                  </button>
-                                </div>
-
-                                {/* List of uploaded documents */}
-                                <div className="space-y-2">
-                                  {uploadedDocuments[regulation.id]?.length >
-                                  0 ? (
-                                    uploadedDocuments[regulation.id].map(
-                                      (document) => (
-                                        <div
-                                          key={document.id}
-                                          className="bg-muted/30 p-3 rounded-md flex items-center justify-between"
-                                        >
-                                          <div>
-                                            <span className="font-medium text-sm">
-                                              {document.title}
-                                            </span>
-                                            <p className="text-xs text-muted-foreground">
-                                              {document.type}
-                                            </p>
-                                          </div>
-                                          <button
-                                            type="button"
-                                            onClick={() =>
-                                              handleDeleteDocument(
-                                                regulation.id,
-                                                document.id
-                                              )
-                                            }
-                                            className="text-destructive hover:text-destructive/80 flex items-center gap-1 text-xs"
-                                          >
-                                            <span>Delete</span>
-                                          </button>
-                                        </div>
-                                      )
-                                    )
-                                  ) : (
-                                    <p className="text-xs text-muted-foreground italic">
-                                      No documents uploaded yet. Upload
-                                      supporting documents for compliance
-                                      verification.
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="mt-2 flex items-start gap-2 text-muted-foreground border-t border-border pt-2">
-                                <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                                <p className="text-xs">
-                                  * Required by regulation
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </FormProvider>
-          </Card>
+          {/* Regulations List Component */}
+          <RegulationList
+            selectedRegion={selectedRegion}
+            isMicaEnabled={isMicaEnabled as boolean}
+            selectedRegulations={selectedRegulations}
+            form={form}
+            uploadedDocuments={uploadedDocuments}
+            onShowUploadDialog={handleShowUploadDialog}
+            onDeleteDocument={handleDeleteDocument}
+            onRegulationSelect={handleRegulationSelect}
+          />
         </div>
       </div>
 
