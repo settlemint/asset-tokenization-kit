@@ -2,19 +2,25 @@ import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import type { Address } from "viem";
+import { MicaRegulationLayout } from "./_components/layout";
 
 interface PageProps {
-  params: { locale: Locale; address: Address; assettype: AssetType };
+  params: Promise<{ locale: Locale; address: Address; assettype: AssetType }>;
 }
 
-export default async function MicaCompliancePage({ params }: PageProps) {
+export default async function MicaRegulationPage({ params }: PageProps) {
+  // Await params before using them
+  const { address } = await params;
+
   // Fetch MICA regulation details
   const regulationDetail = await getRegulationDetail({
-    assetId: params.address,
+    assetId: address,
     regulationType: "mica",
   });
 
-  console.log("regulationDetail", regulationDetail);
-
-  return <div className="space-y-8"></div>;
+  return (
+    <div className="space-y-8">
+      <MicaRegulationLayout />
+    </div>
+  );
 }
