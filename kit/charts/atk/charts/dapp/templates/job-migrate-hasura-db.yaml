@@ -42,6 +42,7 @@ spec:
               set -ex
               if [ -z "$(ls -A /workspace)" ]; then
                 git clone https://github.com/settlemint/asset-tokenization-kit.git /workspace
+                cd /workspace
                 git checkout v{{ $.Values.image.tag }}
               else
                 cd /workspace
