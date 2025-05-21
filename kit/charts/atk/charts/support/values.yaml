@@ -46,6 +46,11 @@ postgresql-ha:
         GRANT ALL PRIVILEGES ON DATABASE portal TO portal;
         \c portal;
         GRANT ALL ON SCHEMA public TO portal;
+        CREATE DATABASE txsigner;
+        CREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;
+        GRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;
+        \c txsigner;
+        GRANT ALL ON SCHEMA public TO txsigner;
   pgpool:
     image:
       registry: docker.io
@@ -53,8 +58,8 @@ postgresql-ha:
     adminUsername: "pgpool"
     adminPassword: "atk"
     customUsers:
-      usernames: "blockscout,hasura,thegraph,portal"
-      passwords: "atk,atk,atk,atk"
+      usernames: "blockscout,hasura,thegraph,portal,txsigner"
+      passwords: "atk,atk,atk,atk,atk"
     maxPool: 500
     numInitChildren: 500
     logConnections: true

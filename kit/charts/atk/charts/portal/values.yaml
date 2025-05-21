@@ -134,7 +134,7 @@ initContainers:
 network:
   networkId: "53771311147"
   networkName: "ATK"
-  nodeRpcUrl: http://erpc:4000
+  nodeRpcUrl: http://txsigner:3000
 
 postgresql: postgresql://portal:atk@postgresql-pgpool:5432/portal?sslmode=disable
 

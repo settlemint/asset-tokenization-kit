@@ -33,8 +33,8 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-graph-node
-          image: "{{ .Values.job.busyboxImage.registry }}/{{ .Values.job.busyboxImage.repository }}:{{ .Values.job.busyboxImage.tag }}"
-          imagePullPolicy: {{ .Values.job.busyboxImage.pullPolicy }}
+          image: "{{ .Values.job.initContainer.graphNodeCheck.image.registry }}/{{ .Values.job.initContainer.graphNodeCheck.image.repository }}:{{ .Values.job.initContainer.graphNodeCheck.image.tag }}"
+          imagePullPolicy: {{ .Values.job.initContainer.graphNodeCheck.image.pullPolicy }}
           command:
             - /bin/sh
             - -c
@@ -58,8 +58,8 @@ spec:
 
               echo "Service ${SERVICE_NAME}:${PORT} is available, proceeding..."
         - name: clone-repo
-          image: "{{ .Values.job.gitImage.registry }}/{{ .Values.job.gitImage.repository }}:{{ .Values.job.gitImage.tag }}"
-          imagePullPolicy: {{ .Values.job.gitImage.pullPolicy }}
+          image: "{{ .Values.job.initContainer.cloneRepo.image.registry }}/{{ .Values.job.initContainer.cloneRepo.image.repository }}:{{ .Values.job.initContainer.cloneRepo.image.tag }}"
+          imagePullPolicy: {{ .Values.job.initContainer.cloneRepo.image.pullPolicy }}
           command:
             - /bin/sh
             - -c
@@ -67,6 +67,8 @@ spec:
               set -ex
               if [ -z "$(ls -A /workspace)" ]; then
                 git clone https://github.com/settlemint/asset-tokenization-kit.git /workspace
+                cd /workspace
+                git checkout v{{ .Values.job.initContainer.cloneRepo.atkTag }}
               else
                 cd /workspace
                 git pull
