@@ -25,6 +25,7 @@ export function AuditDetails() {
         type="datetime-local"
         label={t("last-audit-date")}
         placeholder={t("last-audit-date-placeholder")}
+        max={new Date().toISOString().slice(0, 16)}
       />
 
       <FormSelect
