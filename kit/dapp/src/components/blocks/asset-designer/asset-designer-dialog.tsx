@@ -60,8 +60,12 @@ export function AssetDesignerDialog({
     // Add asset-specific steps if an asset type is selected
     if (assetForm?.steps) {
       const filteredSteps = assetForm.steps
-        // Filter out regulation step if MICA is disabled
-        .filter((step) => isMicaEnabled || step.id !== "regulation")
+        // Filter out regulation step if MICA is disabled or if it's not a stablecoin
+        .filter(
+          (step) =>
+            step.id !== "regulation" ||
+            (isMicaEnabled && selectedAssetType === "stablecoin")
+        )
         .map((step) => ({
           ...step,
           description: t(step.description),
