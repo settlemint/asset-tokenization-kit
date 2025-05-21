@@ -467,20 +467,10 @@ observability:
 txsigner:
   enabled: true
   # Configuration for the txsigner subchart
-  # Define environment variables directly here
-  env:
-    - name: MODE
-      value: standalone
-    - name: RPC_ENDPOINT
-      value: "http://besu-node-rpc-1.atk.svc.cluster.local:8545"
-    - name: WS_ENDPOINT
-      value: "ws://besu-node-rpc-1.atk.svc.cluster.local:8546"
-    - name: DB_CONNECTION_STRING
-      value: "postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable"
-    - name: PRIVATE_KEY_MNEMONIC
-      value: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
-    - name: PRIVATE_KEY_DERIVATION_PATH
-      value: "m/44'/60'/0'/0/0"
+  privateKey:
+    mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
+    derivationPath: "m/44'/60'/0'/0/0"
+  postgresql: postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable
   image:
     tag: "sha-65e9178"
   replicaCount: 1

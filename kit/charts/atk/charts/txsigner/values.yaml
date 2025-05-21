@@ -17,12 +17,6 @@ imagePullSecrets:
 nameOverride: ""
 fullnameOverride: "txsigner"
 
-# Configuration for environment variables
-# Define environment variables directly here
-env: []
-  # - name: ENV_VAR_NAME
-  #   value: "some-value"
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -97,7 +91,6 @@ readinessProbe:
   failureThreshold: 60
   successThreshold: 1
 
-
 autoscaling:
   enabled: false
   minReplicas: 1
@@ -125,3 +118,13 @@ initContainers:
   - name: wait-for-postgres
     image: ghcr.io/settlemint/btp-waitforit:v7.7.2
     command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
+
+network:
+  nodeRpcUrl: http://erpc:4000
+
+privateKey:
+  mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
+  derivationPath: "m/44'/60'/0'/0/0"
+
+postgresql: postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable
+
