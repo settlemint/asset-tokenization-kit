@@ -7,7 +7,7 @@ import {
   cryptocurrencyDataAmountAfterMint,
   cryptocurrencyBurnData,
 } from "../test-data/asset-data";
-import { assetMessage } from "../test-data/success-msg-data";
+import { successMessageData } from "../test-data/message-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
 import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
 
@@ -72,7 +72,7 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
     await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
     testData.cryptocurrencyName = cryptocurrencyData.name;
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageCryptocurrency
     );
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
@@ -85,7 +85,7 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
       ...cryptocurrencyMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageCryptocurrency
     );
     await adminPages.adminPage.verifyTotalSupply(
       cryptocurrencyDataAmountAfterMint.amount
@@ -109,7 +109,7 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
       ...cryptocurrencyTransferData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageCryptocurrency
     );
 
     const transferAmount = Number.parseFloat(

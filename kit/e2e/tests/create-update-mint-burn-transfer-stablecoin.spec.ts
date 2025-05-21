@@ -7,7 +7,7 @@ import {
   stableCoinUpdateCollateralData,
   stablecoinData,
 } from "../test-data/asset-data";
-import { assetMessage } from "../test-data/success-msg-data";
+import { successMessageData } from "../test-data/message-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
 import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
 
@@ -69,7 +69,7 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
     await adminPages.adminPage.createStablecoin(stablecoinData);
     testData.stablecoinName = stablecoinData.name;
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageStablecoin
     );
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
@@ -81,7 +81,7 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
       ...stableCoinUpdateCollateralData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageStablecoin
     );
     await adminPages.adminPage.verifyCollateral(
       stableCoinUpdateCollateralData.amount
@@ -91,7 +91,7 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
       ...stableCoinMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageStablecoin
     );
     await adminPages.adminPage.verifyTotalSupply(stableCoinMintData.amount);
     await adminPages.adminPage.redeemBurnAsset({
@@ -111,7 +111,7 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
       ...stableCoinTransferData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageStablecoin
     );
 
     const transferAmount = Number.parseFloat(

@@ -2,7 +2,10 @@ import { type BrowserContext, test } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { cryptocurrencyData } from "../test-data/asset-data";
-import { assetMessage } from "../test-data/success-msg-data";
+import {
+  successMessageData,
+  errorMessageData,
+} from "../test-data/message-data";
 import { adminUser } from "../test-data/user-data";
 import { ensureUserIsAdmin } from "../utils/db-utils";
 
@@ -36,7 +39,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter at least 1 characters"
+        errorMessageData.errorMessageName
       );
     });
     test("validates symbol field is empty", async () => {
@@ -46,7 +49,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter a valid asset symbol (uppercase letters and numbers)"
+        errorMessageData.errorMessageSymbol
       );
     });
     test("validates symbol field is with lower case", async () => {
@@ -55,7 +58,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         symbol: "tcc",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a valid asset symbol (uppercase letters and numbers)"
+        errorMessageData.errorMessageSymbol
       );
     });
     test("validates symbol field can not contain special characters", async () => {
@@ -67,10 +70,45 @@ test.describe("Cryptocurrency Creation Validation", () => {
         "Please enter a valid asset symbol (uppercase letters and numbers)"
       );
     });
-    //Update this check name constraint after this ticket is fixed jelena/eng-3108-asset-designerno-constraint-in-asset-name-field
-    test("verifies input length restrictions", async () => {
-      // await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
+    //Update this check name constraint after this ticket is fixed https://linear.app/settlemint/issue/ENG-3136/asset-designererror-message-is-wrong-for-asset-name-field
+    test("verifies name field length constraints", async () => {
+      await createAssetForm.verifyInputAttribute("Name", "maxlength", "50");
+    });
+    test("verifies symbol field length constraints", async () => {
       await createAssetForm.verifyInputAttribute("Symbol", "maxlength", "10");
+    });
+    test("validates ISIN format", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Cryptocurrency",
+        symbol: "TCC",
+        isin: "invalid-isin",
+      });
+      await createAssetForm.clickOnNextButton();
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageISIN
+      );
+    });
+    test("validates ISIN no special characters", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Cryptocurrency",
+        symbol: "TCC",
+        isin: "SR03$833%005",
+      });
+      await createAssetForm.clickOnNextButton();
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageISIN
+      );
+    });
+    test("validates ISIN field length constraints", async () => {
+      await createAssetForm.verifyInputAttribute("ISIN", "maxlength", "12");
+    });
+    // Additional steps after this ticket is fixed https://linear.app/settlemint/issue/ENG-3160/internalidwhen-enter-internalid-failed-to-create-asset
+    test("validates Internal ID field length constraints", async () => {
+      await createAssetForm.verifyInputAttribute(
+        "Internal ID",
+        "maxlength",
+        "12"
+      );
     });
   });
 
@@ -90,7 +128,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         price: "1",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates large number in decimals field", async () => {
@@ -100,7 +138,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         price: "1",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates negative number in decimals field", async () => {
@@ -110,7 +148,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         price: "1",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates no signs in decimals field", async () => {
@@ -123,7 +161,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         "18-"
       );
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates initial supply field is empty", async () => {
@@ -132,7 +170,9 @@ test.describe("Cryptocurrency Creation Validation", () => {
         initialSupply: "",
         price: "1",
       });
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageOnlyValidNumber
+      );
     });
     //TODO: Remove skip after this ticket is fixed https://linear.app/settlemint/issue/ENG-3131/cryptocurrencymissing-error-when-entered-0-in-initial-supply
     test.skip("validates inital supply field is 0", async () => {
@@ -152,7 +192,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         price: "1",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a number no greater than 9007199254740991"
+        errorMessageData.errorMessageGreaterThanMax
       );
     });
     test("validates initial supply field can not contain special characters", async () => {
@@ -164,7 +204,9 @@ test.describe("Cryptocurrency Creation Validation", () => {
         'input[name="initialSupply"]',
         "1-"
       );
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageOnlyValidNumber
+      );
     });
     test("validates price field is empty", async () => {
       await createAssetForm.fillCryptocurrencyDetails({
@@ -172,7 +214,9 @@ test.describe("Cryptocurrency Creation Validation", () => {
         initialSupply: "1",
         price: "",
       });
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageOnlyValidNumber
+      );
     });
 
     test("validates large number for price field", async () => {
@@ -182,7 +226,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
         price: "10000000000000000000",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a number no greater than 9007199254740991"
+        errorMessageData.errorMessageGreaterThanMax
       );
     });
     test("validates price field can not contain special characters", async () => {
@@ -194,7 +238,9 @@ test.describe("Cryptocurrency Creation Validation", () => {
         'input[name="price.amount"]',
         "1-"
       );
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageOnlyValidNumber
+      );
     });
     test("verifies default currency is EUR", async () => {
       await createAssetForm.verifyCurrencyValue("EUR");
@@ -205,7 +251,7 @@ test.describe("Cryptocurrency Creation Validation", () => {
       await adminPages.adminPage.goto();
       await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
       await adminPages.adminPage.verifySuccessMessage(
-        assetMessage.successMessageCryptocurrency
+        successMessageData.successMessageCryptocurrency
       );
       await adminPages.adminPage.checkIfAssetExists({
         sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
