@@ -30,13 +30,6 @@ export function UpdateReservesSchema() {
         t.Literal(ReserveComplianceStatus.UNDER_INVESTIGATION),
         t.Literal(ReserveComplianceStatus.NON_COMPLIANT),
       ]),
-      verificationCode: t.VerificationCode({
-        description:
-          "The verification code (PIN, 2FA, or secret code) for signing the transaction",
-      }),
-      verificationType: t.VerificationType({
-        description: "The type of verification",
-      }),
     },
     { $id: "UpdateReserves" }
   );

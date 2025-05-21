@@ -1,7 +1,7 @@
 "use server";
 
+import { action } from "@/lib/mutations/safe-action";
 import { t } from "@/lib/utils/typebox";
-import { action } from "../../../safe-action";
 import { updateReservesFunction } from "./update-reserves-function";
 import { UpdateReservesSchema } from "./update-reserves-schema";
 

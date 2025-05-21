@@ -42,6 +42,7 @@ export function ReserveForm({ address }: ReserveFormProps) {
           submittingLabel: t("saving"),
           processingLabel: t("saving"),
         }}
+        secureForm={false} // No pincode required for this form
         defaultValues={{
           address,
           tokenType: TokenTypeEnum.ELECTRONIC_MONEY_TOKEN,
