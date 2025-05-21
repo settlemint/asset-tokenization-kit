@@ -43,7 +43,14 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - secretRef:
-                name: {{ include "txsigner.fullname" . }}
+                name: {{ include "txsigner.fullname" . }}-env
+            {{- if .Values.privateKey.existingSecret }}
+            - secretRef:
+                name: {{ .Values.privateKey.existingSecret | quote }}
+            {{- else }}
+            - secretRef:
+                name: {{ include "txsigner.fullname" . }}-private-key
+            {{- end }}
           ports:
             - name: txsigner
               containerPort: {{ .Values.service.port }}

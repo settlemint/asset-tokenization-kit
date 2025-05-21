@@ -123,6 +123,7 @@ network:
   nodeRpcUrl: http://erpc:4000
 
 privateKey:
+  existingSecret: "" # Set a value if you want to use an existing secret
   mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
   derivationPath: "m/44'/60'/0'/0/0"
 
