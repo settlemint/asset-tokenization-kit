@@ -10,7 +10,8 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useFeatureFlagEnabled } from "posthog-js/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AssetTypeSelection } from "./steps/asset-type-selection";
 import {
   assetForms,
@@ -39,19 +40,41 @@ export function AssetDesignerDialog({
   const [formComponent, setFormComponent] =
     useState<React.ComponentType<any> | null>(null);
 
-  // Create a unified representation of all steps
-  const allSteps: Step[] = [
-    {
-      ...typeSelectionStep,
-      description: t(typeSelectionStep.description),
-      title: t(typeSelectionStep.title),
-    },
-    ...(assetForm?.steps.map((step) => ({
-      ...step,
-      description: t(step.description),
-      title: t(step.title),
-    })) || []),
-  ].filter((step) => step.id === "type" || selectedAssetType !== null);
+  // Check if MICA feature flag is enabled
+  const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
+  // In development, default to true if PostHog isn't fully initialized
+  const isMicaEnabled =
+    process.env.NODE_ENV === "development" ? true : micaFlagFromPostHog;
+
+  // Create a unified representation of all steps, filtering out regulation step if MICA is disabled
+  const allSteps: Step[] = useMemo(() => {
+    // Start with the type selection step
+    const steps = [
+      {
+        ...typeSelectionStep,
+        description: t(typeSelectionStep.description),
+        title: t(typeSelectionStep.title),
+      },
+    ];
+
+    // Add asset-specific steps if an asset type is selected
+    if (assetForm?.steps) {
+      const filteredSteps = assetForm.steps
+        // Filter out regulation step if MICA is disabled
+        .filter((step) => isMicaEnabled || step.id !== "regulation")
+        .map((step) => ({
+          ...step,
+          description: t(step.description),
+          title: t(step.title),
+        }));
+
+      steps.push(...filteredSteps);
+    }
+
+    return steps.filter(
+      (step) => step.id === "type" || selectedAssetType !== null
+    );
+  }, [assetForm?.steps, isMicaEnabled, selectedAssetType, t]);
 
   // Derive stepsOrder from allSteps for navigation
   const stepsOrder = allSteps.map((step) => step.id);

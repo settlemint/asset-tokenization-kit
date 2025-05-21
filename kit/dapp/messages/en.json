@@ -1632,6 +1632,10 @@
           "issue": "Issue",
           "not-specified": "Not specified",
           "title": "Summary"
+        },
+        "regulation": {
+          "title": "Regulation & Compliance",
+          "description": "Upload required compliance documents and select applicable regulations for your asset."
         }
       },
       "detail": {
