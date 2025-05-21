@@ -139,7 +139,7 @@ initContainer:
     enabled: true
     image:
       repository: ghcr.io/settlemint/btp-waitforit
-      tag: v7.7.4
+      tag: v7.7.5
       pullPolicy: IfNotPresent
     timeout: 5 # Timeout in seconds for each dependency check
     dependencies:
@@ -191,7 +191,7 @@ job:
     hasuraCheck:
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: v7.7.4
+        tag: v7.7.5
         pullPolicy: IfNotPresent
       timeout: 5 # Timeout in seconds for each dependency check
       endpoint: hasura.atk.svc.cluster.local:8080
