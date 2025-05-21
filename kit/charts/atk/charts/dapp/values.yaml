@@ -218,3 +218,9 @@ job:
       cpu: "250m"
     limits:
       memory: "3Gi"
+
+  workspace:
+    # Size of the workspace PVC
+    size: 1Gi
+    # Storage class to use for the workspace PVC
+    storageClass: local-path

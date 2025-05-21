@@ -7,7 +7,7 @@ metadata:
     {{- include "dapp.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-weight": "5"
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   ttlSecondsAfterFinished: 300
@@ -66,6 +66,9 @@ spec:
             {{- toYaml .Values.job.securityContext | nindent 12 }}
           image: {{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}
           imagePullPolicy: {{ .Values.job.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ include "dapp.fullname" . }}-env
           resources:
             requests:
               memory: {{ .Values.job.resources.requests.memory | quote }}
@@ -96,8 +99,8 @@ spec:
               cd kit/dapp
               bun db:push
 
-              echo "Track tables..."
-              bunx settlemint hasura track -a
+              # echo "Track tables..."
+              # bunx settlemint hasura track -a
           volumeMounts:
             - name: workspace
               mountPath: /workspace
