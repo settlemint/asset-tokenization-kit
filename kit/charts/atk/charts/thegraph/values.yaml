@@ -123,19 +123,20 @@ job:
     - image-pull-secret-ghcr
     - image-pull-secret-harbor
 
-  # Image for the wait-for-graph-node init container
-  busyboxImage:
-    registry: docker.io
-    repository: busybox
-    tag: 1.37 # Use specific stable tag
-    pullPolicy: IfNotPresent
-
-  # Image for the clone-repo init container
-  gitImage:
-    registry: docker.io
-    repository: alpine/git
-    tag: latest # Or pin to a specific version
-    pullPolicy: IfNotPresent
+  initContainer:
+    graphNodeCheck:
+      image:
+        registry: docker.io
+        repository: busybox
+        tag: 1.37 # Use specific stable tag
+        pullPolicy: IfNotPresent
+    cloneRepo:
+      atkTag: "1.1.1"
+      image:
+        registry: docker.io
+        repository: alpine/git
+        tag: latest # Or pin to a specific version
+        pullPolicy: IfNotPresent
 
   # Custom Init Containers (add definitions here if needed, e.g., for dependencies)
   # extraInitContainers: []
