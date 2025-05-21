@@ -3,7 +3,7 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { UpdateReservesSchema } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-schema";
-import { type StaticDecode } from "@/lib/utils/typebox";
+import type { StaticDecode } from "@/lib/utils/typebox";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch, type UseFormReturn } from "react-hook-form";
 

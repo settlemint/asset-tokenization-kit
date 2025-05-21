@@ -297,7 +297,10 @@
         "profile": "Profile",
         "settings": "Settings"
       },
-      "trade-management": "Trade management"
+      "trade-management": {
+        "xvp-settlement": "XvP Settlement",
+        "group-title": "Trade management"
+      }
     }
   },
   "admin-user": "Admin",

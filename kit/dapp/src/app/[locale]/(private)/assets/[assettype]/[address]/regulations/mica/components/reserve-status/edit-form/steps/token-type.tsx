@@ -4,7 +4,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import { TokenType as TokenTypeEnum } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import type { UpdateReservesSchema } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-schema";
-import { type StaticDecode } from "@/lib/utils/typebox";
+import type { StaticDecode } from "@/lib/utils/typebox";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 

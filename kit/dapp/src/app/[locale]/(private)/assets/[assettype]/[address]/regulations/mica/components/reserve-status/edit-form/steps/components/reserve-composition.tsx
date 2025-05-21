@@ -2,8 +2,8 @@
 
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UpdateReservesSchema } from "@/lib/mutations/mica/update-reserves/update-reserves-schema";
-import { type StaticDecode } from "@/lib/utils/typebox";
+import { UpdateReservesSchema } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-schema";
+import type { StaticDecode } from "@/lib/utils/typebox";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
@@ -53,7 +53,7 @@ export function ReserveCompositionSection() {
 
         <FormInput
           control={control}
-          name="highQualityLiquidAssets"
+          name="liquidAssets"
           type="number"
           min={0}
           max={100}
