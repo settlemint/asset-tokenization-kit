@@ -99,15 +99,15 @@ const GetMicaRegulationConfigId = hasuraGraphql(`
 `);
 
 type GetRegulationConfigIdResponse = {
-  regulation_configs: Array<{
+  regulation_configs: {
     id: string;
-  }>;
+  }[];
 };
 
 type GetMicaRegulationConfigIdResponse = {
-  mica_regulation_configs: Array<{
+  mica_regulation_configs: {
     id: string;
-  }>;
+  }[];
 };
 
 // GraphQL mutation for updating MICA regulation config
