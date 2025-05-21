@@ -457,7 +457,7 @@ dapp:
     NEXTAUTH_URL: "https://dapp.k8s.orb.local"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy.atk.svc.cluster.local:4318/v1/traces" # Adjust if needed
     OTEL_EXPORTER_OTLP_PROTOCOL: "http"
-    SETTLEMINT_ACCESS_TOKEN: "sm_aat_dummy-key" # Placeholder - Should be configured
+    SETTLEMINT_ACCESS_TOKEN: "dummy-key" # Placeholder - Should be configured
     SETTLEMINT_APP_URL: "https://dapp.k8s.orb.local"
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc.atk.svc.cluster.local/" # Placeholder
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk" # Placeholder

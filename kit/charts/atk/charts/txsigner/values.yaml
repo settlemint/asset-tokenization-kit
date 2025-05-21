@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/settlemint/btp-signer
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "7.12.3" # Default tag from the example
+  tag: "7.13.0" # Default tag from the example
 
 imagePullSecrets:
   - name: image-pull-secret-docker
@@ -124,8 +124,8 @@ network:
 
 privateKey:
   existingSecret: "" # Set a value if you want to use an existing secret
-  mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
-  derivationPath: "m/44'/60'/0'/0/0"
+  mnemonic: "" # Mnemonic to use for the private key
+  derivationPath: "" # Derivation path to use for the private key
 
 postgresql: postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable
 
