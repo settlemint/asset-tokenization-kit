@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/routing";
 import type { RegulationType } from "@/lib/db/regulations/schema-base-regulation-configs";

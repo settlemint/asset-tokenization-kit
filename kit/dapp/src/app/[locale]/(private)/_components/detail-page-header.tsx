@@ -102,9 +102,9 @@ export async function DetailPageHeader({
           <ActivePill
             paused={"paused" in assetDetails ? assetDetails.paused : false}
           />
-          {regulationPills.map((regulation) => (
-            <RegulationPill key={regulation.type} {...regulation} />
-          ))}
+          {regulationPills.map((regulation) => {
+            return <RegulationPill key={regulation.type} {...regulation} />;
+          })}
         </div>
       }
       button={manageDropdown({
