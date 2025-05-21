@@ -2697,6 +2697,9 @@
                 }
               },
               "reserve-composition": {
+                "errors": {
+                  "total-percentage": "Total percentage of all assets must equal 100%"
+                },
                 "title": "Reserve composition",
                 "total-percentage": "Total",
                 "description": "Only assets with non-zero percentages will be shown in the reserve status. Active composition items must total 100%.",
