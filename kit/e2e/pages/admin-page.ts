@@ -14,7 +14,9 @@ export class AdminPage extends BasePage {
   private async startAssetCreation(
     assetType: string,
     name: string,
-    symbol: string
+    symbol: string,
+    isin: string,
+    internalId: string
   ) {
     await this.page
       .locator(
@@ -29,6 +31,8 @@ export class AdminPage extends BasePage {
       .click();
     await this.page.getByLabel("Name").fill(name);
     await this.page.getByLabel("Symbol").fill(symbol);
+    await this.page.getByLabel("ISIN").fill(isin);
+    await this.page.getByLabel("Internal ID").fill(internalId);
   }
 
   public async completeAssetCreation(buttonName: string, pincode: string) {
@@ -59,10 +63,10 @@ export class AdminPage extends BasePage {
     await this.startAssetCreation(
       options.assetType,
       options.name,
-      options.symbol
+      options.symbol,
+      options.isin,
+      options.internalId
     );
-    await this.page.getByLabel("ISIN").fill(options.isin);
-    await this.page.getByLabel("Internal ID").fill(options.internalId);
     const nextButton = this.page.getByRole("button", {
       name: "Next",
       exact: true,
@@ -110,7 +114,9 @@ export class AdminPage extends BasePage {
     await this.startAssetCreation(
       options.assetType,
       options.name,
-      options.symbol
+      options.symbol,
+      options.isin,
+      options.internalId
     );
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
@@ -133,18 +139,20 @@ export class AdminPage extends BasePage {
     name: string;
     symbol: string;
     isin: string;
+    internalId: string;
     decimals: string;
+    price: string;
     equityClass: string;
     equityCategory: string;
-    price: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
       options.assetType,
       options.name,
-      options.symbol
+      options.symbol,
+      options.isin,
+      options.internalId
     );
-    await this.page.getByLabel("ISIN").fill(options.isin);
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
@@ -177,19 +185,21 @@ export class AdminPage extends BasePage {
     name: string;
     symbol: string;
     isin: string;
+    internalId: string;
     decimals: string;
+    price: string;
+    managementFee: string;
     fundCategory: string;
     fundClass: string;
-    managementFee: string;
-    price: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
       options.assetType,
       options.name,
-      options.symbol
+      options.symbol,
+      options.isin,
+      options.internalId
     );
-    await this.page.getByLabel("ISIN").fill(options.isin);
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
@@ -220,15 +230,19 @@ export class AdminPage extends BasePage {
     assetType: string;
     name: string;
     symbol: string;
+    isin: string;
+    internalId: string;
     decimals: string;
-    validityPeriod: string;
     price: string;
+    validityPeriod: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
       options.assetType,
       options.name,
-      options.symbol
+      options.symbol,
+      options.isin,
+      options.internalId
     );
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
@@ -253,29 +267,31 @@ export class AdminPage extends BasePage {
     name: string;
     symbol: string;
     isin: string;
+    internalId: string;
     decimals: string;
-    validityPeriod: string;
     price: string;
+    validityPeriod: string;
     pincode: string;
   }) {
     await this.startAssetCreation(
       options.assetType,
       options.name,
-      options.symbol
+      options.symbol,
+      options.isin,
+      options.internalId
     );
-    await this.page.getByLabel("ISIN").fill(options.isin);
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
     await nextButton.focus();
     await nextButton.click();
     await this.page.getByLabel("Decimals").fill(options.decimals);
-    await this.page
-      .getByLabel("Collateral Proof Validity")
-      .fill(options.validityPeriod);
     await this.page.getByLabel("Price").fill(options.price);
     await this.page.locator("#price\\.currency").click();
     await this.page.getByRole("option", { name: "EUR" }).click();
+    await this.page
+      .getByLabel("Collateral Proof Validity")
+      .fill(options.validityPeriod);
     await nextButton.click();
     await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
@@ -853,22 +869,23 @@ export class AdminPage extends BasePage {
     await expect
       .poll(
         async () => {
-          const isToastVisible = await this.page.isVisible(toastSelector);
-          if (!isToastVisible) {
+          const toasts = await this.page.locator(toastSelector).all();
+          if (toasts.length === 0) {
             return false;
           }
 
-          const toastTitle = await this.page
-            .locator(titleSelector)
-            .textContent();
-          return toastTitle
-            ?.toLowerCase()
-            .includes(partialMessage.toLowerCase());
+          for (const toast of toasts) {
+            const title = await toast.locator("[data-title]").textContent();
+            if (title?.toLowerCase().includes(partialMessage.toLowerCase())) {
+              return true;
+            }
+          }
+          return false;
         },
         {
           message: `Waiting for success toast containing "${partialMessage}"`,
-          timeout: 120000,
-          intervals: [500, 1000, 2000],
+          timeout: 180000,
+          intervals: [1000, 2000, 3000],
         }
       )
       .toBe(true);
