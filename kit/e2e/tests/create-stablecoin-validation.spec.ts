@@ -2,7 +2,10 @@ import { type BrowserContext, test } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { stablecoinData } from "../test-data/asset-data";
-import { assetMessage } from "../test-data/success-msg-data";
+import {
+  successMessageData,
+  errorMessageData,
+} from "../test-data/message-data";
 import { adminUser } from "../test-data/user-data";
 import { ensureUserIsAdmin } from "../utils/db-utils";
 
@@ -36,7 +39,7 @@ test.describe("Stablecoin Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter at least 1 characters"
+        errorMessageData.errorMessageName
       );
     });
     test("validates symbol field is empty", async () => {
@@ -46,7 +49,7 @@ test.describe("Stablecoin Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter a valid asset symbol (uppercase letters and numbers)"
+        errorMessageData.errorMessageSymbol
       );
     });
     test("validates symbol field is with lower case", async () => {
@@ -56,7 +59,7 @@ test.describe("Stablecoin Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter a valid asset symbol (uppercase letters and numbers)"
+        errorMessageData.errorMessageSymbol
       );
     });
     test("validates symbol field can not contain special characters", async () => {
@@ -65,7 +68,7 @@ test.describe("Stablecoin Creation Validation", () => {
         symbol: "TSC$",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a valid asset symbol (uppercase letters and numbers)"
+        errorMessageData.errorMessageSymbol
       );
     });
     //Update this check name constraint after this ticket is fixed https://linear.app/settlemint/issue/ENG-3136/asset-designererror-message-is-wrong-for-asset-name-field
@@ -83,11 +86,30 @@ test.describe("Stablecoin Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter a valid ISIN. Format: 2 letters (country code), 9 alphanumeric characters, and 1 check digit (e.g., US0378331005)"
+        errorMessageData.errorMessageISIN
+      );
+    });
+    test("validates ISIN no special characters", async () => {
+      await createAssetForm.fillBasicFields({
+        name: "Test Stablecoin",
+        symbol: "TSC",
+        isin: "RO03$833%005",
+      });
+      await createAssetForm.clickOnNextButton();
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageISIN
       );
     });
     test("validates ISIN field length constraints", async () => {
       await createAssetForm.verifyInputAttribute("ISIN", "maxlength", "12");
+    });
+    // Additional steps after this ticket is fixed https://linear.app/settlemint/issue/ENG-3160/internalidwhen-enter-internalid-failed-to-create-asset
+    test("validates Internal ID field length constraints", async () => {
+      await createAssetForm.verifyInputAttribute(
+        "Internal ID",
+        "maxlength",
+        "12"
+      );
     });
   });
 
@@ -107,7 +129,7 @@ test.describe("Stablecoin Creation Validation", () => {
         price: stablecoinData.price,
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates large number in decimals field", async () => {
@@ -116,7 +138,7 @@ test.describe("Stablecoin Creation Validation", () => {
         price: stablecoinData.price,
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates negative number in decimals field", async () => {
@@ -125,7 +147,7 @@ test.describe("Stablecoin Creation Validation", () => {
         price: stablecoinData.price,
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates no signs in decimals field", async () => {
@@ -138,7 +160,7 @@ test.describe("Stablecoin Creation Validation", () => {
         "18-"
       );
       await createAssetForm.expectErrorMessage(
-        "Please enter a value between 0 and 18"
+        errorMessageData.errorMessageDecimals
       );
     });
     test("validates price field is empty", async () => {
@@ -148,7 +170,9 @@ test.describe("Stablecoin Creation Validation", () => {
         price: "",
       });
       await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageOnlyValidNumber
+      );
     });
     test("validates large number in price field", async () => {
       await createAssetForm.fillStablecoinConfigurationFields({
@@ -156,7 +180,7 @@ test.describe("Stablecoin Creation Validation", () => {
         price: "10000000000000000000",
       });
       await createAssetForm.expectErrorMessage(
-        "Please enter a number no greater than 9007199254740991"
+        errorMessageData.errorMessageGreaterThanMax
       );
     });
     test("validates price field can not contain special characters", async () => {
@@ -169,7 +193,9 @@ test.describe("Stablecoin Creation Validation", () => {
         'input[name="price"]',
         "1-"
       );
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageOnlyValidNumber
+      );
     });
     // Rename this test to avoid duplicate test title
     test("confirms EUR is selected as default currency", async () => {
@@ -183,7 +209,9 @@ test.describe("Stablecoin Creation Validation", () => {
         price: "1",
       });
       await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage("Please enter a valid number");
+      await createAssetForm.expectErrorMessage(
+        errorMessageData.errorMessageOnlyValidNumber
+      );
     });
     test("validates collateral proof validity field is less than 1", async () => {
       await createAssetForm.fillStablecoinConfigurationFields({
@@ -193,7 +221,7 @@ test.describe("Stablecoin Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter a number no less than 1"
+        errorMessageData.errorMessageLessThanMin
       );
     });
     //Remove skip after this issue is fixed https://linear.app/settlemint/issue/ENG-3152/asset-designerdeposit-missing-error-on-large-number-on-collateral
@@ -205,7 +233,7 @@ test.describe("Stablecoin Creation Validation", () => {
       });
       await createAssetForm.clickOnNextButton();
       await createAssetForm.expectErrorMessage(
-        "Please enter a number no greater than 9007199254740991"
+        errorMessageData.errorMessageGreaterThanMax
       );
     });
   });
@@ -214,7 +242,7 @@ test.describe("Stablecoin Creation Validation", () => {
       await adminPages.adminPage.goto();
       await adminPages.adminPage.createStablecoin(stablecoinData);
       await adminPages.adminPage.verifySuccessMessage(
-        assetMessage.successMessageStablecoin
+        successMessageData.successMessageStablecoin
       );
       await adminPages.adminPage.checkIfAssetExists({
         sidebarAssetTypes: stablecoinData.sidebarAssetTypes,

@@ -6,7 +6,7 @@ import {
   fundMintData,
   fundTransferData,
 } from "../test-data/asset-data";
-import { assetMessage } from "../test-data/success-msg-data";
+import { successMessageData } from "../test-data/message-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
 import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
 
@@ -69,7 +69,7 @@ test.describe("Create, mint, burn and transfer fund", () => {
     await adminPages.adminPage.createFund(fundData);
     testData.fundName = fundData.name;
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageFund
     );
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: fundData.sidebarAssetTypes,
@@ -82,7 +82,7 @@ test.describe("Create, mint, burn and transfer fund", () => {
       ...fundMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageFund
     );
     await adminPages.adminPage.verifyTotalSupply(fundMintData.amount);
     await adminPages.adminPage.redeemBurnAsset({
@@ -102,7 +102,7 @@ test.describe("Create, mint, burn and transfer fund", () => {
       ...fundTransferData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageFund
     );
 
     const transferAmount = Number.parseFloat(fundTransferData.transferAmount);

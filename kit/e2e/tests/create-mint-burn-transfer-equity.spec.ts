@@ -6,7 +6,7 @@ import {
   equityTransferData,
   equityBurnData,
 } from "../test-data/asset-data";
-import { assetMessage } from "../test-data/success-msg-data";
+import { successMessageData } from "../test-data/message-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
 import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
 
@@ -69,7 +69,7 @@ test.describe("Create, mint, burn and transfer equity", () => {
     await adminPages.adminPage.createEquity(equityData);
     testData.equityName = equityData.name;
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageEquity
     );
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: equityData.sidebarAssetTypes,
@@ -82,7 +82,7 @@ test.describe("Create, mint, burn and transfer equity", () => {
       ...equityMintData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageEquity
     );
     await adminPages.adminPage.verifyTotalSupply(equityMintData.amount);
     await adminPages.adminPage.redeemBurnAsset({
@@ -102,7 +102,7 @@ test.describe("Create, mint, burn and transfer equity", () => {
       ...equityTransferData,
     });
     await adminPages.adminPage.verifySuccessMessage(
-      assetMessage.successMessage
+      successMessageData.successMessageEquity
     );
 
     const transferAmount = Number.parseFloat(equityTransferData.transferAmount);
