@@ -1,4 +1,7 @@
-import { TokenType } from "@/lib/db/regulations/schema-mica-regulation-configs";
+import {
+  ReserveComplianceStatus,
+  TokenType,
+} from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { t } from "@/lib/utils/typebox";
 
 export const UpdateReservesSchema = () =>
@@ -16,6 +19,13 @@ export const UpdateReservesSchema = () =>
       centralBankAssets: t.Number({ minimum: 0, maximum: 100 }),
       commodities: t.Number({ minimum: 0, maximum: 100 }),
       otherAssets: t.Number({ minimum: 0, maximum: 100 }),
+      lastAuditDate: t.String({ format: "date-time" }),
+      reserveStatus: t.Union([
+        t.Literal(ReserveComplianceStatus.COMPLIANT),
+        t.Literal(ReserveComplianceStatus.PENDING_REVIEW),
+        t.Literal(ReserveComplianceStatus.UNDER_INVESTIGATION),
+        t.Literal(ReserveComplianceStatus.NON_COMPLIANT),
+      ]),
     },
     { $id: "UpdateReserves" }
   );

@@ -53,7 +53,7 @@ export function Composition() {
 
         <FormInput
           control={control}
-          name="highQualityLiquidAssets"
+          name="liquidAssets"
           type="number"
           min={0}
           max={100}
@@ -125,10 +125,9 @@ export function Composition() {
 
 // Add validated fields for form step validation
 Composition.validatedFields = [
-  "tokenType",
   "bankDeposits",
   "governmentBonds",
-  "highQualityLiquidAssets",
+  "liquidAssets",
   "corporateBonds",
   "centralBankAssets",
   "commodities",

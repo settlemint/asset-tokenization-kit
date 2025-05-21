@@ -297,10 +297,7 @@
         "profile": "Profile",
         "settings": "Settings"
       },
-      "trade-management": {
-        "group-title": "Trade management",
-        "xvp-settlement": "XvP"
-      }
+      "trade-management": "Trade management"
     }
   },
   "admin-user": "Admin",
@@ -748,6 +745,9 @@
         "status": "Status",
         "transaction-hash": "Transaction Hash"
       }
+    },
+    "date-picker": {
+      "pick-date": "Pick a date"
     }
   },
   "creator-owner": "Creator / Owner",
@@ -2682,6 +2682,8 @@
         "reserve-status": {
           "title": "Reserve status",
           "form": {
+            "saving": "Saving...",
+            "save": "Save",
             "trigger-label": "Update",
             "title": "Reserve management",
             "description": "Update reserve information and compliance data",
@@ -2727,6 +2729,20 @@
                     "title": "Other assets",
                     "description": "Other eligible assets that meet regulatory requirements"
                   }
+                }
+              },
+              "audit-details": {
+                "title": "Audit details",
+                "description": "Provide information about the latest audit of the reserve assets",
+                "last-audit-date": "Last audit date",
+                "last-audit-date-placeholder": "Select audit date",
+                "reserve-status": "Reserve status",
+                "reserve-status-placeholder": "Select reserve status",
+                "status": {
+                  "compliant": "Compliant",
+                  "pending-review": "Pending review",
+                  "under-investigation": "Under investigation",
+                  "non-compliant": "Non-compliant"
                 }
               }
             }
