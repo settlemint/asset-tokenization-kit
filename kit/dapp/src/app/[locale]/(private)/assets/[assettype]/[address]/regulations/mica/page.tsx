@@ -1,3 +1,4 @@
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
@@ -11,18 +12,23 @@ interface PageProps {
 export default async function MicaRegulationPage({ params }: PageProps) {
   const { address } = await params;
 
-  const response = await getRegulationDetail({
+  const regulationData = await getRegulationDetail({
     assetId: address,
     regulationType: "mica",
   });
-  if (!response?.mica_regulation_config) {
+  if (!regulationData?.mica_regulation_config) {
     console.error("MiCA regulation config not found");
     return null;
   }
 
+  const assetDetails = await getAssetUsersDetail({ address });
+
   return (
     <div className="space-y-8">
-      <MicaRegulationLayout config={response.mica_regulation_config} />
+      <MicaRegulationLayout
+        config={regulationData.mica_regulation_config}
+        assetDetails={assetDetails}
+      />
     </div>
   );
 }

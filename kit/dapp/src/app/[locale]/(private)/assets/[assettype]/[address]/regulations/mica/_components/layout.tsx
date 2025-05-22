@@ -1,6 +1,7 @@
 "use client";
 
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
+import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
 import { AuthorizationStatusLayout } from "./authorization-status/layout";
 import { ComplianceScoreLayout } from "./compliance-score/layout";
 import { ConsumerProtectionLayout } from "./consumer-protection/layout";
@@ -10,8 +11,10 @@ import { ReserveStatusLayout } from "./reserve-status/layout";
 
 export function MicaRegulationLayout({
   config,
+  assetDetails,
 }: {
   config: MicaRegulationConfig;
+  assetDetails: AssetUsers;
 }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
@@ -19,7 +22,7 @@ export function MicaRegulationLayout({
         <ComplianceScoreLayout />
       </div>
       <div className="md:col-span-4">
-        <ReserveStatusLayout config={config} />
+        <ReserveStatusLayout config={config} assetDetails={assetDetails} />
       </div>
       <div className="md:col-span-2">
         <AuthorizationStatusLayout />
