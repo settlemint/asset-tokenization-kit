@@ -197,9 +197,8 @@ export function StepWizard({
                             isCurrent ? "font-bold" : "font-medium"
                           )}
                         >
-                          {/* Using 'as any' type assertions because dynamic translation keys
-                          don't match the literal string types expected by next-intl's t function */}
-                          {t(step.title as any)}
+                          {/* Safe display of translated title */}
+                          {step.title}
                         </span>
                       </div>
                       <p
@@ -210,9 +209,8 @@ export function StepWizard({
                             : "text-primary-foreground/70"
                         )}
                       >
-                        {/* Using 'as any' type assertions because dynamic translation keys
-                          don't match the literal string types expected by next-intl's t function */}
-                        {t(step.description as any)}
+                        {/* Safe display of translated description */}
+                        {step.description}
                       </p>
                     </button>
                   </div>
