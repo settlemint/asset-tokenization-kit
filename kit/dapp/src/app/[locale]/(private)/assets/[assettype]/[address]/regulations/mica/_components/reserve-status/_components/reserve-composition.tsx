@@ -49,13 +49,13 @@ export function ReserveComposition({
     {
       id: "bankDeposits",
       label: t("form.fields.reserve-composition.fields.bank-deposits.title"),
-      color: "hsl(221, 83%, 53%)", // blue-600
+      color: "var(--chart-1)",
       percentage: bankDeposits,
     },
     {
       id: "governmentBonds",
       label: t("form.fields.reserve-composition.fields.government-bonds.title"),
-      color: "hsl(217, 91%, 60%)", // blue-500
+      color: "var(--chart-2)",
       percentage: governmentBonds,
     },
     {
@@ -63,13 +63,13 @@ export function ReserveComposition({
       label: t(
         "form.fields.reserve-composition.fields.high-quality-liquid-assets.title"
       ),
-      color: "hsl(214, 95%, 67%)", // blue-400
+      color: "var(--chart-3)",
       percentage: highQualityLiquidAssets,
     },
     {
       id: "corporateBonds",
       label: t("form.fields.reserve-composition.fields.corporate-bonds.title"),
-      color: "hsl(210, 98%, 74%)", // blue-300
+      color: "var(--chart-4)",
       percentage: corporateBonds,
     },
     {
@@ -77,13 +77,13 @@ export function ReserveComposition({
       label: t(
         "form.fields.reserve-composition.fields.central-bank-assets.title"
       ),
-      color: "hsl(206, 100%, 81%)", // blue-200
+      color: "var(--chart-5)",
       percentage: centralBankAssets,
     },
     {
       id: "commodities",
       label: t("form.fields.reserve-composition.fields.commodities.title"),
-      color: "hsl(204, 100%, 88%)", // blue-100
+      color: "var(--chart-6)",
       percentage: commodities,
     },
     {
