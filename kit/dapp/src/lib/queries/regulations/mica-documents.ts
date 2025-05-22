@@ -83,7 +83,7 @@ export const getMicaDocuments = withTracing(
               if (meta.assetAddress && meta.assetAddress !== assetAddress) {
                 continue;
               }
-            } catch (error) {
+            } catch (_) {
               // If we can't check metadata, just include the document
             }
           }
