@@ -9,18 +9,20 @@ interface PageProps {
 }
 
 export default async function MicaRegulationPage({ params }: PageProps) {
-  // Await params before using them
   const { address } = await params;
 
-  // Fetch MICA regulation details
-  const regulationDetail = await getRegulationDetail({
+  const response = await getRegulationDetail({
     assetId: address,
     regulationType: "mica",
   });
+  if (!response?.mica_regulation_config) {
+    console.error("MiCA regulation config not found");
+    return null;
+  }
 
   return (
     <div className="space-y-8">
-      <MicaRegulationLayout />
+      <MicaRegulationLayout config={response.mica_regulation_config} />
     </div>
   );
 }

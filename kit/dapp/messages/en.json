@@ -2684,6 +2684,28 @@
       "dashboard": {
         "reserve-status": {
           "title": "Reserve status",
+          "ratio": {
+            "title": "Reserve ratio",
+            "description": "The ratio of the reserve assets to the circulating supply"
+          },
+          "composition": {
+            "title": "Reserve composition",
+            "description": "The composition of the reserve assets"
+          },
+          "details": {
+            "title": "Reserve details",
+            "description": "Provide information about the reserve assets",
+            "fields": {
+              "circulating-supply": {
+                "title": "Circulating supply",
+                "description": "The total number of tokens in circulation"
+              },
+              "reserve-value": {
+                "title": "Reserve value",
+                "description": "The total value of the reserve assets"
+              }
+            }
+          },
           "form": {
             "saving": "Saving...",
             "save": "Save",
