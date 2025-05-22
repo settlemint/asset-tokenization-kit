@@ -35,7 +35,9 @@ interface DetailPageHeaderProps {
 }
 
 async function getRegulationPills(assetId: string) {
-  const regulationConfigs = await getRegulationList({ assetId });
+  const regulationConfigs = await getRegulationList({
+    assetId: assetId.toLowerCase(),
+  });
 
   return regulationConfigs
     .filter((config) => config.status === RegulationStatus.COMPLIANT)
