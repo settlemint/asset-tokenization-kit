@@ -16,9 +16,9 @@ export async function GET(
   context: RouteParams
 ): Promise<Response> {
   try {
-    // Properly await and destructure the params
-    const { params } = context;
-    const assetAddress = params.assetAddress;
+    // Awaiting context.params as per the persistent error message
+    const resolvedParams = await context.params;
+    const { assetAddress } = resolvedParams;
 
     // Validate asset address
     if (!assetAddress || typeof assetAddress !== "string") {
