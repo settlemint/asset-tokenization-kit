@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useMemo, type ReactNode } from "react";
 
