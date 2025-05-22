@@ -51,7 +51,7 @@ export const adminUser: AdminUser = {
 
 export const adminRecipient: SignUpData = {
   name: `Test Admin Recipient ${date}-${randomValue}`,
-  email: "testadminrecipient@settlemint.com",
+  email: `testadminrecipient-${date}-${randomValue}@settlemint.com`,
   password: password,
   pincodeName: pincodeName,
   pincode: pincode,
@@ -59,7 +59,7 @@ export const adminRecipient: SignUpData = {
 
 export const userRecipient: SignUpData = {
   name: `Test User Recipient ${date}-${randomValue}`,
-  email: "testuserrecipient@settlemint.com",
+  email: `testuserrecipient-${date}-${randomValue}@settlemint.com`,
   password: password,
   pincodeName: pincodeName,
   pincode: pincode,

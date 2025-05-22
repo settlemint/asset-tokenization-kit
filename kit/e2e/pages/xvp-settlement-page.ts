@@ -207,7 +207,9 @@ export class XvpSettlementPage extends BasePage {
         async () => {
           const rows = tableBody.locator("tr[data-slot='table-row']");
           const rowCount = await rows.count();
-          if (rowCount === 0) return false;
+          if (rowCount === 0) {
+            return false;
+          }
 
           const now = new Date();
 
