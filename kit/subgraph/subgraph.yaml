@@ -238,6 +238,49 @@ dataSources:
         - event: VaultCreated(indexed address,indexed address,address[],uint256)
           handler: handleVaultCreated
       file: ./src/factories/vault-factory.ts
+  - kind: ethereum/contract
+    name: EAS
+    network: settlemint
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: EAS
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Schema
+        - Attestation
+      abis:
+        - name: EAS
+          file: ../contracts/portal/EAS.json
+      eventHandlers:
+        - event: Attested(indexed address,indexed address,bytes32,indexed bytes32)
+          handler: handleAttested
+        - event: Revoked(indexed address,indexed address,bytes32,indexed bytes32)
+          handler: handleRevoked
+      file: ./src/eas/handlers.ts
+  - kind: ethereum/contract
+    name: SchemaRegistry
+    network: settlemint
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: SchemaRegistry
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Schema
+      abis:
+        - name: SchemaRegistry
+          file: ../contracts/portal/EASSchemaRegistry.json
+      eventHandlers:
+        - event: Registered(indexed bytes32,indexed address,(bytes32,address,bool,string))
+          handler: handleRegisteredSchema
+      file: ./src/eas/handlers.ts
 templates:
   - kind: ethereum/contract
     name: XvPSettlement

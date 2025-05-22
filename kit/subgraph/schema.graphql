@@ -896,3 +896,54 @@ type VaultTransactionConfirmation @entity(immutable: false) {
   signer: Account!
   confirmedAt: BigInt!
 }
+
+type Schema @entity(immutable: false) {
+  "The UID of the schema (bytes32)"
+  id: ID!
+  "Address of the account that registered the schema"
+  registerer: Bytes!
+  "The resolver contract address for this schema (if any)"
+  resolver: Bytes
+  "Whether attestations made with this schema are revocable (schema-level)"
+  revocable: Boolean!
+  "The schema string itself (e.g., 'uint256 voteCount, bool hasVoted')"
+  schemaString: String!
+  "Timestamp of when the schema was registered"
+  registeredTimestamp: BigInt!
+  "List of attestations made using this schema"
+  attestations: [Attestation!] @derivedFrom(field: "schema")
+  "Count of attestations made using this schema"
+  attestationCount: BigInt!
+}
+
+type Attestation @entity(immutable: false) {
+  "The UID of the attestation (bytes32)"
+  id: ID!
+  "Link to the Schema entity this attestation uses"
+  schema: Schema!
+  "Address of the account that made the attestation"
+  attester: Bytes!
+  "Address of the recipient of the attestation"
+  recipient: Bytes!
+  "Timestamp when the attestation was made (Unix timestamp)"
+  time: BigInt!
+  "Timestamp when the attestation expires (Unix timestamp), 0 for no expiration"
+  expirationTime: BigInt!
+  "Timestamp when the attestation was revoked (Unix timestamp), 0 if not revoked"
+  revocationTime: BigInt!
+  "UID of a referenced attestation (if any)"
+  refUID: Bytes # Could also be a link: refAttestation: Attestation
+  "Whether this specific attestation is revocable"
+  revocable: Boolean!
+  "The raw schema-specific data payload"
+  data: Bytes!
+  "Value (ETH) sent with the attestation to the resolver"
+  value: BigInt!
+
+  "Transaction hash where this attestation was made"
+  transactionHash: Bytes!
+  "Block number where this attestation was made"
+  blockNumber: BigInt!
+  "Timestamp of the block where this attestation was made"
+  blockTimestamp: BigInt!
+}
