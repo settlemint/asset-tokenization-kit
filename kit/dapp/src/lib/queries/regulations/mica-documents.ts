@@ -43,28 +43,61 @@ export const getMicaDocuments = withTracing(
     console.log(`Fetching MiCA documents for asset: ${assetAddress}`);
 
     try {
-      // Define the prefix to look for asset-specific documents
-      // The structure would typically be regulations/mica/[assetAddress]/...
-      const prefix = `regulations/mica/${assetAddress}`;
+      // Define multiple prefixes to search for documents
+      const prefixes = [
+        // Original expected path
+        `regulations/mica/${assetAddress}`,
+        // Path for documents created through upload-document.ts
+        `Documents/mica`,
+        // Check generic document types that might contain MICA docs
+        `Documents/Compliance`,
+        `Documents/Legal`,
+        `Documents/Audit`,
+        `Documents/Whitepaper`,
+      ];
 
-      // List all objects with the specified prefix
-      const objectsStream = minioClient.listObjects(
-        DEFAULT_BUCKET,
-        prefix,
-        true
-      );
+      // Collect documents from all potential locations
+      const allDocuments: any[] = [];
 
-      const objectsData: any[] = [];
-      for await (const obj of objectsStream) {
-        objectsData.push(obj);
+      // Search in each prefix
+      for (const prefix of prefixes) {
+        console.log(`Searching for documents with prefix: ${prefix}`);
+        const objectsStream = minioClient.listObjects(
+          DEFAULT_BUCKET,
+          prefix,
+          true
+        );
+
+        for await (const obj of objectsStream) {
+          // For documents not in the assetAddress-specific folder,
+          // check metadata or filename for the asset address to filter
+          if (!prefix.includes(assetAddress)) {
+            // Check if object metadata contains the asset address
+            try {
+              const stat = await minioClient.statObject(
+                DEFAULT_BUCKET,
+                obj.name
+              );
+              const meta = stat.metaData || {};
+              // If this document doesn't reference our asset, skip it
+              if (meta.assetAddress && meta.assetAddress !== assetAddress) {
+                continue;
+              }
+            } catch (error) {
+              // If we can't check metadata, just include the document
+            }
+          }
+
+          allDocuments.push(obj);
+        }
       }
 
       console.log(
-        `Found ${objectsData.length} MiCA documents for asset ${assetAddress}`
+        `Found ${allDocuments.length} MiCA documents for asset ${assetAddress}`
       );
 
       const documents = await Promise.all(
-        objectsData.map(async (obj) => {
+        allDocuments.map(async (obj) => {
           // Generate a presigned URL for the document that's valid for 1 hour
           const url = await minioClient.presignedGetObject(
             DEFAULT_BUCKET,
@@ -86,15 +119,38 @@ export const getMicaDocuments = withTracing(
           }
 
           // Determine document type and category based on path or metadata
-          // This is just an example - adjust according to your actual document structure
-          const category = pathParts[2] || "general"; // Assuming path format: regulations/mica/[category]/[filename]
-          const type =
-            (metaData as any)["type"] ||
-            (fileName.endsWith(".pdf")
-              ? "PDF"
-              : fileName.endsWith(".docx")
-                ? "Document"
-                : "Other");
+          const category = pathParts.length > 1 ? pathParts[1] : "general";
+
+          // Use the folder path for document type instead of file extension
+          // If document is stored in Documents/Audit, use "Audit" as the type
+          let type = "Other";
+
+          // First check if type is explicitly set in metadata
+          if ((metaData as any)["type"]) {
+            type = (metaData as any)["type"];
+          }
+          // Otherwise derive from the path
+          else if (pathParts.length > 1) {
+            // If path is Documents/Audit/... then type is Audit
+            if (pathParts[0] === "Documents" && pathParts.length > 1) {
+              // Capitalize the first letter for nicer display
+              type =
+                pathParts[1].charAt(0).toUpperCase() + pathParts[1].slice(1);
+            }
+            // For MiCA specific paths
+            else if (
+              pathParts[0] === "regulations" &&
+              pathParts[1] === "mica"
+            ) {
+              type = "MiCA";
+            }
+          }
+          // Fallback to extension only if no better type can be derived
+          else if (fileName.endsWith(".pdf")) {
+            type = "PDF";
+          } else if (fileName.endsWith(".docx")) {
+            type = "Document";
+          }
 
           // Determine status - in a real application, this might come from a database
           // Here we're just assigning statuses for demonstration purposes
@@ -157,13 +213,31 @@ export const getMicaDocumentById = withTracing(
       const fileName = pathParts[pathParts.length - 1];
       const category = pathParts[2] || "general";
 
-      const type =
-        (statResult.metaData as any)["type"] ||
-        (fileName.endsWith(".pdf")
-          ? "PDF"
-          : fileName.endsWith(".docx")
-            ? "Document"
-            : "Other");
+      // Use the folder path for document type instead of file extension
+      let type = "Other";
+
+      // First check if type is explicitly set in metadata
+      if ((statResult.metaData as any)["type"]) {
+        type = (statResult.metaData as any)["type"];
+      }
+      // Otherwise derive from the path
+      else if (pathParts.length > 1) {
+        // If path is Documents/Audit/... then type is Audit
+        if (pathParts[0] === "Documents" && pathParts.length > 1) {
+          // Capitalize the first letter for nicer display
+          type = pathParts[1].charAt(0).toUpperCase() + pathParts[1].slice(1);
+        }
+        // For MiCA specific paths
+        else if (pathParts[0] === "regulations" && pathParts[1] === "mica") {
+          type = "MiCA";
+        }
+      }
+      // Fallback to extension only if no better type can be derived
+      else if (fileName.endsWith(".pdf")) {
+        type = "PDF";
+      } else if (fileName.endsWith(".docx")) {
+        type = "Document";
+      }
 
       const title =
         (statResult.metaData as any)["title"] ||

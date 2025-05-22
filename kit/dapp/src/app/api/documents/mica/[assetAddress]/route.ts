@@ -16,7 +16,8 @@ export async function GET(
   { params }: RouteParams
 ): Promise<Response> {
   try {
-    const { assetAddress } = params;
+    // Get assetAddress from params object (already available in this context)
+    const assetAddress = params.assetAddress;
 
     // Validate asset address
     if (!assetAddress || typeof assetAddress !== "string") {

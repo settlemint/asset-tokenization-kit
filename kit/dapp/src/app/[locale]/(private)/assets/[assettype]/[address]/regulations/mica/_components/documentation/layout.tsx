@@ -1,17 +1,10 @@
 "use client";
 
-import { uploadDocumentAction } from "@/app/actions/upload-document";
+import { uploadDocument } from "@/app/actions/upload-document";
+import { DocumentUploadDialog } from "@/components/blocks/asset-designer/components/document-upload-dialog";
+import type { UploadedDocument } from "@/components/blocks/asset-designer/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import type { MicaDocument } from "@/lib/queries/regulations/mica-documents";
 import { Upload } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -24,18 +17,29 @@ export function DocumentationLayout() {
   const assetAddress = params.address as string;
   const [documents, setDocuments] = useState<MicaDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Fetch documents
   const fetchDocuments = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/documents/mica/${assetAddress}`);
+      const response = await fetch(`/api/documents/mica/${assetAddress}`, {
+        // Add cache: 'no-store' to prevent caching
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
+
       if (response.ok) {
         const data = await response.json();
         setDocuments(data);
       } else {
+        const errorText = await response.text();
+        console.error(
+          `Failed to fetch documents: ${response.status}`,
+          errorText
+        );
         toast.error("Failed to fetch documents");
       }
     } catch (error) {
@@ -46,38 +50,66 @@ export function DocumentationLayout() {
     }
   };
 
-  // Handle file upload
-  const handleUpload = async (formData: FormData) => {
-    setIsUploading(true);
+  // Custom upload action that adds the assetAddress to the formData
+  const uploadAction = async (formData: FormData, path: string) => {
+    // Add asset address to the form data
+    formData.append("assetAddress", assetAddress);
+
+    // Get the document type to use as folder path
+    const documentType = formData.get("type") as string;
+
+    // If a document type was selected, use it for the folder structure
+    // This will create paths like Documents/Audit/... or Documents/Whitepaper/...
+    if (documentType && documentType !== "Other" && documentType !== "mica") {
+      // Override the "type" to make sure it's stored as entered by the user
+      // This is important as the type will be displayed in the table
+      formData.set("type", documentType);
+
+      console.log(
+        `Document type: ${documentType}, will be stored in Documents/${documentType}`
+      );
+    } else {
+      // For mica specific documents or unspecified types
+      formData.set("type", "mica");
+      console.log(
+        `Document type: mica, will be stored in regulations/mica/${assetAddress}`
+      );
+    }
+
     try {
-      // Add asset address to the form data
-      formData.append("assetAddress", assetAddress);
+      const result = await uploadDocument(formData);
 
-      // Set document type to mica
-      formData.append("type", "mica");
-
-      const result = await uploadDocumentAction(formData);
-
-      if (result?.data) {
-        toast.success("Document uploaded successfully");
-        setIsDialogOpen(false);
-        fetchDocuments(); // Refresh the documents list
-      } else {
-        toast.error("Failed to upload document");
+      if (!result) {
+        throw new Error("Upload failed");
       }
-    } catch (error: any) {
-      console.error("Error uploading document:", error);
-      toast.error(`Failed to upload document: ${error.message}`);
-    } finally {
-      setIsUploading(false);
+
+      toast.success("Document uploaded successfully");
+
+      // Force a delay to ensure MinIO has time to update
+      setTimeout(() => {
+        fetchDocuments();
+      }, 2000);
+
+      return {
+        id: result.id,
+        url: result.url,
+      };
+    } catch (error) {
+      console.error("Error in uploadAction:", error);
+      toast.error("Failed to upload document");
+      throw error;
     }
   };
 
-  // Upload form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    handleUpload(formData);
+  // Handle document upload completion
+  const handleUploadComplete = (
+    regulationId: string,
+    document: UploadedDocument
+  ) => {
+    // Add a small delay to ensure MinIO has time to update
+    setTimeout(() => {
+      fetchDocuments();
+    }, 1500);
   };
 
   // Fetch documents on initial load
@@ -89,51 +121,36 @@ export function DocumentationLayout() {
     <Card className="w-full h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Documentation</CardTitle>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <Upload className="h-4 w-4 mr-2" />
-              Upload Document
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Upload MiCA Document</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Document Title</Label>
-                <Input
-                  id="title"
-                  name="title"
-                  placeholder="Enter document title"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Input
-                  id="category"
-                  name="category"
-                  placeholder="E.g., White Paper, Audit Report"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="file">Document File</Label>
-                <Input
-                  id="file"
-                  name="file"
-                  type="file"
-                  required
-                  accept=".pdf,.doc,.docx,.txt"
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isUploading}>
-                {isUploading ? "Uploading..." : "Upload"}
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={fetchDocuments}
+            title="Refresh documents"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+            >
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+              <path d="M21 3v5h-5" />
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+              <path d="M8 16H3v5" />
+            </svg>
+          </Button>
+          <Button size="sm" onClick={() => setIsDialogOpen(true)}>
+            <Upload className="h-4 w-4 mr-2" />
+            Upload Document
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="flex-1">
         {isLoading ? (
@@ -142,6 +159,15 @@ export function DocumentationLayout() {
           <DocumentsTable documents={documents} onRefresh={fetchDocuments} />
         )}
       </CardContent>
+
+      {isDialogOpen && (
+        <DocumentUploadDialog
+          regulationId="mica"
+          onClose={() => setIsDialogOpen(false)}
+          onUpload={handleUploadComplete}
+          uploadAction={uploadAction}
+        />
+      )}
     </Card>
   );
 }
