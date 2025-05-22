@@ -1,4 +1,5 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
+import * as dn from "dnum";
 import { isAddress } from "viem";
 import { z } from "zod/v4";
 
@@ -22,15 +23,20 @@ const ZodAssetType = z.literal([
   "deposit",
 ]);
 
+export const ZodDnum = z
+  .union([z.string(), z.number(), z.bigint()])
+  .transform((val) => {
+    return dn.from(val);
+  });
+
+export type ZDnum = z.infer<typeof ZodDnum>;
+
 const UnderlyingAssetSchemaZod = z.object({
   id: ZodEthAddress,
   symbol: z.string(),
   decimals: ZodERC20Decimals,
   type: ZodAssetType,
-  totalSupply: t.BigDecimal({
-    description:
-      "The total supply of the token in a human-readable decimal format",
-  }),
+  totalSupply: ZodDnum,
 });
 
 const UnderlyingAssetSchema = t.Object(
@@ -56,6 +62,17 @@ const UnderlyingAssetSchema = t.Object(
     description: "Information about the underlying asset",
   }
 );
+
+const YieldPeriodSchemaZod = z.object({
+  id: ZodEthAddress,
+  periodId: ZodDnum,
+  startDate: z.bigint(),
+  endDate: z.bigint(),
+  totalClaimed: ZodDnum,
+  totalClaimedExact: ZodDnum,
+  totalYield: ZodDnum,
+  totalYieldExact: ZodDnum,
+});
 
 export const YieldPeriodSchema = t.Object(
   {
@@ -94,6 +111,19 @@ export const YieldPeriodSchema = t.Object(
 
 export type YieldPeriod = StaticDecode<typeof YieldPeriodSchema>;
 
+const YieldScheduleSchemaZod = z.object({
+  id: ZodEthAddress,
+  startDate: z.bigint(),
+  endDate: z.bigint(),
+  rate: ZodDnum,
+  interval: ZodDnum,
+  totalClaimed: ZodDnum,
+  totalClaimedExact: ZodDnum,
+  underlyingBalance: ZodDnum,
+  underlyingBalanceExact: ZodDnum,
+  periods: z.array(YieldPeriodSchemaZod),
+});
+
 export const YieldScheduleSchema = t.Object({
   id: t.EthereumAddress({
     description: "The address of the yield schedule",
@@ -129,6 +159,32 @@ export const YieldScheduleSchema = t.Object({
   }),
 });
 export type YieldSchedule = StaticDecode<typeof YieldScheduleSchema>;
+
+const OnChainBondSchemaZod = z.object({
+  id: ZodEthAddress,
+  name: z.string(),
+  symbol: z.string(),
+  decimals: ZodERC20Decimals,
+  totalSupply: ZodDnum,
+  totalSupplyExact: ZodDnum,
+  totalBurned: ZodDnum,
+  totalBurnedExact: ZodDnum,
+  totalHolders: z.bigint(),
+  paused: z.boolean(),
+  creator: z.object({
+    id: ZodEthAddress,
+  }),
+  underlyingAsset: UnderlyingAssetSchemaZod,
+  maturityDate: z.bigint().nullable(),
+  isMatured: z.boolean(),
+  hasSufficientUnderlying: z.boolean(),
+  yieldSchedule: YieldScheduleSchemaZod.nullable(),
+  redeemedAmount: z.bigint(),
+  faceValue: z.bigint(),
+  underlyingBalance: ZodDnum,
+  underlyingBalanceExact: ZodDnum,
+  totalUnderlyingNeeded: ZodDnum,
+});
 
 /**
  * TypeBox schema for bond data
