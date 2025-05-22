@@ -134,7 +134,7 @@ test.describe("Create and approve XvP settlement", () => {
         adminPages.adminPage.getFilterButtonLocator(),
       ],
     });
-    await adminPages.adminPage.clickCreateNewXvpSettlementButton();
+    await adminPages.xvpSettlementPage.clickCreateNewXvpSettlementButton();
     await adminPages.xvpSettlementPage.configureXvpAssetFlows({
       flows: [
         {

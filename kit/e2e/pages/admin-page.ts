@@ -43,9 +43,7 @@ export class AdminPage extends BasePage {
     await button.scrollIntoViewIfNeeded();
     await button.click();
 
-    await this.page.getByRole("dialog").waitFor({ state: "visible" });
-    await this.page.locator('[data-input-otp="true"]').fill(pincode);
-    await this.page.getByRole("button", { name: "Yes, confirm" }).click();
+    this.confirmPincode(pincode);
   }
 
   async createBond(options: {
@@ -1050,12 +1048,10 @@ export class AdminPage extends BasePage {
     if (options.expectedUrlPattern) {
       await this.page.waitForURL(options.expectedUrlPattern);
     }
-  }
-
-  async clickCreateNewXvpSettlementButton(): Promise<void> {
-    const createXvpButton = this.page.getByRole("button", {
-      name: "Create a new XvP Settlement",
-    });
-    await createXvpButton.click();
+    if (options.expectedLocatorsToWaitFor) {
+      for (const locator of options.expectedLocatorsToWaitFor) {
+        await locator.waitFor({ state: "visible" });
+      }
+    }
   }
 }

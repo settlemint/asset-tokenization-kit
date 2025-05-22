@@ -2,7 +2,6 @@ import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { searchAndSelectFromDialog } from "../utils/page-utils";
 import { BasePage } from "./base-page";
-
 export interface XvpAssetFlow {
   fromUser: string;
   toUser: string;
@@ -13,6 +12,13 @@ export interface XvpAssetFlow {
 export class XvpSettlementPage extends BasePage {
   constructor(page: Page) {
     super(page);
+  }
+
+  async clickCreateNewXvpSettlementButton(): Promise<void> {
+    const createXvpButton = this.page.getByRole("button", {
+      name: "Create a new XvP Settlement",
+    });
+    await createXvpButton.click();
   }
 
   async configureXvpAssetFlows(options: {
@@ -112,8 +118,8 @@ export class XvpSettlementPage extends BasePage {
     await this.clickNextButton();
   }
 
-  async reviewAndConfirmXvpSettlement(options?: {
-    pincode?: string;
+  async reviewAndConfirmXvpSettlement(options: {
+    pincode: string;
   }): Promise<void> {
     const summaryHeader = this.page
       .locator("h2")
@@ -131,22 +137,7 @@ export class XvpSettlementPage extends BasePage {
       "'Create a new XvP Settlement' button on summary should be visible"
     ).toBeVisible();
     await createSettlementButton.click();
-
-    if (options?.pincode) {
-      const pincodeDialog = this.page.getByRole("dialog");
-      await expect(
-        pincodeDialog,
-        "Pincode dialog should be visible"
-      ).toBeVisible({ timeout: 5000 });
-      const otpInput = pincodeDialog.locator('[data-input-otp="true"]');
-      await expect(otpInput, "PIN code input should be visible").toBeVisible();
-      await otpInput.fill(options.pincode);
-
-      const confirmButton = pincodeDialog.getByRole("button", {
-        name: "Yes, confirm",
-      });
-      await confirmButton.click();
-    }
+    this.confirmPincode(options.pincode);
   }
 
   async clickNextButton(): Promise<void> {
@@ -259,7 +250,7 @@ export class XvpSettlementPage extends BasePage {
                   }
                 }
               } else if (createdAtText.includes("a minute ago")) {
-                if (1 <= options.maxCreationAgeInMinutes) {
+                if (options.maxCreationAgeInMinutes >= 1) {
                   meetsCreationTimeCriteria = true;
                 }
               } else if (createdAtText.includes("today at")) {
@@ -271,8 +262,12 @@ export class XvpSettlementPage extends BasePage {
                   const minutes = parseInt(timeMatch[2], 10);
                   const isPm = timeMatch[3] === "pm";
 
-                  if (isPm && hours < 12) hours += 12;
-                  if (!isPm && hours === 12) hours = 0;
+                  if (isPm && hours < 12) {
+                    hours += 12;
+                  }
+                  if (!isPm && hours === 12) {
+                    hours = 0;
+                  }
 
                   createdAtDate = new Date();
                   createdAtDate.setHours(hours, minutes, 0, 0);
@@ -322,7 +317,7 @@ export class XvpSettlementPage extends BasePage {
       .toBe(true);
   }
 
-  async approveXvpSettlement(options: { pincode?: string }): Promise<void> {
+  async approveXvpSettlement(options: { pincode: string }): Promise<void> {
     await this.page.getByRole("button", { name: "Manage" }).click();
     const approveOption = this.page.getByRole("menuitem", {
       name: "Approve",
@@ -339,18 +334,7 @@ export class XvpSettlementPage extends BasePage {
       "Final Approve button should be visible"
     ).toBeVisible({ timeout: 10000 });
     await finalApproveButton.click();
-
-    if (options?.pincode) {
-      const pincodeDialog = this.page.getByRole("dialog");
-      const otpInput = pincodeDialog.locator('[data-input-otp="true"]');
-      await expect(otpInput, "PIN code input should be visible").toBeVisible();
-      await otpInput.fill(options.pincode);
-
-      const confirmButton = pincodeDialog.getByRole("button", {
-        name: "Yes, confirm",
-      });
-      await confirmButton.click();
-    }
+    await this.confirmPincode(options.pincode);
   }
 
   async verifySettlementStatus(options: {
