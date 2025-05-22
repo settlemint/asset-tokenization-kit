@@ -178,8 +178,14 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     const expectedBalance = (
       testData.currentTotalSupply - transferAmount
     ).toString();
-    await adminPages.adminPage.clickSidebarMenuItem("My assets");
-
+    await adminPages.adminPage.chooseSidebarMenuOption({
+      sidebarOption: "My assets",
+      expectedUrlPattern: "**/portfolio/my-assets",
+      expectedLocatorsToWaitFor: [
+        adminPages.adminPage.getTableBodyLocator(),
+        adminPages.adminPage.getFilterButtonLocator(),
+      ],
+    });
     await adminPages.adminPage.filterAssetByName({
       name: testData.bondName,
       totalSupply: expectedBalance,
@@ -188,7 +194,14 @@ test.describe("Create, top up, mint and transfer bonds", () => {
 
   test("Verify regular transfer user received bonds", async () => {
     await transferUserPages.portfolioPage.goto();
-    await transferUserPages.adminPage.clickSidebarMenuItem("My assets");
+    await transferUserPages.adminPage.chooseSidebarMenuOption({
+      sidebarOption: "My assets",
+      expectedUrlPattern: "**/portfolio/my-assets",
+      expectedLocatorsToWaitFor: [
+        adminPages.adminPage.getTableBodyLocator(),
+        adminPages.adminPage.getFilterButtonLocator(),
+      ],
+    });
     await transferUserPages.adminPage.filterAssetByName({
       name: testData.bondName,
       totalSupply: bondTransferData.transferAmount,

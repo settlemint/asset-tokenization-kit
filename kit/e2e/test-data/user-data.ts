@@ -41,14 +41,6 @@ export const signUpUserData: SignUpData = {
   pincode: pincode,
 } as const;
 
-export const signUpTransferUserData: SignUpData = {
-  name: `Test Transfer User ${date}-${randomValue}`,
-  email: `test-transfer-user-${date}-${randomValue}@settlemint.com`,
-  password: password,
-  pincodeName: pincodeName,
-  pincode: pincode,
-} as const;
-
 export const adminUser: AdminUser = {
   email: "testadmin@settlemint.com",
   password: password,
@@ -56,3 +48,27 @@ export const adminUser: AdminUser = {
   pincodeName: pincodeName,
   pincode: pincode,
 };
+
+export const adminRecipient: SignUpData = {
+  name: `Test Admin Recipient ${date}-${randomValue}`,
+  email: "testadminrecipient@settlemint.com",
+  password: password,
+  pincodeName: pincodeName,
+  pincode: pincode,
+};
+
+export const userRecipient: SignUpData = {
+  name: `Test User Recipient ${date}-${randomValue}`,
+  email: "testuserrecipient@settlemint.com",
+  password: password,
+  pincodeName: pincodeName,
+  pincode: pincode,
+};
+
+export const signUpTransferUserData: SignUpData = {
+  name: `Test Transfer User ${date}-${randomValue}`,
+  email: `test-transfer-user-${date}-${randomValue}@settlemint.com`,
+  password: password,
+  pincodeName: pincodeName,
+  pincode: pincode,
+} as const;

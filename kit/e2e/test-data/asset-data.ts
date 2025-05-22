@@ -265,6 +265,19 @@ const generateSymbol = (name: string): string => {
   return symbol;
 };
 
+export function generateFutureDateTimeString(hoursToAdd: number = 24): string {
+  const now = new Date();
+  now.setHours(now.getHours() + hoursToAdd);
+
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  const day = now.getDate().toString().padStart(2, "0");
+  const hours = now.getHours().toString().padStart(2, "0");
+  const minutes = now.getMinutes().toString().padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 export const bondData = {
   assetType: "Bond",
   name: generateBondName(),
@@ -458,5 +471,13 @@ export const stableCoinBurnData = {
 
 export const stableCoinTransferData = {
   transferAmount: "1000",
+  pincode: pincode,
+};
+
+export const xvpSettlementData = {
+  cryptocurrencyAmount: "100",
+  equityAmount: "50",
+  expiryDateTime: generateFutureDateTimeString(),
+  autoExecute: true,
   pincode: pincode,
 };

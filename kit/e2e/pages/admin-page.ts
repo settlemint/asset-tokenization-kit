@@ -956,6 +956,31 @@ export class AdminPage extends BasePage {
     ]);
   }
 
+  async selectFooterDropdownOption(optionText: string) {
+    const menuTrigger = this.page.locator(
+      '[data-slot="dropdown-menu-trigger"]'
+    );
+    await menuTrigger.click();
+    await this.page
+      .locator('[role="menu"][data-state="open"]')
+      .waitFor({ state: "visible" });
+    const menu = this.page.locator('[role="menu"][data-state="open"]');
+    await menu.waitFor({ state: "visible" });
+
+    const option = this.page
+      .locator('div[role="menuitemradio"]')
+      .filter({ hasText: optionText });
+    await option.waitFor({ state: "visible" });
+
+    const isSelected = (await option.getAttribute("aria-checked")) === "true";
+    if (!isSelected) {
+      await option.click();
+
+      await option.waitFor({ state: "visible" });
+      await expect(option).toContainText(optionText);
+    }
+  }
+
   async chooseAssetFromTable(options: {
     name: string;
     sidebarAssetTypes: string;
@@ -999,25 +1024,38 @@ export class AdminPage extends BasePage {
     await this.page.waitForURL(/.*\/assets\/.*\/0x[a-fA-F0-9]{40}/);
   }
 
-  async clickSidebarMenuItem(linkText: string): Promise<void> {
-    const menuLink = this.page.getByRole("link").filter({ hasText: linkText });
+  public getTableBodyLocator(): Locator {
+    return this.page.locator("table tbody");
+  }
 
-    const count = await menuLink.count();
+  public getFilterButtonLocator(): Locator {
+    return this.page.getByRole("button", { name: "Filter" });
+  }
 
-    if (count > 0) {
-      await menuLink.click();
-      return;
+  async chooseSidebarMenuOption(options: {
+    sidebarOption: string;
+    expectedUrlPattern?: string | RegExp;
+    expectedLocatorsToWaitFor?: Locator[];
+  }): Promise<void> {
+    const linkLocator = this.page
+      .locator(
+        'a[data-sidebar="menu-button"], a[data-sidebar="menu-sub-button"]'
+      )
+      .filter({ hasText: options.sidebarOption })
+      .first();
+
+    await expect(linkLocator).toBeVisible();
+    await linkLocator.click();
+
+    if (options.expectedUrlPattern) {
+      await this.page.waitForURL(options.expectedUrlPattern);
     }
+  }
 
-    const sidebarMenuItem = this.page
-      .locator('li[data-sidebar="menu-item"] a')
-      .filter({ hasText: linkText });
-
-    await sidebarMenuItem.click();
-    await this.page.waitForURL(`**/portfolio/my-assets`);
-    await Promise.all([
-      this.page.waitForSelector("table tbody"),
-      this.page.getByRole("button", { name: "Filter" }),
-    ]);
+  async clickCreateNewXvpSettlementButton(): Promise<void> {
+    const createXvpButton = this.page.getByRole("button", {
+      name: "Create a new XvP Settlement",
+    });
+    await createXvpButton.click();
   }
 }
