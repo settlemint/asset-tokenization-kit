@@ -334,25 +334,29 @@ export function Form<
                 ? toastMessages.action(input)
                 : undefined;
 
-              const toastId = Date.now();
+              const toastId = `transaction-${Date.now()}`;
               toast.promise(waitForTransactions(hashes), {
-                loading: t("transactions.sending"),
+                loading: toastMessages?.loading || t("transactions.sending"),
                 success: async (results) => {
                   const lastBlockNumber = Number(results.at(-1)?.blockNumber);
                   await waitForIndexing(lastBlockNumber);
                   await revalidate();
 
                   toast.dismiss(toastId);
-                  return toast.success(successMessage, {
+                  toast.success(successMessage, {
                     action,
                     actionButtonStyle: {
                       backgroundColor: "var(--success-fg-deep)",
                       color: "var(--primary-foreground)",
                     },
                   });
+                  return null;
                 },
-                error: (error) =>
-                  `Failed to submit: ${(error as Error).message}`,
+                error: (error) => {
+                  const errorMessage = `Failed to submit: ${(error as Error).message}`;
+                  toast.error(errorMessage);
+                  return null;
+                },
                 id: toastId,
               });
             }

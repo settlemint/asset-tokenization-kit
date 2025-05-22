@@ -4,7 +4,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import {
   ReserveComplianceStatus,
-  TokenType as TokenTypeEnum,
+  TokenType,
   type MicaRegulationConfig,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { updateReserves } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-action";
@@ -16,7 +16,7 @@ import { useState } from "react";
 import type { Address } from "viem";
 import { AuditDetails } from "./steps/audit-details";
 import { Composition } from "./steps/composition";
-import { TokenType } from "./steps/token-type";
+import { TokenType as TokenTypeStep } from "./steps/token-type";
 
 interface ReserveFormProps {
   address: Address;
@@ -25,7 +25,14 @@ interface ReserveFormProps {
 
 export function ReserveForm({ address, config }: ReserveFormProps) {
   const t = useTranslations("regulations.mica.dashboard.reserve-status.form");
+  const tTransactions = useTranslations("transactions");
   const [open, setOpen] = useState(false);
+
+  const steps = [
+    <TokenTypeStep key="token-type" />,
+    <Composition key="composition" />,
+    <AuditDetails key="audit-details" />,
+  ];
 
   return (
     <FormSheet
@@ -39,18 +46,20 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
       <Form
         action={updateReserves}
         resolver={typeboxResolver(UpdateReservesSchema())}
-        onOpenChange={setOpen}
         buttonLabels={{
           label: t("save"),
           submittingLabel: t("saving"),
           processingLabel: t("saving"),
         }}
-        secureForm={false} // No pincode required for this form
+        toastMessages={{
+          loading: t("saving"),
+          success: tTransactions("success"),
+        }}
+        onOpenChange={setOpen}
         defaultValues={{
           address,
           tokenType:
-            (config.tokenType as TokenTypeEnum) ??
-            TokenTypeEnum.ELECTRONIC_MONEY_TOKEN,
+            (config.tokenType as TokenType) ?? TokenType.ELECTRONIC_MONEY_TOKEN,
           bankDeposits: config.reserveComposition?.bankDeposits ?? 0,
           governmentBonds: config.reserveComposition?.governmentBonds ?? 0,
           liquidAssets: config.reserveComposition?.highQualityLiquidAssets ?? 0,
@@ -66,9 +75,7 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
             ReserveComplianceStatus.PENDING_REVIEW,
         }}
       >
-        <TokenType />
-        <Composition />
-        <AuditDetails />
+        {steps}
       </Form>
     </FormSheet>
   );
