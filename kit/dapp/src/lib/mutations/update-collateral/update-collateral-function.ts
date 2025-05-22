@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -96,18 +97,22 @@ export const updateCollateralFunction = withAccessControl(
           StableCoinUpdateCollateral,
           params
         );
-        return safeParse(t.Hashes(), [
-          response.StableCoinUpdateCollateral?.transactionHash,
-        ]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [
+            response.StableCoinUpdateCollateral?.transactionHash,
+          ])
+        );
       }
       case "deposit": {
         const response = await portalClient.request(
           DepositUpdateCollateral,
           params
         );
-        return safeParse(t.Hashes(), [
-          response.DepositUpdateCollateral?.transactionHash,
-        ]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [
+            response.DepositUpdateCollateral?.transactionHash,
+          ])
+        );
       }
       default:
         throw new Error("Invalid asset type for collateral update");

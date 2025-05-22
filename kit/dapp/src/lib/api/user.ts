@@ -120,7 +120,7 @@ export const UserApi = new Elysia({
         }),
       }),
       response: {
-        200: t.Union([t.Array(UserSchema), t.Array(ContactSchema)]),
+        200: t.Array(t.Union([UserSchema, ContactSchema])),
         ...defaultErrorSchema,
       },
     }

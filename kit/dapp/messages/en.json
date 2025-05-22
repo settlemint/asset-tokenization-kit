@@ -1,23 +1,23 @@
 {
   "actions": {
-    "columns": {
-      "active-at": "Active at",
-      "completed-by": "Completed by",
-      "completed-on": "Completed on",
-      "description": "Description",
-      "name": "Name",
-      "status": "Status",
-      "subject": "Subject"
+    "name": {
+      "ApproveXvPSettlement": "Approve XvP Settlement",
+      "ExecuteXvPSettlement": "Execute XvP Settlement",
+      "MatureBond": "Mature Bond"
     },
     "description": {
       "ApproveXvPSettlement": "Approve the XvP Settlement contract to be able to transfer the assets.",
       "ExecuteXvPSettlement": "Execute the XvP Settlement contract to transfer the assets to the parties as defined in the settlement.",
       "MatureBond": "Mark the bond as matured."
     },
-    "name": {
-      "ApproveXvPSettlement": "Approve XvP Settlement",
-      "ExecuteXvPSettlement": "Execute XvP Settlement",
-      "MatureBond": "Mature Bond"
+    "columns": {
+      "name": "Name",
+      "subject": "Subject",
+      "description": "Description",
+      "active-at": "Active at",
+      "completed-on": "Completed on",
+      "completed-by": "Completed by",
+      "status": "Status"
     },
     "page": {
       "actions": "Actions",
@@ -25,36 +25,36 @@
     },
     "status": {
       "COMPLETED": "Completed",
+      "UPCOMING": "Upcoming",
       "EXPIRED": "Expired",
-      "PENDING": "Pending",
-      "UPCOMING": "Upcoming"
+      "PENDING": "Pending"
     },
     "tabs": {
-      "description": {
-        "completed": "Completed actions",
-        "expired": "Expired actions",
-        "pending": "Pending actions",
-        "upcoming": "Upcoming actions"
-      },
-      "empty-state": {
-        "description": {
-          "completed": "You haven't completed any actions yet. Actions will appear here once they are completed.",
-          "expired": "You don't have any expired actions. Expired actions are actions that should have been completed before their expiry date but can no longer be performed because they have expired.",
-          "pending": "You don't have any actions that require your attention at this time.",
-          "upcoming": "You don't have any scheduled actions coming up."
-        },
-        "title": {
-          "completed": "No completed actions",
-          "expired": "No expired actions",
-          "pending": "No pending actions",
-          "upcoming": "No upcoming actions"
-        }
-      },
       "name": {
         "completed": "Completed",
-        "expired": "Expired",
         "pending": "Pending",
-        "upcoming": "Upcoming"
+        "upcoming": "Upcoming",
+        "expired": "Expired"
+      },
+      "description": {
+        "completed": "Completed actions",
+        "pending": "Pending actions",
+        "upcoming": "Upcoming actions",
+        "expired": "Expired actions"
+      },
+      "empty-state": {
+        "title": {
+          "completed": "No completed actions",
+          "pending": "No pending actions",
+          "upcoming": "No upcoming actions",
+          "expired": "No expired actions"
+        },
+        "description": {
+          "completed": "You haven't completed any actions yet. Actions will appear here once they are completed.",
+          "pending": "You don't have any actions that require your attention at this time.",
+          "upcoming": "You don't have any scheduled actions coming up.",
+          "expired": "You don't have any expired actions. Expired actions are actions that should have been completed before their expiry date but can no longer be performed because they have expired."
+        }
       }
     }
   },
@@ -319,43 +319,6 @@
       "title": "Select asset type"
     }
   },
-  "asset-events": {
-    "Approval": "Approval",
-    "AssetCreated": "Asset created",
-    "BatchDistribution": "Batch distribution",
-    "Burn": "Burn",
-    "Claimed": "Claimed",
-    "Clawback": "Clawback",
-    "CollateralUpdated": "Collateral updated",
-    "Distribution": "Distribution",
-    "FixedYieldCreated": "Fixed yield created",
-    "ManagementFeeCollected": "Management fee collected",
-    "Matured": "Matured",
-    "MerkleRootUpdated": "Merkle root updated",
-    "Mint": "Mint",
-    "Pause": "Pause",
-    "PerformanceFeeCollected": "Performance fee collected",
-    "Redeemed": "Redeemed",
-    "RoleAdminChanged": "Role admin changed",
-    "RoleGranted": "Role granted",
-    "RoleRevoked": "Role revoked",
-    "TokenWithdrawn": "Token withdrawn",
-    "TokensFrozen": "Tokens frozen",
-    "Transfer": "Transfer",
-    "UnderlyingAssetTopUp": "Underlying asset top up",
-    "UnderlyingAssetWithdrawn": "Underlying asset withdrawn",
-    "Unpause": "Unpause",
-    "UserAllowed": "User allowed",
-    "UserBlocked": "User blocked",
-    "UserDisallowed": "User disallowed",
-    "UserUnblocked": "User unblocked",
-    "XvPSettlementApprovalRevoked": "Settlement approval revoked",
-    "XvPSettlementApproved": "Settlement approved",
-    "XvPSettlementCancelled": "Settlement cancelled",
-    "XvPSettlementClaimed": "Settlement claimed",
-    "XvPSettlementExecuted": "Settlement executed",
-    "YieldClaimed": "Yield claimed"
-  },
   "asset-info": {
     "admin": "Admin",
     "creator-owner": "Creator / Owner",
@@ -400,6 +363,57 @@
     },
     "asset-events-table": {
       "asset": "Asset",
+      "event-names": {
+        "Approval": "Approval",
+        "AssetCreated": "Asset created",
+        "BatchDistribution": "Batch distribution",
+        "Burn": "Burn",
+        "Claimed": "Claimed",
+        "Clawback": "Clawback",
+        "CollateralUpdated": "Collateral updated",
+        "ConfirmTransaction": "Transaction confirmed",
+        "Deposit": "Deposit",
+        "Distribution": "Distribution",
+        "ExecuteTransaction": "Transaction executed",
+        "FixedYieldCreated": "Fixed yield created",
+        "ManagementFeeCollected": "Management fee collected",
+        "Matured": "Matured",
+        "MerkleRootUpdated": "Merkle root updated",
+        "Mint": "Mint",
+        "Pause": "Pause",
+        "PerformanceFeeCollected": "Performance fee collected",
+        "Redeemed": "Redeemed",
+        "RequirementChanged": "Requirement changed",
+        "RevokeConfirmation": "Confirmation revoked",
+        "RoleAdminChanged": "Role admin changed",
+        "RoleGranted": "Role granted",
+        "RoleRevoked": "Role revoked",
+        "SubmitContractCallTransaction": "Contract call transaction submitted",
+        "SubmitERC20TransferTransaction": "ERC20 transfer transaction submitted",
+        "SubmitTransaction": "Transaction submitted",
+        "TokenWithdrawn": "Token withdrawn",
+        "TokensFrozen": "Tokens frozen",
+        "Transfer": "Transfer",
+        "UnderlyingAssetTopUp": "Underlying asset top up",
+        "UnderlyingAssetWithdrawn": "Underlying asset withdrawn",
+        "Unpause": "Unpause",
+        "UserAllowed": "User allowed",
+        "UserBlocked": "User blocked",
+        "UserDisallowed": "User disallowed",
+        "UserUnblocked": "User unblocked",
+        "VaultCreated": "Vault created",
+        "XvPSettlementApprovalRevoked": "Settlement approval revoked",
+        "XvPSettlementApproved": "Settlement approved",
+        "XvPSettlementCancelled": "Settlement cancelled",
+        "XvPSettlementClaimed": "Settlement claimed",
+        "XvPSettlementCreated": "Settlement created",
+        "XvPSettlementExecuted": "Settlement executed",
+        "YieldClaimed": "Yield claimed"
+      },
+      "empty-state": {
+        "title": "No activity yet",
+        "description": "Events will appear here once you perform actions."
+      },
       "detail-sheet": {
         "AUDITOR_ROLE": "Auditor Role",
         "DEFAULT_ADMIN_ROLE": "Default Admin Role",
@@ -747,6 +761,11 @@
         "function": "Function",
         "status": "Status",
         "transaction-hash": "Transaction Hash"
+      },
+      "title": "Transactions",
+      "empty-state": {
+        "title": "No recent transactions",
+        "description": "Recent transactions will appear here when you perform actions."
       }
     },
     "date-picker": {
@@ -842,7 +861,6 @@
     "success": "Success",
     "symbol": "Invalid format",
     "title": "Something went wrong!",
-    "to-address-required": "To address is required and must be a valid EVM address",
     "try-again": "Try again",
     "tuple": "Please provide all required items in the correct order",
     "tuple-length": "Please provide exactly {maxItems} items",
@@ -854,7 +872,8 @@
     "union-min-max": "Please enter a value between {min} and {max}",
     "unknown": "Invalid value entered",
     "validation-errors": "Validation error",
-    "void": "This field should be empty"
+    "void": "This field should be empty",
+    "to-address-required": "To address is required and must be a valid EVM address"
   },
   "error-pages": {
     "forbidden": {
@@ -873,7 +892,7 @@
   "homepage": {
     "asset-tokenization": "asset tokenization",
     "bonds-funds-equities": "bonds, funds, equities",
-    "changelog-link-title": "Introducing the SMART protocol",
+    "changelog-link-title": "Introducing X vs Payment",
     "cryptocurrencies": "cryptocurrencies",
     "documentation": "Documentation",
     "features": {
@@ -1318,6 +1337,30 @@
     "assets": {
       "asset-statistics-title": "Statistics",
       "create": {
+        "general": {
+          "title": {
+            "default": "Create digital asset",
+            "bond": "Create a new bond",
+            "cryptocurrency": "Create a new cryptocurrency",
+            "deposit": "Create a new deposit",
+            "equity": "Create a new equity",
+            "fund": "Create a new fund",
+            "stablecoin": "Create a new stablecoin"
+          },
+          "description": {
+            "default": "Create your digital asset in a few steps.",
+            "bond": "Debt instruments issued as tokenized securities.",
+            "cryptocurrency": "Decentralized digital assets used as a medium of exchange or store of value.",
+            "deposit": "Digital assets that represent a deposit of a traditional asset.",
+            "equity": "Assets representing ownership in a company.",
+            "fund": "Investment vehicles pooled by professional managers.",
+            "stablecoin": "Digital assets pegged to a stable asset like USD."
+          }
+        },
+        "select-asset-type": {
+          "title": "Select asset type",
+          "description": "Choose the type of digital asset you want to create."
+        },
         "basics": {
           "description": "Specify the basic information for this asset.",
           "description-offchain": "Optionally enter additional identifying information for this asset. This information is stored offchain and is not accessible outside of this platform.",
@@ -1343,85 +1386,54 @@
           },
           "cryptocurrencies": {
             "description": "Set parameters specific to your cryptocurrency.",
-            "description-supply": "Configure the supply and franctionalization of this cryptocurrency. This information is immutable.",
-            "description-value": "Configure the price for your cryptocurrency.",
             "title": "Cryptocurrency configuration",
             "title-supply": "Supply",
-            "title-value": "Denomination"
+            "title-value": "Denomination",
+            "description-supply": "Configure the supply and franctionalization of this cryptocurrency. This information is immutable.",
+            "description-value": "Configure the price for your cryptocurrency."
           },
           "deposits": {
             "description": "Set parameters specific to your deposit.",
-            "description-collateral": "Configure the collateral for your deposit.",
-            "description-supply": "Configure the supply and franctionalization of this deposit. This information is immutable.",
-            "description-value": "Configure the price for your deposit.",
             "title": "Deposit configuration",
             "title-collateral": "Collateral",
+            "description-collateral": "Configure the collateral for your deposit.",
+            "title-value": "Denomination",
+            "description-value": "Configure the price for your deposit.",
             "title-supply": "Supply",
-            "title-value": "Denomination"
+            "description-supply": "Configure the supply and franctionalization of this deposit. This information is immutable."
           },
           "equities": {
             "description": "Set parameters specific to your equity.",
-            "description-classification": "Configure the classification for your equity.",
+            "title": "Equity configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
             "description-supply": "Configure the supply and franctionalization of this equity. This information is immutable.",
             "description-value": "Configure the price for your equity.",
-            "title": "Equity configuration",
             "title-classification": "Classification",
-            "title-supply": "Supply",
-            "title-value": "Denomination"
+            "description-classification": "Configure the classification for your equity."
           },
           "funds": {
             "description": "Set parameters specific to your fund.",
-            "description-classification": "Configure the classification for your fund.",
+            "title": "Fund configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
             "description-supply": "Configure the supply and franctionalization of this fund. This information is immutable.",
             "description-value": "Configure the price for your fund.",
-            "title": "Fund configuration",
             "title-classification": "Classification",
-            "title-supply": "Supply",
-            "title-value": "Denomination"
+            "description-classification": "Configure the classification for your fund."
           },
           "stablecoins": {
             "description": "Set parameters specific to your stable coin.",
-            "description-collateral": "Configure the collateral for your stable coin.",
+            "title": "Stable coin configuration",
+            "title-supply": "Supply",
+            "title-value": "Denomination",
             "description-supply": "Configure the supply and franctionalization of this stable coin. This information is immutable.",
             "description-value": "Configure the price for your stable coin.",
-            "title": "Stable coin configuration",
             "title-collateral": "Collateral",
-            "title-supply": "Supply",
-            "title-value": "Denomination"
+            "description-collateral": "Configure the collateral for your stable coin."
           }
         },
         "form": {
-          "button-labels": {
-            "bond": {
-              "issue": "Issue bond",
-              "submitting": "Issuing bond..."
-            },
-            "cryptocurrency": {
-              "issue": "Issue cryptocurrency",
-              "submitting": "Issuing cryptocurrency..."
-            },
-            "deposit": {
-              "issue": "Issue deposit",
-              "submitting": "Issuing deposit..."
-            },
-            "equity": {
-              "issue": "Issue equity",
-              "submitting": "Issuing equity..."
-            },
-            "fund": {
-              "issue": "Issue fund",
-              "submitting": "Issuing fund..."
-            },
-            "general": {
-              "next": "Next",
-              "previous": "Previous",
-              "processing": "Processing..."
-            },
-            "stablecoin": {
-              "issue": "Issue stablecoin",
-              "submitting": "Issuing stablecoin..."
-            }
-          },
           "description": {
             "bonds": "A bond is a digital debt instrument where issuers raise capital from investors with predefined terms, enabled by blockchain for automated issuance, transparent tracking, and streamlined settlement.",
             "cryptocurrencies": "Cryptocurrency is a digital asset secured by cryptography, enabling decentralized, peer-to-peer transactions and programmable value transfer on blockchain networks.",
@@ -1460,6 +1472,37 @@
             "equities": "Design a new equity",
             "funds": "Design a new fund",
             "stablecoins": "Design a new stable coin"
+          },
+          "button-labels": {
+            "general": {
+              "next": "Next",
+              "previous": "Previous",
+              "processing": "Processing..."
+            },
+            "stablecoin": {
+              "issue": "Issue stablecoin",
+              "submitting": "Issuing stablecoin..."
+            },
+            "fund": {
+              "issue": "Issue fund",
+              "submitting": "Issuing fund..."
+            },
+            "equity": {
+              "issue": "Issue equity",
+              "submitting": "Issuing equity..."
+            },
+            "deposit": {
+              "issue": "Issue deposit",
+              "submitting": "Issuing deposit..."
+            },
+            "cryptocurrency": {
+              "issue": "Issue cryptocurrency",
+              "submitting": "Issuing cryptocurrency..."
+            },
+            "bond": {
+              "issue": "Issue bond",
+              "submitting": "Issuing bond..."
+            }
           },
           "toast-action": {
             "bonds": "View bond",
@@ -1513,26 +1556,7 @@
             "stablecoins": "Issue a new stablecoin"
           }
         },
-        "general": {
-          "description": {
-            "bond": "Debt instruments issued as tokenized securities.",
-            "cryptocurrency": "Decentralized digital assets used as a medium of exchange or store of value.",
-            "default": "Create your digital asset in a few steps.",
-            "deposit": "Digital assets that represent a deposit of a traditional asset.",
-            "equity": "Assets representing ownership in a company.",
-            "fund": "Investment vehicles pooled by professional managers.",
-            "stablecoin": "Digital assets pegged to a stable asset like USD."
-          },
-          "title": {
-            "bond": "Create a new bond",
-            "cryptocurrency": "Create a new cryptocurrency",
-            "default": "Create digital asset",
-            "deposit": "Create a new deposit",
-            "equity": "Create a new equity",
-            "fund": "Create a new fund",
-            "stablecoin": "Create a new stablecoin"
-          }
-        },
+
         "parameters": {
           "bonds": {
             "cap-description": "Maximum amount of assets that can be issued",
@@ -1543,10 +1567,10 @@
             "maturity-date-error": "Maturity date must be at least 1 hour in the future",
             "maturity-date-label": "Maturity date",
             "name-placeholder": "Company XYZ Bond 2023",
-            "symbol-description": "The symbol of the bond. This a unique identifier for the bond for onchain purposes. It can be up to 10 characters long and cannot be changed after creation.",
             "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "Address of the asset that backs this bond",
-            "underlying-asset-label": "Underlying asset"
+            "underlying-asset-label": "Underlying asset",
+            "symbol-description": "The symbol of the bond. This a unique identifier for the bond for onchain purposes. It can be up to 10 characters long and cannot be changed after creation."
           },
           "common": {
             "collateral-proof-validity-label": "Collateral proof validity",
@@ -1614,10 +1638,7 @@
             "symbol-placeholder": "SAFU"
           }
         },
-        "select-asset-type": {
-          "description": "Choose the type of digital asset you want to create.",
-          "title": "Select asset type"
-        },
+
         "summary": {
           "asset-admins-description": "Administrative roles and permissions for managing this assset.",
           "asset-admins-title": "Asset permissions",
@@ -2845,57 +2866,57 @@
       "xvp": "XvP"
     },
     "xvp": {
-      "actions": "Actions",
-      "ago": "ago",
-      "amount": "Amount",
       "approvals": "Approvals",
-      "approve": "Approve",
-      "approve-description": "The XvP Settlement contract will be granted approval to transfer the assets configured in the settlement on your behalf. Then the settlement will be marked as approved by you.",
-      "approve-xvp-settlement": "Approve XvP Settlement",
-      "approve-xvp-settlement-description": "Grant allowances to the XvP Settlement contract for the assets that will be transferred from your wallet.",
-      "asset": "Asset",
-      "auto-execute": "Auto execute",
-      "auto-execute-description": "Automatically execute the settlement on last approval.",
-      "cancel": "Cancel",
-      "cancel-xvp-settlement": "Cancel XvP Settlement",
-      "cancel-xvp-settlement-description": "Cancel this settlement to prevent it from being executed.",
-      "cancel-xvp-settlement-summary": "Cancelling this settlement will permanently prevent it from being executed, and this action cannot be reversed. A new settlement will have to be created to exchange assets.",
       "columns": {
-        "amount": "Amount",
         "approvals": "Approvals",
-        "approved-at": "Approved At",
-        "asset": "Asset",
         "assets": "Assets",
         "created-at": "Created at",
         "expiry": "Expiry",
-        "from": "From",
         "id": "Settlement ID",
+        "amount": "Amount",
+        "asset": "Asset",
         "price": "Price",
         "status": "Status",
-        "to": "To",
         "total-price": "Total price",
-        "user": "User"
+        "user": "User",
+        "approved-at": "Approved At",
+        "from": "From",
+        "to": "To"
       },
+      "ago": "ago",
+      "total-price-description": "The total price of the assets involved in the settlement.",
+      "auto-execute": "Auto execute",
+      "auto-execute-description": "Automatically execute the settlement on last approval.",
       "details": "Details",
-      "execute": "Execute",
-      "execute-xvp-settlement": "Execute XvP Settlement",
-      "execute-xvp-settlement-description": "Processes all approved asset flows in this settlement.",
-      "execute-xvp-settlement-summary": "Execute this settlement to transfer assets between parties as defined in the settlement flows.",
       "expired": "Expired",
       "flows": "Flows",
-      "manage": "Manage",
       "status": {
+        "READY": "Ready",
         "APPROVED": "Approved",
         "CANCELLED": "Cancelled",
         "EXECUTED": "Executed",
         "EXPIRED": "Expired",
-        "NOT_APPROVED": "Not approved",
         "PENDING": "Pending",
-        "READY": "Ready"
+        "NOT_APPROVED": "Not approved"
       },
+      "manage": "Manage",
+      "approve": "Approve",
+      "approve-xvp-settlement": "Approve XvP Settlement",
+      "approve-xvp-settlement-description": "Grant allowances to the XvP Settlement contract for the assets that will be transferred from your wallet.",
+      "approve-description": "The XvP Settlement contract will be granted approval to transfer the assets configured in the settlement on your behalf. Then the settlement will be marked as approved by you.",
+      "execute": "Execute",
+      "execute-xvp-settlement": "Execute XvP Settlement",
+      "execute-xvp-settlement-description": "Processes all approved asset flows in this settlement.",
+      "execute-xvp-settlement-summary": "Execute this settlement to transfer assets between parties as defined in the settlement flows.",
+      "cancel": "Cancel",
+      "cancel-xvp-settlement": "Cancel XvP Settlement",
+      "cancel-xvp-settlement-summary": "Cancelling this settlement will permanently prevent it from being executed, and this action cannot be reversed. A new settlement will have to be created to exchange assets.",
+      "cancel-xvp-settlement-description": "Cancel this settlement to prevent it from being executed.",
+      "asset": "Asset",
+      "amount": "Amount",
       "to": "To",
-      "total-price-description": "The total price of the assets involved in the settlement.",
-      "xvp-settlement": "XvP Settlement"
+      "xvp-settlement": "XvP Settlement",
+      "actions": "Actions"
     }
   },
   "transactions": {

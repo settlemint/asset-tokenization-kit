@@ -4,7 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
-import type { AssetEventListItem } from "@/lib/queries/asset-events/asset-events-schema";
+import type { AssetEvent } from "@/lib/queries/asset-events/asset-events-schema";
 import { addressNameFilter } from "@/lib/utils/address-name-cache";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper, type ColumnMeta } from "@tanstack/react-table";
@@ -70,6 +70,10 @@ export function Columns() {
       header: t("event"),
       enableColumnFilter: true,
       filterFn: filterFn("text"),
+      cell: ({ getValue }) => {
+        const eventName = getValue();
+        return t(`event-names.${eventName}`);
+      },
       meta: defineMeta((row) => row.eventName, {
         displayName: t("event"),
         icon: CalendarClock,
@@ -107,7 +111,7 @@ export function Columns() {
         icon: MoreHorizontal,
         type: "text",
         enableCsvExport: false,
-      } as ColumnMeta<AssetEventListItem, unknown>,
+      } as ColumnMeta<AssetEvent, unknown>,
     }),
   ];
 }

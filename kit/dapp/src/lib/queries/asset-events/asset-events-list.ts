@@ -8,11 +8,10 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t as tTypebox } from "@/lib/utils/typebox";
 import type { VariablesOf } from "gql.tada";
-import { getTranslations } from "next-intl/server";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import type { Address } from "viem";
-import { AssetEventListSchema } from "./asset-events-schema";
+import { AssetEventSchema, type AssetEvent } from "./asset-events-schema";
 
 /**
  * GraphQL query to fetch asset events
@@ -108,22 +107,15 @@ const fetchAssetEventsList = cache(
 export const getAssetEventsList = withTracing(
   "queries",
   "getAssetEventsList",
-  cache(async ({ asset, sender, limit }: AssetEventsListProps) => {
-    const events = await fetchAssetEventsList(asset, sender, limit);
+  cache(
+    async ({
+      asset,
+      sender,
+      limit,
+    }: AssetEventsListProps): Promise<AssetEvent[]> => {
+      const events = await fetchAssetEventsList(asset, sender, limit);
 
-    const t = await getTranslations("asset-events");
-
-    // Validate and transform events
-    const validatedEvents = safeParse(
-      tTypebox.Array(AssetEventListSchema),
-      events
-    );
-
-    return validatedEvents.map((validatedEvent) => {
-      return {
-        ...validatedEvent,
-        eventName: t(validatedEvent.eventName as any),
-      };
-    });
-  })
+      return safeParse(tTypebox.Array(AssetEventSchema), events);
+    }
+  )
 );
