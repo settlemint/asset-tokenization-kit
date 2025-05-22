@@ -1,7 +1,6 @@
-import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getRecentTransactions } from "@/lib/queries/transactions/transactions-recent";
 import type { Address } from "viem";
-import { Columns, icons } from "./transactions-table-columns";
+import TransactionsTableClient from "./transactions-table-client";
 
 interface TransactionsTableProps {
   from?: Address;
@@ -14,12 +13,5 @@ export default async function TransactionsTable({
     address: from,
   });
 
-  return (
-    <DataTable
-      columns={Columns}
-      data={transactions}
-      icons={icons}
-      name={"Transactions"}
-    />
-  );
+  return <TransactionsTableClient transactions={transactions} />;
 }

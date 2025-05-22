@@ -7,7 +7,7 @@ import { getAddress } from "viem";
 import { getAssetEventDetail } from "../queries/asset-events/asset-event-detail";
 import {
   AssetEventDetailSchema,
-  AssetEventListSchema,
+  AssetEventSchema,
 } from "../queries/asset-events/asset-events-schema";
 
 export const AssetEventsApi = new Elysia({
@@ -59,7 +59,7 @@ export const AssetEventsApi = new Elysia({
         ),
       }),
       response: {
-        200: t.Array(AssetEventListSchema),
+        200: t.Array(AssetEventSchema),
         ...defaultErrorSchema,
       },
     }
@@ -108,7 +108,7 @@ export const AssetEventsApi = new Elysia({
         }),
       }),
       response: {
-        200: t.Array(AssetEventListSchema),
+        200: t.Array(AssetEventSchema),
         ...defaultErrorSchema,
       },
     }
@@ -134,7 +134,7 @@ export const AssetEventsApi = new Elysia({
         }),
       }),
       response: {
-        200: t.Array(AssetEventListSchema),
+        200: t.Array(AssetEventSchema),
         ...defaultErrorSchema,
       },
     }

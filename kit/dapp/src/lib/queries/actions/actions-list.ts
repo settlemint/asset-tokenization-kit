@@ -10,15 +10,12 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import type { Address } from "viem";
-import { calculateActions } from "./action-calculated";
 import { ActionExecutorFragment } from "./actions-fragment";
 import {
+  ActionExecutorSchema,
   ActionType,
-  OnchainActionExecutorSchema,
   type ActionStatus,
-  type OnchainAction,
 } from "./actions-schema";
-
 /**
  * GraphQL query to fetch actions for user
  */
@@ -87,42 +84,38 @@ export const getActionsList = withTracing(
       };
       const actionExecutors = await fetchAllTheGraphPages(
         async (first, skip) => {
-          // Create the request parameters
-          const params = {
-            first,
-            skip,
-          } as any; // Use type assertion to bypass TypeScript checking
-
-          // Add the where clause with type assertion
-          params.where = {
-            executors_: {
-              id_contains: userAddress.toLowerCase(),
+          const result = await theGraphClientKit.request(
+            Actions,
+            {
+              first,
+              skip,
+              where: {
+                executors_: {
+                  id_contains: userAddress.toLowerCase(),
+                },
+                actions_: {
+                  type,
+                  ...(status ? where[status] : {}),
+                  ...(targetAddress ? { target: targetAddress } : {}),
+                },
+              },
             },
-            actions_: {
-              type,
-              ...(status ? where[status] : {}),
-              ...(targetAddress ? { target: targetAddress } : {}),
-            },
-          };
-
-          const result = await theGraphClientKit.request(Actions, params, {
-            "X-GraphQL-Operation-Name": "ActionExecutors",
-            "X-GraphQL-Operation-Type": "query",
-          });
+            {
+              "X-GraphQL-Operation-Name": "ActionExecutors",
+              "X-GraphQL-Operation-Type": "query",
+            }
+          );
 
           const actionExecutors = result.actionExecutors || [];
-          return safeParse(
-            t.Array(OnchainActionExecutorSchema),
-            actionExecutors
-          );
+          return safeParse(t.Array(ActionExecutorSchema), actionExecutors);
         }
       );
 
-      const onchainActions = actionExecutors.flatMap(
+      const actions = actionExecutors.flatMap(
         (actionExecutor) => actionExecutor.actions
-      ) as OnchainAction[];
+      );
 
-      return calculateActions(onchainActions);
+      return actions;
     }
   )
 );

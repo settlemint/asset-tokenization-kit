@@ -1,11 +1,13 @@
-import { AssetEventDetailSchema } from "@/lib/queries/asset-events/asset-events-schema";
+import {
+  type AssetEventDetail,
+  AssetEventDetailSchema,
+} from "@/lib/queries/asset-events/asset-events-schema";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
-import { getTranslations } from "next-intl/server";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 
@@ -70,13 +72,6 @@ export const getAssetEventDetail = withTracing(
   cache(async ({ id }: AssetEventDetailProps) => {
     const event = await fetchAssetEventDetail(id);
 
-    const t = await getTranslations("asset-events");
-
-    const validatedEvent = safeParse(AssetEventDetailSchema, event);
-
-    return {
-      ...validatedEvent,
-      eventName: t(validatedEvent.eventName as any),
-    };
+    return safeParse(AssetEventDetailSchema, event);
   })
 );
