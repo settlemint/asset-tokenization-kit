@@ -86,7 +86,7 @@ export function DocumentationLayout() {
   }, [assetAddress]);
 
   return (
-    <Card>
+    <Card className="w-full h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Documentation</CardTitle>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -135,7 +135,7 @@ export function DocumentationLayout() {
           </DialogContent>
         </Dialog>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         {isLoading ? (
           <div className="text-center py-8">Loading documents...</div>
         ) : (

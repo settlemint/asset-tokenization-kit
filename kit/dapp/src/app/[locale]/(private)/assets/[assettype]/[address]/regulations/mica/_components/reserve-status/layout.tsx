@@ -11,12 +11,12 @@ export function ReserveStatusLayout() {
   const params = useParams<{ address: Address }>();
 
   return (
-    <Card>
+    <Card className="w-full h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{t("title")}</CardTitle>
         <ReserveForm address={params.address} />
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <div className="space-y-6">{/* TODO: Add content */}</div>
       </CardContent>
     </Card>
