@@ -156,7 +156,7 @@ const tabs = async ({
           },
         ]
       : []),
-    ...(true
+    ...(isMicaEnabled
       ? [
           {
             name: t("tabs.mica"),
