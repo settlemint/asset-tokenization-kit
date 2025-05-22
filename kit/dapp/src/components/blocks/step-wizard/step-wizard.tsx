@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useMemo, type ReactNode } from "react";
 
@@ -45,6 +46,7 @@ export function StepWizard({
   }, [theme]);
 
   const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
+  const t = useTranslations("private.assets.create");
 
   return (
     <div className="flex h-full" tabIndex={-1}>
@@ -195,7 +197,9 @@ export function StepWizard({
                             isCurrent ? "font-bold" : "font-medium"
                           )}
                         >
-                          {step.title}
+                          {/* Using 'as any' type assertions because dynamic translation keys
+                          don't match the literal string types expected by next-intl's t function */}
+                          {t(step.title as any)}
                         </span>
                       </div>
                       <p
@@ -206,7 +210,9 @@ export function StepWizard({
                             : "text-primary-foreground/70"
                         )}
                       >
-                        {step.description}
+                        {/* Using 'as any' type assertions because dynamic translation keys
+                          don't match the literal string types expected by next-intl's t function */}
+                        {t(step.description as any)}
                       </p>
                     </button>
                   </div>

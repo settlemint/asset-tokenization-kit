@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { FIXED_YIELD_FACTORY_ADDRESS } from "@/lib/contracts";
+import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { formatDate } from "@/lib/utils/date";
@@ -87,8 +88,8 @@ export const setYieldScheduleFunction = withAccessControl(
       )),
     });
 
-    return safeParse(t.Hashes(), [
-      data.FixedYieldFactoryCreate?.transactionHash,
-    ]);
+    return waitForIndexingTransactions(
+      safeParse(t.Hashes(), [data.FixedYieldFactoryCreate?.transactionHash])
+    );
   }
 );

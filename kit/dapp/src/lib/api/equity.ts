@@ -150,7 +150,7 @@ export const EquityApi = new Elysia({
       },
       body: CreateEquitySchema(),
       response: {
-        200: t.Hashes(),
+        200: t.Number(),
         ...defaultErrorSchema,
       },
     }
@@ -176,7 +176,7 @@ export const EquityApi = new Elysia({
       },
       body: TransferSchema(),
       response: {
-        200: t.Hashes(),
+        200: t.Number(),
         ...defaultErrorSchema,
       },
     }
@@ -201,7 +201,7 @@ export const EquityApi = new Elysia({
       },
       body: GrantRoleSchema(),
       response: {
-        200: t.Hashes(),
+        200: t.Number(),
         ...defaultErrorSchema,
       },
     }
@@ -227,7 +227,7 @@ export const EquityApi = new Elysia({
       },
       body: RevokeRoleSchema(),
       response: {
-        200: t.Hashes(),
+        200: t.Number(),
         ...defaultErrorSchema,
       },
     }
@@ -253,7 +253,7 @@ export const EquityApi = new Elysia({
       },
       body: UpdateRolesSchema(),
       response: {
-        200: t.Hashes(),
+        200: t.Number(),
         ...defaultErrorSchema,
       },
     }
@@ -279,7 +279,7 @@ export const EquityApi = new Elysia({
       },
       body: MintSchema(),
       response: {
-        200: t.Hashes(),
+        200: t.Number(),
         ...defaultErrorSchema,
       },
     }
@@ -304,7 +304,7 @@ export const EquityApi = new Elysia({
       },
       body: WithdrawSchema(),
       response: {
-        200: t.Hashes(),
+        200: t.Number(),
         ...defaultErrorSchema,
       },
     }
@@ -329,7 +329,7 @@ export const EquityApi = new Elysia({
       },
       body: BurnSchema(),
       response: {
-        200: t.Hashes(),
+        200: t.Number(),
         ...defaultErrorSchema,
       },
     }
@@ -354,7 +354,7 @@ export const EquityApi = new Elysia({
       },
       body: BlockUserSchema(),
       response: {
-        200: t.Hashes(),
+        200: t.Number(),
         ...defaultErrorSchema,
       },
     }
@@ -379,7 +379,7 @@ export const EquityApi = new Elysia({
       },
       body: UnblockUserSchema(),
       response: {
-        200: t.Hashes(),
+        200: t.Number(),
         ...defaultErrorSchema,
       },
     }

@@ -78,7 +78,7 @@ export function Columns() {
           <span>{renderValue()}</span>
           {row.original.banned && (
             <Badge variant="destructive">
-              {t("banned_reason", { reason: row.original.ban_reason ?? "" })}
+              {t("banned_reason", { reason: row.original.banReason ?? "" })}
             </Badge>
           )}
         </>
@@ -173,7 +173,7 @@ export function Columns() {
         options: STATUS_OPTIONS,
       }),
     }),
-    columnHelper.accessor("kyc_verified_at", {
+    columnHelper.accessor("kycVerifiedAt", {
       header: t("columns.kyc_status"),
       cell: ({ getValue }) => {
         const verified = getValue();

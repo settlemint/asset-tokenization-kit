@@ -1,6 +1,8 @@
 import type { User } from "@/lib/auth/types";
 import { ContactFragment } from "@/lib/queries/contact/contact-fragment";
+import { ContactSchema } from "@/lib/queries/contact/contact-schema";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { safeParse } from "@/lib/utils/typebox";
 import { revalidatePath, revalidateTag } from "next/cache";
 import type { AddContactFormType } from "./add-contact-schema";
 
@@ -57,8 +59,7 @@ export async function addContactFunction({
     revalidatePath("/portfolio/my-contacts/(table)", "page");
     revalidateTag("contact");
 
-    // Return a mock Ethereum transaction hash (0x + 64 hex chars)
-    return [`0x${"0".repeat(64)}`];
+    return safeParse(ContactSchema, contact);
   } catch (error) {
     console.error("Error adding contact:", error);
     throw new Error(
