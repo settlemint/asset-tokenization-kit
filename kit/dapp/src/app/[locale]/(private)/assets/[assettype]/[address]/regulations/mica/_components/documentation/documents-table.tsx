@@ -29,6 +29,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -55,6 +56,7 @@ function formatBytes(bytes: number, decimals = 2): string {
 }
 
 export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
+  const t = useTranslations("regulations.mica.documents");
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   // Get the appropriate icon based on document type
@@ -115,13 +117,13 @@ export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
       });
 
       if (result?.data) {
-        toast.success("Document deleted successfully");
+        toast.success(t("delete_success"));
         onRefresh(); // Refresh the documents list
       } else {
-        toast.error(`Failed to delete document`);
+        toast.error(t("delete_error"));
       }
     } catch (error: any) {
-      toast.error(`Error deleting document: ${error.message}`);
+      toast.error(`${t("delete_error")}: ${error.message}`);
     } finally {
       setIsDeleting(null);
     }
@@ -131,7 +133,7 @@ export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
   if (documents.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        No documents found. Upload documents for MiCA compliance verification.
+        {t("table.empty_state")}
       </div>
     );
   }
@@ -141,11 +143,11 @@ export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
       <Table className="w-full">
         <TableHeader>
           <TableRow>
-            <TableHead>Document</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>{t("table.document")}</TableHead>
+            <TableHead>{t("table.type")}</TableHead>
+            <TableHead>{t("table.date")}</TableHead>
+            <TableHead>{t("table.status")}</TableHead>
+            <TableHead className="text-right">{t("table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -173,13 +175,17 @@ export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
                     size="icon"
                     variant="ghost"
                     onClick={() => handleDownload(document)}
-                    title="Download"
+                    title={t("table.download")}
                   >
                     <Download className="h-4 w-4" />
                   </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button size="icon" variant="ghost" title="More options">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        title={t("table.more_options")}
+                      >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -190,7 +196,9 @@ export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
                         disabled={isDeleting === document.id}
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
-                        {isDeleting === document.id ? "Deleting..." : "Delete"}
+                        {isDeleting === document.id
+                          ? t("table.deleting")
+                          : t("table.delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

@@ -5,14 +5,73 @@ import { DocumentUploadDialog } from "@/components/blocks/asset-designer/compone
 import type { UploadedDocument } from "@/components/blocks/asset-designer/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { MicaDocument } from "@/lib/queries/regulations/mica-documents";
-import { Upload } from "lucide-react";
+import { RefreshCw, Upload } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DocumentsTable } from "./documents-table";
 
+// Skeleton loader for the documents table
+function DocumentsTableSkeleton() {
+  return (
+    <div className="overflow-x-auto">
+      <div className="w-full">
+        {/* Table header skeleton */}
+        <div className="flex border-b pb-2 mb-3">
+          <div className="flex-1 px-4 py-2">
+            <Skeleton className="h-4 w-24" />
+          </div>
+          <div className="flex-1 px-4 py-2">
+            <Skeleton className="h-4 w-16" />
+          </div>
+          <div className="flex-1 px-4 py-2">
+            <Skeleton className="h-4 w-16" />
+          </div>
+          <div className="flex-1 px-4 py-2">
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <div className="flex-1 px-4 py-2 flex justify-end">
+            <Skeleton className="h-4 w-16" />
+          </div>
+        </div>
+
+        {/* Table rows skeleton */}
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="flex items-center border-b py-3">
+            <div className="flex-1 px-4 py-2">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-5 rounded" />
+                <div>
+                  <Skeleton className="h-4 w-32 mb-1" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 px-4 py-2">
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+            <div className="flex-1 px-4 py-2">
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <div className="flex-1 px-4 py-2">
+              <Skeleton className="h-6 w-24 rounded-full" />
+            </div>
+            <div className="flex-1 px-4 py-2 flex justify-end gap-2">
+              <Skeleton className="h-8 w-8 rounded" />
+              <Skeleton className="h-8 w-8 rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function DocumentationLayout() {
+  const t = useTranslations("regulations.mica.documents");
   const params = useParams();
   const assetAddress = params.address as string;
   const [documents, setDocuments] = useState<MicaDocument[]>([]);
@@ -40,15 +99,15 @@ export function DocumentationLayout() {
           `Failed to fetch documents: ${response.status}`,
           errorText
         );
-        toast.error("Failed to fetch documents");
+        toast.error(t("delete_error"));
       }
     } catch (error) {
       console.error("Error fetching documents:", error);
-      toast.error("Failed to fetch documents");
+      toast.error(t("delete_error"));
     } finally {
       setIsLoading(false);
     }
-  }, [assetAddress]);
+  }, [assetAddress, t]);
 
   // Custom upload action that adds the assetAddress to the formData
   const uploadAction = async (formData: FormData) => {
@@ -83,7 +142,7 @@ export function DocumentationLayout() {
         throw new Error("Upload failed");
       }
 
-      toast.success("Document uploaded successfully");
+      toast.success(t("upload_success"));
 
       // Force a delay to ensure MinIO has time to update
       setTimeout(() => {
@@ -96,7 +155,7 @@ export function DocumentationLayout() {
       };
     } catch (error) {
       console.error("Error in uploadAction:", error);
-      toast.error("Failed to upload document");
+      toast.error(t("delete_error"));
       throw error;
     }
   };
@@ -120,41 +179,25 @@ export function DocumentationLayout() {
   return (
     <Card className="w-full h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Documentation</CardTitle>
+        <CardTitle>{t("card.title")}</CardTitle>
         <div className="flex items-center gap-2">
           <Button
             size="sm"
             variant="outline"
             onClick={fetchDocuments}
-            title="Refresh documents"
+            title={t("card.refresh")}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4 w-4"
-            >
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-              <path d="M21 3v5h-5" />
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-              <path d="M8 16H3v5" />
-            </svg>
+            <RefreshCw className="h-4 w-4" />
           </Button>
           <Button size="sm" onClick={() => setIsDialogOpen(true)}>
             <Upload className="h-4 w-4 mr-2" />
-            Upload Document
+            {t("card.upload")}
           </Button>
         </div>
       </CardHeader>
       <CardContent className="flex-1">
         {isLoading ? (
-          <div className="text-center py-8">Loading documents...</div>
+          <DocumentsTableSkeleton />
         ) : (
           <DocumentsTable documents={documents} onRefresh={fetchDocuments} />
         )}
