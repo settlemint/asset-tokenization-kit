@@ -118,7 +118,7 @@ export function CreateFundForm({
       }}
       secureForm={true}
       hideStepProgress={true}
-      toastMessages={{
+      toast={{
         loading: t("toasts.fund.submitting"),
         success: t("toasts.fund.success"),
       }}

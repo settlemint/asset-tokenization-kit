@@ -79,19 +79,19 @@ export function NavMode() {
               {mode === "assets" && (
                 <HandCoinsIcon
                   ref={handCoinsRef}
-                  className="size-6  p-1 bg-accent cursor-pointer select-none rounded transition-colors duration-200 flex items-center justify-center"
+                  className="size-6 p-1 bg-accent text-white cursor-pointer select-none rounded transition-colors duration-200 flex items-center justify-center"
                 />
               )}
               {mode === "portfolio" && (
                 <ChartLineIcon
                   ref={chartLineRef}
-                  className="size-6  p-1 bg-accent cursor-pointer select-none rounded transition-colors duration-200 flex items-center justify-center"
+                  className="size-6 p-1 bg-accent text-white cursor-pointer select-none rounded transition-colors duration-200 flex items-center justify-center"
                 />
               )}
               {mode === "platform" && (
                 <SettingsGearIcon
                   ref={settingsGearRef}
-                  className="size-6  p-1 bg-accent cursor-pointer select-none rounded transition-colors duration-200 flex items-center justify-center"
+                  className="size-6 p-1 bg-accent text-white cursor-pointer select-none rounded transition-colors duration-200 flex items-center justify-center"
                 />
               )}
               <div className="grid flex-1 text-left text-sm leading-tight">

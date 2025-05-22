@@ -31,16 +31,26 @@ spec:
       serviceAccountName: {{ include "txsigner.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.initContainers }}
+      initContainers:
+        {{- toYaml .Values.initContainers | nindent 8 }}
+      {{- end }}
       containers:
         - name: txsigner
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.env }}
-          env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "txsigner.fullname" . }}-env
+            {{- if .Values.privateKey.existingSecret }}
+            - secretRef:
+                name: {{ .Values.privateKey.existingSecret | quote }}
+            {{- else }}
+            - secretRef:
+                name: {{ include "txsigner.fullname" . }}-private-key
+            {{- end }}
           ports:
             - name: txsigner
               containerPort: {{ .Values.service.port }}

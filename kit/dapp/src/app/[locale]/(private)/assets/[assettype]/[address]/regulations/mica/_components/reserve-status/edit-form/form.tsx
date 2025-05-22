@@ -51,10 +51,6 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
           submittingLabel: t("saving"),
           processingLabel: t("saving"),
         }}
-        toastMessages={{
-          loading: t("saving"),
-          success: tTransactions("success"),
-        }}
         onOpenChange={setOpen}
         defaultValues={{
           address,

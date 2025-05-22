@@ -1,5 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
+import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -60,6 +61,8 @@ export const matureFunction = withAccessControl(
       )),
     });
 
-    return safeParse(t.Hashes(), [response.BondMature?.transactionHash]);
+    return waitForIndexingTransactions(
+      safeParse(t.Hashes(), [response.BondMature?.transactionHash])
+    );
   }
 );

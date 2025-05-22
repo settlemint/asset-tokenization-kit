@@ -13,7 +13,7 @@ export default async function MicaRegulationPage({ params }: PageProps) {
   const { address } = await params;
 
   const regulationData = await getRegulationDetail({
-    assetId: address,
+    assetId: address.toLowerCase(),
     regulationType: "mica",
   });
   if (!regulationData?.mica_regulation_config) {

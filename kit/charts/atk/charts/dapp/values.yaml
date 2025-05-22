@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/settlemint/asset-tokenization-kit
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.0.2-main7a852a0b3"
+  tag: "1.1.1"
 
 imagePullSecrets:
   - name: image-pull-secret-docker
@@ -139,7 +139,7 @@ initContainer:
     enabled: true
     image:
       repository: ghcr.io/settlemint/btp-waitforit
-      tag: v7.7.4
+      tag: v7.7.5
       pullPolicy: IfNotPresent
     timeout: 5 # Timeout in seconds for each dependency check
     dependencies:
@@ -172,3 +172,55 @@ initContainer:
     connectTimeoutSeconds: 5 # Max time to connect
     retries: 24 # Total attempts (e.g., 24 * 5s = 120s total wait time)
 
+job:
+  enabled: true
+
+  # Pod Security Context
+  podSecurityContext: {}
+
+  # Container Security Context
+  securityContext: {}
+
+  # Image configuration
+  image:
+    repository: docker.io/node
+    tag: "23.11.1-slim"
+    pullPolicy: IfNotPresent
+
+  initContainer:
+    hasuraCheck:
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+        tag: v7.7.5
+        pullPolicy: IfNotPresent
+      timeout: 5 # Timeout in seconds for each dependency check
+      endpoint: hasura.atk.svc.cluster.local:8080
+    cloneRepo:
+      image:
+        registry: docker.io
+        repository: alpine/git
+        tag: latest # Or pin to a specific version
+        pullPolicy: IfNotPresent
+
+  # Pod annotations
+  podAnnotations: {}
+
+  # Image pull secrets
+  imagePullSecrets:
+    - image-pull-secret-docker
+    - image-pull-secret-ghcr
+    - image-pull-secret-harbor
+
+  # Resource configuration
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "250m"
+    limits:
+      memory: "3Gi"
+
+  workspace:
+    # Size of the workspace PVC
+    size: 1Gi
+    # Storage class to use for the workspace PVC
+    storageClass: local-path

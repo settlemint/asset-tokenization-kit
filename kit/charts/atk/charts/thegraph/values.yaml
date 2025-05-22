@@ -11,7 +11,7 @@ graph-node:
     imagePullSecrets: []
     extraInitContainers:
       - name: wait-for-postgresql
-        image: ghcr.io/settlemint/btp-waitforit:v7.7.4
+        image: ghcr.io/settlemint/btp-waitforit:v7.7.5
         command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
     affinityPresets:
       # -- Create anti-affinity rule to deter scheduling replicas on the same host
@@ -123,19 +123,20 @@ job:
     - image-pull-secret-ghcr
     - image-pull-secret-harbor
 
-  # Image for the wait-for-graph-node init container
-  busyboxImage:
-    registry: docker.io
-    repository: busybox
-    tag: 1.37 # Use specific stable tag
-    pullPolicy: IfNotPresent
-
-  # Image for the clone-repo init container
-  gitImage:
-    registry: docker.io
-    repository: alpine/git
-    tag: latest # Or pin to a specific version
-    pullPolicy: IfNotPresent
+  initContainer:
+    graphNodeCheck:
+      image:
+        registry: docker.io
+        repository: busybox
+        tag: 1.37 # Use specific stable tag
+        pullPolicy: IfNotPresent
+    cloneRepo:
+      atkTag: "1.1.1"
+      image:
+        registry: docker.io
+        repository: alpine/git
+        tag: latest # Or pin to a specific version
+        pullPolicy: IfNotPresent
 
   # Custom Init Containers (add definitions here if needed, e.g., for dependencies)
   # extraInitContainers: []

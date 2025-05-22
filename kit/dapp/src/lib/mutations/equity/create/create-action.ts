@@ -7,5 +7,5 @@ import { CreateEquitySchema } from "./create-schema";
 
 export const createEquity = action
   .schema(CreateEquitySchema())
-  .outputSchema(t.Hashes())
+  .outputSchema(t.Number())
   .action(createEquityFunction);

@@ -7,5 +7,5 @@ import { TopUpSchema } from "./top-up-schema";
 
 export const topUpUnderlyingAsset = action
   .schema(TopUpSchema())
-  .outputSchema(t.Hashes())
+  .outputSchema(t.Number())
   .action(topUpUnderlyingAssetFunction);

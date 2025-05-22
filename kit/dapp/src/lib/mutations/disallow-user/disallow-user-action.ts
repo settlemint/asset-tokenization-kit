@@ -7,5 +7,5 @@ import { DisallowUserSchema } from "./disallow-user-schema";
 
 export const disallowUser = action
   .schema(DisallowUserSchema())
-  .outputSchema(t.Hashes())
+  .outputSchema(t.Number())
   .action(disallowUserFunction);
