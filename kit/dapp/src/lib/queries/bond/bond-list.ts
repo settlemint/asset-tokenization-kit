@@ -2,20 +2,22 @@ import "server-only";
 
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
+import {
+  BondSchemaZod,
+  OffChainBondSchemaZod,
+  OnChainBondSchemaZod,
+} from "@/lib/queries/bond/bond-schema-zod";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
-import { t } from "@/lib/utils/typebox";
-import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress } from "viem";
+import { z } from "zod";
 import { bondsCalculateFields } from "./bond-calculated";
 import { BondFragment, OffchainBondFragment } from "./bond-fragment";
-import { OffChainBondSchema, OnChainBondSchema } from "./bond-schema";
-
 /**
  * GraphQL query to fetch on-chain bond list from The Graph
  *
@@ -71,7 +73,8 @@ export const getBondList = withTracing(
           skip,
         });
 
-        return safeParse(t.Array(OnChainBondSchema), result.bonds || []);
+        const x = z.array(OnChainBondSchemaZod).parse(result.bonds);
+        return x;
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {
@@ -80,10 +83,10 @@ export const getBondList = withTracing(
           offset,
         });
 
-        return safeParse(
-          t.Array(OffChainBondSchema),
-          result.asset_aggregate.nodes || []
-        );
+        const x = z
+          .array(OffChainBondSchemaZod)
+          .parse(result.asset_aggregate.nodes);
+        return x;
       }),
     ]);
 
@@ -108,6 +111,7 @@ export const getBondList = withTracing(
       };
     });
 
-    return bonds;
+    const bondsParsed = z.array(BondSchemaZod).parse(bonds);
+    return bondsParsed;
   }
 );

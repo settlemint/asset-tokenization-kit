@@ -1,33 +1,45 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
-import * as dn from "dnum";
-import { isAddress } from "viem";
-import { z } from "zod/v4";
+import { getAddress, isAddress } from "viem";
+import { z } from "zod";
 
-const ZodEthAddress = z.string().refine(
-  (value) => {
-    return isAddress(value);
-  },
-  {
-    message: "Invalid Ethereum address",
-  }
-);
+const ZodEthAddress = z
+  .string()
+  .refine(
+    (value) => {
+      return isAddress(value);
+    },
+    {
+      message: "Invalid Ethereum address",
+    }
+  )
+  .transform((value) => getAddress(value));
 
 const ZodERC20Decimals = z.number().int().min(0).max(18);
 
-const ZodAssetType = z.literal([
-  "bond",
-  "cryptocurrency",
-  "equity",
-  "fund",
-  "stablecoin",
-  "deposit",
+const ZodAssetType = z.union([
+  z.literal("bond"),
+  z.literal("cryptocurrency"),
+  z.literal("equity"),
+  z.literal("fund"),
+  z.literal("stablecoin"),
+  z.literal("deposit"),
 ]);
 
-export const ZodDnum = z
-  .union([z.string(), z.number(), z.bigint()])
-  .transform((val) => {
-    return dn.from(val);
-  });
+export const ZodPrice = z.object({
+  amount: z.number(),
+  currency: z.union([
+    z.literal("USD"),
+    z.literal("EUR"),
+    z.literal("GBP"),
+    z.literal("CHF"),
+    z.literal("JPY"),
+    z.literal("AED"),
+    z.literal("SGD"),
+    z.literal("SAR"),
+  ]),
+});
+
+export const ZodDnum = z.string();
 
 export type ZDnum = z.infer<typeof ZodDnum>;
 
@@ -38,30 +50,6 @@ const UnderlyingAssetSchemaZod = z.object({
   type: ZodAssetType,
   totalSupply: ZodDnum,
 });
-
-const UnderlyingAssetSchema = t.Object(
-  {
-    id: t.EthereumAddress({
-      description: "The address of the underlying asset",
-    }),
-    symbol: t.String({
-      description: "The symbol of the underlying asset",
-    }),
-    decimals: t.Decimals({
-      description: "The number of decimal places used by the underlying asset",
-    }),
-    type: t.AssetType({
-      description: "The type of the underlying asset",
-    }),
-    totalSupply: t.BigDecimal({
-      description:
-        "The total supply of the token in a human-readable decimal format",
-    }),
-  },
-  {
-    description: "Information about the underlying asset",
-  }
-);
 
 const YieldPeriodSchemaZod = z.object({
   id: ZodEthAddress,
@@ -74,44 +62,7 @@ const YieldPeriodSchemaZod = z.object({
   totalYieldExact: ZodDnum,
 });
 
-export const YieldPeriodSchema = t.Object(
-  {
-    id: t.String({
-      description: "The unique identifier of the yield period",
-    }),
-    periodId: t.StringifiedBigInt({
-      description: "The sequential ID of the yield period",
-    }),
-    startDate: t.StringifiedBigInt({
-      description: "The start date of the yield period as a timestamp",
-    }),
-    endDate: t.StringifiedBigInt({
-      description: "The end date of the yield period as a timestamp",
-    }),
-    totalClaimed: t.BigDecimal({
-      description:
-        "The total claimed yield for this period in a human-readable decimal format",
-    }),
-    totalClaimedExact: t.StringifiedBigInt({
-      description:
-        "The exact total claimed yield for this period as a raw big integer",
-    }),
-    totalYield: t.BigDecimal({
-      description:
-        "The total yield for this period in a human-readable decimal format",
-    }),
-    totalYieldExact: t.StringifiedBigInt({
-      description: "The exact total yield for this period as a raw big integer",
-    }),
-  },
-  {
-    description: "Information about a single yield period",
-  }
-);
-
-export type YieldPeriod = StaticDecode<typeof YieldPeriodSchema>;
-
-const YieldScheduleSchemaZod = z.object({
+export const YieldScheduleSchemaZod = z.object({
   id: ZodEthAddress,
   startDate: z.bigint(),
   endDate: z.bigint(),
@@ -119,48 +70,13 @@ const YieldScheduleSchemaZod = z.object({
   interval: ZodDnum,
   totalClaimed: ZodDnum,
   totalClaimedExact: ZodDnum,
+  underlyingAsset: UnderlyingAssetSchemaZod,
   underlyingBalance: ZodDnum,
   underlyingBalanceExact: ZodDnum,
   periods: z.array(YieldPeriodSchemaZod),
 });
 
-export const YieldScheduleSchema = t.Object({
-  id: t.EthereumAddress({
-    description: "The address of the yield schedule",
-  }),
-  startDate: t.StringifiedBigInt({
-    description: "The start date of the yield schedule as a timestamp",
-  }),
-  endDate: t.StringifiedBigInt({
-    description: "The end date of the yield schedule as a timestamp",
-  }),
-  rate: t.StringifiedBigInt({
-    description: "The yield rate",
-  }),
-  interval: t.StringifiedBigInt({
-    description: "The yield payment interval",
-  }),
-  totalClaimed: t.BigDecimal({
-    description: "The total claimed yield in a human-readable decimal format",
-  }),
-  totalClaimedExact: t.StringifiedBigInt({
-    description: "The exact total claimed yield as a raw big integer",
-  }),
-  underlyingBalance: t.BigDecimal({
-    description:
-      "The underlying asset balance in a human-readable decimal format",
-  }),
-  underlyingBalanceExact: t.StringifiedBigInt({
-    description: "The exact underlying asset balance as a raw big integer",
-  }),
-  underlyingAsset: UnderlyingAssetSchema,
-  periods: t.Array(YieldPeriodSchema, {
-    description: "Array of yield periods",
-  }),
-});
-export type YieldSchedule = StaticDecode<typeof YieldScheduleSchema>;
-
-const OnChainBondSchemaZod = z.object({
+export const OnChainBondSchemaZod = z.object({
   id: ZodEthAddress,
   name: z.string(),
   symbol: z.string(),
@@ -175,147 +91,31 @@ const OnChainBondSchemaZod = z.object({
     id: ZodEthAddress,
   }),
   underlyingAsset: UnderlyingAssetSchemaZod,
-  maturityDate: z.bigint().nullable(),
+  maturityDate: z.bigint(),
+
   isMatured: z.boolean(),
   hasSufficientUnderlying: z.boolean(),
-  yieldSchedule: YieldScheduleSchemaZod.nullable(),
+  yieldSchedule: YieldScheduleSchemaZod.nullish(),
   redeemedAmount: z.bigint(),
   faceValue: z.bigint(),
   underlyingBalance: ZodDnum,
   underlyingBalanceExact: ZodDnum,
   totalUnderlyingNeeded: ZodDnum,
+  totalUnderlyingNeededExact: ZodDnum,
+  cap: ZodDnum,
+  deployedOn: z.bigint(),
+  concentration: ZodDnum,
 });
 
-/**
- * TypeBox schema for bond data
- *
- * Provides validation for bond token information including:
- * contract address, name, symbol, supply metrics, holders, and bond-specific properties
- */
-export const OnChainBondSchema = t.Object(
-  {
-    id: t.EthereumAddress({
-      description: "The contract address of the bond token",
-    }),
-    name: t.String({
-      description: "The full name of the bond token",
-    }),
-    symbol: t.AssetSymbol({
-      description: "The trading symbol or ticker of the bond token",
-    }),
-    decimals: t.Decimals({
-      description:
-        "The number of decimal places used to display the token amount",
-    }),
-    totalSupply: t.BigDecimal({
-      description:
-        "The total supply of the token in a human-readable decimal format",
-    }),
-    totalSupplyExact: t.StringifiedBigInt({
-      description:
-        "The exact total supply of the token as a raw big integer value",
-    }),
-    totalBurned: t.BigDecimal({
-      description:
-        "The total burned amount of the token in a human-readable decimal format",
-    }),
-    totalBurnedExact: t.StringifiedBigInt({
-      description:
-        "The exact total burned amount of the token as a raw big integer value",
-    }),
-    totalHolders: t.StringifiedBigInt({
-      description: "The total number of unique addresses holding the token",
-    }),
-    paused: t.Boolean({
-      description: "Whether the bond token contract is currently paused",
-    }),
-    creator: t.Object(
-      {
-        id: t.EthereumAddress({
-          description: "The Ethereum address of the token creator",
-        }),
-      },
-      {
-        description: "Information about the token creator",
-      }
-    ),
-    underlyingAsset: UnderlyingAssetSchema,
-    maturityDate: t.Optional(
-      t.StringifiedBigInt({
-        description: "The maturity date of the bond as a timestamp",
-      })
-    ),
-    isMatured: t.Boolean({
-      description: "Whether the bond has matured",
-    }),
-    hasSufficientUnderlying: t.Boolean({
-      description:
-        "Whether the bond has sufficient underlying assets to cover obligations",
-    }),
-    yieldSchedule: t.Optional(
-      t.Nullable(YieldScheduleSchema, {
-        description: "Information about the bond's yield schedule",
-      })
-    ),
-    redeemedAmount: t.StringifiedBigInt({
-      description: "The amount of tokens that have been redeemed",
-    }),
-    faceValue: t.StringifiedBigInt({
-      description: "The face value of the bond",
-    }),
-    underlyingBalance: t.BigDecimal({
-      description:
-        "The underlying asset balance in a human-readable decimal format",
-    }),
-    underlyingBalanceExact: t.StringifiedBigInt({
-      description: "The exact underlying asset balance as a raw big integer",
-    }),
-    totalUnderlyingNeeded: t.BigDecimal({
-      description:
-        "The total underlying assets needed in a human-readable decimal format",
-    }),
-    totalUnderlyingNeededExact: t.StringifiedBigInt({
-      description:
-        "The exact total underlying assets needed as a raw big integer",
-    }),
-    cap: t.StringifiedBigInt({
-      description: "The maximum supply cap",
-    }),
-    deployedOn: t.StringifiedBigInt({
-      description: "The timestamp when the bond was deployed",
-    }),
-    concentration: t.BigDecimal({
-      description:
-        "The percentage of total supply held by the top holders, indicating ownership concentration",
-    }),
-  },
-  {
-    description:
-      "On-chain data for bond tokens including contract address, name, symbol, supply metrics, holders, and bond-specific information",
-  }
-);
-export type OnChainBond = StaticDecode<typeof OnChainBondSchema>;
+export type OnChainBondSchemaZodType = z.infer<typeof OnChainBondSchemaZod>;
 
-export const OffChainBondSchema = t.Object(
-  {
-    id: t.EthereumAddress({
-      description: "The contract address of the bond token",
-    }),
-    isin: t.Optional(
-      t.MaybeEmpty(
-        t.Isin({
-          description:
-            "International Securities Identification Number for the bond token",
-        })
-      )
-    ),
-  },
-  {
-    description:
-      "Off-chain data for bond tokens including financial identifiers and market value information",
-  }
-);
-export type OffChainBond = StaticDecode<typeof OffChainBondSchema>;
+export const OffChainBondSchemaZod = z.object({
+  id: ZodEthAddress,
+  isin: z.string().nullish(),
+});
+export const CalculatedBondSchemaZod = z.object({
+  price: ZodPrice,
+});
 
 export const CalculatedBondSchema = t.Object(
   {
@@ -329,39 +129,10 @@ export const CalculatedBondSchema = t.Object(
 );
 export type CalculatedBond = StaticDecode<typeof CalculatedBondSchema>;
 
-export const BondSchema = t.Intersect(
-  [OnChainBondSchema, t.Partial(OffChainBondSchema)],
-  {
-    description:
-      "Combined schema for complete bond details including on-chain data, off-chain data, and calculated fields",
-  }
+export const BondSchemaZod = z.intersection(
+  OnChainBondSchemaZod,
+  OffChainBondSchemaZod.partial()
 );
-export type Bond = StaticDecode<typeof BondSchema>;
 
-export const YieldDistributionItemSchema = t.Object({
-  timestamp: t.Number({
-    description: "The timestamp in milliseconds for the data point",
-  }),
-  totalYield: t.Number({
-    description: "The total yield accumulated up to this point",
-  }),
-  claimed: t.Number({
-    description: "The amount of yield claimed up to this point",
-  }),
-});
-export type YieldDistributionItem = StaticDecode<
-  typeof YieldDistributionItemSchema
->;
-
-export const YieldCoverageSchema = t.Object({
-  yieldCoverage: t.Number({
-    description: "The percentage of yield coverage by underlying assets",
-  }),
-  hasYieldSchedule: t.Boolean({
-    description: "Whether the bond has a yield schedule",
-  }),
-  isRunning: t.Boolean({
-    description: "Whether the yield schedule is currently active",
-  }),
-});
-export type YieldCoverage = StaticDecode<typeof YieldCoverageSchema>;
+export const BondListSchemaZod = z.array(BondSchemaZod);
+export type BondListSchemaZodType = z.infer<typeof BondListSchemaZod>;
