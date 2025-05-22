@@ -29,9 +29,11 @@ export function ReserveStatusLayout({
   const t = useTranslations("regulations.mica.dashboard.reserve-status");
   const params = useParams<{ address: Address }>();
 
-  const circulatingSupply = 1000000; // TODO: Get from API
-  const reserveValue = 1000000; // TODO: Get from API
-  const reserveRatio = (reserveValue / circulatingSupply) * 100;
+  const circulatingSupply = 0; // TODO: Get from API
+  const reserveValue = 0; // TODO: Get from API
+  // If circulatingSupply is 0, we consider the ratio to be 100% since there are no tokens to back
+  const reserveRatio =
+    circulatingSupply === 0 ? 100 : (reserveValue / circulatingSupply) * 100;
 
   return (
     <Card className="h-full">
@@ -45,13 +47,8 @@ export function ReserveStatusLayout({
         <ReserveDetails
           circulatingSupply={circulatingSupply}
           reserveValue={reserveValue}
-          lastAuditDate={
-            config.lastAuditDate?.toISOString() ?? new Date().toISOString()
-          }
-          reserveStatus={
-            (config.reserveStatus as ReserveComplianceStatus) ??
-            ReserveComplianceStatus.PENDING_REVIEW
-          }
+          lastAuditDate={config.lastAuditDate?.toISOString()}
+          reserveStatus={config.reserveStatus as ReserveComplianceStatus}
         />
       </CardContent>
     </Card>

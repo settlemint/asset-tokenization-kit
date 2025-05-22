@@ -6,10 +6,10 @@ import { formatDate } from "@/lib/utils/date";
 import { useLocale, useTranslations } from "next-intl";
 
 interface ReserveDetailsProps {
-  lastAuditDate: string;
-  reserveStatus: ReserveComplianceStatus;
-  circulatingSupply: number;
-  reserveValue: number;
+  lastAuditDate?: string;
+  reserveStatus?: ReserveComplianceStatus;
+  circulatingSupply?: number;
+  reserveValue?: number;
 }
 
 export function ReserveDetails({
@@ -58,32 +58,38 @@ export function ReserveDetails({
         <h3 className="text-muted-foreground text-sm">
           {t("details.fields.circulating-supply.title")}
         </h3>
-        <p>{circulatingSupply}</p>
+        <p>{circulatingSupply ?? "-"}</p>
       </div>
       <div>
         <h3 className="text-muted-foreground text-sm">
           {t("details.fields.reserve-value.title")}
         </h3>
-        <p>{reserveValue}</p>
+        <p>{reserveValue ?? "-"}</p>
       </div>
       <div>
         <h3 className="text-muted-foreground text-sm">
           {t("form.fields.audit-details.last-audit-date")}
         </h3>
         <p>
-          {formatDate(new Date(lastAuditDate), {
-            type: "absolute",
-            locale: locale,
-          })}
+          {lastAuditDate
+            ? formatDate(new Date(lastAuditDate), {
+                type: "absolute",
+                locale: locale,
+              })
+            : "-"}
         </p>
       </div>
       <div>
         <h3 className="text-muted-foreground text-sm">
           {t("form.fields.audit-details.reserve-status")}
         </h3>
-        <Badge className={getStatusColor(reserveStatus)}>
-          {getStatusLabel(reserveStatus)}
-        </Badge>
+        {reserveStatus ? (
+          <Badge className={getStatusColor(reserveStatus)}>
+            {getStatusLabel(reserveStatus)}
+          </Badge>
+        ) : (
+          "-"
+        )}
       </div>
     </div>
   );

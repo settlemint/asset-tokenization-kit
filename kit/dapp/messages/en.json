@@ -2690,7 +2690,8 @@
           },
           "composition": {
             "title": "Reserve composition",
-            "description": "The composition of the reserve assets"
+            "description": "The composition of the reserve assets",
+            "no-data": "No data available"
           },
           "details": {
             "title": "Reserve details",

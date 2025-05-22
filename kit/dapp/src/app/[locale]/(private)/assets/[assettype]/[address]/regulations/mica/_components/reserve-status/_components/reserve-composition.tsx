@@ -1,6 +1,7 @@
 "use client";
 
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { ChartColumnIncreasingIcon } from "@/components/ui/chart-column-increasing";
 import { useTranslations } from "next-intl";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import { ReserveTooltip } from "./reserve-tooltip";
@@ -32,6 +33,17 @@ export function ReserveComposition({
   otherAssets = 0,
 }: ReserveCompositionProps) {
   const t = useTranslations("regulations.mica.dashboard.reserve-status");
+
+  // Check if all values are 0
+  const isEmpty = [
+    bankDeposits,
+    governmentBonds,
+    highQualityLiquidAssets,
+    corporateBonds,
+    centralBankAssets,
+    commodities,
+    otherAssets,
+  ].every((value) => value === 0);
 
   const reserveData: ReserveEntry[] = [
     {
@@ -95,54 +107,64 @@ export function ReserveComposition({
       <h3 className="text-muted-foreground text-sm">
         {t("composition.title")}
       </h3>
-      <div className="flex flex-col mt-1">
-        <ChartContainer config={config} className="w-full h-[60px]">
-          <BarChart
-            width={600}
-            height={30}
-            data={[
-              {
-                name: "Reserve",
-                ...Object.fromEntries(
-                  reserveData.map((entry) => [entry.id, entry.percentage])
-                ),
-              },
-            ]}
-            layout="vertical"
-            stackOffset="expand"
-            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-          >
-            <XAxis type="number" hide domain={[0, 1]} />
-            <YAxis type="category" hide />
-            <ChartTooltip
-              cursor={false}
-              content={<ReserveTooltip config={config} />}
-              wrapperStyle={{ minWidth: "200px", width: "auto" }}
-            />
-            {reserveData.map((entry) => (
-              <Bar
-                key={entry.id}
-                dataKey={entry.id}
-                stackId="stack"
-                fill={entry.color}
-                fillOpacity={0.5}
-                stroke={entry.color}
-              />
-            ))}
-          </BarChart>
-        </ChartContainer>
-        <div className="flex flex-wrap gap-4 justify-center mt-4">
-          {reserveData.map((entry) => (
-            <div key={entry.id} className="flex items-center gap-2">
-              <div
-                className="h-2 w-2 shrink-0"
-                style={{ backgroundColor: entry.color }}
-              />
-              <p className="text-muted-foreground text-xs">{entry.label}</p>
-            </div>
-          ))}
+
+      {isEmpty && (
+        <div className="flex flex-col items-center gap-2 text-center">
+          <ChartColumnIncreasingIcon className="h-8 w-8 text-muted-foreground" />
+          <p>{t("composition.no-data")}</p>
         </div>
-      </div>
+      )}
+
+      {!isEmpty && (
+        <div className="flex flex-col mt-1">
+          <ChartContainer config={config} className="w-full h-[60px]">
+            <BarChart
+              width={600}
+              height={30}
+              data={[
+                {
+                  name: "Reserve",
+                  ...Object.fromEntries(
+                    reserveData.map((entry) => [entry.id, entry.percentage])
+                  ),
+                },
+              ]}
+              layout="vertical"
+              stackOffset="expand"
+              margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+            >
+              <XAxis type="number" hide domain={[0, 1]} />
+              <YAxis type="category" hide />
+              <ChartTooltip
+                cursor={false}
+                content={<ReserveTooltip config={config} />}
+                wrapperStyle={{ minWidth: "200px", width: "auto" }}
+              />
+              {reserveData.map((entry) => (
+                <Bar
+                  key={entry.id}
+                  dataKey={entry.id}
+                  stackId="stack"
+                  fill={entry.color}
+                  fillOpacity={0.5}
+                  stroke={entry.color}
+                />
+              ))}
+            </BarChart>
+          </ChartContainer>
+          <div className="flex flex-wrap gap-4 justify-center mt-4">
+            {reserveData.map((entry) => (
+              <div key={entry.id} className="flex items-center gap-2">
+                <div
+                  className="h-2 w-2 shrink-0"
+                  style={{ backgroundColor: entry.color }}
+                />
+                <p className="text-muted-foreground text-xs">{entry.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
