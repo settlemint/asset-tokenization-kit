@@ -1,6 +1,5 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
-import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { CancelXvpInput } from "./cancel-schema";
@@ -41,7 +40,5 @@ export const cancelXvpFunction = async ({
   if (!result.XvPSettlementCancel) {
     throw new Error("Failed to cancel XVP");
   }
-  return waitForIndexingTransactions(
-    safeParse(t.Hashes(), [result.XvPSettlementCancel.transactionHash])
-  );
+  return safeParse(t.Hashes(), [result.XvPSettlementCancel.transactionHash]);
 };

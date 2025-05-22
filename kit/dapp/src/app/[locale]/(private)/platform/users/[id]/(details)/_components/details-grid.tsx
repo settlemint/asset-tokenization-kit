@@ -54,11 +54,11 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         </Badge>
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.created_at")}>
-        {formatDate(user.createdAt, { type: "distance", locale: locale })}
+        {formatDate(user.created_at, { type: "distance", locale: locale })}
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.verified_at")}>
-        {user.kycVerifiedAt
-          ? formatDate(user.kycVerifiedAt, {
+        {user.kyc_verified_at
+          ? formatDate(user.kyc_verified_at, {
               type: "distance",
               locale: locale,
             })
@@ -87,8 +87,8 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
           : t("status.never")}
       </DetailGridItem>
       <DetailGridItem label={t("detail.values.last_login")}>
-        {user.lastLoginAt
-          ? formatDate(user.lastLoginAt, { type: "distance", locale: locale })
+        {user.last_login_at
+          ? formatDate(user.last_login_at, { type: "distance", locale: locale })
           : t("status.never")}
       </DetailGridItem>
     </DetailGrid>

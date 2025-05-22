@@ -94,7 +94,7 @@ export function CreateCryptoCurrencyForm({
       }}
       secureForm={true}
       hideStepProgress={true}
-      toast={{
+      toastMessages={{
         loading: t("toasts.cryptocurrency.submitting"),
         success: t("toasts.cryptocurrency.success"),
       }}

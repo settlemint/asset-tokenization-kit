@@ -151,7 +151,7 @@ export const FundApi = new Elysia({
       },
       body: CreateFundSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -177,7 +177,7 @@ export const FundApi = new Elysia({
       },
       body: TransferSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -202,7 +202,7 @@ export const FundApi = new Elysia({
       },
       body: GrantRoleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -227,7 +227,7 @@ export const FundApi = new Elysia({
       },
       body: RevokeRoleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -253,7 +253,7 @@ export const FundApi = new Elysia({
       },
       body: UpdateRolesSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -279,7 +279,7 @@ export const FundApi = new Elysia({
       },
       body: MintSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -304,7 +304,7 @@ export const FundApi = new Elysia({
       },
       body: WithdrawSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -329,7 +329,7 @@ export const FundApi = new Elysia({
       },
       body: BurnSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -354,7 +354,7 @@ export const FundApi = new Elysia({
       },
       body: BlockUserSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -379,7 +379,7 @@ export const FundApi = new Elysia({
       },
       body: UnblockUserSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }

@@ -80,12 +80,6 @@ export function SetupWalletSecurityForm() {
             refetch();
           }
         }}
-        onSuccess={() => {
-          refetch();
-        }}
-        toast={{
-          disabled: true,
-        }}
         disablePreviousButton
       >
         <SelectMethod key="select-method" />

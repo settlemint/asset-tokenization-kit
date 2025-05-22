@@ -7,5 +7,5 @@ import { CancelXvpSchema } from "./cancel-schema";
 
 export const cancelXvp = action
   .schema(CancelXvpSchema)
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(cancelXvpFunction);

@@ -158,7 +158,7 @@ export const BondApi = new Elysia({
       },
       body: CreateBondSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -184,7 +184,7 @@ export const BondApi = new Elysia({
       },
       body: TransferSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -209,7 +209,7 @@ export const BondApi = new Elysia({
       },
       body: GrantRoleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -234,7 +234,7 @@ export const BondApi = new Elysia({
       },
       body: RevokeRoleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -260,7 +260,7 @@ export const BondApi = new Elysia({
       },
       body: UpdateRolesSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -286,7 +286,7 @@ export const BondApi = new Elysia({
       },
       body: MintSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -308,7 +308,7 @@ export const BondApi = new Elysia({
       },
       body: MatureFormSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -330,7 +330,7 @@ export const BondApi = new Elysia({
       },
       body: RedeemBondSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -353,7 +353,7 @@ export const BondApi = new Elysia({
       },
       body: SetYieldScheduleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -375,7 +375,7 @@ export const BondApi = new Elysia({
       },
       body: TopUpSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -400,7 +400,7 @@ export const BondApi = new Elysia({
       },
       body: BlockUserSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -426,7 +426,7 @@ export const BondApi = new Elysia({
       },
       body: UnblockUserSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -451,7 +451,7 @@ export const BondApi = new Elysia({
       },
       body: WithdrawSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -477,7 +477,7 @@ export const BondApi = new Elysia({
       },
       body: BurnSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }

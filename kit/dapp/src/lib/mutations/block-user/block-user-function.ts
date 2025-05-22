@@ -1,6 +1,5 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
-import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -160,30 +159,26 @@ export const blockUserFunction = withAccessControl(
     switch (assettype) {
       case "bond": {
         const response = await portalClient.request(BondBlockUser, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.BondBlockUser?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [response.BondBlockUser?.transactionHash]);
       }
       case "equity": {
         const response = await portalClient.request(EquityBlockUser, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.EquityBlockUser?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [
+          response.EquityBlockUser?.transactionHash,
+        ]);
       }
       case "fund": {
         const response = await portalClient.request(FundBlockUser, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.FundBlockUser?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [response.FundBlockUser?.transactionHash]);
       }
       case "stablecoin": {
         const response = await portalClient.request(
           StableCoinBlockUser,
           params
         );
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.StableCoinBlockUser?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [
+          response.StableCoinBlockUser?.transactionHash,
+        ]);
       }
       case "cryptocurrency": {
         throw new Error(

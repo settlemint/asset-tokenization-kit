@@ -7,5 +7,5 @@ import { FreezeSchema } from "./freeze-schema";
 
 export const freeze = action
   .schema(FreezeSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(freezeFunction);

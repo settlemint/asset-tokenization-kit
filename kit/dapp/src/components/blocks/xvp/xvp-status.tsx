@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
-import { calculateXvPStatus } from "@/lib/queries/xvp/xvp-status";
 import { cn } from "@/lib/utils";
 import { CheckCircle, Clock, Rocket, TriangleAlert, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -17,7 +16,7 @@ export function XvPStatusIndicator({
 }: XvPStatusIndicatorProps): ReactElement {
   const t = useTranslations("trade-management.xvp");
 
-  const status = calculateXvPStatus(xvp);
+  const status = xvp.status;
 
   const statusConfig = {
     PENDING: {

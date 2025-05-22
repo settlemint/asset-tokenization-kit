@@ -2,7 +2,6 @@
 
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
-import { Ellipsis } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Columns, icons } from "./asset-events-columns";
 
@@ -34,11 +33,6 @@ export function AssetEventsClientTable({
       }}
       pagination={{ enablePagination: !disableToolbarAndPagination }}
       initialColumnFilters={initialColumnFilters}
-      customEmptyState={{
-        icon: Ellipsis,
-        title: t("empty-state.title"),
-        description: t("empty-state.description"),
-      }}
     />
   );
 }

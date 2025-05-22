@@ -7,5 +7,5 @@ import { AllowUserSchema } from "./allow-user-schema";
 
 export const allowUser = action
   .schema(AllowUserSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(allowUserFunction);

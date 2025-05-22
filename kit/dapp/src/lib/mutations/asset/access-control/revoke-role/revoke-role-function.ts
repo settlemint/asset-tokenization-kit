@@ -1,7 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { type Role, getRoleIdentifier } from "@/lib/config/roles";
-import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -184,45 +183,33 @@ export const revokeRoleFunction = withAccessControl(
             StableCoinRevokeRole,
             params
           );
-          return safeParse(t.Hashes(), [
-            response.StableCoinRevokeRole?.transactionHash,
-          ]);
+          return response.StableCoinRevokeRole?.transactionHash;
         }
         case "bond": {
           const response = await portalClient.request(BondRevokeRole, params);
-          return safeParse(t.Hashes(), [
-            response.BondRevokeRole?.transactionHash,
-          ]);
+          return response.BondRevokeRole?.transactionHash;
         }
         case "cryptocurrency": {
           const response = await portalClient.request(
             CryptoCurrencyRevokeRole,
             params
           );
-          return safeParse(t.Hashes(), [
-            response.CryptoCurrencyRevokeRole?.transactionHash,
-          ]);
+          return response.CryptoCurrencyRevokeRole?.transactionHash;
         }
         case "fund": {
           const response = await portalClient.request(FundRevokeRole, params);
-          return safeParse(t.Hashes(), [
-            response.FundRevokeRole?.transactionHash,
-          ]);
+          return response.FundRevokeRole?.transactionHash;
         }
         case "equity": {
           const response = await portalClient.request(EquityRevokeRole, params);
-          return safeParse(t.Hashes(), [
-            response.EquityRevokeRole?.transactionHash,
-          ]);
+          return response.EquityRevokeRole?.transactionHash;
         }
         case "deposit": {
           const response = await portalClient.request(
             DepositRevokeRole,
             params
           );
-          return safeParse(t.Hashes(), [
-            response.DepositRevokeRole?.transactionHash,
-          ]);
+          return response.DepositRevokeRole?.transactionHash;
         }
         default:
           throw new Error("Unsupported asset type");
@@ -235,6 +222,6 @@ export const revokeRoleFunction = withAccessControl(
     const revokePromises = selectedRoles.map((role) => revokeRoleFn(role));
     const results = await Promise.all(revokePromises);
 
-    return waitForIndexingTransactions(results.flat());
+    return safeParse(t.Hashes(), results);
   }
 );

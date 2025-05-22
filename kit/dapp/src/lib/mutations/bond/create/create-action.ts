@@ -7,5 +7,5 @@ import { CreateBondSchema } from "./create-schema";
 
 export const createBond = action
   .schema(CreateBondSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(createBondFunction);

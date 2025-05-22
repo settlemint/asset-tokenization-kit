@@ -7,5 +7,5 @@ import { CreateFundSchema } from "./create-schema";
 
 export const createFund = action
   .schema(CreateFundSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(createFundFunction);

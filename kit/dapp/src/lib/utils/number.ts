@@ -16,8 +16,6 @@ export interface FormatOptions {
   readonly decimals?: number;
   /** Whether to display the number as a percentage */
   readonly percentage?: boolean;
-  /** Whether to adjust the value by dividing by 10^decimals (for token amounts) */
-  readonly adjustDecimals?: boolean;
 }
 
 /**
@@ -30,30 +28,16 @@ function formatNumberWithFormatter(
   amount: string | bigint | number | BigNumber | null | undefined,
   options: FormatOptions
 ): string {
-  const {
-    currency,
-    token,
-    decimals = 2,
-    percentage = false,
-    adjustDecimals = false,
-  } = options;
+  const { currency, token, decimals = 2, percentage = false } = options;
 
-  // Convert input to BigNumber safely and adjust for decimals if needed
+  // Convert input to BigNumber safely
   const value = (() => {
     try {
-      let value: BigNumber;
-      if (amount instanceof BigNumber) value = amount;
-      else if (amount === null || amount === undefined)
-        value = new BigNumber(0);
-      else
-        value = new BigNumber(
-          typeof amount === "bigint" ? amount.toString() : amount
-        );
-
-      // Adjust for token decimals if needed (divide by 10^decimals)
-      return adjustDecimals && decimals
-        ? value.div(new BigNumber(10).pow(decimals))
-        : value;
+      if (amount instanceof BigNumber) return amount;
+      if (amount === null || amount === undefined) return new BigNumber(0);
+      return new BigNumber(
+        typeof amount === "bigint" ? amount.toString() : amount
+      );
     } catch {
       return new BigNumber(0);
     }

@@ -1,7 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -182,36 +181,28 @@ export const freezeFunction = withAccessControl(
     switch (assettype) {
       case "bond": {
         const response = await portalClient.request(BondFreeze, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.BondFreeze?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [response.BondFreeze?.transactionHash]);
       }
       case "cryptocurrency": {
         throw new Error("Cryptocurrency does not support freeze operations");
       }
       case "equity": {
         const response = await portalClient.request(EquityFreeze, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.EquityFreeze?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [response.EquityFreeze?.transactionHash]);
       }
       case "fund": {
         const response = await portalClient.request(FundFreeze, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.FundFreeze?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [response.FundFreeze?.transactionHash]);
       }
       case "stablecoin": {
         const response = await portalClient.request(StableCoinFreeze, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.StableCoinFreeze?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [
+          response.StableCoinFreeze?.transactionHash,
+        ]);
       }
       case "deposit": {
         const response = await portalClient.request(DepositFreeze, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.DepositFreeze?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [response.DepositFreeze?.transactionHash]);
       }
       default:
         throw new Error("Invalid asset type");

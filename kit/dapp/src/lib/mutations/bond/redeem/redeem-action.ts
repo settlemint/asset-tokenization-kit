@@ -7,5 +7,5 @@ import { RedeemBondSchema } from "./redeem-schema";
 
 export const redeem = action
   .schema(RedeemBondSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(redeemFunction);

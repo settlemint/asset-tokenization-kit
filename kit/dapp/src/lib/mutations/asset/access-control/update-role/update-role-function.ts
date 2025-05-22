@@ -1,5 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { withAccessControl } from "@/lib/utils/access-control";
+import { safeParse, t } from "@/lib/utils/typebox";
 import { RoleMap } from "@/lib/utils/typebox/roles";
 import { grantRoleFunction } from "../grant-role/grant-role-function";
 import { revokeRoleFunction } from "../revoke-role/revoke-role-function";
@@ -54,42 +55,46 @@ export const updateRolesFunction = withAccessControl(
         rolesToDisable[role as keyof RoleMap] = true;
       }
     }
-    const txns = [];
+
+    const txns: string[] = [];
+
     const hasRolesToGrant = Object.keys(rolesToEnable).length > 0;
     if (hasRolesToGrant) {
-      txns.push(
-        grantRoleFunction({
-          parsedInput: {
-            address,
-            roles: rolesToEnable,
-            userAddress,
-            verificationCode,
-            verificationType,
-            assettype,
-          },
-          ctx,
-        })
-      );
+      const grantResult = await grantRoleFunction({
+        parsedInput: {
+          address,
+          roles: rolesToEnable,
+          userAddress,
+          verificationCode,
+          verificationType,
+          assettype,
+        },
+        ctx,
+      });
+      if (grantResult) {
+        txns.push(...grantResult);
+      }
     }
 
     const hasRolesToRevoke = Object.keys(rolesToDisable).length > 0;
     if (hasRolesToRevoke) {
-      txns.push(
-        revokeRoleFunction({
-          parsedInput: {
-            address,
-            roles: rolesToDisable,
-            userAddress,
-            verificationCode,
-            verificationType,
-            assettype,
-          },
-          ctx,
-        })
-      );
+      const revokeResult = await revokeRoleFunction({
+        parsedInput: {
+          address,
+          roles: rolesToDisable,
+          userAddress,
+          verificationCode,
+          verificationType,
+          assettype,
+        },
+        ctx,
+      });
+
+      if (revokeResult) {
+        txns.push(...revokeResult);
+      }
     }
 
-    const blocks = await Promise.all(txns);
-    return blocks.at(-1) ?? 0;
+    return safeParse(t.Hashes(), txns);
   }
 );

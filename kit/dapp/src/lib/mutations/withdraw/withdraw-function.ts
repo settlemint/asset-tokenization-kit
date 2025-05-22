@@ -2,7 +2,6 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -249,9 +248,7 @@ export const withdrawFunction = withAccessControl(
 
         const bondFormattedAmount = parseUnits(
           amount.toString(),
-          isYield
-            ? bondDetails.yieldSchedule!.underlyingAsset.decimals
-            : bondDetails.underlyingAsset.decimals
+          isYield ? bondDetails.yieldSchedule!.underlyingAsset.decimals : bondDetails.underlyingAsset.decimals
         ).toString();
 
         if (isYield) {
@@ -279,11 +276,9 @@ export const withdrawFunction = withAccessControl(
             );
           }
 
-          return waitForIndexingTransactions(
-            safeParse(t.Hashes(), [
-              response.FixedYieldWithdrawUnderlyingAsset.transactionHash,
-            ])
-          );
+          return safeParse(t.Hashes(), [
+            response.FixedYieldWithdrawUnderlyingAsset.transactionHash,
+          ]);
         } else {
           const response = await portalClient.request(
             BondWithdrawUnderlyingAsset,
@@ -307,11 +302,9 @@ export const withdrawFunction = withAccessControl(
             throw new Error("Failed to get bond withdrawal transaction hash");
           }
 
-          return waitForIndexingTransactions(
-            safeParse(t.Hashes(), [
-              response.BondWithdrawUnderlyingAsset.transactionHash,
-            ])
-          );
+          return safeParse(t.Hashes(), [
+            response.BondWithdrawUnderlyingAsset.transactionHash,
+          ]);
         }
       }
       case "cryptocurrency": {
@@ -319,51 +312,45 @@ export const withdrawFunction = withAccessControl(
           CryptoCurrencyWithdrawToken,
           tokenParams
         );
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [
-            response.CryptoCurrencyWithdrawToken?.transactionHash,
-          ])
-        );
+        return safeParse(t.Hashes(), [
+          response.CryptoCurrencyWithdrawToken?.transactionHash,
+        ]);
       }
       case "equity": {
         const response = await portalClient.request(
           EquityWithdrawToken,
           tokenParams
         );
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.EquityWithdrawToken?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [
+          response.EquityWithdrawToken?.transactionHash,
+        ]);
       }
       case "fund": {
         const response = await portalClient.request(
           FundWithdrawToken,
           tokenParams
         );
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.FundWithdrawToken?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [
+          response.FundWithdrawToken?.transactionHash,
+        ]);
       }
       case "stablecoin": {
         const response = await portalClient.request(
           StableCoinWithdrawToken,
           tokenParams
         );
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [
-            response.StableCoinWithdrawToken?.transactionHash,
-          ])
-        );
+        return safeParse(t.Hashes(), [
+          response.StableCoinWithdrawToken?.transactionHash,
+        ]);
       }
       case "deposit": {
         const response = await portalClient.request(
           DepositWithdrawToken,
           tokenParams
         );
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [
-            response.DepositWithdrawToken?.transactionHash,
-          ])
-        );
+        return safeParse(t.Hashes(), [
+          response.DepositWithdrawToken?.transactionHash,
+        ]);
       }
       default:
         throw new Error("Invalid asset type");

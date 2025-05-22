@@ -160,7 +160,7 @@ export const DepositApi = new Elysia({
       },
       body: CreateDepositSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -186,7 +186,7 @@ export const DepositApi = new Elysia({
       },
       body: TransferSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -211,7 +211,7 @@ export const DepositApi = new Elysia({
       },
       body: GrantRoleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -237,7 +237,7 @@ export const DepositApi = new Elysia({
       },
       body: RevokeRoleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -263,7 +263,7 @@ export const DepositApi = new Elysia({
       },
       body: UpdateRolesSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -289,7 +289,7 @@ export const DepositApi = new Elysia({
       },
       body: MintSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -315,7 +315,7 @@ export const DepositApi = new Elysia({
       },
       body: BurnSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -341,7 +341,7 @@ export const DepositApi = new Elysia({
       },
       body: FreezeSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -366,7 +366,7 @@ export const DepositApi = new Elysia({
       },
       body: PauseSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -392,7 +392,7 @@ export const DepositApi = new Elysia({
       },
       body: UnpauseSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -417,7 +417,7 @@ export const DepositApi = new Elysia({
       },
       body: UpdateCollateralSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -442,7 +442,7 @@ export const DepositApi = new Elysia({
       },
       body: AllowUserSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -467,7 +467,7 @@ export const DepositApi = new Elysia({
       },
       body: DisallowUserSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -492,7 +492,7 @@ export const DepositApi = new Elysia({
       },
       body: WithdrawSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }

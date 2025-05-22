@@ -4,7 +4,7 @@
  * This module provides a TypeBox schema for validating Ethereum hashes,
  * ensuring they conform to the correct format.
  */
-import type { SchemaOptions, StaticDecode } from "@sinclair/typebox";
+import type { SchemaOptions } from "@sinclair/typebox";
 import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
 import { isHash, type Hash as HashType } from "viem";
 
@@ -48,6 +48,3 @@ export const Hash = (options?: SchemaOptions) =>
  */
 export const Hashes = (options?: SchemaOptions) =>
   t.Array(Hash(), { ...options });
-
-const _HashesSchema = Hashes();
-export type Hashes = StaticDecode<typeof _HashesSchema>;

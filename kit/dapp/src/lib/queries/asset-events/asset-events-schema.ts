@@ -1,57 +1,9 @@
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
-export const AssetEventNameSchema = t.UnionEnum([
-  "Transfer",
-  "Mint",
-  "Burn",
-  "RoleGranted",
-  "RoleRevoked",
-  "RoleAdminChanged",
-  "Approval",
-  "Pause",
-  "Unpause",
-  "Clawback",
-  "TokensFrozen",
-  "UserBlocked",
-  "UserUnblocked",
-  "UserAllowed",
-  "UserDisallowed",
-  "TokenWithdrawn",
-  "CollateralUpdated",
-  "Matured",
-  "Redeemed",
-  "UnderlyingAssetTopUp",
-  "UnderlyingAssetWithdrawn",
-  "ManagementFeeCollected",
-  "PerformanceFeeCollected",
-  "YieldClaimed",
-  "AssetCreated",
-  "FixedYieldCreated",
-  "XvPSettlementCreated",
-  "XvPSettlementApproved",
-  "XvPSettlementApprovalRevoked",
-  "XvPSettlementClaimed",
-  "XvPSettlementExecuted",
-  "XvPSettlementCancelled",
-  "Claimed",
-  "Distribution",
-  "BatchDistribution",
-  "MerkleRootUpdated",
-  "VaultCreated",
-  "Deposit",
-  "RequirementChanged",
-  "SubmitTransaction",
-  "SubmitERC20TransferTransaction",
-  "SubmitContractCallTransaction",
-  "ConfirmTransaction",
-  "RevokeConfirmation",
-  "ExecuteTransaction",
-]);
-
 /**
  * Base TypeBox schema for asset events
  */
-export const AssetEventSchema = t.Object(
+export const AssetEventListSchema = t.Object(
   {
     id: t.String({
       description: "Unique identifier for the event",
@@ -76,7 +28,9 @@ export const AssetEventSchema = t.Object(
         description: "Information about the event emitter",
       }
     ),
-    eventName: AssetEventNameSchema,
+    eventName: t.String({
+      description: "Name of the event",
+    }),
     blockTimestamp: t.Timestamp({
       description: "When the event occurred",
     }),
@@ -86,18 +40,7 @@ export const AssetEventSchema = t.Object(
   }
 );
 
-export type AssetEvent = StaticDecode<typeof AssetEventSchema>;
-
-export const AssetEventValueSchema = t.Object({
-  name: t.String({
-    description: "Name of the value",
-  }),
-  value: t.String({
-    description: "Value of the value",
-  }),
-});
-
-export type AssetEventValue = StaticDecode<typeof AssetEventValueSchema>;
+export type AssetEventListItem = StaticDecode<typeof AssetEventListSchema>;
 
 /**
  * TypeBox schema for asset event detail
@@ -124,7 +67,9 @@ export const AssetEventDetailSchema = t.Object(
         description: "Information about the event emitter",
       }
     ),
-    eventName: AssetEventNameSchema,
+    eventName: t.String({
+      description: "Name of the event",
+    }),
     blockTimestamp: t.Timestamp({
       description: "When the event occurred",
     }),
@@ -137,7 +82,16 @@ export const AssetEventDetailSchema = t.Object(
     txIndex: t.StringifiedBigInt({
       description: "Transaction index of the event",
     }),
-    values: t.Array(AssetEventValueSchema),
+    values: t.Array(
+      t.Object({
+        name: t.String({
+          description: "Name of the value",
+        }),
+        value: t.String({
+          description: "Value of the value",
+        }),
+      })
+    ),
   },
   {
     description: "Asset event detail",

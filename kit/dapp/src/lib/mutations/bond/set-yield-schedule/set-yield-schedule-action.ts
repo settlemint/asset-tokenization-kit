@@ -7,5 +7,5 @@ import { SetYieldScheduleSchema } from "./set-yield-schedule-schema";
 
 export const setYieldSchedule = action
   .schema(SetYieldScheduleSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(setYieldScheduleFunction);

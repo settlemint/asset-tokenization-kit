@@ -21,14 +21,14 @@ export const UserFragment = hasuraGraphql(`
     name
     email
     wallet
-    createdAt: created_at
-    updatedAt: updated_at
-    kycVerifiedAt: kyc_verified_at
+    created_at
+    updated_at
+    kyc_verified_at
     role
     banned
-    banReason: ban_reason
-    banExpires: ban_expires
-    lastLoginAt: last_login_at
+    ban_reason
+    ban_expires
+    last_login_at
     image
     currency
   }

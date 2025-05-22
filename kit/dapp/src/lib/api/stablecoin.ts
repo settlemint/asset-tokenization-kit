@@ -160,7 +160,7 @@ export const StableCoinApi = new Elysia({
       },
       body: CreateStablecoinSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -186,7 +186,7 @@ export const StableCoinApi = new Elysia({
       },
       body: TransferSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -212,7 +212,7 @@ export const StableCoinApi = new Elysia({
       },
       body: GrantRoleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -238,7 +238,7 @@ export const StableCoinApi = new Elysia({
       },
       body: RevokeRoleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -264,7 +264,7 @@ export const StableCoinApi = new Elysia({
       },
       body: UpdateRolesSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -290,7 +290,7 @@ export const StableCoinApi = new Elysia({
       },
       body: MintSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -316,7 +316,7 @@ export const StableCoinApi = new Elysia({
       },
       body: BurnSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -342,7 +342,7 @@ export const StableCoinApi = new Elysia({
       },
       body: FreezeSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -367,7 +367,7 @@ export const StableCoinApi = new Elysia({
       },
       body: PauseSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -393,7 +393,7 @@ export const StableCoinApi = new Elysia({
       },
       body: UnpauseSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -418,7 +418,7 @@ export const StableCoinApi = new Elysia({
       },
       body: UpdateCollateralSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -444,7 +444,7 @@ export const StableCoinApi = new Elysia({
       },
       body: BlockUserSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -470,7 +470,7 @@ export const StableCoinApi = new Elysia({
       },
       body: UnblockUserSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -495,7 +495,7 @@ export const StableCoinApi = new Elysia({
       },
       body: WithdrawSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }

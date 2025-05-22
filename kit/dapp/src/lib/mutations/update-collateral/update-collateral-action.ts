@@ -10,5 +10,5 @@ import { UpdateCollateralSchema } from "./update-collateral-schema";
  */
 export const updateCollateral = action
   .schema(UpdateCollateralSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(updateCollateralFunction);

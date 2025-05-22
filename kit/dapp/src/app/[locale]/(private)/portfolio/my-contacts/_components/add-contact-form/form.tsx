@@ -32,7 +32,7 @@ export function AddContactForm({
           label: t("contact.title"),
         }}
         secureForm={false}
-        toast={{
+        toastMessages={{
           loading: t("contact.adding"),
           success: t("contact.added"),
         }}

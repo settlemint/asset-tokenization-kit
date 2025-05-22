@@ -94,7 +94,7 @@ export function CreateEquityForm({
       }}
       secureForm={true}
       hideStepProgress={true}
-      toast={{
+      toastMessages={{
         loading: t("toasts.equity.submitting"),
         success: t("toasts.equity.success"),
       }}

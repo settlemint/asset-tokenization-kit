@@ -58,14 +58,14 @@ export type UserCountResult = {
  * @param users - Array of users with creation timestamps
  * @returns Array of daily cumulative user counts
  */
-function calculateCumulativeUsersByDay(users: { createdAt: Date }[]) {
+function calculateCumulativeUsersByDay(users: { created_at: Date }[]) {
   if (!users.length) return [];
 
   const dailyCounts = new Map<string, number>();
 
   // Group users by day and find min/max dates
   users.forEach((user) => {
-    const date = new Date(user.createdAt);
+    const date = new Date(user.created_at);
     const dateStr = format(date, "yyyy-MM-dd");
 
     dailyCounts.set(dateStr, (dailyCounts.get(dateStr) || 0) + 1);
