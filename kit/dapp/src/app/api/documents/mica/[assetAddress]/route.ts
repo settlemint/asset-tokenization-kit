@@ -12,7 +12,7 @@ type RouteParams = {
  * API route to fetch MiCA documents for a specific asset
  */
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: RouteParams
 ): Promise<Response> {
   try {

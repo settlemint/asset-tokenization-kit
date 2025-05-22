@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MicaDocument } from "@/lib/queries/regulations/mica-documents";
 import { Upload } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DocumentsTable } from "./documents-table";
 
@@ -20,7 +20,7 @@ export function DocumentationLayout() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Fetch documents
-  const fetchDocuments = async () => {
+  const fetchDocuments = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/documents/mica/${assetAddress}`, {
@@ -48,10 +48,10 @@ export function DocumentationLayout() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [assetAddress]);
 
   // Custom upload action that adds the assetAddress to the formData
-  const uploadAction = async (formData: FormData, path: string) => {
+  const uploadAction = async (formData: FormData) => {
     // Add asset address to the form data
     formData.append("assetAddress", assetAddress);
 
@@ -103,8 +103,8 @@ export function DocumentationLayout() {
 
   // Handle document upload completion
   const handleUploadComplete = (
-    regulationId: string,
-    document: UploadedDocument
+    _regulationId: string,
+    _document: UploadedDocument
   ) => {
     // Add a small delay to ensure MinIO has time to update
     setTimeout(() => {
@@ -115,7 +115,7 @@ export function DocumentationLayout() {
   // Fetch documents on initial load
   useEffect(() => {
     fetchDocuments();
-  }, [assetAddress]);
+  }, [assetAddress, fetchDocuments]);
 
   return (
     <Card className="w-full h-full flex flex-col">

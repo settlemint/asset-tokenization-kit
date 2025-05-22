@@ -42,6 +42,8 @@ interface DocumentsTableProps {
  */
 function formatBytes(bytes: number, decimals = 2): string {
   if (bytes === 0) {
+    return "0 Bytes";
+  }
 
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
@@ -56,7 +58,7 @@ export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   // Get the appropriate icon based on document type
-  const getDocumentIcon = (type: string, status: string) => {
+  const getDocumentIcon = (type: string, _status: string) => {
     switch (type.toLowerCase()) {
       case "pdf":
         return <FileText className="h-5 w-5 text-destructive" />;
