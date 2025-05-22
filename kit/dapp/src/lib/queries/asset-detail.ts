@@ -8,7 +8,7 @@ import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { Address } from "viem";
 import { getUser } from "../auth/utils";
-import { type AssetType } from "../utils/typebox/asset-types";
+import type { AssetType } from "../utils/typebox/asset-types";
 
 interface AssetDetailProps {
   assettype: AssetType;
