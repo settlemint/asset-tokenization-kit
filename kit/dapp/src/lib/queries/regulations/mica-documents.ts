@@ -115,22 +115,27 @@ export const getMicaDocuments = withTracing(
             const stat = await minioClient.statObject(DEFAULT_BUCKET, obj.name);
             metaData = stat.metaData || {};
           } catch (error) {
-            console.warn(`Could not fetch metadata for ${obj.name}:`, error);
+            // Don't let metadata failure prevent document listing
+            // Only log non-authentication errors at warning level
+            if ((error as any)?.code !== "AccessDenied") {
+              console.warn(`Could not fetch metadata for ${obj.name}:`, error);
+            } else {
+              // For auth errors, just log at debug level (won't appear in normal logs)
+              console.debug(
+                `Auth issue with metadata for ${obj.name} - continuing without metadata`
+              );
+            }
+            // Continue with empty metadata - we'll derive what we can from the filename
           }
 
           // Determine document type and category based on path or metadata
           const category = pathParts.length > 1 ? pathParts[1] : "general";
 
-          // Use the folder path for document type instead of file extension
-          // If document is stored in Documents/Audit, use "Audit" as the type
+          // Extract document type - prioritize folder structure since metadata access might fail
           let type = "Other";
 
-          // First check if type is explicitly set in metadata
-          if ((metaData as any)["type"]) {
-            type = (metaData as any)["type"];
-          }
-          // Otherwise derive from the path
-          else if (pathParts.length > 1) {
+          // First try to determine type from the path
+          if (pathParts.length > 1) {
             // If path is Documents/Audit/... then type is Audit
             if (pathParts[0] === "Documents" && pathParts.length > 1) {
               // Capitalize the first letter for nicer display
@@ -144,6 +149,11 @@ export const getMicaDocuments = withTracing(
             ) {
               type = "MiCA";
             }
+          }
+
+          // Then check if type is explicitly set in metadata (might not be available due to auth issues)
+          if ((metaData as any)["type"]) {
+            type = (metaData as any)["type"];
           }
           // Fallback to extension only if no better type can be derived
           else if (fileName.endsWith(".pdf")) {
@@ -198,11 +208,27 @@ export const getMicaDocumentById = withTracing(
     console.log(`Getting MiCA document details for: ${documentId}`);
 
     try {
-      const statResult = await minioClient.statObject(
-        DEFAULT_BUCKET,
-        documentId
-      );
+      // Attempt to get object stats (may fail due to auth issues)
+      let statResult;
+      let metaData = {};
 
+      try {
+        statResult = await minioClient.statObject(DEFAULT_BUCKET, documentId);
+        metaData = statResult.metaData || {};
+      } catch (error) {
+        // Only log non-authentication errors at warning level
+        if ((error as any)?.code !== "AccessDenied") {
+          console.warn(`Could not fetch metadata for ${documentId}:`, error);
+        } else {
+          // For auth errors, just log at debug level (won't appear in normal logs)
+          console.debug(
+            `Auth issue with metadata for ${documentId} - continuing without metadata`
+          );
+        }
+        // Continue even without metadata
+      }
+
+      // Generate presigned URL (should still work even if metadata failed)
       const url = await minioClient.presignedGetObject(
         DEFAULT_BUCKET,
         documentId,
@@ -211,17 +237,13 @@ export const getMicaDocumentById = withTracing(
 
       const pathParts = documentId.split("/");
       const fileName = pathParts[pathParts.length - 1];
-      const category = pathParts[2] || "general";
+      const category = pathParts.length > 1 ? pathParts[1] : "general";
 
-      // Use the folder path for document type instead of file extension
+      // Extract document type - prioritize folder structure since metadata access might fail
       let type = "Other";
 
-      // First check if type is explicitly set in metadata
-      if ((statResult.metaData as any)["type"]) {
-        type = (statResult.metaData as any)["type"];
-      }
-      // Otherwise derive from the path
-      else if (pathParts.length > 1) {
+      // First try to determine type from the path
+      if (pathParts.length > 1) {
         // If path is Documents/Audit/... then type is Audit
         if (pathParts[0] === "Documents" && pathParts.length > 1) {
           // Capitalize the first letter for nicer display
@@ -232,7 +254,12 @@ export const getMicaDocumentById = withTracing(
           type = "MiCA";
         }
       }
-      // Fallback to extension only if no better type can be derived
+
+      // Then check if type is explicitly set in metadata (if available)
+      if (metaData && (metaData as any)["type"]) {
+        type = (metaData as any)["type"];
+      }
+      // Fallback to extension
       else if (fileName.endsWith(".pdf")) {
         type = "PDF";
       } else if (fileName.endsWith(".docx")) {
@@ -240,19 +267,24 @@ export const getMicaDocumentById = withTracing(
       }
 
       const title =
-        (statResult.metaData as any)["title"] ||
+        (metaData && (metaData as any)["title"]) ||
         fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
 
+      // For the document object creation, provide fallbacks for when statResult is undefined
       const document = {
         id: documentId,
         title: title,
         fileName: fileName,
         type: type,
         category: category,
-        uploadDate: statResult.lastModified.toISOString(),
-        status: (statResult.metaData as any)["status"] || "pending",
+        // Use current date if statResult is undefined
+        uploadDate: statResult
+          ? statResult.lastModified.toISOString()
+          : new Date().toISOString(),
+        status: (metaData as any)["status"] || "pending",
         url,
-        size: statResult.size,
+        // Default size to 0 if statResult is undefined
+        size: statResult ? statResult.size : 0,
       };
 
       return safeParse(MicaDocumentSchema, document);

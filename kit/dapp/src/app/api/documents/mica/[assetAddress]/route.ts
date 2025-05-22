@@ -13,10 +13,11 @@ type RouteParams = {
  */
 export async function GET(
   _request: Request,
-  { params }: RouteParams
+  context: RouteParams
 ): Promise<Response> {
   try {
-    // Get assetAddress from params object (already available in this context)
+    // Properly await and destructure the params
+    const { params } = context;
     const assetAddress = params.assetAddress;
 
     // Validate asset address
