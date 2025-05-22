@@ -37,6 +37,7 @@ import { unblockUserFunction } from "../mutations/unblock-user/unblock-user-func
 import { UnblockUserSchema } from "../mutations/unblock-user/unblock-user-schema";
 import { withdrawFunction } from "../mutations/withdraw/withdraw-function";
 import { WithdrawSchema } from "../mutations/withdraw/withdraw-schema";
+
 export const BondApi = new Elysia({
   detail: {
     security: [
@@ -62,7 +63,7 @@ export const BondApi = new Elysia({
       },
       response: {
         200: t.Array(BondSchema),
-        ...defaultErrorSchema,
+        // ...defaultErrorSchema,
       },
     }
   )
