@@ -43,7 +43,7 @@ export class AdminPage extends BasePage {
     await button.scrollIntoViewIfNeeded();
     await button.click();
 
-    this.confirmPincode(pincode);
+    await this.confirmPincode(pincode);
   }
 
   async createBond(options: {
