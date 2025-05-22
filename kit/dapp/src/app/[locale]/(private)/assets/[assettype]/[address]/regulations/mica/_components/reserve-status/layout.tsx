@@ -39,7 +39,7 @@ export function ReserveStatusLayout({
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle>{t("title")}</CardTitle>
-        <ReserveForm address={params.address} />
+        <ReserveForm address={params.address} config={config} />
       </CardHeader>
       <CardContent className="space-y-8">
         <ReserveRatio value={reserveRatio} />

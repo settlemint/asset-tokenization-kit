@@ -5,9 +5,11 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import {
   ReserveComplianceStatus,
   TokenType as TokenTypeEnum,
+  type MicaRegulationConfig,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { updateReserves } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-action";
 import { UpdateReservesSchema } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-schema";
+import { formatToDateTimeInput } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -18,9 +20,10 @@ import { TokenType } from "./steps/token-type";
 
 interface ReserveFormProps {
   address: Address;
+  config: MicaRegulationConfig;
 }
 
-export function ReserveForm({ address }: ReserveFormProps) {
+export function ReserveForm({ address, config }: ReserveFormProps) {
   const t = useTranslations("regulations.mica.dashboard.reserve-status.form");
   const [open, setOpen] = useState(false);
 
@@ -45,16 +48,22 @@ export function ReserveForm({ address }: ReserveFormProps) {
         secureForm={false} // No pincode required for this form
         defaultValues={{
           address,
-          tokenType: TokenTypeEnum.ELECTRONIC_MONEY_TOKEN,
-          bankDeposits: 0,
-          governmentBonds: 0,
-          liquidAssets: 0,
-          corporateBonds: 0,
-          centralBankAssets: 0,
-          commodities: 0,
-          otherAssets: 0,
-          lastAuditDate: new Date().toISOString(),
-          reserveStatus: ReserveComplianceStatus.PENDING_REVIEW,
+          tokenType:
+            (config.tokenType as TokenTypeEnum) ??
+            TokenTypeEnum.ELECTRONIC_MONEY_TOKEN,
+          bankDeposits: config.reserveComposition?.bankDeposits ?? 0,
+          governmentBonds: config.reserveComposition?.governmentBonds ?? 0,
+          liquidAssets: config.reserveComposition?.highQualityLiquidAssets ?? 0,
+          corporateBonds: config.reserveComposition?.corporateBonds ?? 0,
+          centralBankAssets: config.reserveComposition?.centralBankAssets ?? 0,
+          commodities: config.reserveComposition?.commodities ?? 0,
+          otherAssets: config.reserveComposition?.otherAssets ?? 0,
+          lastAuditDate: formatToDateTimeInput(
+            config.lastAuditDate ?? new Date()
+          ),
+          reserveStatus:
+            (config.reserveStatus as ReserveComplianceStatus) ??
+            ReserveComplianceStatus.PENDING_REVIEW,
         }}
       >
         <TokenType />
