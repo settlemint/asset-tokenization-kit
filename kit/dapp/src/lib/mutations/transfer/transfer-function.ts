@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -205,30 +206,42 @@ export const transferAssetFunction = withAccessControl(
     switch (assettype) {
       case "bond": {
         const response = await portalClient.request(BondTransfer, params);
-        return safeParse(t.Hashes(), [response.Transfer?.transactionHash]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.Transfer?.transactionHash])
+        );
       }
       case "cryptocurrency": {
         const response = await portalClient.request(
           CryptoCurrencyTransfer,
           params
         );
-        return safeParse(t.Hashes(), [response.Transfer?.transactionHash]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.Transfer?.transactionHash])
+        );
       }
       case "equity": {
         const response = await portalClient.request(EquityTransfer, params);
-        return safeParse(t.Hashes(), [response.Transfer?.transactionHash]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.Transfer?.transactionHash])
+        );
       }
       case "fund": {
         const response = await portalClient.request(FundTransfer, params);
-        return safeParse(t.Hashes(), [response.Transfer?.transactionHash]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.Transfer?.transactionHash])
+        );
       }
       case "stablecoin": {
         const response = await portalClient.request(StableCoinTransfer, params);
-        return safeParse(t.Hashes(), [response.Transfer?.transactionHash]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.Transfer?.transactionHash])
+        );
       }
       case "deposit": {
         const response = await portalClient.request(DepositTransfer, params);
-        return safeParse(t.Hashes(), [response.Transfer?.transactionHash]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.Transfer?.transactionHash])
+        );
       }
       default:
         throw new Error("Invalid asset type");

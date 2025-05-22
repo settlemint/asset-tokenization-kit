@@ -186,7 +186,7 @@ export function CreateStablecoinForm({
       }}
       secureForm={true}
       hideStepProgress={true}
-      toastMessages={{
+      toast={{
         loading: t("toasts.stablecoin.submitting"),
         success: t("toasts.stablecoin.success"),
       }}
