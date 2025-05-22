@@ -7,5 +7,5 @@ import { CreateDepositSchema } from "./create-schema";
 
 export const createDeposit = action
   .schema(CreateDepositSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(createDepositFunction);

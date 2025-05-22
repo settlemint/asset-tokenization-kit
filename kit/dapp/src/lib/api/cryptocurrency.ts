@@ -146,7 +146,7 @@ export const CryptoCurrencyApi = new Elysia({
       },
       body: CreateCryptoCurrencySchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -172,7 +172,7 @@ export const CryptoCurrencyApi = new Elysia({
       },
       body: TransferSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -198,7 +198,7 @@ export const CryptoCurrencyApi = new Elysia({
       },
       body: GrantRoleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -224,7 +224,7 @@ export const CryptoCurrencyApi = new Elysia({
       },
       body: RevokeRoleSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -250,7 +250,7 @@ export const CryptoCurrencyApi = new Elysia({
       },
       body: UpdateRolesSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -276,7 +276,7 @@ export const CryptoCurrencyApi = new Elysia({
       },
       body: MintSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }
@@ -301,7 +301,7 @@ export const CryptoCurrencyApi = new Elysia({
       },
       body: WithdrawSchema(),
       response: {
-        200: t.Number(),
+        200: t.Hashes(),
         ...defaultErrorSchema,
       },
     }

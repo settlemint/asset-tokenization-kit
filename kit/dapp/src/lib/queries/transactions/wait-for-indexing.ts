@@ -1,11 +1,9 @@
 "use server";
 
-import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { Hashes } from "@/lib/utils/typebox/hash";
 import {
   IndexingFragment,
   type IndexingFragmentType,
@@ -44,7 +42,11 @@ export interface IndexingMonitoringOptions {
   pollingIntervalMs?: number;
 }
 
-export async function waitForIndexingBlock(
+/**
+ * Waits for a single transaction to be mined
+ * @internal Use waitForTransactions for external calls
+ */
+export async function waitForIndexing(
   blockNumber: number,
   options: IndexingMonitoringOptions = {}
 ) {
@@ -72,16 +74,4 @@ export async function waitForIndexingBlock(
     }
   }
   return indexedBlock.number;
-}
-
-export async function waitForIndexingTransactions(
-  transactionHashes: Hashes
-): Promise<number> {
-  const receipts = await waitForTransactions(transactionHashes);
-  const lastBlockNumber = Number(
-    receipts.sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber)).at(0)
-      ?.blockNumber
-  );
-  const indexedBlock = await waitForIndexingBlock(lastBlockNumber);
-  return indexedBlock;
 }

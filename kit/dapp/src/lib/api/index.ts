@@ -107,12 +107,7 @@ export const api = new Elysia({
       if (path && path.includes("/transaction/recent")) {
         return []; // Return empty array instead of error for transaction endpoints
       }
-      console.error(
-        "Caught Check is not defined error in:",
-        path,
-        "error stack:",
-        error.stack
-      );
+
       return elysiaStatus(500, "Transaction processing error");
     }
 

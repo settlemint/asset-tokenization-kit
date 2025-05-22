@@ -10,5 +10,5 @@ import { UnblockUserSchema } from "./unblock-user-schema";
  */
 export const unblockUser = action
   .schema(UnblockUserSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(unblockUserFunction);

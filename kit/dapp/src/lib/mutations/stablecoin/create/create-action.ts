@@ -7,5 +7,5 @@ import { CreateStablecoinSchema } from "./create-schema";
 
 export const createStablecoin = action
   .schema(CreateStablecoinSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(createStablecoinFunction);

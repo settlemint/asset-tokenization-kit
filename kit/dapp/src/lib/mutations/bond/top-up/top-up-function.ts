@@ -2,7 +2,6 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
@@ -215,10 +214,10 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
   }) => {
     const isYield = target === "yield";
 
-    const bondDetails = (await getAssetDetail({
+    const bondDetails = await getAssetDetail({
       address: bondAddress,
       assettype: "bond",
-    })) as Awaited<ReturnType<typeof getBondDetail>>;
+    }) as Awaited<ReturnType<typeof getBondDetail>>;
     if (!bondDetails) {
       throw new Error("Missing bond details");
     }
@@ -228,9 +227,7 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
 
     const formattedAmount = parseUnits(
       amount.toString(),
-      isYield
-        ? bondDetails.yieldSchedule!.underlyingAsset.decimals
-        : bondDetails.underlyingAsset.decimals
+      isYield ? bondDetails.yieldSchedule!.underlyingAsset.decimals : bondDetails.underlyingAsset.decimals
     ).toString();
 
     const spender = isYield ? bondDetails.yieldSchedule!.id : bondDetails.id;
@@ -338,11 +335,9 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
         throw new Error("Failed to get transaction hash");
       }
 
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [
-          response.FixedYieldTopUpUnderlyingAsset.transactionHash,
-        ])
-      );
+      return safeParse(t.Hashes(), [
+        response.FixedYieldTopUpUnderlyingAsset.transactionHash,
+      ]);
     } else {
       const response = await portalClient.request(BondTopUpUnderlyingAsset, {
         address: spender,
@@ -362,11 +357,9 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
         throw new Error("Failed to get transaction hash");
       }
 
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [
-          response.BondTopUpUnderlyingAsset.transactionHash,
-        ])
-      );
+      return safeParse(t.Hashes(), [
+        response.BondTopUpUnderlyingAsset.transactionHash,
+      ]);
     }
   }
 );

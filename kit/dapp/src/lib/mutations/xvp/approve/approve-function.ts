@@ -1,6 +1,5 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
-import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { getXvPSettlementDetail } from "@/lib/queries/xvp/xvp-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
@@ -101,10 +100,7 @@ export const approveXvpFunction = async ({
     if (!result.XvPSettlementApprove) {
       throw new Error("Failed to approve XVP");
     }
-    const hashes = safeParse(t.Hashes(), [
-      result.XvPSettlementApprove.transactionHash,
-    ]);
-    return await waitForIndexingTransactions(hashes);
+    return safeParse(t.Hashes(), [result.XvPSettlementApprove.transactionHash]);
   }
 
   const result = await portalClient.request(XvpRevoke, {
@@ -116,8 +112,7 @@ export const approveXvpFunction = async ({
   if (!result.XvPSettlementRevokeApproval) {
     throw new Error("Failed to revoke XVP");
   }
-  const hashes = safeParse(t.Hashes(), [
+  return safeParse(t.Hashes(), [
     result.XvPSettlementRevokeApproval.transactionHash,
   ]);
-  return await waitForIndexingTransactions(hashes);
 };

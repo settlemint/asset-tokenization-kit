@@ -7,5 +7,5 @@ import { MatureFormSchema } from "./mature-schema";
 
 export const mature = action
   .schema(MatureFormSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(matureFunction);

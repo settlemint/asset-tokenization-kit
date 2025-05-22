@@ -7,5 +7,5 @@ import { UpdateRolesSchema } from "./update-role-schema";
 
 export const updateRoles = action
   .schema(UpdateRolesSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(updateRolesFunction);

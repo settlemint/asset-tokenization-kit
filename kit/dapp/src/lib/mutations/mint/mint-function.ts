@@ -1,7 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -206,39 +205,31 @@ export const mintFunction = withAccessControl(
     switch (assettype) {
       case "bond": {
         const response = await portalClient.request(BondMint, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.BondMint?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [response.BondMint?.transactionHash]);
       }
       case "cryptocurrency": {
         const response = await portalClient.request(CryptoCurrencyMint, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.CryptoCurrencyMint?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [
+          response.CryptoCurrencyMint?.transactionHash,
+        ]);
       }
       case "equity": {
         const response = await portalClient.request(EquityMint, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.EquityMint?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [response.EquityMint?.transactionHash]);
       }
       case "fund": {
         const response = await portalClient.request(FundMint, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.FundMint?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [response.FundMint?.transactionHash]);
       }
       case "stablecoin": {
         const response = await portalClient.request(StableCoinMint, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.StableCoinMint?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [
+          response.StableCoinMint?.transactionHash,
+        ]);
       }
       case "deposit": {
         const response = await portalClient.request(DepositMint, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.DepositMint?.transactionHash])
-        );
+        return safeParse(t.Hashes(), [response.DepositMint?.transactionHash]);
       }
       default:
         throw new Error("Invalid asset type");

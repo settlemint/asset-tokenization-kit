@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { calculateActionStatus } from "@/lib/queries/actions/action-status";
 import type {
   Action,
   ActionStatus,
@@ -35,8 +34,7 @@ export function ActionsDropdownClientTable({
   const [status, setStatus] = useState<ActionStatus>("PENDING");
   const counts = actions.reduce(
     (acc, action) => {
-      const actionStatus = calculateActionStatus(action);
-      acc[actionStatus] = (acc[actionStatus] ?? 0) + 1;
+      acc[action.status] = (acc[action.status] ?? 0) + 1;
       return acc;
     },
     {} as Record<ActionStatus, number>

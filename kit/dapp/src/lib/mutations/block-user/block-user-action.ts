@@ -7,5 +7,5 @@ import { BlockUserSchema } from "./block-user-schema";
 
 export const blockUser = action
   .schema(BlockUserSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(blockUserFunction);

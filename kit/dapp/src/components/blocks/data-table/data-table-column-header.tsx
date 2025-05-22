@@ -83,7 +83,7 @@ export function DataTableColumnHeader<TData, TValue>({
 
   if (!column.getCanSort()) {
     return (
-      <div className={cn("text-sm", headerVariants({ variant, className }))}>
+      <div className={cn("text-xs", headerVariants({ variant, className }))}>
         {children}
       </div>
     );

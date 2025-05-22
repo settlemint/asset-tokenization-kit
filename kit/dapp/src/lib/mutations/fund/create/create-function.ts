@@ -1,7 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
-import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
@@ -10,6 +9,7 @@ import { grantRolesToAdmins } from "@/lib/utils/role-granting";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateFundInput } from "./create-schema";
+
 /**
  * GraphQL mutation for creating a new fund
  *
@@ -124,14 +124,14 @@ export const createFundFunction = withAccessControl(
     const hasMoreAdmins = assetAdmins.length > 0;
 
     if (!hasMoreAdmins) {
-      return waitForIndexingTransactions(safeParse(t.Hashes(), [createTxHash]));
+      return safeParse(t.Hashes(), [createTxHash]);
     }
 
     // Wait for the creation transaction to be mined
     await waitForTransactions([createTxHash]);
 
     // Grant roles to admins using the shared helper
-    await grantRolesToAdmins(
+    const roleGrantHashes = await grantRolesToAdmins(
       assetAdmins,
       predictedAddress,
       verificationCode,
@@ -140,6 +140,9 @@ export const createFundFunction = withAccessControl(
       user
     );
 
-    return waitForIndexingTransactions(safeParse(t.Hashes(), [createTxHash]));
+    // Combine all transaction hashes
+    const allTransactionHashes = [createTxHash, ...roleGrantHashes];
+
+    return safeParse(t.Hashes(), allTransactionHashes);
   }
 );

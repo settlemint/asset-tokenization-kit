@@ -1,7 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
@@ -143,36 +142,26 @@ export const burnFunction = async ({
   switch (assettype) {
     case "bond": {
       const response = await portalClient.request(BondBurn, params);
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [response.BondBurn?.transactionHash])
-      );
+      return safeParse(t.Hashes(), [response.BondBurn?.transactionHash]);
     }
     case "cryptocurrency": {
       throw new Error("Cryptocurrency does not support burn operations");
     }
     case "equity": {
       const response = await portalClient.request(EquityBurn, params);
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [response.EquityBurn?.transactionHash])
-      );
+      return safeParse(t.Hashes(), [response.EquityBurn?.transactionHash]);
     }
     case "fund": {
       const response = await portalClient.request(FundBurn, params);
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [response.FundBurn?.transactionHash])
-      );
+      return safeParse(t.Hashes(), [response.FundBurn?.transactionHash]);
     }
     case "stablecoin": {
       const response = await portalClient.request(StableCoinBurn, params);
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [response.StableCoinBurn?.transactionHash])
-      );
+      return safeParse(t.Hashes(), [response.StableCoinBurn?.transactionHash]);
     }
     case "deposit": {
       const response = await portalClient.request(DepositBurn, params);
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [response.DepositBurn?.transactionHash])
-      );
+      return safeParse(t.Hashes(), [response.DepositBurn?.transactionHash]);
     }
     default:
       throw new Error("Invalid asset type");

@@ -7,5 +7,5 @@ import { GrantRoleSchema } from "./grant-role-schema";
 
 export const grantRole = action
   .schema(GrantRoleSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(grantRoleFunction);

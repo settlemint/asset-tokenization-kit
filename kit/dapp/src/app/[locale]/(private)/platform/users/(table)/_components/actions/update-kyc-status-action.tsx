@@ -34,7 +34,7 @@ export function UpdateKycStatusAction({
       setIsLoading(true);
       await updateKycStatus({
         userId: user.id,
-        kycVerified: user.kycVerifiedAt ? null : new Date().toJSON(),
+        kycVerified: user.kyc_verified_at ? null : new Date().toJSON(),
       });
 
       toast.success(t("success"));
@@ -57,12 +57,12 @@ export function UpdateKycStatusAction({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {user.kycVerifiedAt
+              {user.kyc_verified_at
                 ? t("remove-kyc-status.title")
                 : t("set-kyc-status.title")}
             </DialogTitle>
             <DialogDescription>
-              {user.kycVerifiedAt
+              {user.kyc_verified_at
                 ? t("remove-kyc-status.description", {
                     userName: user.name,
                   })
@@ -82,13 +82,13 @@ export function UpdateKycStatusAction({
               {t("buttons.cancel")}
             </Button>
             <Button
-              variant={user.kycVerifiedAt ? "destructive" : "default"}
+              variant={user.kyc_verified_at ? "destructive" : "default"}
               onClick={handleStatusChange}
               disabled={isLoading}
             >
               {isLoading
                 ? t("buttons.loading")
-                : user.kycVerifiedAt
+                : user.kyc_verified_at
                   ? t("buttons.remove")
                   : t("buttons.set")}
             </Button>

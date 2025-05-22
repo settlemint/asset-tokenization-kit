@@ -10,5 +10,5 @@ import { TransferSchema } from "./transfer-schema";
  */
 export const transfer = action
   .schema(TransferSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(transferAssetFunction);

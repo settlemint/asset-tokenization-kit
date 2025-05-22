@@ -7,5 +7,5 @@ import { PauseSchema } from "./pause-schema";
 
 export const pause = action
   .schema(PauseSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(pauseFunction);

@@ -27,7 +27,7 @@ export async function grantRolesToAdmins(
   verificationType: VerificationType,
   assetType: AssetType,
   user: User
-) {
+): Promise<string[]> {
   // Map each admin to their role grant operation
   const grantRolePromises = assetAdmins.map(async (admin) => {
     const roles = {
@@ -52,5 +52,6 @@ export async function grantRolesToAdmins(
   });
 
   // Execute all role grants in parallel and collect transaction hashes
-  await Promise.all(grantRolePromises);
+  const grantRoleResults = await Promise.all(grantRolePromises);
+  return grantRoleResults.flatMap((result) => result);
 }

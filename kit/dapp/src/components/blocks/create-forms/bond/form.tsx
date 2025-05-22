@@ -92,7 +92,7 @@ export function CreateBondForm({
       }}
       secureForm={true}
       hideStepProgress={true}
-      toast={{
+      toastMessages={{
         loading: t("toasts.bond.submitting"),
         success: t("toasts.bond.success"),
       }}

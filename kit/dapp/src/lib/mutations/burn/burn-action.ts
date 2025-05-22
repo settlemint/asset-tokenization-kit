@@ -7,5 +7,5 @@ import { BurnSchema } from "./burn-schema";
 
 export const burn = action
   .schema(BurnSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(burnFunction);

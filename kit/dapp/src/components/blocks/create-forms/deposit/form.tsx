@@ -162,7 +162,7 @@ export function CreateDepositForm({
       }}
       secureForm={true}
       hideStepProgress={true}
-      toast={{
+      toastMessages={{
         loading: t("toasts.deposit.submitting"),
         success: t("toasts.deposit.success"),
       }}

@@ -10,5 +10,5 @@ import { WithdrawSchema } from "./withdraw-schema";
  */
 export const withdraw = action
   .schema(WithdrawSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(withdrawFunction);

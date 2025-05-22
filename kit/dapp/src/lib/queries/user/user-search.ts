@@ -107,21 +107,9 @@ export const getUserSearch = withTracing(
     (User | Contact)[]
   > => {
     const user = ctx?.user ?? (await getUser());
-
-    if (user.role !== "user") {
-      return getAllUsersSearch({ searchTerm, ctx: { user } });
+    if (user.role === "user") {
+      return getContactsList(user.id, searchTerm);
     }
-
-    const contacts = await getContactsList(user.id, searchTerm);
-    const includeCurrentUser =
-      user.wallet.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      searchTerm.toLowerCase().includes(user.wallet.toLowerCase()) ||
-      (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    if (includeCurrentUser) {
-      return contacts.concat(user);
-    }
-
-    return contacts;
+    return getAllUsersSearch({ searchTerm, ctx: { user } });
   }
 );

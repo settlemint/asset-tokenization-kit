@@ -10,5 +10,5 @@ import { UnpauseSchema } from "./unpause-schema";
  */
 export const unpause = action
   .schema(UnpauseSchema())
-  .outputSchema(t.Number())
+  .outputSchema(t.Hashes())
   .action(unpauseFunction);
