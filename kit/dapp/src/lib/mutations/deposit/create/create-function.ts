@@ -1,6 +1,7 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
+import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
@@ -126,14 +127,14 @@ export const createDepositFunction = withAccessControl(
     const hasMoreAdmins = assetAdmins.length > 0;
 
     if (!hasMoreAdmins) {
-      return safeParse(t.Hashes(), [createTxHash]);
+      return waitForIndexingTransactions(safeParse(t.Hashes(), [createTxHash]));
     }
 
     // Wait for the creation transaction to be mined
     await waitForTransactions([createTxHash]);
 
     // Grant roles to admins using the shared helper
-    const roleGrantHashes = await grantRolesToAdmins(
+    await grantRolesToAdmins(
       assetAdmins,
       predictedAddress,
       verificationCode,
@@ -142,9 +143,6 @@ export const createDepositFunction = withAccessControl(
       user
     );
 
-    // Combine all transaction hashes
-    const allTransactionHashes = [createTxHash, ...roleGrantHashes];
-
-    return safeParse(t.Hashes(), allTransactionHashes);
+    return waitForIndexingTransactions(safeParse(t.Hashes(), [createTxHash]));
   }
 );

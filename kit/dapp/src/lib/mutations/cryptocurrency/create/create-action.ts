@@ -7,5 +7,5 @@ import { CreateCryptoCurrencySchema } from "./create-schema";
 
 export const createCryptoCurrency = action
   .schema(CreateCryptoCurrencySchema())
-  .outputSchema(t.Hashes())
+  .outputSchema(t.Number())
   .action(createCryptoCurrencyFunction);

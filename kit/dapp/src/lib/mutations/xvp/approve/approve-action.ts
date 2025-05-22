@@ -7,5 +7,5 @@ import { ApproveXvpSchema } from "./approve-schema";
 
 export const approveXvp = action
   .schema(ApproveXvpSchema)
-  .outputSchema(t.Hashes())
+  .outputSchema(t.Number())
   .action(approveXvpFunction);
