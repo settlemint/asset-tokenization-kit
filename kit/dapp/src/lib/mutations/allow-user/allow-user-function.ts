@@ -1,5 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
+import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -73,9 +74,9 @@ export const allowUserFunction = withAccessControl(
     switch (assettype) {
       case "deposit": {
         const response = await portalClient.request(DepositAllowUser, params);
-        return safeParse(t.Hashes(), [
-          response.DepositAllowUser?.transactionHash,
-        ]);
+        return waitForIndexingTransactions(
+          safeParse(t.Hashes(), [response.DepositAllowUser?.transactionHash])
+        );
       }
       default:
         throw new Error("Asset type does not support allow user operations");

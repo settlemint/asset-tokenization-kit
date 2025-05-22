@@ -1,4 +1,3 @@
-import type { AssetFormStep } from "@/components/blocks/asset-designer/types";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { StepContent } from "@/components/blocks/step-wizard/step-content";
@@ -87,9 +86,7 @@ Basics.validatedFields = [
 ] satisfies (keyof CreateStablecoinInput)[];
 
 // Export step definition for the asset designer
-export const stepDefinition: AssetFormStep & {
-  component: typeof Basics;
-} = {
+export const stepDefinition = {
   id: "details",
   title: "basics.title",
   description: "basics.description",

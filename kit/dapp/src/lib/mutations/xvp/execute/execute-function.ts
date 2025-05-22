@@ -1,5 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
+import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { ExecuteXvpInput } from "./execute-schema";
@@ -40,5 +41,7 @@ export const executeXvpFunction = async ({
   if (!result.XvPSettlementExecute) {
     throw new Error("Failed to execute XVP");
   }
-  return safeParse(t.Hashes(), [result.XvPSettlementExecute.transactionHash]);
+  return waitForIndexingTransactions(
+    safeParse(t.Hashes(), [result.XvPSettlementExecute.transactionHash])
+  );
 };

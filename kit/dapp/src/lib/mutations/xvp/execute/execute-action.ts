@@ -7,5 +7,5 @@ import { ExecuteXvpSchema } from "./execute-schema";
 
 export const executeXvp = action
   .schema(ExecuteXvpSchema)
-  .outputSchema(t.Hashes())
+  .outputSchema(t.Number())
   .action(executeXvpFunction);

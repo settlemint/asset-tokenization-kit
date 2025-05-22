@@ -40,10 +40,12 @@ export const EventDetailContent = React.memo(function EventDetailContent({
     if (isAddress(value as Hash)) {
       return <EvmAddress address={value as Hash} />;
     }
+
     const role = getRoleFromHash(value as Hex);
     if (typeof role === "string") {
       return <span>{t(role as any)}</span>;
     }
+
     return <span>{String(value)}</span>;
   };
 

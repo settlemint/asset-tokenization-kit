@@ -7,5 +7,5 @@ import { RevokeRoleSchema } from "./revoke-role-schema";
 
 export const revokeRole = action
   .schema(RevokeRoleSchema())
-  .outputSchema(t.Hashes())
+  .outputSchema(t.Number())
   .action(revokeRoleFunction);

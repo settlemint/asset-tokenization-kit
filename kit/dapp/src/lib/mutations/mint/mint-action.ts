@@ -7,5 +7,5 @@ import { MintSchema } from "./mint-schema";
 
 export const mint = action
   .schema(MintSchema())
-  .outputSchema(t.Hashes())
+  .outputSchema(t.Number())
   .action(mintFunction);
