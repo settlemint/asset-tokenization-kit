@@ -133,6 +133,9 @@ export const AssetUsersSchema = t.Object(
     decimals: t.Number({
       description: "Number of decimals for the asset",
     }),
+    totalSupply: t.String({
+      description: "Total supply of the asset",
+    }),
     admins: t.Array(PermissionSchema, {
       description: "Accounts with admin permissions for the asset",
     }),
@@ -160,6 +163,16 @@ export const AssetUsersSchema = t.Object(
       description: "Users explicitly blocked from interacting with the asset",
       default: [],
     }),
+    collateral: t.Optional(
+      t.String({
+        description: "Collateral amount of the asset",
+      })
+    ),
+    collateralRatio: t.Optional(
+      t.String({
+        description: "Collateral ratio of the asset",
+      })
+    ),
   },
   {
     description: "On-chain asset data with user permission relationships",

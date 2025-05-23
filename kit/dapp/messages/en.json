@@ -628,16 +628,16 @@
       },
       "document-upload": {
         "accepted-format": "Accepted formats: {formats} (Max: {maxSize}MB)",
-        "add-document": "Add Document",
+        "add-document": "Add document",
         "cancel": "Cancel",
-        "choose-file": "Choose File",
-        "delete-document": "Delete Document",
+        "choose-file": "Choose file",
+        "delete-document": "Delete document",
         "document-description": "Description",
         "document-description-placeholder": "Brief description of the document",
-        "document-file": "Upload File",
-        "document-title": "Document Title",
+        "document-file": "Upload file",
+        "document-title": "Document title",
         "document-title-placeholder": "e.g. MiCA Compliance White Paper",
-        "document-type": "Document Type",
+        "document-type": "Document type",
         "file-too-large": "File is too large. Maximum size is {maxSize}MB.",
         "invalid-file-format": "Invalid file format. Only {formats} files are accepted.",
         "no-documents": "No documents have been uploaded yet",
@@ -645,7 +645,7 @@
         "select-document-type": "Select document type",
         "upload-document": "Upload",
         "upload-document-description": "Upload white papers, audit reports, and other compliance documents",
-        "upload-document-title": "Upload Document",
+        "upload-document-title": "Upload document",
         "uploading": "Uploading",
         "uploading-document": "Uploading..."
       },
@@ -2725,6 +2725,29 @@
       "dashboard": {
         "reserve-status": {
           "title": "Reserve status",
+          "ratio": {
+            "title": "Reserve ratio",
+            "description": "The ratio of the reserve assets to the circulating supply"
+          },
+          "composition": {
+            "title": "Reserve composition",
+            "description": "The composition of the reserve assets",
+            "no-data": "No data available"
+          },
+          "details": {
+            "title": "Reserve details",
+            "description": "Provide information about the reserve assets",
+            "fields": {
+              "circulating-supply": {
+                "title": "Circulating supply",
+                "description": "The total number of tokens in circulation"
+              },
+              "reserve-value": {
+                "title": "Reserve value",
+                "description": "The total value of the reserve assets"
+              }
+            }
+          },
           "form": {
             "saving": "Saving...",
             "save": "Save",
@@ -2790,7 +2813,8 @@
                   "pending-review": "Pending review",
                   "under-investigation": "Under investigation",
                   "non-compliant": "Non-compliant"
-                }
+                },
+                "audit-documents": "Audit documents"
               }
             }
           }

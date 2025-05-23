@@ -1,7 +1,47 @@
 import "server-only";
 
+import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
+
+// Helper function to transform snake_case response to camelCase
+function transformMicaConfig(config: any): MicaRegulationConfig | null {
+  if (!config) {
+    return null;
+  }
+
+  // Handle reserve_composition - it might be a string (needs parsing) or object (already parsed)
+  let reserveComposition = null;
+  if (config.reserve_composition) {
+    if (typeof config.reserve_composition === "string") {
+      try {
+        reserveComposition = JSON.parse(config.reserve_composition);
+      } catch (error) {
+        console.warn("Failed to parse reserve_composition as JSON:", error);
+        reserveComposition = null;
+      }
+    } else if (typeof config.reserve_composition === "object") {
+      // Already an object, use as-is
+      reserveComposition = config.reserve_composition;
+    }
+  }
+
+  return {
+    id: config.id,
+    regulationConfigId: config.regulation_config_id,
+    documents: config.documents,
+    reserveComposition,
+    lastAuditDate: config.last_audit_date
+      ? new Date(config.last_audit_date)
+      : null,
+    reserveStatus: config.reserve_status,
+    tokenType: config.token_type,
+    legalEntity: config.legal_entity,
+    managementVetting: config.management_vetting,
+    regulatoryApproval: config.regulatory_approval,
+    euPassportStatus: config.eu_passport_status,
+  };
+}
 
 /**
  * GraphQL query to fetch base regulation details from Hasura
@@ -41,6 +81,7 @@ const RegulationTypeQueries = {
         limit: 1
       ) {
         id
+        regulation_config_id
         documents
         reserve_composition
         last_audit_date
@@ -75,6 +116,19 @@ export interface RegulationDetailProps {
   regulationType: keyof typeof RegulationTypeQueries;
 }
 
+type BaseRegulationConfig = {
+  id: string;
+  asset_id: string;
+  regulation_type: string;
+  status: string;
+  created_at: unknown;
+  updated_at: unknown;
+};
+
+type RegulationDetailResponse = {
+  mica_regulation_config?: MicaRegulationConfig;
+} & BaseRegulationConfig;
+
 /**
  * Fetches regulation configuration data for a specific asset and regulation type
  *
@@ -84,7 +138,10 @@ export interface RegulationDetailProps {
 export const getRegulationDetail = withTracing(
   "queries",
   "getRegulationDetail",
-  async ({ assetId, regulationType }: RegulationDetailProps) => {
+  async ({
+    assetId,
+    regulationType,
+  }: RegulationDetailProps): Promise<RegulationDetailResponse | null> => {
     try {
       const baseResponse = await hasuraClient.request(
         RegulationDetail,
@@ -126,11 +183,15 @@ export const getRegulationDetail = withTracing(
         return null;
       }
 
+      // Transform the response to match the expected types
+      const transformedConfig = transformMicaConfig(
+        specificResponse[configField][0]
+      );
+
       return {
         ...baseConfig,
-        [`${regulationType}_regulation_config`]:
-          specificResponse[configField][0],
-      };
+        [`${regulationType}_regulation_config`]: transformedConfig,
+      } as RegulationDetailResponse;
     } catch (error) {
       console.error("Error fetching regulation detail:", error);
       return null;

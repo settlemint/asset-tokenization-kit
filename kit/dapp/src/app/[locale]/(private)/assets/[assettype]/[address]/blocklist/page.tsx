@@ -13,6 +13,7 @@ interface PageProps {
 export default async function BlocklistPage({ params }: PageProps) {
   const { address, assettype } = await params;
   const assetDetail = await getAssetUsersDetail({ address });
+
   const t = await getTranslations("private.assets.details.tabs");
 
   return (
