@@ -198,8 +198,8 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       sidebarOption: "My assets",
       expectedUrlPattern: "**/portfolio/my-assets",
       expectedLocatorsToWaitFor: [
-        adminPages.adminPage.getTableBodyLocator(),
-        adminPages.adminPage.getFilterButtonLocator(),
+        transferUserPages.adminPage.getTableBodyLocator(),
+        transferUserPages.adminPage.getFilterButtonLocator(),
       ],
     });
     await transferUserPages.adminPage.filterAssetByName({
