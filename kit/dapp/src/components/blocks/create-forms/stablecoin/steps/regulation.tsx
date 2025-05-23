@@ -427,9 +427,11 @@ export function AssetRegulationStep({
     [regulationId: string]: UploadedDocument[];
   }>({});
   const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  // In development, default to true if PostHog isn't fully initialized
+  // Always enable MiCA in development mode, regardless of PostHog configuration
   const isMicaEnabled =
-    process.env.NODE_ENV === "development" ? true : !!micaFlagFromPostHog;
+    process.env.NODE_ENV === "development" || process.env.NODE_ENV === undefined
+      ? true
+      : !!micaFlagFromPostHog;
 
   // Get currently selected regulations from form
   const selectedRegulations = form.watch("selectedRegulations") || [];

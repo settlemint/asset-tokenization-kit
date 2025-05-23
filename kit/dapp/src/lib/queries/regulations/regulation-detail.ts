@@ -10,13 +10,27 @@ function transformMicaConfig(config: any): MicaRegulationConfig | null {
     return null;
   }
 
+  // Handle reserve_composition - it might be a string (needs parsing) or object (already parsed)
+  let reserveComposition = null;
+  if (config.reserve_composition) {
+    if (typeof config.reserve_composition === "string") {
+      try {
+        reserveComposition = JSON.parse(config.reserve_composition);
+      } catch (error) {
+        console.warn("Failed to parse reserve_composition as JSON:", error);
+        reserveComposition = null;
+      }
+    } else if (typeof config.reserve_composition === "object") {
+      // Already an object, use as-is
+      reserveComposition = config.reserve_composition;
+    }
+  }
+
   return {
     id: config.id,
     regulationConfigId: config.regulation_config_id,
     documents: config.documents,
-    reserveComposition: config.reserve_composition
-      ? JSON.parse(config.reserve_composition)
-      : null,
+    reserveComposition,
     lastAuditDate: config.last_audit_date
       ? new Date(config.last_audit_date)
       : null,

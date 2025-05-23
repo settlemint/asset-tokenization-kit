@@ -9,6 +9,7 @@ import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import { FormLabel } from "@/components/ui/form";
 import {
   DocumentStatus,
+  MicaDocumentType,
   ReserveComplianceStatus,
   type MicaDocument,
   type MicaRegulationConfig,
@@ -23,14 +24,24 @@ import { toast } from "sonner";
 // Convert UploadedDocument to MicaDocument format
 const convertToMicaDocument = (
   doc: UploadedDocument
-): MicaDocument & { id: string } => ({
-  id: doc.id,
-  title: doc.title,
-  type: doc.type,
-  url: doc.url,
-  status: DocumentStatus.PENDING,
-  description: doc.description,
-});
+): MicaDocument & { id: string } => {
+  // Handle the case where type might be "mica" - convert to a default MicaDocumentType
+  let documentType: MicaDocumentType;
+  if (doc.type === "mica") {
+    documentType = MicaDocumentType.POLICY; // Default to policy for mica documents
+  } else {
+    documentType = doc.type as MicaDocumentType;
+  }
+
+  return {
+    id: doc.id,
+    title: doc.title,
+    type: documentType,
+    url: doc.url,
+    status: DocumentStatus.PENDING,
+    description: doc.description,
+  };
+};
 
 export function AuditDetails({ config }: { config: MicaRegulationConfig }) {
   const t = useTranslations(
