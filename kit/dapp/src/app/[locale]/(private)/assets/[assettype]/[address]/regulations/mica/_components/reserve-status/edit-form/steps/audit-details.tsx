@@ -9,12 +9,22 @@ import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import { FormLabel } from "@/components/ui/form";
 import { deleteFile } from "@/lib/actions/delete-file";
 import {
+  DocumentStatus,
+  MicaDocumentType,
   ReserveComplianceStatus,
   type MicaRegulationConfig,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
+import { updateDocuments } from "@/lib/mutations/regulations/mica/update-documents/update-documents-action";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
+
+// Convert UploadedDocument to MicaDocument format
+const convertToMicaDocument = (doc: UploadedDocument) => ({
+  ...doc,
+  type: doc.type.toLowerCase() as MicaDocumentType,
+  status: DocumentStatus.PENDING,
+});
 
 export function AuditDetails({ config }: { config: MicaRegulationConfig }) {
   const t = useTranslations(
@@ -27,14 +37,33 @@ export function AuditDetails({ config }: { config: MicaRegulationConfig }) {
   }>({});
   const [showUploadDialog, setShowUploadDialog] = useState(false);
 
-  const handleDocumentUploaded = (
+  const handleDocumentUploaded = async (
     regulationId: string,
     document: UploadedDocument
   ) => {
-    setUploadedDocuments((prev) => ({
-      ...prev,
-      [regulationId]: [...(prev[regulationId] || []), document],
-    }));
+    // Update local state
+    const updatedDocs = {
+      ...uploadedDocuments,
+      [regulationId]: [...(uploadedDocuments[regulationId] || []), document],
+    };
+    setUploadedDocuments(updatedDocs);
+
+    try {
+      // Save to Hasura with status
+      await updateDocuments({
+        regulationId,
+        documents: updatedDocs[regulationId].map(convertToMicaDocument),
+      });
+    } catch (error) {
+      console.error("Error saving document metadata:", error);
+      // Revert local state on error
+      setUploadedDocuments((prev) => ({
+        ...prev,
+        [regulationId]: prev[regulationId].filter(
+          (doc) => doc.id !== document.id
+        ),
+      }));
+    }
   };
 
   const handleDeleteDocument = async (
@@ -56,25 +85,25 @@ export function AuditDetails({ config }: { config: MicaRegulationConfig }) {
     try {
       // Call our enhanced deleteFile function to delete from MinIO
       if (docToDelete.objectName) {
-        // Try to delete with both the objectName and possible variations
         const result = await deleteFile(docToDelete.objectName);
-
-        if (!result.success && docToDelete.type === "mica") {
-          // Try the specific MiCA path if the first attempt failed
-          const micaPath = `regulations/mica/${docToDelete.fileName || ""}`;
-          await deleteFile(micaPath);
-        }
       }
 
       // Update local state
-      setUploadedDocuments((prev) => ({
-        ...prev,
-        [regulationId]: prev[regulationId].filter(
+      const updatedDocs = {
+        ...uploadedDocuments,
+        [regulationId]: uploadedDocuments[regulationId].filter(
           (doc) => doc.id !== documentId
         ),
-      }));
+      };
+      setUploadedDocuments(updatedDocs);
+
+      // Update Hasura
+      await updateDocuments({
+        regulationId,
+        documents: updatedDocs[regulationId].map(convertToMicaDocument),
+      });
     } catch (error) {
-      console.error("Error deleting document from MinIO:", error);
+      console.error("Error deleting document:", error);
     }
   };
 

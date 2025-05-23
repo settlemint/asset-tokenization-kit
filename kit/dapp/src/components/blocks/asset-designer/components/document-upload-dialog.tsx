@@ -1,5 +1,7 @@
 "use client";
 
+import { MicaDocumentType } from "@/lib/db/regulations/schema-mica-regulation-configs";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { UploadedDocument } from "../types";
@@ -20,9 +22,12 @@ export function DocumentUploadDialog({
   onUpload,
   uploadAction,
 }: DocumentUploadDialogProps) {
+  const t = useTranslations("regulations.mica.documents.types");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentTitle, setDocumentTitle] = useState<string>("");
-  const [documentType, setDocumentType] = useState<string>("");
+  const [documentType, setDocumentType] = useState<MicaDocumentType>(
+    MicaDocumentType.AUDIT
+  );
   const [documentDescription, setDocumentDescription] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
 
@@ -63,9 +68,8 @@ export function DocumentUploadDialog({
       // Create form data for upload
       const formData = new FormData();
       formData.append("file", selectedFile);
-      // Add required fields that uploadDocument expects
       formData.append("title", documentTitle);
-      formData.append("type", documentType || "Other");
+      formData.append("type", documentType);
       formData.append("description", documentDescription || "");
 
       // Use the server action to upload the file with the regulation ID as path
@@ -76,7 +80,7 @@ export function DocumentUploadDialog({
       const newDocument: UploadedDocument = {
         id: result.id,
         name: selectedFile.name,
-        title: documentTitle || selectedFile.name,
+        title: documentTitle,
         type: documentType,
         description: documentDescription,
         url: result.url,
@@ -163,17 +167,21 @@ export function DocumentUploadDialog({
               id="document-type"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               value={documentType}
-              onChange={(e) => setDocumentType(e.target.value)}
+              onChange={(e) =>
+                setDocumentType(e.target.value as MicaDocumentType)
+              }
             >
-              <option value="" disabled>
-                Select document type
+              <option value={MicaDocumentType.WHITE_PAPER}>
+                {t("white_paper")}
               </option>
-              <option value="Compliance">Compliance</option>
-              <option value="Legal">Legal</option>
-              <option value="Financial">Financial</option>
-              <option value="Audit">Audit</option>
-              <option value="Whitepaper">Whitepaper</option>
-              <option value="Other">Other</option>
+              <option value={MicaDocumentType.AUDIT}>{t("audit")}</option>
+              <option value={MicaDocumentType.POLICY}>{t("policy")}</option>
+              <option value={MicaDocumentType.GOVERNANCE}>
+                {t("governance")}
+              </option>
+              <option value={MicaDocumentType.PROCEDURE}>
+                {t("procedure")}
+              </option>
             </select>
           </div>
 
