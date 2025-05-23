@@ -4,6 +4,8 @@ import { EQUITY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
+import { cache } from "react";
+import type { Address } from "viem";
 import {
   PredictedAddressSchema,
   type PredictAddressInput,
@@ -42,12 +44,20 @@ export const getPredictedAddress = withTracing(
   "queries",
   "getPredictedAddress",
   async (input: PredictAddressInput) => {
-    const { assetName, symbol, decimals, equityCategory, equityClass } = input;
     const user = await getUser();
+    return getPredictedAddressForUser(input, user.wallet);
+  }
+);
+
+export const getPredictedAddressForUser = withTracing(
+  "queries",
+  "getPredictedAddressForUser",
+  cache(async (input: PredictAddressInput, userAddress: Address) => {
+    const { assetName, symbol, decimals, equityCategory, equityClass } = input;
 
     const data = await portalClient.request(CreateEquityPredictAddress, {
       address: EQUITY_FACTORY_ADDRESS,
-      sender: user.wallet,
+      sender: userAddress,
       decimals,
       name: assetName,
       symbol,
@@ -58,5 +68,5 @@ export const getPredictedAddress = withTracing(
     const predictedAddress = safeParse(PredictedAddressSchema, data);
 
     return predictedAddress.EquityFactory.predictAddress.predicted;
-  }
+  })
 );
