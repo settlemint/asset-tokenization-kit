@@ -94,7 +94,7 @@
         "next-themes": "0.4.6",
         "pg": "8.16.0",
         "posthog-js": "1.245.1",
-        "posthog-node": "4.17.1",
+        "posthog-node": "4.17.2",
         "react": "19.1.0",
         "react-awesome-gravatar": "2.0.3",
         "react-day-picker": "8.10.1",
@@ -171,13 +171,13 @@
     "prisma",
   ],
   "overrides": {
-    "react-is": "19.1.0",
-    "graphql": "16.11.0",
-    "elliptic": "6.6.1",
-    "ws": "8.18.2",
     "adm-zip": "0.5.16",
-    "undici": "7.10.0",
+    "elliptic": "6.6.1",
+    "graphql": "16.11.0",
     "prettier": "3.5.3",
+    "react-is": "19.1.0",
+    "undici": "7.10.0",
+    "ws": "8.18.2",
   },
   "packages": {
     "@0no-co/graphql.web": ["@0no-co/graphql.web@1.1.2", "", { "peerDependencies": { "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0" }, "optionalPeers": ["graphql"] }, "sha512-N2NGsU5FLBhT8NZ+3l2YrzZSHITjNXNuDhC4iDiikv0IujaJ0Xc6xIxQZ/Ek3Cb+rgPjnLHYyJm11tInuJn+cw=="],
@@ -3118,7 +3118,7 @@
 
     "posthog-js": ["posthog-js@1.245.1", "", { "dependencies": { "core-js": "^3.38.1", "fflate": "^0.4.8", "preact": "^10.19.3", "web-vitals": "^4.2.4" }, "peerDependencies": { "@rrweb/types": "2.0.0-alpha.17", "rrweb-snapshot": "2.0.0-alpha.17" }, "optionalPeers": ["@rrweb/types", "rrweb-snapshot"] }, "sha512-I2HWR4VKAfX6Y8e/VtAq1DRUMcZi/1pjlpaRqDp60AGs0JnTiJ1F7o2ke52VTIs6gBnoZIQCe3Xh8z384hLMGQ=="],
 
-    "posthog-node": ["posthog-node@4.17.1", "", { "dependencies": { "axios": "^1.8.2" } }, "sha512-cVlQPOwOPjakUnrueKRCQe1m2Ku+XzKaOos7Tn/zDZkkZFeBT/byP7tbNf7LiwhaBRWFBRowZZb/MsTtSRaorg=="],
+    "posthog-node": ["posthog-node@4.17.2", "", { "dependencies": { "axios": "^1.8.2" } }, "sha512-bFmwOTk4QdYavopeHVXtyFGQ9vyLMVaNWkWocwjix+0n6sQgv7Zq5nYjYulz7ThmK18zsvNJ337ahuMLv3ulow=="],
 
     "preact": ["preact@10.26.6", "", {}, "sha512-5SRRBinwpwkaD+OqlBDeITlRgvd8I8QlxHJw9AxSdMNV6O+LodN9nUyYGpSF7sadHjs6RzeFShMexC6DbtWr9g=="],
 
