@@ -61,7 +61,7 @@
         "@radix-ui/react-tabs": "1.1.12",
         "@radix-ui/react-tooltip": "1.2.7",
         "@react-email/components": "0.0.41",
-        "@scalar/api-reference-react": "0.7.2",
+        "@scalar/api-reference-react": "0.7.3",
         "@scalar/types": "0.2.1",
         "@settlemint/sdk-blockscout": "2.3.2",
         "@settlemint/sdk-hasura": "2.3.2",
@@ -171,13 +171,13 @@
     "prisma",
   ],
   "overrides": {
-    "ws": "8.18.2",
-    "react-is": "19.1.0",
-    "undici": "7.10.0",
     "adm-zip": "0.5.16",
     "elliptic": "6.6.1",
     "graphql": "16.11.0",
     "prettier": "3.5.3",
+    "react-is": "19.1.0",
+    "undici": "7.10.0",
+    "ws": "8.18.2",
   },
   "packages": {
     "@0no-co/graphql.web": ["@0no-co/graphql.web@1.1.2", "", { "peerDependencies": { "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0" }, "optionalPeers": ["graphql"] }, "sha512-N2NGsU5FLBhT8NZ+3l2YrzZSHITjNXNuDhC4iDiikv0IujaJ0Xc6xIxQZ/Ek3Cb+rgPjnLHYyJm11tInuJn+cw=="],
@@ -1090,11 +1090,11 @@
 
     "@rushstack/eslint-patch": ["@rushstack/eslint-patch@1.11.0", "", {}, "sha512-zxnHvoMQVqewTJr/W4pKjF0bMGiKJv1WX7bSrkl46Hg0QjESbzBROWK0Wg4RphzSOS5Jiy7eFimmM3UgMrMZbQ=="],
 
-    "@scalar/api-client": ["@scalar/api-client@2.4.2", "", { "dependencies": { "@headlessui/tailwindcss": "^0.2.0", "@headlessui/vue": "^1.7.20", "@scalar/components": "0.14.1", "@scalar/draggable": "0.2.0", "@scalar/icons": "0.4.1", "@scalar/import": "0.4.2", "@scalar/oas-utils": "0.3.1", "@scalar/object-utils": "1.2.1", "@scalar/openapi-parser": "0.11.1", "@scalar/openapi-types": "0.3.1", "@scalar/postman-to-openapi": "0.3.1", "@scalar/snippetz": "0.3.0", "@scalar/themes": "0.12.1", "@scalar/types": "0.2.1", "@scalar/use-codemirror": "0.12.1", "@scalar/use-hooks": "0.2.1", "@scalar/use-toasts": "0.8.0", "@scalar/use-tooltip": "1.1.0", "@vueuse/core": "^10.10.0", "@vueuse/integrations": "^11.2.0", "focus-trap": "^7", "fuse.js": "^7.0.0", "microdiff": "^1.4.0", "nanoid": "^5.1.5", "pretty-bytes": "^6.1.1", "pretty-ms": "^8.0.0", "shell-quote": "^1.8.1", "type-fest": "^4.20.0", "vue": "^3.5.12", "vue-router": "^4.3.0", "whatwg-mimetype": "^4.0.0", "yaml": "^2.4.5", "zod": "3.24.1" } }, "sha512-yQQt1Lf5lp4+I/m6lKbVOgd3GZ6xUFOy7Dqc9P9O7ekva3+SSwcHp+HrmFjhJ4JCRkHWH5jOawtsvlKIzoK5Iw=="],
+    "@scalar/api-client": ["@scalar/api-client@2.4.3", "", { "dependencies": { "@headlessui/tailwindcss": "^0.2.0", "@headlessui/vue": "^1.7.20", "@scalar/components": "0.14.1", "@scalar/draggable": "0.2.0", "@scalar/icons": "0.4.1", "@scalar/import": "0.4.2", "@scalar/oas-utils": "0.3.1", "@scalar/object-utils": "1.2.1", "@scalar/openapi-parser": "0.11.1", "@scalar/openapi-types": "0.3.1", "@scalar/postman-to-openapi": "0.3.1", "@scalar/snippetz": "0.3.0", "@scalar/themes": "0.12.1", "@scalar/types": "0.2.1", "@scalar/use-codemirror": "0.12.2", "@scalar/use-hooks": "0.2.1", "@scalar/use-toasts": "0.8.0", "@scalar/use-tooltip": "1.1.0", "@vueuse/core": "^10.10.0", "@vueuse/integrations": "^11.2.0", "focus-trap": "^7", "fuse.js": "^7.0.0", "microdiff": "^1.4.0", "nanoid": "^5.1.5", "pretty-bytes": "^6.1.1", "pretty-ms": "^8.0.0", "shell-quote": "^1.8.1", "type-fest": "^4.20.0", "vue": "^3.5.12", "vue-router": "^4.3.0", "whatwg-mimetype": "^4.0.0", "yaml": "^2.4.5", "zod": "3.24.1" } }, "sha512-eeJx4mQ9eahATVS0xh6KtLb//HanWJxmRYwFQ7xbxfTMvNnjTfaLbT8cIvE/LYYl2EarL01YUGb5aMp3cFpWWQ=="],
 
-    "@scalar/api-reference": ["@scalar/api-reference@1.29.2", "", { "dependencies": { "@floating-ui/vue": "^1.0.2", "@headlessui/vue": "^1.7.20", "@scalar/api-client": "2.4.2", "@scalar/code-highlight": "0.1.0", "@scalar/components": "0.14.1", "@scalar/icons": "0.4.1", "@scalar/oas-utils": "0.3.1", "@scalar/openapi-parser": "0.11.1", "@scalar/openapi-types": "0.3.1", "@scalar/snippetz": "0.3.0", "@scalar/themes": "0.12.1", "@scalar/types": "0.2.1", "@scalar/use-hooks": "0.2.1", "@scalar/use-toasts": "0.8.0", "@unhead/vue": "^1.11.11", "@vueuse/core": "^10.10.0", "flatted": "^3.3.1", "fuse.js": "^7.0.0", "github-slugger": "^2.0.0", "microdiff": "^1.4.0", "nanoid": "^5.1.5", "vue": "^3.5.12", "zod": "3.24.1" } }, "sha512-h/53qA+QXlcsS4XZ6eeYViMK7e1lwf96wopUj1uw/Fmn4UI9z2b0yAhekGWerPVyndXpslcME1ytLHYrFZqKDw=="],
+    "@scalar/api-reference": ["@scalar/api-reference@1.29.3", "", { "dependencies": { "@floating-ui/vue": "^1.0.2", "@headlessui/vue": "^1.7.20", "@scalar/api-client": "2.4.3", "@scalar/code-highlight": "0.1.0", "@scalar/components": "0.14.1", "@scalar/icons": "0.4.1", "@scalar/oas-utils": "0.3.1", "@scalar/openapi-parser": "0.11.1", "@scalar/openapi-types": "0.3.1", "@scalar/snippetz": "0.3.0", "@scalar/themes": "0.12.1", "@scalar/types": "0.2.1", "@scalar/use-hooks": "0.2.1", "@scalar/use-toasts": "0.8.0", "@unhead/vue": "^1.11.11", "@vueuse/core": "^10.10.0", "flatted": "^3.3.1", "fuse.js": "^7.0.0", "github-slugger": "^2.0.0", "microdiff": "^1.4.0", "nanoid": "^5.1.5", "vue": "^3.5.12", "zod": "3.24.1" } }, "sha512-P5pMoDGKWJSw474pTqLOwpnWo6sASkjoYNGbw7oZRnakw2ux5DMWaNKx/riHlj/cVOBModb/Q/X+UN/pMHGRsw=="],
 
-    "@scalar/api-reference-react": ["@scalar/api-reference-react@0.7.2", "", { "dependencies": { "@scalar/api-reference": "1.29.2", "@scalar/types": "0.2.1" }, "peerDependencies": { "react": "^18.0.0 || ^19.0.0" } }, "sha512-7EMi4nQPzW8Whd2DHyO2iKfCHue6eiO9LILwyrDa9rGOh33p+mEojCf+rCCFTWdVLuO88JMyaXSr2SmV0Ph8iw=="],
+    "@scalar/api-reference-react": ["@scalar/api-reference-react@0.7.3", "", { "dependencies": { "@scalar/api-reference": "1.29.3", "@scalar/types": "0.2.1" }, "peerDependencies": { "react": "^18.0.0 || ^19.0.0" } }, "sha512-g2rcqZLJ7XMpvj5ZnB6AWUGCAGQPMFy9ysD/vPgV2FBrJ64147VfSvlV7/4mvW1GwZtUVU2OrFlbmcB22Qi1Pg=="],
 
     "@scalar/code-highlight": ["@scalar/code-highlight@0.1.0", "", { "dependencies": { "hast-util-to-text": "^4.0.2", "highlight.js": "^11.9.0", "highlightjs-curl": "^1.3.0", "highlightjs-vue": "^1.0.0", "lowlight": "^3.1.0", "rehype-external-links": "^3.0.0", "rehype-format": "^5.0.0", "rehype-parse": "^9.0.0", "rehype-raw": "^7.0.0", "rehype-sanitize": "^6.0.0", "rehype-stringify": "^10.0.0", "remark-gfm": "^4.0.0", "remark-parse": "^11.0.0", "remark-rehype": "^11.1.0", "remark-stringify": "^11.0.0", "unified": "^11.0.4", "unist-util-visit": "^5.0.0" } }, "sha512-KDbboAi/pHfZTksEckCmfAbB1tbWntssu1obHYqe6xULEPzqCfwX/faTvJ941H8qPg0C2eg4NqUm4954Im0y7A=="],
 
@@ -1122,7 +1122,7 @@
 
     "@scalar/types": ["@scalar/types@0.2.1", "", { "dependencies": { "@scalar/openapi-types": "0.3.1", "nanoid": "^5.1.5", "zod": "3.24.1" } }, "sha512-eXcxuwazLABrnCjpqE4tG+FgiCKyHhKxB4V8Bn4Uj/XCBTemRd+WSzXp0mmpGuBbqz820j5UGrlZ5cWlUWaWWw=="],
 
-    "@scalar/use-codemirror": ["@scalar/use-codemirror@0.12.1", "", { "dependencies": { "@codemirror/autocomplete": "^6.18.3", "@codemirror/commands": "^6.7.1", "@codemirror/lang-css": "^6.3.1", "@codemirror/lang-html": "^6.4.8", "@codemirror/lang-json": "^6.0.0", "@codemirror/lang-xml": "^6.0.0", "@codemirror/lang-yaml": "^6.1.2", "@codemirror/language": "^6.10.7", "@codemirror/lint": "^6.8.4", "@codemirror/state": "^6.5.0", "@codemirror/view": "^6.35.3", "@lezer/common": "^1.2.3", "@lezer/highlight": "^1.2.1", "@lezer/lr": "^1.4.2", "@replit/codemirror-css-color-picker": "^6.3.0", "@scalar/components": "0.14.1", "codemirror": "^6.0.0", "style-mod": "^4.1.2", "vue": "^3.5.12" } }, "sha512-pTZQrLjJW7giyML8XCEpaYYdFMN3Qep4wBdvV50Cgl9MCAoSD6I9ig+Mkpb93npo/KJdPfThVeU27xiprDQjWA=="],
+    "@scalar/use-codemirror": ["@scalar/use-codemirror@0.12.2", "", { "dependencies": { "@codemirror/autocomplete": "^6.18.3", "@codemirror/commands": "^6.7.1", "@codemirror/lang-css": "^6.3.1", "@codemirror/lang-html": "^6.4.8", "@codemirror/lang-json": "^6.0.0", "@codemirror/lang-xml": "^6.0.0", "@codemirror/lang-yaml": "^6.1.2", "@codemirror/language": "^6.10.7", "@codemirror/lint": "^6.8.4", "@codemirror/state": "^6.5.0", "@codemirror/view": "^6.35.3", "@lezer/common": "^1.2.3", "@lezer/highlight": "^1.2.1", "@replit/codemirror-css-color-picker": "^6.3.0", "@scalar/components": "0.14.1", "codemirror": "^6.0.0", "vue": "^3.5.12" } }, "sha512-+0PWuW6ZbZcPSwXWhh5GyRhrUnbWTM4KyKyJOQxHWZK8ibUV5gkAL4YMCXohe8UjSu+WvckFYTem6/1BLvGyRw=="],
 
     "@scalar/use-hooks": ["@scalar/use-hooks@0.2.1", "", { "dependencies": { "@scalar/themes": "0.12.1", "@scalar/use-toasts": "0.8.0", "@vueuse/core": "^10.10.0", "cva": "1.0.0-beta.2", "tailwind-merge": "^2.5.5", "vue": "^3.5.12", "zod": "3.24.1" } }, "sha512-QKszj86p3R693ZAbn60TSOLJSmF0XTWcFHH6S7FdoEKN21vmLF0dEWAVawexNa3//R4AK9z9x2Nu/gedsSQpKQ=="],
 
