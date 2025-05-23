@@ -117,10 +117,7 @@ export const api = new Elysia({
     }
 
     // TODO: handle specific errors (hasura, postgres, thegraph, portal, etc)
-    console.error(
-      `Unexpected error: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
-      error
-    );
+    console.error(`Unexpected error: ${JSON.stringify(error, null, 2)}`, error);
     return elysiaStatus(500, "Internal server error");
   })
   .mount(auth.handler)
