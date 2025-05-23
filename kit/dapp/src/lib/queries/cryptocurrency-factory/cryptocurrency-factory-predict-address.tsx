@@ -59,40 +59,33 @@ export const getPredictedAddressForUser = withTracing(
   "queries",
   "getPredictedAddressForUser",
   cache(async (input: PredictAddressInput, userAddress: Address) => {
-    try {
-      const { assetName, symbol, decimals, initialSupply } = input;
+    const { assetName, symbol, decimals, initialSupply } = input;
 
-      const initialSupplyExact = String(
-        parseUnits(String(initialSupply), decimals)
-      );
+    const initialSupplyExact = String(
+      parseUnits(String(initialSupply), decimals)
+    );
 
-      // Add timeout for the request
-      const timeoutPromise = new Promise<null>((_, reject) => {
-        setTimeout(() => reject(new Error("Request timed out")), 10000); // 10 second timeout
-      });
+    // Add timeout for the request
+    const timeoutPromise = new Promise<null>((_, reject) => {
+      setTimeout(() => reject(new Error("Request timed out")), 10000); // 10 second timeout
+    });
 
-      // Race the actual request against the timeout
-      const data = await Promise.race([
-        portalClient.request(CreateCryptoCurrencyPredictAddress, {
-          address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-          sender: userAddress,
-          decimals,
-          name: assetName,
-          symbol,
-          initialSupply: initialSupplyExact,
-        }),
-        timeoutPromise,
-      ]);
+    // Race the actual request against the timeout
+    const data = await Promise.race([
+      portalClient.request(CreateCryptoCurrencyPredictAddress, {
+        address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
+        sender: userAddress,
+        decimals,
+        name: assetName,
+        symbol,
+        initialSupply: initialSupplyExact,
+      }),
+      timeoutPromise,
+    ]);
 
-      if (!data) throw new Error("No data returned from prediction");
+    if (!data) throw new Error("No data returned from prediction");
 
-      const predictedAddress = safeParse(PredictedAddressSchema, data);
-      return predictedAddress.CryptoCurrencyFactory.predictAddress.predicted;
-    } catch (error) {
-      console.error("Error predicting cryptocurrency address:", error);
-      // Return a uniquely generated fallback address
-      // This allows the form to proceed and will get replaced during actual deployment
-      return `0x${Math.random().toString(16).substring(2).padStart(40, "0")}` as Address;
-    }
+    const predictedAddress = safeParse(PredictedAddressSchema, data);
+    return predictedAddress.CryptoCurrencyFactory.predictAddress.predicted;
   })
 );
