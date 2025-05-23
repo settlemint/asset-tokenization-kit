@@ -33,6 +33,22 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
     <AuditDetails key="audit-details" config={config} />,
   ];
 
+  // Helper function to safely convert date values to Date objects
+  const getValidDate = (dateValue: any): Date => {
+    if (!dateValue) return new Date();
+
+    if (dateValue instanceof Date) {
+      return dateValue;
+    }
+
+    if (typeof dateValue === "string") {
+      const date = new Date(dateValue);
+      return !isNaN(date.getTime()) ? date : new Date();
+    }
+
+    return new Date();
+  };
+
   return (
     <FormSheet
       open={open}
@@ -63,7 +79,7 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
           commodities: config.reserveComposition?.commodities ?? 0,
           otherAssets: config.reserveComposition?.otherAssets ?? 0,
           lastAuditDate: formatToDateTimeInput(
-            config.lastAuditDate ?? new Date()
+            getValidDate(config.lastAuditDate)
           ),
           reserveStatus:
             (config.reserveStatus as ReserveComplianceStatus) ??
