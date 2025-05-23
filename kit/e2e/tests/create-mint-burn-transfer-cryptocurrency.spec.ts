@@ -1,11 +1,11 @@
 import { type BrowserContext, test } from "@playwright/test";
 import { Pages } from "../pages/pages";
 import {
+  cryptocurrencyBurnData,
   cryptocurrencyData,
+  cryptocurrencyDataAmountAfterMint,
   cryptocurrencyMintData,
   cryptocurrencyTransferData,
-  cryptocurrencyDataAmountAfterMint,
-  cryptocurrencyBurnData,
 } from "../test-data/asset-data";
 import { successMessageData } from "../test-data/message-data";
 import { adminUser, signUpTransferUserData } from "../test-data/user-data";
@@ -118,7 +118,14 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
     const expectedBalance = (
       testData.currentTotalSupply - transferAmount
     ).toString();
-    await adminPages.adminPage.clickSidebarMenuItem("My assets");
+    await adminPages.adminPage.chooseSidebarMenuOption({
+      sidebarOption: "My assets",
+      expectedUrlPattern: "**/portfolio/my-assets",
+      expectedLocatorsToWaitFor: [
+        adminPages.adminPage.getTableBodyLocator(),
+        adminPages.adminPage.getFilterButtonLocator(),
+      ],
+    });
 
     await adminPages.adminPage.filterAssetByName({
       name: testData.cryptocurrencyName,

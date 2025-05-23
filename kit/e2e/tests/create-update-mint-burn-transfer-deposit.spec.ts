@@ -133,7 +133,14 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
     const expectedBalance = (
       testData.currentTotalSupply - transferAmount
     ).toString();
-    await adminPages.adminPage.clickSidebarMenuItem("My assets");
+    await adminPages.adminPage.chooseSidebarMenuOption({
+      sidebarOption: "My assets",
+      expectedUrlPattern: "**/portfolio/my-assets",
+      expectedLocatorsToWaitFor: [
+        adminPages.adminPage.getTableBodyLocator(),
+        adminPages.adminPage.getFilterButtonLocator(),
+      ],
+    });
 
     await adminPages.adminPage.filterAssetByName({
       name: testData.depositName,

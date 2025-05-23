@@ -4,7 +4,7 @@ import { PortfolioPage } from "./portfolio-page";
 import { SignInPage } from "./sign-in-page";
 import { SignUpPage } from "./sign-up-page";
 import { CreateAssetForm } from "./create-asset-form";
-
+import { XvpSettlementPage } from "./xvp-settlement-page";
 export const Pages = (page: Page) => {
   return {
     adminPage: new AdminPage(page),
@@ -12,6 +12,7 @@ export const Pages = (page: Page) => {
     portfolioPage: new PortfolioPage(page),
     signInPage: new SignInPage(page),
     signUpPage: new SignUpPage(page),
+    xvpSettlementPage: new XvpSettlementPage(page),
   };
 };
 
