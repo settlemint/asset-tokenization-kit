@@ -4,6 +4,7 @@ import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
+import { cache } from "react";
 import { parseUnits, type Address } from "viem";
 import {
   PredictedAddressSchema,
@@ -42,9 +43,24 @@ export const getPredictedAddress = withTracing(
   "queries",
   "getPredictedAddress",
   async (input: PredictAddressInput) => {
+    const user = await getUser();
+    return getPredictedAddressForUser(input, user.wallet);
+  }
+);
+
+/**
+ * Predicts the address of a new cryptocurrency for a given user
+ *
+ * @param input - The data for creating a new cryptocurrency
+ * @param userAddress - The address of the user creating the cryptocurrency
+ * @returns The predicted address of the new cryptocurrency
+ */
+export const getPredictedAddressForUser = withTracing(
+  "queries",
+  "getPredictedAddressForUser",
+  cache(async (input: PredictAddressInput, userAddress: Address) => {
     try {
       const { assetName, symbol, decimals, initialSupply } = input;
-      const user = await getUser();
 
       const initialSupplyExact = String(
         parseUnits(String(initialSupply), decimals)
@@ -59,7 +75,7 @@ export const getPredictedAddress = withTracing(
       const data = await Promise.race([
         portalClient.request(CreateCryptoCurrencyPredictAddress, {
           address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-          sender: user.wallet,
+          sender: userAddress,
           decimals,
           name: assetName,
           symbol,
@@ -78,5 +94,5 @@ export const getPredictedAddress = withTracing(
       // This allows the form to proceed and will get replaced during actual deployment
       return `0x${Math.random().toString(16).substring(2).padStart(40, "0")}` as Address;
     }
-  }
+  })
 );
