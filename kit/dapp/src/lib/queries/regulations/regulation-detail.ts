@@ -6,7 +6,7 @@ import { withTracing } from "@/lib/utils/tracing";
 
 // Helper function to transform snake_case response to camelCase
 function transformMicaConfig(config: any): MicaRegulationConfig {
-  if (!config) return config;
+  if (!config) {
 
   return {
     id: config.id,
