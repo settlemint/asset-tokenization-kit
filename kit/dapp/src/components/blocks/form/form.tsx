@@ -357,7 +357,6 @@ export function Form<
     }
 
     onOpenChange?.(false);
-    resetFormAndAction();
   };
 
   const isLastStep = currentStep === totalSteps - 1;
