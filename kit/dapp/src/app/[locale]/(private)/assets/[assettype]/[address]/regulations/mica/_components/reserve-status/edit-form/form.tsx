@@ -30,7 +30,7 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
   const steps = [
     <TokenTypeStep key="token-type" />,
     <Composition key="composition" />,
-    <AuditDetails key="audit-details" />,
+    <AuditDetails key="audit-details" config={config} />,
   ];
 
   return (
