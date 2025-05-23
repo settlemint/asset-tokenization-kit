@@ -2664,6 +2664,24 @@
           "policy": "Policy Document",
           "governance": "Governance Document",
           "procedure": "Procedure Document"
+        },
+        "table": {
+          "document": "Document",
+          "type": "Type",
+          "date": "Date",
+          "status": "Status",
+          "actions": "Actions",
+          "download": "Download",
+          "more_options": "More options",
+          "delete": "Delete",
+          "deleting": "Deleting...",
+          "empty_state": "No documents found. Upload documents for MiCA compliance verification."
+        },
+        "card": {
+          "title": "Documentation",
+          "refresh": "Refresh documents",
+          "upload": "Upload Document",
+          "loading": "Loading documents..."
         }
       },
       "compliance": {

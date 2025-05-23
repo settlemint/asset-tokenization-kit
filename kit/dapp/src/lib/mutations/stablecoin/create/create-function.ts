@@ -49,12 +49,12 @@ const StableCoinFactoryCreate = portalGraphql(`
  * where multiple requests might try to create the same asset simultaneously
  */
 const CreateOffchainStablecoin = hasuraGraphql(`
-    mutation CreateOffchainStablecoin($id: String!, $isin: String) {
+    mutation CreateOffchainStablecoin($id: String!, $isin: String, $internalid: String) {
       insert_asset_one(
-        object: {id: $id, isin: $isin},
+        object: {id: $id, isin: $isin, internalid: $internalid},
         on_conflict: {
           constraint: asset_pkey,
-          update_columns: [isin]
+          update_columns: [isin, internalid]
         }
       ) {
         id

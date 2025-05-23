@@ -43,6 +43,7 @@ async function uploadDocumentImplementation(formData: FormData) {
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
     const type = formData.get("type") as string;
+    const assetAddress = formData.get("assetAddress") as string;
 
     if (!file) {
       throw new Error("No file provided in FormData");
@@ -60,15 +61,26 @@ async function uploadDocumentImplementation(formData: FormData) {
     // Special case for regulations/mica path format to maintain consistency with existing files
     const basePath =
       type === "mica" || type === "regulations"
-        ? "regulations/mica"
+        ? `regulations/mica/${assetAddress}`
         : `Documents/${type}/${datePath}`;
 
     const path = basePath;
 
     console.log(`Uploading document '${title}' to path: ${path}`);
 
-    // Upload the file using the storage service
-    const uploadedFile = await uploadFile(file, path);
+    // Create metadata including asset address
+    const metadata = {
+      "content-type": file.type,
+      "original-name": file.name,
+      "upload-time": new Date().toISOString(),
+      title: title,
+      description: description || "",
+      type: type,
+      assetAddress: assetAddress || "", // Store asset address in metadata
+    };
+
+    // Upload the file using the storage service with custom metadata
+    const uploadedFile = await uploadFile(file, path, metadata);
 
     if (!uploadedFile) {
       throw new Error("File upload failed");
