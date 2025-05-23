@@ -5,8 +5,10 @@ import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
 
 // Helper function to transform snake_case response to camelCase
-function transformMicaConfig(config: any): MicaRegulationConfig {
+function transformMicaConfig(config: any): MicaRegulationConfig | null {
   if (!config) {
+    return null;
+  }
 
   return {
     id: config.id,

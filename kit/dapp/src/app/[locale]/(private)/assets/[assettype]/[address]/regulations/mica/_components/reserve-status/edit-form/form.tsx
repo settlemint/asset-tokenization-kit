@@ -25,7 +25,6 @@ interface ReserveFormProps {
 
 export function ReserveForm({ address, config }: ReserveFormProps) {
   const t = useTranslations("regulations.mica.dashboard.reserve-status.form");
-  const tTransactions = useTranslations("transactions");
   const [open, setOpen] = useState(false);
 
   const steps = [
