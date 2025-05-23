@@ -7,23 +7,29 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import { FormLabel } from "@/components/ui/form";
-import { deleteFile } from "@/lib/actions/delete-file";
 import {
   DocumentStatus,
-  MicaDocumentType,
   ReserveComplianceStatus,
+  type MicaDocument,
   type MicaRegulationConfig,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { updateDocuments } from "@/lib/mutations/regulations/mica/update-documents/update-documents-action";
+import { DocumentOperation } from "@/lib/mutations/regulations/mica/update-documents/update-documents-schema";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { toast } from "sonner";
 
 // Convert UploadedDocument to MicaDocument format
-const convertToMicaDocument = (doc: UploadedDocument) => ({
-  ...doc,
-  type: doc.type.toLowerCase() as MicaDocumentType,
+const convertToMicaDocument = (
+  doc: UploadedDocument
+): MicaDocument & { id: string } => ({
+  id: doc.id,
+  title: doc.title,
+  type: doc.type,
+  url: doc.url,
   status: DocumentStatus.PENDING,
+  description: doc.description,
 });
 
 export function AuditDetails({ config }: { config: MicaRegulationConfig }) {
@@ -41,28 +47,22 @@ export function AuditDetails({ config }: { config: MicaRegulationConfig }) {
     regulationId: string,
     document: UploadedDocument
   ) => {
-    // Update local state
-    const updatedDocs = {
-      ...uploadedDocuments,
-      [regulationId]: [...(uploadedDocuments[regulationId] || []), document],
-    };
-    setUploadedDocuments(updatedDocs);
-
     try {
-      // Save to Hasura with status
+      // Add the document using the server action
       await updateDocuments({
         regulationId,
-        documents: updatedDocs[regulationId].map(convertToMicaDocument),
+        operation: DocumentOperation.ADD,
+        document: convertToMicaDocument(document),
       });
-    } catch (error) {
-      console.error("Error saving document metadata:", error);
-      // Revert local state on error
+
+      // Update local state
       setUploadedDocuments((prev) => ({
         ...prev,
-        [regulationId]: prev[regulationId].filter(
-          (doc) => doc.id !== document.id
-        ),
+        [regulationId]: [...(prev[regulationId] || []), document],
       }));
+    } catch (error) {
+      console.error("Error saving document metadata:", error);
+      toast.error("Failed to save document metadata. Please try again.");
     }
   };
 
@@ -83,27 +83,25 @@ export function AuditDetails({ config }: { config: MicaRegulationConfig }) {
     }
 
     try {
-      // Call our enhanced deleteFile function to delete from MinIO
-      if (docToDelete.objectName) {
-        const result = await deleteFile(docToDelete.objectName);
-      }
-
-      // Update local state
-      const updatedDocs = {
-        ...uploadedDocuments,
-        [regulationId]: uploadedDocuments[regulationId].filter(
-          (doc) => doc.id !== documentId
-        ),
-      };
-      setUploadedDocuments(updatedDocs);
-
-      // Update Hasura
+      // Delete the document using the server action
       await updateDocuments({
         regulationId,
-        documents: updatedDocs[regulationId].map(convertToMicaDocument),
+        operation: DocumentOperation.DELETE,
+        document: convertToMicaDocument(docToDelete),
       });
+
+      // Update local state
+      setUploadedDocuments((prev) => ({
+        ...prev,
+        [regulationId]: prev[regulationId].filter(
+          (doc) => doc.id !== documentId
+        ),
+      }));
+
+      toast.success("Document deleted successfully");
     } catch (error) {
       console.error("Error deleting document:", error);
+      toast.error("Failed to delete document. Please try again.");
     }
   };
 

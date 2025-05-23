@@ -29,11 +29,23 @@ const DocumentSchema = t.Object(
   { $id: "MicaDocument" }
 );
 
+export const DocumentOperation = {
+  ADD: "add",
+  DELETE: "delete",
+} as const;
+
+export type DocumentOperation =
+  (typeof DocumentOperation)[keyof typeof DocumentOperation];
+
 export function UpdateDocumentsSchema() {
   return t.Object(
     {
       regulationId: t.String(),
-      documents: t.Array(DocumentSchema),
+      operation: t.Union([
+        t.Literal(DocumentOperation.ADD),
+        t.Literal(DocumentOperation.DELETE),
+      ]),
+      document: DocumentSchema,
     },
     { $id: "UpdateDocuments" }
   );
