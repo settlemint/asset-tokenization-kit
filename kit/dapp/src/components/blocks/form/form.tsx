@@ -326,8 +326,6 @@ export function Form<
       }
     );
 
-  const { getValues, clearErrors, watch } = form;
-
   const handleSubmit = async () => {
     if (toast?.disabled) {
       await handleSubmitWithAction();
@@ -446,7 +444,7 @@ export function Form<
       return;
     }
 
-    const subscription = form.watch((value, { name, type }) => {
+    const subscription = form.watch((_value, { name }) => {
       if (name) {
         onAnyFieldChange(form as UseFormReturn<Infer<S>>, {
           changedFieldName: name,

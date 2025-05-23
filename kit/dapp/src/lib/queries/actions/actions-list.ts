@@ -16,7 +16,6 @@ import {
   ActionType,
   type ActionStatus,
 } from "./actions-schema";
-
 /**
  * GraphQL query to fetch actions for user
  */

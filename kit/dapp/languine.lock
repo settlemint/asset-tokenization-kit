@@ -619,6 +619,7 @@ files:
     error.undefined: b1d80863b3cc102de85a83a8c78c4ee2
     error.union: f23738594f51d25753c0e679535529d5
     error.union-min-max: 87b12354ce4427f3639bafd2d8cc86bb
+    error.union-min-max: 87b12354ce4427f3639bafd2d8cc86bb
     error.unknown: 13e39826b98706157ee4ceb641c7199f
     error.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
     error.void: b1d80863b3cc102de85a83a8c78c4ee2
@@ -1018,6 +1019,9 @@ files:
     private.assets.create.form.errors.address-prediction-failed: 75ee7e264d21ea9c3f956bfb50344989
     private.assets.create.form.errors.duplicate-asset: 5428ab6ecbefe4155a6976722bd1d7c2
     private.assets.create.form.errors.validation-failed: 84c9737f96f4e694a475bb84f21ceaf6
+    private.assets.create.form.errors.address-prediction-failed: 75ee7e264d21ea9c3f956bfb50344989
+    private.assets.create.form.errors.duplicate-asset: 5428ab6ecbefe4155a6976722bd1d7c2
+    private.assets.create.form.errors.validation-failed: 84c9737f96f4e694a475bb84f21ceaf6
     private.assets.create.form.steps.asset-admins.add-another-admin: bc13359fda44ff58183b2b88fdcc1d0d
     private.assets.create.form.steps.asset-admins.add-first-admin: 64f23e68360a6bf1f7982e7b058ac9b5
     private.assets.create.form.steps.asset-admins.add-role: c683a42e94cceeb66f047658e10d0611
@@ -1136,6 +1140,7 @@ files:
     private.assets.create.parameters.bonds.symbol-description: 313c510c884bd2b720cb0824a91ffd4e
     private.assets.create.parameters.common.collateral-proof-validity-label: 4f48427723be78cbcfd4953a0bd8a5e0
     private.assets.create.parameters.common.decimals-description: 09f826a0b637670d6dd6ef49a4f155ef
+    private.assets.create.parameters.common.decimals-description: 09f826a0b637670d6dd6ef49a4f155ef
     private.assets.create.parameters.common.decimals-label: 2b417805040de3a3df31c8fd3626b57c
     private.assets.create.parameters.common.internalid-label: 7e45bd3d0f499fe6fcd68cfaa873072f
     private.assets.create.parameters.common.isin-label: d03440b351474d0b1a3f851c3453e8de
@@ -1153,6 +1158,7 @@ files:
     private.assets.create.parameters.common.time-units.singular.months: 7436f942d5ea836cb84f1bb2527d8286
     private.assets.create.parameters.common.time-units.singular.seconds: a9f0e61a137d86aa9db53465e0801612
     private.assets.create.parameters.common.time-units.singular.weeks: 172a8327fcd3685ab3c0f740d031da09
+    private.assets.create.parameters.cryptocurrencies.initial-supply-description: 120a5c5a6496e2fe28b6ee58da3df828
     private.assets.create.parameters.cryptocurrencies.initial-supply-description: 120a5c5a6496e2fe28b6ee58da3df828
     private.assets.create.parameters.cryptocurrencies.initial-supply-label: 642a2cc0832a64da551484c62bbd7f8a
     private.assets.create.parameters.cryptocurrencies.name-placeholder: d023ec040f79f1a9b2ac960b43785089
@@ -1193,6 +1199,12 @@ files:
     private.assets.create.summary.asset-basics-title: 807402b2447c57bd90060f83ba51c561
     private.assets.create.summary.configuration-description: 77bfd7a31fd385c8993d933997e91af4
     private.assets.create.summary.configuration-title: 254f642527b45bc260048e30704edb39
+    private.assets.create.summary.creating: d930f4451cc35bdcd216273a273cb891
+    private.assets.create.summary.default-asset: 26e9054be7f40079575582b7ad3f7363
+    private.assets.create.summary.description: bd483692b343186b2c6b79af1ec20bdf
+    private.assets.create.summary.disclaimer: d5fc10f8c9f05d0f0ba4a264e97b7681
+    private.assets.create.summary.issue: 642facf67e0ad311eee88b3ab8381590
+    private.assets.create.summary.not-specified: dd3195ced9c1810388e28ca2b4eb921f
     private.assets.create.summary.creating: d930f4451cc35bdcd216273a273cb891
     private.assets.create.summary.default-asset: 26e9054be7f40079575582b7ad3f7363
     private.assets.create.summary.description: bd483692b343186b2c6b79af1ec20bdf
@@ -1958,6 +1970,23 @@ files:
     trade-management.forms.amounts.description: 8de95c4ca84e432696da84508dc972f4
     trade-management.forms.amounts.max-amount-to-send: cc521903c94bc4bdd85ffc0a66e6de2b
     trade-management.forms.amounts.title: d8db79f4fdae5de73504ec3bd1724e5c
+    trade-management.forms.asset-flows.add: ec211f7c20af43e742bf2570c3cb84f9
+    trade-management.forms.asset-flows.amount: b2f40690858b404ed10e62bdf422c704
+    trade-management.forms.asset-flows.amount-placeholder: b532ac7cec0ae5c3f43336a77ac1ed25
+    trade-management.forms.asset-flows.asset: 26e9054be7f40079575582b7ad3f7363
+    trade-management.forms.asset-flows.asset-placeholder: 237949bcc88eeadea12cf3b097925981
+    trade-management.forms.asset-flows.description: 9bdeb1fdb22812afb0f995870f58b134
+    trade-management.forms.asset-flows.flow: 95268892fe65116b71a55b993081bf6c
+    trade-management.forms.asset-flows.flows: c647c38e64bd84c0fe9fe165f3fff0eb
+    trade-management.forms.asset-flows.flows-summary: f2242bd538fee18c411cbc7ed77cb38f
+    trade-management.forms.asset-flows.from: 5da618e8e4b89c66fe86e32cdafde142
+    trade-management.forms.asset-flows.from-placeholder: 5f8f82f678fd7ddaed9526994ada4f01
+    trade-management.forms.asset-flows.max-amount: b21cceed8c6948e527f07859a6d7f29c
+    trade-management.forms.asset-flows.remove: 1063e38cb53d94d386f21227fcd84717
+    trade-management.forms.asset-flows.title: 72012a8aac4e42961998a1ea053863d4
+    trade-management.forms.asset-flows.to: e12167aa0a7698e6ebc92b4ce3909b53
+    trade-management.forms.asset-flows.to-placeholder: 8874514d5a5785a774a05021d6891f45
+    trade-management.forms.button.xvp: c908e958fede0f7152eadc8c943d33cd
     trade-management.forms.asset-flows.add: ec211f7c20af43e742bf2570c3cb84f9
     trade-management.forms.asset-flows.amount: b2f40690858b404ed10e62bdf422c704
     trade-management.forms.asset-flows.amount-placeholder: b532ac7cec0ae5c3f43336a77ac1ed25

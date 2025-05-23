@@ -8,7 +8,7 @@ import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { Address } from "viem";
 import { getUser } from "../auth/utils";
-import type { AssetType } from "../utils/typebox/asset-types";
+import { assetTypes, type AssetType } from "../utils/typebox/asset-types";
 
 interface AssetDetailProps {
   assettype: AssetType;
@@ -46,4 +46,20 @@ export async function getAssetDetail({
     default:
       throw new Error("Invalid asset type");
   }
+}
+
+export async function tryAssetDetail(address: Address) {
+  for (const assetType of assetTypes) {
+    try {
+      const detail = await getAssetDetail({ assettype: assetType, address });
+      if (detail) {
+        return detail;
+      }
+    } catch {
+      // Continue to next asset type if this one fails
+      continue;
+    }
+  }
+
+  return null;
 }
