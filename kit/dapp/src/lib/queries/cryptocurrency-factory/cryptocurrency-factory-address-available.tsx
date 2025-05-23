@@ -37,7 +37,7 @@ export const isAddressAvailable = withTracing(
 
       const cryptocurrencyExists = safeParse(CryptocurrencyExistsSchema, data);
 
-      return !cryptocurrencyExists.cryptocurrency;
+      return !cryptocurrencyExists.cryptoCurrency;
     } catch (error) {
       // Log the error but don't fail validation
       console.error("Error checking if address is available:", error);
