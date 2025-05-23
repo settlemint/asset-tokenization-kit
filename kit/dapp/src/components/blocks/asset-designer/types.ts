@@ -63,7 +63,7 @@ export interface UploadedDocument {
   id: string;
   name: string;
   title: string;
-  type: MicaDocumentType;
+  type: MicaDocumentType | "mica";
   description: string;
   url: string;
   objectName: string; // Path in MinIO storage
