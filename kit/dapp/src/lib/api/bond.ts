@@ -4,10 +4,9 @@ import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-pre
 import { PredictAddressInputSchema } from "@/lib/queries/bond-factory/bond-factory-schema";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getBondList } from "@/lib/queries/bond/bond-list";
-import { type Bond, BondSchema } from "@/lib/queries/bond/bond-schema";
+import { BondSchema } from "@/lib/queries/bond/bond-schema";
 import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
-import { makeJsonStringifiable } from "@settlemint/sdk-utils";
 import { Elysia } from "elysia";
 import { getAddress } from "viem";
 import { grantRoleFunction } from "../mutations/asset/access-control/grant-role/grant-role-function";
@@ -65,9 +64,6 @@ export const BondApi = new Elysia({
       response: {
         200: t.Array(BondSchema),
         ...defaultErrorSchema,
-      },
-      afterHandle: ({ response }) => {
-        return makeJsonStringifiable<Bond[]>(response);
       },
     }
   )

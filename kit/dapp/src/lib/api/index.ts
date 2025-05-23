@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth/auth";
 import { opentelemetry } from "@elysiajs/opentelemetry";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
+import { makeJsonStringifiable } from "@settlemint/sdk-utils";
 import { Elysia, status as elysiaStatus } from "elysia";
 import pkgjson from "../../../package.json";
 import { metadata } from "../config/metadata";
@@ -121,6 +122,9 @@ export const api = new Elysia({
     return elysiaStatus(500, "Internal server error");
   })
   .mount(auth.handler)
+  .onAfterHandle(({ response }) => {
+    return makeJsonStringifiable(response);
+  })
   .group("/bond", (app) => app.use(BondApi))
   .group("/contact", (app) => app.use(ContactApi))
   .group("/cryptocurrency", (app) => app.use(CryptoCurrencyApi))
