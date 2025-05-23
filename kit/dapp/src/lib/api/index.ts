@@ -30,8 +30,8 @@ import { UserApi } from "./user";
 import { VaultApi } from "./vault";
 
 export const api = new Elysia({
-  aot: true,
-  precompile: true,
+  aot: false,
+  precompile: false,
   experimental: { encodeSchema: true },
   prefix: "/api",
   detail: {

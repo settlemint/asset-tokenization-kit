@@ -28,13 +28,15 @@ if (!TypeRegistry.Has("eth-address")) {
  * @returns A TypeBox schema that validates Ethereum addresses and types as Viem's Address
  */
 export const EthereumAddress = (options?: SchemaOptions) =>
-  t.Unsafe<Address>(
-    t.String({
-      format: "eth-address",
-      transform: [(value: string) => getAddress(value)], // TODO: this transform doesn't work
-      title: "Ethereum Address",
-      description: "A valid Ethereum address",
-      examples: ["0x71C7656EC7ab88b098defB751B7401B5f6d8976F"],
-      ...options,
-    })
-  );
+  t
+    .Transform(
+      t.String({
+        format: "eth-address",
+        title: "Ethereum Address",
+        description: "A valid Ethereum address",
+        examples: ["0x71C7656EC7ab88b098defB751B7401B5f6d8976F"],
+        ...options,
+      })
+    )
+    .Decode((value) => getAddress(value))
+    .Encode((value) => value);
