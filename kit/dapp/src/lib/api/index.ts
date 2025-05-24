@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth/auth";
 import { opentelemetry } from "@elysiajs/opentelemetry";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
+import { makeJsonStringifiable } from "@settlemint/sdk-utils";
 import { Elysia, status as elysiaStatus } from "elysia";
 import pkgjson from "../../../package.json";
 import { metadata } from "../config/metadata";
@@ -30,8 +31,8 @@ import { UserApi } from "./user";
 import { VaultApi } from "./vault";
 
 export const api = new Elysia({
-  aot: true,
-  precompile: true,
+  aot: false,
+  precompile: false,
   experimental: { encodeSchema: true },
   prefix: "/api",
   detail: {
@@ -117,13 +118,13 @@ export const api = new Elysia({
     }
 
     // TODO: handle specific errors (hasura, postgres, thegraph, portal, etc)
-    console.error(
-      `Unexpected error: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
-      error
-    );
+    console.error(`Unexpected error: ${JSON.stringify(error, null, 2)}`, error);
     return elysiaStatus(500, "Internal server error");
   })
   .mount(auth.handler)
+  .onAfterHandle(({ response }) => {
+    return makeJsonStringifiable(response);
+  })
   .group("/bond", (app) => app.use(BondApi))
   .group("/contact", (app) => app.use(ContactApi))
   .group("/cryptocurrency", (app) => app.use(CryptoCurrencyApi))
