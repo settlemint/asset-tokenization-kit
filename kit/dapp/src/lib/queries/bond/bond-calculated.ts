@@ -22,9 +22,15 @@ export async function bondsCalculateFields(
 
   return onChainBonds.reduce((acc, bond) => {
     const price = prices.get(bond.id);
+    if (!price) {
+      console.log("No price found for", bond.id);
+      return acc;
+    }
+
     const calculatedBond = safeParse(CalculatedBondSchema, {
       price,
     });
+
     acc.set(bond.id, calculatedBond);
     return acc;
   }, new Map<string, CalculatedBond>());
