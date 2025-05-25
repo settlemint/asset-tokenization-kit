@@ -13,11 +13,7 @@ import { useTranslations } from "next-intl";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AssetTypeSelection } from "./steps/asset-type-selection";
-import {
-  assetForms,
-  typeSelectionStep,
-  type AssetFormDefinition,
-} from "./types";
+import { assetForms, type AssetFormDefinition } from "./types";
 import { getAssetDescription, getAssetTitle } from "./utils";
 
 interface AssetDesignerDialogProps {
@@ -42,18 +38,21 @@ export function AssetDesignerDialog({
 
   // Check if MICA feature flag is enabled
   const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  // In development, default to true if PostHog isn't fully initialized
+  // Always enable MiCA in development mode, regardless of PostHog configuration
   const isMicaEnabled =
-    process.env.NODE_ENV === "development" ? true : micaFlagFromPostHog;
+    process.env.NODE_ENV === "development" || process.env.NODE_ENV === undefined
+      ? true
+      : !!micaFlagFromPostHog;
 
   // Create a unified representation of all steps, filtering out regulation step if MICA is disabled
   const allSteps: Step[] = useMemo(() => {
     // Start with the type selection step
     const steps = [
       {
-        ...typeSelectionStep,
-        description: t(typeSelectionStep.description),
-        title: t(typeSelectionStep.title),
+        id: "type",
+        // Hardcode the translations to avoid TypeScript errors with t.raw
+        title: "Select asset type",
+        description: "Choose the type of digital asset you want to create.",
       },
     ];
 
@@ -63,9 +62,9 @@ export function AssetDesignerDialog({
         // Filter out regulation step if MICA is disabled
         .filter((step) => isMicaEnabled || step.id !== "regulation")
         .map((step) => ({
-          ...step,
-          description: t(step.description),
-          title: t(step.title),
+          id: step.id,
+          title: t(step.title as any),
+          description: t(step.description as any),
         }));
 
       steps.push(...filteredSteps);

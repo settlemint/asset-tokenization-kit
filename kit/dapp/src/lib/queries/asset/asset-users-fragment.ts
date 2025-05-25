@@ -48,6 +48,7 @@ export const AssetUsersFragment = theGraphGraphqlKit(
     symbol
     type
     decimals
+    totalSupply
     admins {
       ...PermissionFragment
     }
@@ -71,11 +72,13 @@ export const AssetUsersFragment = theGraphGraphqlKit(
       }
     }
     ... on StableCoin {
+      collateral
       auditors {
         ...PermissionFragment
       }
     }
     ... on Deposit {
+      collateral
       auditors {
         ...PermissionFragment
       }

@@ -37,7 +37,7 @@ export const isRegulationEnabled = withTracing(
       const response = await hasuraClient.request(
         RegulationEnabled,
         {
-          assetId,
+          assetId: assetId.toLowerCase(),
           regulationType,
         },
         {

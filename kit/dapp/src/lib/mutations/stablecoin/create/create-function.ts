@@ -1,6 +1,8 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
+import { RegulationStatus } from "@/lib/db/regulations/schema-base-regulation-configs";
+import { createRegulation } from "@/lib/providers/regulations/regulation-provider";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
@@ -49,12 +51,12 @@ const StableCoinFactoryCreate = portalGraphql(`
  * where multiple requests might try to create the same asset simultaneously
  */
 const CreateOffchainStablecoin = hasuraGraphql(`
-    mutation CreateOffchainStablecoin($id: String!, $isin: String) {
+    mutation CreateOffchainStablecoin($id: String!, $isin: String, $internalid: String) {
       insert_asset_one(
-        object: {id: $id, isin: $isin},
+        object: {id: $id, isin: $isin, internalid: $internalid},
         on_conflict: {
           constraint: asset_pkey,
-          update_columns: [isin]
+          update_columns: [isin, internalid]
         }
       ) {
         id
@@ -89,6 +91,7 @@ export const createStablecoinFunction = withAccessControl(
       assetAdmins,
       isin,
       internalid,
+      selectedRegulations,
     },
     ctx: { user },
   }: {
@@ -106,6 +109,28 @@ export const createStablecoinFunction = withAccessControl(
       amount: String(price.amount),
       currency: price.currency,
     });
+
+    // Create regulation configurations if any regulations were selected
+    if (selectedRegulations && selectedRegulations.length > 0) {
+      for (const regulationType of selectedRegulations) {
+        if (regulationType === "mica") {
+          // Create MiCA regulation config with default values
+          await createRegulation(
+            {
+              assetId: predictedAddress,
+              regulationType: "mica",
+              status: RegulationStatus.NOT_COMPLIANT, // Initially not compliant until configured
+            },
+            {
+              // MiCA-specific default config
+              documents: [],
+              tokenType: "e-money-token", // Default to e-money token
+              reserveStatus: "pending_setup",
+            }
+          );
+        }
+      }
+    }
 
     const collateralLivenessSeconds = getTimeUnitSeconds(
       collateralLivenessValue,

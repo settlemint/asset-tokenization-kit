@@ -2,21 +2,24 @@ import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import type { Address } from "viem";
-import { MicaRegulationLayout } from "./_components/layout";
+import { MicaConfigMissing, MicaRegulationLayout } from "./_components";
 
 interface PageProps {
   params: Promise<{ locale: Locale; address: Address; assettype: AssetType }>;
 }
 
 export default async function MicaRegulationPage({ params }: PageProps) {
-  // Await params before using them
   const { address } = await params;
 
-  // Fetch MICA regulation details
-  const regulationDetail = await getRegulationDetail({
-    assetId: address,
+  const regulationData = await getRegulationDetail({
+    assetId: address.toLowerCase(),
     regulationType: "mica",
   });
+
+  if (!regulationData?.mica_regulation_config) {
+    console.error("MiCA regulation config not found for asset:", address);
+    return <MicaConfigMissing assetAddress={address} />;
+  }
 
   return (
     <div className="space-y-8">

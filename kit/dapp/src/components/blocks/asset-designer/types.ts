@@ -1,3 +1,4 @@
+import { MicaDocumentType } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { AssetType } from "@/lib/utils/typebox/asset-types";
 import { useTranslations } from "next-intl";
 
@@ -62,10 +63,10 @@ export interface UploadedDocument {
   id: string;
   name: string;
   title: string;
-  type: string;
+  type: MicaDocumentType | "mica";
   description: string;
-  url?: string;
-  objectName?: string; // Path in MinIO storage
+  url: string;
+  objectName: string; // Path in MinIO storage
   fileName?: string; // Original file name
 }
 

@@ -131,12 +131,17 @@ export const getFileById = withTracing(
  *
  * @param file - The file to upload
  * @param path - Optional path/folder to store the file in
+ * @param customMetadata - Optional custom metadata to store with the file
  * @returns The uploaded file metadata
  */
 export const uploadFile = withTracing(
   "queries",
   "uploadFile",
-  async (file: File, path: string = ""): Promise<FileMetadata | null> => {
+  async (
+    file: File,
+    path: string = "",
+    customMetadata?: Record<string, string>
+  ): Promise<FileMetadata | null> => {
     try {
       // Ensure the bucket exists before attempting to upload
       const bucketExists = await minioClient.bucketExists(DEFAULT_BUCKET);
@@ -157,6 +162,7 @@ export const uploadFile = withTracing(
         "content-type": file.type,
         "original-name": file.name,
         "upload-time": new Date().toISOString(),
+        ...customMetadata, // Merge custom metadata if provided
       };
 
       const arrayBuffer = await file.arrayBuffer();
