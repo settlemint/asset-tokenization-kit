@@ -134,8 +134,12 @@ export type CalculatedUser = StaticDecode<typeof CalculatedUserSchema>;
 /**
  * Combined schema for complete user details
  */
-export const UserDetailSchema = t.Intersect(
-  [UserSchema, t.Partial(t.Omit(AccountSchema, ["id"])), CalculatedUserSchema],
+export const UserDetailSchema = t.Object(
+  {
+    ...UserSchema.properties,
+    ...t.Partial(t.Omit(AccountSchema, ["id"])).properties,
+    ...CalculatedUserSchema.properties,
+  },
   {
     description:
       "Combined schema for complete user details including Hasura data, account data, and calculated fields",

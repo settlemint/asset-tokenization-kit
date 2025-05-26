@@ -107,8 +107,12 @@ export const CalculatedEquitySchema = t.Object(
 );
 export type CalculatedEquity = StaticDecode<typeof CalculatedEquitySchema>;
 
-export const EquitySchema = t.Intersect(
-  [OnChainEquitySchema, t.Partial(OffChainEquitySchema)],
+export const EquitySchema = t.Object(
+  {
+    ...OnChainEquitySchema.properties,
+    ...t.Partial(OffChainEquitySchema).properties,
+    ...CalculatedEquitySchema.properties,
+  },
   {
     description:
       "Combined schema for complete equity details including on-chain data, off-chain data, and calculated fields",

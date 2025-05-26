@@ -16,60 +16,58 @@ import { type StaticDecode, t } from "@/lib/utils/typebox";
  * @property {Array} assetAdmins - List of admin users with their roles
  */
 export function CreateStablecoinSchema() {
-  return t.Intersect([
-    t.Object(
-      {
-        assetName: t.String({
-          description: "The name of the stablecoin",
-          minLength: 1,
-          maxLength: 32,
-        }),
-        symbol: t.AssetSymbol({
-          description: "The symbol of the stablecoin (ticker)",
-          maxLength: 10,
-        }),
-        decimals: t.Decimals({
-          description: "The number of decimal places for the token",
-        }),
-        isin: t.Optional(
-          t.Isin({
-            description: "International Securities Identification Number",
-          })
-        ),
-        internalid: t.Optional(
-          t.String({
-            description: "Internal ID of the stablecoin",
-          })
-        ),
-        collateralLivenessValue: t.Number({
-          description: "The duration value for collateral validity",
-          minimum: 1,
-        }),
-        collateralLivenessTimeUnit: t.TimeUnit({
-          description: "The time unit for collateral validity duration",
-          default: "months",
-        }),
-        verificationCode: t.VerificationCode({
-          description:
-            "The verification code (PIN, 2FA, or secret code) for signing the transaction",
-        }),
-        verificationType: t.VerificationType({
-          description: "The type of verification",
-        }),
-        predictedAddress: t.EthereumAddress({
-          description: "The predicted contract address",
-        }),
-        price: t.Price({
-          description: "Price of the stablecoin",
-        }),
-        assetAdmins: AssetAdminsSchemaFragment(),
-        selectedRegulations: t.Optional(t.Array(t.String())),
-      },
-      {
-        description: "Schema for validating stablecoin creation inputs",
-      }
-    ),
-  ]);
+  return t.Object(
+    {
+      assetName: t.String({
+        description: "The name of the stablecoin",
+        minLength: 1,
+        maxLength: 32,
+      }),
+      symbol: t.AssetSymbol({
+        description: "The symbol of the stablecoin (ticker)",
+        maxLength: 10,
+      }),
+      decimals: t.Decimals({
+        description: "The number of decimal places for the token",
+      }),
+      isin: t.Optional(
+        t.Isin({
+          description: "International Securities Identification Number",
+        })
+      ),
+      internalid: t.Optional(
+        t.String({
+          description: "Internal ID of the stablecoin",
+        })
+      ),
+      collateralLivenessValue: t.Number({
+        description: "The duration value for collateral validity",
+        minimum: 1,
+      }),
+      collateralLivenessTimeUnit: t.TimeUnit({
+        description: "The time unit for collateral validity duration",
+        default: "months",
+      }),
+      verificationCode: t.VerificationCode({
+        description:
+          "The verification code (PIN, 2FA, or secret code) for signing the transaction",
+      }),
+      verificationType: t.VerificationType({
+        description: "The type of verification",
+      }),
+      predictedAddress: t.EthereumAddress({
+        description: "The predicted contract address",
+      }),
+      price: t.Price({
+        description: "Price of the stablecoin",
+      }),
+      assetAdmins: AssetAdminsSchemaFragment(),
+      selectedRegulations: t.Optional(t.Array(t.String())),
+    },
+    {
+      description: "Schema for validating stablecoin creation inputs",
+    }
+  );
 }
 
 export type CreateStablecoinInput = StaticDecode<

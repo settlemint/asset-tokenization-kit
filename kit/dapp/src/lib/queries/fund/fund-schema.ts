@@ -136,8 +136,12 @@ export const CalculatedFundSchema = t.Object(
 );
 export type CalculatedFund = StaticDecode<typeof CalculatedFundSchema>;
 
-export const FundSchema = t.Intersect(
-  [OnChainFundSchema, t.Partial(OffChainFundSchema), CalculatedFundSchema],
+export const FundSchema = t.Object(
+  {
+    ...OnChainFundSchema.properties,
+    ...t.Partial(OffChainFundSchema).properties,
+    ...CalculatedFundSchema.properties,
+  },
   {
     description:
       "Combined schema for complete fund details including on-chain data, off-chain data, and calculated fields",
