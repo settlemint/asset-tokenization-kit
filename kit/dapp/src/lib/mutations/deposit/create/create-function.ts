@@ -46,7 +46,7 @@ const DepositFactoryCreate = portalGraphql(`
  */
 const CreateOffchainDeposit = hasuraGraphql(`
   mutation CreateOffchainDeposit($id: String!, $isin: String) {
-    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
+    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: [isin, internalid]}) {
       id
     }
   }
