@@ -71,7 +71,7 @@ export const getCryptoCurrencyDetail = withTracing(
   cache(async ({ address, userCurrency }: CryptoCurrencyDetailProps) => {
     "use cache";
     cacheTag("asset");
-    const [onChainCryptoCurrency, offChainCryptoCurrency] = await Promise.all([
+    const [onChain, offChainCryptoCurrency] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(
           CryptoCurrencyDetail,
@@ -105,6 +105,11 @@ export const getCryptoCurrencyDetail = withTracing(
         return safeParse(OffChainCryptoCurrencySchema, response.asset[0]);
       })(),
     ]);
+
+    const onChainCryptoCurrency = {
+      ...onChain,
+      id: getAddress(onChain.id),
+    };
 
     const calculatedFields = await cryptoCurrenciesCalculateFields(
       [onChainCryptoCurrency],

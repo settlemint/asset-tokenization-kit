@@ -65,7 +65,7 @@ export const getEquityDetail = withTracing(
   cache(async ({ address, userCurrency }: EquityDetailProps) => {
     "use cache";
     cacheTag("asset");
-    const [onChainEquity, offChainEquity] = await Promise.all([
+    const [onChain, offChainEquity] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(
           EquityDetail,
@@ -99,6 +99,11 @@ export const getEquityDetail = withTracing(
         return safeParse(OffChainEquitySchema, response.asset[0]);
       })(),
     ]);
+
+    const onChainEquity = {
+      ...onChain,
+      id: getAddress(onChain.id),
+    };
 
     const calculatedFields = await equitiesCalculateFields(
       [onChainEquity],
