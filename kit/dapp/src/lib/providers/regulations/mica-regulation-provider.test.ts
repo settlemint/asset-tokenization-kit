@@ -6,7 +6,7 @@ import type {
   MicaRegulationConfig,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import { MicaRegulationProvider } from "./mica-regulation-provider";
+import type { MicaRegulationProvider } from "./mica-regulation-provider";
 
 // Mock database operations
 const mockInsert = mock(() => ({
@@ -46,7 +46,10 @@ const mockTx = {
 describe("MICA Regulation Provider", () => {
   let provider: MicaRegulationProvider;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    const { MicaRegulationProvider } = await import(
+      "./mica-regulation-provider"
+    );
     provider = new MicaRegulationProvider();
     // Clear any mock records
     mock.restore();
