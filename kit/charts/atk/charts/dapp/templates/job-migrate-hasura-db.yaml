@@ -43,9 +43,19 @@ spec:
               if [ -z "$(ls -A /workspace)" ]; then
                 git clone https://github.com/settlemint/asset-tokenization-kit.git /workspace
                 cd /workspace
-                git checkout v{{ $.Values.image.tag }}
+                {{- if contains "main" .Values.image.tag }}
+                git checkout main
+                {{- else }}
+                git checkout v{{ .Values.image.tag }}
+                {{- end }}
               else
                 cd /workspace
+                {{- if contains "main" .Values.image.tag }}
+                git restore .
+                git checkout main
+                {{- else }}
+                git checkout v{{ .Values.image.tag }}
+                {{- end }}
                 git pull
               fi
           volumeMounts:
