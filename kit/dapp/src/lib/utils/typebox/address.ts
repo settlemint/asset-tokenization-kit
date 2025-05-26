@@ -6,7 +6,7 @@
  */
 import type { SchemaOptions } from "@sinclair/typebox";
 import { FormatRegistry, t, TypeRegistry } from "elysia/type-system";
-import { getAddress, isAddress, type Address } from "viem";
+import { isAddress, type Address } from "viem";
 
 // Ethereum address format validator
 if (!FormatRegistry.Has("eth-address")) {
@@ -31,7 +31,6 @@ export const EthereumAddress = (options?: SchemaOptions) =>
   t.Unsafe<Address>(
     t.String({
       format: "eth-address",
-      transform: [(value: string) => getAddress(value)],
       title: "Ethereum Address",
       description: "A valid Ethereum address",
       examples: ["0x71C7656EC7ab88b098defB751B7401B5f6d8976F"],

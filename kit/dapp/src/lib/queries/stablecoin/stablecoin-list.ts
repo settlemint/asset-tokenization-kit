@@ -67,7 +67,7 @@ export const getStableCoinList = withTracing(
   cache(async (userCurrency: CurrencyCode) => {
     "use cache";
     cacheTag("asset");
-    const [onChainStableCoins, offChainStableCoins] = await Promise.all([
+    const [onChain, offChainStableCoins] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientKit.request(
           StableCoinList,
@@ -110,6 +110,11 @@ export const getStableCoinList = withTracing(
     const assetsById = new Map(
       offChainStableCoins.map((asset) => [getAddress(asset.id), asset])
     );
+
+    const onChainStableCoins = onChain.map((stableCoin) => ({
+      ...stableCoin,
+      id: getAddress(stableCoin.id),
+    }));
 
     const calculatedFields = await stablecoinsCalculateFields(
       onChainStableCoins,

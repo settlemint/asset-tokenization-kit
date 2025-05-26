@@ -66,7 +66,7 @@ export const getBondDetail = withTracing(
   cache(async ({ address, userCurrency }: BondDetailProps) => {
     "use cache";
     cacheTag("asset");
-    const [onChainBond, offChainBond] = await Promise.all([
+    const [onChain, offChainBond] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(
           BondDetail,
@@ -100,6 +100,11 @@ export const getBondDetail = withTracing(
         return safeParse(OffChainBondSchema, response.asset[0]);
       })(),
     ]);
+
+    const onChainBond = {
+      ...onChain,
+      id: getAddress(onChain.id),
+    };
 
     const calculatedFields = await bondsCalculateFields(
       [onChainBond],
