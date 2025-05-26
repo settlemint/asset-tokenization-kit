@@ -1,6 +1,11 @@
 "use client";
 
-import { MicaDocumentType } from "@/lib/db/regulations/schema-mica-regulation-configs";
+import {
+  DocumentStatus,
+  MicaDocumentType,
+} from "@/lib/db/regulations/schema-mica-regulation-configs";
+import { updateDocuments } from "@/lib/mutations/regulations/mica/update-documents/update-documents-action";
+import { DocumentOperation } from "@/lib/mutations/regulations/mica/update-documents/update-documents-schema";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -88,11 +93,73 @@ export function DocumentUploadDialog({
         fileName: selectedFile.name,
       };
 
+      // Save document metadata to database using updateDocuments server action
+      console.log("Attempting to save document metadata to database...");
+      console.log("regulationId received:", regulationId);
+      console.log("regulationId type:", typeof regulationId);
+      console.log("regulationId length:", regulationId.length);
+      console.log("document metadata:", {
+        id: result.id,
+        title: documentTitle,
+        type: documentType,
+        url: result.url,
+        status: DocumentStatus.PENDING,
+        description: documentDescription || undefined,
+      });
+
+      // Check if we're in asset creation mode (regulationId is just "mica" instead of a UUID)
+      const isAssetCreationMode =
+        regulationId === "mica" ||
+        regulationId === "fund" ||
+        regulationId === "bond" ||
+        regulationId === "equity" ||
+        regulationId === "deposit" ||
+        regulationId === "cryptocurrency" ||
+        regulationId === "stablecoin";
+
+      if (isAssetCreationMode) {
+        console.log(
+          "Asset creation mode detected - skipping database save for now"
+        );
+        console.log("Document will be saved to database when asset is created");
+        toast.success(
+          "Document uploaded to storage (metadata will be saved when asset is created)"
+        );
+      } else {
+        try {
+          const dbResult = await updateDocuments({
+            regulationId,
+            operation: DocumentOperation.ADD,
+            document: {
+              id: result.id,
+              title: documentTitle,
+              type: documentType,
+              url: result.url,
+              status: DocumentStatus.PENDING,
+              description: documentDescription || undefined,
+            },
+          });
+
+          console.log(
+            "Document metadata saved to database successfully:",
+            dbResult
+          );
+          toast.success("Document uploaded and metadata saved successfully");
+        } catch (dbError) {
+          console.error("Error saving document metadata to database:", dbError);
+          console.error(
+            "Full error details:",
+            JSON.stringify(dbError, null, 2)
+          );
+          toast.error(
+            "Document uploaded but failed to save metadata. Please try again."
+          );
+          return;
+        }
+      }
+
       // Send the document back to the parent component
       onUpload(regulationId, newDocument);
-
-      // Show success message
-      toast.success("Document uploaded successfully");
 
       // Close dialog
       onClose();

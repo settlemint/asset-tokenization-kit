@@ -77,6 +77,9 @@ export function DocumentationLayout() {
   const [documents, setDocuments] = useState<MicaDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [regulationConfigId, setRegulationConfigId] = useState<string | null>(
+    null
+  );
 
   // Fetch documents
   const fetchDocuments = useCallback(async () => {
@@ -171,10 +174,36 @@ export function DocumentationLayout() {
     }, 1500);
   };
 
-  // Fetch documents on initial load
+  // Fetch regulation config ID for this asset
+  const fetchRegulationConfig = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/regulations/mica/${assetAddress}`, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setRegulationConfigId(data.id);
+        console.log("Regulation config ID fetched:", data.id);
+        console.log("Full API response:", data);
+      } else {
+        console.error("Failed to fetch regulation config:", response.status);
+        toast.error("Failed to load regulation configuration");
+      }
+    } catch (error) {
+      console.error("Error fetching regulation config:", error);
+      toast.error("Failed to load regulation configuration");
+    }
+  }, [assetAddress]);
+
+  // Fetch documents and regulation config on initial load
   useEffect(() => {
     fetchDocuments();
-  }, [assetAddress, fetchDocuments]);
+    fetchRegulationConfig();
+  }, [assetAddress, fetchDocuments, fetchRegulationConfig]);
 
   return (
     <Card className="w-full h-full flex flex-col">
@@ -189,7 +218,16 @@ export function DocumentationLayout() {
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
-          <Button size="sm" onClick={() => setIsDialogOpen(true)}>
+          <Button
+            size="sm"
+            onClick={() => setIsDialogOpen(true)}
+            disabled={!regulationConfigId}
+            title={
+              !regulationConfigId
+                ? "Loading regulation configuration..."
+                : undefined
+            }
+          >
             <Upload className="h-4 w-4 mr-2" />
             {t("card.upload")}
           </Button>
@@ -203,9 +241,9 @@ export function DocumentationLayout() {
         )}
       </CardContent>
 
-      {isDialogOpen && (
+      {isDialogOpen && regulationConfigId && (
         <DocumentUploadDialog
-          regulationId="mica"
+          regulationId={regulationConfigId}
           onClose={() => setIsDialogOpen(false)}
           onUpload={handleUploadComplete}
           uploadAction={uploadAction}

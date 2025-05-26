@@ -2,6 +2,7 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import { RegulationStatus } from "@/lib/db/regulations/schema-base-regulation-configs";
+import { DocumentStatus } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { createRegulation } from "@/lib/providers/regulations/regulation-provider";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
@@ -92,6 +93,7 @@ export const createStablecoinFunction = withAccessControl(
       isin,
       internalid,
       selectedRegulations,
+      uploadedDocuments,
     },
     ctx: { user },
   }: {
@@ -114,7 +116,25 @@ export const createStablecoinFunction = withAccessControl(
     if (selectedRegulations && selectedRegulations.length > 0) {
       for (const regulationType of selectedRegulations) {
         if (regulationType === "mica") {
-          // Create MiCA regulation config with default values
+          // Get uploaded documents for this regulation type
+          const regulationDocuments = uploadedDocuments?.[regulationType] || [];
+
+          // Convert UploadedDocument to MicaDocument format
+          const micaDocuments = regulationDocuments.map((doc) => ({
+            id: doc.id,
+            title: doc.title,
+            type: doc.type === "mica" ? "policy" : doc.type, // Convert "mica" type to a valid MicaDocumentType
+            url: doc.url,
+            status: DocumentStatus.PENDING, // Set initial status
+            description: doc.description,
+          }));
+
+          console.log(
+            `Creating MiCA regulation with ${micaDocuments.length} documents:`,
+            micaDocuments
+          );
+
+          // Create MiCA regulation config with uploaded documents
           await createRegulation(
             {
               assetId: predictedAddress,
@@ -122,8 +142,8 @@ export const createStablecoinFunction = withAccessControl(
               status: RegulationStatus.NOT_COMPLIANT, // Initially not compliant until configured
             },
             {
-              // MiCA-specific default config
-              documents: [],
+              // MiCA-specific config with uploaded documents
+              documents: micaDocuments,
               tokenType: "e-money-token", // Default to e-money token
               reserveStatus: "pending_setup",
             }

@@ -18,7 +18,6 @@ import { useTranslations } from "next-intl";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
-import { FormProvider } from "react-hook-form";
 
 // Define the region regulations
 const regionRegulations = {
@@ -330,6 +329,11 @@ function RegulationList({
   onDeleteDocument,
   onRegulationSelect,
 }: RegulationListProps) {
+  console.log(
+    "RegulationList rendered with selectedRegulations:",
+    selectedRegulations
+  );
+
   if (!selectedRegion) return null;
 
   return (
@@ -339,62 +343,95 @@ function RegulationList({
         Regulations applicable to selected regions:
       </p>
 
-      <FormProvider {...form}>
-        <div className="space-y-6">
-          {regionRegulations[selectedRegion].map((regulation) => {
-            // Check if regulation is disabled based on feature flag
-            const isDisabled = regulation.id === "mica" && !isMicaEnabled;
+      <div className="space-y-6">
+        {regionRegulations[selectedRegion].map((regulation) => {
+          // Check if regulation is disabled based on feature flag
+          const isDisabled = regulation.id === "mica" && !isMicaEnabled;
 
-            // Render disabled regulation
-            if (isDisabled) {
-              return (
-                <DisabledRegulation
-                  key={regulation.id}
-                  regulation={regulation}
-                  selectedRegion={selectedRegion}
-                  isMicaEnabled={isMicaEnabled}
-                />
-              );
-            }
-
-            // Render active regulation
+          // Render disabled regulation
+          if (isDisabled) {
             return (
-              <div
+              <DisabledRegulation
                 key={regulation.id}
-                className="border border-border rounded-lg overflow-hidden"
-              >
-                <div className="p-4 flex items-start gap-3 bg-muted/30">
-                  <Checkbox
-                    id={regulation.id}
-                    checked={selectedRegulations.includes(regulation.id)}
-                    onCheckedChange={(value) =>
-                      onRegulationSelect(regulation.id, !!value)
-                    }
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <label
-                        htmlFor={regulation.id}
-                        className="text-base font-medium cursor-pointer"
-                      >
-                        {regulation.name}
-                      </label>
-                      <Badge variant="outline" className="ml-2">
-                        <span className="inline-flex items-center text-xs">
-                          <span className="mr-1">{selectedRegion}</span>
-                        </span>
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {regulation.description}
-                    </p>
-                  </div>
-                </div>
+                regulation={regulation}
+                selectedRegion={selectedRegion}
+                isMicaEnabled={isMicaEnabled}
+              />
+            );
+          }
 
-                {/* Display requirements if regulation is selected and it's MiCA */}
-                {selectedRegulations.includes(regulation.id) &&
-                  regulation.id === "mica" && (
+          // Render active regulation
+          const isRegulationSelected = selectedRegulations.includes(
+            regulation.id
+          );
+          console.log(
+            `Rendering ${regulation.id}, selected: ${isRegulationSelected}`
+          );
+
+          return (
+            <div
+              key={regulation.id}
+              className="border border-border rounded-lg overflow-hidden"
+            >
+              <div className="p-4 flex items-start gap-3 bg-muted/30">
+                <Checkbox
+                  id={regulation.id}
+                  checked={isRegulationSelected}
+                  disabled={false}
+                  onCheckedChange={(value) => {
+                    console.log(
+                      `Checkbox onCheckedChange for ${regulation.id}:`,
+                      value
+                    );
+                    console.log(
+                      "Event handler called, calling onRegulationSelect"
+                    );
+                    onRegulationSelect(regulation.id, !!value);
+                  }}
+                  className="mt-1 cursor-pointer"
+                  data-testid={`checkbox-${regulation.id}`}
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <label
+                      htmlFor={regulation.id}
+                      className="text-base font-medium cursor-pointer hover:text-primary transition-colors"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        console.log(`Label clicked for ${regulation.id}`);
+                        onRegulationSelect(
+                          regulation.id,
+                          !isRegulationSelected
+                        );
+                      }}
+                    >
+                      {regulation.name}
+                    </label>
+                    <Badge variant="outline" className="ml-2">
+                      <span className="inline-flex items-center text-xs">
+                        <span className="mr-1">{selectedRegion}</span>
+                      </span>
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {regulation.description}
+                  </p>
+                </div>
+              </div>
+
+              {/* Display requirements if regulation is selected and it's MiCA */}
+              {(() => {
+                const shouldShow =
+                  selectedRegulations.includes(regulation.id) &&
+                  regulation.id === "mica";
+                console.log(
+                  `Should show MiCA content for ${regulation.id}:`,
+                  shouldShow,
+                  "selectedRegulations:",
+                  selectedRegulations
+                );
+                return (
+                  shouldShow && (
                     <MiCARegulation
                       regulation={regulation}
                       selectedRegion={selectedRegion}
@@ -403,12 +440,13 @@ function RegulationList({
                       onShowUploadDialog={onShowUploadDialog}
                       onDeleteDocument={onDeleteDocument}
                     />
-                  )}
-              </div>
-            );
-          })}
-        </div>
-      </FormProvider>
+                  )
+                );
+              })()}
+            </div>
+          );
+        })}
+      </div>
     </Card>
   );
 }
@@ -433,8 +471,35 @@ export function AssetRegulationStep({
       ? true
       : !!micaFlagFromPostHog;
 
-  // Get currently selected regulations from form
-  const selectedRegulations = form.watch("selectedRegulations") || [];
+  // Initialize selectedRegulations if not already set
+  useEffect(() => {
+    const currentValue = form.getValues("selectedRegulations");
+    if (!currentValue) {
+      console.log("Initializing selectedRegulations field");
+      form.setValue("selectedRegulations", []);
+    }
+  }, [form]);
+
+  // Use local state for selectedRegulations to ensure proper re-rendering
+  const [selectedRegulations, setSelectedRegulations] = useState<string[]>([]);
+
+  // Sync local state with form state
+  useEffect(() => {
+    const formValue = form.getValues("selectedRegulations") || [];
+    setSelectedRegulations(formValue);
+    console.log("Syncing selectedRegulations from form:", formValue);
+  }, [form]);
+
+  // Watch for form changes and sync local state
+  const watchedRegulations = form.watch("selectedRegulations");
+  useEffect(() => {
+    const regulations = watchedRegulations || [];
+    setSelectedRegulations(regulations);
+    console.log(
+      "Form watch triggered, updating selectedRegulations:",
+      regulations
+    );
+  }, [watchedRegulations]);
 
   // Remove MiCA from selected regulations if feature flag is disabled
   useEffect(() => {
@@ -456,16 +521,34 @@ export function AssetRegulationStep({
 
   // Handle regulation selection
   const handleRegulationSelect = (regulationId: string, isChecked: boolean) => {
+    console.log(`handleRegulationSelect called: ${regulationId}, ${isChecked}`);
     const current = form.getValues("selectedRegulations") || [];
+    console.log("Current selected regulations:", current);
 
-    if (isChecked) {
-      form.setValue("selectedRegulations", [...current, regulationId]);
+    // Check if the regulation is currently selected (ignore isChecked parameter)
+    const isCurrentlySelected = current.includes(regulationId);
+
+    let updatedRegulations: string[];
+    if (isCurrentlySelected) {
+      // Remove it if it's already selected
+      updatedRegulations = current.filter((id: string) => id !== regulationId);
+      console.log(`Removing ${regulationId} from selection`);
     } else {
-      form.setValue(
-        "selectedRegulations",
-        current.filter((id: string) => id !== regulationId)
-      );
+      // Add it if it's not selected
+      updatedRegulations = [...current, regulationId];
+      console.log(`Adding ${regulationId} to selection`);
     }
+
+    console.log("Setting selectedRegulations to:", updatedRegulations);
+    form.setValue("selectedRegulations", updatedRegulations, {
+      shouldTouch: true,
+    });
+
+    // Update local state immediately for instant UI update
+    setSelectedRegulations(updatedRegulations);
+
+    // Force re-render by triggering form validation
+    form.trigger("selectedRegulations");
   };
 
   // Handle document upload
@@ -479,10 +562,16 @@ export function AssetRegulationStep({
     regulationId: string,
     document: UploadedDocument
   ) => {
-    setUploadedDocuments((prev) => ({
-      ...prev,
-      [regulationId]: [...(prev[regulationId] || []), document],
-    }));
+    const updatedDocuments = {
+      ...uploadedDocuments,
+      [regulationId]: [...(uploadedDocuments[regulationId] || []), document],
+    };
+
+    setUploadedDocuments(updatedDocuments);
+
+    // Also save to form state so it's available during asset creation
+    form.setValue("uploadedDocuments", updatedDocuments);
+    console.log("Updated uploaded documents in form:", updatedDocuments);
   };
 
   // Handle document deletion
@@ -516,12 +605,21 @@ export function AssetRegulationStep({
       }
 
       // Update local state
-      setUploadedDocuments((prev) => ({
-        ...prev,
-        [regulationId]: prev[regulationId].filter(
+      const updatedDocuments = {
+        ...uploadedDocuments,
+        [regulationId]: uploadedDocuments[regulationId].filter(
           (doc) => doc.id !== documentId
         ),
-      }));
+      };
+
+      setUploadedDocuments(updatedDocuments);
+
+      // Also update form state
+      form.setValue("uploadedDocuments", updatedDocuments);
+      console.log(
+        "Updated uploaded documents in form after deletion:",
+        updatedDocuments
+      );
     } catch (error) {
       console.error("Error deleting document from MinIO:", error);
     }
@@ -550,6 +648,7 @@ export function AssetRegulationStep({
 
           {/* Regulations List Component */}
           <RegulationList
+            key={`regulations-${selectedRegulations.join(",")}`}
             selectedRegion={selectedRegion}
             isMicaEnabled={isMicaEnabled as boolean}
             selectedRegulations={selectedRegulations}
