@@ -329,11 +329,6 @@ function RegulationList({
   onDeleteDocument,
   onRegulationSelect,
 }: RegulationListProps) {
-  console.log(
-    "RegulationList rendered with selectedRegulations:",
-    selectedRegulations
-  );
-
   if (!selectedRegion) return null;
 
   return (
@@ -379,13 +374,6 @@ function RegulationList({
                   checked={isRegulationSelected}
                   disabled={false}
                   onCheckedChange={(value) => {
-                    console.log(
-                      `Checkbox onCheckedChange for ${regulation.id}:`,
-                      value
-                    );
-                    console.log(
-                      "Event handler called, calling onRegulationSelect"
-                    );
                     onRegulationSelect(regulation.id, !!value);
                   }}
                   className="mt-1 cursor-pointer"
@@ -398,7 +386,6 @@ function RegulationList({
                       className="text-base font-medium cursor-pointer hover:text-primary transition-colors"
                       onClick={(e) => {
                         e.preventDefault();
-                        console.log(`Label clicked for ${regulation.id}`);
                         onRegulationSelect(
                           regulation.id,
                           !isRegulationSelected

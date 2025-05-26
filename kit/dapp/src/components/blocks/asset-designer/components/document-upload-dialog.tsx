@@ -93,20 +93,6 @@ export function DocumentUploadDialog({
         fileName: selectedFile.name,
       };
 
-      // Save document metadata to database using updateDocuments server action
-      console.log("Attempting to save document metadata to database...");
-      console.log("regulationId received:", regulationId);
-      console.log("regulationId type:", typeof regulationId);
-      console.log("regulationId length:", regulationId.length);
-      console.log("document metadata:", {
-        id: result.id,
-        title: documentTitle,
-        type: documentType,
-        url: result.url,
-        status: DocumentStatus.PENDING,
-        description: documentDescription || undefined,
-      });
-
       // Check if we're in asset creation mode (regulationId is just "mica" instead of a UUID)
       const isAssetCreationMode =
         regulationId === "mica" ||

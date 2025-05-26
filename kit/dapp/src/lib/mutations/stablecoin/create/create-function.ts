@@ -129,11 +129,6 @@ export const createStablecoinFunction = withAccessControl(
             description: doc.description,
           }));
 
-          console.log(
-            `Creating MiCA regulation with ${micaDocuments.length} documents:`,
-            micaDocuments
-          );
-
           // Create MiCA regulation config with uploaded documents
           await createRegulation(
             {
