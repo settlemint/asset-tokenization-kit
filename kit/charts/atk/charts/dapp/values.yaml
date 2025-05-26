@@ -108,14 +108,12 @@ secretEnv:
   NEXTAUTH_URL: "https://dapp.local"
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://o11y-alloy.btp-platform.svc.cluster.local:4318/v1/traces" # Adjust if needed
   OTEL_EXPORTER_OTLP_PROTOCOL: "http"
-  SETTLEMINT_ACCESS_TOKEN: "dummy-token" # Placeholder - Should be configured
-  SETTLEMINT_APP_URL: "https://dapp.local"
   SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "https://explorer.local/" # Placeholder
   SETTLEMINT_HASURA_ADMIN_SECRET: "dummy-secret" # Placeholder
   SETTLEMINT_HASURA_DATABASE_URL: "postgresql://user:pass@host:port/db" # Placeholder
   SETTLEMINT_HASURA_ENDPOINT: "https://hasura.local/v1/graphql" # Placeholder
   SETTLEMINT_HD_PRIVATE_KEY: "dummy-key" # Placeholder
-  SETTLEMINT_INSTANCE: "https://console.local" # Placeholder
+  SETTLEMINT_INSTANCE: "standalone"
   SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "https://portal.local/graphql" # Placeholder
   SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["https://graph.local/subgraphs/name/kit"]' # Placeholder
 

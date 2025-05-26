@@ -101,8 +101,8 @@ spec:
               cd kit/dapp
               bun db:push
 
-              # echo "Track tables..."
-              # bunx settlemint hasura track -a
+              echo "Track tables..."
+              bunx settlemint hasura track -a
           volumeMounts:
             - name: workspace
               mountPath: /workspace
