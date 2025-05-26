@@ -64,7 +64,7 @@ export const getBondList = withTracing(
   async (userCurrency: CurrencyCode) => {
     "use cache";
     cacheTag("asset");
-    const [onChainBonds, offChainBonds] = await Promise.all([
+    const [onChain, offChainBonds] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientKit.request(BondList, {
           first,
@@ -90,6 +90,10 @@ export const getBondList = withTracing(
     const assetsById = new Map(
       offChainBonds.map((asset) => [getAddress(asset.id), asset])
     );
+    const onChainBonds = onChain.map((bond) => ({
+      ...bond,
+      id: getAddress(bond.id),
+    }));
 
     const calculatedFields = await bondsCalculateFields(
       onChainBonds,
@@ -97,7 +101,7 @@ export const getBondList = withTracing(
     );
 
     const bonds = onChainBonds.map((bond) => {
-      const offChainBond = assetsById.get(getAddress(bond.id));
+      const offChainBond = assetsById.get(bond.id);
 
       const calculatedBond = calculatedFields.get(bond.id)!;
 

@@ -70,50 +70,54 @@ export const getCryptoCurrencyList = withTracing(
   cache(async (userCurrency: CurrencyCode) => {
     "use cache";
     cacheTag("asset");
-    const [onChainCryptoCurrencies, offChainCryptoCurrencies] =
-      await Promise.all([
-        fetchAllTheGraphPages(async (first, skip) => {
-          const result = await theGraphClientKit.request(
-            CryptoCurrencyList,
-            {
-              first,
-              skip,
-            },
-            {
-              "X-GraphQL-Operation-Name": "CryptoCurrencyList",
-              "X-GraphQL-Operation-Type": "query",
-            }
-          );
+    const [onChain, offChainCryptoCurrencies] = await Promise.all([
+      fetchAllTheGraphPages(async (first, skip) => {
+        const result = await theGraphClientKit.request(
+          CryptoCurrencyList,
+          {
+            first,
+            skip,
+          },
+          {
+            "X-GraphQL-Operation-Name": "CryptoCurrencyList",
+            "X-GraphQL-Operation-Type": "query",
+          }
+        );
 
-          return safeParse(
-            t.Array(OnChainCryptoCurrencySchema),
-            result.cryptoCurrencies || []
-          );
-        }),
+        return safeParse(
+          t.Array(OnChainCryptoCurrencySchema),
+          result.cryptoCurrencies || []
+        );
+      }),
 
-        fetchAllHasuraPages(async (pageLimit, offset) => {
-          const result = await hasuraClient.request(
-            OffchainCryptocurrencyList,
-            {
-              limit: pageLimit,
-              offset,
-            },
-            {
-              "X-GraphQL-Operation-Name": "OffchainCryptocurrencyList",
-              "X-GraphQL-Operation-Type": "query",
-            }
-          );
+      fetchAllHasuraPages(async (pageLimit, offset) => {
+        const result = await hasuraClient.request(
+          OffchainCryptocurrencyList,
+          {
+            limit: pageLimit,
+            offset,
+          },
+          {
+            "X-GraphQL-Operation-Name": "OffchainCryptocurrencyList",
+            "X-GraphQL-Operation-Type": "query",
+          }
+        );
 
-          return safeParse(
-            t.Array(OffChainCryptoCurrencySchema),
-            result.asset_aggregate.nodes || []
-          );
-        }),
-      ]);
+        return safeParse(
+          t.Array(OffChainCryptoCurrencySchema),
+          result.asset_aggregate.nodes || []
+        );
+      }),
+    ]);
 
     const assetsById = new Map(
       offChainCryptoCurrencies.map((asset) => [getAddress(asset.id), asset])
     );
+
+    const onChainCryptoCurrencies = onChain.map((cryptocurrency) => ({
+      ...cryptocurrency,
+      id: getAddress(cryptocurrency.id),
+    }));
 
     const calculatedFields = await cryptoCurrenciesCalculateFields(
       onChainCryptoCurrencies,
