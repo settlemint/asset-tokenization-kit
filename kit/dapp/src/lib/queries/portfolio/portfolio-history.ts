@@ -43,7 +43,7 @@ export const PortfolioHistorySchema = t.Object(
     balance: t.BigDecimal({
       description: "Balance at this timestamp",
     }),
-    balanceExact: t.BigInt({
+    balanceExact: t.StringifiedBigInt({
       description: "Exact balance at this timestamp",
     }),
   },

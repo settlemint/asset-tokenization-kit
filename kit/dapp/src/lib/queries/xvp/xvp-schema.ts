@@ -23,13 +23,15 @@ export const CalculatedXvPSettlementFlowSchema = t.Object({
   }),
 });
 
-export const XvPSettlementFlowSchema = t.Intersect(
-  [OnChainXvPSettlementFlowSchema, CalculatedXvPSettlementFlowSchema],
+export const XvPSettlementFlowSchema = t.Object(
+  {
+    ...OnChainXvPSettlementFlowSchema.properties,
+    ...CalculatedXvPSettlementFlowSchema.properties,
+  },
   {
     description: "Flows of the settlement",
   }
 );
-
 export type XvPSettlementFlow = Static<typeof XvPSettlementFlowSchema>;
 
 /**
@@ -82,11 +84,11 @@ export const CalculatedXvPSettlementSchema = t.Object({
 /**
  * TypeBox schema for XvPSettlement
  */
-export const XvPSettlementSchema = t.Intersect(
-  [
-    t.Omit(OnChainXvPSettlementSchema, ["flows"]),
-    CalculatedXvPSettlementSchema,
-  ],
+export const XvPSettlementSchema = t.Object(
+  {
+    ...t.Omit(OnChainXvPSettlementSchema, ["flows"]).properties,
+    ...CalculatedXvPSettlementSchema.properties,
+  },
   {
     description: "XvPSettlement",
   }
