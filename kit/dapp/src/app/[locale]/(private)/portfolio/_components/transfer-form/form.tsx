@@ -9,7 +9,7 @@ import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 import { SelectAsset } from "./select-asset";
 import { Amount } from "./steps/amount";
 import { Recipients } from "./steps/recipients";
@@ -50,7 +50,9 @@ export function TransferForm({
   const assetType = assettype ?? selectedAsset?.type;
   const userBalance =
     balance ??
-    selectedAsset?.holders?.find((h) => h.account.id === userAddress)?.value ??
+    selectedAsset?.holders?.find(
+      (h) => getAddress(h.account.id) === userAddress
+    )?.value ??
     0;
 
   const handleSheetOpenChange = (isOpen: boolean) => {
