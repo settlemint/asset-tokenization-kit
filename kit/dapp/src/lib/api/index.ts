@@ -32,6 +32,7 @@ import { VaultApi } from "./vault";
 export const api = new Elysia({
   aot: true,
   precompile: false,
+  encodeSchema: true,
   prefix: "/api",
   detail: {
     security: [
