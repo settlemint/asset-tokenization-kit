@@ -118,7 +118,7 @@ export type Account = StaticDecode<typeof AccountSchema>;
  */
 export const CalculatedUserSchema = t.Object(
   {
-    assetCount: t.BigInt({
+    assetCount: t.StringifiedBigInt({
       description: "The number of assets held by the user",
     }),
     transactionCount: t.Number({

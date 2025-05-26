@@ -10,7 +10,7 @@ import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { betterAuth } from "@/lib/utils/elysia";
 import { t } from "@/lib/utils/typebox";
-import { Elysia } from "elysia";
+import { Elysia, NotFoundError } from "elysia";
 import { getAddress } from "viem";
 
 // Create a minimal query to fetch recent transactions
@@ -91,10 +91,16 @@ export const TransactionApi = new Elysia({
   )
   .get(
     "/:transactionHash",
-    ({ params: { transactionHash } }) => {
-      return getTransactionDetail({
+    async ({ params: { transactionHash } }) => {
+      const result = await getTransactionDetail({
         transactionHash,
       });
+      if (!result) {
+        throw new NotFoundError(
+          `Could not find transaction ${transactionHash}`
+        );
+      }
+      return result;
     },
     {
       auth: true,
@@ -110,7 +116,7 @@ export const TransactionApi = new Elysia({
         }),
       }),
       response: {
-        200: t.Union([TransactionSchema, t.Null()]),
+        200: TransactionSchema,
         ...defaultErrorSchema,
       },
     }
