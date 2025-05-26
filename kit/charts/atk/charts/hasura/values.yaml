@@ -22,9 +22,16 @@ graphql-engine:
     redisUrl: "redis://default:atk@redis-master:6379"
     rateLimitRedisUrl: "redis://default:atk@redis-master:6379"
     metadataDbUrl: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
+    extraSecrets:
+      HASURA_GRAPHQL_DATABASE_URL: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
   extraEnvs:
     - name: HASURA_GRAPHQL_PG_CONNECTIONS
       value: "10"
+    - name: HASURA_GRAPHQL_DATABASE_URL
+      valueFrom:
+        secretKeyRef:
+          key: HASURA_GRAPHQL_DATABASE_URL
+          name: atk-secrets
   global:
     imagePullSecrets:
       - image-pull-secret-docker
