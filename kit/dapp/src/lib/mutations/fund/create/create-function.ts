@@ -43,8 +43,8 @@ const FundFactoryCreate = portalGraphql(`
  * Stores additional metadata about the fund in Hasura
  */
 const CreateOffchainFund = hasuraGraphql(`
-  mutation CreateOffchainFund($id: String!, $isin: String) {
-    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: [isin, internalid]}) {
+  mutation CreateOffchainFund($id: String!, $isin: String, $internalid: String) {
+    insert_asset_one(object: {id: $id, isin: $isin, internalid: $internalid}, on_conflict: {constraint: asset_pkey, update_columns: [isin, internalid]}) {
       id
       isin
     }
