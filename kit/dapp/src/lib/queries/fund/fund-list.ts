@@ -64,7 +64,7 @@ export const getFundList = withTracing(
   cache(async (userCurrency: CurrencyCode) => {
     "use cache";
     cacheTag("asset");
-    const [onChain, offChainFunds] = await Promise.all([
+    const [onChainFunds, offChainFunds] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientKit.request(
           FundList,
@@ -104,11 +104,6 @@ export const getFundList = withTracing(
     const assetsById = new Map(
       offChainFunds.map((asset) => [getAddress(asset.id), asset])
     );
-
-    const onChainFunds = onChain.map((fund) => ({
-      ...fund,
-      id: getAddress(fund.id),
-    }));
 
     const calculatedFields = await fundsCalculateFields(
       onChainFunds,
