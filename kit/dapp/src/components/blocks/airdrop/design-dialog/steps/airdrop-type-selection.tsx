@@ -20,136 +20,139 @@ interface AirdropTypeSelectionProps {
 const airdropTypesInfo = [
   {
     type: "standard" as const,
-    titleKey: "airdrop-designer.type-selection.types.standard.title" as const,
+    titleKey:
+      "private.airdrops.create.type-selection.types.standard.title" as const,
     descriptionKey:
-      "airdrop-designer.type-selection.types.standard.description" as const,
+      "private.airdrops.create.type-selection.types.standard.description" as const,
     extendedDescriptionKey:
-      "airdrop-designer.type-selection.types.standard.extended-description" as const,
+      "private.airdrops.create.type-selection.types.standard.extended-description" as const,
     featureKeys: [
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.standard.features.merkle-proof" as const,
+          "private.airdrops.create.type-selection.types.standard.features.merkle-proof" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.standard.features.time-bound" as const,
+          "private.airdrops.create.type-selection.types.standard.features.time-bound" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.standard.features.user-initiated-claim" as const,
+          "private.airdrops.create.type-selection.types.standard.features.user-initiated-claim" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.standard.features.batch-claim" as const,
+          "private.airdrops.create.type-selection.types.standard.features.batch-claim" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.standard.features.erc2771-support" as const,
+          "private.airdrops.create.type-selection.types.standard.features.erc2771-support" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.standard.features.ownable" as const,
+          "private.airdrops.create.type-selection.types.standard.features.ownable" as const,
       },
     ],
   },
   {
     type: "vesting" as const,
-    titleKey: "airdrop-designer.type-selection.types.vesting.title" as const,
+    titleKey:
+      "private.airdrops.create.type-selection.types.vesting.title" as const,
     descriptionKey:
-      "airdrop-designer.type-selection.types.vesting.description" as const,
+      "private.airdrops.create.type-selection.types.vesting.description" as const,
     extendedDescriptionKey:
-      "airdrop-designer.type-selection.types.vesting.extended-description" as const,
+      "private.airdrops.create.type-selection.types.vesting.extended-description" as const,
     featureKeys: [
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.vesting.features.pluggable-vesting-strategy" as const,
+          "private.airdrops.create.type-selection.types.vesting.features.pluggable-vesting-strategy" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.vesting.features.time-bound-initialization" as const,
+          "private.airdrops.create.type-selection.types.vesting.features.time-bound-initialization" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.vesting.features.user-initiated-claim" as const,
+          "private.airdrops.create.type-selection.types.vesting.features.user-initiated-claim" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.vesting.features.merkle-proof" as const,
+          "private.airdrops.create.type-selection.types.vesting.features.merkle-proof" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.vesting.features.reentrancy-guard" as const,
+          "private.airdrops.create.type-selection.types.vesting.features.reentrancy-guard" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.vesting.features.batch-claim" as const,
+          "private.airdrops.create.type-selection.types.vesting.features.batch-claim" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.vesting.features.erc2771-support" as const,
+          "private.airdrops.create.type-selection.types.vesting.features.erc2771-support" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.vesting.features.ownable" as const,
+          "private.airdrops.create.type-selection.types.vesting.features.ownable" as const,
       },
     ],
   },
   {
     type: "push" as const,
-    titleKey: "airdrop-designer.type-selection.types.push.title" as const,
+    titleKey:
+      "private.airdrops.create.type-selection.types.push.title" as const,
     descriptionKey:
-      "airdrop-designer.type-selection.types.push.description" as const,
+      "private.airdrops.create.type-selection.types.push.description" as const,
     extendedDescriptionKey:
-      "airdrop-designer.type-selection.types.push.extended-description" as const,
+      "private.airdrops.create.type-selection.types.push.extended-description" as const,
     featureKeys: [
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.push.features.admin-initiated" as const,
+          "private.airdrops.create.type-selection.types.push.features.admin-initiated" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.push.features.merkle-proof-admin" as const,
+          "private.airdrops.create.type-selection.types.push.features.merkle-proof-admin" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.push.features.batch-distribution" as const,
+          "private.airdrops.create.type-selection.types.push.features.batch-distribution" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.push.features.no-user-claim-needed" as const,
+          "private.airdrops.create.type-selection.types.push.features.no-user-claim-needed" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.push.features.distribution-cap" as const,
+          "private.airdrops.create.type-selection.types.push.features.distribution-cap" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.push.features.erc2771-support" as const,
+          "private.airdrops.create.type-selection.types.push.features.erc2771-support" as const,
       },
       {
         status: true,
         label:
-          "airdrop-designer.type-selection.types.push.features.ownable" as const,
+          "private.airdrops.create.type-selection.types.push.features.ownable" as const,
       },
     ],
   },
@@ -165,10 +168,10 @@ export function AirdropTypeSelection({
     <div className="h-full flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
-          {t("airdrop-designer.type-selection.title")}
+          {t("private.airdrops.create.type-selection.title")}
         </h2>
         <p className="text-sm text-muted-foreground pt-2">
-          {t("airdrop-designer.type-selection.description")}
+          {t("private.airdrops.create.type-selection.description")}
         </p>
       </div>
       <div className="flex-1 overflow-y-auto pr-4 px-0">
@@ -214,7 +217,7 @@ export function AirdropTypeSelection({
                 <CardContent className="mt-auto relative z-10">
                   <div className="space-y-2">
                     <h4 className="text-xs font-medium text-foreground">
-                      {t("airdrop-designer.type-selection.key-features")}
+                      {t("private.airdrops.create.type-selection.key-features")}
                     </h4>
                     <ul className="space-y-1.5">
                       {airdropInfo.featureKeys.map((featureKey) => (

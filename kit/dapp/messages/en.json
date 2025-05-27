@@ -299,7 +299,8 @@
       },
       "trade-management": {
         "group-title": "Trade management",
-        "xvp-settlement": "XvP"
+        "xvp-settlement": "XvP",
+        "airdrop-designer": "Airdrops"
       }
     }
   },
@@ -1337,6 +1338,177 @@
     }
   },
   "private": {
+    "airdrops": {
+      "design-button": "Design airdrop",
+      "create": {
+        "general": {
+          "title": {
+            "standard": "Create a new standard airdrop",
+            "vesting": "Create a new vesting airdrop",
+            "push": "Create a new push airdrop"
+          },
+          "description": {
+            "standard": "Distribute tokens that users claim within a set timeframe using Merkle proofs.",
+            "vesting": "Release tokens gradually over time according to a vesting schedule.",
+            "push": "Directly transfer tokens to recipients, initiated by an administrator."
+          }
+        },
+        "form": {
+          "description": {
+            "standard": "Distribute tokens that users claim within a set timeframe using Merkle proofs.",
+            "vesting": "Release tokens gradually over time according to a vesting schedule.",
+            "push": "Directly transfer tokens to recipients, initiated by an administrator."
+          },
+          "errors": {
+            "address-prediction-failed": "Failed to predict address. Please try again.",
+            "duplicate-asset": "An asset with these parameters already exists. Please change at least one parameter and try again.",
+            "validation-failed": "A validation error occurred."
+          },
+          "steps": {
+            "basics": {
+              "title": "Basic information",
+              "description": "Specify the basic information for this airdrop."
+            },
+            "configuration": {
+              "title": "Configuration",
+              "description": "Configure the parameters for this airdrop."
+            }
+          },
+          "title": {
+            "standard": "Design a new standard airdrop",
+            "vesting": "Design a new vesting airdrop",
+            "push": "Design a new push airdrop"
+          },
+          "toasts": {
+            "submitting": "Creating airdrop... This process may take a moment.",
+            "failed": "Failed to create airdrop. Please try again.",
+            "success": "Airdrop was created successfully!",
+            "push": {
+              "submitting": "Creating push airdrop... This process may take a moment.",
+              "failed": "Failed to create push airdrop. Please try again.",
+              "success": "Push airdrop was created successfully!"
+            },
+            "vesting": {
+              "submitting": "Creating vesting airdrop... This process may take a moment.",
+              "failed": "Failed to create vesting airdrop. Please try again.",
+              "success": "Vesting airdrop was created successfully!"
+            },
+            "standard": {
+              "submitting": "Creating standard airdrop... This process may take a moment.",
+              "failed": "Failed to create standard airdrop. Please try again.",
+              "success": "Standard airdrop was created successfully!"
+            }
+          },
+          "button-labels": {
+            "general": {
+              "next": "Next",
+              "previous": "Previous",
+              "processing": "Processing..."
+            },
+            "push": {
+              "create": "Create push airdrop",
+              "submitting": "Creating push airdrop..."
+            },
+            "vesting": {
+              "create": "Create vesting airdrop",
+              "submitting": "Creating vesting airdrop..."
+            },
+            "standard": {
+              "create": "Create standard airdrop",
+              "submitting": "Creating standard airdrop..."
+            }
+          },
+          "toast-action": {
+            "bonds": "View bond",
+            "cryptocurrencies": "View cryptocurrency",
+            "deposits": "View deposit",
+            "equities": "View equity",
+            "funds": "View fund",
+            "stablecoins": "View stablecoin"
+          },
+          "trigger-label": {
+            "bonds": "Issue a new bond",
+            "cryptocurrencies": "Issue a new cryptocurrency",
+            "deposits": "Issue a new deposit",
+            "equities": "Issue a new equity",
+            "funds": "Issue a new fund",
+            "stablecoins": "Issue a new stablecoin"
+          }
+        },
+        "basics": {
+          "title": "Basic information",
+          "description": "Specify the basic information for this airdrop."
+        },
+        "button-labels": {
+          "general": {
+            "next": "Next",
+            "previous": "Previous",
+            "processing": "Processing..."
+          },
+          "push": {
+            "create": "Create push airdrop",
+            "submitting": "Creating push airdrop..."
+          },
+          "vesting": {
+            "create": "Create vesting airdrop",
+            "submitting": "Creating vesting airdrop..."
+          },
+          "standard": {
+            "create": "Create standard airdrop",
+            "submitting": "Creating standard airdrop..."
+          }
+        },
+        "type-selection": {
+          "title": "Select airdrop type",
+          "description": "Choose the type of airdrop you want to create.",
+          "key-features": "Key features:",
+          "types": {
+            "standard": {
+              "title": "Standard Airdrop",
+              "description": "Simple, time-bound airdrop where users claim tokens using a Merkle proof.",
+              "extended-description": "A Standard Airdrop allows for a straightforward distribution of tokens to a list of recipients. Users can claim their allocated tokens within a defined start and end time by providing a cryptographic (Merkle) proof of their inclusion in the airdrop list. It supports individual and batch claims.",
+              "features": {
+                "merkle-proof": "Merkle proof verification for claims",
+                "time-bound": "Configurable start and end time for claims",
+                "user-initiated-claim": "Users initiate their own claims",
+                "batch-claim": "Supports batch claiming for multiple allocations",
+                "erc2771-support": "ERC2771 support for gasless transactions (meta-transactions)",
+                "ownable": "Contract is ownable for administrative functions"
+              }
+            },
+            "vesting": {
+              "title": "Vesting Airdrop",
+              "description": "Airdrop with tokens released over time according to a vesting schedule.",
+              "extended-description": "A Vesting Airdrop distributes tokens that are released to recipients gradually over a defined period, following a specific vesting schedule. It uses a pluggable claim strategy to define how vesting occurs (e.g., linear, cliff). Users initialize their claim, and then can claim available tokens as they vest. Supports ERC2771 for meta-transactions.",
+              "features": {
+                "pluggable-vesting-strategy": "Uses a configurable claim strategy for vesting logic",
+                "time-bound-initialization": "Claim initialization period (claimPeriodEnd)",
+                "user-initiated-claim": "Users initiate claims as tokens vest",
+                "merkle-proof": "Merkle proof verification for initial eligibility",
+                "reentrancy-guard": "Protected against reentrancy attacks",
+                "batch-claim": "Supports batch claiming for multiple allocations",
+                "erc2771-support": "ERC2771 support for gasless transactions (meta-transactions)",
+                "ownable": "Contract is ownable for administrative functions like changing strategy"
+              }
+            },
+            "push": {
+              "title": "Push Airdrop",
+              "description": "Admin-initiated airdrop where tokens are directly transferred to recipients.",
+              "extended-description": "A Push Airdrop allows an administrator (owner) to directly send tokens to a list of recipients. The admin verifies eligibility using Merkle proofs and can distribute tokens individually or in batches. This type is useful when users are not expected to actively claim tokens. Supports ERC2771 for meta-transactions by the admin.",
+              "features": {
+                "admin-initiated": "Administrator (owner) pushes tokens to recipients",
+                "merkle-proof-admin": "Admin uses Merkle proofs to verify distributions",
+                "batch-distribution": "Supports batch distribution to multiple recipients",
+                "no-user-claim-needed": "Recipients do not need to actively claim tokens",
+                "distribution-cap": "Optional cap on total tokens to be distributed",
+                "erc2771-support": "ERC2771 support for gasless transactions by admin (meta-transactions)",
+                "ownable": "Contract is ownable for administrative functions"
+              }
+            }
+          }
+        }
+      }
+    },
     "assets": {
       "asset-statistics-title": "Statistics",
       "create": {
@@ -2748,56 +2920,5 @@
     "sending": "Sending",
     "success": "Success",
     "validation-errors": "Validation error"
-  },
-  "airdrop-designer": {
-    "type-selection": {
-      "title": "Select airdrop type",
-      "description": "Choose the type of airdrop you want to create.",
-      "key-features": "Key features:",
-      "types": {
-        "standard": {
-          "title": "Standard Airdrop",
-          "description": "Simple, time-bound airdrop where users claim tokens using a Merkle proof.",
-          "extended-description": "A Standard Airdrop allows for a straightforward distribution of tokens to a list of recipients. Users can claim their allocated tokens within a defined start and end time by providing a cryptographic (Merkle) proof of their inclusion in the airdrop list. It supports individual and batch claims.",
-          "features": {
-            "merkle-proof": "Merkle proof verification for claims",
-            "time-bound": "Configurable start and end time for claims",
-            "user-initiated-claim": "Users initiate their own claims",
-            "batch-claim": "Supports batch claiming for multiple allocations",
-            "erc2771-support": "ERC2771 support for gasless transactions (meta-transactions)",
-            "ownable": "Contract is ownable for administrative functions"
-          }
-        },
-        "vesting": {
-          "title": "Vesting Airdrop",
-          "description": "Airdrop with tokens released over time according to a vesting schedule.",
-          "extended-description": "A Vesting Airdrop distributes tokens that are released to recipients gradually over a defined period, following a specific vesting schedule. It uses a pluggable claim strategy to define how vesting occurs (e.g., linear, cliff). Users initialize their claim, and then can claim available tokens as they vest. Supports ERC2771 for meta-transactions.",
-          "features": {
-            "pluggable-vesting-strategy": "Uses a configurable claim strategy for vesting logic",
-            "time-bound-initialization": "Claim initialization period (claimPeriodEnd)",
-            "user-initiated-claim": "Users initiate claims as tokens vest",
-            "merkle-proof": "Merkle proof verification for initial eligibility",
-            "reentrancy-guard": "Protected against reentrancy attacks",
-            "batch-claim": "Supports batch claiming for multiple allocations",
-            "erc2771-support": "ERC2771 support for gasless transactions (meta-transactions)",
-            "ownable": "Contract is ownable for administrative functions like changing strategy"
-          }
-        },
-        "push": {
-          "title": "Push Airdrop",
-          "description": "Admin-initiated airdrop where tokens are directly transferred to recipients.",
-          "extended-description": "A Push Airdrop allows an administrator (owner) to directly send tokens to a list of recipients. The admin verifies eligibility using Merkle proofs and can distribute tokens individually or in batches. This type is useful when users are not expected to actively claim tokens. Supports ERC2771 for meta-transactions by the admin.",
-          "features": {
-            "admin-initiated": "Administrator (owner) pushes tokens to recipients",
-            "merkle-proof-admin": "Admin uses Merkle proofs to verify distributions",
-            "batch-distribution": "Supports batch distribution to multiple recipients",
-            "no-user-claim-needed": "Recipients do not need to actively claim tokens",
-            "distribution-cap": "Optional cap on total tokens to be distributed",
-            "erc2771-support": "ERC2771 support for gasless transactions by admin (meta-transactions)",
-            "ownable": "Contract is ownable for administrative functions"
-          }
-        }
-      }
-    }
   }
 }
