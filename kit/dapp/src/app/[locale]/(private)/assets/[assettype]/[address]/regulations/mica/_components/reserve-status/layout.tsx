@@ -39,7 +39,7 @@ export function ReserveStatusLayout({
       </CardHeader>
       <CardContent className="space-y-8">
         <ReserveRatio value={reserveRatio} />
-        <ReserveComposition {...config.reserveComposition} />
+        <ReserveComposition {...(config.reserveComposition || {})} />
         <ReserveDetails
           circulatingSupply={circulatingSupply}
           reserveValue={reserveValue}
