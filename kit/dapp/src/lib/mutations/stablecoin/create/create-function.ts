@@ -2,6 +2,10 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import { RegulationStatus } from "@/lib/db/regulations/schema-base-regulation-configs";
+import {
+  ReserveComplianceStatus,
+  TokenType,
+} from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { createRegulation } from "@/lib/providers/regulations/regulation-provider";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
@@ -128,8 +132,8 @@ export const createStablecoinFunction = withAccessControl(
             {
               // MiCA-specific default config
               documents: [],
-              tokenType: "e-money-token", // Default to e-money token
-              reserveStatus: "pending_setup",
+              tokenType: TokenType.ELECTRONIC_MONEY_TOKEN, // Default to e-money token
+              reserveStatus: ReserveComplianceStatus.PENDING_REVIEW,
             }
           );
         }

@@ -56,7 +56,6 @@ export const ReserveComplianceStatus = {
   PENDING_REVIEW: "pending_review",
   UNDER_INVESTIGATION: "under_investigation",
   NON_COMPLIANT: "non_compliant",
-  PENDING_SETUP: "pending_setup",
 } as const;
 
 export type ReserveComplianceStatus =

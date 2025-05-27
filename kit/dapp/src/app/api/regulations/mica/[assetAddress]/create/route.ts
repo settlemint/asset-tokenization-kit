@@ -32,7 +32,7 @@ async function createMicaConfigForAsset(assetId: string): Promise<string> {
         // MiCA-specific default config - store as JSON strings
         documents: [],
         tokenType: TokenType.ELECTRONIC_MONEY_TOKEN, // Default to e-money token
-        reserveStatus: ReserveComplianceStatus.PENDING_SETUP,
+        reserveStatus: ReserveComplianceStatus.PENDING_REVIEW,
         reserveComposition: JSON.stringify(reserveComposition), // Convert to JSON string
       }
     );
