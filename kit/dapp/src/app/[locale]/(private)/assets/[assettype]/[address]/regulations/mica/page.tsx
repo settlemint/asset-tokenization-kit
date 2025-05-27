@@ -3,6 +3,7 @@ import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail
 import { normalizeAddress } from "@/lib/utils/typebox/address";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
+import { notFound } from "next/navigation";
 import type { Address } from "viem";
 import { MicaRegulationLayout } from "./_components/layout";
 
@@ -22,8 +23,12 @@ export default async function MicaRegulationPage({ params }: PageProps) {
   });
 
   if (!regulationData?.mica_regulation_config) {
-    console.error("MiCA regulation config not found");
-    return null;
+    // This should never happen as we check in asset-tabs.ts, but handle it gracefully
+    console.error(
+      "MiCA regulation config not found for asset:",
+      normalizedAddress
+    );
+    notFound();
   }
 
   const assetDetails = await getAssetUsersDetail({

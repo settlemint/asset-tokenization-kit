@@ -48,7 +48,7 @@ async function createMicaConfigForAsset(assetId: string): Promise<string> {
 }
 
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ assetAddress: string }> }
 ) {
   try {
