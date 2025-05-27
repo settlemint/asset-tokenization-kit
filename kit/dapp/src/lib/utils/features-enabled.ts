@@ -38,5 +38,5 @@ export const hasMica = async (assettype: AssetType, assetId: Address) => {
     return false;
   }
 
-  return isDevelopment ? true : await isRegulationEnabled(assetId, "mica");
+  return await isRegulationEnabled(assetId, "mica");
 };
