@@ -103,6 +103,17 @@ export function DocumentUploadDialog({
         regulationId === "cryptocurrency" ||
         regulationId === "stablecoin";
 
+      console.log("DocumentUploadDialog - Upload flow:", {
+        regulationId,
+        isAssetCreationMode,
+        documentTitle,
+        documentType,
+        uploadResult: result,
+        context: isAssetCreationMode
+          ? "ASSET_CREATION_WIZARD"
+          : "EXISTING_ASSET_TAB",
+      });
+
       if (isAssetCreationMode) {
         console.log(
           "Asset creation mode detected - skipping database save for now"
@@ -113,6 +124,20 @@ export function DocumentUploadDialog({
         );
       } else {
         try {
+          console.log("About to call updateDocuments with:", {
+            regulationId,
+            operation: DocumentOperation.ADD,
+            document: {
+              id: result.id,
+              title: documentTitle,
+              type: documentType,
+              url: result.url,
+              status: DocumentStatus.PENDING,
+              description: documentDescription || undefined,
+            },
+          });
+
+          console.log("Calling updateDocuments...");
           const dbResult = await updateDocuments({
             regulationId,
             operation: DocumentOperation.ADD,

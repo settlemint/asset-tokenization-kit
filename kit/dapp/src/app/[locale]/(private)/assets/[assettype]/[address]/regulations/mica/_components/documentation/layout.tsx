@@ -3,6 +3,8 @@
 import type { MicaDocument } from "@/app/actions/get-mica-documents";
 import { getMicaDocumentsAction } from "@/app/actions/get-mica-documents";
 import { getMicaRegulationConfigAction } from "@/app/actions/get-mica-regulation-config";
+import { testMicaRegulationConfigAction } from "@/app/actions/test-mica-regulation-config";
+import { uploadDocument } from "@/app/actions/upload-document";
 import { DocumentUploadDialog } from "@/components/blocks/asset-designer/components/document-upload-dialog";
 import type { UploadedDocument } from "@/components/blocks/asset-designer/types";
 import { Button } from "@/components/ui/button";
@@ -105,7 +107,7 @@ export function DocumentationLayout() {
   }, [assetAddress, t]);
 
   // Upload action using MinIO SDK server action
-  const uploadAction = async (formData: FormData) => {
+  const uploadAction = async (formData: FormData, path: string) => {
     try {
       const file = formData.get("file") as File;
       const documentType = (formData.get("type") as string) || "mica";
@@ -115,56 +117,49 @@ export function DocumentationLayout() {
         throw new Error("No file provided");
       }
 
-      console.log(
-        `Document type: ${documentType}, will be stored appropriately`
-      );
+      console.log("EXISTING ASSET UPLOAD ACTION called with:", {
+        documentType,
+        title,
+        path,
+        assetAddress,
+        regulationConfigId,
+      });
 
-      // Note: This is temporarily disabled until we create a proper upload dialog
-      // that works with our server action
-      toast.error(
-        "Upload functionality is being updated to use the new MinIO SDK"
-      );
+      // Use the uploadDocument action with the form data
+      formData.append("assetAddress", assetAddress);
+      const result = await uploadDocument(formData);
+
+      console.log("EXISTING ASSET UPLOAD SUCCESS:", result);
+      toast.success(t("upload_success"));
+
       return {
-        id: "temp",
-        url: "#",
+        id: result.id,
+        url: result.url,
       };
-
-      // TODO: Implement proper upload using server action
-      // const result = await uploadMicaDocumentAction({
-      //   file,
-      //   assetAddress,
-      //   documentType,
-      //   title,
-      // });
-
-      // if (!result.success) {
-      //   throw new Error(result.error || "Upload failed");
-      // }
-
-      // toast.success(t("upload_success"));
-
-      // // Force a delay to ensure MinIO has time to update
-      // setTimeout(() => {
-      //   fetchDocuments();
-      // }, 2000);
-
-      // return {
-      //   id: result.data.id,
-      //   url: result.data.url,
-      // };
     } catch (error) {
-      console.error("Error in uploadAction:", error);
+      console.error("Error in EXISTING ASSET uploadAction:", error);
       toast.error(t("delete_error"));
       throw error;
     }
   };
 
   // Handle document upload completion
-  const handleUploadComplete = (
-    _regulationId: string,
-    _document: UploadedDocument
+  const handleUploadComplete = async (
+    regulationId: string,
+    document: UploadedDocument
   ) => {
-    // Add a small delay to ensure MinIO has time to update
+    console.log("handleUploadComplete called with:", {
+      regulationId,
+      document,
+    });
+
+    // The DocumentUploadDialog already handles updating the database,
+    // so we just need to refresh the documents list here
+    console.log(
+      "Document should already be saved to database by DocumentUploadDialog"
+    );
+
+    // Refresh the documents list after a short delay
     setTimeout(() => {
       fetchDocuments();
     }, 1500);
@@ -182,6 +177,18 @@ export function DocumentationLayout() {
         setRegulationConfigId(result.data.id);
         console.log("Regulation config ID fetched:", result.data.id);
         console.log("Full server action response:", result.data);
+        console.log("Config documents field:", result.data.documents);
+
+        // Test direct database access
+        console.log("Testing direct database access...");
+        try {
+          const testResult = await testMicaRegulationConfigAction(
+            result.data.id
+          );
+          console.log("Direct database test result:", testResult);
+        } catch (testError) {
+          console.error("Direct database test failed:", testError);
+        }
       } else {
         console.error("Failed to fetch regulation config:", result.error);
         toast.error("Failed to load regulation configuration");
@@ -213,7 +220,11 @@ export function DocumentationLayout() {
           </Button>
           <Button
             size="sm"
-            onClick={() => setIsDialogOpen(true)}
+            onClick={() => {
+              console.log("🚀 EXISTING ASSET TAB UPLOAD BUTTON CLICKED!");
+              console.log("Current regulationConfigId:", regulationConfigId);
+              setIsDialogOpen(true);
+            }}
             disabled={!regulationConfigId}
             title={
               !regulationConfigId
@@ -235,12 +246,28 @@ export function DocumentationLayout() {
       </CardContent>
 
       {isDialogOpen && regulationConfigId && (
-        <DocumentUploadDialog
-          regulationId={regulationConfigId}
-          onClose={() => setIsDialogOpen(false)}
-          onUpload={handleUploadComplete}
-          uploadAction={uploadAction}
-        />
+        <>
+          {console.log(
+            "🚀 EXISTING ASSET TAB DIALOG RENDERING with regulationId:",
+            regulationConfigId
+          )}
+          <DocumentUploadDialog
+            regulationId={regulationConfigId}
+            onClose={() => {
+              console.log("🚀 EXISTING ASSET TAB DIALOG CLOSING");
+              setIsDialogOpen(false);
+            }}
+            onUpload={handleUploadComplete}
+            uploadAction={uploadAction}
+          />
+        </>
+      )}
+
+      {/* Debug info */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="text-xs text-gray-500 p-2 border-t">
+          Debug: regulationConfigId = {regulationConfigId || "null"}
+        </div>
       )}
     </Card>
   );

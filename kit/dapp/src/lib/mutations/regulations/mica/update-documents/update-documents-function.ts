@@ -46,15 +46,29 @@ export const updateDocumentsFunction = withAccessControl(
   },
   async ({
     parsedInput,
+    ctx,
   }: {
     parsedInput: UpdateDocumentsInput;
     ctx: { user: User };
   }) => {
     try {
+      console.log("updateDocumentsFunction called with:", {
+        regulationId: parsedInput.regulationId,
+        operation: parsedInput.operation,
+        document: parsedInput.document,
+        user: ctx.user?.id || "No user",
+      });
+
       // Get current documents
+      console.log(
+        "Fetching current documents for regulation ID:",
+        parsedInput.regulationId
+      );
       const currentResult = await hasuraClient.request(GetMicaDocuments, {
         id: parsedInput.regulationId,
       });
+
+      console.log("Current documents query result:", currentResult);
 
       // Parse the documents from JSON string, handling potential double encoding
       let currentDocuments: MicaDocumentInput[] = [];
@@ -104,15 +118,28 @@ export const updateDocumentsFunction = withAccessControl(
       }
 
       // Update documents in database
+      console.log("About to update documents in database:", {
+        id: parsedInput.regulationId,
+        updatedDocuments,
+        serializedDocuments: JSON.stringify(updatedDocuments),
+      });
+
       const result = await hasuraClient.request(UpdateMicaDocuments, {
         id: parsedInput.regulationId,
         documents: JSON.stringify(updatedDocuments),
       });
 
+      console.log("Update documents mutation result:", result);
+
       if (!result.update_mica_regulation_configs_by_pk) {
+        console.error("No result returned from update mutation");
         throw new Error("Failed to update MICA documents");
       }
 
+      console.log(
+        "Documents updated successfully:",
+        result.update_mica_regulation_configs_by_pk
+      );
       return safeParse(t.Hashes(), []);
     } catch (error) {
       console.error("Error updating MICA documents:", error);
