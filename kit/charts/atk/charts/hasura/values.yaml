@@ -13,7 +13,7 @@ graphql-engine:
     ingressClassName: "settlemint-nginx"
     hostName: "hasura.k8s.orb.local"
   config:
-    metadataOnly: true
+    metadataOnly: false
     enableInternalConsoleAssets: true
     devMode: true
   secret:
@@ -22,12 +22,16 @@ graphql-engine:
     redisUrl: "redis://default:atk@redis-master:6379"
     rateLimitRedisUrl: "redis://default:atk@redis-master:6379"
     metadataDbUrl: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
+    extraSecrets:
+      DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
   extraEnvs:
     - name: HASURA_GRAPHQL_PG_CONNECTIONS
       value: "10"
-  extraSecrets:
     - name: HASURA_GRAPHQL_DATABASE_URL
-      value: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
+      valueFrom:
+        secretKeyRef:
+          key: DEFAULT_DB_URL
+          name: atk-secrets
   global:
     imagePullSecrets:
       - image-pull-secret-docker
@@ -45,13 +49,6 @@ busybox:
   repository: busybox
   tag: 1.37
   pullPolicy: IfNotPresent
-
-drizzleMigrate:
-  image:
-    registry: docker.io
-    repository: oven/bun
-    tag: "1"
-    pullPolicy: IfNotPresent
 
 git:
   image:
