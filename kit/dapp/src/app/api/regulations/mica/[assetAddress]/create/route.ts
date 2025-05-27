@@ -1,4 +1,8 @@
 import { RegulationStatus } from "@/lib/db/regulations/schema-base-regulation-configs";
+import {
+  ReserveComplianceStatus,
+  TokenType,
+} from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { createRegulation } from "@/lib/providers/regulations/regulation-provider";
 import { normalizeAddress } from "@/lib/utils/typebox/address";
 import { NextRequest, NextResponse } from "next/server";
@@ -27,8 +31,8 @@ async function createMicaConfigForAsset(assetId: string): Promise<string> {
       {
         // MiCA-specific default config - store as JSON strings
         documents: [],
-        tokenType: "e-money-token", // Default to e-money token
-        reserveStatus: "pending_setup",
+        tokenType: TokenType.ELECTRONIC_MONEY_TOKEN, // Default to e-money token
+        reserveStatus: ReserveComplianceStatus.PENDING_SETUP,
         reserveComposition: JSON.stringify(reserveComposition), // Convert to JSON string
       }
     );

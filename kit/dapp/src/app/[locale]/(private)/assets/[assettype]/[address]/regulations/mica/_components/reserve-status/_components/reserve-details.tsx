@@ -32,6 +32,8 @@ export function ReserveDetails({
         return "bg-warning text-warning-foreground";
       case ReserveComplianceStatus.NON_COMPLIANT:
         return "bg-destructive text-destructive-foreground";
+      case ReserveComplianceStatus.PENDING_SETUP:
+        return "bg-muted text-muted-foreground";
       default:
         return "bg-muted text-muted-foreground";
     }
@@ -47,6 +49,8 @@ export function ReserveDetails({
         return t("form.fields.audit-details.status.under-investigation");
       case ReserveComplianceStatus.NON_COMPLIANT:
         return t("form.fields.audit-details.status.non-compliant");
+      case ReserveComplianceStatus.PENDING_SETUP:
+        return t("form.fields.audit-details.status.pending-setup");
       default:
         return status;
     }
@@ -83,13 +87,15 @@ export function ReserveDetails({
         <h3 className="text-muted-foreground text-sm">
           {t("form.fields.audit-details.reserve-status")}
         </h3>
-        {reserveStatus ? (
-          <Badge className={getStatusColor(reserveStatus)}>
-            {getStatusLabel(reserveStatus)}
-          </Badge>
-        ) : (
-          "-"
-        )}
+        <Badge
+          className={getStatusColor(
+            reserveStatus ?? ReserveComplianceStatus.PENDING_SETUP
+          )}
+        >
+          {getStatusLabel(
+            reserveStatus ?? ReserveComplianceStatus.PENDING_SETUP
+          )}
+        </Badge>
       </div>
     </div>
   );

@@ -2812,7 +2812,8 @@
                   "compliant": "Compliant",
                   "pending-review": "Pending review",
                   "under-investigation": "Under investigation",
-                  "non-compliant": "Non-compliant"
+                  "non-compliant": "Non-compliant",
+                  "pending-setup": "Pending setup"
                 },
                 "audit-documents": "Audit documents"
               }

@@ -22,10 +22,6 @@ export default async function MicaRegulationPage({ params }: PageProps) {
     regulationType: "mica",
   });
 
-  console.log("assetId", normalizedAddress);
-
-  console.log(regulationData);
-
   if (!regulationData?.mica_regulation_config) {
     console.error("MiCA regulation config not found");
     return null;
@@ -34,9 +30,6 @@ export default async function MicaRegulationPage({ params }: PageProps) {
   const assetDetails = await getAssetUsersDetail({
     address: normalizedAddress,
   });
-
-  console.log(regulationData);
-  console.log(assetDetails);
 
   return (
     <div className="space-y-8">
