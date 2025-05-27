@@ -1,6 +1,5 @@
 "use client";
 
-import type { AirdropFormDefinition } from "@/components/blocks/airdrop/design-dialog/types";
 import { Form } from "@/components/blocks/form/form";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createVestingAirdrop } from "@/lib/mutations/airdrop/create/vesting/create-action";
@@ -78,13 +77,12 @@ export function CreateVestingAirdropForm({
   );
 }
 
-export const vestingAirdropFormDefinition: AirdropFormDefinition = {
+export const vestingAirdropFormDefinition = {
   steps: [
     {
       id: "basics",
-      title: "private.airdrops.create.basics.title", // Reusing generic title for now
-      description: "private.airdrops.create.basics.description", // Reusing generic desc for now
+      title: "basics.title",
+      description: "basics.description",
     },
-    // Add other steps like configuration, summary etc. later
   ],
-};
+} as const;

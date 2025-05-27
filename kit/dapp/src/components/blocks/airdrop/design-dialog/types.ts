@@ -1,27 +1,9 @@
-import type { Step } from "@/components/blocks/step-wizard/step-wizard";
+import { pushAirdropFormDefinition } from "./create-forms/push-airdrop/form";
+import { standardAirdropFormDefinition } from "./create-forms/standard-airdrop/form";
+import { vestingAirdropFormDefinition } from "./create-forms/vesting-airdrop/form";
 
-// Dynamically import airdrop form configurations
 export const airdropForms = {
-  standard: () =>
-    import("./create-forms/standard-airdrop/form").then((m) => {
-      return {
-        default: m.standardAirdropFormDefinition,
-      };
-    }),
-  vesting: () =>
-    import("./create-forms/vesting-airdrop/form").then((m) => {
-      return {
-        default: m.vestingAirdropFormDefinition,
-      };
-    }),
-  push: () =>
-    import("./create-forms/push-airdrop/form").then((m) => {
-      return {
-        default: m.pushAirdropFormDefinition,
-      };
-    }),
+  standard: standardAirdropFormDefinition,
+  vesting: vestingAirdropFormDefinition,
+  push: pushAirdropFormDefinition,
 } as const;
-
-export interface AirdropFormDefinition {
-  steps: Step[];
-}

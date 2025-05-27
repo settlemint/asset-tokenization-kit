@@ -1,6 +1,5 @@
 "use client";
 
-import type { AirdropFormDefinition } from "@/components/blocks/airdrop/design-dialog/types";
 import { Form } from "@/components/blocks/form/form";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createStandardAirdrop } from "@/lib/mutations/airdrop/create/standard/create-action";
@@ -73,18 +72,17 @@ export function CreateStandardAirdropForm({
       onAnyFieldChange={onAnyFieldChange}
       onOpenChange={onOpenChange}
     >
-      <Basics onNextStep={onNextStep} />
+      <Basics />
     </Form>
   );
 }
 
-export const standardAirdropFormDefinition: AirdropFormDefinition = {
+export const standardAirdropFormDefinition = {
   steps: [
     {
       id: "basics",
-      title: "private.airdrops.create.basics.title", // Reusing generic title for now
-      description: "private.airdrops.create.basics.description", // Reusing generic desc for now
+      title: "basics.title",
+      description: "basics.description",
     },
-    // Add other steps like configuration, summary etc. later
   ],
-};
+} as const;
