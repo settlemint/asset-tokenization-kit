@@ -1,6 +1,8 @@
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
+import { normalizeAddress } from "@/lib/utils/typebox/address";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import console from "console";
 import type { Locale } from "next-intl";
 import type { Address } from "viem";
 import { MicaRegulationLayout } from "./_components/layout";
@@ -12,16 +14,29 @@ interface PageProps {
 export default async function MicaRegulationPage({ params }: PageProps) {
   const { address } = await params;
 
+  // Normalize the address to lowercase for consistency while maintaining the Address type
+  const normalizedAddress = normalizeAddress(address);
+
   const regulationData = await getRegulationDetail({
-    assetId: address.toLowerCase(),
+    assetId: normalizedAddress,
     regulationType: "mica",
   });
+
+  console.log("assetId", normalizedAddress);
+
+  console.log(regulationData);
+
   if (!regulationData?.mica_regulation_config) {
     console.error("MiCA regulation config not found");
     return null;
   }
 
-  const assetDetails = await getAssetUsersDetail({ address });
+  const assetDetails = await getAssetUsersDetail({
+    address: normalizedAddress,
+  });
+
+  console.log(regulationData);
+  console.log(assetDetails);
 
   return (
     <div className="space-y-8">

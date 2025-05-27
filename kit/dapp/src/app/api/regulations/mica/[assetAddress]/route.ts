@@ -1,5 +1,7 @@
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
+import { normalizeAddress } from "@/lib/utils/typebox/address";
 import { NextRequest, NextResponse } from "next/server";
+import type { Address } from "viem";
 
 export async function GET(
   request: NextRequest,
@@ -10,7 +12,7 @@ export async function GET(
 
     // Fetch the regulation data
     const regulationData = await getRegulationDetail({
-      assetId: assetAddress.toLowerCase(),
+      assetId: normalizeAddress(assetAddress as Address),
       regulationType: "mica",
     });
 

@@ -11,6 +11,8 @@ import { withAccessControl } from "@/lib/utils/access-control";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { grantRolesToAdmins } from "@/lib/utils/role-granting";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { normalizeAddress } from "@/lib/utils/typebox/address";
+import type { Address } from "viem";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateStablecoinInput } from "./create-schema";
 /**
@@ -98,14 +100,16 @@ export const createStablecoinFunction = withAccessControl(
     parsedInput: CreateStablecoinInput;
     ctx: { user: User };
   }) => {
+    const normalizedAddress = normalizeAddress(predictedAddress as Address);
+
     await hasuraClient.request(CreateOffchainStablecoin, {
-      id: predictedAddress,
+      id: normalizedAddress,
       isin,
       internalid,
     });
 
     await hasuraClient.request(AddAssetPrice, {
-      assetId: predictedAddress,
+      assetId: normalizedAddress,
       amount: String(price.amount),
       currency: price.currency,
     });
@@ -117,7 +121,7 @@ export const createStablecoinFunction = withAccessControl(
           // Create MiCA regulation config with default values
           await createRegulation(
             {
-              assetId: predictedAddress,
+              assetId: normalizedAddress,
               regulationType: "mica",
               status: RegulationStatus.NOT_COMPLIANT, // Initially not compliant until configured
             },
@@ -177,7 +181,7 @@ export const createStablecoinFunction = withAccessControl(
     // Grant roles to admins using the shared helper
     await grantRolesToAdmins(
       assetAdmins,
-      predictedAddress,
+      normalizedAddress,
       verificationCode,
       verificationType,
       "stablecoin",
