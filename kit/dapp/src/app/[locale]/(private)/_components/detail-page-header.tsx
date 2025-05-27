@@ -39,6 +39,8 @@ async function getRegulationPills(assetId: Address) {
     assetId,
   });
 
+  console.log("regulationConfigs", regulationConfigs);
+
   return regulationConfigs
     .filter((config) => config.status === RegulationStatus.COMPLIANT)
     .map((config) => {

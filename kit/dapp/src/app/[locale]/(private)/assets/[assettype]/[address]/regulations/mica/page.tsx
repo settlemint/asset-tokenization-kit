@@ -30,10 +30,7 @@ export default async function MicaRegulationPage({ params }: PageProps) {
 
   return (
     <div className="space-y-8">
-      <MicaRegulationLayout
-        config={regulationData.mica_regulation_config}
-        assetDetails={assetDetails}
-      />
+      <MicaRegulationLayout params={params} />
     </div>
   );
 }

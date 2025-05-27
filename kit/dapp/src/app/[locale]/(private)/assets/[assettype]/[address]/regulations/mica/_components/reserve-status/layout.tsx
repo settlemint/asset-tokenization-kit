@@ -1,9 +1,11 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { authClient } from "@/lib/auth/client";
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { ReserveComplianceStatus } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
+import { isTokenAdmin } from "@/lib/utils/has-role";
 import { useTranslations } from "next-intl";
 import { ReserveComposition } from "./_components/reserve-composition";
 import { ReserveDetails } from "./_components/reserve-details";
@@ -18,6 +20,7 @@ export function ReserveStatusLayout({
   assetDetails: AssetUsers;
 }) {
   const t = useTranslations("regulations.mica.dashboard.reserve-status");
+  const { data: session } = authClient.useSession();
 
   const circulatingSupply = assetDetails.totalSupply
     ? Number(assetDetails.totalSupply)
@@ -31,11 +34,15 @@ export function ReserveStatusLayout({
       ? 100
       : Number(((reserveValue / circulatingSupply) * 100).toFixed(1));
 
+  const canEditReserve = isTokenAdmin(session?.user?.wallet, assetDetails);
+
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle>{t("title")}</CardTitle>
-        <ReserveForm address={assetDetails.id} config={config} />
+        {canEditReserve && (
+          <ReserveForm address={assetDetails.id} config={config} />
+        )}
       </CardHeader>
       <CardContent className="space-y-8">
         <ReserveRatio value={reserveRatio} />
