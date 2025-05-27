@@ -1,6 +1,6 @@
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
-import { normalizeAddress } from "@/lib/utils/typebox/address";
+import { normalizeAddress } from "@/lib/utils/address";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import { notFound } from "next/navigation";

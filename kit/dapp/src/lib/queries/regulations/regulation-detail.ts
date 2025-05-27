@@ -2,8 +2,8 @@ import "server-only";
 
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { normalizeAddress } from "@/lib/utils/address";
 import { withTracing } from "@/lib/utils/tracing";
-import { normalizeAddress } from "@/lib/utils/typebox/address";
 import type { Address } from "viem";
 
 // Helper function to transform snake_case response to camelCase

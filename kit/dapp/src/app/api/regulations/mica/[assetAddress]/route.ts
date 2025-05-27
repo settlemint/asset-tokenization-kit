@@ -1,5 +1,5 @@
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
-import { normalizeAddress } from "@/lib/utils/typebox/address";
+import { normalizeAddress } from "@/lib/utils/address";
 import { NextRequest, NextResponse } from "next/server";
 import type { Address } from "viem";
 

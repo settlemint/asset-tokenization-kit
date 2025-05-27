@@ -32,13 +32,13 @@ const tabs = async ({
   const tabItems = [
     {
       name: t("tabs.details"),
-      href: `/assets/${assettype}/${address}`,
+      href: `/portfolio/my-assets/${assettype}/${address}`,
     },
     ...(isMicaEnabled
       ? [
           {
             name: t("tabs.mica"),
-            href: `/assets/${assettype}/${address}/regulations/mica`,
+            href: `/portfolio/my-assets/${assettype}/${address}/regulations/mica`,
           },
         ]
       : []),

@@ -15,7 +15,7 @@ import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getRegulationList } from "@/lib/queries/regulations/regulation-list";
-import { normalizeAddress } from "@/lib/utils/typebox/address";
+import { normalizeAddress } from "@/lib/utils/address";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";

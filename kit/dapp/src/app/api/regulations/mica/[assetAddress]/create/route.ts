@@ -4,7 +4,7 @@ import {
   TokenType,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { createRegulation } from "@/lib/providers/regulations/regulation-provider";
-import { normalizeAddress } from "@/lib/utils/typebox/address";
+import { normalizeAddress } from "@/lib/utils/address";
 import { NextRequest, NextResponse } from "next/server";
 import type { Address } from "viem";
 
