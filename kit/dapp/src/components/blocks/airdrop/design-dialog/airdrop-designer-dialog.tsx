@@ -1,23 +1,20 @@
 "use client";
 
+import MiniProgressBar from "@/components/blocks/step-wizard/mini-progress-bar";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
+import {
+  StepWizard,
+  type Step,
+} from "@/components/blocks/step-wizard/step-wizard";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
-
-// Adjusted imports for airdrop designer - these are now direct imports as requested
-import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
-import type { Step } from "@/components/blocks/asset-designer/step-wizard/step-wizard"; // Using Step from asset designer
-import { StepWizard } from "@/components/blocks/asset-designer/step-wizard/step-wizard";
-
-import MiniProgressBar from "../../asset-designer/components/mini-progress-bar"; // Reusing progress bar
 import { AirdropTypeSelection } from "./steps/airdrop-type-selection";
 import {
   airdropForms,
-  typeSelectionStep,
-  type AirdropFormDefinition,
+  type AirdropFormDefinition
 } from "./types";
 import { getAirdropDescription, getAirdropTitle } from "./utils";
 
@@ -32,8 +29,7 @@ export function AirdropDesignerDialog({
   open,
   onOpenChange,
 }: AirdropDesignerDialogProps) {
-  const t = useTranslations("private.airdrops.create"); // Adjusted translation namespace
-  const { theme } = useTheme();
+  const t = useTranslations("private.airdrops.create");
   const [selectedAirdropType, setSelectedAirdropType] =
     useState<AirdropType | null>(null);
   const [currentStepId, setCurrentStepId] = useState<string>("type");
@@ -44,7 +40,11 @@ export function AirdropDesignerDialog({
     useState<React.ComponentType<any> | null>(null);
 
   const allSteps: Step[] = [
-    typeSelectionStep,
+    {
+      id: "type",
+      title: t("type-selection.title"),
+      description: t("type-selection.description"),
+    },
     ...(airdropForm?.steps || []),
   ].filter((step) => step.id === "type" || selectedAirdropType !== null);
 
@@ -128,16 +128,6 @@ export function AirdropDesignerDialog({
     }
   }, [currentStepId, stepsOrder]);
 
-  const sidebarStyle = {
-    backgroundImage:
-      theme === "dark"
-        ? "linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5))"
-        : "linear-gradient(45deg, rgba(52, 110, 238, 0.5), rgba(137, 214, 162, 0.8))", // Example gradient
-    backgroundSize: "cover",
-    backgroundPosition: "top",
-    backgroundRepeat: "no-repeat",
-  };
-
   const currentStepIndex = stepsOrder.indexOf(currentStepId);
 
   const renderStepContent = () => {
@@ -186,7 +176,6 @@ export function AirdropDesignerDialog({
             title={t(getAirdropTitle(selectedAirdropType))}
             description={t(getAirdropDescription(selectedAirdropType))}
             onStepChange={handleStepChange}
-            sidebarStyle={sidebarStyle}
             onClose={() => onOpenChange(false)}
           >
             {renderStepContent()}

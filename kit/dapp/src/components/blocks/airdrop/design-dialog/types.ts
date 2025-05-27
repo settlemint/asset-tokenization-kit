@@ -1,21 +1,7 @@
-import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
-
-export interface Step {
-  id: string;
-  title: string; // This will be a translation key
-  description: string; // This will be a translation key
-}
-
-export interface AirdropFormDefinition {
-  steps: Step[];
-  // Potentially add other common fields like initialValues, validationSchema later
-}
+import type { Step } from "@/components/blocks/step-wizard/step-wizard";
 
 // Dynamically import airdrop form configurations
-export const airdropForms: Record<
-  AirdropType,
-  () => Promise<{ default: AirdropFormDefinition }>
-> = {
+export const airdropForms = {
   standard: () =>
     import("./create-forms/standard-airdrop/form").then((m) => {
       return {
@@ -34,10 +20,8 @@ export const airdropForms: Record<
         default: m.pushAirdropFormDefinition,
       };
     }),
-};
+} as const;
 
-export const typeSelectionStep = {
-  id: "type",
-  title: "airdrop-designer.type-selection.title",
-  description: "airdrop-designer.type-selection.description",
-};
+export interface AirdropFormDefinition {
+  steps: Step[];
+}

@@ -3,7 +3,7 @@ import { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 // Helper functions to get title and description translation keys
 export function getAirdropTitle(airdropType: AirdropType | null) {
   if (!airdropType) {
-    return "type-selection.title" as const;
+    return "type-selection.general.title" as const;
   }
   switch (airdropType) {
     case "standard":
@@ -19,7 +19,7 @@ export function getAirdropTitle(airdropType: AirdropType | null) {
 
 export function getAirdropDescription(airdropType: AirdropType | null) {
   if (!airdropType) {
-    return "type-selection.description" as const;
+    return "type-selection.general.description" as const;
   }
   switch (airdropType) {
     case "standard":

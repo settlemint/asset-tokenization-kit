@@ -1,6 +1,6 @@
 "use client";
 
-import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 
