@@ -1,6 +1,7 @@
 import { isRegulationEnabled } from "@/lib/queries/regulations/regulation-enabled";
 import { isFeatureEnabled } from "@/lib/utils/feature-flags";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import type { Address } from "viem";
 
 export const hasBlocklist = (assettype: AssetType) =>
   assettype !== "cryptocurrency" && assettype !== "deposit";
@@ -21,7 +22,7 @@ export const hasFreeze = (assettype: AssetType) =>
  * @param assetId The ID of the asset to check
  * @returns True if MICA is available and enabled for this asset
  */
-export const hasMica = async (assettype: AssetType, assetId: string) => {
+export const hasMica = async (assettype: AssetType, assetId: Address) => {
   // Always enable MiCA in development mode for supported asset types
   const isDevelopment =
     process.env.NODE_ENV === "development" ||
