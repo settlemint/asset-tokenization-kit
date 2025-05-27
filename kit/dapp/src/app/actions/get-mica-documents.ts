@@ -32,7 +32,7 @@ export const getMicaDocumentsAction = withTracing(
         };
       }
 
-      console.log(`Fetching MiCA documents for asset: ${assetAddress}`);
+      console.log(`🔍 Fetching MiCA documents for asset: ${assetAddress}`);
 
       // Define multiple prefixes to search for documents
       const prefixes = [
@@ -54,10 +54,14 @@ export const getMicaDocumentsAction = withTracing(
 
       // Collect documents from all potential locations
       const allDocuments: any[] = [];
+      // Use a Set to avoid duplicates based on object name
+      const seenObjectNames = new Set<string>();
+      let totalDocumentsFound = 0;
+      let totalDocumentsIncluded = 0;
 
       // Search in each prefix
       for (const prefix of prefixes) {
-        console.log(`Searching for documents with prefix: ${prefix}`);
+        console.log(`🔍 Searching for documents with prefix: ${prefix}`);
         const objectsStream = minioClient.listObjects(
           DEFAULT_BUCKET,
           prefix,
@@ -65,57 +69,80 @@ export const getMicaDocumentsAction = withTracing(
         );
 
         let prefixCount = 0;
+        let prefixIncluded = 0;
 
         for await (const obj of objectsStream) {
-          // For documents not in the assetAddress-specific folder,
-          // check metadata or filename for the asset address to filter
-          if (!prefix.includes(assetAddress)) {
-            let shouldInclude = false;
+          totalDocumentsFound++;
+          console.log(
+            `📄 Found object: ${obj.name} (size: ${obj.size}, lastModified: ${obj.lastModified})`
+          );
 
-            // Check if object metadata contains the asset address
-            try {
-              const stat = await minioClient.statObject(
-                DEFAULT_BUCKET,
-                obj.name
-              );
-              const meta = stat.metaData || {};
-
-              // If this document references our asset, include it
-              if (meta.assetAddress === assetAddress) {
-                shouldInclude = true;
-              }
-              // If no assetAddress in metadata but we're in a specific document type folder, include it
-              else if (!meta.assetAddress && prefix !== "Documents/") {
-                shouldInclude = true;
-              }
-              // If we're doing broad Documents search, only include if assetAddress matches
-              else if (
-                prefix === "Documents/" &&
-                meta.assetAddress !== assetAddress
-              ) {
-                shouldInclude = false;
-              }
-            } catch (_) {
-              // If we can't check metadata and it's not a broad search, include the document
-              if (prefix !== "Documents/") {
-                shouldInclude = true;
-              }
-            }
-
-            if (!shouldInclude) {
-              continue;
-            }
+          // Skip if we've already seen this object
+          if (seenObjectNames.has(obj.name)) {
+            console.log(`⏭️ Skipping duplicate object: ${obj.name}`);
+            continue;
           }
 
-          allDocuments.push(obj);
-          prefixCount++;
+          let shouldInclude = true; // Default to including documents
+          let exclusionReason = "";
+
+          // For documents not in the assetAddress-specific folder,
+          // apply more lenient filtering
+          if (!prefix.includes(assetAddress)) {
+            // If this is the broad Documents/ search, be more selective
+            if (prefix === "Documents/") {
+              // Check metadata only for the broad search
+              try {
+                const stat = await minioClient.statObject(
+                  DEFAULT_BUCKET,
+                  obj.name
+                );
+                const meta = stat.metaData || {};
+                console.log(`📋 Metadata for ${obj.name}:`, meta);
+
+                // If metadata has assetAddress and it doesn't match, exclude
+                if (meta.assetAddress && meta.assetAddress !== assetAddress) {
+                  shouldInclude = false;
+                  exclusionReason = `assetAddress mismatch: ${meta.assetAddress} !== ${assetAddress}`;
+                }
+                // If no assetAddress in metadata, include it (could be our document)
+              } catch (error) {
+                // If metadata access fails, include the document
+                console.log(
+                  `⚠️ Could not check metadata for ${obj.name}, including by default. Error:`,
+                  error
+                );
+              }
+            }
+            // For specific document type folders (like Documents/mica, Documents/Audit, etc.)
+            // include all documents as they are likely relevant
+          }
+
+          if (shouldInclude) {
+            allDocuments.push(obj);
+            seenObjectNames.add(obj.name);
+            prefixCount++;
+            prefixIncluded++;
+            totalDocumentsIncluded++;
+            console.log(
+              `✅ Added document: ${obj.name} (from prefix: ${prefix})`
+            );
+          } else {
+            console.log(`❌ Excluding ${obj.name} - ${exclusionReason}`);
+          }
         }
 
-        console.log(`Found ${prefixCount} documents in prefix: ${prefix}`);
+        console.log(
+          `📊 Found ${prefixCount} documents in prefix: ${prefix} (${prefixIncluded} included)`
+        );
       }
 
       console.log(
-        `Found ${allDocuments.length} MiCA documents for asset ${assetAddress}`
+        `📊 SUMMARY: Found ${totalDocumentsFound} total objects, included ${totalDocumentsIncluded} documents`
+      );
+      console.log(
+        `📋 Document names:`,
+        allDocuments.map((doc) => doc.name)
       );
 
       const documents: MicaDocument[] = await Promise.all(
@@ -204,6 +231,19 @@ export const getMicaDocumentsAction = withTracing(
       documents.sort(
         (a, b) =>
           new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
+      );
+
+      console.log(
+        `📊 Returning ${documents.length} documents after processing and sorting`
+      );
+      console.log(
+        `📋 Final document list:`,
+        documents.map((doc) => ({
+          id: doc.id,
+          title: doc.title,
+          type: doc.type,
+          uploadDate: doc.uploadDate,
+        }))
       );
 
       return {

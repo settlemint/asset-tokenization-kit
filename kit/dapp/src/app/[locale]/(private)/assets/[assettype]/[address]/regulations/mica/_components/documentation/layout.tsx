@@ -129,7 +129,6 @@ export function DocumentationLayout() {
       formData.append("assetAddress", assetAddress);
       const result = await uploadDocument(formData);
 
-      console.log("EXISTING ASSET UPLOAD SUCCESS:", result);
       toast.success(t("upload_success"));
 
       return {
@@ -175,17 +174,11 @@ export function DocumentationLayout() {
 
       if (result.success && result.data) {
         setRegulationConfigId(result.data.id);
-        console.log("Regulation config ID fetched:", result.data.id);
-        console.log("Full server action response:", result.data);
-        console.log("Config documents field:", result.data.documents);
 
-        // Test direct database access
-        console.log("Testing direct database access...");
         try {
           const testResult = await testMicaRegulationConfigAction(
             result.data.id
           );
-          console.log("Direct database test result:", testResult);
         } catch (testError) {
           console.error("Direct database test failed:", testError);
         }
@@ -261,13 +254,6 @@ export function DocumentationLayout() {
             uploadAction={uploadAction}
           />
         </>
-      )}
-
-      {/* Debug info */}
-      {process.env.NODE_ENV === "development" && (
-        <div className="text-xs text-gray-500 p-2 border-t">
-          Debug: regulationConfigId = {regulationConfigId || "null"}
-        </div>
       )}
     </Card>
   );
