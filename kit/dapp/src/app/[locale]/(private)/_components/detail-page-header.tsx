@@ -40,6 +40,8 @@ async function getRegulationPills(assetId: string) {
     assetId: normalizeAddress(assetId as Address),
   });
 
+  console.log("regulationConfigs", regulationConfigs);
+
   return regulationConfigs
     .filter((config) => config.status === RegulationStatus.COMPLIANT)
     .map((config) => {
