@@ -2,7 +2,6 @@ import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
 import { normalizeAddress } from "@/lib/utils/typebox/address";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import console from "console";
 import type { Locale } from "next-intl";
 import type { Address } from "viem";
 import { MicaRegulationLayout } from "./_components/layout";
