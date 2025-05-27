@@ -8,7 +8,7 @@ import type { Address } from "viem";
 export type { MicaDocument } from "@/lib/queries/regulations/mica-documents";
 
 export const getMicaDocumentsAction = withTracing(
-  "actions",
+  "queries",
   "getMicaDocumentsAction",
   async (assetAddress: string) => {
     try {
@@ -21,16 +21,8 @@ export const getMicaDocumentsAction = withTracing(
         };
       }
 
-      console.log(
-        `🎯 [ACTION] Fetching MiCA documents for asset: ${assetAddress}`
-      );
-
       // Call the Hasura-based query function
       const documents = await getMicaDocuments(assetAddress as Address);
-
-      console.log(
-        `✅ [ACTION] Successfully fetched ${documents.length} documents for asset: ${assetAddress}`
-      );
 
       return {
         success: true,
@@ -39,7 +31,7 @@ export const getMicaDocumentsAction = withTracing(
       };
     } catch (error) {
       console.error(
-        `❌ [ACTION] Failed to fetch MiCA documents for asset ${assetAddress}:`,
+        `Failed to fetch MiCA documents for asset ${assetAddress}:`,
         error
       );
 

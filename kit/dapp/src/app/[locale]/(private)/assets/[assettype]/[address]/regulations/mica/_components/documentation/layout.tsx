@@ -3,7 +3,6 @@
 import type { MicaDocument } from "@/app/actions/get-mica-documents";
 import { getMicaDocumentsAction } from "@/app/actions/get-mica-documents";
 import { getMicaRegulationConfigAction } from "@/app/actions/get-mica-regulation-config";
-import { testMicaRegulationConfigAction } from "@/app/actions/test-mica-regulation-config";
 import { uploadDocument } from "@/app/actions/upload-document";
 import { DocumentUploadDialog } from "@/components/blocks/asset-designer/components/document-upload-dialog";
 import type { UploadedDocument } from "@/components/blocks/asset-designer/types";
@@ -174,14 +173,6 @@ export function DocumentationLayout() {
 
       if (result.success && result.data) {
         setRegulationConfigId(result.data.id);
-
-        try {
-          const testResult = await testMicaRegulationConfigAction(
-            result.data.id
-          );
-        } catch (testError) {
-          console.error("Direct database test failed:", testError);
-        }
       } else {
         console.error("Failed to fetch regulation config:", result.error);
         toast.error("Failed to load regulation configuration");
@@ -214,8 +205,6 @@ export function DocumentationLayout() {
           <Button
             size="sm"
             onClick={() => {
-              console.log("🚀 EXISTING ASSET TAB UPLOAD BUTTON CLICKED!");
-              console.log("Current regulationConfigId:", regulationConfigId);
               setIsDialogOpen(true);
             }}
             disabled={!regulationConfigId}
@@ -240,14 +229,9 @@ export function DocumentationLayout() {
 
       {isDialogOpen && regulationConfigId && (
         <>
-          {console.log(
-            "🚀 EXISTING ASSET TAB DIALOG RENDERING with regulationId:",
-            regulationConfigId
-          )}
           <DocumentUploadDialog
             regulationId={regulationConfigId}
             onClose={() => {
-              console.log("🚀 EXISTING ASSET TAB DIALOG CLOSING");
               setIsDialogOpen(false);
             }}
             onUpload={handleUploadComplete}

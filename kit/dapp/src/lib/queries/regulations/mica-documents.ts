@@ -96,20 +96,10 @@ export const getMicaDocuments = withTracing(
   "queries",
   "getMicaDocuments",
   async (assetAddress: Address): Promise<MicaDocument[]> => {
-    console.log(`🔍 [${assetAddress}] Fetching MiCA documents from Hasura`);
-
     try {
       // First, let's check the overall data structure
       const allDataResult = await hasuraClient.request(
         CHECK_ALL_REGULATION_DATA
-      );
-      console.log(
-        `🔍 [${assetAddress}] All regulation configs:`,
-        allDataResult.regulation_configs
-      );
-      console.log(
-        `🔍 [${assetAddress}] All MiCA configs:`,
-        allDataResult.mica_regulation_configs
       );
 
       // Check if this asset has a regulation config
@@ -118,16 +108,8 @@ export const getMicaDocuments = withTracing(
       );
 
       if (!assetRegulationConfig) {
-        console.log(
-          `❌ [${assetAddress}] No regulation config found for this asset`
-        );
         return [];
       }
-
-      console.log(
-        `✅ [${assetAddress}] Found regulation config:`,
-        assetRegulationConfig
-      );
 
       // Find the corresponding MiCA config
       const assetMicaConfig = allDataResult.mica_regulation_configs.find(
@@ -136,35 +118,14 @@ export const getMicaDocuments = withTracing(
       );
 
       if (!assetMicaConfig) {
-        console.log(
-          `❌ [${assetAddress}] No MiCA config found for regulation config ${assetRegulationConfig.id}`
-        );
         return [];
       }
-
-      console.log(`✅ [${assetAddress}] Found MiCA config:`, {
-        id: assetMicaConfig.id,
-        regulation_config_id: assetMicaConfig.regulation_config_id,
-        documentsCount: assetMicaConfig.documents
-          ? assetMicaConfig.documents.length
-          : 0,
-      });
 
       const documentsFromHasura = assetMicaConfig.documents;
 
       if (!documentsFromHasura || !Array.isArray(documentsFromHasura)) {
-        console.log(`ℹ️ [${assetAddress}] No documents found in MiCA config`);
         return [];
       }
-
-      console.log(
-        `📄 [${assetAddress}] Found ${documentsFromHasura.length} documents:`,
-        documentsFromHasura.map((doc) => ({
-          title: doc.title,
-          type: doc.type,
-          id: doc.id,
-        }))
-      );
 
       // Transform Hasura documents to match our schema
       const documents: MicaDocument[] = documentsFromHasura.map(
@@ -213,14 +174,10 @@ export const getMicaDocuments = withTracing(
           new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
       );
 
-      console.log(
-        `✨ [${assetAddress}] Returning ${documents.length} documents`
-      );
-
       return safeParse(t.Array(MicaDocumentSchema), documents);
     } catch (error) {
       console.error(
-        `❌ [${assetAddress}] Failed to fetch MiCA documents:`,
+        `Failed to fetch MiCA documents for asset ${assetAddress}:`,
         error
       );
       return [];
