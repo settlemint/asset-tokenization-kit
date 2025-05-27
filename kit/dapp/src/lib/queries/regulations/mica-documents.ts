@@ -1,14 +1,11 @@
 import "server-only";
 
-import { client as minioClient } from "@/lib/settlemint/minio";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
 import type { Address } from "viem";
 
-// Default bucket name
-const DEFAULT_BUCKET = "uploads";
-
-// Schema for MiCA document metadata
+// Schema for MiCA document metadata from Hasura
 export const MicaDocumentSchema = t.Object(
   {
     id: t.String(),
@@ -30,8 +27,67 @@ export const MicaDocumentSchema = t.Object(
 
 export type MicaDocument = StaticDecode<typeof MicaDocumentSchema>;
 
+// GraphQL query to get regulation config ID for an asset
+const GET_REGULATION_CONFIG_ID = hasuraGraphql(`
+  query GetRegulationConfigId($assetId: String!) {
+    regulation_configs(
+      where: {
+        asset_id: { _eq: $assetId },
+        regulation_type: { _eq: "mica" }
+      },
+      limit: 1
+    ) {
+      id
+    }
+  }
+`);
+
+// GraphQL query to get MICA regulation config with documents
+const GET_MICA_REGULATION_CONFIG = hasuraGraphql(`
+  query GetMicaRegulationConfig($regulationConfigId: String!) {
+    mica_regulation_configs(
+      where: {
+        regulation_config_id: { _eq: $regulationConfigId }
+      },
+      limit: 1
+    ) {
+      id
+      documents
+    }
+  }
+`);
+
+// Debug query to see all regulation configs and MiCA configs
+const DEBUG_ALL_CONFIGS = hasuraGraphql(`
+  query DebugAllConfigs {
+    regulation_configs {
+      id
+      asset_id
+      regulation_type
+    }
+    mica_regulation_configs {
+      id
+      regulation_config_id
+      documents
+    }
+  }
+`);
+
+type GetRegulationConfigIdResponse = {
+  regulation_configs: {
+    id: string;
+  }[];
+};
+
+type GetMicaRegulationConfigResponse = {
+  mica_regulation_configs: {
+    id: string;
+    documents: any[] | null;
+  }[];
+};
+
 /**
- * Fetches MiCA regulation documents for a specific asset
+ * Fetches MiCA regulation documents for a specific asset from Hasura
  *
  * @param assetAddress - The blockchain address of the asset
  * @returns Array of MiCA document metadata
@@ -40,182 +96,148 @@ export const getMicaDocuments = withTracing(
   "queries",
   "getMicaDocuments",
   async (assetAddress: Address): Promise<MicaDocument[]> => {
-    console.log(`Fetching MiCA documents for asset: ${assetAddress}`);
+    console.log(
+      `🔍 Fetching MiCA documents from Hasura for asset: ${assetAddress}`
+    );
 
     try {
-      // Define multiple prefixes to search for documents
-      const prefixes = [
-        // Original expected path
-        `regulations/mica/${assetAddress}`,
-        // Path for documents created through upload-document.ts (includes all subfolders)
-        `Documents/mica`,
-        // Check generic document types that might contain MICA docs (includes all subfolders)
-        `Documents/Compliance`,
-        `Documents/Legal`,
-        `Documents/Audit`,
-        `Documents/Whitepaper`,
-        `Documents/Governance`,
-        `Documents/Policy`,
-        `Documents/Procedure`,
-        // Also search broadly in Documents folder to catch any date-based subfolders
-        `Documents/`,
-      ];
-
-      // Collect documents from all potential locations
-      const allDocuments: any[] = [];
-
-      // Search in each prefix
-      for (const prefix of prefixes) {
-        console.log(`Searching for documents with prefix: ${prefix}`);
-        const objectsStream = minioClient.listObjects(
-          DEFAULT_BUCKET,
-          prefix,
-          true
-        );
-
-        let prefixCount = 0;
-
-        for await (const obj of objectsStream) {
-          // For documents not in the assetAddress-specific folder,
-          // check metadata or filename for the asset address to filter
-          if (!prefix.includes(assetAddress)) {
-            let shouldInclude = false;
-
-            // Check if object metadata contains the asset address
-            try {
-              const stat = await minioClient.statObject(
-                DEFAULT_BUCKET,
-                obj.name
-              );
-              const meta = stat.metaData || {};
-
-              // If this document references our asset, include it
-              if (meta.assetAddress === assetAddress) {
-                shouldInclude = true;
-              }
-              // If no assetAddress in metadata but we're in a specific document type folder, include it
-              else if (!meta.assetAddress && prefix !== "Documents/") {
-                shouldInclude = true;
-              }
-              // If we're doing broad Documents search, only include if assetAddress matches
-              else if (
-                prefix === "Documents/" &&
-                meta.assetAddress !== assetAddress
-              ) {
-                shouldInclude = false;
-              }
-            } catch (_) {
-              // If we can't check metadata and it's not a broad search, include the document
-              if (prefix !== "Documents/") {
-                shouldInclude = true;
-              }
-            }
-
-            if (!shouldInclude) {
-              continue;
-            }
-          }
-
-          allDocuments.push(obj);
-          prefixCount++;
-        }
-
-        console.log(`Found ${prefixCount} documents in prefix: ${prefix}`);
-      }
-
+      // Debug: First let's see all configs in the database
       console.log(
-        `Found ${allDocuments.length} MiCA documents for asset ${assetAddress}`
+        `🔬 DEBUG: Fetching all regulation configs and MiCA configs for debugging...`
+      );
+      const debugResult = await hasuraClient.request(DEBUG_ALL_CONFIGS);
+      console.log(
+        `🔬 DEBUG: All regulation configs:`,
+        debugResult.regulation_configs
+      );
+      console.log(
+        `🔬 DEBUG: All MiCA configs:`,
+        debugResult.mica_regulation_configs
       );
 
-      const documents = await Promise.all(
-        allDocuments.map(async (obj) => {
-          // Generate a presigned URL for the document that's valid for 1 hour
-          const url = await minioClient.presignedGetObject(
-            DEFAULT_BUCKET,
-            obj.name,
-            3600 // URL valid for 1 hour
-          );
+      // Step 1: Get the regulation config ID for this asset
+      const regulationConfigResult =
+        await hasuraClient.request<GetRegulationConfigIdResponse>(
+          GET_REGULATION_CONFIG_ID,
+          {
+            assetId: assetAddress,
+          }
+        );
 
-          // Extract metadata from the object name and path
-          const pathParts = obj.name.split("/");
-          const fileName = pathParts[pathParts.length - 1];
+      console.log(
+        `📊 Regulation config query result for asset ${assetAddress}:`,
+        regulationConfigResult
+      );
 
-          // Try to get more metadata if available
-          let metaData = {};
-          try {
-            const stat = await minioClient.statObject(DEFAULT_BUCKET, obj.name);
-            metaData = stat.metaData || {};
-          } catch (error) {
-            // Don't let metadata failure prevent document listing
-            // Only log non-authentication errors at warning level
-            if ((error as any)?.code !== "AccessDenied") {
-              console.warn(`Could not fetch metadata for ${obj.name}:`, error);
-            } else {
-              // For auth errors, just log at debug level (won't appear in normal logs)
-              console.debug(
-                `Auth issue with metadata for ${obj.name} - continuing without metadata`
-              );
+      if (
+        !regulationConfigResult.regulation_configs ||
+        regulationConfigResult.regulation_configs.length === 0
+      ) {
+        console.log(`ℹ️ No regulation config found for asset ${assetAddress}`);
+        return [];
+      }
+
+      const regulationConfig = regulationConfigResult.regulation_configs[0];
+      console.log(
+        `✅ Found regulation config ID: ${regulationConfig.id} for asset: ${assetAddress}`
+      );
+
+      // Step 2: Get the MICA regulation config with documents
+      const micaConfigResult =
+        await hasuraClient.request<GetMicaRegulationConfigResponse>(
+          GET_MICA_REGULATION_CONFIG,
+          {
+            regulationConfigId: regulationConfig.id,
+          }
+        );
+
+      console.log(
+        `📊 MiCA config query result for regulation config ${regulationConfig.id}:`,
+        micaConfigResult
+      );
+
+      if (
+        !micaConfigResult.mica_regulation_configs ||
+        micaConfigResult.mica_regulation_configs.length === 0
+      ) {
+        console.log(
+          `ℹ️ No MiCA regulation config found for regulation config ${regulationConfig.id}`
+        );
+        return [];
+      }
+
+      const micaConfig = micaConfigResult.mica_regulation_configs[0];
+      console.log(
+        `✅ Found MiCA config ID: ${micaConfig.id} for regulation config: ${regulationConfig.id}`
+      );
+
+      const documentsFromHasura = micaConfig.documents;
+
+      console.log(
+        `📄 Raw documents from Hasura for asset ${assetAddress}:`,
+        documentsFromHasura
+      );
+      console.log(
+        `📄 Number of documents found: ${documentsFromHasura ? documentsFromHasura.length : 0}`
+      );
+
+      if (!documentsFromHasura || !Array.isArray(documentsFromHasura)) {
+        console.log(
+          `ℹ️ No documents found in MiCA config for asset ${assetAddress}`
+        );
+        return [];
+      }
+
+      // Let's also log what documents are found and their details
+      documentsFromHasura.forEach((doc: any, index: number) => {
+        console.log(`📄 Document ${index + 1}:`, {
+          id: doc.id,
+          title: doc.title,
+          type: doc.type,
+          url: doc.url,
+          status: doc.status,
+        });
+      });
+
+      // Transform Hasura documents to match our schema
+      const documents: MicaDocument[] = documentsFromHasura.map(
+        (doc: any, index: number) => {
+          // Extract filename from URL if not provided
+          let fileName = doc.fileName || doc.title || `document-${index + 1}`;
+          if (!doc.fileName && doc.url) {
+            try {
+              const urlPath = new URL(doc.url).pathname;
+              const urlFileName = urlPath.split("/").pop();
+              if (urlFileName) {
+                fileName = urlFileName;
+              }
+            } catch (error) {
+              console.warn(`Could not extract filename from URL: ${doc.url}`);
             }
-            // Continue with empty metadata - we'll derive what we can from the filename
           }
 
-          // Determine document type and category based on path or metadata
-          const category = pathParts.length > 1 ? pathParts[1] : "general";
+          // Determine category from type or filename
+          const category = doc.category || doc.type || "general";
 
-          // Extract document type - prioritize folder structure since metadata access might fail
-          let type = "Other";
+          // Generate upload date if not provided
+          const uploadDate =
+            doc.uploadDate || doc.created_at || new Date().toISOString();
 
-          // First try to determine type from the path
-          if (pathParts.length > 1) {
-            // If path is Documents/Audit/... then type is Audit
-            if (pathParts[0] === "Documents" && pathParts.length > 1) {
-              // Capitalize the first letter for nicer display
-              type =
-                pathParts[1].charAt(0).toUpperCase() + pathParts[1].slice(1);
-            }
-            // For MiCA specific paths
-            else if (
-              pathParts[0] === "regulations" &&
-              pathParts[1] === "mica"
-            ) {
-              type = "MiCA";
-            }
-          }
-
-          // Then check if type is explicitly set in metadata (might not be available due to auth issues)
-          if ((metaData as any)["type"]) {
-            type = (metaData as any)["type"];
-          }
-          // Fallback to extension only if no better type can be derived
-          else if (fileName.endsWith(".pdf")) {
-            type = "PDF";
-          } else if (fileName.endsWith(".docx")) {
-            type = "Document";
-          }
-
-          // Determine status - in a real application, this might come from a database
-          // Here we're just assigning statuses for demonstration purposes
-          const statusOptions = ["approved", "pending"] as const;
-          const randomStatus =
-            statusOptions[Math.floor(Math.random() * statusOptions.length)];
-
-          // For title, use metadata or generate from filename
-          const title =
-            (metaData as any)["title"] ||
-            fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+          // Estimate file size if not provided (default to 0)
+          const size = doc.size || 0;
 
           return {
-            id: obj.name,
-            title: title,
+            id: doc.id || doc.url || `doc-${index}`,
+            title: doc.title || fileName,
             fileName: fileName,
-            type: type,
+            type: doc.type || "document",
             category: category,
-            uploadDate: obj.lastModified.toISOString(),
-            status: (metaData as any)["status"] || randomStatus,
-            url,
-            size: obj.size,
+            uploadDate: uploadDate,
+            status: doc.status || "pending",
+            url: doc.url,
+            size: size,
           };
-        })
+        }
       );
 
       // Sort documents by upload date (newest first)
@@ -224,10 +246,18 @@ export const getMicaDocuments = withTracing(
           new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
       );
 
+      console.log(
+        `✨ Returning ${documents.length} documents for asset ${assetAddress}`
+      );
+      console.log(
+        `📋 Document summary:`,
+        documents.map((d) => ({ title: d.title, type: d.type }))
+      );
+
       return safeParse(t.Array(MicaDocumentSchema), documents);
     } catch (error) {
       console.error(
-        `Failed to fetch MiCA documents for asset ${assetAddress}:`,
+        `❌ Failed to fetch MiCA documents from Hasura for asset ${assetAddress}:`,
         error
       );
       return [];
@@ -236,97 +266,71 @@ export const getMicaDocuments = withTracing(
 );
 
 /**
- * Get a specific MiCA document by ID
+ * Get a specific MiCA document by ID from Hasura
  */
 export const getMicaDocumentById = withTracing(
   "queries",
   "getMicaDocumentById",
   async (documentId: string): Promise<MicaDocument | null> => {
-    console.log(`Getting MiCA document details for: ${documentId}`);
+    console.log(
+      `🔍 Getting MiCA document details from Hasura for: ${documentId}`
+    );
 
     try {
-      // Attempt to get object stats (may fail due to auth issues)
-      let statResult;
-      let metaData = {};
+      // For now, we'll need to search through all MiCA configs to find the document
+      // In a future version, we could create a dedicated documents table for better querying
 
-      try {
-        statResult = await minioClient.statObject(DEFAULT_BUCKET, documentId);
-        metaData = statResult.metaData || {};
-      } catch (error) {
-        // Only log non-authentication errors at warning level
-        if ((error as any)?.code !== "AccessDenied") {
-          console.warn(`Could not fetch metadata for ${documentId}:`, error);
-        } else {
-          // For auth errors, just log at debug level (won't appear in normal logs)
-          console.debug(
-            `Auth issue with metadata for ${documentId} - continuing without metadata`
+      const allConfigsQuery = hasuraGraphql(`
+        query GetAllMicaConfigs {
+          mica_regulation_configs {
+            id
+            documents
+          }
+        }
+      `);
+
+      const response = await hasuraClient.request(allConfigsQuery);
+
+      for (const config of response.mica_regulation_configs) {
+        if (config.documents && Array.isArray(config.documents)) {
+          const document = config.documents.find(
+            (doc: any) => doc.id === documentId || doc.url === documentId
           );
-        }
-        // Continue even without metadata
-      }
 
-      // Generate presigned URL (should still work even if metadata failed)
-      const url = await minioClient.presignedGetObject(
-        DEFAULT_BUCKET,
-        documentId,
-        3600
-      );
+          if (document) {
+            // Transform the document to match our schema
+            const fileName = document.fileName || document.title || "document";
+            const category = document.category || document.type || "general";
+            const uploadDate =
+              document.uploadDate ||
+              document.created_at ||
+              new Date().toISOString();
+            const size = document.size || 0;
 
-      const pathParts = documentId.split("/");
-      const fileName = pathParts[pathParts.length - 1];
-      const category = pathParts.length > 1 ? pathParts[1] : "general";
+            const transformedDocument = {
+              id: document.id || document.url || documentId,
+              title: document.title || fileName,
+              fileName: fileName,
+              type: document.type || "document",
+              category: category,
+              uploadDate: uploadDate,
+              status: document.status || "pending",
+              url: document.url,
+              size: size,
+            };
 
-      // Extract document type - prioritize folder structure since metadata access might fail
-      let type = "Other";
-
-      // First try to determine type from the path
-      if (pathParts.length > 1) {
-        // If path is Documents/Audit/... then type is Audit
-        if (pathParts[0] === "Documents" && pathParts.length > 1) {
-          // Capitalize the first letter for nicer display
-          type = pathParts[1].charAt(0).toUpperCase() + pathParts[1].slice(1);
-        }
-        // For MiCA specific paths
-        else if (pathParts[0] === "regulations" && pathParts[1] === "mica") {
-          type = "MiCA";
+            return safeParse(MicaDocumentSchema, transformedDocument);
+          }
         }
       }
 
-      // Then check if type is explicitly set in metadata (if available)
-      if (metaData && (metaData as any)["type"]) {
-        type = (metaData as any)["type"];
-      }
-      // Fallback to extension
-      else if (fileName.endsWith(".pdf")) {
-        type = "PDF";
-      } else if (fileName.endsWith(".docx")) {
-        type = "Document";
-      }
-
-      const title =
-        (metaData && (metaData as any)["title"]) ||
-        fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-
-      // For the document object creation, provide fallbacks for when statResult is undefined
-      const document = {
-        id: documentId,
-        title: title,
-        fileName: fileName,
-        type: type,
-        category: category,
-        // Use current date if statResult is undefined
-        uploadDate: statResult
-          ? statResult.lastModified.toISOString()
-          : new Date().toISOString(),
-        status: (metaData as any)["status"] || "pending",
-        url,
-        // Default size to 0 if statResult is undefined
-        size: statResult ? statResult.size : 0,
-      };
-
-      return safeParse(MicaDocumentSchema, document);
+      console.log(`ℹ️ Document not found: ${documentId}`);
+      return null;
     } catch (error) {
-      console.error(`Failed to get MiCA document ${documentId}:`, error);
+      console.error(
+        `❌ Failed to get MiCA document ${documentId} from Hasura:`,
+        error
+      );
       return null;
     }
   }
