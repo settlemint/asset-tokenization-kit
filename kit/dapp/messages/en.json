@@ -468,6 +468,12 @@
       "stablecoin-initials": "SC",
       "tokenized-deposit-initials": "TD"
     },
+    "airdrop-type-icon": {
+      "standard-initials": "ST",
+      "vesting-initials": "VS",
+      "push-initials": "PS",
+      "not-available-initials": "NA"
+    },
     "chart": {
       "info-icon-label": "Info",
       "last-updated-at": "Last updated at: {lastUpdated}",
@@ -2742,5 +2748,56 @@
     "sending": "Sending",
     "success": "Success",
     "validation-errors": "Validation error"
+  },
+  "airdrop-designer": {
+    "type-selection": {
+      "title": "Select airdrop type",
+      "description": "Choose the type of airdrop you want to create.",
+      "key-features": "Key features:",
+      "types": {
+        "standard": {
+          "title": "Standard Airdrop",
+          "description": "Simple, time-bound airdrop where users claim tokens using a Merkle proof.",
+          "extended-description": "A Standard Airdrop allows for a straightforward distribution of tokens to a list of recipients. Users can claim their allocated tokens within a defined start and end time by providing a cryptographic (Merkle) proof of their inclusion in the airdrop list. It supports individual and batch claims.",
+          "features": {
+            "merkle-proof": "Merkle proof verification for claims",
+            "time-bound": "Configurable start and end time for claims",
+            "user-initiated-claim": "Users initiate their own claims",
+            "batch-claim": "Supports batch claiming for multiple allocations",
+            "erc2771-support": "ERC2771 support for gasless transactions (meta-transactions)",
+            "ownable": "Contract is ownable for administrative functions"
+          }
+        },
+        "vesting": {
+          "title": "Vesting Airdrop",
+          "description": "Airdrop with tokens released over time according to a vesting schedule.",
+          "extended-description": "A Vesting Airdrop distributes tokens that are released to recipients gradually over a defined period, following a specific vesting schedule. It uses a pluggable claim strategy to define how vesting occurs (e.g., linear, cliff). Users initialize their claim, and then can claim available tokens as they vest. Supports ERC2771 for meta-transactions.",
+          "features": {
+            "pluggable-vesting-strategy": "Uses a configurable claim strategy for vesting logic",
+            "time-bound-initialization": "Claim initialization period (claimPeriodEnd)",
+            "user-initiated-claim": "Users initiate claims as tokens vest",
+            "merkle-proof": "Merkle proof verification for initial eligibility",
+            "reentrancy-guard": "Protected against reentrancy attacks",
+            "batch-claim": "Supports batch claiming for multiple allocations",
+            "erc2771-support": "ERC2771 support for gasless transactions (meta-transactions)",
+            "ownable": "Contract is ownable for administrative functions like changing strategy"
+          }
+        },
+        "push": {
+          "title": "Push Airdrop",
+          "description": "Admin-initiated airdrop where tokens are directly transferred to recipients.",
+          "extended-description": "A Push Airdrop allows an administrator (owner) to directly send tokens to a list of recipients. The admin verifies eligibility using Merkle proofs and can distribute tokens individually or in batches. This type is useful when users are not expected to actively claim tokens. Supports ERC2771 for meta-transactions by the admin.",
+          "features": {
+            "admin-initiated": "Administrator (owner) pushes tokens to recipients",
+            "merkle-proof-admin": "Admin uses Merkle proofs to verify distributions",
+            "batch-distribution": "Supports batch distribution to multiple recipients",
+            "no-user-claim-needed": "Recipients do not need to actively claim tokens",
+            "distribution-cap": "Optional cap on total tokens to be distributed",
+            "erc2771-support": "ERC2771 support for gasless transactions by admin (meta-transactions)",
+            "ownable": "Contract is ownable for administrative functions"
+          }
+        }
+      }
+    }
   }
 }
