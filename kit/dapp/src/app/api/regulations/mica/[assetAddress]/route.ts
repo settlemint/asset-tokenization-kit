@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { Address } from "viem";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ assetAddress: string }> }
 ) {
   try {
