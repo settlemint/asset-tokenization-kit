@@ -1449,6 +1449,12 @@
           "end-time-label": "End time",
           "end-time-description": "The date and time when the airdrop claim period ends."
         },
+        "distribution": {
+          "title": "Distribution",
+          "description": "Specify the distribution for this airdrop.",
+          "distribution-label": "Distribution CSV",
+          "distribution-description": "The distribution of the airdrop. The CSV file must have the columns 'amount' and 'recipient'."
+        },
         "button-labels": {
           "general": {
             "next": "Next",

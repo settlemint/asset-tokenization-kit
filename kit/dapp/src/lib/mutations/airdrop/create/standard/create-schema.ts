@@ -1,4 +1,5 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
+import { AirdropDistributionSchema } from "../common/airdrop-distribution-schema";
 
 export const CreateStandardAirdropSchema = t.Object(
   {
@@ -19,9 +20,7 @@ export const CreateStandardAirdropSchema = t.Object(
         description: "Asset to transfer",
       }
     ),
-    merkleRoot: t.String({
-      description: "The merkle root of the airdrop",
-    }),
+    distribution: AirdropDistributionSchema,
     owner: t.EthereumAddress({
       description: "The owner of the airdrop",
     }),

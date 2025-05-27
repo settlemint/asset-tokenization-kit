@@ -8,6 +8,7 @@ import { CreateStandardAirdropSchema } from "@/lib/mutations/airdrop/create/stan
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { Basics } from "./steps/basics";
+import { Distribution } from "./steps/distribution";
 
 interface CreateStandardAirdropFormProps {
   userDetails: User;
@@ -16,6 +17,21 @@ interface CreateStandardAirdropFormProps {
   onPrevStep: () => void;
   onOpenChange: (open: boolean) => void;
 }
+
+export const standardAirdropFormDefinition = {
+  steps: [
+    {
+      id: "basics",
+      title: "basics.title",
+      description: "basics.description",
+    },
+    {
+      id: "distribution",
+      title: "distribution.title",
+      description: "distribution.description",
+    },
+  ],
+} as const;
 
 export function CreateStandardAirdropForm({
   userDetails,
@@ -28,9 +44,8 @@ export function CreateStandardAirdropForm({
 
   // Define step order and mapping
   const stepIdToIndex = {
-    details: 0,
-    // recipients: 1,
-    // summary: 2,
+    basics: 0,
+    distribution: 1,
   };
 
   // Use the step synchronization hook
@@ -67,16 +82,7 @@ export function CreateStandardAirdropForm({
       onOpenChange={onOpenChange}
     >
       <Basics />
+      <Distribution />
     </Form>
   );
 }
-
-export const standardAirdropFormDefinition = {
-  steps: [
-    {
-      id: "basics",
-      title: "basics.title",
-      description: "basics.description",
-    },
-  ],
-} as const;
