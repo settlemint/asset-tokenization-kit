@@ -3,6 +3,8 @@ import "server-only";
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
+import { normalizeAddress } from "@/lib/utils/typebox/address";
+import type { Address } from "viem";
 
 // Helper function to transform snake_case response to camelCase
 function transformMicaConfig(config: any): MicaRegulationConfig | null {
@@ -143,10 +145,13 @@ export const getRegulationDetail = withTracing(
     regulationType,
   }: RegulationDetailProps): Promise<RegulationDetailResponse | null> => {
     try {
+      // Ensure assetId is always lowercased for consistency
+      const normalizedAssetId = normalizeAddress(assetId as Address);
+
       const baseResponse = await hasuraClient.request(
         RegulationDetail,
         {
-          assetId,
+          assetId: normalizedAssetId,
           regulationType,
         },
         {

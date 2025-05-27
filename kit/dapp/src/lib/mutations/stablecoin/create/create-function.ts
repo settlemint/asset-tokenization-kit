@@ -2,6 +2,10 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import { RegulationStatus } from "@/lib/db/regulations/schema-base-regulation-configs";
+import {
+  ReserveComplianceStatus,
+  TokenType,
+} from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { createRegulation } from "@/lib/providers/regulations/regulation-provider";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
@@ -11,6 +15,8 @@ import { withAccessControl } from "@/lib/utils/access-control";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { grantRolesToAdmins } from "@/lib/utils/role-granting";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { normalizeAddress } from "@/lib/utils/typebox/address";
+import type { Address } from "viem";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateStablecoinInput } from "./create-schema";
 /**
@@ -98,14 +104,16 @@ export const createStablecoinFunction = withAccessControl(
     parsedInput: CreateStablecoinInput;
     ctx: { user: User };
   }) => {
+    const normalizedAddress = normalizeAddress(predictedAddress as Address);
+
     await hasuraClient.request(CreateOffchainStablecoin, {
-      id: predictedAddress,
+      id: normalizedAddress,
       isin,
       internalid,
     });
 
     await hasuraClient.request(AddAssetPrice, {
-      assetId: predictedAddress,
+      assetId: normalizedAddress,
       amount: String(price.amount),
       currency: price.currency,
     });
@@ -117,15 +125,15 @@ export const createStablecoinFunction = withAccessControl(
           // Create MiCA regulation config with default values
           await createRegulation(
             {
-              assetId: predictedAddress,
+              assetId: normalizedAddress,
               regulationType: "mica",
               status: RegulationStatus.NOT_COMPLIANT, // Initially not compliant until configured
             },
             {
               // MiCA-specific default config
               documents: [],
-              tokenType: "e-money-token", // Default to e-money token
-              reserveStatus: "pending_setup",
+              tokenType: TokenType.ELECTRONIC_MONEY_TOKEN, // Default to e-money token
+              reserveStatus: ReserveComplianceStatus.PENDING_REVIEW,
             }
           );
         }
@@ -177,7 +185,7 @@ export const createStablecoinFunction = withAccessControl(
     // Grant roles to admins using the shared helper
     await grantRolesToAdmins(
       assetAdmins,
-      predictedAddress,
+      normalizedAddress,
       verificationCode,
       verificationType,
       "stablecoin",
