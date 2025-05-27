@@ -6,6 +6,7 @@ import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import type { Address } from "viem";
+import { AssetTabs } from "./_components/asset-tabs";
 import { ManageDropdown } from "./_components/manage-dropdown";
 
 interface LayoutProps extends PropsWithChildren {
@@ -20,7 +21,7 @@ export default async function AssetDetailLayout({
   children,
   params,
 }: LayoutProps) {
-  const { address, assettype } = await params;
+  const { address, assettype, locale } = await params;
 
   return (
     <>
@@ -37,6 +38,9 @@ export default async function AssetDetailLayout({
           />
         )}
       />
+      <div className="relative mt-4 space-y-2">
+        <AssetTabs locale={locale} address={address} assettype={assettype} />
+      </div>
       {children}
     </>
   );

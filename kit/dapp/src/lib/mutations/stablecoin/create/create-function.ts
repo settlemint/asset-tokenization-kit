@@ -12,10 +12,10 @@ import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transac
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
+import { normalizeAddress } from "@/lib/utils/address";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { grantRolesToAdmins } from "@/lib/utils/role-granting";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { normalizeAddress } from "@/lib/utils/typebox/address";
 import type { Address } from "viem";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateStablecoinInput } from "./create-schema";
