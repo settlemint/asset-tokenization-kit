@@ -1,6 +1,5 @@
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
-import { normalizeAddress } from "@/lib/utils/typebox/address";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import { notFound } from "next/navigation";
@@ -14,25 +13,19 @@ interface PageProps {
 export default async function MicaRegulationPage({ params }: PageProps) {
   const { address } = await params;
 
-  // Normalize the address to lowercase for consistency while maintaining the Address type
-  const normalizedAddress = normalizeAddress(address);
-
   const regulationData = await getRegulationDetail({
-    assetId: normalizedAddress,
+    assetId: address,
     regulationType: "mica",
   });
 
   if (!regulationData?.mica_regulation_config) {
     // This should never happen as we check in asset-tabs.ts, but handle it gracefully
-    console.error(
-      "MiCA regulation config not found for asset:",
-      normalizedAddress
-    );
+    console.error("MiCA regulation config not found for asset:", address);
     notFound();
   }
 
   const assetDetails = await getAssetUsersDetail({
-    address: normalizedAddress,
+    address,
   });
 
   return (

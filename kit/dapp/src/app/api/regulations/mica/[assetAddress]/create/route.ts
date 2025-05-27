@@ -4,11 +4,10 @@ import {
   TokenType,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { createRegulation } from "@/lib/providers/regulations/regulation-provider";
-import { normalizeAddress } from "@/lib/utils/typebox/address";
 import { NextRequest, NextResponse } from "next/server";
 import type { Address } from "viem";
 
-async function createMicaConfigForAsset(assetId: string): Promise<string> {
+async function createMicaConfigForAsset(assetId: Address): Promise<string> {
   console.log(`Creating MiCA regulation config for asset: ${assetId}`);
 
   try {
@@ -24,7 +23,7 @@ async function createMicaConfigForAsset(assetId: string): Promise<string> {
 
     const regulationId = await createRegulation(
       {
-        assetId: normalizeAddress(assetId as Address),
+        assetId,
         regulationType: "mica",
         status: RegulationStatus.NOT_COMPLIANT, // Initially not compliant until configured
       },
@@ -49,7 +48,7 @@ async function createMicaConfigForAsset(assetId: string): Promise<string> {
 
 export async function POST(
   _request: NextRequest,
-  { params }: { params: Promise<{ assetAddress: string }> }
+  { params }: { params: Promise<{ assetAddress: Address }> }
 ) {
   try {
     const { assetAddress } = await params;

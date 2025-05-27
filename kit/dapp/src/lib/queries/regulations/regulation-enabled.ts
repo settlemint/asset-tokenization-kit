@@ -2,7 +2,6 @@
 
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
-import { normalizeAddress } from "@/lib/utils/typebox/address";
 import type { Address } from "viem";
 
 /**
@@ -34,12 +33,12 @@ const RegulationEnabled = hasuraGraphql(
 export const isRegulationEnabled = withTracing(
   "queries",
   "isRegulationEnabled",
-  async (assetId: string, regulationType: string) => {
+  async (assetId: Address, regulationType: string) => {
     try {
       const response = await hasuraClient.request(
         RegulationEnabled,
         {
-          assetId: normalizeAddress(assetId as Address),
+          assetId,
           regulationType,
         },
         {

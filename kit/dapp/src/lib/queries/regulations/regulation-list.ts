@@ -2,6 +2,7 @@
 
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
+import type { Address } from "viem";
 
 /**
  * GraphQL query to fetch all regulations for an asset
@@ -23,7 +24,7 @@ const RegulationList = hasuraGraphql(
 );
 
 export interface RegulationListProps {
-  assetId: string;
+  assetId: Address;
 }
 
 /**
