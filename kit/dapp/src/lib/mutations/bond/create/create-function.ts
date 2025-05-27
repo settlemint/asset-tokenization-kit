@@ -48,7 +48,7 @@ const BondFactoryCreate = portalGraphql(`
  */
 const CreateOffchainBond = hasuraGraphql(`
   mutation CreateOffchainBond($id: String!, $isin: String, $internalid: String) {
-    insert_asset_one(object: {id: $id, isin: $isin, internalid: $internalid}) {
+    insert_asset_one(object: {id: $id, isin: $isin, internalid: $internalid}, on_conflict: {constraint: asset_pkey, update_columns: [isin, internalid]}) {
       id
     }
   }

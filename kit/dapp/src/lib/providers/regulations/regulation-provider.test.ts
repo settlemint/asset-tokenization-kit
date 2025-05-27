@@ -5,13 +5,7 @@ import {
   RegulationStatus,
   RegulationType,
 } from "@/lib/db/regulations/schema-base-regulation-configs";
-import { beforeEach, describe, expect, mock, test } from "bun:test";
-import {
-  createRegulation,
-  getRegulationById,
-  getRegulationsByAssetId,
-  updateRegulation,
-} from "./regulation-provider";
+import { beforeAll, beforeEach, describe, expect, mock, test } from "bun:test";
 
 // Create a base mock provider with all methods
 const mockProvider = {
@@ -52,6 +46,12 @@ mock.module("./regulation-factory", () => ({
   createRegulationProvider: () => mockProvider,
 }));
 
+let regulationProvider: typeof import("./regulation-provider");
+beforeAll(async () => {
+  // Needs to beimported after the regulation factory is mocked
+  regulationProvider = await import("./regulation-provider");
+});
+
 describe("Regulation Provider API", () => {
   // Reset mocks before each test
   beforeEach(() => {
@@ -69,7 +69,10 @@ describe("Regulation Provider API", () => {
     };
     const specificConfig = { documents: [] };
 
-    const result = await createRegulation(baseConfig, specificConfig);
+    const result = await regulationProvider.createRegulation(
+      baseConfig,
+      specificConfig
+    );
 
     expect(result).toBe("mock-id");
     expect(mockProvider.create).toHaveBeenCalledWith(
@@ -84,7 +87,12 @@ describe("Regulation Provider API", () => {
     const regulationType = RegulationType.MICA;
     const specificConfig = { documents: [] };
 
-    await updateRegulation(id, baseConfig, regulationType, specificConfig);
+    await regulationProvider.updateRegulation(
+      id,
+      baseConfig,
+      regulationType,
+      specificConfig
+    );
 
     expect(mockProvider.update).toHaveBeenCalledWith(
       id,
@@ -97,7 +105,10 @@ describe("Regulation Provider API", () => {
     const id = "regulation-123";
     const regulationType = RegulationType.MICA;
 
-    const result = await getRegulationById(id, regulationType);
+    const result = await regulationProvider.getRegulationById(
+      id,
+      regulationType
+    );
 
     expect(result).toBeTruthy();
     expect(mockProvider.getById).toHaveBeenCalledWith(id);
@@ -107,7 +118,10 @@ describe("Regulation Provider API", () => {
     const assetId = "asset-123";
     const regulationType = RegulationType.MICA;
 
-    const result = await getRegulationsByAssetId(assetId, regulationType);
+    const result = await regulationProvider.getRegulationsByAssetId(
+      assetId,
+      regulationType
+    );
 
     expect(result).toHaveLength(1);
     expect(mockProvider.getByAssetId).toHaveBeenCalledWith(assetId);

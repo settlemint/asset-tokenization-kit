@@ -240,8 +240,12 @@ export const CalculatedBondSchema = t.Object(
 );
 export type CalculatedBond = StaticDecode<typeof CalculatedBondSchema>;
 
-export const BondSchema = t.Intersect(
-  [OnChainBondSchema, t.Partial(OffChainBondSchema)],
+export const BondSchema = t.Object(
+  {
+    ...OnChainBondSchema.properties,
+    ...t.Partial(OffChainBondSchema).properties,
+    ...CalculatedBondSchema.properties,
+  },
   {
     description:
       "Combined schema for complete bond details including on-chain data, off-chain data, and calculated fields",

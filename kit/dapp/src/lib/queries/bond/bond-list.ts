@@ -97,7 +97,7 @@ export const getBondList = withTracing(
     );
 
     const bonds = onChainBonds.map((bond) => {
-      const offChainBond = assetsById.get(getAddress(bond.id));
+      const offChainBond = assetsById.get(bond.id);
 
       const calculatedBond = calculatedFields.get(bond.id)!;
 

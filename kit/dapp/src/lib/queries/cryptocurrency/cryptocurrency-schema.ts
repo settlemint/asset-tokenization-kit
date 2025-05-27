@@ -96,8 +96,12 @@ export type CalculatedCryptoCurrency = StaticDecode<
   typeof CalculatedCryptoCurrencySchema
 >;
 
-export const CryptoCurrencySchema = t.Intersect(
-  [OnChainCryptoCurrencySchema, t.Partial(OffChainCryptoCurrencySchema)],
+export const CryptoCurrencySchema = t.Object(
+  {
+    ...OnChainCryptoCurrencySchema.properties,
+    ...t.Partial(OffChainCryptoCurrencySchema).properties,
+    ...CalculatedCryptoCurrencySchema.properties,
+  },
   {
     description:
       "Combined schema for complete cryptocurrency details including on-chain data, off-chain data, and calculated fields",
