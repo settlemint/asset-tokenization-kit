@@ -488,7 +488,7 @@ dapp:
   image:
     repository: ghcr.io/settlemint/asset-tokenization-kit
     pullPolicy: IfNotPresent
-    tag: "1.0.6-mainec4a002f8"
+    tag: "1.0.6-main83e81f549"
   ingress:
     enabled: true
     # IMPORTANT: Set the correct hostname for your environment
