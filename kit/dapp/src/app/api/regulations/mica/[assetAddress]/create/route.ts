@@ -5,7 +5,7 @@ import {
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { createRegulation } from "@/lib/providers/regulations/regulation-provider";
 import { NextRequest, NextResponse } from "next/server";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 
 async function createMicaConfigForAsset(assetId: Address): Promise<string> {
   console.log(`Creating MiCA regulation config for asset: ${assetId}`);
@@ -48,10 +48,11 @@ async function createMicaConfigForAsset(assetId: Address): Promise<string> {
 
 export async function POST(
   _request: NextRequest,
-  { params }: { params: Promise<{ assetAddress: Address }> }
+  { params }: { params: Promise<{ assetAddress: string }> }
 ) {
   try {
-    const { assetAddress } = await params;
+    const { assetAddress: raw } = await params;
+    const assetAddress = getAddress(raw);
 
     if (!assetAddress) {
       return NextResponse.json(
