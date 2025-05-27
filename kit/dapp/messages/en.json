@@ -2819,6 +2819,19 @@
               }
             }
           }
+        },
+        "authorization-status": {
+          "title": "Authorization status",
+          "description": "The authorization status of the asset",
+          "compliance-requirements": "Compliance requirements",
+          "complete": "Complete",
+          "fields": {
+            "legal-entity": "Legal entity",
+            "management-vetting": "Management vetting",
+            "regulatory-approval": "Regulatory approval",
+            "eu-passport-status": "EU passport status",
+            "compliance-requirements": "Compliance requirements"
+          }
         }
       }
     }
