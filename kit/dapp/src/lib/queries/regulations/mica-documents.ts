@@ -47,13 +47,18 @@ export const getMicaDocuments = withTracing(
       const prefixes = [
         // Original expected path
         `regulations/mica/${assetAddress}`,
-        // Path for documents created through upload-document.ts
+        // Path for documents created through upload-document.ts (includes all subfolders)
         `Documents/mica`,
-        // Check generic document types that might contain MICA docs
+        // Check generic document types that might contain MICA docs (includes all subfolders)
         `Documents/Compliance`,
         `Documents/Legal`,
         `Documents/Audit`,
         `Documents/Whitepaper`,
+        `Documents/Governance`,
+        `Documents/Policy`,
+        `Documents/Procedure`,
+        // Also search broadly in Documents folder to catch any date-based subfolders
+        `Documents/`,
       ];
 
       // Collect documents from all potential locations
@@ -68,10 +73,14 @@ export const getMicaDocuments = withTracing(
           true
         );
 
+        let prefixCount = 0;
+
         for await (const obj of objectsStream) {
           // For documents not in the assetAddress-specific folder,
           // check metadata or filename for the asset address to filter
           if (!prefix.includes(assetAddress)) {
+            let shouldInclude = false;
+
             // Check if object metadata contains the asset address
             try {
               const stat = await minioClient.statObject(
@@ -79,17 +88,39 @@ export const getMicaDocuments = withTracing(
                 obj.name
               );
               const meta = stat.metaData || {};
-              // If this document doesn't reference our asset, skip it
-              if (meta.assetAddress && meta.assetAddress !== assetAddress) {
-                continue;
+
+              // If this document references our asset, include it
+              if (meta.assetAddress === assetAddress) {
+                shouldInclude = true;
+              }
+              // If no assetAddress in metadata but we're in a specific document type folder, include it
+              else if (!meta.assetAddress && prefix !== "Documents/") {
+                shouldInclude = true;
+              }
+              // If we're doing broad Documents search, only include if assetAddress matches
+              else if (
+                prefix === "Documents/" &&
+                meta.assetAddress !== assetAddress
+              ) {
+                shouldInclude = false;
               }
             } catch (_) {
-              // If we can't check metadata, just include the document
+              // If we can't check metadata and it's not a broad search, include the document
+              if (prefix !== "Documents/") {
+                shouldInclude = true;
+              }
+            }
+
+            if (!shouldInclude) {
+              continue;
             }
           }
 
           allDocuments.push(obj);
+          prefixCount++;
         }
+
+        console.log(`Found ${prefixCount} documents in prefix: ${prefix}`);
       }
 
       console.log(

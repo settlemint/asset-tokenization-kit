@@ -48,16 +48,16 @@ export const TransactionSchema = t.Object(
             description:
               "The block number in which the transaction was included",
           }),
-          gasUsed: t.StringifiedBigInt({
+          gasUsed: t.String({
             description: "The amount of gas used by the transaction",
           }),
           blobGasPrice: t.MaybeEmpty(
-            t.StringifiedBigInt({
+            t.String({
               description: "The price of blob gas for the transaction",
             })
           ),
           blobGasUsed: t.MaybeEmpty(
-            t.StringifiedBigInt({
+            t.String({
               description: "The amount of blob gas used by the transaction",
             })
           ),
@@ -69,11 +69,11 @@ export const TransactionSchema = t.Object(
               description: "The address of the created contract, if any",
             })
           ),
-          cumulativeGasUsed: t.StringifiedBigInt({
+          cumulativeGasUsed: t.String({
             description:
               "The total gas used when this transaction was executed in the block",
           }),
-          effectiveGasPrice: t.StringifiedBigInt({
+          effectiveGasPrice: t.String({
             description: "The effective gas price for the transaction",
           }),
           from: t.EthereumAddress({

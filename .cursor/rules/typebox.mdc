@@ -9,7 +9,7 @@ alwaysApply: false
 - Extend TypeBox with custom validators using module augmentation for domain-specific types
 - Add descriptive documentation to schema fields using the `description` property
 - Implement custom validation logic using TypeBox formats and additional properties
-- Create reusable schema components by composing smaller schemas with `t.Intersect()`
+- Create reusable schema components by composing smaller schemas with `t.Object(...SchemaX.properties, ...SchemaY.Properties)`
 - Use `t.Optional()` and `t.MaybeEmpty()` for handling optional fields properly
 - Implement robust error handling with custom `safeParse` functions
 - Organize related schemas in domain-specific files with proper exports

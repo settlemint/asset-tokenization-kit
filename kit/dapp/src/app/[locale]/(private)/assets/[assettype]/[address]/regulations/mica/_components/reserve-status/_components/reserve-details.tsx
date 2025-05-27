@@ -83,13 +83,15 @@ export function ReserveDetails({
         <h3 className="text-muted-foreground text-sm">
           {t("form.fields.audit-details.reserve-status")}
         </h3>
-        {reserveStatus ? (
-          <Badge className={getStatusColor(reserveStatus)}>
-            {getStatusLabel(reserveStatus)}
-          </Badge>
-        ) : (
-          "-"
-        )}
+        <Badge
+          className={getStatusColor(
+            reserveStatus ?? ReserveComplianceStatus.PENDING_REVIEW
+          )}
+        >
+          {getStatusLabel(
+            reserveStatus ?? ReserveComplianceStatus.PENDING_REVIEW
+          )}
+        </Badge>
       </div>
     </div>
   );

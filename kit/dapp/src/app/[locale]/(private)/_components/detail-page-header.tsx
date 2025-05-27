@@ -34,10 +34,12 @@ interface DetailPageHeaderProps {
   }) => ReactNode;
 }
 
-async function getRegulationPills(assetId: string) {
+async function getRegulationPills(assetId: Address) {
   const regulationConfigs = await getRegulationList({
-    assetId: assetId.toLowerCase(),
+    assetId,
   });
+
+  console.log("regulationConfigs", regulationConfigs);
 
   return regulationConfigs
     .filter((config) => config.status === RegulationStatus.COMPLIANT)

@@ -2,6 +2,7 @@
 
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
+import type { Address } from "viem";
 
 /**
  * GraphQL query to check if a regulation is enabled for an asset
@@ -32,12 +33,12 @@ const RegulationEnabled = hasuraGraphql(
 export const isRegulationEnabled = withTracing(
   "queries",
   "isRegulationEnabled",
-  async (assetId: string, regulationType: string) => {
+  async (assetId: Address, regulationType: string) => {
     try {
       const response = await hasuraClient.request(
         RegulationEnabled,
         {
-          assetId: assetId.toLowerCase(),
+          assetId,
           regulationType,
         },
         {

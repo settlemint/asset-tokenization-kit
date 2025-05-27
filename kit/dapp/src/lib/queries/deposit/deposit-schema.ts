@@ -127,15 +127,15 @@ export const CalculatedDepositSchema = t.Object(
 );
 export type CalculatedDeposit = StaticDecode<typeof CalculatedDepositSchema>;
 
-export const DepositSchema = t.Intersect(
-  [
-    OnChainDepositSchema,
-    t.Partial(OffChainDepositSchema),
-    CalculatedDepositSchema,
-  ],
+export const DepositSchema = t.Object(
+  {
+    ...OnChainDepositSchema.properties,
+    ...t.Partial(OffChainDepositSchema).properties,
+    ...CalculatedDepositSchema.properties,
+  },
   {
     description:
-      "Combined schema for complete tokenized deposit details including on-chain data, off-chain data, and calculated fields",
+      "Combined schema for complete deposit details including on-chain data, off-chain data, and calculated fields",
   }
 );
 export type Deposit = StaticDecode<typeof DepositSchema>;

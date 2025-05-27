@@ -65,7 +65,7 @@ export const getDepositDetail = withTracing(
   cache(async ({ address, userCurrency }: DepositDetailProps) => {
     "use cache";
     cacheTag("asset");
-    const [onChain, offChainDeposit] = await Promise.all([
+    const [onChainDeposit, offChainDeposit] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(
           DepositDetail,
@@ -99,11 +99,6 @@ export const getDepositDetail = withTracing(
         return safeParse(OffChainDepositSchema, response.asset[0]);
       })(),
     ]);
-
-    const onChainDeposit = {
-      ...onChain,
-      id: getAddress(onChain.id),
-    };
 
     const calculatedFields = await depositsCalculateFields(
       [onChainDeposit],

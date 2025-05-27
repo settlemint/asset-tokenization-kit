@@ -1,12 +1,13 @@
 "use client";
 
-import { uploadDocument } from "@/app/actions/upload-document";
+import type { MicaDocument } from "@/app/actions/get-mica-documents";
+import { getMicaDocumentsAction } from "@/app/actions/get-mica-documents";
+import { getMicaRegulationConfigAction } from "@/app/actions/get-mica-regulation-config";
 import { DocumentUploadDialog } from "@/components/blocks/asset-designer/components/document-upload-dialog";
 import type { UploadedDocument } from "@/components/blocks/asset-designer/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { MicaDocument } from "@/lib/queries/regulations/mica-documents";
 import { RefreshCw, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
@@ -81,27 +82,16 @@ export function DocumentationLayout() {
     null
   );
 
-  // Fetch documents
+  // Fetch documents using server action
   const fetchDocuments = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/documents/mica/${assetAddress}`, {
-        // Add cache: 'no-store' to prevent caching
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache",
-        },
-      });
+      const result = await getMicaDocumentsAction(assetAddress);
 
-      if (response.ok) {
-        const data = await response.json();
-        setDocuments(data);
+      if (result.success) {
+        setDocuments(result.data);
       } else {
-        const errorText = await response.text();
-        console.error(
-          `Failed to fetch documents: ${response.status}`,
-          errorText
-        );
+        console.error("Failed to fetch documents:", result.error);
         toast.error(t("delete_error"));
       }
     } catch (error) {
@@ -112,50 +102,54 @@ export function DocumentationLayout() {
     }
   }, [assetAddress, t]);
 
-  // Custom upload action that adds the assetAddress to the formData
+  // Upload action using MinIO SDK server action
   const uploadAction = async (formData: FormData) => {
-    // Add asset address to the form data
-    formData.append("assetAddress", assetAddress);
-
-    // Get the document type to use as folder path
-    const documentType = formData.get("type") as string;
-
-    // If a document type was selected, use it for the folder structure
-    // This will create paths like Documents/Audit/... or Documents/Whitepaper/...
-    if (documentType && documentType !== "Other" && documentType !== "mica") {
-      // Override the "type" to make sure it's stored as entered by the user
-      // This is important as the type will be displayed in the table
-      formData.set("type", documentType);
-
-      console.log(
-        `Document type: ${documentType}, will be stored in Documents/${documentType}`
-      );
-    } else {
-      // For mica specific documents or unspecified types
-      formData.set("type", "mica");
-      console.log(
-        `Document type: mica, will be stored in regulations/mica/${assetAddress}`
-      );
-    }
-
     try {
-      const result = await uploadDocument(formData);
+      const file = formData.get("file") as File;
+      const documentType = (formData.get("type") as string) || "mica";
+      const title = formData.get("title") as string;
 
-      if (!result) {
-        throw new Error("Upload failed");
+      if (!file) {
+        throw new Error("No file provided");
       }
 
-      toast.success(t("upload_success"));
+      console.log(
+        `Document type: ${documentType}, will be stored appropriately`
+      );
 
-      // Force a delay to ensure MinIO has time to update
-      setTimeout(() => {
-        fetchDocuments();
-      }, 2000);
-
+      // Note: This is temporarily disabled until we create a proper upload dialog
+      // that works with our server action
+      toast.error(
+        "Upload functionality is being updated to use the new MinIO SDK"
+      );
       return {
-        id: result.id,
-        url: result.url,
+        id: "temp",
+        url: "#",
       };
+
+      // TODO: Implement proper upload using server action
+      // const result = await uploadMicaDocumentAction({
+      //   file,
+      //   assetAddress,
+      //   documentType,
+      //   title,
+      // });
+
+      // if (!result.success) {
+      //   throw new Error(result.error || "Upload failed");
+      // }
+
+      // toast.success(t("upload_success"));
+
+      // // Force a delay to ensure MinIO has time to update
+      // setTimeout(() => {
+      //   fetchDocuments();
+      // }, 2000);
+
+      // return {
+      //   id: result.data.id,
+      //   url: result.data.url,
+      // };
     } catch (error) {
       console.error("Error in uploadAction:", error);
       toast.error(t("delete_error"));
@@ -174,23 +168,17 @@ export function DocumentationLayout() {
     }, 1500);
   };
 
-  // Fetch regulation config ID for this asset
+  // Fetch regulation config ID for this asset using server action
   const fetchRegulationConfig = useCallback(async () => {
     try {
-      const response = await fetch(`/api/regulations/mica/${assetAddress}`, {
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache",
-        },
-      });
+      const result = await getMicaRegulationConfigAction(assetAddress);
 
-      if (response.ok) {
-        const data = await response.json();
-        setRegulationConfigId(data.id);
-        console.log("Regulation config ID fetched:", data.id);
-        console.log("Full API response:", data);
+      if (result.success && result.data) {
+        setRegulationConfigId(result.data.id);
+        console.log("Regulation config ID fetched:", result.data.id);
+        console.log("Full server action response:", result.data);
       } else {
-        console.error("Failed to fetch regulation config:", response.status);
+        console.error("Failed to fetch regulation config:", result.error);
         toast.error("Failed to load regulation configuration");
       }
     } catch (error) {

@@ -1,8 +1,13 @@
 import { RegulationStatus } from "@/lib/db/regulations/schema-base-regulation-configs";
+import {
+  ReserveComplianceStatus,
+  TokenType,
+} from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { createRegulation } from "@/lib/providers/regulations/regulation-provider";
 import { NextRequest, NextResponse } from "next/server";
+import { getAddress, type Address } from "viem";
 
-async function createMicaConfigForAsset(assetId: string): Promise<string> {
+async function createMicaConfigForAsset(assetId: Address): Promise<string> {
   console.log(`Creating MiCA regulation config for asset: ${assetId}`);
 
   try {
@@ -18,15 +23,15 @@ async function createMicaConfigForAsset(assetId: string): Promise<string> {
 
     const regulationId = await createRegulation(
       {
-        assetId: assetId.toLowerCase(),
+        assetId,
         regulationType: "mica",
         status: RegulationStatus.NOT_COMPLIANT, // Initially not compliant until configured
       },
       {
         // MiCA-specific default config - store as JSON strings
         documents: [],
-        tokenType: "e-money-token", // Default to e-money token
-        reserveStatus: "pending_setup",
+        tokenType: TokenType.ELECTRONIC_MONEY_TOKEN, // Default to e-money token
+        reserveStatus: ReserveComplianceStatus.PENDING_REVIEW,
         reserveComposition: JSON.stringify(reserveComposition), // Convert to JSON string
       }
     );
@@ -42,11 +47,12 @@ async function createMicaConfigForAsset(assetId: string): Promise<string> {
 }
 
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ assetAddress: string }> }
 ) {
   try {
-    const { assetAddress } = await params;
+    const { assetAddress: raw } = await params;
+    const assetAddress = getAddress(raw);
 
     if (!assetAddress) {
       return NextResponse.json(

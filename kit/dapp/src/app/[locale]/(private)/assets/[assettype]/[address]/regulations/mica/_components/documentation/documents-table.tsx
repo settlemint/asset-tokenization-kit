@@ -55,19 +55,87 @@ function formatBytes(bytes: number, decimals = 2): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
 
+/**
+ * Formats the document type for display, ensuring we show meaningful
+ * documentation types rather than file extensions
+ */
+function formatDocumentType(type: string, fileName: string): string {
+  // If type is already a meaningful documentation type, return it
+  const meaningfulTypes = [
+    "audit",
+    "whitepaper",
+    "mica",
+    "compliance",
+    "legal",
+    "governance",
+    "policy",
+    "procedure",
+    "general",
+  ];
+
+  if (meaningfulTypes.includes(type.toLowerCase())) {
+    return type.charAt(0).toUpperCase() + type.slice(1);
+  }
+
+  // If type appears to be a file extension, try to infer from fileName or provide a generic fallback
+  if (
+    type.toLowerCase() === "pdf" ||
+    type.toLowerCase() === "document" ||
+    type.toLowerCase() === "docx"
+  ) {
+    // Try to infer from file name patterns
+    const lowerFileName = fileName.toLowerCase();
+    if (lowerFileName.includes("audit")) return "Audit";
+    if (
+      lowerFileName.includes("whitepaper") ||
+      lowerFileName.includes("white_paper")
+    )
+      return "Whitepaper";
+    if (lowerFileName.includes("compliance")) return "Compliance";
+    if (lowerFileName.includes("legal")) return "Legal";
+    if (lowerFileName.includes("governance")) return "Governance";
+    if (lowerFileName.includes("policy")) return "Policy";
+    if (lowerFileName.includes("procedure")) return "Procedure";
+
+    // Fallback to generic document type
+    return "Document";
+  }
+
+  // For any other case, capitalize the first letter
+  return type.charAt(0).toUpperCase() + type.slice(1);
+}
+
 export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
   const t = useTranslations("regulations.mica.documents");
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   // Get the appropriate icon based on document type
-  const getDocumentIcon = (type: string, _status: string) => {
+  const getDocumentIcon = (type: string, fileName: string) => {
+    // Check document category first
     switch (type.toLowerCase()) {
-      case "pdf":
-        return <FileText className="h-5 w-5 text-destructive" />;
-      case "document":
-      case "docx":
-        return <FileText className="h-5 w-5 text-primary" />;
+      case "audit":
+        return <FileText className="h-5 w-5 text-blue-600" />;
+      case "whitepaper":
+        return <FileText className="h-5 w-5 text-green-600" />;
+      case "mica":
+      case "compliance":
+      case "legal":
+        return <FileText className="h-5 w-5 text-purple-600" />;
+      case "governance":
+      case "policy":
+      case "procedure":
+        return <FileText className="h-5 w-5 text-orange-600" />;
       default:
+        // Fallback to file extension for icon only
+        if (fileName.toLowerCase().endsWith(".pdf")) {
+          return <FileText className="h-5 w-5 text-destructive" />;
+        }
+        if (
+          fileName.toLowerCase().endsWith(".docx") ||
+          fileName.toLowerCase().endsWith(".doc")
+        ) {
+          return <FileText className="h-5 w-5 text-primary" />;
+        }
         return <FileIcon className="h-5 w-5 text-muted-foreground" />;
     }
   };
@@ -154,7 +222,7 @@ export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
           {documents.map((document) => (
             <TableRow key={document.id}>
               <TableCell className="flex items-center gap-2">
-                {getDocumentIcon(document.type, document.status)}
+                {getDocumentIcon(document.type, document.fileName)}
                 <div>
                   <div className="font-medium">{document.title}</div>
                   <div className="text-xs text-muted-foreground">
@@ -163,7 +231,9 @@ export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
                 </div>
               </TableCell>
               <TableCell>
-                <Badge variant="outline">{document.type}</Badge>
+                <Badge variant="outline">
+                  {formatDocumentType(document.type, document.fileName)}
+                </Badge>
               </TableCell>
               <TableCell>
                 {format(new Date(document.uploadDate), "MMM d, yyyy")}

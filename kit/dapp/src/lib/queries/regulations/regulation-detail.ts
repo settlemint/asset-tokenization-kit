@@ -3,6 +3,7 @@ import "server-only";
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
+import type { Address } from "viem";
 
 // Helper function to transform snake_case response to camelCase
 function transformMicaConfig(config: any): MicaRegulationConfig | null {
@@ -111,7 +112,7 @@ const RegulationTypeConfigFields = {
  */
 export interface RegulationDetailProps {
   /** Asset ID to fetch regulation for */
-  assetId: string;
+  assetId: Address;
   /** Type of regulation to fetch */
   regulationType: keyof typeof RegulationTypeQueries;
 }

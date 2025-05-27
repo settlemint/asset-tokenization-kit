@@ -128,12 +128,12 @@ export type CalculatedStableCoin = StaticDecode<
   typeof CalculatedStableCoinSchema
 >;
 
-export const StableCoinSchema = t.Intersect(
-  [
-    OnChainStableCoinSchema,
-    t.Partial(OffChainStableCoinSchema),
-    CalculatedStableCoinSchema,
-  ],
+export const StableCoinSchema = t.Object(
+  {
+    ...OnChainStableCoinSchema.properties,
+    ...t.Partial(OffChainStableCoinSchema).properties,
+    ...CalculatedStableCoinSchema.properties,
+  },
   {
     description:
       "Combined schema for complete stablecoin details including on-chain data, off-chain data, and calculated fields",
