@@ -8,6 +8,7 @@ import type { UploadedDocument } from "@/components/blocks/asset-designer/types"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { RefreshCw, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
@@ -75,6 +76,7 @@ export function DocumentationLayout() {
   const t = useTranslations("regulations.mica.documents");
   const params = useParams();
   const assetAddress = params.address as string;
+  const assetType = params.assettype as string;
   const [documents, setDocuments] = useState<MicaDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -171,7 +173,10 @@ export function DocumentationLayout() {
   // Fetch regulation config ID for this asset using server action
   const fetchRegulationConfig = useCallback(async () => {
     try {
-      const result = await getMicaRegulationConfigAction(assetAddress);
+      const result = await getMicaRegulationConfigAction(
+        assetAddress,
+        assetType as AssetType
+      );
 
       if (result.success && result.data) {
         setRegulationConfigId(result.data.id);
@@ -185,7 +190,7 @@ export function DocumentationLayout() {
       console.error("Error fetching regulation config:", error);
       toast.error("Failed to load regulation configuration");
     }
-  }, [assetAddress]);
+  }, [assetAddress, assetType]);
 
   // Fetch documents and regulation config on initial load
   useEffect(() => {
