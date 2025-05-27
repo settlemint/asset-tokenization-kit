@@ -1,12 +1,13 @@
 "use client";
 
 import { Form } from "@/components/blocks/form/form";
+import type { User } from "@/lib/auth/types";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createVestingAirdrop } from "@/lib/mutations/airdrop/create/vesting/create-action";
 import { CreateVestingAirdropSchema } from "@/lib/mutations/airdrop/create/vesting/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
+import { Distribution } from "../common/distribution";
 import { Basics } from "./steps/basics";
 
 interface CreateVestingAirdropFormProps {
@@ -17,6 +18,21 @@ interface CreateVestingAirdropFormProps {
   onOpenChange: (open: boolean) => void;
 }
 
+export const vestingAirdropFormDefinition = {
+  steps: [
+    {
+      id: "basics",
+      title: "basics.title",
+      description: "basics.description",
+    },
+    {
+      id: "distribution",
+      title: "distribution.title",
+      description: "distribution.description",
+    },
+  ],
+} as const;
+
 export function CreateVestingAirdropForm({
   userDetails,
   currentStepId,
@@ -26,11 +42,12 @@ export function CreateVestingAirdropForm({
 }: CreateVestingAirdropFormProps) {
   const t = useTranslations("private.airdrops.create.form");
 
-  // Define step order and mapping
-  const stepIdToIndex = {
-    details: 0,
-    // recipients: 1,
-    // summary: 2,
+  const stepIdToIndex: Record<
+    (typeof vestingAirdropFormDefinition.steps)[number]["id"],
+    number
+  > = {
+    basics: 0,
+    distribution: 1,
   };
 
   // Use the step synchronization hook
@@ -46,14 +63,7 @@ export function CreateVestingAirdropForm({
       action={createVestingAirdrop}
       resolver={typeboxResolver(CreateVestingAirdropSchema)}
       defaultValues={{
-        asset: {
-          symbol: "",
-          decimals: 18,
-        },
-        merkleRoot: "",
-        owner: "0x0000000000000000000000000000000000000000",
-        verificationCode: "",
-        verificationType: "pincode",
+        owner: userDetails.wallet,
       }}
       buttonLabels={{
         label: isLastStep
@@ -72,17 +82,8 @@ export function CreateVestingAirdropForm({
       onAnyFieldChange={onAnyFieldChange}
       onOpenChange={onOpenChange}
     >
-      <Basics onNextStep={onNextStep} />
+      <Basics />
+      <Distribution />
     </Form>
   );
 }
-
-export const vestingAirdropFormDefinition = {
-  steps: [
-    {
-      id: "basics",
-      title: "basics.title",
-      description: "basics.description",
-    },
-  ],
-} as const;

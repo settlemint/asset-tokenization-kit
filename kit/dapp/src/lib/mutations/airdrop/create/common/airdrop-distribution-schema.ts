@@ -1,20 +1,16 @@
-import { t } from "@/lib/utils/typebox";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 export const AirdropDistributionSchema = t.Array(
   t.Object({
-    amount: t
-      .Transform(t.String())
-      .Decode((value) => {
-        const amount = Number(value);
-        if (isNaN(amount)) {
-          throw new Error(`Invalid amount: ${value}. Amount must be a number.`);
-        }
-
-        return amount;
-      })
-      .Encode((value) => value.toString()),
+    amount: t.BigDecimal({
+      description: "The amount of the distribution",
+    }),
     recipient: t.EthereumAddress({
       description: "The address of the recipient",
     }),
   })
 );
+
+export type AirdropDistribution = StaticDecode<
+  typeof AirdropDistributionSchema
+>;

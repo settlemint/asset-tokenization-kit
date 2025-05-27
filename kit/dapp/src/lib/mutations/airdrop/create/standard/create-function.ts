@@ -24,7 +24,7 @@ mutation AirdropFactoryDeployStandardAirdrop($challengeResponse: String!, $verif
 export const createStandardAirdropFunction = async ({
   parsedInput: {
     asset,
-    merkleRoot,
+    distribution,
     owner,
     startTime,
     endTime,
@@ -43,7 +43,7 @@ export const createStandardAirdropFunction = async ({
       from: user.wallet,
       input: {
         tokenAddress: asset.id,
-        merkleRoot,
+        merkleRoot: "",
         owner,
         startTime: formatDate(startTime, {
           type: "unixSeconds",

@@ -7,8 +7,8 @@ import { createStandardAirdrop } from "@/lib/mutations/airdrop/create/standard/c
 import { CreateStandardAirdropSchema } from "@/lib/mutations/airdrop/create/standard/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import { Distribution } from "../common/distribution";
 import { Basics } from "./steps/basics";
-import { Distribution } from "./steps/distribution";
 
 interface CreateStandardAirdropFormProps {
   userDetails: User;
@@ -43,7 +43,10 @@ export function CreateStandardAirdropForm({
   const t = useTranslations("private.airdrops.create.form");
 
   // Define step order and mapping
-  const stepIdToIndex = {
+  const stepIdToIndex: Record<
+    (typeof standardAirdropFormDefinition.steps)[number]["id"],
+    number
+  > = {
     basics: 0,
     distribution: 1,
   };

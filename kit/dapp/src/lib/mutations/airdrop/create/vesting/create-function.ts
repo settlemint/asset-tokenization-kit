@@ -24,7 +24,7 @@ mutation AirdropFactoryDeployLinearVestingAirdrop($challengeResponse: String!, $
 export const createVestingAirdropFunction = async ({
   parsedInput: {
     asset,
-    merkleRoot,
+    distribution,
     owner,
     claimPeriodEnd,
     cliffDuration,
@@ -44,7 +44,7 @@ export const createVestingAirdropFunction = async ({
       from: user.wallet,
       input: {
         tokenAddress: asset.id,
-        merkleRoot,
+        merkleRoot: "",
         owner,
         claimPeriodEnd: formatDate(claimPeriodEnd, {
           type: "unixSeconds",

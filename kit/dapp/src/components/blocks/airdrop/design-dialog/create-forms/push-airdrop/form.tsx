@@ -1,12 +1,13 @@
 "use client";
 
 import { Form } from "@/components/blocks/form/form";
+import type { User } from "@/lib/auth/types";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createPushAirdrop } from "@/lib/mutations/airdrop/create/push/create-action";
 import { CreatePushAirdropSchema } from "@/lib/mutations/airdrop/create/push/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
+import { Distribution } from "../common/distribution";
 import { Basics } from "./steps/basics";
 
 interface CreatePushAirdropFormProps {
@@ -16,6 +17,21 @@ interface CreatePushAirdropFormProps {
   onPrevStep: () => void;
   onOpenChange: (open: boolean) => void;
 }
+
+export const pushAirdropFormDefinition = {
+  steps: [
+    {
+      id: "basics",
+      title: "basics.title",
+      description: "basics.description",
+    },
+    {
+      id: "distribution",
+      title: "distribution.title",
+      description: "distribution.description",
+    },
+  ],
+} as const;
 
 export function CreatePushAirdropForm({
   userDetails,
@@ -27,10 +43,12 @@ export function CreatePushAirdropForm({
   const t = useTranslations("private.airdrops.create.form");
 
   // Define step order and mapping
-  const stepIdToIndex = {
-    details: 0,
-    // recipients: 1,
-    // summary: 2,
+  const stepIdToIndex: Record<
+    (typeof pushAirdropFormDefinition.steps)[number]["id"],
+    number
+  > = {
+    basics: 0,
+    distribution: 1,
   };
 
   // Use the step synchronization hook
@@ -46,14 +64,7 @@ export function CreatePushAirdropForm({
       action={createPushAirdrop}
       resolver={typeboxResolver(CreatePushAirdropSchema)}
       defaultValues={{
-        asset: {
-          symbol: "",
-          decimals: 18,
-        },
-        merkleRoot: "",
-        owner: "0x0000000000000000000000000000000000000000",
-        verificationCode: "",
-        verificationType: "pincode",
+        owner: userDetails.wallet,
       }}
       buttonLabels={{
         label: isLastStep
@@ -72,17 +83,8 @@ export function CreatePushAirdropForm({
       onAnyFieldChange={onAnyFieldChange}
       onOpenChange={onOpenChange}
     >
-      <Basics onNextStep={onNextStep} />
+      <Basics />
+      <Distribution />
     </Form>
   );
 }
-
-export const pushAirdropFormDefinition = {
-  steps: [
-    {
-      id: "basics",
-      title: "basics.title",
-      description: "basics.description",
-    },
-  ],
-} as const;

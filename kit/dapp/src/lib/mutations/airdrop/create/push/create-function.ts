@@ -24,7 +24,7 @@ mutation AirdropFactoryDeployPushAirdrop($challengeResponse: String!, $verificat
 export const createPushAirdropFunction = async ({
   parsedInput: {
     asset,
-    merkleRoot,
+    distribution,
     owner,
     distributionCap,
     verificationCode,
@@ -40,7 +40,7 @@ export const createPushAirdropFunction = async ({
     from: user.wallet,
     input: {
       tokenAddress: asset.id,
-      merkleRoot,
+      merkleRoot: "",
       owner,
       distributionCap: parseUnits(
         distributionCap.toString(),

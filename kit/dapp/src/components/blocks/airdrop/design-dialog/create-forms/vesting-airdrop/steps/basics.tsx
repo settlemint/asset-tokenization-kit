@@ -1,14 +1,9 @@
 "use client";
 
 import { StepContent } from "@/components/blocks/step-wizard/step-content";
-import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 
-interface AirdropBasicsProps {
-  onNextStep: () => void;
-}
-
-export function Basics({ onNextStep }: AirdropBasicsProps) {
+export function Basics() {
   const t = useTranslations();
 
   return (
@@ -23,9 +18,6 @@ export function Basics({ onNextStep }: AirdropBasicsProps) {
       </div>
       <div>
         <p>Airdrop Basics - Placeholder Content</p>
-      </div>
-      <div className="mt-8 flex justify-end">
-        <Button onClick={onNextStep}>{t("components.form.button.next")}</Button>
       </div>
     </StepContent>
   );

@@ -1,4 +1,6 @@
-import { t, type StaticDecode } from "@/lib/utils/typebox";
+import { t } from "@/lib/utils/typebox";
+import type { Static } from "@sinclair/typebox";
+import { AirdropDistributionSchema } from "../common/airdrop-distribution-schema";
 
 export const CreatePushAirdropSchema = t.Object(
   {
@@ -19,9 +21,7 @@ export const CreatePushAirdropSchema = t.Object(
         description: "Asset to transfer",
       }
     ),
-    merkleRoot: t.String({
-      description: "The merkle root of the airdrop",
-    }),
+    distribution: AirdropDistributionSchema,
     owner: t.EthereumAddress({
       description: "The owner of the airdrop",
     }),
@@ -41,6 +41,4 @@ export const CreatePushAirdropSchema = t.Object(
   }
 );
 
-export type CreatePushAirdropInput = StaticDecode<
-  typeof CreatePushAirdropSchema
->;
+export type CreatePushAirdropInput = Static<typeof CreatePushAirdropSchema>;

@@ -1,4 +1,5 @@
-import { t, type StaticDecode } from "@/lib/utils/typebox";
+import { t } from "@/lib/utils/typebox";
+import type { Static } from "@sinclair/typebox";
 import { AirdropDistributionSchema } from "../common/airdrop-distribution-schema";
 
 export const CreateStandardAirdropSchema = t.Object(
@@ -43,6 +44,6 @@ export const CreateStandardAirdropSchema = t.Object(
   }
 );
 
-export type CreateStandardAirdropInput = StaticDecode<
+export type CreateStandardAirdropInput = Static<
   typeof CreateStandardAirdropSchema
 >;
