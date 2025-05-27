@@ -488,7 +488,7 @@ dapp:
   image:
     repository: ghcr.io/settlemint/asset-tokenization-kit
     pullPolicy: IfNotPresent
-    tag: "1.1.1"
+    tag: "1.0.6-main83e81f549"
   ingress:
     enabled: true
     # IMPORTANT: Set the correct hostname for your environment
@@ -509,14 +509,12 @@ dapp:
     NEXTAUTH_URL: "https://dapp.k8s.orb.local"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy.atk.svc.cluster.local:4318/v1/traces"  # Adjust if needed
     OTEL_EXPORTER_OTLP_PROTOCOL: "http"
-    SETTLEMINT_ACCESS_TOKEN: "dummy-key"
-    SETTLEMINT_APP_URL: "https://dapp.k8s.orb.local"
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc.atk.svc.cluster.local/"
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
     SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
     SETTLEMINT_HASURA_ENDPOINT: "http://hasura.atk.svc.cluster.local:8080/v1/graphql"
     SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
-    # SETTLEMINT_INSTANCE: "https://console.k8s.orb.local"
+    SETTLEMINT_INSTANCE: "standalone"
     SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "http://portal.atk.svc.cluster.local:3001/graphql"
     SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"]'
   initContainer:
