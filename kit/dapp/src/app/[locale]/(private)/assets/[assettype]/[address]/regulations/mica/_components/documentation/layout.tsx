@@ -116,14 +116,6 @@ export function DocumentationLayout() {
         throw new Error("No file provided");
       }
 
-      console.log("EXISTING ASSET UPLOAD ACTION called with:", {
-        documentType,
-        title,
-        path,
-        assetAddress,
-        regulationConfigId,
-      });
-
       // Use the uploadDocument action with the form data
       formData.append("assetAddress", assetAddress);
       const result = await uploadDocument(formData);
@@ -146,17 +138,6 @@ export function DocumentationLayout() {
     regulationId: string,
     document: UploadedDocument
   ) => {
-    console.log("handleUploadComplete called with:", {
-      regulationId,
-      document,
-    });
-
-    // The DocumentUploadDialog already handles updating the database,
-    // so we just need to refresh the documents list here
-    console.log(
-      "Document should already be saved to database by DocumentUploadDialog"
-    );
-
     // Refresh the documents list after a short delay
     setTimeout(() => {
       fetchDocuments();
