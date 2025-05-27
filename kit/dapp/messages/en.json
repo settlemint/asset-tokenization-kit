@@ -1437,7 +1437,17 @@
         },
         "basics": {
           "title": "Basic information",
-          "description": "Specify the basic information for this airdrop."
+          "description": "Specify the basic information for this airdrop.",
+          "asset-label": "Asset",
+          "asset-placeholder": "Select asset",
+          "asset-description": "The asset that will be distributed in this airdrop.",
+          "owner-label": "Owner",
+          "owner-placeholder": "Select owner",
+          "owner-description": "The account that will own and manage this airdrop contract.",
+          "start-time-label": "Start time",
+          "start-time-description": "The date and time when users can start claiming tokens.",
+          "end-time-label": "End time",
+          "end-time-description": "The date and time when the airdrop claim period ends."
         },
         "button-labels": {
           "general": {
