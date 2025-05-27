@@ -1,6 +1,6 @@
 import { t } from "@/lib/utils/typebox";
 import type { Static } from "@sinclair/typebox";
-import { AirdropDistributionSchema } from "../common/airdrop-distribution-schema";
+import { AirdropDistributionListSchema } from "../common/airdrop-distribution-schema";
 
 export const CreatePushAirdropSchema = t.Object(
   {
@@ -21,7 +21,7 @@ export const CreatePushAirdropSchema = t.Object(
         description: "Asset to transfer",
       }
     ),
-    distribution: AirdropDistributionSchema,
+    distribution: AirdropDistributionListSchema,
     owner: t.EthereumAddress({
       description: "The owner of the airdrop",
     }),

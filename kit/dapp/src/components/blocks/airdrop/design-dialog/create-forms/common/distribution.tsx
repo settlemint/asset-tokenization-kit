@@ -2,8 +2,8 @@ import { DocumentUpload } from "@/components/blocks/document-upload/document-upl
 import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormDescription, FormLabel } from "@/components/ui/form";
-import type { AirdropDistribution } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
-import { AirdropDistributionSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
+import type { AirdropDistributionList } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
+import { AirdropDistributionListSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
 import type { CreateStandardAirdropInput } from "@/lib/mutations/airdrop/create/standard/create-schema";
 import { safeParse } from "@/lib/utils/typebox";
 import { useTranslations } from "next-intl";
@@ -12,7 +12,7 @@ import { useFormContext } from "react-hook-form";
 
 export function Distribution() {
   const { setError, clearErrors, setValue } = useFormContext<{
-    distribution: AirdropDistribution;
+    distribution: AirdropDistributionList;
   }>();
   const t = useTranslations("private.airdrops.create.distribution");
 
@@ -53,7 +53,10 @@ export function Distribution() {
               });
               return;
             }
-            const distribution = safeParse(AirdropDistributionSchema, jsonData);
+            const distribution = safeParse(
+              AirdropDistributionListSchema,
+              jsonData
+            );
 
             setValue("distribution", distribution);
           } catch (error) {

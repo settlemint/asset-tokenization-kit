@@ -5,6 +5,7 @@ import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { getMerkleRoot } from "../common/merkle-tree";
 import type { CreateStandardAirdropInput } from "./create-schema";
 
 const AirdropFactoryDeployStandardAirdrop = portalGraphql(`
@@ -43,7 +44,7 @@ export const createStandardAirdropFunction = async ({
       from: user.wallet,
       input: {
         tokenAddress: asset.id,
-        merkleRoot: "",
+        merkleRoot: getMerkleRoot(distribution),
         owner,
         startTime: formatDate(startTime, {
           type: "unixSeconds",

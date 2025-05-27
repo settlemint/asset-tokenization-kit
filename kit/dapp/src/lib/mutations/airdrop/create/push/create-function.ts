@@ -5,6 +5,7 @@ import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
+import { getMerkleRoot } from "../common/merkle-tree";
 import type { CreatePushAirdropInput } from "./create-schema";
 
 const AirdropFactoryDeployPushAirdrop = portalGraphql(`
@@ -40,7 +41,7 @@ export const createPushAirdropFunction = async ({
     from: user.wallet,
     input: {
       tokenAddress: asset.id,
-      merkleRoot: "",
+      merkleRoot: getMerkleRoot(distribution),
       owner,
       distributionCap: parseUnits(
         distributionCap.toString(),
