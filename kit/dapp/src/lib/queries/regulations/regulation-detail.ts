@@ -2,7 +2,6 @@ import "server-only";
 
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { normalizeAddress } from "@/lib/utils/address";
 import { withTracing } from "@/lib/utils/tracing";
 import type { Address } from "viem";
 
@@ -113,7 +112,7 @@ const RegulationTypeConfigFields = {
  */
 export interface RegulationDetailProps {
   /** Asset ID to fetch regulation for */
-  assetId: string;
+  assetId: Address;
   /** Type of regulation to fetch */
   regulationType: keyof typeof RegulationTypeQueries;
 }
@@ -145,13 +144,10 @@ export const getRegulationDetail = withTracing(
     regulationType,
   }: RegulationDetailProps): Promise<RegulationDetailResponse | null> => {
     try {
-      // Ensure assetId is always lowercased for consistency
-      const normalizedAssetId = normalizeAddress(assetId as Address);
-
       const baseResponse = await hasuraClient.request(
         RegulationDetail,
         {
-          assetId: normalizedAssetId,
+          assetId,
           regulationType,
         },
         {

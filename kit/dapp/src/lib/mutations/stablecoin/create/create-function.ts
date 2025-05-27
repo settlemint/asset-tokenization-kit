@@ -12,11 +12,9 @@ import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transac
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
-import { normalizeAddress } from "@/lib/utils/address";
 import { getTimeUnitSeconds } from "@/lib/utils/date";
 import { grantRolesToAdmins } from "@/lib/utils/role-granting";
 import { safeParse, t } from "@/lib/utils/typebox";
-import type { Address } from "viem";
 import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateStablecoinInput } from "./create-schema";
 /**
@@ -104,16 +102,14 @@ export const createStablecoinFunction = withAccessControl(
     parsedInput: CreateStablecoinInput;
     ctx: { user: User };
   }) => {
-    const normalizedAddress = normalizeAddress(predictedAddress as Address);
-
     await hasuraClient.request(CreateOffchainStablecoin, {
-      id: normalizedAddress,
+      id: predictedAddress,
       isin,
       internalid,
     });
 
     await hasuraClient.request(AddAssetPrice, {
-      assetId: normalizedAddress,
+      assetId: predictedAddress,
       amount: String(price.amount),
       currency: price.currency,
     });
@@ -125,7 +121,7 @@ export const createStablecoinFunction = withAccessControl(
           // Create MiCA regulation config with default values
           await createRegulation(
             {
-              assetId: normalizedAddress,
+              assetId: predictedAddress,
               regulationType: "mica",
               status: RegulationStatus.NOT_COMPLIANT, // Initially not compliant until configured
             },
@@ -185,7 +181,7 @@ export const createStablecoinFunction = withAccessControl(
     // Grant roles to admins using the shared helper
     await grantRolesToAdmins(
       assetAdmins,
-      normalizedAddress,
+      predictedAddress,
       verificationCode,
       verificationType,
       "stablecoin",
