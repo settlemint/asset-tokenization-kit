@@ -218,6 +218,12 @@ export const getMicaDocuments = withTracing(
         })
       );
 
+      // Sort documents by upload date (newest first)
+      documents.sort(
+        (a, b) =>
+          new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
+      );
+
       return safeParse(t.Array(MicaDocumentSchema), documents);
     } catch (error) {
       console.error(
