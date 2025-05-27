@@ -48,55 +48,160 @@ function formatBytes(bytes: number, decimals = 2): string {
  * Formats the document type for display, ensuring we show meaningful
  * documentation types rather than file extensions
  */
-function formatDocumentType(type: string, fileName: string): string {
-  // If type is already a meaningful documentation type, return it
-  const meaningfulTypes = [
-    "audit",
-    "whitepaper",
-    "mica",
-    "compliance",
-    "legal",
-    "governance",
-    "policy",
-    "procedure",
-    "general",
-  ];
+function formatDocumentType(
+  type: string,
+  fileName: string,
+  category?: string
+): string {
+  // Create a mapping of document types to proper display names
+  const typeMapping: Record<string, string> = {
+    audit: "Audit Report",
+    whitepaper: "White Paper",
+    mica: "MiCA Compliance",
+    compliance: "Compliance Document",
+    legal: "Legal Document",
+    governance: "Governance Document",
+    policy: "Policy Document",
+    procedure: "Procedure Document",
+    general: "General Document",
+    // Add more specific types
+    financial: "Financial Report",
+    risk: "Risk Assessment",
+    technical: "Technical Documentation",
+    regulatory: "Regulatory Document",
+    terms: "Terms & Conditions",
+    privacy: "Privacy Policy",
+    security: "Security Document",
+    operational: "Operational Document",
+    business: "Business Document",
+  };
 
-  if (meaningfulTypes.includes(type.toLowerCase())) {
-    return type.charAt(0).toUpperCase() + type.slice(1);
+  const lowerType = type.toLowerCase();
+  const lowerFileName = fileName.toLowerCase();
+  const lowerCategory = category?.toLowerCase() || "";
+
+  // First check the category field if available
+  if (category && typeMapping[lowerCategory]) {
+    return typeMapping[lowerCategory];
   }
 
-  // If type appears to be a file extension, try to infer from fileName or provide a generic fallback
+  // Check if we have a direct mapping for the type (only for meaningful types)
+  if (typeMapping[lowerType]) {
+    return typeMapping[lowerType];
+  }
+
+  // Always try to infer from filename first, regardless of the type field
+  // Check for specific patterns in filename
+  if (lowerFileName.includes("audit")) return "Audit Report";
   if (
-    type.toLowerCase() === "pdf" ||
-    type.toLowerCase() === "document" ||
-    type.toLowerCase() === "docx"
-  ) {
-    // Try to infer from file name patterns
-    const lowerFileName = fileName.toLowerCase();
-    if (lowerFileName.includes("audit")) return "Audit";
-    if (
-      lowerFileName.includes("whitepaper") ||
-      lowerFileName.includes("white_paper")
-    )
-      return "Whitepaper";
-    if (lowerFileName.includes("compliance")) return "Compliance";
-    if (lowerFileName.includes("legal")) return "Legal";
-    if (lowerFileName.includes("governance")) return "Governance";
-    if (lowerFileName.includes("policy")) return "Policy";
-    if (lowerFileName.includes("procedure")) return "Procedure";
+    lowerFileName.includes("whitepaper") ||
+    lowerFileName.includes("white_paper") ||
+    lowerFileName.includes("white-paper")
+  )
+    return "White Paper";
+  if (lowerFileName.includes("compliance")) return "Compliance Document";
+  if (lowerFileName.includes("legal")) return "Legal Document";
+  if (lowerFileName.includes("governance")) return "Governance Document";
+  if (lowerFileName.includes("policy")) return "Policy Document";
+  if (lowerFileName.includes("procedure")) return "Procedure Document";
+  if (lowerFileName.includes("financial") || lowerFileName.includes("finance"))
+    return "Financial Report";
+  if (lowerFileName.includes("risk")) return "Risk Assessment";
+  if (lowerFileName.includes("technical") || lowerFileName.includes("tech"))
+    return "Technical Documentation";
+  if (
+    lowerFileName.includes("regulatory") ||
+    lowerFileName.includes("regulation")
+  )
+    return "Regulatory Document";
+  if (
+    lowerFileName.includes("terms") ||
+    lowerFileName.includes("t&c") ||
+    lowerFileName.includes("tos")
+  )
+    return "Terms & Conditions";
+  if (lowerFileName.includes("privacy")) return "Privacy Policy";
+  if (lowerFileName.includes("security")) return "Security Document";
+  if (
+    lowerFileName.includes("operational") ||
+    lowerFileName.includes("operations")
+  )
+    return "Operational Document";
+  if (lowerFileName.includes("business")) return "Business Document";
+  if (lowerFileName.includes("mica")) return "MiCA Compliance";
 
-    // Fallback to generic document type
-    return "Document";
+  // Check category even if not in mapping - format it nicely
+  if (
+    category &&
+    lowerCategory !== "general" &&
+    lowerCategory !== "pdf" &&
+    lowerCategory !== "document" &&
+    lowerCategory !== "docx" &&
+    lowerCategory !== "doc" &&
+    lowerCategory !== "file"
+  ) {
+    return (
+      category.charAt(0).toUpperCase() + category.slice(1).replace(/[_-]/g, " ")
+    );
   }
 
-  // For any other case, capitalize the first letter
-  return type.charAt(0).toUpperCase() + type.slice(1);
+  // If the type is meaningful but not in our mapping, format it nicely
+  if (
+    lowerType !== "pdf" &&
+    lowerType !== "document" &&
+    lowerType !== "docx" &&
+    lowerType !== "doc" &&
+    lowerType !== "file" &&
+    lowerType !== "xlsx" &&
+    lowerType !== "xls" &&
+    lowerType !== "pptx" &&
+    lowerType !== "ppt" &&
+    lowerType !== "other"
+  ) {
+    // This is likely a meaningful document type, format it nicely
+    return type.charAt(0).toUpperCase() + type.slice(1).replace(/[_-]/g, " ");
+  }
+
+  // Only use file extension as absolute last resort
+  if (lowerFileName.endsWith(".pdf")) return "PDF Document";
+  if (lowerFileName.endsWith(".docx") || lowerFileName.endsWith(".doc"))
+    return "Word Document";
+  if (lowerFileName.endsWith(".xlsx") || lowerFileName.endsWith(".xls"))
+    return "Spreadsheet";
+  if (lowerFileName.endsWith(".pptx") || lowerFileName.endsWith(".ppt"))
+    return "Presentation";
+
+  // Final fallback
+  return "Document";
 }
 
 // Get the appropriate icon based on document type
-function getDocumentIcon(type: string, fileName: string) {
-  // Check document category first
+function getDocumentIcon(type: string, fileName: string, category?: string) {
+  // Check category first since it's likely more meaningful
+  if (category) {
+    switch (category.toLowerCase()) {
+      case "audit":
+        return <FileText className="h-5 w-5 text-blue-600" />;
+      case "whitepaper":
+        return <FileText className="h-5 w-5 text-green-600" />;
+      case "mica":
+      case "compliance":
+      case "legal":
+        return <FileText className="h-5 w-5 text-purple-600" />;
+      case "governance":
+      case "policy":
+      case "procedure":
+        return <FileText className="h-5 w-5 text-orange-600" />;
+      case "financial":
+        return <FileText className="h-5 w-5 text-emerald-600" />;
+      case "risk":
+        return <FileText className="h-5 w-5 text-red-600" />;
+      case "technical":
+        return <FileText className="h-5 w-5 text-indigo-600" />;
+    }
+  }
+
+  // Then check document type
   switch (type.toLowerCase()) {
     case "audit":
       return <FileText className="h-5 w-5 text-blue-600" />;
@@ -230,7 +335,11 @@ export function DocumentsTableColumns(onRefresh: () => void) {
         const document = row.original;
         return (
           <div className="flex items-center gap-2">
-            {getDocumentIcon(document.type, document.fileName)}
+            {getDocumentIcon(
+              document.type,
+              document.fileName,
+              document.category
+            )}
             <div>
               <div className="font-medium">{document.title}</div>
               <div className="text-xs text-muted-foreground">
@@ -255,17 +364,24 @@ export function DocumentsTableColumns(onRefresh: () => void) {
         const document = row.original;
         return (
           <Badge variant="outline">
-            {formatDocumentType(document.type, document.fileName)}
+            {formatDocumentType(
+              document.type,
+              document.fileName,
+              document.category
+            )}
           </Badge>
         );
       },
       enableColumnFilter: true,
       filterFn: filterFn("text"),
-      meta: defineMeta((row) => formatDocumentType(row.type, row.fileName), {
-        displayName: t("table.type"),
-        icon: FileText,
-        type: "text",
-      }),
+      meta: defineMeta(
+        (row) => formatDocumentType(row.type, row.fileName, row.category),
+        {
+          displayName: t("table.type"),
+          icon: FileText,
+          type: "text",
+        }
+      ),
     }),
 
     columnHelper.accessor("uploadDate", {
