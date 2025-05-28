@@ -10,6 +10,7 @@ import { AssetType } from "./asset-types";
 import { BigDecimal } from "./bigdecimal";
 import { StringifiedBigInt } from "./bigint";
 import { Decimals } from "./decimals";
+import { Duration } from "./duration";
 import { EquityCategory } from "./equity-categories";
 import { EquityClass } from "./equity-classes";
 import { FiatCurrency } from "./fiat-currency";
@@ -63,6 +64,7 @@ declare module "@sinclair/typebox" {
     UserRoles: typeof UserRoles;
     VerificationType: typeof VerificationType;
     VerificationCode: typeof VerificationCode;
+    Duration: typeof Duration;
   }
 }
 
@@ -95,6 +97,7 @@ t.TwoFactorCode = TwoFactorCode;
 t.UserRoles = UserRoles;
 t.VerificationCode = VerificationCode;
 t.VerificationType = VerificationType;
+t.Duration = Duration;
 
 export function safeParse<T extends TSchema>(
   schema: T,
