@@ -103,6 +103,11 @@
       "cache": false,
       "persistent": true
     },
+    "test:e2e:api": {
+      "dependsOn": ["codegen"],
+      "cache": false,
+      "persistent": true
+    },
     "helm:proxy": {
       "cache": false
     },

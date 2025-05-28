@@ -72,3 +72,11 @@ export const signUpTransferUserData: SignUpData = {
   pincodeName: pincodeName,
   pincode: pincode,
 } as const;
+
+export const adminApiUser: SignUpData = {
+  name: `Test Admin Api User`,
+  email: `test-admin-api-user@settlemint.com`,
+  password: password,
+  pincodeName: pincodeName,
+  pincode: pincode,
+} as const;
