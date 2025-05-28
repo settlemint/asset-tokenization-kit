@@ -46,9 +46,10 @@ export function Distribution({ children }: PropsWithChildren) {
 
           try {
             // Skip header row and transform data
-            const jsonData = parseResult.data.slice(1).map((row) => ({
+            const jsonData = parseResult.data.slice(1).map((row, index) => ({
               amount: row[0],
               recipient: row[1],
+              index,
             }));
 
             if (jsonData.length === 0) {
