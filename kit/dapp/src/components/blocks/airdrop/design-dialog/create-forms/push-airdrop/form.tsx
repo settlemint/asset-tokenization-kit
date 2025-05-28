@@ -9,6 +9,7 @@ import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { Basics } from "./steps/basics";
 import { Distribution } from "./steps/distribution";
+import { Summary } from "./steps/summary";
 
 interface CreatePushAirdropFormProps {
   userDetails: User;
@@ -30,6 +31,11 @@ export const pushAirdropFormDefinition = {
       title: "distribution.title",
       description: "distribution.description",
     },
+    {
+      id: "summary",
+      title: "summary.push.title",
+      description: "summary.push.description",
+    },
   ],
 } as const;
 
@@ -49,6 +55,7 @@ export function CreatePushAirdropForm({
   > = {
     basics: 0,
     distribution: 1,
+    summary: 2,
   };
 
   // Use the step synchronization hook
@@ -85,6 +92,7 @@ export function CreatePushAirdropForm({
     >
       <Basics />
       <Distribution />
+      <Summary />
     </Form>
   );
 }
