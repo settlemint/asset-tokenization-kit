@@ -38,6 +38,9 @@ export const CreateStandardAirdropSchema = t.Object(
     verificationType: t.VerificationType({
       description: "The type of verification",
     }),
+    predictedAddress: t.EthereumAddress({
+      description: "The predicted address of the airdrop",
+    }),
   },
   {
     description: "Standard airdrop information",

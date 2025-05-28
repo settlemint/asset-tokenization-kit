@@ -2,9 +2,11 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { AIRDROP_FACTORY_ADDRESS } from "@/lib/contracts";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
+import { hasuraClient } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
+import { AddAirdropDistribution } from "../common/add-distribution";
 import { getMerkleRoot } from "../common/merkle-tree";
 import type { CreatePushAirdropInput } from "./create-schema";
 
@@ -30,6 +32,7 @@ export const createPushAirdropFunction = async ({
     distributionCap,
     verificationCode,
     verificationType,
+    predictedAddress,
   },
   ctx: { user },
 }: {
@@ -63,5 +66,16 @@ export const createPushAirdropFunction = async ({
     );
   }
   const hashes = safeParse(t.Hashes(), [createTxHash]);
-  return await waitForIndexingTransactions(hashes);
+  const block = await waitForIndexingTransactions(hashes);
+
+  await hasuraClient.request(AddAirdropDistribution, {
+    objects: distribution.map((d) => ({
+      airdrop_id: predictedAddress,
+      recipient: d.recipient,
+      amount: parseUnits(d.amount.toString(), asset.decimals).toString(),
+      index: d.index,
+    })),
+  });
+
+  return block;
 };
