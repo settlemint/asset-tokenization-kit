@@ -3,7 +3,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { AIRDROP_FACTORY_ADDRESS } from "@/lib/contracts";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { formatDate } from "@/lib/utils/date";
+import { formatDate, getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { getMerkleRoot } from "../common/merkle-tree";
 import type { CreateVestingAirdropInput } from "./create-schema";
@@ -50,12 +50,14 @@ export const createVestingAirdropFunction = async ({
         claimPeriodEnd: formatDate(claimPeriodEnd, {
           type: "unixSeconds",
         }),
-        cliffDuration: formatDate(cliffDuration, {
-          type: "unixSeconds",
-        }),
-        vestingDuration: formatDate(vestingDuration, {
-          type: "unixSeconds",
-        }),
+        cliffDuration: getTimeUnitSeconds(
+          cliffDuration.value,
+          cliffDuration.unit
+        ).toString(),
+        vestingDuration: getTimeUnitSeconds(
+          vestingDuration.value,
+          vestingDuration.unit
+        ).toString(),
       },
       ...(await handleChallenge(
         user,

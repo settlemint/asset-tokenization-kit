@@ -28,10 +28,10 @@ export const CreateVestingAirdropSchema = t.Object(
     claimPeriodEnd: t.Timestamp({
       description: "The end of the claim period for the vesting airdrop",
     }),
-    cliffDuration: t.Timestamp({
+    cliffDuration: t.Duration({
       description: "The cliff duration for the vesting airdrop",
     }),
-    vestingDuration: t.Timestamp({
+    vestingDuration: t.Duration({
       description: "The vesting duration for the vesting airdrop",
     }),
     verificationCode: t.VerificationCode({
