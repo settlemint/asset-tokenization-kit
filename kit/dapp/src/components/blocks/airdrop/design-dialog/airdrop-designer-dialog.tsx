@@ -7,9 +7,9 @@ import {
   type Step,
 } from "@/components/blocks/step-wizard/step-wizard";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import type { User } from "@/lib/auth/types";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
-import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import {
