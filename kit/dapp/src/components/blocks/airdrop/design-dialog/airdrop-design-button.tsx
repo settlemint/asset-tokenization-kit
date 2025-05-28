@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { User } from "better-auth";
+import type { User } from "@/lib/auth/types";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
