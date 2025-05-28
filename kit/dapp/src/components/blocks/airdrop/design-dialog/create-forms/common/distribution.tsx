@@ -8,9 +8,10 @@ import type { CreateStandardAirdropInput } from "@/lib/mutations/airdrop/create/
 import { safeParse } from "@/lib/utils/typebox";
 import { useTranslations } from "next-intl";
 import { parse } from "papaparse";
+import type { PropsWithChildren } from "react";
 import { useFormContext } from "react-hook-form";
 
-export function Distribution() {
+export function Distribution({ children }: PropsWithChildren) {
   const { setError, clearErrors, setValue } = useFormContext<{
     distribution: AirdropDistributionList;
   }>();
@@ -22,7 +23,11 @@ export function Distribution() {
       description={t("description")}
       contentClassName="space-y-4"
     >
-      <FormLabel>{t("distribution-label")}</FormLabel>
+      {children}
+      <FormLabel>
+        {t("distribution-label")}
+        <span className="-ml-1 text-destructive">*</span>
+      </FormLabel>
       <DocumentUpload
         onSelect={async (file) => {
           clearErrors("distribution");

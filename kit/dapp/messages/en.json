@@ -1452,8 +1452,10 @@
         "distribution": {
           "title": "Distribution",
           "description": "Specify the distribution for this airdrop.",
-          "distribution-label": "Distribution CSV",
-          "distribution-description": "The distribution of the airdrop. The CSV file must have the columns 'amount' and 'recipient'."
+          "distribution-label": "Distribution (csv)",
+          "distribution-description": "The distribution of the airdrop. The CSV file must have the columns 'amount' and 'recipient'.",
+          "distribution-cap-label": "Distribution limit",
+          "distribution-cap-description": "The maximum number of tokens that can be distributed in this airdrop."
         },
         "button-labels": {
           "general": {

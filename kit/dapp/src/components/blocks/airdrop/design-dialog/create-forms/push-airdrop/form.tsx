@@ -7,8 +7,8 @@ import { createPushAirdrop } from "@/lib/mutations/airdrop/create/push/create-ac
 import { CreatePushAirdropSchema } from "@/lib/mutations/airdrop/create/push/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { Distribution } from "../common/distribution";
 import { Basics } from "./steps/basics";
+import { Distribution } from "./steps/distribution";
 
 interface CreatePushAirdropFormProps {
   userDetails: User;
