@@ -4,13 +4,21 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { CheckCircle } from "lucide-react";
+import { AlertCircle, CheckCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { AuthorizationForm } from "./edit-form";
+import { EditForm } from "./_components/edit-form";
 
 interface AuthorizationStatusLayoutProps {
   config?: MicaRegulationConfig | null;
+}
+
+function isAuthorized(config: MicaRegulationConfig): boolean {
+  return !!(
+    config.licenceNumber &&
+    config.regulatoryAuthority &&
+    config.approvalDate
+  );
 }
 
 export function AuthorizationStatusLayout({
@@ -41,9 +49,21 @@ export function AuthorizationStatusLayout({
           <div className="flex items-start justify-between">
             <div>
               <CardTitle>{t("title")}</CardTitle>
-              <Badge className="mt-4 !bg-success/80 !text-success-foreground border-transparent">
-                <CheckCircle className="mr-1 size-3" />
-                {t("authorized")}
+              <Badge
+                className={`mt-4 ${
+                  isAuthorized(config)
+                    ? "!bg-success/80 !text-success-foreground"
+                    : "!bg-warning/80 !text-warning-foreground"
+                } border-transparent`}
+              >
+                {isAuthorized(config) ? (
+                  <CheckCircle className="mr-1 size-3" />
+                ) : (
+                  <AlertCircle className="mr-1 size-3" />
+                )}
+                {t(
+                  isAuthorized(config) ? "authorized" : "pending-authorization"
+                )}
               </Badge>
             </div>
             <div className="flex items-center gap-2">
@@ -58,13 +78,13 @@ export function AuthorizationStatusLayout({
             <h3 className="text-muted-foreground text-sm">
               {t("license-number")}
             </h3>
-            {config.licenceNumber ?? t("not-specified")}
+            {config.licenceNumber ?? "-"}
           </div>
           <div>
             <h3 className="text-muted-foreground text-sm">
               {t("regulatory-authority")}
             </h3>
-            <p>{config.regulatoryAuthority ?? t("not-specified")}</p>
+            <p>{config.regulatoryAuthority ?? "-"}</p>
           </div>
           <div>
             <h3 className="text-muted-foreground text-sm">
@@ -73,20 +93,16 @@ export function AuthorizationStatusLayout({
             <p>
               {config.approvalDate
                 ? new Date(config.approvalDate).toLocaleDateString()
-                : t("not-specified")}
+                : "-"}
             </p>
           </div>
           <div>
             <h3 className="text-muted-foreground text-sm">
               {t("additional-details")}
             </h3>
-            <p>{config.approvalDetails ?? t("not-specified")}</p>
+            <p>{config.approvalDetails ?? "-"}</p>
           </div>
-          <AuthorizationForm
-            config={config}
-            open={open}
-            onOpenChange={setOpen}
-          />
+          <EditForm config={config} open={open} onOpenChange={setOpen} />
         </CardContent>
       </Card>
     </>

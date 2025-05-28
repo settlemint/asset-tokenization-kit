@@ -2824,7 +2824,7 @@
           "title": "Authorization status",
           "description": "The authorization status of the asset",
           "authorized": "Authorized",
-          "not-authorized": "Not authorized",
+          "pending-authorization": "Pending authorization",
           "license-number": "License number",
           "regulatory-authority": "Regulatory authority",
           "approval-date": "Approval date",

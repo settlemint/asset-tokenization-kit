@@ -45,6 +45,7 @@ export const updateAuthorizationFunction = withAccessControl(
     parsedInput: UpdateAuthorizationInput;
     ctx: { user: User };
   }) => {
+    console.log("action", parsedInput);
     try {
       const { regulationId, ...data } = parsedInput;
 
@@ -58,8 +59,6 @@ export const updateAuthorizationFunction = withAccessControl(
           : null,
         approvalDetails: data.approvalDetails || null,
       });
-
-      console.log(result);
 
       if (!result.update_mica_regulation_configs_by_pk) {
         throw new Error("Failed to update MICA authorization");
