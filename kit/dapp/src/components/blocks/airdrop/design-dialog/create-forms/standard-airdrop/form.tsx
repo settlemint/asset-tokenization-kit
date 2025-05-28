@@ -9,6 +9,7 @@ import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { Distribution } from "../common/distribution";
 import { Basics } from "./steps/basics";
+import { Summary } from "./steps/summary";
 
 interface CreateStandardAirdropFormProps {
   userDetails: User;
@@ -71,7 +72,7 @@ export function CreateStandardAirdropForm({
       resolver={typeboxResolver(CreateStandardAirdropSchema)}
       defaultValues={{
         owner: userDetails.wallet,
-        verificationType: "pincode",
+        airdropType: "standard",
       }}
       buttonLabels={{
         label: isLastStep
@@ -92,6 +93,7 @@ export function CreateStandardAirdropForm({
     >
       <Basics />
       <Distribution />
+      <Summary />
     </Form>
   );
 }

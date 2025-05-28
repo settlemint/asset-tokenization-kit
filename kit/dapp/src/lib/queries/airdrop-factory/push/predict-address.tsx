@@ -30,9 +30,9 @@ const CreatePushAirdropPredictAddress = portalGraphql(`
  * @param input - The data for creating a new push airdrop
  * @returns The predicted address of the new push airdrop
  */
-export const getPredictedPushAirdropAddress = withTracing(
+export const getPredictedAddress = withTracing(
   "queries",
-  "getPredictedPushAirdropAddress",
+  "getPredictedAirdropAddress",
   async (input: PredictPushAirdropAddressInput) => {
     const { tokenAddress, merkleRoot, owner, distributionCap } = input;
     const user = await getUser();

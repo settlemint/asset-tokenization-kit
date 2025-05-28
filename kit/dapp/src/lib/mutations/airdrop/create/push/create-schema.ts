@@ -38,6 +38,9 @@ export const CreatePushAirdropSchema = t.Object(
     predictedAddress: t.EthereumAddress({
       description: "The predicted address of the airdrop",
     }),
+    airdropType: t.AirdropType({
+      description: "The type of airdrop",
+    }),
   },
   {
     description: "Push airdrop information",

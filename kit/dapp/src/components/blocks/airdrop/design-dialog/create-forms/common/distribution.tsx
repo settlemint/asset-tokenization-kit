@@ -2,9 +2,8 @@ import { DocumentUpload } from "@/components/blocks/document-upload/document-upl
 import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormDescription, FormLabel } from "@/components/ui/form";
-import type { AirdropDistributionList } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
 import { AirdropDistributionListSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
-import type { CreateStandardAirdropInput } from "@/lib/mutations/airdrop/create/standard/create-schema";
+import type { CreateAirdropInput } from "@/lib/mutations/airdrop/create/common/schema";
 import { safeParse } from "@/lib/utils/typebox";
 import { useTranslations } from "next-intl";
 import { parse } from "papaparse";
@@ -12,9 +11,8 @@ import type { PropsWithChildren } from "react";
 import { useFormContext } from "react-hook-form";
 
 export function Distribution({ children }: PropsWithChildren) {
-  const { setError, clearErrors, setValue } = useFormContext<{
-    distribution: AirdropDistributionList;
-  }>();
+  const { setError, clearErrors, setValue } =
+    useFormContext<CreateAirdropInput>();
   const t = useTranslations("private.airdrops.create.distribution");
 
   return (
@@ -85,4 +83,4 @@ export function Distribution({ children }: PropsWithChildren) {
 
 Distribution.validatedFields = [
   "distribution",
-] satisfies (keyof CreateStandardAirdropInput)[];
+] satisfies (keyof CreateAirdropInput)[];

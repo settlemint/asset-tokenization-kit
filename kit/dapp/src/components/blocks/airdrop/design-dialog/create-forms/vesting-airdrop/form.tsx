@@ -9,6 +9,7 @@ import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { Distribution } from "../common/distribution";
 import { Basics } from "./steps/basics";
+import { Summary } from "./steps/summary";
 import { Vesting } from "./steps/vesting";
 
 interface CreateVestingAirdropFormProps {
@@ -77,6 +78,7 @@ export function CreateVestingAirdropForm({
       resolver={typeboxResolver(CreateVestingAirdropSchema)}
       defaultValues={{
         owner: userDetails.wallet,
+        airdropType: "vesting",
       }}
       buttonLabels={{
         label: isLastStep
@@ -98,6 +100,7 @@ export function CreateVestingAirdropForm({
       <Basics />
       <Vesting />
       <Distribution />
+      <Summary />
     </Form>
   );
 }

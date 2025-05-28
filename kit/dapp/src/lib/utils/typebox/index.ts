@@ -4,6 +4,7 @@ import type { StaticDecode, TSchema } from "@sinclair/typebox";
 import { TypeCompiler } from "@sinclair/typebox/compiler";
 import { redactSensitiveFields } from "../redaction";
 import { EthereumAddress } from "./address";
+import { AirdropType } from "./airdrop-types";
 import { Amount } from "./amount";
 import { AssetSymbol } from "./asset-symbol";
 import { AssetType } from "./asset-types";
@@ -65,6 +66,7 @@ declare module "@sinclair/typebox" {
     VerificationType: typeof VerificationType;
     VerificationCode: typeof VerificationCode;
     Duration: typeof Duration;
+    AirdropType: typeof AirdropType;
   }
 }
 
@@ -98,6 +100,7 @@ t.UserRoles = UserRoles;
 t.VerificationCode = VerificationCode;
 t.VerificationType = VerificationType;
 t.Duration = Duration;
+t.AirdropType = AirdropType;
 
 export function safeParse<T extends TSchema>(
   schema: T,

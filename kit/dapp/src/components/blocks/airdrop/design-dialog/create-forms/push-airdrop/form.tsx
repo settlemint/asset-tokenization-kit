@@ -5,11 +5,13 @@ import type { User } from "@/lib/auth/types";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createPushAirdrop } from "@/lib/mutations/airdrop/create/push/create-action";
 import { CreatePushAirdropSchema } from "@/lib/mutations/airdrop/create/push/create-schema";
+import { isAddressAvailable } from "@/lib/queries/airdrop-factory/push/is-address-available";
+import { getPredictedAddress } from "@/lib/queries/airdrop-factory/push/predict-address";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import { Summary } from "../common/summary";
 import { Basics } from "./steps/basics";
 import { Distribution } from "./steps/distribution";
-import { Summary } from "./steps/summary";
 
 interface CreatePushAirdropFormProps {
   userDetails: User;
@@ -72,6 +74,7 @@ export function CreatePushAirdropForm({
       resolver={typeboxResolver(CreatePushAirdropSchema)}
       defaultValues={{
         owner: userDetails.wallet,
+        airdropType: "push",
       }}
       buttonLabels={{
         label: isLastStep
@@ -92,7 +95,10 @@ export function CreatePushAirdropForm({
     >
       <Basics />
       <Distribution />
-      <Summary />
+      <Summary
+        predictAddress={getPredictedAddress}
+        isAddressAvailable={isAddressAvailable}
+      />
     </Form>
   );
 }
