@@ -94,42 +94,11 @@ export const micaRegulationConfigs = pgTable("mica_regulation_configs", {
   reserveStatus: text("reserve_status"),
   tokenType: text("token_type"),
 
-  // Legal entity data
-  legalEntity: jsonb("legal_entity").$type<{
-    leiCode?: string;
-    registrationNumber?: string;
-    registeredOfficeAddress?: {
-      street?: string;
-      city?: string;
-      postalCode?: string;
-      country?: string;
-    };
-  } | null>(),
-
-  // Management vetting data
-  managementVetting: jsonb("management_vetting").$type<{
-    ceoName?: string;
-    cfoName?: string;
-    boardOfDirectors?: string[];
-    complianceOfficer?: string;
-    vettingProcessDetails?: string;
-  } | null>(),
-
   // Regulatory approval data
-  regulatoryApproval: jsonb("regulatory_approval").$type<{
-    licenceNumber?: string;
-    regulatoryAuthority?: string;
-    approvalDate?: number;
-    approvalDetails?: string;
-  } | null>(),
-
-  // EU passport status data
-  euPassportStatus: jsonb("eu_passport_status").$type<{
-    homeMemberState?: string;
-    passportEffectiveDate?: number;
-    notifiedCountries?: string[];
-    additionalDetails?: string;
-  } | null>(),
+  licenceNumber: text("licence_number"),
+  regulatoryAuthority: text("regulatory_authority"),
+  approvalDate: timestamp("approval_date", { withTimezone: true }),
+  approvalDetails: text("approval-details"),
 });
 
 // Define relation to regulation configs

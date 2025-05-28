@@ -2823,14 +2823,39 @@
         "authorization-status": {
           "title": "Authorization status",
           "description": "The authorization status of the asset",
-          "compliance-requirements": "Compliance requirements",
-          "complete": "Complete",
-          "fields": {
-            "legal-entity": "Legal entity",
-            "management-vetting": "Management vetting",
-            "regulatory-approval": "Regulatory approval",
-            "eu-passport-status": "EU passport status",
-            "compliance-requirements": "Compliance requirements"
+          "authorized": "Authorized",
+          "not-authorized": "Not authorized",
+          "license-number": "License number",
+          "regulatory-authority": "Regulatory authority",
+          "approval-date": "Approval date",
+          "additional-details": "Additional details",
+          "not-specified": "Not specified",
+          "no-authorization-data": "No authorization data available",
+          "update": "Update",
+          "form": {
+            "title": "Edit authorization status",
+            "description": "Update the regulatory approval information for MiCA compliance.",
+            "save": "Save changes",
+            "saving": "Saving...",
+            "success": "Authorization status updated successfully",
+            "fields": {
+              "licence-number": {
+                "label": "License number",
+                "description": "Your MICA license or application ID"
+              },
+              "regulatory-authority": {
+                "label": "Regulatory authority",
+                "description": "The authority that granted the approval"
+              },
+              "approval-date": {
+                "label": "Approval date",
+                "description": "When the approval was granted"
+              },
+              "additional-details": {
+                "label": "Additional details",
+                "description": "Include any conditions, restrictions, or special notes"
+              }
+            }
           }
         }
       }
