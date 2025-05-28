@@ -359,9 +359,6 @@ function RegulationList({
           const isRegulationSelected = selectedRegulations.includes(
             regulation.id
           );
-          console.log(
-            `Rendering ${regulation.id}, selected: ${isRegulationSelected}`
-          );
 
           return (
             <div
@@ -462,7 +459,6 @@ export function AssetRegulationStep({
   useEffect(() => {
     const currentValue = form.getValues("selectedRegulations");
     if (!currentValue) {
-      console.log("Initializing selectedRegulations field");
       form.setValue("selectedRegulations", []);
     }
   }, [form]);
@@ -474,7 +470,6 @@ export function AssetRegulationStep({
   useEffect(() => {
     const formValue = form.getValues("selectedRegulations") || [];
     setSelectedRegulations(formValue);
-    console.log("Syncing selectedRegulations from form:", formValue);
   }, [form]);
 
   // Watch for form changes and sync local state
@@ -482,10 +477,6 @@ export function AssetRegulationStep({
   useEffect(() => {
     const regulations = watchedRegulations || [];
     setSelectedRegulations(regulations);
-    console.log(
-      "Form watch triggered, updating selectedRegulations:",
-      regulations
-    );
   }, [watchedRegulations]);
 
   // Remove MiCA from selected regulations if feature flag is disabled
@@ -508,9 +499,7 @@ export function AssetRegulationStep({
 
   // Handle regulation selection
   const handleRegulationSelect = (regulationId: string, isChecked: boolean) => {
-    console.log(`handleRegulationSelect called: ${regulationId}, ${isChecked}`);
     const current = form.getValues("selectedRegulations") || [];
-    console.log("Current selected regulations:", current);
 
     // Check if the regulation is currently selected (ignore isChecked parameter)
     const isCurrentlySelected = current.includes(regulationId);
@@ -519,14 +508,11 @@ export function AssetRegulationStep({
     if (isCurrentlySelected) {
       // Remove it if it's already selected
       updatedRegulations = current.filter((id: string) => id !== regulationId);
-      console.log(`Removing ${regulationId} from selection`);
     } else {
       // Add it if it's not selected
       updatedRegulations = [...current, regulationId];
-      console.log(`Adding ${regulationId} to selection`);
     }
 
-    console.log("Setting selectedRegulations to:", updatedRegulations);
     form.setValue("selectedRegulations", updatedRegulations, {
       shouldTouch: true,
     });
@@ -558,7 +544,6 @@ export function AssetRegulationStep({
 
     // Also save to form state so it's available during asset creation
     form.setValue("uploadedDocuments", updatedDocuments);
-    console.log("Updated uploaded documents in form:", updatedDocuments);
   };
 
   // Handle document deletion
@@ -603,10 +588,6 @@ export function AssetRegulationStep({
 
       // Also update form state
       form.setValue("uploadedDocuments", updatedDocuments);
-      console.log(
-        "Updated uploaded documents in form after deletion:",
-        updatedDocuments
-      );
     } catch (error) {
       console.error("Error deleting document from MinIO:", error);
     }

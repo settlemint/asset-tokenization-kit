@@ -1,27 +1,18 @@
 "use server";
 
+import type { NewMicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { createMicaRegulationConfig } from "@/lib/mutations/regulations/create-mica-regulation-config";
 import { getMicaRegulationConfig } from "@/lib/queries/regulations/get-mica-regulation-config";
 import { randomUUID } from "crypto";
 
-export interface CreateMicaRegulationConfigActionInput {
-  assetAddress: string;
-  tokenType?: string;
-  reserveStatus?: string;
-  legalEntity?: any;
-  regulatoryApproval?: any;
-  reserveComposition?: any;
-  managementVetting?: any;
-  euPassportStatus?: any;
-  documents?: any;
-}
-
 export async function createMicaRegulationConfigAction(
-  input: CreateMicaRegulationConfigActionInput
+  input: Omit<NewMicaRegulationConfig, "id">
 ) {
   try {
     // Check if config already exists
-    const existingConfig = await getMicaRegulationConfig(input.assetAddress);
+    const existingConfig = await getMicaRegulationConfig(
+      input.regulationConfigId
+    );
 
     if (existingConfig) {
       return {
@@ -34,9 +25,9 @@ export async function createMicaRegulationConfigAction(
     // Create new regulation config
     const newConfig = await createMicaRegulationConfig({
       id: randomUUID(),
-      regulation_config_id: input.assetAddress,
-      token_type: input.tokenType,
-      reserve_status: input.reserveStatus,
+      regulation_config_id: input.regulationConfigId,
+      token_type: input.tokenType ?? undefined,
+      reserve_status: input.reserveStatus ?? undefined,
       legal_entity: input.legalEntity
         ? JSON.stringify(input.legalEntity)
         : null,
@@ -53,6 +44,7 @@ export async function createMicaRegulationConfigAction(
         ? JSON.stringify(input.euPassportStatus)
         : null,
       documents: input.documents ? JSON.stringify(input.documents) : null,
+      last_audit_date: input.lastAuditDate,
     });
 
     return {

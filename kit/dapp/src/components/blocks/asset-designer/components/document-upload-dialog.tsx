@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  DocumentStatus,
-  MicaDocumentType,
-} from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { updateDocuments } from "@/lib/mutations/regulations/mica/update-documents/update-documents-action";
-import { DocumentOperation } from "@/lib/mutations/regulations/mica/update-documents/update-documents-schema";
+import { MicaDocumentType } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -93,68 +88,17 @@ export function DocumentUploadDialog({
         fileName: selectedFile.name,
       };
 
-      // Check if we're in asset creation mode (regulationId is just "mica" instead of a UUID)
-      const isAssetCreationMode =
-        regulationId === "mica" ||
-        regulationId === "fund" ||
-        regulationId === "bond" ||
-        regulationId === "equity" ||
-        regulationId === "deposit" ||
-        regulationId === "cryptocurrency" ||
-        regulationId === "stablecoin";
-
-      console.log("DocumentUploadDialog - Upload flow:", {
-        regulationId,
-        isAssetCreationMode,
-        documentTitle,
-        documentType,
-        uploadResult: result,
-        context: isAssetCreationMode
-          ? "ASSET_CREATION_WIZARD"
-          : "EXISTING_ASSET_TAB",
-      });
+      // Check if we're in asset creation mode (regulationId is not a UUID format)
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const isAssetCreationMode = !uuidRegex.test(regulationId);
 
       if (isAssetCreationMode) {
-        console.log(
-          "Asset creation mode detected - skipping database save for now"
-        );
-        console.log("Document will be saved to database when asset is created");
         toast.success(
           "Document uploaded to storage (metadata will be saved when asset is created)"
         );
       } else {
         try {
-          console.log("About to call updateDocuments with:", {
-            regulationId,
-            operation: DocumentOperation.ADD,
-            document: {
-              id: result.id,
-              title: documentTitle,
-              type: documentType,
-              url: result.url,
-              status: DocumentStatus.PENDING,
-              description: documentDescription || undefined,
-            },
-          });
-
-          console.log("Calling updateDocuments...");
-          const dbResult = await updateDocuments({
-            regulationId,
-            operation: DocumentOperation.ADD,
-            document: {
-              id: result.id,
-              title: documentTitle,
-              type: documentType,
-              url: result.url,
-              status: DocumentStatus.PENDING,
-              description: documentDescription || undefined,
-            },
-          });
-
-          console.log(
-            "Document metadata saved to database successfully:",
-            dbResult
-          );
           toast.success("Document uploaded and metadata saved successfully");
         } catch (dbError) {
           console.error("Error saving document metadata to database:", dbError);
