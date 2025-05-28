@@ -6,13 +6,15 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { authClient } from "@/lib/auth/client";
 import type { CreatePushAirdropInput } from "@/lib/mutations/airdrop/create/push/create-schema";
-import { Coins, HandHeart, Settings } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { formatNumber } from "@/lib/utils/number";
+import { HandHeart, Settings } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 export function Summary() {
   const form = useFormContext<CreatePushAirdropInput>();
-  const t = useTranslations("private.airdrops.create.summary.push");
+  const t = useTranslations("private.airdrops.create.summary");
+  const locale = useLocale();
   const formValues = form.getValues();
   const { data: session } = authClient.useSession();
 
@@ -34,7 +36,14 @@ export function Summary() {
         >
           <FormSummaryDetailItem
             label={t("basics.asset-label")}
-            value={formValues.asset ? `${formValues.asset.symbol}` : undefined}
+            value={
+              formValues.asset ? (
+                <EvmAddress
+                  address={formValues.asset.id}
+                  symbol={formValues.asset.symbol}
+                />
+              ) : undefined
+            }
           />
           <FormSummaryDetailItem
             label={t("basics.owner-label")}
@@ -56,12 +65,8 @@ export function Summary() {
         <FormSummaryDetailCard
           title={t("configuration.title")}
           description={t("configuration.description")}
-          icon={<Coins className="size-3 text-primary-foreground" />}
+          icon={<HandHeart className="size-3 text-primary-foreground" />}
         >
-          <FormSummaryDetailItem
-            label={t("configuration.distribution-cap-label")}
-            value={formValues.distributionCap?.toString()}
-          />
           <FormSummaryDetailItem
             label={t("configuration.distribution-recipients-label")}
             value={formValues.distribution?.length?.toString()}
@@ -70,48 +75,21 @@ export function Summary() {
             label={t("configuration.total-distribution-amount-label")}
             value={
               formValues.distribution
-                ? formValues.distribution
-                    .reduce((sum, item) => sum + Number(item.amount), 0)
-                    .toString()
-                : undefined
+                ? formatNumber(
+                    formValues.distribution.reduce(
+                      (sum, item) => sum + Number(item.amount),
+                      0
+                    ),
+                    {
+                      decimals: formValues.asset?.decimals,
+                      token: formValues.asset?.symbol,
+                      locale,
+                    }
+                  )
+                : "-"
             }
           />
         </FormSummaryDetailCard>
-
-        {/* Distribution Recipients Card */}
-        {formValues.distribution && formValues.distribution.length > 0 && (
-          <FormSummaryDetailCard
-            title={t("recipients.title")}
-            description={t("recipients.description")}
-            icon={<HandHeart className="size-3 text-primary-foreground" />}
-          >
-            <div className="space-y-3 max-h-48 overflow-y-auto">
-              {formValues.distribution.slice(0, 10).map((recipient, index) => (
-                <div
-                  key={`recipient-${index}`}
-                  className="flex items-center justify-between py-1.5"
-                >
-                  <div className="flex items-center">
-                    <EvmAddress
-                      address={recipient.recipient}
-                      hoverCard={false}
-                    />
-                  </div>
-                  <div className="text-sm font-medium">
-                    {recipient.amount} {formValues.asset?.symbol}
-                  </div>
-                </div>
-              ))}
-              {formValues.distribution.length > 10 && (
-                <div className="text-sm text-muted-foreground text-center pt-2">
-                  {t("recipients.and-more", {
-                    count: formValues.distribution.length - 10,
-                  })}
-                </div>
-              )}
-            </div>
-          </FormSummaryDetailCard>
-        )}
 
         {/* Disclaimer */}
         <div className="text-sm text-muted-foreground mt-8">

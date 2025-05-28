@@ -1544,30 +1544,35 @@
           }
         },
         "summary": {
-          "push": {
-            "title": "Summary",
-            "description": "Review all the details you have entered for your push airdrop.",
-            "basics": {
-              "title": "Basic Information",
-              "description": "General information about your push airdrop.",
-              "asset-label": "Asset",
-              "owner-label": "Owner"
-            },
-            "configuration": {
-              "title": "Distribution Configuration",
-              "description": "Configuration parameters for the push airdrop distribution.",
-              "distribution-cap-label": "Distribution Cap",
-              "distribution-recipients-label": "Number of Recipients",
-              "total-distribution-amount-label": "Total Distribution Amount"
-            },
-            "recipients": {
-              "title": "Distribution Recipients",
-              "description": "List of recipients who will receive tokens in this push airdrop.",
-              "and-more": "and {count} more recipients..."
-            },
-            "not-specified": "Not specified",
-            "disclaimer": "By creating this push airdrop, you confirm that all information provided is accurate and that you have the necessary permissions to deploy this airdrop. This action cannot be undone."
-          }
+          "title": "Summary",
+          "description": "Review all the details you have entered for your airdrop.",
+          "basics": {
+            "title": "Basic Information",
+            "description": "General information about your airdrop.",
+            "asset-label": "Asset",
+            "owner-label": "Owner"
+          },
+          "timing": {
+            "title": "Time Configuration",
+            "description": "Timing parameters for the airdrop claim period.",
+            "start-time-label": "Start Time",
+            "end-time-label": "End Time",
+            "claim-duration-label": "Claim Duration"
+          },
+          "configuration": {
+            "title": "Distribution Configuration",
+            "description": "Configuration parameters for the airdrop distribution.",
+            "distribution-cap-label": "Distribution Cap",
+            "distribution-recipients-label": "Number of Recipients",
+            "total-distribution-amount-label": "Total Distribution Amount"
+          },
+          "recipients": {
+            "title": "Distribution Recipients",
+            "description": "List of recipients who will receive tokens in this airdrop.",
+            "and-more": "and {count} more recipients..."
+          },
+          "not-specified": "Not specified",
+          "disclaimer": "By creating this airdrop, you confirm that all information provided is accurate and that you have the necessary permissions to deploy this airdrop. This action cannot be undone."
         }
       }
     },
