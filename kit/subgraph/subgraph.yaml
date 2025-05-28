@@ -207,6 +207,8 @@ dataSources:
           file: ../contracts/artifacts/contracts/VestingAirdrop.sol/VestingAirdrop.json
         - name: LinearVestingStrategy
           file: ../contracts/artifacts/contracts/airdrop/strategies/LinearVestingStrategy.sol/LinearVestingStrategy.json
+        - name: PushAirdrop
+          file: ../contracts/artifacts/contracts/PushAirdrop.sol/PushAirdrop.json
       eventHandlers:
         - event: StandardAirdropDeployed(indexed address,indexed address,indexed address)
           handler: handleStandardAirdropDeployed
