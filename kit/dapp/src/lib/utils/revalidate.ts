@@ -7,6 +7,7 @@ export async function revalidate() {
   revalidateTag("user-activity");
   revalidateTag("trades");
   revalidateTag("actions");
+  revalidateTag("airdrop");
 
   // Now revalidate paths after clearing cache
   revalidatePath("/[locale]/assets", "layout");
