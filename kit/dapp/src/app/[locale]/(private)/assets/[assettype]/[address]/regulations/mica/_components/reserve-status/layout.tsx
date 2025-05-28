@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/client";
-import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
+import type { MicaRegulationConfigResponse } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { ReserveComplianceStatus } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
 import { isTokenAdmin } from "@/lib/utils/has-role";
@@ -16,7 +16,7 @@ export function ReserveStatusLayout({
   config,
   assetDetails,
 }: {
-  config: MicaRegulationConfig;
+  config: MicaRegulationConfigResponse;
   assetDetails: AssetUsers;
 }) {
   const t = useTranslations("regulations.mica.dashboard.reserve-status");

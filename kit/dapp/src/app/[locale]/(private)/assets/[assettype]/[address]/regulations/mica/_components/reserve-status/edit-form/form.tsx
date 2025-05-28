@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import {
   ReserveComplianceStatus,
   TokenType,
-  type MicaRegulationConfig,
+  type MicaRegulationConfigResponse,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { updateReserves } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-action";
 import { UpdateReservesSchema } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-schema";
@@ -20,7 +20,7 @@ import { TokenType as TokenTypeStep } from "./steps/token-type";
 
 interface ReserveFormProps {
   address: Address;
-  config: MicaRegulationConfig;
+  config: MicaRegulationConfigResponse;
 }
 
 export function ReserveForm({ address, config }: ReserveFormProps) {

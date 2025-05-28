@@ -1,93 +1,30 @@
 import "server-only";
 
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { db } from "@/lib/db";
+import { regulationConfigs } from "@/lib/db/regulations/schema-base-regulation-configs";
+import { micaRegulationConfigs } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
+import { and, eq } from "drizzle-orm";
 import type { Address } from "viem";
 
-// Schema for MiCA document metadata from Hasura
-export const MicaDocumentSchema = t.Object(
-  {
-    id: t.String(),
-    title: t.String(),
-    fileName: t.String(),
-    type: t.String(),
-    category: t.String(),
-    uploadDate: t.String({ format: "date-time" }),
-    status: t.Union([
-      t.Literal("approved"),
-      t.Literal("pending"),
-      t.Literal("rejected"),
-    ]),
-    url: t.String({ format: "uri" }),
-    size: t.Number(),
-  },
-  { $id: "MicaDocument" }
-);
+// Document schema for validation
+const MicaDocumentSchema = t.Object({
+  id: t.String(),
+  title: t.String(),
+  fileName: t.String(),
+  type: t.String(),
+  category: t.String(),
+  uploadDate: t.String(),
+  status: t.String(),
+  url: t.String(),
+  size: t.Number(),
+});
 
 export type MicaDocument = StaticDecode<typeof MicaDocumentSchema>;
 
-// GraphQL query to get regulation config ID for an asset
-const GET_REGULATION_CONFIG_ID = hasuraGraphql(`
-  query GetRegulationConfigId($assetId: String!) {
-    regulation_configs(
-      where: {
-        asset_id: { _eq: $assetId },
-        regulation_type: { _eq: "mica" }
-      },
-      limit: 1
-    ) {
-      id
-    }
-  }
-`);
-
-// GraphQL query to get MICA regulation config with documents
-const GET_MICA_REGULATION_CONFIG = hasuraGraphql(`
-  query GetMicaRegulationConfig($regulationConfigId: String!) {
-    mica_regulation_configs(
-      where: {
-        regulation_config_id: { _eq: $regulationConfigId }
-      },
-      limit: 1
-    ) {
-      id
-      documents
-    }
-  }
-`);
-
-// Query to check all regulation configs and their relationships
-const CHECK_ALL_REGULATION_DATA = hasuraGraphql(`
-  query CheckAllRegulationData {
-    regulation_configs(where: { regulation_type: { _eq: "mica" } }) {
-      id
-      asset_id
-      regulation_type
-    }
-    mica_regulation_configs {
-      id
-      regulation_config_id
-      documents
-    }
-  }
-`);
-
-type GetRegulationConfigIdResponse = {
-  regulation_configs: {
-    id: string;
-  }[];
-};
-
-type GetMicaRegulationConfigResponse = {
-  mica_regulation_configs: {
-    id: string;
-    documents: any[] | null;
-  }[];
-};
-
 /**
- * Fetches MiCA regulation documents for a specific asset from Hasura
+ * Fetches MiCA regulation documents for a specific asset using Drizzle
  *
  * @param assetAddress - The blockchain address of the asset
  * @returns Array of MiCA document metadata
@@ -97,38 +34,50 @@ export const getMicaDocuments = withTracing(
   "getMicaDocuments",
   async (assetAddress: Address): Promise<MicaDocument[]> => {
     try {
-      // First, let's check the overall data structure
-      const allDataResult = await hasuraClient.request(
-        CHECK_ALL_REGULATION_DATA
-      );
+      // Get the regulation config for this asset
+      const regulationConfigResult = await db
+        .select({
+          id: regulationConfigs.id,
+        })
+        .from(regulationConfigs)
+        .where(
+          and(
+            eq(regulationConfigs.assetId, assetAddress),
+            eq(regulationConfigs.regulationType, "mica")
+          )
+        )
+        .limit(1);
 
-      // Check if this asset has a regulation config
-      const assetRegulationConfig = allDataResult.regulation_configs.find(
-        (config) => config.asset_id === assetAddress
-      );
-
-      if (!assetRegulationConfig) {
+      if (!regulationConfigResult[0]) {
         return [];
       }
 
-      // Find the corresponding MiCA config
-      const assetMicaConfig = allDataResult.mica_regulation_configs.find(
-        (micaConfig) =>
-          micaConfig.regulation_config_id === assetRegulationConfig.id
-      );
+      // Get the MiCA config for this regulation
+      const micaConfigResult = await db
+        .select({
+          documents: micaRegulationConfigs.documents,
+        })
+        .from(micaRegulationConfigs)
+        .where(
+          eq(
+            micaRegulationConfigs.regulationConfigId,
+            regulationConfigResult[0].id
+          )
+        )
+        .limit(1);
 
-      if (!assetMicaConfig) {
+      if (!micaConfigResult[0]) {
         return [];
       }
 
-      const documentsFromHasura = assetMicaConfig.documents;
+      const documentsFromDB = micaConfigResult[0].documents;
 
-      if (!documentsFromHasura || !Array.isArray(documentsFromHasura)) {
+      if (!documentsFromDB || !Array.isArray(documentsFromDB)) {
         return [];
       }
 
-      // Transform Hasura documents to match our schema
-      const documents: MicaDocument[] = documentsFromHasura.map(
+      // Transform database documents to match our schema
+      const documents: MicaDocument[] = documentsFromDB.map(
         (doc: any, index: number) => {
           // Extract filename from URL if not provided
           let fileName = doc.fileName || doc.title || `document-${index + 1}`;
@@ -186,32 +135,25 @@ export const getMicaDocuments = withTracing(
 );
 
 /**
- * Get a specific MiCA document by ID from Hasura
+ * Get a specific MiCA document by ID using Drizzle
  */
 export const getMicaDocumentById = withTracing(
   "queries",
   "getMicaDocumentById",
   async (documentId: string): Promise<MicaDocument | null> => {
     console.log(
-      `🔍 Getting MiCA document details from Hasura for: ${documentId}`
+      `🔍 Getting MiCA document details from database for: ${documentId}`
     );
 
     try {
-      // For now, we'll need to search through all MiCA configs to find the document
-      // In a future version, we could create a dedicated documents table for better querying
+      // Get all MiCA configs and search through their documents
+      const allConfigs = await db
+        .select({
+          documents: micaRegulationConfigs.documents,
+        })
+        .from(micaRegulationConfigs);
 
-      const allConfigsQuery = hasuraGraphql(`
-        query GetAllMicaConfigs {
-          mica_regulation_configs {
-            id
-            documents
-          }
-        }
-      `);
-
-      const response = await hasuraClient.request(allConfigsQuery);
-
-      for (const config of response.mica_regulation_configs) {
+      for (const config of allConfigs) {
         if (config.documents && Array.isArray(config.documents)) {
           const document = config.documents.find(
             (doc: any) => doc.id === documentId || doc.url === documentId
@@ -248,7 +190,7 @@ export const getMicaDocumentById = withTracing(
       return null;
     } catch (error) {
       console.error(
-        `❌ Failed to get MiCA document ${documentId} from Hasura:`,
+        `❌ Failed to get MiCA document ${documentId} from database:`,
         error
       );
       return null;

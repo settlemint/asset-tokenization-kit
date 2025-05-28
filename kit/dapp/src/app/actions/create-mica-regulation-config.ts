@@ -22,29 +22,19 @@ export async function createMicaRegulationConfigAction(
       };
     }
 
-    // Create new regulation config
+    // Create new regulation config with only the fields that exist in the database
     const newConfig = await createMicaRegulationConfig({
       id: randomUUID(),
-      regulation_config_id: input.regulationConfigId,
-      token_type: input.tokenType ?? undefined,
-      reserve_status: input.reserveStatus ?? undefined,
-      legal_entity: input.legalEntity
-        ? JSON.stringify(input.legalEntity)
-        : null,
-      regulatory_approval: input.regulatoryApproval
-        ? JSON.stringify(input.regulatoryApproval)
-        : null,
-      reserve_composition: input.reserveComposition
-        ? JSON.stringify(input.reserveComposition)
-        : null,
-      management_vetting: input.managementVetting
-        ? JSON.stringify(input.managementVetting)
-        : null,
-      eu_passport_status: input.euPassportStatus
-        ? JSON.stringify(input.euPassportStatus)
-        : null,
-      documents: input.documents ? JSON.stringify(input.documents) : null,
-      last_audit_date: input.lastAuditDate,
+      regulationConfigId: input.regulationConfigId,
+      tokenType: input.tokenType ?? undefined,
+      reserveStatus: input.reserveStatus ?? undefined,
+      reserveComposition: input.reserveComposition,
+      documents: input.documents,
+      lastAuditDate: input.lastAuditDate,
+      licenceNumber: input.licenceNumber ?? undefined,
+      regulatoryAuthority: input.regulatoryAuthority ?? undefined,
+      approvalDate: input.approvalDate ?? undefined,
+      approvalDetails: input.approvalDetails ?? undefined,
     });
 
     return {

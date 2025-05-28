@@ -94,42 +94,11 @@ export const micaRegulationConfigs = pgTable("mica_regulation_configs", {
   reserveStatus: text("reserve_status"),
   tokenType: text("token_type"),
 
-  // Legal entity data
-  legalEntity: jsonb("legal_entity").$type<{
-    leiCode?: string;
-    registrationNumber?: string;
-    registeredOfficeAddress?: {
-      street?: string;
-      city?: string;
-      postalCode?: string;
-      country?: string;
-    };
-  } | null>(),
-
-  // Management vetting data
-  managementVetting: jsonb("management_vetting").$type<{
-    ceoName?: string;
-    cfoName?: string;
-    boardOfDirectors?: string[];
-    complianceOfficer?: string;
-    vettingProcessDetails?: string;
-  } | null>(),
-
-  // Regulatory approval data
-  regulatoryApproval: jsonb("regulatory_approval").$type<{
-    licenceNumber?: string;
-    regulatoryAuthority?: string;
-    approvalDate?: number;
-    approvalDetails?: string;
-  } | null>(),
-
-  // EU passport status data
-  euPassportStatus: jsonb("eu_passport_status").$type<{
-    homeMemberState?: string;
-    passportEffectiveDate?: number;
-    notifiedCountries?: string[];
-    additionalDetails?: string;
-  } | null>(),
+  // Regulatory approval data (flattened from the previous nested structure)
+  licenceNumber: text("licence_number"),
+  regulatoryAuthority: text("regulatory_authority"),
+  approvalDate: timestamp("approval_date", { withTimezone: true }),
+  approvalDetails: text("approval-details"),
 });
 
 // Define relation to regulation configs
@@ -146,3 +115,51 @@ export const micaRegulationConfigsRelations = relations(
 // Export types
 export type MicaRegulationConfig = typeof micaRegulationConfigs.$inferSelect;
 export type NewMicaRegulationConfig = typeof micaRegulationConfigs.$inferInsert;
+
+// Backward compatible interface for API responses
+export interface MicaRegulationConfigResponse {
+  id: string;
+  regulationConfigId: string;
+  documents: MicaDocument[] | null;
+  reserveComposition: {
+    bankDeposits?: number;
+    governmentBonds?: number;
+    highQualityLiquidAssets?: number;
+    corporateBonds?: number;
+    centralBankAssets?: number;
+    commodities?: number;
+    otherAssets?: number;
+  } | null;
+  lastAuditDate: Date | null;
+  reserveStatus: string | null;
+  tokenType: string | null;
+  legalEntity: {
+    leiCode?: string;
+    registrationNumber?: string;
+    registeredOfficeAddress?: {
+      street?: string;
+      city?: string;
+      postalCode?: string;
+      country?: string;
+    };
+  } | null;
+  managementVetting: {
+    ceoName?: string;
+    cfoName?: string;
+    boardOfDirectors?: string[];
+    complianceOfficer?: string;
+    vettingProcessDetails?: string;
+  } | null;
+  regulatoryApproval: {
+    licenceNumber?: string;
+    regulatoryAuthority?: string;
+    approvalDate?: number;
+    approvalDetails?: string;
+  } | null;
+  euPassportStatus: {
+    homeMemberState?: string;
+    passportEffectiveDate?: number;
+    notifiedCountries?: string[];
+    additionalDetails?: string;
+  } | null;
+}
