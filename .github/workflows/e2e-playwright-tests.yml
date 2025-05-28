@@ -118,9 +118,20 @@ jobs:
           echo "Dev server is ready at http://localhost:3000!"
         working-directory: kit/dapp
 
-      - name: Run Playwright tests
-        id: playwright
-        run: bun playwright test tests --retries 2 --reporter=html
+      - name: Run API Playwright tests
+        id: playwright-api
+        run:
+          bun playwright test --config=playwright.api.config.ts
+          --project=api-tests --retries 2 --reporter=html
+        working-directory: kit/e2e
+        env:
+          CI: true
+
+      - name: Run UI Playwright tests
+        id: playwright-ui
+        run:
+          bun playwright test --config=playwright.ui.config.ts
+          --project=ui-tests --retries 2 --reporter=html
         working-directory: kit/e2e
         env:
           CI: true
@@ -133,7 +144,7 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "${{ steps.playwright.outcome == 'success' && ':white_check_mark: Asset Tokenization E2E Tests Passed' || ':x: Asset Tokenization E2E Tests Failed' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
+              "text": "${{ (steps.playwright-api.outcome == 'success' && steps.playwright-ui.outcome == 'success') && ':white_check_mark: Asset Tokenization E2E Tests Passed (API & UI)' || ':x: Asset Tokenization E2E Tests Failed (API or UI)' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
             }
 
       - name: Stop dev server

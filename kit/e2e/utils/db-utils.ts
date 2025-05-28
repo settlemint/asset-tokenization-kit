@@ -136,3 +136,57 @@ export async function ensureUserIsAdmin(
     );
   }
 }
+
+export async function getUserPincodeStatusFromDB(
+  email: string
+): Promise<{
+  pincodeEnabled: boolean;
+  pincodeVerificationId: string | null;
+} | null> {
+  const client = await createDbClient();
+  try {
+    const result = await client.query(
+      'SELECT pincode_enabled, pincode_verification_id FROM "user" WHERE email = $1',
+      [email]
+    );
+    if (result.rows.length === 0) {
+      return null;
+    }
+    const userData = result.rows[0];
+    return {
+      pincodeEnabled: userData.pincode_enabled ?? false,
+      pincodeVerificationId: userData.pincode_verification_id ?? null,
+    };
+  } catch (error) {
+    console.error(
+      `[DB UTILS] Error fetching pincode status for ${email}:`,
+      error instanceof Error ? error.message : String(error)
+    );
+    throw new Error(
+      `Failed to get user pincode status: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+  } finally {
+    await client.end();
+  }
+}
+
+export async function isPincodeEnabledInDB(email: string): Promise<boolean> {
+  try {
+    const status = await getUserPincodeStatusFromDB(email);
+    if (!status) {
+      return false;
+    }
+    const isEnabled = !!(
+      status.pincodeEnabled &&
+      status.pincodeVerificationId &&
+      status.pincodeVerificationId.trim() !== ""
+    );
+    return isEnabled;
+  } catch (error) {
+    console.error(
+      `[DB UTILS] Error in isPincodeEnabledInDB for ${email}:`,
+      error instanceof Error ? error.message : String(error)
+    );
+    return false;
+  }
+}

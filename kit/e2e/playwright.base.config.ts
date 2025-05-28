@@ -1,13 +1,11 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { PlaywrightTestConfig } from "@playwright/test";
-import { devices } from "@playwright/test";
 import * as dotenv from "dotenv";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const projectRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../../"
-);
+const __filename = fileURLToPath(import.meta.url);
+const e2eDir = path.dirname(__filename);
+const projectRoot = path.resolve(e2eDir, "../../");
 
 dotenv.config({ path: path.join(projectRoot, ".env") });
 dotenv.config({ path: path.join(projectRoot, ".env.local"), override: true });
@@ -19,32 +17,36 @@ const requiredEnvVars = [
 
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
-    throw new Error(`Missing required environment variable: ${envVar}`);
+    throw new Error(
+      `[Base Config] Missing required environment variable: ${envVar}`
+    );
   }
 }
 
-const config: PlaywrightTestConfig = {
-  testDir: "./tests",
+const baseConfig: PlaywrightTestConfig = {
   timeout: 600 * 1000,
   expect: {
     timeout: 65000,
   },
-  retries: 2,
-  fullyParallel: false,
+  retries: process.env.CI ? 2 : 0,
+  fullyParallel: !process.env.CI,
   workers: process.env.CI ? 3 : undefined,
   forbidOnly: !!process.env.CI,
-  reporter: [["html"]],
+  reporter: process.env.CI
+    ? [["blob"], ["github"], ["html"]]
+    : [["list"], ["html"]],
+
   use: {
     actionTimeout: 65000,
     navigationTimeout: 120000,
-    baseURL: "http://localhost:3000",
-    trace: "off",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+    trace: process.env.CI ? "on-first-retry" : "retain-on-failure",
     viewport: { width: 1920, height: 1080 },
     screenshot: "only-on-failure",
-    video: "retain-on-failure",
-    headless: true,
+    video: process.env.CI ? "retain-on-failure" : "off",
+    headless: !!process.env.CI || process.env.HEADLESS === "true",
     launchOptions: {
-      slowMo: 100,
+      slowMo: Number(process.env.PLAYWRIGHT_SLOW_MO) || 0,
       args: [
         "--disable-dev-shm-usage",
         "--no-sandbox",
@@ -54,24 +56,20 @@ const config: PlaywrightTestConfig = {
       ],
     },
   },
-  projects: [
-    {
-      name: "chromium",
-      use: {
-        ...devices["Desktop Chrome"],
-      },
-    },
-  ],
+
   webServer: process.env.CI
     ? undefined
     : {
         command: "cd ../dapp && bun run dev",
         port: 3000,
-        reuseExistingServer: true,
-        timeout: 120000,
+        reuseExistingServer: !process.env.CI,
+        timeout: 120 * 1000,
         stdout: "pipe",
         stderr: "pipe",
+        env: {
+          PORT: "3000",
+        },
       },
 };
 
-export default config;
+export default baseConfig;
