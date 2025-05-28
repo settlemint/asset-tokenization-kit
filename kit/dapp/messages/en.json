@@ -1450,8 +1450,10 @@
           "owner-description": "The account that will own and manage this airdrop contract.",
           "start-time-label": "Start time",
           "start-time-description": "The date and time when users can start claiming tokens.",
+          "start-time-error": "Start time must be at least 1 hour in the future",
           "end-time-label": "End time",
-          "end-time-description": "The date and time when the airdrop claim period ends."
+          "end-time-description": "The date and time when the airdrop claim period ends.",
+          "end-time-error": "End time must be at least 1 hour after start time"
         },
         "distribution": {
           "title": "Distribution",
@@ -1459,7 +1461,8 @@
           "distribution-label": "Distribution (csv)",
           "distribution-description": "The distribution of the airdrop. The CSV file must have the columns 'amount' and 'recipient'.",
           "distribution-cap-label": "Distribution limit",
-          "distribution-cap-description": "The maximum number of tokens that can be distributed in this airdrop."
+          "distribution-cap-description": "The maximum number of tokens that can be distributed in this airdrop.",
+          "distribution-cap-error": "Total distribution amount exceeds the distribution limit"
         },
         "button-labels": {
           "general": {
@@ -1518,6 +1521,7 @@
           "description": "Configure the vesting parameters for the airdrop.",
           "claim-period-end-label": "Claim Period End",
           "claim-period-end-description": "Deadline for users to claim their airdrop. After this date, unclaimed tokens are forfeited.",
+          "claim-period-end-error": "Claim period end must be at least 1 hour in the future",
           "cliff-duration-label": "Cliff Duration",
           "cliff-duration-description": "Waiting period after claiming before any tokens can be withdrawn.",
           "vesting-duration-label": "Vesting Duration",

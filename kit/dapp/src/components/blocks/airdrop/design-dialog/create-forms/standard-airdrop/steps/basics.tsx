@@ -3,8 +3,9 @@ import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import type { CreateStandardAirdropInput } from "@/lib/mutations/airdrop/create/standard/create-schema";
+import { isValidFutureDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Basics() {
   const { control } = useFormContext<CreateStandardAirdropInput>();
@@ -63,3 +64,72 @@ Basics.validatedFields = [
   "startTime",
   "endTime",
 ] satisfies (keyof CreateStandardAirdropInput)[];
+
+/**
+ * Custom validation function for start time
+ *
+ * Note: We use this custom validation approach instead of
+ * relying on the schema refinement defined in create-schema.ts because
+ * refinement properties don't work reliably with @hookform/typebox resolver.
+ * This ensures the validation is properly applied and error messages are displayed.
+ */
+const validateStartTime = async (
+  form: UseFormReturn<CreateStandardAirdropInput>
+) => {
+  const startTime = form.getValues("startTime");
+  if (!startTime) {
+    return false;
+  }
+
+  if (!isValidFutureDate(startTime, 1)) {
+    // Using the translation key directly, which will be resolved by the Form component's
+    // error formatting mechanism that automatically handles translations
+    form.setError("startTime", {
+      type: "manual",
+      message: "private.airdrops.create.basics.start-time-error",
+    });
+
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * Custom validation function for end time
+ *
+ * Note: We use this custom validation approach instead of
+ * relying on the schema refinement defined in create-schema.ts because
+ * refinement properties don't work reliably with @hookform/typebox resolver.
+ * This ensures the validation is properly applied and error messages are displayed.
+ */
+const validateEndTime = async (
+  form: UseFormReturn<CreateStandardAirdropInput>
+) => {
+  const startTime = form.getValues("startTime");
+  const endTime = form.getValues("endTime");
+
+  if (!endTime || !startTime) {
+    return false;
+  }
+
+  // Check if end time is at least 1 hour after start time
+  const startDate = new Date(startTime);
+  const endDate = new Date(endTime);
+  const oneHourInMs = 60 * 60 * 1000; // 1 hour in milliseconds
+
+  if (endDate.getTime() - startDate.getTime() < oneHourInMs) {
+    // Using the translation key directly, which will be resolved by the Form component's
+    // error formatting mechanism that automatically handles translations
+    form.setError("endTime", {
+      type: "manual",
+      message: "private.airdrops.create.basics.end-time-error",
+    });
+
+    return false;
+  }
+
+  return true;
+};
+
+Basics.customValidation = [validateStartTime, validateEndTime];
