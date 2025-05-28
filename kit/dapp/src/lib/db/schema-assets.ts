@@ -75,10 +75,7 @@ export const airdropDistribution = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     airdropId: text("airdrop_id").notNull(),
     recipient: text("recipient").notNull(),
-    amount: numeric("amount", {
-      precision: 36,
-      scale: 18,
-    }).notNull(),
+    amount: text("amount").notNull(),
     index: integer("index").notNull(),
     claimed: timestamp("claimed", { withTimezone: true }),
   },

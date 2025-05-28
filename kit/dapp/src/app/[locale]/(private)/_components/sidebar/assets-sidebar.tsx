@@ -24,7 +24,9 @@ export async function AssetsSidebar() {
       </SidebarHeader>
       <SidebarContent className="pt-4">
         <AssetDesignerButton currentUser={user} />
-        <AirdropDesignButton currentUser={user} />
+        {process.env.NODE_ENV === "development" && (
+          <AirdropDesignButton currentUser={user} />
+        )}
         <AssetManagement />
         <CustodyManagement />
       </SidebarContent>
