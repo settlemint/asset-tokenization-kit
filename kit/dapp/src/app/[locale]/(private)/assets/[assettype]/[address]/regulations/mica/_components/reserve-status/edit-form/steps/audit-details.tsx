@@ -125,10 +125,15 @@ export function AuditDetails({ config }: { config: MicaRegulationConfig }) {
       <FormInput
         control={form.control}
         name="lastAuditDate"
-        type="datetime-local"
+        type="date"
         label={t("last-audit-date")}
         placeholder={t("last-audit-date-placeholder")}
         max={new Date().toISOString().slice(0, 16)}
+        onChange={(e) => {
+          if (e.target.value === "") {
+            form.setValue("lastAuditDate", null);
+          }
+        }}
       />
 
       <FormSelect
