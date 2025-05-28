@@ -58,6 +58,7 @@ interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   pagination?: DataTablePaginationOptions;
   initialSorting?: SortingState;
   initialColumnFilters?: ColumnFiltersState;
+  initialPageSize?: number;
   className?: string;
   customEmptyState?: DataTableEmptyStateProps;
 }
@@ -101,6 +102,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   pagination,
   initialSorting,
   initialColumnFilters,
+  initialPageSize,
   className,
   customEmptyState,
 }: DataTableProps<TData, CParams>) {
@@ -132,6 +134,12 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     globalFilterFn: "includesString",
+
+    initialState: {
+      pagination: {
+        pageSize: initialPageSize ?? 5,
+      },
+    },
 
     state: {
       sorting,
