@@ -33,8 +33,8 @@ export const pushAirdropFormDefinition = {
     },
     {
       id: "summary",
-      title: "summary.push.title",
-      description: "summary.push.description",
+      title: "summary.title",
+      description: "summary.description",
     },
   ],
 } as const;

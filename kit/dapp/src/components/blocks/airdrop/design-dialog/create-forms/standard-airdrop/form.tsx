@@ -30,6 +30,11 @@ export const standardAirdropFormDefinition = {
       title: "distribution.title",
       description: "distribution.description",
     },
+    {
+      id: "summary",
+      title: "summary.title",
+      description: "summary.description",
+    },
   ],
 } as const;
 
@@ -49,6 +54,7 @@ export function CreateStandardAirdropForm({
   > = {
     basics: 0,
     distribution: 1,
+    summary: 2,
   };
 
   // Use the step synchronization hook

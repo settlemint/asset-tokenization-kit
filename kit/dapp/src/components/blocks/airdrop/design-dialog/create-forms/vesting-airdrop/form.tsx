@@ -36,6 +36,11 @@ export const vestingAirdropFormDefinition = {
       title: "distribution.title",
       description: "distribution.description",
     },
+    {
+      id: "summary",
+      title: "summary.title",
+      description: "summary.description",
+    },
   ],
 } as const;
 
@@ -55,6 +60,7 @@ export function CreateVestingAirdropForm({
     basics: 0,
     vesting: 1,
     distribution: 2,
+    summary: 3,
   };
 
   // Use the step synchronization hook
