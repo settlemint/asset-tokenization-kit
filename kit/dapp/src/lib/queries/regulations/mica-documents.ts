@@ -97,8 +97,7 @@ export const getMicaDocuments = withTracing(
           const category = doc.category || doc.type || "general";
 
           // Generate upload date if not provided
-          const uploadDate =
-            doc.uploadDate || doc.created_at || new Date().toISOString();
+          const uploadDate = doc.uploadDate || new Date().toISOString();
 
           // Estimate file size if not provided (default to 0)
           const size = doc.size || 0;
@@ -163,10 +162,7 @@ export const getMicaDocumentById = withTracing(
             // Transform the document to match our schema
             const fileName = document.fileName || document.title || "document";
             const category = document.category || document.type || "general";
-            const uploadDate =
-              document.uploadDate ||
-              document.created_at ||
-              new Date().toISOString();
+            const uploadDate = document.uploadDate || new Date().toISOString();
             const size = document.size || 0;
 
             const transformedDocument = {

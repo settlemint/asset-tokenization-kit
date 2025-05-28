@@ -43,11 +43,16 @@ export type DocumentStatus =
 
 // Document type for MICA
 export type MicaDocument = {
-  type: MicaDocumentType;
-  url: string;
-  status: DocumentStatus;
-  description?: string;
+  id: string;
   title: string;
+  fileName: string;
+  type: MicaDocumentType;
+  category?: string;
+  uploadDate: string;
+  status: DocumentStatus;
+  url: string;
+  size: number;
+  description?: string;
 };
 
 // Reserve compliance status

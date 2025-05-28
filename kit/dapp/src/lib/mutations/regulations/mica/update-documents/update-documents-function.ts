@@ -105,16 +105,51 @@ export const updateDocumentsFunction = withAccessControl(
           throw new Error(`Invalid operation: ${parsedInput.operation}`);
       }
 
+      // Transform MicaDocumentInput to full MicaDocument format for database storage
+      const fullDocuments = updatedDocuments.map(
+        (
+          doc
+        ): import("@/lib/db/regulations/schema-mica-regulation-configs").MicaDocument => {
+          // Extract filename from URL or use title as fallback
+          let fileName = doc.title;
+          if (doc.url) {
+            try {
+              const urlPath = new URL(doc.url).pathname;
+              const urlFileName = urlPath.split("/").pop();
+              if (urlFileName) {
+                fileName = urlFileName;
+              }
+            } catch (error) {
+              // Use title as fallback if URL parsing fails
+              fileName = doc.title;
+            }
+          }
+
+          return {
+            id: doc.id,
+            title: doc.title,
+            fileName: fileName,
+            type: doc.type,
+            category: doc.type, // Use document type as category
+            uploadDate: new Date().toISOString(),
+            url: doc.url,
+            status: doc.status,
+            size: 0, // Default size - could be enhanced if size info is available
+            description: doc.description,
+          };
+        }
+      );
+
       // Update documents in database using Drizzle
       console.log("About to update documents in database:", {
         id: parsedInput.regulationId,
-        updatedDocuments,
+        updatedDocuments: fullDocuments,
       });
 
       const result = await db
         .update(micaRegulationConfigs)
         .set({
-          documents: updatedDocuments,
+          documents: fullDocuments,
         })
         .where(eq(micaRegulationConfigs.id, parsedInput.regulationId))
         .returning({

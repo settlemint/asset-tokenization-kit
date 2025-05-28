@@ -39,12 +39,31 @@ const convertToMicaDocument = (
     documentType = doc.type as MicaDocumentType;
   }
 
+  // Extract filename from title or URL
+  let fileName = doc.title;
+  if (doc.url) {
+    try {
+      const urlPath = new URL(doc.url).pathname;
+      const urlFileName = urlPath.split("/").pop();
+      if (urlFileName) {
+        fileName = urlFileName;
+      }
+    } catch (error) {
+      // Use title as fallback if URL parsing fails
+      fileName = doc.title;
+    }
+  }
+
   return {
     id: doc.id,
     title: doc.title,
+    fileName: fileName,
     type: documentType,
+    category: doc.type, // Use the original type as category
+    uploadDate: new Date().toISOString(),
     url: doc.url,
     status: DocumentStatus.PENDING,
+    size: 0, // Default size, could be enhanced if available in UploadedDocument
     description: doc.description,
   };
 };
