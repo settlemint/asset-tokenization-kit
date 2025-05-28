@@ -10,7 +10,7 @@ import { formatNumber } from "@/lib/utils/number";
 import { HandHeart, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { PropsWithChildren } from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 
@@ -29,7 +29,6 @@ export function Summary({
   const locale = useLocale();
   const formValues = form.getValues();
   const { data: session } = authClient.useSession();
-  const [predictionError, setPredictionError] = useState<string | null>(null);
 
   // Fetch and validate predicted address on initial load
   useEffect(() => {
@@ -41,8 +40,6 @@ export function Summary({
     // Validate predicted address
     const validateAddress = async () => {
       try {
-        setPredictionError(null);
-
         const values = form.getValues();
         const predictedAddress = await predictAddress(values);
         const isAvailable = await isAddressAvailable(predictedAddress);
@@ -51,7 +48,6 @@ export function Summary({
           form.setError("predictedAddress", {
             message: "private.airdrops.create.form.errors.duplicate-airdrop",
           });
-          setPredictionError("This airdrop configuration is already deployed");
           return;
         }
 
@@ -64,12 +60,12 @@ export function Summary({
           message:
             "private.airdrops.create.form.errors.address-prediction-failed",
         });
-        setPredictionError("Failed to predict contract address");
       }
     };
 
     validateAddress();
-  }, [form, predictAddress, isAddressAvailable]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <StepContent className="max-w-3xl w-full mx-auto">
@@ -80,13 +76,6 @@ export function Summary({
             {t("description")}
           </p>
         </div>
-
-        {/* Show prediction error if any */}
-        {predictionError && (
-          <div className="bg-destructive/15 text-destructive p-3 rounded-md mb-4">
-            {predictionError}
-          </div>
-        )}
 
         {/* Basic Information Card */}
         <FormSummaryDetailCard

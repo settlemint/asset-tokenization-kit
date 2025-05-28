@@ -1361,7 +1361,7 @@
           },
           "errors": {
             "address-prediction-failed": "Failed to predict address. Please try again.",
-            "duplicate-asset": "An asset with these parameters already exists. Please change at least one parameter and try again.",
+            "duplicate-airdrop": "An airdrop with these parameters already exists. Please change at least one parameter and try again.",
             "validation-failed": "A validation error occurred."
           },
           "steps": {

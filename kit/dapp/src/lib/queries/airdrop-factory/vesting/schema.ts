@@ -1,18 +1,19 @@
+import { AirdropDistributionListSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 
 /**
  * Input type for the getPredictedAddress function for vesting airdrops
  */
 export const PredictAddressInputSchema = t.Object({
-  tokenAddress: t.EthereumAddress({
-    description: "The address of the token to be distributed",
-  }),
-  merkleRoot: t.Hash({
-    description: "The Merkle root for verifying claims",
+  asset: t.Object({
+    id: t.EthereumAddress({
+      description: "The id of the asset to be distributed",
+    }),
   }),
   owner: t.EthereumAddress({
     description: "The owner of the airdrop",
   }),
+  distribution: AirdropDistributionListSchema,
   claimPeriodEnd: t.Timestamp({
     description: "The end of the claim period for the vesting airdrop",
   }),
