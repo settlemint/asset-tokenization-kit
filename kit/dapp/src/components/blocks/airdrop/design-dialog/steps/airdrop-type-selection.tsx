@@ -30,32 +30,22 @@ const airdropTypesInfo = [
       {
         status: true,
         label:
-          "private.airdrops.create.type-selection.types.standard.features.merkle-proof" as const,
+          "private.airdrops.create.type-selection.features.user-initiated-claim" as const,
       },
       {
         status: true,
         label:
-          "private.airdrops.create.type-selection.types.standard.features.time-bound" as const,
+          "private.airdrops.create.type-selection.features.time-bound" as const,
+      },
+      {
+        status: false,
+        label:
+          "private.airdrops.create.type-selection.features.vesting-schedule" as const,
       },
       {
         status: true,
         label:
-          "private.airdrops.create.type-selection.types.standard.features.user-initiated-claim" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.standard.features.batch-claim" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.standard.features.erc2771-support" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.standard.features.ownable" as const,
+          "private.airdrops.create.type-selection.features.batch-operations" as const,
       },
     ],
   },
@@ -71,42 +61,22 @@ const airdropTypesInfo = [
       {
         status: true,
         label:
-          "private.airdrops.create.type-selection.types.vesting.features.pluggable-vesting-strategy" as const,
+          "private.airdrops.create.type-selection.features.user-initiated-claim" as const,
       },
       {
         status: true,
         label:
-          "private.airdrops.create.type-selection.types.vesting.features.time-bound-initialization" as const,
+          "private.airdrops.create.type-selection.features.time-bound" as const,
       },
       {
         status: true,
         label:
-          "private.airdrops.create.type-selection.types.vesting.features.user-initiated-claim" as const,
+          "private.airdrops.create.type-selection.features.vesting-schedule" as const,
       },
       {
         status: true,
         label:
-          "private.airdrops.create.type-selection.types.vesting.features.merkle-proof" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.vesting.features.reentrancy-guard" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.vesting.features.batch-claim" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.vesting.features.erc2771-support" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.vesting.features.ownable" as const,
+          "private.airdrops.create.type-selection.features.batch-operations" as const,
       },
     ],
   },
@@ -120,39 +90,24 @@ const airdropTypesInfo = [
       "private.airdrops.create.type-selection.types.push.extended-description" as const,
     featureKeys: [
       {
-        status: true,
+        status: false,
         label:
-          "private.airdrops.create.type-selection.types.push.features.admin-initiated" as const,
+          "private.airdrops.create.type-selection.features.user-initiated-claim" as const,
+      },
+      {
+        status: false,
+        label:
+          "private.airdrops.create.type-selection.features.time-bound" as const,
+      },
+      {
+        status: false,
+        label:
+          "private.airdrops.create.type-selection.features.vesting-schedule" as const,
       },
       {
         status: true,
         label:
-          "private.airdrops.create.type-selection.types.push.features.merkle-proof-admin" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.push.features.batch-distribution" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.push.features.no-user-claim-needed" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.push.features.distribution-cap" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.push.features.erc2771-support" as const,
-      },
-      {
-        status: true,
-        label:
-          "private.airdrops.create.type-selection.types.push.features.ownable" as const,
+          "private.airdrops.create.type-selection.features.batch-operations" as const,
       },
     ],
   },
@@ -175,7 +130,7 @@ export function AirdropTypeSelection({
         </p>
       </div>
       <div className="flex-1 overflow-y-auto pr-4 px-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 pb-4">
           {airdropTypesInfo.map((airdropInfo) => (
             <div key={airdropInfo.type} className="pl-2">
               <Card

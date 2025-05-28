@@ -1488,48 +1488,28 @@
           "title": "Select airdrop type",
           "description": "Choose the type of airdrop you want to create.",
           "key-features": "Key features:",
+          "features": {
+            "user-initiated-claim": "User claims",
+            "batch-operations": "Batch operations",
+            "gasless-transactions": "Gasless transactions",
+            "time-bound": "Time-bound",
+            "vesting-schedule": "Vesting schedule"
+          },
           "types": {
             "standard": {
-              "title": "Standard Airdrop",
+              "title": "Standard",
               "description": "Simple, time-bound airdrop where users claim tokens using a Merkle proof.",
-              "extended-description": "A Standard Airdrop allows for a straightforward distribution of tokens to a list of recipients. Users can claim their allocated tokens within a defined start and end time by providing a cryptographic (Merkle) proof of their inclusion in the airdrop list. It supports individual and batch claims.",
-              "features": {
-                "merkle-proof": "Merkle proof verification for claims",
-                "time-bound": "Configurable start and end time for claims",
-                "user-initiated-claim": "Users initiate their own claims",
-                "batch-claim": "Supports batch claiming for multiple allocations",
-                "erc2771-support": "ERC2771 support for gasless transactions (meta-transactions)",
-                "ownable": "Contract is ownable for administrative functions"
-              }
+              "extended-description": "A Standard Airdrop allows for a straightforward distribution of tokens to a list of recipients. Users can claim their allocated tokens within a defined start and end time by providing a cryptographic (Merkle) proof of their inclusion in the airdrop list. It supports individual and batch claims."
             },
             "vesting": {
-              "title": "Vesting Airdrop",
+              "title": "Vesting",
               "description": "Airdrop with tokens released over time according to a vesting schedule.",
-              "extended-description": "A Vesting Airdrop distributes tokens that are released to recipients gradually over a defined period, following a specific vesting schedule. It uses a pluggable claim strategy to define how vesting occurs (e.g., linear, cliff). Users initialize their claim, and then can claim available tokens as they vest. Supports ERC2771 for meta-transactions.",
-              "features": {
-                "pluggable-vesting-strategy": "Uses a configurable claim strategy for vesting logic",
-                "time-bound-initialization": "Claim initialization period (claimPeriodEnd)",
-                "user-initiated-claim": "Users initiate claims as tokens vest",
-                "merkle-proof": "Merkle proof verification for initial eligibility",
-                "reentrancy-guard": "Protected against reentrancy attacks",
-                "batch-claim": "Supports batch claiming for multiple allocations",
-                "erc2771-support": "ERC2771 support for gasless transactions (meta-transactions)",
-                "ownable": "Contract is ownable for administrative functions like changing strategy"
-              }
+              "extended-description": "A Vesting Airdrop distributes tokens that are released to recipients gradually over a defined period, following a specific vesting schedule. It uses a pluggable claim strategy to define how vesting occurs (e.g., linear, cliff). Users initialize their claim, and then can claim available tokens as they vest. Supports ERC2771 for meta-transactions."
             },
             "push": {
-              "title": "Push Airdrop",
+              "title": "Push",
               "description": "Admin-initiated airdrop where tokens are directly transferred to recipients.",
-              "extended-description": "A Push Airdrop allows an administrator (owner) to directly send tokens to a list of recipients. The admin verifies eligibility using Merkle proofs and can distribute tokens individually or in batches. This type is useful when users are not expected to actively claim tokens. Supports ERC2771 for meta-transactions by the admin.",
-              "features": {
-                "admin-initiated": "Administrator (owner) pushes tokens to recipients",
-                "merkle-proof-admin": "Admin uses Merkle proofs to verify distributions",
-                "batch-distribution": "Supports batch distribution to multiple recipients",
-                "no-user-claim-needed": "Recipients do not need to actively claim tokens",
-                "distribution-cap": "Optional cap on total tokens to be distributed",
-                "erc2771-support": "ERC2771 support for gasless transactions by admin (meta-transactions)",
-                "ownable": "Contract is ownable for administrative functions"
-              }
+              "extended-description": "A Push Airdrop allows an administrator (owner) to directly send tokens to a list of recipients. The admin verifies eligibility using Merkle proofs and can distribute tokens individually or in batches. This type is useful when users are not expected to actively claim tokens. Supports ERC2771 for meta-transactions by the admin."
             }
           }
         },
@@ -1537,11 +1517,11 @@
           "title": "Vesting Schedule",
           "description": "Configure the vesting parameters for the airdrop.",
           "claim-period-end-label": "Claim Period End",
-          "claim-period-end-description": "The date and time when the claim period for the vesting airdrop ends.",
+          "claim-period-end-description": "Deadline for users to claim their airdrop. After this date, unclaimed tokens are forfeited.",
           "cliff-duration-label": "Cliff Duration",
-          "cliff-duration-description": "The initial period during which no tokens are vested.",
+          "cliff-duration-description": "Waiting period after claiming before any tokens can be withdrawn.",
           "vesting-duration-label": "Vesting Duration",
-          "vesting-duration-description": "The total period over which tokens will vest after the cliff.",
+          "vesting-duration-description": "Total time for all tokens to unlock gradually after claiming.",
           "time-units": {
             "plural": {
               "days": "days",
@@ -1582,7 +1562,7 @@
               "and-more": "and {count} more recipients..."
             },
             "not-specified": "Not specified",
-            "disclaimer": "By creating this push airdrop, you confirm that all information provided is accurate and that you have the necessary permissions to deploy this airdrop. This action cannot be undone once the airdrop is created."
+            "disclaimer": "By creating this push airdrop, you confirm that all information provided is accurate and that you have the necessary permissions to deploy this airdrop. This action cannot be undone."
           }
         }
       }
