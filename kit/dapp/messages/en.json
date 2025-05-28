@@ -1528,6 +1528,32 @@
               }
             }
           }
+        },
+        "vesting": {
+          "title": "Vesting Schedule",
+          "description": "Configure the vesting parameters for the airdrop.",
+          "claim-period-end-label": "Claim Period End",
+          "claim-period-end-description": "The date and time when the claim period for the vesting airdrop ends.",
+          "cliff-duration-label": "Cliff Duration",
+          "cliff-duration-description": "The initial period during which no tokens are vested.",
+          "vesting-duration-label": "Vesting Duration",
+          "vesting-duration-description": "The total period over which tokens will vest after the cliff.",
+          "time-units": {
+            "plural": {
+              "days": "days",
+              "hours": "hours",
+              "months": "months",
+              "seconds": "seconds",
+              "weeks": "weeks"
+            },
+            "singular": {
+              "days": "day",
+              "hours": "hour",
+              "months": "month",
+              "seconds": "second",
+              "weeks": "week"
+            }
+          }
         }
       }
     },

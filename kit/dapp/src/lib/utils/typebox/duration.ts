@@ -6,6 +6,7 @@
  */
 import type { SchemaOptions, Static } from "@sinclair/typebox";
 import { t } from "elysia/type-system";
+import { TimeUnit } from "./time-units";
 
 /**
  * Validates a duration with value and unit
@@ -20,7 +21,7 @@ export const Duration = (options?: SchemaOptions) =>
         minimum: 0, // Durations are non-negative
         description: "The numeric value of the duration",
       }),
-      unit: t.TimeUnit({
+      unit: TimeUnit({
         description: "The unit of the duration (e.g., days, months)",
       }),
     },

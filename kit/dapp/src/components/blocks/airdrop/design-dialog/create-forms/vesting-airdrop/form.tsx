@@ -9,6 +9,7 @@ import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { Distribution } from "../common/distribution";
 import { Basics } from "./steps/basics";
+import { Vesting } from "./steps/vesting";
 
 interface CreateVestingAirdropFormProps {
   userDetails: User;
@@ -24,6 +25,11 @@ export const vestingAirdropFormDefinition = {
       id: "basics",
       title: "basics.title",
       description: "basics.description",
+    },
+    {
+      id: "vesting",
+      title: "vesting.title",
+      description: "vesting.description",
     },
     {
       id: "distribution",
@@ -47,7 +53,8 @@ export function CreateVestingAirdropForm({
     number
   > = {
     basics: 0,
-    distribution: 1,
+    vesting: 1,
+    distribution: 2,
   };
 
   // Use the step synchronization hook
@@ -83,6 +90,7 @@ export function CreateVestingAirdropForm({
       onOpenChange={onOpenChange}
     >
       <Basics />
+      <Vesting />
       <Distribution />
     </Form>
   );
