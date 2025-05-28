@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { RefreshCw, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -174,31 +174,21 @@ export function DocumentationLayout() {
     <Card className="w-full h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{t("card.title")}</CardTitle>
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={fetchDocuments}
-            title={t("card.refresh")}
-          >
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => {
-              setIsDialogOpen(true);
-            }}
-            disabled={!regulationConfigId}
-            title={
-              !regulationConfigId
-                ? "Loading regulation configuration..."
-                : undefined
-            }
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            {t("card.upload")}
-          </Button>
-        </div>
+        <Button
+          size="sm"
+          onClick={() => {
+            setIsDialogOpen(true);
+          }}
+          disabled={!regulationConfigId}
+          title={
+            !regulationConfigId
+              ? "Loading regulation configuration..."
+              : undefined
+          }
+        >
+          <Upload className="h-4 w-4 mr-2" />
+          {t("card.upload")}
+        </Button>
       </CardHeader>
       <CardContent className="flex-1">
         {isLoading ? (

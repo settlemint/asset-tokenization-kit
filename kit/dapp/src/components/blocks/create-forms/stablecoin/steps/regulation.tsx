@@ -408,12 +408,6 @@ function RegulationList({
                 const shouldShow =
                   selectedRegulations.includes(regulation.id) &&
                   regulation.id === "mica";
-                console.log(
-                  `Should show MiCA content for ${regulation.id}:`,
-                  shouldShow,
-                  "selectedRegulations:",
-                  selectedRegulations
-                );
                 return (
                   shouldShow && (
                     <MiCARegulation
