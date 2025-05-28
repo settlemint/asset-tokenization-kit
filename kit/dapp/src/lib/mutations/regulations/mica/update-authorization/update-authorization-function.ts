@@ -45,7 +45,6 @@ export const updateAuthorizationFunction = withAccessControl(
     parsedInput: UpdateAuthorizationInput;
     ctx: { user: User };
   }) => {
-    console.log("action", parsedInput);
     try {
       const { regulationId, ...data } = parsedInput;
 
