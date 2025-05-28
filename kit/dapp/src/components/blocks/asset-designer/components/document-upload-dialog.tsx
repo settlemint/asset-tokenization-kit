@@ -88,11 +88,33 @@ export function DocumentUploadDialog({
         fileName: selectedFile.name,
       };
 
+      // Check if we're in asset creation mode (regulationId is not a UUID format)
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const isAssetCreationMode = !uuidRegex.test(regulationId);
+
+      if (isAssetCreationMode) {
+        toast.success(
+          "Document uploaded to storage (metadata will be saved when asset is created)"
+        );
+      } else {
+        try {
+          toast.success("Document uploaded and metadata saved successfully");
+        } catch (dbError) {
+          console.error("Error saving document metadata to database:", dbError);
+          console.error(
+            "Full error details:",
+            JSON.stringify(dbError, null, 2)
+          );
+          toast.error(
+            "Document uploaded but failed to save metadata. Please try again."
+          );
+          return;
+        }
+      }
+
       // Send the document back to the parent component
       onUpload(regulationId, newDocument);
-
-      // Show success message
-      toast.success("Document uploaded successfully");
 
       // Close dialog
       onClose();

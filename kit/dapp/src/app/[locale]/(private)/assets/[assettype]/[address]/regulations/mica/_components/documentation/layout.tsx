@@ -1,12 +1,15 @@
 "use client";
 
+import type { MicaDocument } from "@/app/actions/get-mica-documents";
+import { getMicaDocumentsAction } from "@/app/actions/get-mica-documents";
+import { getMicaRegulationConfigAction } from "@/app/actions/get-mica-regulation-config";
 import { uploadDocument } from "@/app/actions/upload-document";
 import { DocumentUploadDialog } from "@/components/blocks/asset-designer/components/document-upload-dialog";
 import type { UploadedDocument } from "@/components/blocks/asset-designer/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { MicaDocument } from "@/lib/queries/regulations/mica-documents";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { RefreshCw, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
@@ -74,31 +77,24 @@ export function DocumentationLayout() {
   const t = useTranslations("regulations.mica.documents");
   const params = useParams();
   const assetAddress = params.address as string;
+  const assetType = params.assettype as string;
   const [documents, setDocuments] = useState<MicaDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [regulationConfigId, setRegulationConfigId] = useState<string | null>(
+    null
+  );
 
-  // Fetch documents
+  // Fetch documents using server action
   const fetchDocuments = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/documents/mica/${assetAddress}`, {
-        // Add cache: 'no-store' to prevent caching
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache",
-        },
-      });
+      const result = await getMicaDocumentsAction(assetAddress);
 
-      if (response.ok) {
-        const data = await response.json();
-        setDocuments(data);
+      if (result.success) {
+        setDocuments(result.data);
       } else {
-        const errorText = await response.text();
-        console.error(
-          `Failed to fetch documents: ${response.status}`,
-          errorText
-        );
+        console.error("Failed to fetch documents:", result.error);
         toast.error(t("delete_error"));
       }
     } catch (error) {
@@ -109,72 +105,70 @@ export function DocumentationLayout() {
     }
   }, [assetAddress, t]);
 
-  // Custom upload action that adds the assetAddress to the formData
-  const uploadAction = async (formData: FormData) => {
-    // Add asset address to the form data
-    formData.append("assetAddress", assetAddress);
-
-    // Get the document type to use as folder path
-    const documentType = formData.get("type") as string;
-
-    // If a document type was selected, use it for the folder structure
-    // This will create paths like Documents/Audit/... or Documents/Whitepaper/...
-    if (documentType && documentType !== "Other" && documentType !== "mica") {
-      // Override the "type" to make sure it's stored as entered by the user
-      // This is important as the type will be displayed in the table
-      formData.set("type", documentType);
-
-      console.log(
-        `Document type: ${documentType}, will be stored in Documents/${documentType}`
-      );
-    } else {
-      // For mica specific documents or unspecified types
-      formData.set("type", "mica");
-      console.log(
-        `Document type: mica, will be stored in regulations/mica/${assetAddress}`
-      );
-    }
-
+  // Upload action using MinIO SDK server action
+  const uploadAction = async (formData: FormData, path: string) => {
     try {
-      const result = await uploadDocument(formData);
+      const file = formData.get("file") as File;
+      const documentType = (formData.get("type") as string) || "mica";
+      const title = formData.get("title") as string;
 
-      if (!result) {
-        throw new Error("Upload failed");
+      if (!file) {
+        throw new Error("No file provided");
       }
 
-      toast.success(t("upload_success"));
+      // Use the uploadDocument action with the form data
+      formData.append("assetAddress", assetAddress);
+      const result = await uploadDocument(formData);
 
-      // Force a delay to ensure MinIO has time to update
-      setTimeout(() => {
-        fetchDocuments();
-      }, 2000);
+      toast.success(t("upload_success"));
 
       return {
         id: result.id,
         url: result.url,
       };
     } catch (error) {
-      console.error("Error in uploadAction:", error);
+      console.error("Error in EXISTING ASSET uploadAction:", error);
       toast.error(t("delete_error"));
       throw error;
     }
   };
 
   // Handle document upload completion
-  const handleUploadComplete = (
-    _regulationId: string,
-    _document: UploadedDocument
+  const handleUploadComplete = async (
+    regulationId: string,
+    document: UploadedDocument
   ) => {
-    // Add a small delay to ensure MinIO has time to update
+    // Refresh the documents list after a short delay
     setTimeout(() => {
       fetchDocuments();
     }, 1500);
   };
 
-  // Fetch documents on initial load
+  // Fetch regulation config ID for this asset using server action
+  const fetchRegulationConfig = useCallback(async () => {
+    try {
+      const result = await getMicaRegulationConfigAction(
+        assetAddress,
+        assetType as AssetType
+      );
+
+      if (result.success && result.data) {
+        setRegulationConfigId(result.data.id);
+      } else {
+        console.error("Failed to fetch regulation config:", result.error);
+        toast.error("Failed to load regulation configuration");
+      }
+    } catch (error) {
+      console.error("Error fetching regulation config:", error);
+      toast.error("Failed to load regulation configuration");
+    }
+  }, [assetAddress, assetType]);
+
+  // Fetch documents and regulation config on initial load
   useEffect(() => {
     fetchDocuments();
-  }, [assetAddress, fetchDocuments]);
+    fetchRegulationConfig();
+  }, [assetAddress, fetchDocuments, fetchRegulationConfig]);
 
   return (
     <Card className="w-full h-full flex flex-col">
@@ -189,7 +183,18 @@ export function DocumentationLayout() {
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
-          <Button size="sm" onClick={() => setIsDialogOpen(true)}>
+          <Button
+            size="sm"
+            onClick={() => {
+              setIsDialogOpen(true);
+            }}
+            disabled={!regulationConfigId}
+            title={
+              !regulationConfigId
+                ? "Loading regulation configuration..."
+                : undefined
+            }
+          >
             <Upload className="h-4 w-4 mr-2" />
             {t("card.upload")}
           </Button>
@@ -203,13 +208,17 @@ export function DocumentationLayout() {
         )}
       </CardContent>
 
-      {isDialogOpen && (
-        <DocumentUploadDialog
-          regulationId="mica"
-          onClose={() => setIsDialogOpen(false)}
-          onUpload={handleUploadComplete}
-          uploadAction={uploadAction}
-        />
+      {isDialogOpen && regulationConfigId && (
+        <>
+          <DocumentUploadDialog
+            regulationId={regulationConfigId}
+            onClose={() => {
+              setIsDialogOpen(false);
+            }}
+            onUpload={handleUploadComplete}
+            uploadAction={uploadAction}
+          />
+        </>
       )}
     </Card>
   );

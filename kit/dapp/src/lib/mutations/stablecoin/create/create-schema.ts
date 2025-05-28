@@ -1,6 +1,23 @@
 import { AssetAdminsSchemaFragment } from "@/lib/mutations/common/asset-admins-schema";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
+// Schema for uploaded documents
+const UploadedDocumentSchema = t.Object({
+  id: t.String(),
+  name: t.String(),
+  title: t.String(),
+  type: t.String(),
+  description: t.Optional(t.String()),
+  url: t.String(),
+  objectName: t.String(),
+  fileName: t.String(),
+});
+
+const UploadedDocumentsSchema = t.Record(
+  t.String(), // regulationId
+  t.Array(UploadedDocumentSchema)
+);
+
 /**
  * TypeBox schema for validating stablecoin creation inputs
  *
@@ -63,6 +80,7 @@ export function CreateStablecoinSchema() {
       }),
       assetAdmins: AssetAdminsSchemaFragment(),
       selectedRegulations: t.Optional(t.Array(t.String())),
+      uploadedDocuments: t.Optional(UploadedDocumentsSchema),
     },
     {
       description: "Schema for validating stablecoin creation inputs",

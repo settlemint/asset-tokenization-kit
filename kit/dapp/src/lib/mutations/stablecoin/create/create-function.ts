@@ -3,6 +3,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import { RegulationStatus } from "@/lib/db/regulations/schema-base-regulation-configs";
 import {
+  DocumentStatus,
   ReserveComplianceStatus,
   TokenType,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
@@ -96,6 +97,7 @@ export const createStablecoinFunction = withAccessControl(
       isin,
       internalid,
       selectedRegulations,
+      uploadedDocuments,
     },
     ctx: { user },
   }: {
@@ -118,7 +120,20 @@ export const createStablecoinFunction = withAccessControl(
     if (selectedRegulations && selectedRegulations.length > 0) {
       for (const regulationType of selectedRegulations) {
         if (regulationType === "mica") {
-          // Create MiCA regulation config with default values
+          // Get uploaded documents for this regulation type
+          const regulationDocuments = uploadedDocuments?.[regulationType] || [];
+
+          // Convert UploadedDocument to MicaDocument format
+          const micaDocuments = regulationDocuments.map((doc) => ({
+            id: doc.id,
+            title: doc.title,
+            type: doc.type === "mica" ? "policy" : doc.type, // Convert "mica" type to a valid MicaDocumentType
+            url: doc.url,
+            status: DocumentStatus.PENDING, // Set initial status
+            description: doc.description,
+          }));
+
+          // Create MiCA regulation config with uploaded documents
           await createRegulation(
             {
               assetId: predictedAddress,
@@ -126,8 +141,8 @@ export const createStablecoinFunction = withAccessControl(
               status: RegulationStatus.NOT_COMPLIANT, // Initially not compliant until configured
             },
             {
-              // MiCA-specific default config
-              documents: [],
+              // MiCA-specific default config with the actual documents
+              documents: micaDocuments,
               tokenType: TokenType.ELECTRONIC_MONEY_TOKEN, // Default to e-money token
               reserveStatus: ReserveComplianceStatus.PENDING_REVIEW,
             }
