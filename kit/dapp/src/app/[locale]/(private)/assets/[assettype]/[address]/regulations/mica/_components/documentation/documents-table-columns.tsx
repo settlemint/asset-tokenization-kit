@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteDocumentAction } from "@/app/actions/delete-document";
+import { PDFViewer } from "@/components/blocks/pdf-viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,7 @@ import {
   Check,
   Clock,
   Download,
+  Eye,
   FileIcon,
   FileText,
   MoreHorizontal,
@@ -264,6 +266,19 @@ interface DocumentActionsProps {
 function DocumentActions({ document, onRefresh }: DocumentActionsProps) {
   const t = useTranslations("regulations.mica.documents");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isPDFViewerOpen, setIsPDFViewerOpen] = useState(false);
+
+  // Check if the document is a PDF
+  const isPDF =
+    document.fileName.toLowerCase().endsWith(".pdf") ||
+    document.type.toLowerCase() === "pdf" ||
+    document.fileName.toLowerCase().includes(".pdf");
+
+  // Handle PDF viewer
+  const handleViewPDF = () => {
+    if (!document.url || !isPDF) return;
+    setIsPDFViewerOpen(true);
+  };
 
   // Handle document download
   const handleDownload = () => {
@@ -295,33 +310,58 @@ function DocumentActions({ document, onRefresh }: DocumentActionsProps) {
   };
 
   return (
-    <div className="flex justify-end gap-2">
-      <Button
-        size="icon"
-        variant="ghost"
-        onClick={handleDownload}
-        title={t("table.download")}
-      >
-        <Download className="h-4 w-4" />
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button size="icon" variant="ghost" title={t("table.more_options")}>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            className="text-destructive"
-            onClick={handleDelete}
-            disabled={isDeleting}
+    <>
+      <div className="flex justify-end gap-2">
+        {/* PDF Viewer Button - only show for PDF files */}
+        {isPDF && (
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={handleViewPDF}
+            title="View PDF"
           >
-            <Trash2 className="h-4 w-4 mr-2" />
-            {isDeleting ? t("table.deleting") : t("table.delete")}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+            <Eye className="h-4 w-4" />
+          </Button>
+        )}
+
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={handleDownload}
+          title={t("table.download")}
+        >
+          <Download className="h-4 w-4" />
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="ghost" title={t("table.more_options")}>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {isDeleting ? t("table.deleting") : t("table.delete")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* PDF Viewer Dialog */}
+      {isPDF && (
+        <PDFViewer
+          isOpen={isPDFViewerOpen}
+          onClose={() => setIsPDFViewerOpen(false)}
+          fileUrl={document.url}
+          fileName={document.fileName}
+        />
+      )}
+    </>
   );
 }
 

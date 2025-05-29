@@ -346,4 +346,30 @@ h3: text-xl
   .AuthProvider [data-slot="separator-root"] {
     @apply shrink-1;
   }
+
+  /* PDF Viewer Styles */
+  .pdf-container {
+    @apply flex justify-center;
+  }
+
+  .pdf-page {
+    @apply shadow-lg;
+  }
+
+  /* Override react-pdf default styles */
+  .react-pdf__Page {
+    @apply mb-4;
+  }
+
+  .react-pdf__Page__canvas {
+    @apply max-w-full h-auto;
+  }
+
+  .react-pdf__Page__textContent {
+    @apply opacity-25;
+  }
+
+  .react-pdf__Page__annotations {
+    @apply opacity-100;
+  }
 }

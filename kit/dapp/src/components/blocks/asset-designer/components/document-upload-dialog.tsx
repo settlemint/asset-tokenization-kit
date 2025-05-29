@@ -98,19 +98,8 @@ export function DocumentUploadDialog({
           "Document uploaded to storage (metadata will be saved when asset is created)"
         );
       } else {
-        try {
-          toast.success("Document uploaded and metadata saved successfully");
-        } catch (dbError) {
-          console.error("Error saving document metadata to database:", dbError);
-          console.error(
-            "Full error details:",
-            JSON.stringify(dbError, null, 2)
-          );
-          toast.error(
-            "Document uploaded but failed to save metadata. Please try again."
-          );
-          return;
-        }
+        // For existing assets, the parent component will handle database saving
+        toast.success("Document uploaded successfully");
       }
 
       // Send the document back to the parent component
