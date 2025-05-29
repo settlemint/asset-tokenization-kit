@@ -299,7 +299,8 @@
       },
       "trade-management": {
         "group-title": "Trade management",
-        "xvp-settlement": "XvP"
+        "xvp-settlement": "XvP",
+        "airdrop-designer": "Airdrops"
       }
     }
   },
@@ -467,6 +468,12 @@
       "not-available-initials": "NA",
       "stablecoin-initials": "SC",
       "tokenized-deposit-initials": "TD"
+    },
+    "airdrop-type-icon": {
+      "standard-initials": "ST",
+      "vesting-initials": "VS",
+      "push-initials": "PS",
+      "not-available-initials": "NA"
     },
     "chart": {
       "info-icon-label": "Info",
@@ -1331,6 +1338,244 @@
     }
   },
   "private": {
+    "airdrops": {
+      "design-button": "Airdrop Designer",
+      "create": {
+        "general": {
+          "title": {
+            "standard": "Create a new standard airdrop",
+            "vesting": "Create a new vesting airdrop",
+            "push": "Create a new push airdrop"
+          },
+          "description": {
+            "standard": "Distribute tokens that users claim within a set timeframe using Merkle proofs.",
+            "vesting": "Release tokens gradually over time according to a vesting schedule.",
+            "push": "Directly transfer tokens to recipients, initiated by an administrator."
+          }
+        },
+        "form": {
+          "description": {
+            "standard": "Distribute tokens that users claim within a set timeframe using Merkle proofs.",
+            "vesting": "Release tokens gradually over time according to a vesting schedule.",
+            "push": "Directly transfer tokens to recipients, initiated by an administrator."
+          },
+          "errors": {
+            "address-prediction-failed": "Failed to predict address. Please try again.",
+            "duplicate-airdrop": "An airdrop with these parameters already exists. Please change at least one parameter and try again.",
+            "validation-failed": "A validation error occurred."
+          },
+          "steps": {
+            "basics": {
+              "title": "Basic information",
+              "description": "Specify the basic information for this airdrop."
+            },
+            "configuration": {
+              "title": "Configuration",
+              "description": "Configure the parameters for this airdrop."
+            },
+            "summary": {
+              "title": "Summary",
+              "description": "Review all the details you have entered."
+            }
+          },
+          "title": {
+            "standard": "Design a new standard airdrop",
+            "vesting": "Design a new vesting airdrop",
+            "push": "Design a new push airdrop"
+          },
+          "toasts": {
+            "submitting": "Creating airdrop... This process may take a moment.",
+            "failed": "Failed to create airdrop. Please try again.",
+            "success": "Airdrop was created successfully!",
+            "push": {
+              "submitting": "Creating push airdrop... This process may take a moment.",
+              "failed": "Failed to create push airdrop. Please try again.",
+              "success": "Push airdrop was created successfully!"
+            },
+            "vesting": {
+              "submitting": "Creating vesting airdrop... This process may take a moment.",
+              "failed": "Failed to create vesting airdrop. Please try again.",
+              "success": "Vesting airdrop was created successfully!"
+            },
+            "standard": {
+              "submitting": "Creating standard airdrop... This process may take a moment.",
+              "failed": "Failed to create standard airdrop. Please try again.",
+              "success": "Standard airdrop was created successfully!"
+            }
+          },
+          "button-labels": {
+            "general": {
+              "next": "Next",
+              "previous": "Previous",
+              "processing": "Processing..."
+            },
+            "push": {
+              "create": "Create push airdrop",
+              "submitting": "Creating push airdrop..."
+            },
+            "vesting": {
+              "create": "Create vesting airdrop",
+              "submitting": "Creating vesting airdrop..."
+            },
+            "standard": {
+              "create": "Create standard airdrop",
+              "submitting": "Creating standard airdrop..."
+            }
+          },
+          "toast-action": {
+            "bonds": "View bond",
+            "cryptocurrencies": "View cryptocurrency",
+            "deposits": "View deposit",
+            "equities": "View equity",
+            "funds": "View fund",
+            "stablecoins": "View stablecoin"
+          },
+          "trigger-label": {
+            "bonds": "Issue a new bond",
+            "cryptocurrencies": "Issue a new cryptocurrency",
+            "deposits": "Issue a new deposit",
+            "equities": "Issue a new equity",
+            "funds": "Issue a new fund",
+            "stablecoins": "Issue a new stablecoin"
+          }
+        },
+        "basics": {
+          "title": "Basic information",
+          "description": "Specify the basic information for this airdrop.",
+          "asset-label": "Asset",
+          "asset-placeholder": "Select asset",
+          "asset-description": "The asset that will be distributed in this airdrop.",
+          "owner-label": "Owner",
+          "owner-placeholder": "Select owner",
+          "owner-description": "The account that will own and manage this airdrop contract.",
+          "start-time-label": "Start time",
+          "start-time-description": "The date and time when users can start claiming tokens.",
+          "start-time-error": "Start time must be at least 1 hour in the future",
+          "end-time-label": "End time",
+          "end-time-description": "The date and time when the airdrop claim period ends.",
+          "end-time-error": "End time must be at least 1 hour after start time"
+        },
+        "distribution": {
+          "title": "Distribution",
+          "description": "Specify the distribution for this airdrop.",
+          "distribution-label": "Distribution (csv)",
+          "distribution-description": "The distribution of the airdrop. The CSV file must have the columns 'amount' and 'recipient'.",
+          "distribution-cap-label": "Distribution limit",
+          "distribution-cap-description": "The maximum number of tokens that can be distributed in this airdrop.",
+          "distribution-cap-error": "Total distribution amount exceeds the distribution limit"
+        },
+        "button-labels": {
+          "general": {
+            "next": "Next",
+            "previous": "Previous",
+            "processing": "Processing..."
+          },
+          "push": {
+            "create": "Create push airdrop",
+            "submitting": "Creating push airdrop..."
+          },
+          "vesting": {
+            "create": "Create vesting airdrop",
+            "submitting": "Creating vesting airdrop..."
+          },
+          "standard": {
+            "create": "Create standard airdrop",
+            "submitting": "Creating standard airdrop..."
+          }
+        },
+        "type-selection": {
+          "general": {
+            "title": "Create an airdrop",
+            "description": "Create your airdrop in a few steps."
+          },
+          "title": "Select airdrop type",
+          "description": "Choose the type of airdrop you want to create.",
+          "key-features": "Key features:",
+          "features": {
+            "user-initiated-claim": "User claims",
+            "batch-operations": "Batch operations",
+            "gasless-transactions": "Gasless transactions",
+            "time-bound": "Time-bound",
+            "vesting-schedule": "Vesting schedule"
+          },
+          "types": {
+            "standard": {
+              "title": "Standard",
+              "description": "Simple, time-bound airdrop where users claim tokens using a Merkle proof.",
+              "extended-description": "A Standard Airdrop allows for a straightforward distribution of tokens to a list of recipients. Users can claim their allocated tokens within a defined start and end time by providing a cryptographic (Merkle) proof of their inclusion in the airdrop list. It supports individual and batch claims."
+            },
+            "vesting": {
+              "title": "Vesting",
+              "description": "Airdrop with tokens released over time according to a vesting schedule.",
+              "extended-description": "A Vesting Airdrop distributes tokens that are released to recipients gradually over a defined period, following a specific vesting schedule. It uses a pluggable claim strategy to define how vesting occurs (e.g., linear, cliff). Users initialize their claim, and then can claim available tokens as they vest. Supports ERC2771 for meta-transactions."
+            },
+            "push": {
+              "title": "Push",
+              "description": "Admin-initiated airdrop where tokens are directly transferred to recipients.",
+              "extended-description": "A Push Airdrop allows an administrator (owner) to directly send tokens to a list of recipients. The admin verifies eligibility using Merkle proofs and can distribute tokens individually or in batches. This type is useful when users are not expected to actively claim tokens. Supports ERC2771 for meta-transactions by the admin."
+            }
+          }
+        },
+        "vesting": {
+          "title": "Vesting Schedule",
+          "description": "Configure the vesting parameters for the airdrop.",
+          "claim-period-end-label": "Claim Period End",
+          "claim-period-end-description": "Deadline for users to claim their airdrop. After this date, unclaimed tokens are forfeited.",
+          "claim-period-end-error": "Claim period end must be at least 1 hour in the future",
+          "cliff-duration-label": "Cliff Duration",
+          "cliff-duration-description": "Waiting period after claiming before any tokens can be withdrawn.",
+          "vesting-duration-label": "Vesting Duration",
+          "vesting-duration-description": "Total time for all tokens to unlock gradually after claiming.",
+          "time-units": {
+            "plural": {
+              "days": "days",
+              "hours": "hours",
+              "months": "months",
+              "seconds": "seconds",
+              "weeks": "weeks"
+            },
+            "singular": {
+              "days": "day",
+              "hours": "hour",
+              "months": "month",
+              "seconds": "second",
+              "weeks": "week"
+            }
+          }
+        },
+        "summary": {
+          "title": "Summary",
+          "description": "Review all the details you have entered for your airdrop.",
+          "basics": {
+            "title": "Basic Information",
+            "description": "General information about your airdrop.",
+            "asset-label": "Asset",
+            "owner-label": "Owner"
+          },
+          "timing": {
+            "title": "Time Configuration",
+            "description": "Timing parameters for the airdrop claim period.",
+            "start-time-label": "Start Time",
+            "end-time-label": "End Time",
+            "claim-duration-label": "Claim Duration"
+          },
+          "configuration": {
+            "title": "Distribution Configuration",
+            "description": "Configuration parameters for the airdrop distribution.",
+            "distribution-cap-label": "Distribution Cap",
+            "distribution-recipients-label": "Number of Recipients",
+            "total-distribution-amount-label": "Total Distribution Amount"
+          },
+          "recipients": {
+            "title": "Distribution Recipients",
+            "description": "List of recipients who will receive tokens in this airdrop.",
+            "and-more": "and {count} more recipients..."
+          },
+          "not-specified": "Not specified",
+          "disclaimer": "By creating this airdrop, you confirm that all information provided is accurate and that you have the necessary permissions to deploy this airdrop. This action cannot be undone."
+        }
+      }
+    },
     "assets": {
       "asset-statistics-title": "Statistics",
       "create": {
