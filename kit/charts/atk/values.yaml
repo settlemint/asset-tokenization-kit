@@ -182,7 +182,7 @@ blockscout:
     blockscout:
       image:
         repository: ghcr.io/blockscout/blockscout
-        tag: "8.0.2"
+        tag: "8.1.0"
       # Add an extra init container to wait for PostgreSQL
       init:
         enabled: true
