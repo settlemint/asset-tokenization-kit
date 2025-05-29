@@ -8,6 +8,10 @@ import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
 import { and, eq } from "drizzle-orm";
 import type { Address } from "viem";
 
+// Import MinIO client for fresh URL generation
+import { DEFAULT_BUCKET } from "@/lib/queries/storage/file-storage";
+import { client as minioClient } from "@/lib/settlemint/minio";
+
 // Extended document schema for UI purposes (includes generated fields)
 const MicaDocumentSchema = t.Object({
   id: t.String(),
@@ -246,15 +250,37 @@ export const getMicaDocuments = withTracing(
             uploadDate = new Date().toISOString();
           }
 
+          // Generate fresh presigned URL from the stored URL
+          let freshUrl = doc.url; // Default to stored URL
+          if (doc.url) {
+            try {
+              const newUrl = await generateFreshPresignedUrl(doc.url);
+              if (newUrl) {
+                freshUrl = newUrl;
+                console.log(`Refreshed URL for document: ${doc.title}`);
+              } else {
+                console.warn(
+                  `Could not refresh URL for document: ${doc.title}, using stored URL`
+                );
+              }
+            } catch (error) {
+              console.error(
+                `Error refreshing URL for document: ${doc.title}`,
+                error
+              );
+              // Continue with stored URL as fallback
+            }
+          }
+
           const transformedDoc = {
-            id: doc.url || `doc-${index}`, // Use URL as ID since ID is not stored in DB
+            id: doc.url || `doc-${index}`, // Use original URL as ID since ID is not stored in DB
             title: doc.title || fileName,
             fileName: fileName,
             type: doc.type || "document",
             category: category,
             uploadDate: uploadDate,
             status: doc.status || "pending",
-            url: doc.url,
+            url: freshUrl, // Use fresh URL instead of stored URL
             size: size,
             description: doc.description || "",
           };
@@ -384,6 +410,28 @@ export const getMicaDocumentById = withTracing(
               uploadDate = new Date().toISOString();
             }
 
+            // Generate fresh presigned URL from the stored URL
+            let freshUrl = document.url; // Default to stored URL
+            if (document.url) {
+              try {
+                const newUrl = await generateFreshPresignedUrl(document.url);
+                if (newUrl) {
+                  freshUrl = newUrl;
+                  console.log(`Refreshed URL for document: ${document.title}`);
+                } else {
+                  console.warn(
+                    `Could not refresh URL for document: ${document.title}, using stored URL`
+                  );
+                }
+              } catch (error) {
+                console.error(
+                  `Error refreshing URL for document: ${document.title}`,
+                  error
+                );
+                // Continue with stored URL as fallback
+              }
+            }
+
             const transformedDocument = {
               id: document.url || documentId,
               title: document.title || fileName,
@@ -392,7 +440,7 @@ export const getMicaDocumentById = withTracing(
               category: category,
               uploadDate: uploadDate,
               status: document.status || "pending",
-              url: document.url,
+              url: freshUrl, // Use fresh URL instead of stored URL
               size: size,
               description: document.description || "",
             };
@@ -543,4 +591,76 @@ async function migrateDocumentFileSizes(
   }
 
   return updatedDocuments;
+}
+
+/**
+ * Helper function to generate a fresh presigned URL from an existing URL
+ * Extracts the object name and generates a new presigned URL that won't be expired
+ */
+async function generateFreshPresignedUrl(
+  oldUrl: string
+): Promise<string | null> {
+  try {
+    // Extract object name from the old URL
+    let objectName: string | null = null;
+
+    // Try to extract object name from URL path
+    try {
+      const url = new URL(oldUrl);
+      const pathParts = url.pathname.split("/");
+
+      // Look for the object name in the path
+      // MinIO URLs typically have format: /bucket-name/object-name or /object-name
+      if (pathParts.length >= 2) {
+        // Remove empty first element and potential bucket name
+        const cleanParts = pathParts.filter(
+          (part) => part !== "" && part !== DEFAULT_BUCKET
+        );
+        if (cleanParts.length > 0) {
+          objectName = cleanParts.join("/");
+        }
+      }
+    } catch (error) {
+      // If URL parsing fails, try to extract from query parameters or other methods
+      console.log("URL parsing failed, trying alternative extraction methods");
+    }
+
+    // Alternative: Try to extract from URL patterns commonly found in MinIO presigned URLs
+    if (!objectName) {
+      // Look for common MinIO URL patterns
+      const patterns = [
+        /\/uploads\/(.+?)\?/, // Pattern: /uploads/path/file.pdf?X-Amz-...
+        /\/([^?]+)\?X-Amz-/, // Pattern: /path/file.pdf?X-Amz-...
+        /uploads\/(.+)$/, // Pattern: uploads/path/file.pdf (without query)
+      ];
+
+      for (const pattern of patterns) {
+        const match = oldUrl.match(pattern);
+        if (match && match[1]) {
+          objectName = match[1];
+          break;
+        }
+      }
+    }
+
+    if (!objectName) {
+      console.error(`Could not extract object name from URL: ${oldUrl}`);
+      return null;
+    }
+
+    console.log(`Generating fresh presigned URL for object: ${objectName}`);
+
+    // Generate fresh presigned URL (1 hour expiry)
+    const freshUrl = await minioClient.presignedGetObject(
+      DEFAULT_BUCKET,
+      objectName,
+      3600 // 1 hour
+    );
+
+    console.log(`Generated fresh URL: ${freshUrl.substring(0, 100)}...`);
+    return freshUrl;
+  } catch (error) {
+    console.error("Error generating fresh presigned URL:", error);
+    return null;
+  }
 }
