@@ -68,6 +68,8 @@ export interface UploadedDocument {
   url: string;
   objectName: string; // Path in MinIO storage
   fileName?: string; // Original file name
+  uploadedAt?: string; // ISO timestamp of when the document was uploaded
+  size?: number; // File size in bytes
 }
 
 export interface UploadedDocumentsState {

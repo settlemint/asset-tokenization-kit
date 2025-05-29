@@ -25,18 +25,16 @@ export async function createMicaRegulationConfigAction(
     // Create new regulation config
     const newConfig = await createMicaRegulationConfig({
       id: randomUUID(),
-      regulation_config_id: input.regulationConfigId,
-      token_type: input.tokenType ?? undefined,
-      reserve_status: input.reserveStatus ?? undefined,
-      documents: input.documents ? JSON.stringify(input.documents) : null,
-      last_audit_date: input.lastAuditDate,
-      reserve_composition: input.reserveComposition
-        ? JSON.stringify(input.reserveComposition)
-        : null,
-      approval_date: input.approvalDate,
-      approval_details: input.approvalDetails,
-      regulatory_authority: input.regulatoryAuthority,
-      licence_number: input.licenceNumber,
+      regulationConfigId: input.regulationConfigId,
+      tokenType: input.tokenType ?? undefined,
+      reserveStatus: input.reserveStatus ?? undefined,
+      documents: input.documents,
+      lastAuditDate: input.lastAuditDate,
+      reserveComposition: input.reserveComposition,
+      approvalDate: input.approvalDate,
+      approvalDetails: input.approvalDetails,
+      regulatoryAuthority: input.regulatoryAuthority,
+      licenceNumber: input.licenceNumber,
     });
 
     return {

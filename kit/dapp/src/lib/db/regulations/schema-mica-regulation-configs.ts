@@ -48,6 +48,9 @@ export type MicaDocument = {
   status: DocumentStatus;
   description?: string;
   title: string;
+  uploadDate?: string; // ISO timestamp of when the document was uploaded
+  size?: number; // File size in bytes
+  fileName?: string; // Original filename
 };
 
 // Reserve compliance status

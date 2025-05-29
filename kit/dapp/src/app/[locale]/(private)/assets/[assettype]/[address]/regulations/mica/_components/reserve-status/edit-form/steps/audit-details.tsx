@@ -16,10 +16,16 @@ import {
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { updateDocuments } from "@/lib/mutations/regulations/mica/update-documents/update-documents-action";
 import { DocumentOperation } from "@/lib/mutations/regulations/mica/update-documents/update-documents-schema";
+import { UpdateReservesSchema } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-schema";
+import type { StaticDecode } from "@/lib/utils/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
+
+type UpdateReservesInput = StaticDecode<
+  ReturnType<typeof UpdateReservesSchema>
+>;
 
 // Convert UploadedDocument to MicaDocument format
 const convertToMicaDocument = (

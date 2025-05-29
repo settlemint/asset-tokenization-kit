@@ -8,30 +8,35 @@ import { DocumentsTableColumns } from "./documents-table-columns";
 
 interface DocumentsTableProps {
   documents: MicaDocument[];
-  onRefresh: () => void;
+  regulationId?: string;
 }
 
-export function DocumentsTable({ documents, onRefresh }: DocumentsTableProps) {
+export function DocumentsTable({
+  documents,
+  regulationId = "",
+}: DocumentsTableProps) {
   const t = useTranslations("regulations.mica.documents");
 
   return (
-    <DataTable
-      columns={() => DocumentsTableColumns(onRefresh)}
-      data={documents}
-      name="documents"
-      initialSorting={[{ id: "uploadDate", desc: true }]}
-      initialPageSize={5}
-      toolbar={{
-        enableToolbar: true,
-      }}
-      pagination={{
-        enablePagination: true,
-      }}
-      customEmptyState={{
-        icon: FileText,
-        title: "No documents found",
-        description: "Upload documents to get started with MiCA compliance.",
-      }}
-    />
+    <div className="space-y-4">
+      <DataTable
+        columns={() => DocumentsTableColumns(regulationId)}
+        data={documents}
+        name="documents"
+        initialSorting={[{ id: "uploadDate", desc: true }]}
+        initialPageSize={5}
+        toolbar={{
+          enableToolbar: true,
+        }}
+        pagination={{
+          enablePagination: true,
+        }}
+        customEmptyState={{
+          icon: FileText,
+          title: "No documents found",
+          description: "Upload documents to get started with MiCA compliance.",
+        }}
+      />
+    </div>
   );
 }

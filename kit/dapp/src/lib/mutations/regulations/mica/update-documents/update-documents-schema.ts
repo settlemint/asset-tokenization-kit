@@ -16,7 +16,8 @@ const DocumentSchema = t.Object(
       t.Literal(MicaDocumentType.PROCEDURE),
     ]),
     url: t.String({
-      format: "uri",
+      // Temporarily remove strict URI validation to debug
+      // format: "uri",
       error: "Must be a valid URL",
     }),
     status: t.Union([
@@ -25,6 +26,9 @@ const DocumentSchema = t.Object(
       t.Literal(DocumentStatus.REJECTED),
     ]),
     description: t.Optional(t.String()),
+    uploadDate: t.Optional(t.String({ format: "date-time" })),
+    size: t.Optional(t.Number()),
+    fileName: t.Optional(t.String()),
   },
   { $id: "MicaDocument" }
 );

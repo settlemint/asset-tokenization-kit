@@ -9,8 +9,14 @@ import type { UploadedDocument } from "@/components/blocks/asset-designer/types"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DocumentStatus,
+  MicaDocumentType,
+} from "@/lib/db/regulations/schema-mica-regulation-configs";
+import { updateDocuments } from "@/lib/mutations/regulations/mica/update-documents/update-documents-action";
+import { DocumentOperation } from "@/lib/mutations/regulations/mica/update-documents/update-documents-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { RefreshCw, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -94,11 +100,9 @@ export function DocumentationLayout() {
       if (result.success) {
         setDocuments(result.data);
       } else {
-        console.error("Failed to fetch documents:", result.error);
         toast.error(t("delete_error"));
       }
     } catch (error) {
-      console.error("Error fetching documents:", error);
       toast.error(t("delete_error"));
     } finally {
       setIsLoading(false);
@@ -125,9 +129,11 @@ export function DocumentationLayout() {
       return {
         id: result.id,
         url: result.url,
+        uploadedAt: result.uploadedAt,
+        size: result.size,
+        fileName: result.name,
       };
     } catch (error) {
-      console.error("Error in EXISTING ASSET uploadAction:", error);
       toast.error(t("delete_error"));
       throw error;
     }
@@ -138,10 +144,71 @@ export function DocumentationLayout() {
     regulationId: string,
     document: UploadedDocument
   ) => {
-    // Refresh the documents list after a short delay
-    setTimeout(() => {
-      fetchDocuments();
-    }, 1500);
+    try {
+      // Convert UploadedDocument to MicaDocument format for database storage
+      const convertToMicaDocument = (doc: UploadedDocument) => {
+        // Handle the case where type might be "mica" - convert to a default MicaDocumentType
+        let documentType: MicaDocumentType;
+        if (doc.type === "mica") {
+          documentType = MicaDocumentType.POLICY; // Default to policy for mica documents
+        } else {
+          documentType = doc.type as MicaDocumentType;
+        }
+
+        // Extract filename from title, fileName field, or URL
+        let fileName = doc.fileName || doc.title;
+        if (!fileName && doc.url) {
+          try {
+            const urlPath = new URL(doc.url).pathname;
+            const urlFileName = urlPath.split("/").pop();
+            if (urlFileName) {
+              fileName = urlFileName;
+            }
+          } catch (error) {
+            // Use title as fallback if URL parsing fails
+            fileName = doc.title;
+          }
+        }
+
+        const micaDocument = {
+          id: doc.id,
+          title: doc.title,
+          type: documentType,
+          url: doc.url,
+          status: DocumentStatus.PENDING,
+          description: doc.description,
+          // Include upload metadata
+          uploadDate: doc.uploadedAt || new Date().toISOString(),
+          size: doc.size,
+          fileName: fileName,
+        };
+
+        return micaDocument;
+      };
+
+      const micaDocument = convertToMicaDocument(document);
+
+      // Save the document metadata to the database
+      const updateResult = await updateDocuments({
+        regulationId,
+        operation: DocumentOperation.ADD,
+        document: micaDocument,
+      });
+
+      if (updateResult?.data) {
+        toast.success("Document uploaded and metadata saved successfully");
+        // Refresh the documents list
+        await fetchDocuments();
+      } else {
+        throw new Error(
+          `Database update failed: ${updateResult?.serverError || "Unknown error"}`
+        );
+      }
+    } catch (error) {
+      toast.error(
+        "Document uploaded but failed to save metadata. Please try again."
+      );
+    }
   };
 
   // Fetch regulation config ID for this asset using server action
@@ -155,11 +222,9 @@ export function DocumentationLayout() {
       if (result.success && result.data) {
         setRegulationConfigId(result.data.id);
       } else {
-        console.error("Failed to fetch regulation config:", result.error);
         toast.error("Failed to load regulation configuration");
       }
     } catch (error) {
-      console.error("Error fetching regulation config:", error);
       toast.error("Failed to load regulation configuration");
     }
   }, [assetAddress, assetType]);
@@ -174,37 +239,30 @@ export function DocumentationLayout() {
     <Card className="w-full h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{t("card.title")}</CardTitle>
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={fetchDocuments}
-            title={t("card.refresh")}
-          >
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => {
-              setIsDialogOpen(true);
-            }}
-            disabled={!regulationConfigId}
-            title={
-              !regulationConfigId
-                ? "Loading regulation configuration..."
-                : undefined
-            }
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            {t("card.upload")}
-          </Button>
-        </div>
+        <Button
+          size="sm"
+          onClick={() => {
+            setIsDialogOpen(true);
+          }}
+          disabled={!regulationConfigId}
+          title={
+            !regulationConfigId
+              ? "Loading regulation configuration..."
+              : undefined
+          }
+        >
+          <Upload className="h-4 w-4 mr-2" />
+          {t("card.upload")}
+        </Button>
       </CardHeader>
       <CardContent className="flex-1">
         {isLoading ? (
           <DocumentsTableSkeleton />
         ) : (
-          <DocumentsTable documents={documents} onRefresh={fetchDocuments} />
+          <DocumentsTable
+            documents={documents}
+            regulationId={regulationConfigId || ""}
+          />
         )}
       </CardContent>
 

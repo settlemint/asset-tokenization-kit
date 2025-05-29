@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteDocumentAction } from "@/app/actions/delete-document";
+import { PDFViewer } from "@/components/blocks/pdf-viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,7 @@ import {
   Check,
   Clock,
   Download,
+  Eye,
   FileIcon,
   FileText,
   MoreHorizontal,
@@ -258,12 +260,23 @@ function getStatusIndicator(status: string) {
 // Document actions component
 interface DocumentActionsProps {
   document: MicaDocument;
-  onRefresh: () => void;
+  regulationId: string;
 }
 
-function DocumentActions({ document, onRefresh }: DocumentActionsProps) {
-  const t = useTranslations("regulations.mica.documents");
+function DocumentActions({ document, regulationId }: DocumentActionsProps) {
+  const [isPDFViewerOpen, setIsPDFViewerOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const t = useTranslations("regulations.mica.documents");
+
+  // Check if the document is a PDF
+  const isPDF =
+    document.url?.toLowerCase().includes(".pdf") ||
+    document.fileName?.toLowerCase().endsWith(".pdf");
+
+  const handleViewPDF = () => {
+    if (!document.url || !isPDF) return;
+    setIsPDFViewerOpen(true);
+  };
 
   // Handle document download
   const handleDownload = () => {
@@ -271,7 +284,7 @@ function DocumentActions({ document, onRefresh }: DocumentActionsProps) {
     window.open(document.url, "_blank");
   };
 
-  // Handle document deletion
+  // Handle document deletion - both from MinIO and database
   const handleDelete = async () => {
     setIsDeleting(true);
 
@@ -279,53 +292,88 @@ function DocumentActions({ document, onRefresh }: DocumentActionsProps) {
       const result = await deleteDocumentAction({
         objectName: document.id,
         documentType: "mica",
+        fileName: document.fileName,
       });
 
-      if (result?.data) {
-        toast.success(t("delete_success"));
-        onRefresh(); // Refresh the documents list
+      if (result?.data?.success) {
+        toast.success("Document deleted successfully", {
+          description: `${document.fileName} has been deleted successfully.`,
+        });
+        // Note: The parent component should handle refreshing the data
+        // through its own state management or data fetching
       } else {
-        toast.error(t("delete_error"));
+        toast.error("Failed to delete document", {
+          description: result?.data?.error || "Failed to delete the document.",
+        });
       }
-    } catch (error: any) {
-      toast.error(`${t("delete_error")}: ${error.message}`);
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      toast.error("Failed to delete document", {
+        description:
+          "An unexpected error occurred while deleting the document.",
+      });
     } finally {
       setIsDeleting(false);
     }
   };
 
   return (
-    <div className="flex justify-end gap-2">
-      <Button
-        size="icon"
-        variant="ghost"
-        onClick={handleDownload}
-        title={t("table.download")}
-      >
-        <Download className="h-4 w-4" />
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button size="icon" variant="ghost" title={t("table.more_options")}>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            className="text-destructive"
-            onClick={handleDelete}
-            disabled={isDeleting}
+    <>
+      <div className="flex justify-end gap-2">
+        {/* PDF Viewer Button - only show for PDF files */}
+        {isPDF && (
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={handleViewPDF}
+            title="View PDF"
           >
-            <Trash2 className="h-4 w-4 mr-2" />
-            {isDeleting ? t("table.deleting") : t("table.delete")}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+            <Eye className="h-4 w-4" />
+          </Button>
+        )}
+
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={handleDownload}
+          title={t("table.download")}
+        >
+          <Download className="h-4 w-4" />
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="ghost" title={t("table.more_options")}>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {isDeleting ? t("table.deleting") : t("table.delete")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* PDF Viewer Dialog */}
+      {isPDF && (
+        <PDFViewer
+          isOpen={isPDFViewerOpen}
+          onClose={() => setIsPDFViewerOpen(false)}
+          fileUrl={document.url}
+          fileName={document.fileName}
+        />
+      )}
+    </>
   );
 }
 
-export function DocumentsTableColumns(onRefresh: () => void) {
+export function DocumentsTableColumns(regulationId: string) {
   const t = useTranslations("regulations.mica.documents");
 
   return [
@@ -345,6 +393,11 @@ export function DocumentsTableColumns(onRefresh: () => void) {
               <div className="text-xs text-muted-foreground">
                 {formatBytes(document.size)}
               </div>
+              {document.description && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  {document.description}
+                </div>
+              )}
             </div>
           </div>
         );
@@ -422,7 +475,10 @@ export function DocumentsTableColumns(onRefresh: () => void) {
       header: t("table.actions"),
       cell: ({ row }) => {
         return (
-          <DocumentActions document={row.original} onRefresh={onRefresh} />
+          <DocumentActions
+            document={row.original}
+            regulationId={regulationId}
+          />
         );
       },
       meta: {

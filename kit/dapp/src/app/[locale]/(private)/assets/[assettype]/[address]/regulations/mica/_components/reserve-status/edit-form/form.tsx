@@ -4,6 +4,7 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import {
   ReserveComplianceStatus,
+  TokenType,
   type MicaRegulationConfig,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { updateReserves } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-action";
@@ -14,6 +15,7 @@ import { useState } from "react";
 import type { Address } from "viem";
 import { AuditDetails } from "./steps/audit-details";
 import { Composition } from "./steps/composition";
+import { TokenType as TokenTypeStep } from "./steps/token-type";
 
 interface ReserveFormProps {
   address: Address;
@@ -25,6 +27,7 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
   const [open, setOpen] = useState(false);
 
   const steps = [
+    <TokenTypeStep key="token-type" />,
     <Composition key="composition" />,
     <AuditDetails key="audit-details" config={config} />,
   ];
@@ -49,6 +52,8 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
         onOpenChange={setOpen}
         defaultValues={{
           address,
+          tokenType:
+            (config.tokenType as TokenType) ?? TokenType.ELECTRONIC_MONEY_TOKEN,
           bankDeposits: config.reserveComposition?.bankDeposits ?? 0,
           governmentBonds: config.reserveComposition?.governmentBonds ?? 0,
           liquidAssets: config.reserveComposition?.highQualityLiquidAssets ?? 0,
