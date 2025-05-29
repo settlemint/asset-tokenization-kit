@@ -115,9 +115,8 @@ const UpdateMicaRegulationConfig = hasuraGraphql(`
   mutation UpdateMicaRegulationConfig(
     $id: String!
     $reserveComposition: jsonb!
-    $lastAuditDate: timestamptz!
+    $lastAuditDate: timestamptz
     $reserveStatus: String!
-    $tokenType: String!
   ) {
     update_mica_regulation_configs_by_pk(
       pk_columns: { id: $id }
@@ -125,14 +124,12 @@ const UpdateMicaRegulationConfig = hasuraGraphql(`
         reserve_composition: $reserveComposition
         last_audit_date: $lastAuditDate
         reserve_status: $reserveStatus
-        token_type: $tokenType
       }
     ) {
       id
       reserve_composition
       last_audit_date
       reserve_status
-      token_type
     }
   }
 `);
@@ -199,9 +196,10 @@ export const updateReservesFunction = withAccessControl(
     const result = await hasuraClient.request(UpdateMicaRegulationConfig, {
       id: micaConfig.id,
       reserveComposition: JSON.stringify(reserveComposition),
-      lastAuditDate: new Date(parsedInput.lastAuditDate).toISOString(),
+      lastAuditDate: parsedInput.lastAuditDate
+        ? new Date(parsedInput.lastAuditDate).toISOString()
+        : null,
       reserveStatus: parsedInput.reserveStatus,
-      tokenType: parsedInput.tokenType,
     });
 
     if (!result.update_mica_regulation_configs_by_pk) {

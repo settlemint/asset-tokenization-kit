@@ -37,10 +37,10 @@ function transformMicaConfig(config: any): MicaRegulationConfig | null {
       : null,
     reserveStatus: config.reserve_status,
     tokenType: config.token_type,
-    legalEntity: config.legal_entity,
-    managementVetting: config.management_vetting,
-    regulatoryApproval: config.regulatory_approval,
-    euPassportStatus: config.eu_passport_status,
+    licenceNumber: config.licence_number,
+    regulatoryAuthority: config.regulatory_authority,
+    approvalDate: config.approval_date,
+    approvalDetails: config.approval_details,
   };
 }
 
@@ -88,10 +88,10 @@ const RegulationTypeQueries = {
         last_audit_date
         reserve_status
         token_type
-        legal_entity
-        management_vetting
-        regulatory_approval
-        eu_passport_status
+        licence_number
+        regulatory_authority
+        approval_date
+        approval_details
       }
     }
   `

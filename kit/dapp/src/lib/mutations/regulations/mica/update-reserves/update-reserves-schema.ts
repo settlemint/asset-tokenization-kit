@@ -1,7 +1,4 @@
-import {
-  ReserveComplianceStatus,
-  TokenType,
-} from "@/lib/db/regulations/schema-mica-regulation-configs";
+import { ReserveComplianceStatus } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 const AssetPercentagesSchema = t.Object({
@@ -15,15 +12,22 @@ const AssetPercentagesSchema = t.Object({
 });
 
 export function UpdateReservesSchema() {
+  const today = new Date().toISOString().split("T")[0];
+
   return t.Object(
     {
-      tokenType: t.Union([
-        t.Literal(TokenType.ELECTRONIC_MONEY_TOKEN),
-        t.Literal(TokenType.ASSET_REFERENCED_TOKEN),
-      ]),
       address: t.EthereumAddress(),
       ...AssetPercentagesSchema.properties,
-      lastAuditDate: t.String(),
+      lastAuditDate: t.Optional(
+        t.Union([
+          t.String({
+            format: "date",
+            maximum: today,
+            error: "Last audit date cannot be in the future",
+          }),
+          t.Null(),
+        ])
+      ),
       reserveStatus: t.Union([
         t.Literal(ReserveComplianceStatus.COMPLIANT),
         t.Literal(ReserveComplianceStatus.PENDING_REVIEW),

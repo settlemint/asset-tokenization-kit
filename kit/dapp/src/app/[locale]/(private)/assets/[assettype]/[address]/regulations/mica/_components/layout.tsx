@@ -45,7 +45,9 @@ export async function MicaRegulationLayout({
         />
       </div>
       <div className="md:col-span-2">
-        <AuthorizationStatusLayout />
+        <AuthorizationStatusLayout
+          config={regulationData.mica_regulation_config}
+        />
       </div>
       <div className="md:col-span-4">
         <DocumentationLayout />
