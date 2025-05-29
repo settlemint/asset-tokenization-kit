@@ -183,6 +183,11 @@ export function FormInput<T extends FieldValues>({
                         await form.trigger(field.name);
                       }
                     }
+
+                    // Chain the external onChange handler if provided
+                    if (inputProps.onChange) {
+                      inputProps.onChange(evt);
+                    }
                   }}
                   inputMode={inputProps.type === "number" ? "decimal" : "text"}
                   {...getAriaAttributes(

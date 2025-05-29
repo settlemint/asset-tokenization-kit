@@ -1,15 +1,14 @@
 "use client";
+"use client";
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import {
   ReserveComplianceStatus,
-  TokenType,
-  type MicaRegulationConfigResponse,
+  type MicaRegulationConfig,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { updateReserves } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-action";
 import { UpdateReservesSchema } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-schema";
-import { formatToDateTimeInput } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -20,7 +19,7 @@ import { TokenType as TokenTypeStep } from "./steps/token-type";
 
 interface ReserveFormProps {
   address: Address;
-  config: MicaRegulationConfigResponse;
+  config: MicaRegulationConfig;
 }
 
 export function ReserveForm({ address, config }: ReserveFormProps) {
@@ -32,22 +31,6 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
     <Composition key="composition" />,
     <AuditDetails key="audit-details" config={config} />,
   ];
-
-  // Helper function to safely convert date values to Date objects
-  const getValidDate = (dateValue: any): Date => {
-    if (!dateValue) return new Date();
-
-    if (dateValue instanceof Date) {
-      return dateValue;
-    }
-
-    if (typeof dateValue === "string") {
-      const date = new Date(dateValue);
-      return !isNaN(date.getTime()) ? date : new Date();
-    }
-
-    return new Date();
-  };
 
   return (
     <FormSheet
@@ -78,9 +61,9 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
           centralBankAssets: config.reserveComposition?.centralBankAssets ?? 0,
           commodities: config.reserveComposition?.commodities ?? 0,
           otherAssets: config.reserveComposition?.otherAssets ?? 0,
-          lastAuditDate: formatToDateTimeInput(
-            getValidDate(config.lastAuditDate)
-          ),
+          lastAuditDate: config.lastAuditDate
+            ? new Date(config.lastAuditDate).toISOString().split("T")[0]
+            : null,
           reserveStatus:
             (config.reserveStatus as ReserveComplianceStatus) ??
             ReserveComplianceStatus.PENDING_REVIEW,

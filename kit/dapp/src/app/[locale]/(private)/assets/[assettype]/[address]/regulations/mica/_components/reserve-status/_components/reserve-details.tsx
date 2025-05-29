@@ -2,8 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { ReserveComplianceStatus } from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { formatDate } from "@/lib/utils/date";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 interface ReserveDetailsProps {
   lastAuditDate?: string;
@@ -19,7 +18,6 @@ export function ReserveDetails({
   reserveValue,
 }: ReserveDetailsProps) {
   const t = useTranslations("regulations.mica.dashboard.reserve-status");
-  const locale = useLocale();
 
   // Get status color and label based on status
   const getStatusColor = (status: ReserveComplianceStatus) => {
@@ -71,12 +69,7 @@ export function ReserveDetails({
           {t("form.fields.audit-details.last-audit-date")}
         </h3>
         <p>
-          {lastAuditDate
-            ? formatDate(new Date(lastAuditDate), {
-                type: "absolute",
-                locale: locale,
-              })
-            : "-"}
+          {lastAuditDate ? new Date(lastAuditDate).toLocaleDateString() : "-"}
         </p>
       </div>
       <div>
