@@ -19,6 +19,7 @@ const MicaDocumentSchema = t.Object({
   status: t.String(),
   url: t.String(),
   size: t.Number(),
+  description: t.Optional(t.String()),
 });
 
 export type MicaDocument = StaticDecode<typeof MicaDocumentSchema>;
@@ -255,6 +256,7 @@ export const getMicaDocuments = withTracing(
             status: doc.status || "pending",
             url: doc.url,
             size: size,
+            description: doc.description || "",
           };
 
           return transformedDoc;
@@ -392,6 +394,7 @@ export const getMicaDocumentById = withTracing(
               status: document.status || "pending",
               url: document.url,
               size: size,
+              description: document.description || "",
             };
 
             return safeParse(MicaDocumentSchema, transformedDocument);

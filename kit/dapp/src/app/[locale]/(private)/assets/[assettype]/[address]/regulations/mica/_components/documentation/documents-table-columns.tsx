@@ -421,6 +421,11 @@ export function DocumentsTableColumns(
               <div className="text-xs text-muted-foreground">
                 {formatBytes(document.size)}
               </div>
+              {document.description && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  {document.description}
+                </div>
+              )}
             </div>
           </div>
         );
