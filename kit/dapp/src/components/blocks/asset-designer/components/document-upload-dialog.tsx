@@ -63,6 +63,14 @@ export function DocumentUploadDialog({
       return;
     }
 
+    console.log("🚀 DocumentUploadDialog: Starting upload process:", {
+      fileName: selectedFile.name,
+      title: documentTitle,
+      type: documentType,
+      description: documentDescription,
+      regulationId,
+    });
+
     setIsUploading(true);
     try {
       // Create form data for upload
@@ -72,9 +80,13 @@ export function DocumentUploadDialog({
       formData.append("type", documentType);
       formData.append("description", documentDescription || "");
 
+      console.log("📦 Created FormData, calling uploadAction...");
+
       // Use the server action to upload the file with the regulation ID as path
       const path = `regulations/${regulationId}`;
       const result = await uploadAction(formData, path);
+
+      console.log("✅ Upload action completed:", result);
 
       // Create the document object
       const newDocument: UploadedDocument = {
@@ -88,10 +100,18 @@ export function DocumentUploadDialog({
         fileName: selectedFile.name,
       };
 
+      console.log("📄 Created document object:", newDocument);
+
       // Check if we're in asset creation mode (regulationId is not a UUID format)
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       const isAssetCreationMode = !uuidRegex.test(regulationId);
+
+      console.log("🔍 Upload mode check:", {
+        regulationId,
+        isAssetCreationMode,
+        uuidRegex: uuidRegex.test(regulationId),
+      });
 
       if (isAssetCreationMode) {
         toast.success(
@@ -102,13 +122,15 @@ export function DocumentUploadDialog({
         toast.success("Document uploaded successfully");
       }
 
+      console.log("📞 Calling onUpload callback...");
       // Send the document back to the parent component
       onUpload(regulationId, newDocument);
 
+      console.log("✅ Upload process completed, closing dialog");
       // Close dialog
       onClose();
     } catch (error) {
-      console.error("Error uploading document:", error);
+      console.error("❌ Error uploading document:", error);
       toast.error("Failed to upload document. Please try again.");
     } finally {
       setIsUploading(false);

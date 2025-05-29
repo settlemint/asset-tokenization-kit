@@ -1,4 +1,7 @@
-import { ReserveComplianceStatus } from "@/lib/db/regulations/schema-mica-regulation-configs";
+import {
+  ReserveComplianceStatus,
+  TokenType,
+} from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { type StaticDecode, t } from "@/lib/utils/typebox";
 
 const AssetPercentagesSchema = t.Object({
@@ -17,6 +20,10 @@ export function UpdateReservesSchema() {
   return t.Object(
     {
       address: t.EthereumAddress(),
+      tokenType: t.Union([
+        t.Literal(TokenType.ELECTRONIC_MONEY_TOKEN),
+        t.Literal(TokenType.ASSET_REFERENCED_TOKEN),
+      ]),
       ...AssetPercentagesSchema.properties,
       lastAuditDate: t.Optional(
         t.Union([

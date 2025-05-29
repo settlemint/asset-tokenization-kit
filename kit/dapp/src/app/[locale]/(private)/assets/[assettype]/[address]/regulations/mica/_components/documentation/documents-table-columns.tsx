@@ -261,20 +261,23 @@ function getStatusIndicator(status: string) {
 interface DocumentActionsProps {
   document: MicaDocument;
   onRefresh: () => void;
+  regulationId: string;
 }
 
-function DocumentActions({ document, onRefresh }: DocumentActionsProps) {
-  const t = useTranslations("regulations.mica.documents");
-  const [isDeleting, setIsDeleting] = useState(false);
+function DocumentActions({
+  document,
+  onRefresh,
+  regulationId,
+}: DocumentActionsProps) {
   const [isPDFViewerOpen, setIsPDFViewerOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const t = useTranslations("regulations.mica.documents");
 
   // Check if the document is a PDF
   const isPDF =
-    document.fileName.toLowerCase().endsWith(".pdf") ||
-    document.type.toLowerCase() === "pdf" ||
-    document.fileName.toLowerCase().includes(".pdf");
+    document.url?.toLowerCase().includes(".pdf") ||
+    document.fileName?.toLowerCase().endsWith(".pdf");
 
-  // Handle PDF viewer
   const handleViewPDF = () => {
     if (!document.url || !isPDF) return;
     setIsPDFViewerOpen(true);
@@ -286,21 +289,51 @@ function DocumentActions({ document, onRefresh }: DocumentActionsProps) {
     window.open(document.url, "_blank");
   };
 
-  // Handle document deletion
+  // Handle document deletion - both from MinIO and database
   const handleDelete = async () => {
     setIsDeleting(true);
 
     try {
-      const result = await deleteDocumentAction({
-        objectName: document.id,
+      // Step 1: Delete the file from MinIO storage
+      const storageResult = await deleteDocumentAction({
+        objectName: document.id, // Use document.id which should be the MinIO object path
         documentType: "mica",
       });
 
-      if (result?.data) {
+      if (!storageResult?.data?.success) {
+        // Continue with database deletion even if MinIO deletion fails
+        // The file might already be missing from storage
+      }
+
+      // Step 2: Remove the document from the database
+      const { updateDocuments } = await import(
+        "@/lib/mutations/regulations/mica/update-documents/update-documents-action"
+      );
+      const { DocumentOperation } = await import(
+        "@/lib/mutations/regulations/mica/update-documents/update-documents-schema"
+      );
+
+      const databaseResult = await updateDocuments({
+        regulationId: regulationId,
+        operation: DocumentOperation.DELETE,
+        document: {
+          id: document.id,
+          title: document.title,
+          type: document.type as any, // Cast to satisfy the schema
+          url: document.url,
+          status: document.status as any, // Cast to satisfy the schema
+          description: document.title, // Use title as description fallback
+          uploadDate: document.uploadDate,
+          size: document.size,
+          fileName: document.fileName,
+        },
+      });
+
+      if (databaseResult?.data) {
         toast.success(t("delete_success"));
         onRefresh(); // Refresh the documents list
       } else {
-        toast.error(t("delete_error"));
+        toast.error(`${t("delete_error")}: Failed to remove from database`);
       }
     } catch (error: any) {
       toast.error(`${t("delete_error")}: ${error.message}`);
@@ -365,7 +398,10 @@ function DocumentActions({ document, onRefresh }: DocumentActionsProps) {
   );
 }
 
-export function DocumentsTableColumns(onRefresh: () => void) {
+export function DocumentsTableColumns(
+  onRefresh: () => void,
+  regulationId: string
+) {
   const t = useTranslations("regulations.mica.documents");
 
   return [
@@ -462,7 +498,11 @@ export function DocumentsTableColumns(onRefresh: () => void) {
       header: t("table.actions"),
       cell: ({ row }) => {
         return (
-          <DocumentActions document={row.original} onRefresh={onRefresh} />
+          <DocumentActions
+            document={row.original}
+            onRefresh={onRefresh}
+            regulationId={regulationId}
+          />
         );
       },
       meta: {

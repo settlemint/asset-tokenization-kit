@@ -93,28 +93,19 @@ export function DocumentationLayout() {
 
   // Fetch documents using server action
   const fetchDocuments = useCallback(async () => {
-    console.log("🔍 Starting to fetch documents for asset:", assetAddress);
     setIsLoading(true);
     try {
       const result = await getMicaDocumentsAction(assetAddress);
-      console.log("📄 getMicaDocumentsAction result:", result);
 
       if (result.success) {
-        console.log(
-          `✅ Successfully fetched ${result.data.length} documents:`,
-          result.data
-        );
         setDocuments(result.data);
       } else {
-        console.error("❌ Failed to fetch documents:", result.error);
         toast.error(t("delete_error"));
       }
     } catch (error) {
-      console.error("❌ Error fetching documents:", error);
       toast.error(t("delete_error"));
     } finally {
       setIsLoading(false);
-      console.log("🏁 fetchDocuments completed");
     }
   }, [assetAddress, t]);
 
@@ -138,9 +129,11 @@ export function DocumentationLayout() {
       return {
         id: result.id,
         url: result.url,
+        uploadedAt: result.uploadedAt,
+        size: result.size,
+        fileName: result.name,
       };
     } catch (error) {
-      console.error("Error in EXISTING ASSET uploadAction:", error);
       toast.error(t("delete_error"));
       throw error;
     }
@@ -152,16 +145,6 @@ export function DocumentationLayout() {
     document: UploadedDocument
   ) => {
     try {
-      console.log("🔄 Starting document upload completion process:", {
-        regulationId,
-        document: {
-          id: document.id,
-          title: document.title,
-          type: document.type,
-          url: document.url,
-        },
-      });
-
       // Convert UploadedDocument to MicaDocument format for database storage
       const convertToMicaDocument = (doc: UploadedDocument) => {
         // Handle the case where type might be "mica" - convert to a default MicaDocumentType
@@ -172,9 +155,9 @@ export function DocumentationLayout() {
           documentType = doc.type as MicaDocumentType;
         }
 
-        // Extract filename from title or URL
-        let fileName = doc.title;
-        if (doc.url) {
+        // Extract filename from title, fileName field, or URL
+        let fileName = doc.fileName || doc.title;
+        if (!fileName && doc.url) {
           try {
             const urlPath = new URL(doc.url).pathname;
             const urlFileName = urlPath.split("/").pop();
@@ -190,27 +173,20 @@ export function DocumentationLayout() {
         const micaDocument = {
           id: doc.id,
           title: doc.title,
-          fileName: fileName,
           type: documentType,
-          category: doc.type, // Use the original type as category
-          uploadDate: new Date().toISOString(), // This will be the upload date for the new document
           url: doc.url,
           status: DocumentStatus.PENDING,
-          size: 0, // Default size, could be enhanced if available in UploadedDocument
           description: doc.description,
+          // Include upload metadata
+          uploadDate: doc.uploadedAt || new Date().toISOString(),
+          size: doc.size,
+          fileName: fileName,
         };
 
-        console.log("📄 Converted document for database:", micaDocument);
         return micaDocument;
       };
 
       const micaDocument = convertToMicaDocument(document);
-
-      console.log("💾 Calling updateDocuments with:", {
-        regulationId,
-        operation: DocumentOperation.ADD,
-        document: micaDocument,
-      });
 
       // Save the document metadata to the database
       const updateResult = await updateDocuments({
@@ -219,21 +195,16 @@ export function DocumentationLayout() {
         document: micaDocument,
       });
 
-      console.log("✅ updateDocuments completed:", updateResult);
-
-      toast.success("Document uploaded and metadata saved successfully");
-
-      console.log("🔄 Refreshing documents list...");
-      // Refresh the documents list
-      await fetchDocuments();
-      console.log("✅ Documents list refreshed");
+      if (updateResult?.data) {
+        toast.success("Document uploaded and metadata saved successfully");
+        // Refresh the documents list
+        await fetchDocuments();
+      } else {
+        throw new Error(
+          `Database update failed: ${updateResult?.serverError || "Unknown error"}`
+        );
+      }
     } catch (error) {
-      console.error("❌ Error saving document metadata to database:", error);
-      console.error("Full error details:", {
-        message: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined,
-        error,
-      });
       toast.error(
         "Document uploaded but failed to save metadata. Please try again."
       );
@@ -242,26 +213,18 @@ export function DocumentationLayout() {
 
   // Fetch regulation config ID for this asset using server action
   const fetchRegulationConfig = useCallback(async () => {
-    console.log("🔍 Fetching regulation config for:", {
-      assetAddress,
-      assetType,
-    });
     try {
       const result = await getMicaRegulationConfigAction(
         assetAddress,
         assetType as AssetType
       );
-      console.log("📋 getMicaRegulationConfigAction result:", result);
 
       if (result.success && result.data) {
-        console.log("✅ Setting regulation config ID:", result.data.id);
         setRegulationConfigId(result.data.id);
       } else {
-        console.error("❌ Failed to fetch regulation config:", result.error);
         toast.error("Failed to load regulation configuration");
       }
     } catch (error) {
-      console.error("❌ Error fetching regulation config:", error);
       toast.error("Failed to load regulation configuration");
     }
   }, [assetAddress, assetType]);
@@ -296,7 +259,11 @@ export function DocumentationLayout() {
         {isLoading ? (
           <DocumentsTableSkeleton />
         ) : (
-          <DocumentsTable documents={documents} onRefresh={fetchDocuments} />
+          <DocumentsTable
+            documents={documents}
+            onRefresh={fetchDocuments}
+            regulationId={regulationConfigId || ""}
+          />
         )}
       </CardContent>
 

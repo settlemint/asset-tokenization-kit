@@ -12,7 +12,7 @@ import {
   MicaDocumentType,
   ReserveComplianceStatus,
   type MicaDocument,
-  type MicaRegulationConfigResponse,
+  type MicaRegulationConfig,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { updateDocuments } from "@/lib/mutations/regulations/mica/update-documents/update-documents-action";
 import { DocumentOperation } from "@/lib/mutations/regulations/mica/update-documents/update-documents-schema";
@@ -39,40 +39,17 @@ const convertToMicaDocument = (
     documentType = doc.type as MicaDocumentType;
   }
 
-  // Extract filename from title or URL
-  let fileName = doc.title;
-  if (doc.url) {
-    try {
-      const urlPath = new URL(doc.url).pathname;
-      const urlFileName = urlPath.split("/").pop();
-      if (urlFileName) {
-        fileName = urlFileName;
-      }
-    } catch (error) {
-      // Use title as fallback if URL parsing fails
-      fileName = doc.title;
-    }
-  }
-
   return {
     id: doc.id,
     title: doc.title,
-    fileName: fileName,
     type: documentType,
-    category: doc.type, // Use the original type as category
-    uploadDate: new Date().toISOString(),
     url: doc.url,
     status: DocumentStatus.PENDING,
-    size: 0, // Default size, could be enhanced if available in UploadedDocument
     description: doc.description,
   };
 };
 
-export function AuditDetails({
-  config,
-}: {
-  config: MicaRegulationConfigResponse;
-}) {
+export function AuditDetails({ config }: { config: MicaRegulationConfig }) {
   const t = useTranslations(
     "regulations.mica.dashboard.reserve-status.form.fields.audit-details"
   );
