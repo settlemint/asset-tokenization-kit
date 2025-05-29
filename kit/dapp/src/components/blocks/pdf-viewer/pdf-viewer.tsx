@@ -120,10 +120,6 @@ export function PDFViewer({
       verbosity: retryAttempt > 0 ? 5 : 1, // Increase verbosity on retry
     };
 
-    console.log(
-      `PDF.js Document options (attempt ${retryAttempt + 1}):`,
-      baseOptions
-    );
     return baseOptions;
   }, [retryAttempt]);
 
@@ -144,26 +140,13 @@ export function PDFViewer({
   // Debug PDF.js configuration
   useEffect(() => {
     if (isOpen && fileUrl) {
-      console.log("=== PDF Viewer Debug Info ===");
-      console.log("PDF.js version:", pdfjs.version);
-      console.log("PDF.js worker source:", pdfjs.GlobalWorkerOptions.workerSrc);
-      console.log("Original File URL:", fileUrl);
-      console.log("Proxied File URL:", pdfUrl);
-      console.log("File name:", fileName);
-      console.log("User Agent:", navigator.userAgent);
-      console.log("Is valid PDF URL:", isValidPDFUrl);
-
       // Test worker accessibility
       const testWorker = async () => {
         try {
-          const response = await fetch(pdfjs.GlobalWorkerOptions.workerSrc, {
+          await fetch(pdfjs.GlobalWorkerOptions.workerSrc, {
             method: "HEAD",
             mode: "no-cors",
           });
-          console.log(
-            "Worker accessible:",
-            response.status || "no-cors response"
-          );
         } catch (error) {
           console.error("Worker test failed:", error);
         }
@@ -176,12 +159,11 @@ export function PDFViewer({
             method: "HEAD",
             signal: AbortSignal.timeout(5000),
           });
-          console.log("PDF URL accessible:", response.status);
 
           // If we get a 403, immediately set the error state instead of trying to load
           if (response.status === 403) {
             setError(
-              "Access to the PDF file was denied. The secure file link has expired (usually after 1 hour). Please click 'Refresh Documents' in the table above to get a new link."
+              "Access to the PDF file was denied. The secure file link has expired (usually after 1 hour). Please try downloading the document instead."
             );
             setIsLoading(false);
             return; // Don't proceed with PDF loading
@@ -199,7 +181,7 @@ export function PDFViewer({
               error.message.includes("Forbidden"))
           ) {
             setError(
-              "Access to the PDF file was denied. The secure file link has expired (usually after 1 hour). Please click 'Refresh Documents' in the table above to get a new link."
+              "Access to the PDF file was denied. The secure file link has expired (usually after 1 hour). Please try downloading the document instead."
             );
             setIsLoading(false);
             return;
@@ -226,8 +208,6 @@ export function PDFViewer({
   // Add a timeout for loading with shorter duration
   useEffect(() => {
     if (isLoading && isOpen && fileUrl) {
-      console.log("Starting PDF load timer...");
-
       // Clear any existing timeout
       if (loadingTimeout) {
         clearTimeout(loadingTimeout);
@@ -235,12 +215,6 @@ export function PDFViewer({
 
       const timeout = setTimeout(() => {
         if (isLoading) {
-          console.log("PDF loading timed out");
-          console.log("Current loading progress:", loadingProgress);
-          console.log("Current error state:", error);
-          console.log("PDF URL being loaded:", fileUrl);
-          console.log("Is valid PDF URL:", isValidPDFUrl);
-
           setError(
             "PDF loading timed out. The file might be too large, there could be network issues, or the PDF worker failed to load. Check browser console for more details."
           );
@@ -251,7 +225,6 @@ export function PDFViewer({
       setLoadingTimeout(timeout);
 
       return () => {
-        console.log("Clearing PDF load timer");
         clearTimeout(timeout);
         setLoadingTimeout(null);
       };
@@ -259,7 +232,6 @@ export function PDFViewer({
   }, [isLoading, isOpen, fileUrl, loadingProgress, error]);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-    console.log("PDF loaded successfully with", numPages, "pages");
     setNumPages(numPages);
     setIsLoading(false);
     setError(null);
@@ -275,7 +247,6 @@ export function PDFViewer({
     setTimeout(() => {
       // Double-check that the document is still valid before marking as ready
       if (pdfDocumentRef.current && isDocumentValid()) {
-        console.log("Document validated and marked as ready");
         setDocumentReady(true);
       } else {
         console.warn("Document validation failed after load success");
@@ -302,7 +273,7 @@ export function PDFViewer({
       errorMessage.includes("Forbidden")
     ) {
       errorMessage =
-        "Access to the PDF file was denied. The secure file link may have expired (usually after 1 hour). Please refresh the page to get a new link.";
+        "Access to the PDF file was denied. The secure file link may have expired (usually after 1 hour). Please try downloading the document instead.";
     } else if (errorMessage.includes("InvalidPDFException")) {
       errorMessage = "This PDF file appears to be corrupted or invalid.";
     } else if (errorMessage.includes("MissingPDFException")) {
@@ -337,7 +308,6 @@ export function PDFViewer({
   }) {
     const progress = Math.round((loaded / total) * 100);
     setLoadingProgress(progress);
-    console.log(`Loading progress: ${loaded}/${total} (${progress}%)`);
   }
 
   function changePage(offset: number) {
@@ -368,8 +338,6 @@ export function PDFViewer({
   }
 
   function handleRetry() {
-    console.log(`Retrying PDF load... (attempt ${retryAttempt + 1})`);
-
     // Try different worker configurations on retry
     if (retryAttempt > 0) {
       initializePDFWorker();
@@ -394,8 +362,6 @@ export function PDFViewer({
   // Reset state when dialog closes
   function handleOpenChange(open: boolean) {
     if (!open) {
-      console.log("Closing PDF viewer");
-
       // Clear timeout when closing
       if (loadingTimeout) {
         clearTimeout(loadingTimeout);
@@ -420,8 +386,6 @@ export function PDFViewer({
       setLoadingProgress(0);
       setDocumentReady(false);
       onClose();
-    } else {
-      console.log("Opening PDF viewer for:", fileName);
     }
   }
 
@@ -430,11 +394,14 @@ export function PDFViewer({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[95vh] flex flex-col p-0">
+      <DialogContent
+        className="!w-[90vw] !max-w-[90vw] max-h-[95vh] flex flex-col p-0"
+        style={{ width: "90vw !important", maxWidth: "90vw !important" }}
+      >
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="flex items-center justify-between text-lg">
             <span className="truncate pr-4">{fileName}</span>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 flex-shrink-0 mr-8">
               <Button
                 size="sm"
                 variant="outline"
@@ -470,9 +437,9 @@ export function PDFViewer({
 
         <div className="flex-1 flex flex-col overflow-hidden px-6">
           {/* PDF Content */}
-          <div className="flex-1 overflow-auto border rounded-md bg-gray-50 dark:bg-gray-900 flex items-center justify-center min-h-[400px]">
+          <div className="flex-1 overflow-auto border rounded-md bg-gray-50 dark:bg-gray-900 flex items-center justify-center min-h-[600px]">
             {fileUrl && isValidPDFUrl && (
-              <div className="pdf-container w-full relative">
+              <div className="pdf-container w-full h-full relative">
                 {/* Loading overlay */}
                 {isLoading && !error && (
                   <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-md">
@@ -526,8 +493,7 @@ export function PDFViewer({
                           <p className="font-medium">💡 File access expired</p>
                           <p className="mt-1">
                             The secure file link has expired (usually after 1
-                            hour). Click &quot;Refresh Documents&quot; in the
-                            table above to get a new link.
+                            hour). Please try downloading the document instead.
                           </p>
                         </div>
                       )}
@@ -548,18 +514,6 @@ export function PDFViewer({
                             Retry ({3 - retryAttempt} left)
                           </Button>
                         )}
-                        {(error.includes("403") ||
-                          error.includes("Forbidden") ||
-                          error.includes("expired")) && (
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => window.location.reload()}
-                            className="bg-blue-600 hover:bg-blue-700"
-                          >
-                            Refresh Page
-                          </Button>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -569,19 +523,10 @@ export function PDFViewer({
                 <Document
                   file={pdfUrl}
                   onLoadSuccess={(pdf) => {
-                    console.log("PDF.js Document onLoadSuccess called:", pdf);
-                    console.log(
-                      "📄 Rendering Document component with URL:",
-                      pdfUrl
-                    );
-
                     // Validate the PDF document before storing reference
                     try {
                       if (pdf && pdf.numPages > 0) {
                         pdfDocumentRef.current = pdf;
-                        console.log(
-                          "PDF document reference stored successfully"
-                        );
                         onDocumentLoadSuccess(pdf);
                       } else {
                         console.error("Invalid PDF document received:", pdf);
@@ -599,29 +544,20 @@ export function PDFViewer({
                     }
                   }}
                   onLoadError={(error) => {
-                    console.log("PDF.js Document onLoadError called:", error);
                     onDocumentLoadError(error);
                   }}
                   onLoadProgress={(progress) => {
-                    console.log(
-                      "PDF.js Document onLoadProgress called:",
-                      progress
-                    );
                     onDocumentLoadProgress(progress);
                   }}
                   onItemClick={(item) => {
-                    console.log("PDF.js Document onItemClick:", item);
+                    // Handle PDF item clicks if needed
                   }}
                   onPassword={(callback, reason) => {
-                    console.log(
-                      "PDF.js Document onPassword called, reason:",
-                      reason
-                    );
                     // For now, just reject password-protected PDFs
                     callback(null);
                   }}
                   options={documentOptions}
-                  className="w-full"
+                  className="w-full h-full flex justify-center items-start py-4"
                   loading={
                     <div className="flex items-center justify-center h-96">
                       <Loader2 className="h-6 w-6 animate-spin" />

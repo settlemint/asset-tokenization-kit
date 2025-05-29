@@ -261,7 +261,6 @@ export function DocumentationLayout() {
         ) : (
           <DocumentsTable
             documents={documents}
-            onRefresh={fetchDocuments}
             regulationId={regulationConfigId || ""}
           />
         )}
