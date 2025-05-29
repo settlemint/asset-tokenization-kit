@@ -3,8 +3,6 @@ import "server-only";
 import { db } from "@/lib/db";
 import { regulationConfigs } from "@/lib/db/regulations/schema-base-regulation-configs";
 import { micaRegulationConfigs } from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { DEFAULT_BUCKET } from "@/lib/queries/storage/file-storage";
-import { client as minioClient } from "@/lib/settlemint/minio";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
 import { and, eq } from "drizzle-orm";
@@ -26,82 +24,46 @@ const MicaDocumentSchema = t.Object({
 export type MicaDocument = StaticDecode<typeof MicaDocumentSchema>;
 
 /**
- * Helper function to get file metadata from MinIO
+ * Helper function to get file metadata from HTTP HEAD request
+ * This is more reliable than MinIO direct access since presigned URLs always work
  */
-async function getFileMetadataFromMinIO(
-  url: string,
-  assetAddress?: string
-): Promise<{
+async function getFileMetadataFromURL(url: string): Promise<{
   uploadDate: string;
   size: number;
 } | null> {
   try {
-    // Extract object name from URL or use URL as object path
-    let objectName = url;
+    // Make a HEAD request to get file metadata without downloading the file
+    const response = await fetch(url, {
+      method: "HEAD",
+      // Add timeout to prevent hanging
+      signal: AbortSignal.timeout(5000),
+    });
 
-    // If it's a presigned URL, extract the object name
-    if (url.includes("?")) {
-      const urlParts = url.split("?")[0];
-      const pathParts = urlParts.split("/");
-
-      // Find regulations/mica path in URL
-      const micaIndex = pathParts.findIndex((part) => part === "mica");
-      if (
-        micaIndex !== -1 &&
-        micaIndex > 0 &&
-        pathParts[micaIndex - 1] === "regulations"
-      ) {
-        objectName = pathParts.slice(micaIndex - 1).join("/");
-      } else {
-        // Fallback: use last part of URL as filename and assume regulations/mica path
-        const fileName = pathParts[pathParts.length - 1];
-        if (assetAddress) {
-          objectName = `regulations/mica/${assetAddress}/${fileName}`;
-        } else {
-          objectName = `regulations/mica/${fileName}`;
-        }
-      }
+    if (!response.ok) {
+      return null;
     }
 
-    // Try different possible object names/paths including asset address variations
-    const possiblePaths = [
-      objectName,
-      // Try with asset address if provided
-      ...(assetAddress
-        ? [
-            `regulations/mica/${assetAddress}/${objectName}`,
-            `regulations/mica/${assetAddress}/${objectName.split("/").pop()}`, // just filename
-          ]
-        : []),
-      // Legacy paths without asset address
-      `regulations/mica/${objectName}`,
-      `regulations/mica/${objectName.split("/").pop()}`, // just filename
-      objectName.startsWith("regulations/")
-        ? objectName
-        : `regulations/mica/${objectName}`,
-    ];
+    // Get file size from Content-Length header
+    const contentLength = response.headers.get("content-length");
+    const size = contentLength ? parseInt(contentLength, 10) : 0;
 
-    for (const path of possiblePaths) {
+    // Get last modified date from Last-Modified header, fallback to current time
+    const lastModified = response.headers.get("last-modified");
+    let uploadDate = new Date().toISOString();
+
+    if (lastModified) {
       try {
-        const statResult = await minioClient.statObject(DEFAULT_BUCKET, path);
-
-        // Try to get upload date from metadata first, fallback to lastModified
-        let uploadDate = statResult.lastModified.toISOString();
-        if (statResult.metaData && statResult.metaData["upload-time"]) {
-          uploadDate = statResult.metaData["upload-time"];
-        }
-
-        return {
-          uploadDate,
-          size: statResult.size,
-        };
+        uploadDate = new Date(lastModified).toISOString();
       } catch (error) {
-        // Continue to next possible path
-        continue;
+        // Use current time if date parsing fails
+        uploadDate = new Date().toISOString();
       }
     }
 
-    return null;
+    return {
+      uploadDate,
+      size: size > 0 ? size : 0,
+    };
   } catch (error) {
     return null;
   }
@@ -204,6 +166,19 @@ export const getMicaDocuments = withTracing(
         );
       }
 
+      // Check if any documents are missing file size and migrate them if needed
+      const documentsNeedingSizeMigration = processedDocuments.filter(
+        (doc: any) => !doc.size || doc.size === 0
+      );
+
+      if (documentsNeedingSizeMigration.length > 0) {
+        processedDocuments = await migrateDocumentFileSizes(
+          regulationConfigResult[0].id,
+          processedDocuments,
+          assetAddress
+        );
+      }
+
       // Transform database documents to match our schema
       const documents: MicaDocument[] = await Promise.all(
         processedDocuments.map(async (doc: any, index: number) => {
@@ -224,26 +199,23 @@ export const getMicaDocuments = withTracing(
           // Use type as category since category is not stored in DB
           const category = doc.type || "general";
 
-          // Use stored upload date from database if available, otherwise try to get from MinIO or current time
+          // Use stored upload date from database if available, otherwise try to get from URL or current time
           let uploadDate = doc.uploadDate; // Start with stored value (could be undefined)
-          let size = doc.size || 0; // Use stored size if available
+          let size = doc.size && doc.size > 0 ? doc.size : 0; // Use stored size if available and > 0
 
-          // If we don't have uploadDate stored in database, try to get it from MinIO
+          // If we don't have uploadDate stored in database, try to get it from URL
           if (!doc.uploadDate && doc.url) {
             try {
-              const fileMetadata = await getFileMetadataFromMinIO(
-                doc.url,
-                assetAddress
-              );
-              if (fileMetadata) {
-                uploadDate = fileMetadata.uploadDate;
+              const urlFileMetadata = await getFileMetadataFromURL(doc.url);
+              if (urlFileMetadata) {
+                uploadDate = urlFileMetadata.uploadDate;
 
                 // Also get size if we don't have it
-                if (!doc.size) {
-                  size = fileMetadata.size;
+                if (!doc.size || doc.size === 0) {
+                  size = urlFileMetadata.size;
                 }
               } else {
-                // Fallback to URL date extraction if MinIO metadata lookup fails
+                // Fallback to URL date extraction if URL metadata lookup fails
                 const urlDate = extractUploadDateFromUrl(doc.url);
                 if (urlDate) {
                   uploadDate = urlDate;
@@ -256,15 +228,12 @@ export const getMicaDocuments = withTracing(
                 uploadDate = urlDate;
               }
             }
-          } else if (!doc.size && doc.url) {
-            // We have uploadDate but missing size, try to get size from MinIO
+          } else if ((!doc.size || doc.size === 0) && doc.url) {
+            // We have uploadDate but missing size, try to get size from URL
             try {
-              const fileMetadata = await getFileMetadataFromMinIO(
-                doc.url,
-                assetAddress
-              );
-              if (fileMetadata && fileMetadata.size) {
-                size = fileMetadata.size;
+              const urlSizeMetadata = await getFileMetadataFromURL(doc.url);
+              if (urlSizeMetadata && urlSizeMetadata.size > 0) {
+                size = urlSizeMetadata.size;
               }
             } catch (error) {
               // Continue with default size
@@ -360,26 +329,25 @@ export const getMicaDocumentById = withTracing(
 
             const category = document.type || "general";
 
-            // Use stored upload date from database if available, otherwise try to get from MinIO
+            // Use stored upload date from database if available, otherwise try to get from URL
             let uploadDate = document.uploadDate; // Start with stored value (could be undefined)
-            let size = document.size || 0; // Use stored size if available
+            let size = document.size && document.size > 0 ? document.size : 0; // Use stored size if available and > 0
 
-            // If we don't have uploadDate stored in database, try to get it from MinIO
+            // If we don't have uploadDate stored in database, try to get it from URL
             if (!document.uploadDate && document.url) {
               try {
-                const fileMetadata = await getFileMetadataFromMinIO(
-                  document.url,
-                  assetAddress || undefined
+                const urlFileMetadata = await getFileMetadataFromURL(
+                  document.url
                 );
-                if (fileMetadata) {
-                  uploadDate = fileMetadata.uploadDate;
+                if (urlFileMetadata) {
+                  uploadDate = urlFileMetadata.uploadDate;
 
                   // Also get size if we don't have it
-                  if (!document.size) {
-                    size = fileMetadata.size;
+                  if (!document.size || document.size === 0) {
+                    size = urlFileMetadata.size;
                   }
                 } else {
-                  // Fallback to URL date extraction if MinIO metadata lookup fails
+                  // Fallback to URL date extraction if URL metadata lookup fails
                   const urlDate = extractUploadDateFromUrl(document.url);
                   if (urlDate) {
                     uploadDate = urlDate;
@@ -392,15 +360,17 @@ export const getMicaDocumentById = withTracing(
                   uploadDate = urlDate;
                 }
               }
-            } else if (!document.size && document.url) {
-              // We have uploadDate but missing size, try to get size from MinIO
+            } else if (
+              (!document.size || document.size === 0) &&
+              document.url
+            ) {
+              // We have uploadDate but missing size, try to get size from URL
               try {
-                const fileMetadata = await getFileMetadataFromMinIO(
-                  document.url,
-                  assetAddress || undefined
+                const urlSizeMetadata = await getFileMetadataFromURL(
+                  document.url
                 );
-                if (fileMetadata && fileMetadata.size) {
-                  size = fileMetadata.size;
+                if (urlSizeMetadata && urlSizeMetadata.size > 0) {
+                  size = urlSizeMetadata.size;
                 }
               } catch (error) {
                 // Continue with default size
@@ -437,7 +407,7 @@ export const getMicaDocumentById = withTracing(
 );
 
 /**
- * Helper function to migrate existing documents with proper upload dates from MinIO
+ * Helper function to migrate existing documents with proper upload dates from URL metadata
  * This should be called when documents are missing uploadDate in the database
  */
 async function migrateDocumentUploadDates(
@@ -455,15 +425,12 @@ async function migrateDocumentUploadDates(
 
       let migratedUploadDate = null;
 
-      // Try to get upload date from MinIO
+      // Try to get upload date from URL metadata
       if (doc.url) {
         try {
-          const fileMetadata = await getFileMetadataFromMinIO(
-            doc.url,
-            assetAddress
-          );
-          if (fileMetadata) {
-            migratedUploadDate = fileMetadata.uploadDate;
+          const urlMetadata = await getFileMetadataFromURL(doc.url);
+          if (urlMetadata) {
+            migratedUploadDate = urlMetadata.uploadDate;
           } else {
             // Fallback to URL date extraction
             const urlDate = extractUploadDateFromUrl(doc.url);
@@ -493,6 +460,69 @@ async function migrateDocumentUploadDates(
   );
 
   // Update the database if we found new upload dates
+  if (needsUpdate) {
+    try {
+      await db
+        .update(micaRegulationConfigs)
+        .set({
+          documents: updatedDocuments,
+        })
+        .where(
+          eq(micaRegulationConfigs.regulationConfigId, regulationConfigId)
+        );
+    } catch (error) {
+      // Return original documents if update fails
+      return documents;
+    }
+  }
+
+  return updatedDocuments;
+}
+
+/**
+ * Helper function to migrate existing documents with proper file sizes from URL metadata
+ * This should be called when documents are missing size in the database
+ */
+async function migrateDocumentFileSizes(
+  regulationConfigId: string,
+  documents: any[],
+  assetAddress: string
+): Promise<any[]> {
+  let needsUpdate = false;
+  const updatedDocuments = await Promise.all(
+    documents.map(async (doc: any) => {
+      // Skip if document already has size
+      if (doc.size && doc.size > 0) {
+        return doc;
+      }
+
+      let migratedSize = null;
+
+      // Try to get file size from URL metadata
+      if (doc.url) {
+        try {
+          const urlMetadata = await getFileMetadataFromURL(doc.url);
+          if (urlMetadata && urlMetadata.size) {
+            migratedSize = urlMetadata.size;
+          }
+        } catch (error) {
+          // Continue without size if URL metadata lookup fails
+        }
+      }
+
+      if (migratedSize && migratedSize > 0) {
+        needsUpdate = true;
+        return {
+          ...doc,
+          size: migratedSize,
+        };
+      }
+
+      return doc;
+    })
+  );
+
+  // Update the database if we found new file sizes
   if (needsUpdate) {
     try {
       await db
