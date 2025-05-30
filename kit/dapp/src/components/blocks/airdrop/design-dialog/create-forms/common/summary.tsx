@@ -1,9 +1,9 @@
 "use client";
 
-import { StepContent } from "@/components/blocks/asset-designer/step-wizard/step-content";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
+import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import { authClient } from "@/lib/auth/client";
 import type { CreateAirdropInput } from "@/lib/mutations/airdrop/create/common/schema";
 import { formatNumber } from "@/lib/utils/number";
