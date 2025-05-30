@@ -1,8 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function ConsumerProtectionLayout() {
+  const t = useTranslations("regulations.mica.dashboard.consumer-protection");
+
   const totalRedemptions = 1000; // TODO: get from API
   const averageRedemptionTime = "-"; // We assume this is immediate
   const completedWithin24Hours = 100; // We assume this is always true
@@ -14,7 +17,7 @@ export function ConsumerProtectionLayout() {
   return (
     <Card className="w-full h-full flex flex-col">
       <CardHeader>
-        <CardTitle>Consumer Protection</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
         <Badge
           className={`mt-2 ${
             isCompliant
@@ -27,33 +30,35 @@ export function ConsumerProtectionLayout() {
           ) : (
             <AlertCircle className="mr-1 size-3" />
           )}
-          {isCompliant ? "Compliant" : "Non-Compliant"}
+          {isCompliant ? t("compliant") : t("non-compliant")}
         </Badge>
       </CardHeader>
       <CardContent className="flex-1">
         <div className="grid grid-cols-2 md:grid-cols-2 gap-8">
           <div>
-            <h3 className="text-muted-foreground text-sm">Total Redemptions</h3>
+            <h3 className="text-muted-foreground text-sm">
+              {t("total-redemptions")}
+            </h3>
             <p>{totalRedemptions.toLocaleString()}</p>
           </div>
 
           <div>
             <h3 className="text-muted-foreground text-sm">
-              Average Redemption Time
+              {t("average-redemption-time")}
             </h3>
             <p>{averageRedemptionTime}</p>
           </div>
 
           <div>
             <h3 className="text-muted-foreground text-sm">
-              Completed Within 24 Hours
+              {t("completed-within-24-hours")}
             </h3>
             <p>{completedWithin24Hours}%</p>
           </div>
 
           <div>
             <h3 className="text-muted-foreground text-sm">
-              Redemptions at Par Value
+              {t("redemptions-at-par-value")}
             </h3>
             <p>{redemptionsAtParValue}%</p>
           </div>
