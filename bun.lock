@@ -176,12 +176,12 @@
     "prisma",
   ],
   "overrides": {
-    "react-is": "19.1.0",
-    "graphql": "16.11.0",
-    "elliptic": "6.6.1",
     "ws": "8.18.2",
-    "adm-zip": "0.5.16",
+    "react-is": "19.1.0",
     "undici": "7.10.0",
+    "adm-zip": "0.5.16",
+    "elliptic": "6.6.1",
+    "graphql": "16.11.0",
     "prettier": "3.5.3",
   },
   "packages": {
