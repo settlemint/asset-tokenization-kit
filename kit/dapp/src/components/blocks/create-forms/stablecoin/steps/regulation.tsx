@@ -12,10 +12,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { deleteFile } from "@/lib/actions/delete-file";
 import { uploadDocument } from "@/lib/actions/upload-document";
 import { cn } from "@/lib/utils";
+import { isFeatureEnabled } from "@/lib/utils/feature-flags";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { Check, Info, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 
@@ -442,8 +442,7 @@ export function AssetRegulationStep({
   const [uploadedDocuments, setUploadedDocuments] = useState<{
     [regulationId: string]: UploadedDocument[];
   }>({});
-  const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  const isMicaEnabled = !!micaFlagFromPostHog;
+  const isMicaEnabled = isFeatureEnabled("mica");
 
   // Initialize selectedRegulations if not already set
   useEffect(() => {

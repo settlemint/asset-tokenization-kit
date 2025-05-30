@@ -7,9 +7,9 @@ import { CreateDepositSchema } from "@/lib/mutations/deposit/create/create-schem
 import { isAddressAvailable } from "@/lib/queries/deposit-factory/deposit-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/deposit-factory/deposit-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
+import { isFeatureEnabled } from "@/lib/utils/feature-flags";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
@@ -57,8 +57,7 @@ export function CreateDepositForm({
   onOpenChange,
 }: CreateDepositFormProps) {
   const t = useTranslations("private.assets.create.form");
-  const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  const isMicaEnabled = !!micaFlagFromPostHog;
+  const isMicaEnabled = isFeatureEnabled("mica");
 
   // Create component instances for each step
   const BasicsComponent = basicsStep.component;

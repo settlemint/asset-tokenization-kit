@@ -30,10 +30,10 @@ import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create
 import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
+import { isFeatureEnabled } from "@/lib/utils/feature-flags";
 import type { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useEffect, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
@@ -81,8 +81,7 @@ export function CreateStablecoinForm({
   onOpenChange,
 }: CreateStablecoinFormProps) {
   const t = useTranslations("private.assets.create.form");
-  const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  const isMicaEnabled = !!micaFlagFromPostHog;
+  const isMicaEnabled = isFeatureEnabled("mica");
 
   // Create component instances for each step
   const BasicsComponent = basicsStep.component;
