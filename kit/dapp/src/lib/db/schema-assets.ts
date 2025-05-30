@@ -1,10 +1,12 @@
 import {
   index,
+  integer,
   numeric,
   pgEnum,
   pgTable,
   text,
   timestamp,
+  unique,
   uuid,
 } from "drizzle-orm/pg-core";
 import { fiatCurrencies } from "../utils/typebox/fiat-currency";
@@ -64,5 +66,29 @@ export const contact = pgTable(
     index("contact_name_idx").on(table.name),
     index("contact_wallet_idx").on(table.wallet),
     index("contact_user_id_idx").on(table.userId),
+  ]
+);
+
+export const airdropDistribution = pgTable(
+  "airdrop_distribution",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    airdropId: text("airdrop_id").notNull(),
+    recipient: text("recipient").notNull(),
+    amount: text("amount").notNull(),
+    index: integer("index").notNull(),
+    claimed: timestamp("claimed", { withTimezone: true }),
+  },
+  (table) => [
+    index("airdrop_distribution_recipient_idx").on(table.recipient),
+    index("airdrop_distribution_airdrop_id_idx").on(table.airdropId),
+    index("airdrop_distribution_recipient_airdrop_idx").on(
+      table.recipient,
+      table.airdropId
+    ),
+    unique("airdrop_distribution_unique_constraint").on(
+      table.airdropId,
+      table.recipient
+    ),
   ]
 );

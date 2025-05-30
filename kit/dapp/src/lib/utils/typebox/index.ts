@@ -4,12 +4,14 @@ import type { StaticDecode, TSchema } from "@sinclair/typebox";
 import { TypeCompiler } from "@sinclair/typebox/compiler";
 import { redactSensitiveFields } from "../redaction";
 import { EthereumAddress } from "./address";
+import { AirdropType } from "./airdrop-types";
 import { Amount } from "./amount";
 import { AssetSymbol } from "./asset-symbol";
 import { AssetType } from "./asset-types";
 import { BigDecimal } from "./bigdecimal";
 import { StringifiedBigInt } from "./bigint";
 import { Decimals } from "./decimals";
+import { Duration } from "./duration";
 import { EquityCategory } from "./equity-categories";
 import { EquityClass } from "./equity-classes";
 import { FiatCurrency } from "./fiat-currency";
@@ -63,6 +65,8 @@ declare module "@sinclair/typebox" {
     UserRoles: typeof UserRoles;
     VerificationType: typeof VerificationType;
     VerificationCode: typeof VerificationCode;
+    Duration: typeof Duration;
+    AirdropType: typeof AirdropType;
   }
 }
 
@@ -95,6 +99,8 @@ t.TwoFactorCode = TwoFactorCode;
 t.UserRoles = UserRoles;
 t.VerificationCode = VerificationCode;
 t.VerificationType = VerificationType;
+t.Duration = Duration;
+t.AirdropType = AirdropType;
 
 export function safeParse<T extends TSchema>(
   schema: T,
