@@ -1,3 +1,4 @@
+import { AirdropDesignButton } from "@/components/blocks/airdrop/design-dialog/airdrop-design-button";
 import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { NavHeader } from "@/components/layout/nav-header";
 import { NavMode } from "@/components/layout/nav-mode";
@@ -23,6 +24,9 @@ export async function AssetsSidebar() {
       </SidebarHeader>
       <SidebarContent className="pt-4">
         <AssetDesignerButton currentUser={user} />
+        {process.env.NODE_ENV === "development" && (
+          <AirdropDesignButton currentUser={user} />
+        )}
         <AssetManagement />
         <CustodyManagement />
       </SidebarContent>
