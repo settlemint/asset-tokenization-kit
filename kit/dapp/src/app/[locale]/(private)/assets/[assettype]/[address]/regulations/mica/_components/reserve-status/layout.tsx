@@ -36,8 +36,6 @@ export function ReserveStatusLayout({
 
   const canEditReserve = isTokenAdmin(session?.user?.wallet, assetDetails);
 
-  console.log(config);
-
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
