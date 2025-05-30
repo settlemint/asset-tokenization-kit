@@ -19,6 +19,7 @@ export const TabItem: FC<TabItemProps> = ({ href, name, active }) => (
       className={cn(
         navigationMenuTriggerStyle(),
         "relative rounded-none bg-transparent! pb-4 text-md after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-accent hover:text-foreground hover:after:w-full hover:after:transition-[width] hover:after:duration-200 hover:after:ease-in-out",
+        "focus:bg-transparent! focus:text-primary! focus-visible:bg-transparent! focus-visible:text-primary!",
         active ? "font-bold text-primary! after:w-full" : "after:w-0"
       )}
     >
