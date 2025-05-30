@@ -14,13 +14,18 @@ export function userCalculateFields(
   account?: Account
 ): CalculatedUser {
   // Calculate asset count from account data
-  const assetCount = account?.balancesCount ?? BigInt(0);
+  // Handle both string and bigint formats from account data
+  const rawAssetCount = account?.balancesCount ?? "0";
+  const assetCount =
+    typeof rawAssetCount === "string"
+      ? rawAssetCount
+      : rawAssetCount.toString();
 
   // Calculate transaction count from account data
   const transactionCount = 0;
 
   return safeParse(CalculatedUserSchema, {
-    assetCount,
+    assetCount, // Now guaranteed to be a string
     transactionCount,
   });
 }

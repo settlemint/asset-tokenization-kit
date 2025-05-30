@@ -42,8 +42,7 @@ templates:
         - name: System
           file: ../contracts/artifacts/smart-protocol/contracts/system/SMARTSystem.sol/SMARTSystem.json
       eventHandlers:
-        - event:
-            Bootstrapped(indexed address,indexed address,indexed
+        - event: Bootstrapped(indexed address,indexed address,indexed
             address,address,address)
           handler: handleBootstrapped
         - event: ComplianceImplementationUpdated(indexed address)
@@ -58,8 +57,7 @@ templates:
           handler: handleIdentityRegistryImplementationUpdated
         - event: IdentityRegistryStorageImplementationUpdated(indexed address)
           handler: handleIdentityRegistryStorageImplementationUpdated
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
@@ -105,21 +103,17 @@ templates:
         - name: IdentityFactory
           file: ../contracts/artifacts/contracts/ATKIdentityFactoryImplementation.sol/ATKIdentityFactoryImplementation.json
       eventHandlers:
-        - event:
-            IdentityCreated(indexed address,indexed address,indexed address)
+        - event: IdentityCreated(indexed address,indexed address,indexed address)
           handler: handleIdentityCreated
         - event: Initialized(uint64)
           handler: handleInitialized
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event:
-            TokenIdentityCreated(indexed address,indexed address,indexed
-            address)
+        - event: TokenIdentityCreated(indexed address,indexed address,indexed address)
           handler: handleTokenIdentityCreated
       file: ./src/event-handlers/identity-factory.ts
   - kind: ethereum
@@ -140,21 +134,17 @@ templates:
       eventHandlers:
         - event: CountryUpdated(indexed address,indexed address,indexed uint16)
           handler: handleCountryUpdated
-        - event:
-            IdentityRegistered(indexed address,indexed address,indexed address)
+        - event: IdentityRegistered(indexed address,indexed address,indexed address)
           handler: handleIdentityRegistered
-        - event:
-            IdentityRemoved(indexed address,indexed address,indexed address)
+        - event: IdentityRemoved(indexed address,indexed address,indexed address)
           handler: handleIdentityRemoved
         - event: IdentityStorageSet(indexed address,indexed address)
           handler: handleIdentityStorageSet
-        - event:
-            IdentityUpdated(indexed address,indexed address,indexed address)
+        - event: IdentityUpdated(indexed address,indexed address,indexed address)
           handler: handleIdentityUpdated
         - event: Initialized(uint64)
           handler: handleInitialized
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
@@ -193,8 +183,7 @@ templates:
           handler: handleIdentityUnstored
         - event: Initialized(uint64)
           handler: handleInitialized
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
@@ -221,8 +210,7 @@ templates:
           handler: handleClaimTopicsUpdated
         - event: Initialized(uint64)
           handler: handleInitialized
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
@@ -251,27 +239,20 @@ templates:
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
-        - event:
-            ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimAdded
-        - event:
-            ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimChanged
-        - event:
-            ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimRemoved
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
-        - event:
-            ExecutionFailed(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionFailed
-        - event:
-            ExecutionRequested(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionRequested
         - event: Initialized(uint64)
           handler: handleInitialized
@@ -298,27 +279,20 @@ templates:
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
-        - event:
-            ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimAdded
-        - event:
-            ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimChanged
-        - event:
-            ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimRemoved
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
-        - event:
-            ExecutionFailed(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionFailed
-        - event:
-            ExecutionRequested(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionRequested
         - event: Initialized(uint64)
           handler: handleInitialized

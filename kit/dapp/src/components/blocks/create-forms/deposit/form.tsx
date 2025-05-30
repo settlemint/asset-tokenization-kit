@@ -58,11 +58,10 @@ export function CreateDepositForm({
 }: CreateDepositFormProps) {
   const t = useTranslations("private.assets.create.form");
   const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  // Always enable MiCA in development mode, regardless of PostHog configuration
-  const isMicaEnabled =
-    process.env.NODE_ENV === "development" || process.env.NODE_ENV === undefined
-      ? true
-      : !!micaFlagFromPostHog;
+  // Match server-side behavior: if PostHog not configured, default to enabled
+  const isMicaEnabled = !process.env.NEXT_PUBLIC_POSTHOG_KEY
+    ? true
+    : !!micaFlagFromPostHog;
 
   // Create component instances for each step
   const BasicsComponent = basicsStep.component;
