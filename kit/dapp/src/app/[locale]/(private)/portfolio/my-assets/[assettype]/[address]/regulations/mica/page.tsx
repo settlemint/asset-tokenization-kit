@@ -1,4 +1,4 @@
-import { MicaRegulationLayout } from "@/app/[locale]/(private)/assets/[assettype]/[address]/regulations/mica/_components";
+import { MicaRegulationLayout } from "@/app/[locale]/(private)/assets/[assettype]/[address]/regulations/mica/_components/layout";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import type { Address } from "viem";

@@ -23,6 +23,9 @@ export async function MicaRegulationLayout({
     regulationType: "mica",
   });
 
+  console.log(address);
+  console.log(regulationData);
+
   if (!regulationData?.mica_regulation_config) {
     // This should never happen as we check in asset-tabs.ts, but handle it gracefully
     console.error("MiCA regulation config not found for asset:", address);
