@@ -23,12 +23,7 @@ export const hasFreeze = (assettype: AssetType) =>
  * @returns True if MICA is available and enabled for this asset
  */
 export const hasMica = async (assettype: AssetType, assetId: Address) => {
-  // Always enable MiCA in development mode for supported asset types
-  const isDevelopment =
-    process.env.NODE_ENV === "development" ||
-    process.env.NODE_ENV === undefined;
-
-  const flagEnabled = isDevelopment ? true : await isFeatureEnabled("mica");
+  const flagEnabled = await isFeatureEnabled("mica");
   if (!flagEnabled) {
     return false;
   }
