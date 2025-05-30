@@ -3102,6 +3102,16 @@
               }
             }
           }
+        },
+        "consumer-protection": {
+          "title": "Consumer protection",
+          "description": "The consumer protection status of the asset",
+          "total-redemptions": "Total redemptions",
+          "average-redemption-time": "Average redemption time",
+          "completed-within-24-hours": "Completed within 24 hours",
+          "redemptions-at-par-value": "Redemptions at par value",
+          "compliant": "Compliant",
+          "non-compliant": "Non-compliant"
         }
       }
     }
