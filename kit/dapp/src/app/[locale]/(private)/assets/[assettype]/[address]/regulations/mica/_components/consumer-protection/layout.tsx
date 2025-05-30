@@ -1,6 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { AlertCircle, CheckCircle, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export function ConsumerProtectionLayout() {
@@ -57,9 +63,26 @@ export function ConsumerProtectionLayout() {
           </div>
 
           <div>
-            <h3 className="text-muted-foreground text-sm">
-              {t("redemptions-at-par-value")}
-            </h3>
+            <div className="flex items-center gap-1">
+              <h3 className="text-muted-foreground text-sm">
+                {t("redemptions-at-par-value")}
+              </h3>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info
+                      className="size-4 text-muted-foreground"
+                      aria-label={t("redemptions-at-par-value-info")}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-accent-foreground text-xs">
+                      {t("redemptions-at-par-value-info")}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <p>{redemptionsAtParValue}%</p>
           </div>
         </div>
