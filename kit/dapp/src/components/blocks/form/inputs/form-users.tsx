@@ -92,7 +92,7 @@ export function FormUsers<T extends FieldValues>({
                 id={`${field.name}-label`}
               >
                 <span>{label}</span>
-                {required && <span className="ml-1 text-destructive">*</span>}
+                {required && <span className="-ml-1 text-destructive">*</span>}
               </FormLabel>
             )}
             <Popover open={open} onOpenChange={setOpen}>

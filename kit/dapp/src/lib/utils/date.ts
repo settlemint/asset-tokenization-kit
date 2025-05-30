@@ -107,18 +107,19 @@ export function formatDate(
   }
 }
 
-export function formatDuration(duration: number | string) {
+export function formatDuration(durationSeconds: number | string) {
   return formatDurationFns({
-    years: Math.floor(Number(duration) / 31536000),
-    months: Math.floor((Number(duration) % 31536000) / 2592000),
-    days: Math.floor(((Number(duration) % 31536000) % 2592000) / 86400),
+    years: Math.floor(Number(durationSeconds) / 31536000),
+    months: Math.floor((Number(durationSeconds) % 31536000) / 2592000),
+    days: Math.floor(((Number(durationSeconds) % 31536000) % 2592000) / 86400),
     hours: Math.floor(
-      (((Number(duration) % 31536000) % 2592000) % 86400) / 3600
+      (((Number(durationSeconds) % 31536000) % 2592000) % 86400) / 3600
     ),
     minutes: Math.floor(
-      ((((Number(duration) % 31536000) % 2592000) % 86400) % 3600) / 60
+      ((((Number(durationSeconds) % 31536000) % 2592000) % 86400) % 3600) / 60
     ),
-    seconds: ((((Number(duration) % 31536000) % 2592000) % 86400) % 3600) % 60,
+    seconds:
+      ((((Number(durationSeconds) % 31536000) % 2592000) % 86400) % 3600) % 60,
   });
 }
 
