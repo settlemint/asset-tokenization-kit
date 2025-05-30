@@ -38,11 +38,7 @@ export function AssetDesignerDialog({
 
   // Check if MICA feature flag is enabled
   const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  // Always enable MiCA in development mode, regardless of PostHog configuration
-  const isMicaEnabled =
-    process.env.NODE_ENV === "development" || process.env.NODE_ENV === undefined
-      ? true
-      : !!micaFlagFromPostHog;
+  const isMicaEnabled = !!micaFlagFromPostHog;
 
   // Create a unified representation of all steps, filtering out regulation step if MICA is disabled
   const allSteps: Step[] = useMemo(() => {

@@ -82,11 +82,7 @@ export function CreateStablecoinForm({
 }: CreateStablecoinFormProps) {
   const t = useTranslations("private.assets.create.form");
   const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  // Always enable MiCA in development mode, regardless of PostHog configuration
-  const isMicaEnabled =
-    process.env.NODE_ENV === "development" || process.env.NODE_ENV === undefined
-      ? true
-      : !!micaFlagFromPostHog;
+  const isMicaEnabled = !!micaFlagFromPostHog;
 
   // Create component instances for each step
   const BasicsComponent = basicsStep.component;
