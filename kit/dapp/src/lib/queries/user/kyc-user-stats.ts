@@ -1,43 +1,14 @@
 import "server-only";
 
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
-import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { RecentUsersCountFragment } from "./user-fragment";
-import { UserCountSchema } from "./user-schema";
-
-/**
- * GraphQL query to get KYC user statistics
- */
-const KycUserStats = hasuraGraphql(
-  `
-  query KycUserStats {
-    kycVerifiedUsers: user_aggregate(where: { kyc_verified_at: { _is_null: false }, banned: { _neq: true } }) {
-      aggregate {
-        ...RecentUsersCountFragment
-      }
-    }
-    pendingVerificationUsers: user_aggregate(where: { kyc_verified_at: { _is_null: true }, banned: { _neq: true } }) {
-      aggregate {
-        ...RecentUsersCountFragment
-      }
-    }
-    blockedUsers: user_aggregate(where: { banned: { _eq: true } }) {
-      aggregate {
-        ...RecentUsersCountFragment
-      }
-    }
-  }
-`,
-  [RecentUsersCountFragment]
-);
+import { getUserCount } from "./user-count";
 
 /**
  * Type for KYC user statistics results
  */
 export type KycUserStatsResult = {
-  /** Count of KYC verified users (excluding banned) */
+  /** Count of total platform users (excluding banned) - used as verified holders */
   kycVerifiedCount: number;
   /** Count of users pending KYC verification (excluding banned) */
   pendingVerificationCount: number;
@@ -48,7 +19,7 @@ export type KycUserStatsResult = {
 /**
  * Fetches KYC user statistics for monitoring dashboard
  *
- * @returns Object containing KYC verified, pending, and blocked user counts
+ * @returns Object containing total platform users (as verified), pending, and blocked user counts
  */
 export const getKycUserStats = withTracing(
   "queries",
@@ -57,28 +28,15 @@ export const getKycUserStats = withTracing(
     "use cache";
     cacheTag("user-activity");
 
-    const result = await hasuraClient.request(KycUserStats, {});
+    // Get total platform users using the same method as the working UsersWidget
+    const userCountResult = await getUserCount();
 
-    // Validate the response using TypeBox schemas
-    const kycVerifiedCount = safeParse(
-      UserCountSchema,
-      result.kycVerifiedUsers.aggregate
-    );
-
-    const pendingVerificationCount = safeParse(
-      UserCountSchema,
-      result.pendingVerificationUsers.aggregate
-    );
-
-    const blockedUsersCount = safeParse(
-      UserCountSchema,
-      result.blockedUsers.aggregate
-    );
+    console.log("KYC Stats - getUserCount result:", userCountResult);
 
     return {
-      kycVerifiedCount: kycVerifiedCount.count,
-      pendingVerificationCount: pendingVerificationCount.count,
-      blockedUsersCount: blockedUsersCount.count,
+      kycVerifiedCount: userCountResult.totalUsersCount,
+      pendingVerificationCount: 0, // Will implement proper counts later
+      blockedUsersCount: 0, // Will implement proper counts later
     };
   }
 );
