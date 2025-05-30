@@ -79,7 +79,7 @@ function DocumentsTableSkeleton() {
   );
 }
 
-export function DocumentationLayout() {
+export function DocumentationLayout({ canEdit }: { canEdit: boolean }) {
   const t = useTranslations("regulations.mica.documents");
   const params = useParams();
   const assetAddress = params.address as string;
@@ -110,12 +110,9 @@ export function DocumentationLayout() {
   }, [assetAddress, t]);
 
   // Upload action using MinIO SDK server action
-  const uploadAction = async (formData: FormData, path: string) => {
+  const uploadAction = async (formData: FormData) => {
     try {
       const file = formData.get("file") as File;
-      const documentType = (formData.get("type") as string) || "mica";
-      const title = formData.get("title") as string;
-
       if (!file) {
         throw new Error("No file provided");
       }
@@ -239,21 +236,23 @@ export function DocumentationLayout() {
     <Card className="w-full h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{t("card.title")}</CardTitle>
-        <Button
-          size="sm"
-          onClick={() => {
-            setIsDialogOpen(true);
-          }}
-          disabled={!regulationConfigId}
-          title={
-            !regulationConfigId
-              ? "Loading regulation configuration..."
-              : undefined
-          }
-        >
-          <Upload className="h-4 w-4 mr-2" />
-          {t("card.upload")}
-        </Button>
+        {canEdit && (
+          <Button
+            size="sm"
+            onClick={() => {
+              setIsDialogOpen(true);
+            }}
+            disabled={!regulationConfigId}
+            title={
+              !regulationConfigId
+                ? "Loading regulation configuration..."
+                : undefined
+            }
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            {t("card.upload")}
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="flex-1">
         {isLoading ? (
@@ -262,6 +261,7 @@ export function DocumentationLayout() {
           <DocumentsTable
             documents={documents}
             regulationId={regulationConfigId || ""}
+            canEdit={canEdit}
           />
         )}
       </CardContent>
