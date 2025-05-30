@@ -10,7 +10,7 @@ import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useFeatureFlagEnabled } from "posthog-js/react";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
@@ -78,17 +78,6 @@ export function CreateDepositForm({
       <AdminsComponent key="admins" userDetails={userDetails} />,
     ];
 
-    // Only include regulation step if MICA is enabled
-    if (isMicaEnabled) {
-      baseSteps.push(
-        <RegulationStepWrapper
-          key="regulation"
-          onBack={onPrevStep}
-          onNext={onNextStep}
-        />
-      );
-    }
-
     baseSteps.push(
       <SummaryComponent
         key="summary"
@@ -103,25 +92,14 @@ export function CreateDepositForm({
 
   // Define step order and mapping
   const stepIdToIndex = useMemo(() => {
-    if (isMicaEnabled) {
-      const steps: Record<string, number> = {
-        details: 0,
-        configuration: 1,
-        admins: 2,
-        regulation: 3,
-        summary: 4,
-      };
-      return steps;
-    } else {
-      const steps: Record<string, number> = {
-        details: 0,
-        configuration: 1,
-        admins: 2,
-        summary: 3,
-      };
-      return steps;
-    }
-  }, [isMicaEnabled]);
+    const steps: Record<string, number> = {
+      details: 0,
+      configuration: 1,
+      admins: 2,
+      summary: 3,
+    };
+    return steps;
+  }, []);
 
   // Use the step synchronization hook
   const { isLastStep, onStepChange, onAnyFieldChange } = useFormStepSync({
@@ -130,13 +108,6 @@ export function CreateDepositForm({
     onNextStep,
     onPrevStep,
   });
-
-  // If MICA is disabled but the current step is regulation, redirect to summary
-  useEffect(() => {
-    if (!isMicaEnabled && currentStepId === "regulation") {
-      onNextStep();
-    }
-  }, [isMicaEnabled, currentStepId, onNextStep]);
 
   return (
     <Form
@@ -180,13 +151,7 @@ export function CreateDepositForm({
 CreateDepositForm.displayName = "CreateDepositForm";
 
 // Collect all the step definitions
-const depositSteps = [
-  basicsStep,
-  configurationStep,
-  adminsStep,
-  regulationStep,
-  summaryStep,
-];
+const depositSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
 
 // Export form definition for the asset designer
 export const depositFormDefinition: AssetFormDefinition = {

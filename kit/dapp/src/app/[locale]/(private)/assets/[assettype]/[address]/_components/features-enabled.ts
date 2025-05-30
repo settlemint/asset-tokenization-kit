@@ -28,7 +28,7 @@ export const hasMica = async (assettype: AssetType, assetId: Address) => {
     return false;
   }
 
-  const isAvailable = assettype === "deposit" || assettype === "stablecoin";
+  const isAvailable = assettype === "stablecoin";
   if (!isAvailable) {
     return false;
   }
