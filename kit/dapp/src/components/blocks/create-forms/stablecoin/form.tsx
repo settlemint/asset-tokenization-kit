@@ -24,13 +24,13 @@
  */
 
 import { Form } from "@/components/blocks/form/form";
+import { useFeatureEnabled } from "@/lib/hooks/use-feature-enabled";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
 import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
-import { isFeatureEnabled } from "@/lib/utils/feature-flags";
 import type { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
@@ -81,7 +81,7 @@ export function CreateStablecoinForm({
   onOpenChange,
 }: CreateStablecoinFormProps) {
   const t = useTranslations("private.assets.create.form");
-  const isMicaEnabled = isFeatureEnabled("mica");
+  const isMicaEnabled = useFeatureEnabled("mica");
 
   // Create component instances for each step
   const BasicsComponent = basicsStep.component;

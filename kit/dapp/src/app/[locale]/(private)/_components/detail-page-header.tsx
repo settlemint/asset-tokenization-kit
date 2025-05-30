@@ -1,4 +1,4 @@
-import { hasMica } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled";
+import { isMicaEnabledForAsset } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled";
 import { ActivePill } from "@/components/blocks/active-pill/active-pill";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
@@ -80,7 +80,7 @@ export async function DetailPageHeader({
         })
       : null;
 
-  const isMicaEnabled = await hasMica(assettype, address);
+  const isMicaEnabled = await isMicaEnabledForAsset(assettype, address);
   const regulationPills = isMicaEnabled
     ? await getRegulationPills(address)
     : [];

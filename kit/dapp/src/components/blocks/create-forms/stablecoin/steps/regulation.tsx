@@ -11,8 +11,8 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { deleteFile } from "@/lib/actions/delete-file";
 import { uploadDocument } from "@/lib/actions/upload-document";
+import { useFeatureEnabled } from "@/lib/hooks/use-feature-enabled";
 import { cn } from "@/lib/utils";
-import { isFeatureEnabled } from "@/lib/utils/feature-flags";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { Check, Info, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -442,7 +442,7 @@ export function AssetRegulationStep({
   const [uploadedDocuments, setUploadedDocuments] = useState<{
     [regulationId: string]: UploadedDocument[];
   }>({});
-  const isMicaEnabled = isFeatureEnabled("mica");
+  const isMicaEnabled = useFeatureEnabled("mica");
 
   // Initialize selectedRegulations if not already set
   useEffect(() => {

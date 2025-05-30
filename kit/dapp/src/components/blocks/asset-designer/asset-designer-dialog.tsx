@@ -7,7 +7,7 @@ import {
   type Step,
 } from "@/components/blocks/step-wizard/step-wizard";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { isFeatureEnabled } from "@/lib/utils/feature-flags";
+import { useFeatureEnabled } from "@/lib/hooks/use-feature-enabled";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
@@ -36,8 +36,7 @@ export function AssetDesignerDialog({
   const [formComponent, setFormComponent] =
     useState<React.ComponentType<any> | null>(null);
 
-  // Check if MICA feature flag is enabled
-  const isMicaEnabled = isFeatureEnabled("mica");
+  const isMicaEnabled = useFeatureEnabled("mica");
 
   // Create a unified representation of all steps, filtering out regulation step if MICA is disabled
   const allSteps: Step[] = useMemo(() => {
