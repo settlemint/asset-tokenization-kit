@@ -1,4 +1,4 @@
-import { hasMica } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled";
+import { isMicaEnabledForAsset } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled";
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -24,7 +24,7 @@ const tabs = async ({
 
   let isMicaEnabled = false; // Default to false to hide the tab in case of error
   try {
-    isMicaEnabled = await hasMica(assettype, address);
+    isMicaEnabled = await isMicaEnabledForAsset(assettype, address);
   } catch (error) {
     console.error("Failed to check MICA availability:", error);
   }
