@@ -10,7 +10,6 @@
   "scripts": {
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
-    "lint": "eslint src/ --ext .ts",
     "format": "prettier --write .",
     "build": "settlemint scs subgraph build",
     "deploy:local": "bash graph-deploy.sh --local",
@@ -19,10 +18,7 @@
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",
-    "@graphprotocol/graph-ts": "0.38.1",
-    "@typescript-eslint/parser": "8.33.0",
-    "eslint": "9.28.0",
-    "eslint-plugin-import": "2.31.0"
+    "@graphprotocol/graph-ts": "0.38.1"
   },
   "devDependencies": {
     "matchstick-as": "0.6.0"

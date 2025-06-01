@@ -19,8 +19,6 @@
     },
     "dependencies": {},
     "format": {},
-    "lint": {
-      "dependsOn": ["codegen"]
-    }
+    "lint": {}
   }
 }
