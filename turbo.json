@@ -79,7 +79,7 @@
       "outputs": ["portal/*.json"]
     },
     "interfaceid": {
-      "dependsOn": ["dependencies"],
+      "dependsOn": ["dependencies", "contracts:dependencies"],
       "cache": false
     },
     "contracts#deploy:local": {
