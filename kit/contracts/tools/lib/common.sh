@@ -402,13 +402,13 @@ install_forge_dependencies() {
 
     # Install dependencies with optional timeout
     log_debug "Installing dependencies from ${PROJECT_ROOT}"
-    
+
     # Change to project root for forge commands
     if ! pushd "${PROJECT_ROOT}" > /dev/null 2>&1; then
         log_error "Failed to change to project directory: ${PROJECT_ROOT}"
         return 1
     fi
-    
+
     local success=false
     if command_exists "timeout"; then
         # Run forge directly with timeout
@@ -421,9 +421,9 @@ install_forge_dependencies() {
             success=true
         fi
     fi
-    
+
     popd > /dev/null
-    
+
     if [[ "${success}" == "true" ]]; then
         log_success "Dependencies installed successfully"
         return 0

@@ -25,6 +25,9 @@ init_common_lib "patch-abi-path.sh"
 # Path to subgraph.yaml relative to contracts directory
 readonly SUBGRAPH_YAML_PATH="${PROJECT_ROOT}/../subgraph/subgraph.yaml"
 
+# Global variable to track backup file for cleanup
+BACKUP_FILE=""
+
 # =============================================================================
 # SCRIPT-SPECIFIC FUNCTIONS
 # =============================================================================
@@ -32,6 +35,13 @@ readonly SUBGRAPH_YAML_PATH="${PROJECT_ROOT}/../subgraph/subgraph.yaml"
 # Script-specific cleanup function
 script_cleanup() {
     local exit_code="$1"
+
+    # Clean up backup file if it exists
+    if [[ -n "${BACKUP_FILE}" && -f "${BACKUP_FILE}" ]]; then
+        log_debug "Cleaning up backup file: ${BACKUP_FILE}"
+        rm -f "${BACKUP_FILE}"
+    fi
+
     if [[ ${exit_code} -eq 0 ]]; then
         log_success "ABI path patching completed successfully!"
     fi
@@ -96,9 +106,9 @@ patch_abi_paths() {
     fi
 
     # Create backup
-    local backup_file="${SUBGRAPH_YAML_PATH}.bak"
-    log_debug "Creating backup at: ${backup_file}"
-    cp "${SUBGRAPH_YAML_PATH}" "${backup_file}" || {
+    BACKUP_FILE="${SUBGRAPH_YAML_PATH}.bak"
+    log_debug "Creating backup at: ${BACKUP_FILE}"
+    cp "${SUBGRAPH_YAML_PATH}" "${BACKUP_FILE}" || {
         log_error "Failed to create backup of subgraph.yaml"
         return 1
     }
@@ -113,7 +123,8 @@ patch_abi_paths() {
 
     if [[ ${lines_to_change} -eq 0 ]]; then
         log_warn "No ABI paths found to patch"
-        rm -f "${backup_file}"
+        rm -f "${BACKUP_FILE}"
+        BACKUP_FILE=""  # Clear the variable so cleanup doesn't try to remove it again
         return 0
     fi
 
@@ -122,7 +133,8 @@ patch_abi_paths() {
     sed -i.tmp 's|file: \.\./artifacts|file: ../contracts/artifacts|g' "${SUBGRAPH_YAML_PATH}" || {
         log_error "Failed to patch ABI paths"
         # Restore backup
-        mv "${backup_file}" "${SUBGRAPH_YAML_PATH}"
+        mv "${BACKUP_FILE}" "${SUBGRAPH_YAML_PATH}"
+        BACKUP_FILE=""  # Clear the variable since we moved the file
         return 1
     }
 
@@ -138,11 +150,13 @@ patch_abi_paths() {
 
     if [[ ${lines_after_change} -eq ${lines_to_change} ]]; then
         log_success "Successfully patched ${lines_after_change} ABI path(s)"
-        rm -f "${backup_file}"
+        rm -f "${BACKUP_FILE}"
+        BACKUP_FILE=""  # Clear the variable so cleanup doesn't try to remove it again
     else
         log_error "Patch verification failed. Expected ${lines_to_change}, found ${lines_after_change}"
         # Restore backup
-        mv "${backup_file}" "${SUBGRAPH_YAML_PATH}"
+        mv "${BACKUP_FILE}" "${SUBGRAPH_YAML_PATH}"
+        BACKUP_FILE=""  # Clear the variable since we moved the file
         return 1
     fi
 

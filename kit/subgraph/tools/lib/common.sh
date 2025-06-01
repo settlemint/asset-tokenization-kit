@@ -59,7 +59,7 @@ init_script_metadata() {
     if [[ -z "${SCRIPT_DIR:-}" ]]; then
         SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
     fi
-    
+
     # Navigate up from subgraph/tools to find project root
     local current_dir="$SCRIPT_DIR"
     while [[ "$current_dir" != "/" ]]; do
@@ -69,30 +69,30 @@ init_script_metadata() {
         fi
         current_dir="$(dirname "$current_dir")"
     done
-    
+
     if [[ -z "$PROJECT_ROOT" ]]; then
         echo "Error: Could not find project root directory" >&2
         exit $EXIT_CONFIG_ERROR
     fi
-    
+
     SUBGRAPH_DIR="${PROJECT_ROOT}/subgraph"
 }
 
 # Main initialization function
 init_common_lib() {
     local script_name="${1:-$(basename "${BASH_SOURCE[1]}")}"
-    
+
     # Set secure defaults
     set -euo pipefail
     IFS=$'\n\t'
-    
+
     # Initialize metadata
     init_script_metadata "$script_name"
-    
+
     # Set up error handling
     trap 'handle_error ${LINENO} ${?}' ERR
     trap 'cleanup_on_exit' EXIT INT TERM
-    
+
     # Parse common arguments
     parse_common_arguments "$@"
 }
@@ -164,9 +164,9 @@ handle_error() {
     local line_number="$1"
     local exit_code="$2"
     local bash_lineno="${3:-$line_number}"
-    
+
     log_error "Command failed with exit code $exit_code at line $line_number"
-    
+
     if [[ "$DEBUG_MODE" == "true" ]] || [[ "$VERBOSE_MODE" == "true" ]]; then
         log_error "Call stack:"
         local frame=0
@@ -176,17 +176,17 @@ handle_error() {
             log_error "  at $func ($file:$line)"
         done
     fi
-    
+
     exit "$exit_code"
 }
 
 # Cleanup function called on exit
 cleanup_on_exit() {
     local exit_code=$?
-    
+
     # Add any cleanup tasks here
     log_debug "Cleaning up..."
-    
+
     # Restore any modified files
     if [[ -n "${BACKUP_FILES:-}" ]]; then
         for file in $BACKUP_FILES; do
@@ -196,7 +196,7 @@ cleanup_on_exit() {
             fi
         done
     fi
-    
+
     if [[ $exit_code -eq 0 ]]; then
         log_debug "Script completed successfully"
     else
@@ -217,17 +217,17 @@ command_exists() {
 validate_commands() {
     local commands=("$@")
     local missing_commands=()
-    
+
     for cmd in "${commands[@]}"; do
         if ! command_exists "$cmd"; then
             missing_commands+=("$cmd")
         fi
     done
-    
+
     if [[ ${#missing_commands[@]} -gt 0 ]]; then
         log_error "Missing required commands: ${missing_commands[*]}"
         log_error "Please install the missing dependencies."
-        
+
         # Provide installation hints
         for cmd in "${missing_commands[@]}"; do
             case "$cmd" in
@@ -245,10 +245,10 @@ validate_commands() {
                     ;;
             esac
         done
-        
+
         return $EXIT_MISSING_DEPS
     fi
-    
+
     return $EXIT_SUCCESS
 }
 
@@ -256,17 +256,17 @@ validate_commands() {
 validate_file() {
     local file="$1"
     local description="${2:-File}"
-    
+
     if [[ ! -f "$file" ]]; then
         log_error "$description not found: $file"
         return $EXIT_ERROR
     fi
-    
+
     if [[ ! -r "$file" ]]; then
         log_error "$description is not readable: $file"
         return $EXIT_ERROR
     fi
-    
+
     return $EXIT_SUCCESS
 }
 
@@ -274,29 +274,29 @@ validate_file() {
 validate_directory() {
     local dir="$1"
     local description="${2:-Directory}"
-    
+
     if [[ ! -d "$dir" ]]; then
         log_error "$description not found: $dir"
         return $EXIT_ERROR
     fi
-    
+
     if [[ ! -r "$dir" ]] || [[ ! -x "$dir" ]]; then
         log_error "$description is not accessible: $dir"
         return $EXIT_ERROR
     fi
-    
+
     return $EXIT_SUCCESS
 }
 
 # Validate JSON file
 validate_json() {
     local file="$1"
-    
+
     if ! jq empty "$file" 2>/dev/null; then
         log_error "Invalid JSON in file: $file"
         return $EXIT_ERROR
     fi
-    
+
     return $EXIT_SUCCESS
 }
 
@@ -308,11 +308,11 @@ validate_json() {
 backup_file() {
     local file="$1"
     local backup_suffix="${2:-.backup}"
-    
+
     if [[ -f "$file" ]]; then
         cp "$file" "${file}${backup_suffix}"
         log_debug "Backed up $file to ${file}${backup_suffix}"
-        
+
         # Track backup for cleanup
         BACKUP_FILES="${BACKUP_FILES:-} $file"
     fi
@@ -321,7 +321,7 @@ backup_file() {
 # Create directory if it doesn't exist
 ensure_directory() {
     local dir="$1"
-    
+
     if [[ ! -d "$dir" ]]; then
         log_debug "Creating directory: $dir"
         mkdir -p "$dir"
@@ -332,7 +332,7 @@ ensure_directory() {
 find_files() {
     local directory="$1"
     local pattern="$2"
-    
+
     find "$directory" -name "$pattern" -type f -print0 2>/dev/null
 }
 
@@ -389,14 +389,14 @@ EOF
 confirm() {
     local prompt="${1:-Continue?}"
     local default="${2:-n}"
-    
+
     if [[ "$QUIET_MODE" == "true" ]]; then
         [[ "$default" == "y" ]] && return 0 || return 1
     fi
-    
+
     local response
     read -r -p "$prompt [y/N]: " response
-    
+
     case "$response" in
         [yY][eE][sS]|[yY])
             return 0
@@ -411,7 +411,7 @@ confirm() {
 get_relative_path() {
     local path="$1"
     local base="${2:-$PROJECT_ROOT}"
-    
+
     # Use realpath if available, otherwise fall back to a simple method
     if command_exists realpath; then
         realpath --relative-to="$base" "$path" 2>/dev/null || echo "$path"
