@@ -24,15 +24,18 @@ IFS=$'\n\t'       # Secure Internal Field Separator
 # Initialize script metadata (to be called by each script)
 init_script_metadata() {
     if [[ -z "${SCRIPT_NAME:-}" ]]; then
-        readonly SCRIPT_NAME="$(basename "${0}")"
+        SCRIPT_NAME="$(basename "${0}")"
+        readonly SCRIPT_NAME
     fi
 
     if [[ -z "${PROJECT_ROOT:-}" ]]; then
-        readonly PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+        PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+        readonly PROJECT_ROOT
     fi
 
     if [[ -z "${LIB_DIR:-}" ]]; then
-        readonly LIB_DIR="$(cd "${SCRIPT_DIR}/lib" && pwd)"
+        LIB_DIR="$(cd "${SCRIPT_DIR}/lib" && pwd)"
+        readonly LIB_DIR
     fi
 }
 
@@ -74,11 +77,14 @@ log() {
     local level="$1"
     local level_color="$2"
     shift 2
-    local timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
+    local timestamp
+    timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
     # All log levels are exactly 4 characters for clean alignment
-    local colored_level="$(apply_color "${level_color}" "${level}")"
+    local colored_level
+    colored_level="$(apply_color "${level_color}" "${level}")"
     local script_context="${SCRIPT_NAME:-common.sh}"
-    local colored_message="$(apply_color "${level_color}" "$*")"
+    local colored_message
+    colored_message="$(apply_color "${level_color}" "$*")"
     echo -e "${timestamp} [${colored_level}] ${script_context}: ${colored_message}" >&2
 }
 
@@ -165,10 +171,6 @@ is_file() {
     [[ -f "$1" ]]
 }
 
-is_executable() {
-    [[ -x "$1" ]]
-}
-
 # Network utility
 is_port_in_use() {
     local port="$1"
@@ -199,7 +201,7 @@ validate_forge_environment() {
     if [[ ! -f "${PROJECT_ROOT}/foundry.toml" ]] && [[ ! -f "${PROJECT_ROOT}/forge.toml" ]]; then
         log_error "Not in a Forge project directory. Expected foundry.toml or forge.toml in ${PROJECT_ROOT}"
         log_error "Directory contents:"
-        ls -la "${PROJECT_ROOT}" 2>/dev/null | head -10 >&2 || true
+        find "${PROJECT_ROOT}" -maxdepth 1 -printf '%f\n' 2>/dev/null | head -10 >&2 || true
         return 1
     fi
 
@@ -267,34 +269,6 @@ validate_directories() {
 # =============================================================================
 
 # Standard argument parsing for common options
-parse_common_arguments() {
-    while [[ $# -gt 0 ]]; do
-        case $1 in
-            -h|--help)
-                if declare -f show_usage >/dev/null; then
-                    show_usage
-                else
-                    log_error "Help function 'show_usage' not defined in script"
-                fi
-                exit 0
-                ;;
-            -v|--verbose)
-                LOG_LEVEL="DEBUG"
-                log_info "Verbose mode enabled"
-                ;;
-            -q|--quiet)
-                LOG_LEVEL="ERROR"
-                log_info "Quiet mode enabled"
-                ;;
-            *)
-                # Return unprocessed arguments
-                echo "$1"
-                ;;
-        esac
-        shift
-    done
-}
-
 # =============================================================================
 # FILE OPERATIONS
 # =============================================================================

@@ -158,20 +158,6 @@ get_block_number() {
     run_cast_command "block-number" "--rpc-url" "${rpc_url}"
 }
 
-# Check if address is a contract
-is_contract_address() {
-    local address="$1"
-    local rpc_url="${2:-http://localhost:8545}"
-    
-    local code
-    if code=$(get_contract_code "${address}" "${rpc_url}"); then
-        # Contract has code if result is not just "0x"
-        [[ "${code}" != "0x" ]]
-    else
-        return 1
-    fi
-}
-
 # =============================================================================
 # GENESIS FILE OPERATIONS
 # =============================================================================
@@ -249,28 +235,6 @@ copy_genesis_file() {
 # NETWORK UTILITIES
 # =============================================================================
 
-# Wait for network to be ready
-wait_for_network() {
-    local rpc_url="${1:-http://localhost:8545}"
-    local timeout="${2:-30}"
-    local interval="${3:-1}"
-    
-    log_info "Waiting for network to be ready..."
-    
-    local elapsed=0
-    while [[ ${elapsed} -lt ${timeout} ]]; do
-        if get_block_number "${rpc_url}" >/dev/null 2>&1; then
-            log_success "Network is ready"
-            return 0
-        fi
-        
-        sleep "${interval}"
-        elapsed=$((elapsed + interval))
-    done
-    
-    log_error "Network not ready after ${timeout} seconds"
-    return 1
-}
 
 # Check network connectivity
 check_network_connectivity() {
@@ -285,94 +249,6 @@ check_network_connectivity() {
         log_warn "Network connectivity failed"
         return 1
     fi
-}
-
-# Get network info
-get_network_info() {
-    local rpc_url="${1:-http://localhost:8545}"
-    
-    local block_number
-    if block_number=$(get_block_number "${rpc_url}"); then
-        echo "Current block number: ${block_number}"
-        return 0
-    else
-        log_error "Failed to get network info"
-        return 1
-    fi
-}
-
-# =============================================================================
-# TRANSACTION OPERATIONS
-# =============================================================================
-
-# Send transaction with cast
-send_transaction() {
-    local to="$1"
-    local data="$2"
-    local rpc_url="${3:-http://localhost:8545}"
-    local from="${4:-0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266}"
-    
-    run_cast_command "send" "--rpc-url" "${rpc_url}" "--from" "${from}" "${to}" "${data}"
-}
-
-# Call contract function
-call_contract() {
-    local contract_address="$1"
-    local function_signature="$2"
-    local rpc_url="${3:-http://localhost:8545}"
-    shift 3
-    local args=("$@")
-    
-    run_cast_command "call" "--rpc-url" "${rpc_url}" "${contract_address}" "${function_signature}" "${args[@]}"
-}
-
-# Get transaction receipt
-get_transaction_receipt() {
-    local tx_hash="$1"
-    local rpc_url="${2:-http://localhost:8545}"
-    
-    run_cast_command "receipt" "--rpc-url" "${rpc_url}" "${tx_hash}"
-}
-
-# =============================================================================
-# ADDRESS UTILITIES
-# =============================================================================
-
-# Validate Ethereum address format
-validate_address() {
-    local address="$1"
-    
-    # Check if address starts with 0x and has 40 hex characters
-    if [[ "${address}" =~ ^0x[0-9a-fA-F]{40}$ ]]; then
-        return 0
-    else
-        log_warn "Invalid address format: ${address}"
-        return 1
-    fi
-}
-
-# Convert address to checksum format
-to_checksum_address() {
-    local address="$1"
-    
-    # Use cast to convert to checksum format
-    run_cast_command "to-check-sum-address" "${address}"
-}
-
-# Generate random address (for testing)
-generate_random_address() {
-    # Generate 20 random bytes and convert to hex
-    local random_bytes
-    if command_exists "openssl"; then
-        random_bytes=$(openssl rand -hex 20)
-    elif command_exists "od" && [[ -c /dev/urandom ]]; then
-        random_bytes=$(od -An -N20 -tx1 /dev/urandom | tr -d ' \n')
-    else
-        log_error "Cannot generate random address: missing openssl or /dev/urandom"
-        return 1
-    fi
-    
-    echo "0x${random_bytes}"
 }
 
 log_debug "Blockchain operations library loaded successfully" 

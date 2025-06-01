@@ -10,7 +10,9 @@ if [[ "${_ALL_LIBS_LOADED:-}" == "1" ]]; then
 fi
 
 # Get the library directory
-readonly LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+declare LIB_DIR
+LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly LIB_DIR
 
 # Source all library modules in dependency order
 source "${LIB_DIR}/common.sh"      # Core functionality (must be first)

@@ -76,27 +76,6 @@ find_smart_protocol_dir() {
     echo "${smart_protocol_dirs[0]}"
 }
 
-# Get smart-protocol version from foundry.toml
-get_smart_protocol_version() {
-    local foundry_toml="${PROJECT_ROOT}/foundry.toml"
-
-    if [[ ! -f "${foundry_toml}" ]]; then
-        log_error "foundry.toml not found at: ${foundry_toml}"
-        return 1
-    fi
-
-    # Extract smart-protocol version from foundry.toml
-    local version
-    version=$(sed -n 's/^smart-protocol.*"\([^"]*\)".*/\1/p' "${foundry_toml}")
-
-    if [[ -z "${version}" ]]; then
-        log_error "Could not find smart-protocol version in foundry.toml"
-        return 1
-    fi
-
-    echo "${version}"
-}
-
 # Find OnChain ID directory
 find_onchainid_directory() {
     local dependencies_dir="${PROJECT_ROOT}/dependencies"
@@ -115,7 +94,7 @@ find_onchainid_directory() {
         if [[ ${#onchainid_dirs[@]} -eq 0 ]]; then
             log_error "No @onchainid-* directory found in ${dependencies_dir}"
             log_error "Available directories:"
-            ls -la "${dependencies_dir}" 2>/dev/null | head -10 >&2 || true
+            find "${dependencies_dir}" -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | head -10 >&2 || true
             return 1
         fi
 
@@ -248,68 +227,6 @@ copy_directory_with_confirmation() {
         log_error "Failed to copy ${dir_name}"
         return 1
     fi
-}
-
-# Copy smart-protocol files
-copy_smart_protocol_files() {
-    local force_copy="${1:-false}"
-
-    log_info "Copying smart-protocol files..."
-
-    # Get the smart-protocol version from foundry.toml
-    local version
-    if ! version="$(get_smart_protocol_version)"; then
-        log_error "Failed to get smart-protocol version"
-        return 1
-    fi
-
-    log_info "Using smart-protocol version: ${version}"
-
-    # Define directories to copy: source_subdir:dest_subdir
-    local directories=(
-        "contracts:contracts"
-        "ignition/modules:ignition/modules"
-        "scripts:scripts"
-        "test:test"
-        "tools:tools"
-        "subgraph:../subgraph"
-    )
-
-    local dependencies_dir="${PROJECT_ROOT}/dependencies"
-    local smart_protocol_dir="${dependencies_dir}/smart-protocol-${version}"
-
-    # Process each directory
-    for dir_mapping in "${directories[@]}"; do
-        local source_subdir="${dir_mapping%:*}"
-        local dest_subdir="${dir_mapping#*:}"
-        local source_dir="${smart_protocol_dir}/${source_subdir}"
-        local dest_dir="${PROJECT_ROOT}/${dest_subdir}"
-
-        log_info "Processing ${source_subdir} -> ${dest_subdir}"
-
-        # Check if source directory exists
-        if [[ ! -d "${source_dir}" ]]; then
-            log_warn "Source directory not found, skipping: ${source_dir}"
-            continue
-        fi
-
-        # Create destination directory if it doesn't exist
-        if [[ ! -d "${dest_dir}" ]]; then
-            log_info "Creating directory: ${dest_dir}"
-            if ! mkdir -p "${dest_dir}"; then
-                log_error "Failed to create directory: ${dest_dir}"
-                return 1
-            fi
-        fi
-
-        # Copy the directory with diff and confirmation logic
-        if ! copy_directory_with_confirmation "${source_dir}" "${dest_dir}" "${source_subdir}" "${force_copy}"; then
-            log_error "Failed to copy ${source_subdir}"
-            return 1
-        fi
-    done
-
-    log_success "All smart-protocol files copied successfully"
 }
 
 # Run patch script with proper argument handling

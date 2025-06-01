@@ -8,7 +8,9 @@
 # =============================================================================
 
 # Get script directory and source libraries
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+declare SCRIPT_DIR
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 source "${SCRIPT_DIR}/lib/all.sh"
 
 # =============================================================================
@@ -37,7 +39,6 @@ declare -i PATCHES_SKIPPED=0
 
 # Script-specific cleanup function
 script_cleanup() {
-    local exit_code="$1"
     log_info "Processing summary: ${FILES_PROCESSED} files processed, ${PATCHES_APPLIED} patches applied, ${FILES_SKIPPED} files skipped, ${PATCHES_SKIPPED} patches skipped"
 }
 
@@ -57,7 +58,7 @@ find_onchainid_directory() {
         if [[ ${#onchainid_dirs[@]} -eq 0 ]]; then
             log_error "No @onchainid-* directory found in ${dependencies_dir}"
             log_error "Available directories:"
-            ls -la "${dependencies_dir}" 2>/dev/null | head -10 >&2 || true
+            find "${dependencies_dir}" -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | head -10 >&2 || true
             return 1
         fi
 

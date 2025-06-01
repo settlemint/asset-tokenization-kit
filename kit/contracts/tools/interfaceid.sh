@@ -8,7 +8,9 @@
 # =============================================================================
 
 # Get script directory and source libraries
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+declare SCRIPT_DIR
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 source "${SCRIPT_DIR}/lib/all.sh"
 
 # =============================================================================
@@ -200,8 +202,7 @@ find_interface_files() {
     fi
 
     # Sort the files for consistent processing
-    IFS=$'\n' INTERFACE_FILES=($(sort <<<"${found_files[*]}"))
-    unset IFS
+    mapfile -t INTERFACE_FILES < <(printf '%s\n' "${found_files[@]}" | sort)
 
     INTERFACES_FOUND=${#INTERFACE_FILES[@]}
     log_success "Found ${INTERFACES_FOUND} interface files:"

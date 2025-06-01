@@ -8,7 +8,9 @@
 # =============================================================================
 
 # Get script directory and source libraries
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+declare SCRIPT_DIR
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 source "${SCRIPT_DIR}/lib/all.sh"
 
 # =============================================================================
@@ -294,7 +296,7 @@ get_storage_layout() {
     # Process storage slots
     local storage_json="{}"
     local slots
-    if ! slots=($(echo "${storage_layout}" | jq -r '.storage[] | .slot' 2>/dev/null || true)); then
+    if ! mapfile -t slots < <(echo "${storage_layout}" | jq -r '.storage[] | .slot' 2>/dev/null || true); then
         log_warn "No storage slots found for ${contract_name}"
         echo "${storage_json}"
         return 0

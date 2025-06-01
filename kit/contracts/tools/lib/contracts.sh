@@ -296,55 +296,6 @@ deploy_contract() {
     echo "${deployed_address}"
 }
 
-# Get storage layout for a contract
-get_contract_storage_layout() {
-    local sol_file="$1"
-    local contract_name="$2"
-    local deployed_address="$3"
-    local rpc_url="${4:-http://localhost:8545}"
-
-    log_debug "Getting storage layout for ${contract_name}..."
-
-    # Get storage layout from contract
-    local storage_layout
-    if ! storage_layout=$(run_forge_command "inspect" "${sol_file}:${contract_name}" "storageLayout" "--force" "--json" 2>&1); then
-        log_error "Error getting storage layout for ${contract_name}: ${storage_layout}"
-        return 1
-    fi
-
-    # Process storage slots
-    local storage_json="{}"
-    local slots=()
-    mapfile -t slots < <(echo "${storage_layout}" | jq -r '.storage[] | .slot' 2>/dev/null || true)
-
-    if [[ ${#slots[@]} -eq 0 ]]; then
-        log_warn "No storage slots found for ${contract_name}"
-        echo "${storage_json}"
-        return 0
-    fi
-
-    for slot in "${slots[@]}"; do
-        local slot_value
-        if ! slot_value=$(cast storage --rpc-url "${rpc_url}" "${deployed_address}" "${slot}" 2>&1); then
-            log_warn "Error reading storage slot ${slot} for ${contract_name}: ${slot_value}"
-            continue
-        fi
-
-        # Validate and pad if needed
-        if [[ "${slot_value}" =~ ^0x ]]; then
-            slot_value="${slot_value#0x}"  # Remove 0x prefix
-            slot_value=$(printf "%064s" "${slot_value}" | tr ' ' '0')  # Pad to 32 bytes
-            slot_value="0x${slot_value}"
-        fi
-
-        local padded_slot
-        padded_slot=$(printf "0x%064x" "${slot}")
-        storage_json=$(echo "${storage_json}" | jq --arg slot "${padded_slot}" --arg value "${slot_value}" '. + {($slot): $value}')
-    done
-
-    echo "${storage_json}"
-}
-
 # Get deployed bytecode
 get_deployed_bytecode() {
     local contract_name="$1"
@@ -373,35 +324,5 @@ get_deployed_bytecode() {
 # =============================================================================
 # CONTRACT PROCESSING UTILITIES
 # =============================================================================
-
-# Find contracts in directory
-find_contracts() {
-    local contracts_dir="${1:-${PROJECT_ROOT}/contracts}"
-    local max_depth="${2:-1}"
-
-    find_files "${contracts_dir}" "*.sol" "${max_depth}"
-}
-
-# Get contract name from file path
-get_contract_name() {
-    local sol_file="$1"
-    basename "${sol_file}" .sol
-}
-
-# Check if contract exists in build output
-contract_exists_in_build() {
-    local contract_name="$1"
-    local build_dir="${PROJECT_ROOT}/out"
-
-    [[ -f "${build_dir}/${contract_name}.sol/${contract_name}.json" ]]
-}
-
-# Get contract metadata path
-get_contract_metadata_path() {
-    local contract_name="$1"
-    local build_dir="${PROJECT_ROOT}/out"
-
-    echo "${build_dir}/${contract_name}.sol/${contract_name}.json"
-}
 
 log_debug "Contract operations library loaded successfully"
