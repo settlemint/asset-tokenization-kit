@@ -11,8 +11,11 @@
 #   ./graph-deploy.sh --local    # Deploy to local Graph node
 #   ./graph-deploy.sh --remote   # Deploy to SettleMint
 
+# shellcheck disable=SC2154  # SCRIPT_NAME and other variables are set by init_common_lib
+
 # Get script directory and source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 source "${SCRIPT_DIR}/lib/all.sh"
 
 # Initialize the common library
@@ -76,14 +79,14 @@ parse_arguments() {
                 if [[ -n "$DEPLOYMENT_ENV" ]]; then
                     log_error "Deployment environment already specified as: $DEPLOYMENT_ENV"
                     log_error "Cannot specify both --local and --remote"
-                    exit $EXIT_INVALID_ARGS
+                    exit "$EXIT_INVALID_ARGS"
                 fi
                 DEPLOYMENT_ENV="${1#--}"
                 ;;
             *)
                 log_error "Unknown argument: $1"
                 show_usage
-                exit $EXIT_INVALID_ARGS
+                exit "$EXIT_INVALID_ARGS"
                 ;;
         esac
         shift
@@ -97,7 +100,7 @@ parse_arguments() {
         log_error "Deployment environment not specified"
         log_error "Please use either --local or --remote"
         show_usage
-        exit $EXIT_INVALID_ARGS
+        exit "$EXIT_INVALID_ARGS"
     fi
 }
 
@@ -116,12 +119,12 @@ main() {
 
     # Initialize graph-specific paths
     if ! init_graph_paths; then
-        exit $EXIT_ERROR
+        exit "$EXIT_ERROR"
     fi
 
     # Validate environment
     if ! validate_graph_environment; then
-        exit $EXIT_ERROR
+        exit "$EXIT_ERROR"
     fi
 
     # Set up cleanup to restore addresses on exit
@@ -134,6 +137,10 @@ main() {
             ;;
         remote)
             deploy_remote_workflow
+            ;;
+        *)
+            log_error "Invalid deployment environment: $DEPLOYMENT_ENV"
+            exit "$EXIT_INVALID_ARGS"
             ;;
     esac
 

@@ -7,7 +7,8 @@
 #   source "path/to/subgraph/tools/lib/all.sh"
 
 # Get the directory of this script
-readonly _ALL_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_ALL_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly _ALL_LIB_DIR
 
 # Source libraries in dependency order
 source "${_ALL_LIB_DIR}/common.sh"

@@ -10,6 +10,8 @@
 # Usage:
 #   source "${SCRIPT_DIR}/lib/graph.sh"
 
+# shellcheck disable=SC2154  # EXIT_* variables are defined in common.sh
+
 # Prevent multiple sourcing
 if [[ "${_GRAPH_LIB_LOADED:-}" == "true" ]]; then
     return 0
@@ -28,7 +30,6 @@ readonly DEFAULT_SYSTEM_FACTORY_ADDRESS="0x5e771e1417100000000000000000000000020
 
 # Deployment configurations
 readonly LOCAL_GRAPH_NODE="http://localhost:8020"
-readonly LOCAL_IPFS_NODE="http://localhost:5001"
 readonly REMOTE_IPFS_NODE="https://ipfs.console.settlemint.com"
 
 # File paths (initialized after PROJECT_ROOT and SUBGRAPH_DIR are set)
@@ -47,7 +48,7 @@ GRAPH_VERSION_PREFIX="${GRAPH_VERSION_PREFIX:-v1.0}"
 init_graph_paths() {
     if [[ -z "$PROJECT_ROOT" ]] || [[ -z "$SUBGRAPH_DIR" ]]; then
         log_error "PROJECT_ROOT and SUBGRAPH_DIR must be initialized before calling init_graph_paths"
-        return $EXIT_CONFIG_ERROR
+        return "$EXIT_CONFIG_ERROR"
     fi
     
     DEPLOYED_ADDRESSES_FILE="${PROJECT_ROOT}/ignition/deployments/smart-protocol-local/deployed_addresses.json"
@@ -57,7 +58,7 @@ init_graph_paths() {
     log_debug "  DEPLOYED_ADDRESSES_FILE: $DEPLOYED_ADDRESSES_FILE"
     log_debug "  SUBGRAPH_YAML: $SUBGRAPH_YAML"
     
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # ============================================================================
@@ -71,27 +72,27 @@ validate_graph_environment() {
     # Check required commands
     local required_commands=("npm" "npx" "jq" "yq")
     if ! validate_commands "${required_commands[@]}"; then
-        return $EXIT_MISSING_DEPS
+        return "$EXIT_MISSING_DEPS"
     fi
     
     # Check for graph-cli
     if ! npx graph --version &>/dev/null; then
         log_error "graph-cli not found. Please install with: npm install -g @graphprotocol/graph-cli"
-        return $EXIT_MISSING_DEPS
+        return "$EXIT_MISSING_DEPS"
     fi
     
     # Validate subgraph directory
     if ! validate_directory "$SUBGRAPH_DIR" "Subgraph directory"; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     # Validate subgraph.yaml
     if ! validate_file "$SUBGRAPH_YAML" "Subgraph configuration"; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     log_success "Graph environment validation passed"
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Validate deployment environment
@@ -103,27 +104,27 @@ validate_deployment_environment() {
             if ! check_local_graph_node; then
                 log_error "Local Graph node is not running at $LOCAL_GRAPH_NODE"
                 log_info "Please start the Graph node with: docker-compose up -d"
-                return $EXIT_ERROR
+                return "$EXIT_ERROR"
             fi
             ;;
         remote)
             if ! command_exists settlemint; then
                 log_error "SettleMint CLI not found. Please install it first."
-                return $EXIT_MISSING_DEPS
+                return "$EXIT_MISSING_DEPS"
             fi
             
             if ! check_settlemint_auth; then
                 log_error "Not authenticated with SettleMint. Please run: npx settlemint login"
-                return $EXIT_ERROR
+                return "$EXIT_ERROR"
             fi
             ;;
         *)
             log_error "Invalid deployment environment: $env"
-            return $EXIT_INVALID_ARGS
+            return "$EXIT_INVALID_ARGS"
             ;;
     esac
     
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Check if local graph node is running
@@ -136,9 +137,9 @@ check_local_graph_node() {
     
     if [[ "$response" == *"POST or OPTIONS is required"* ]]; then
         log_debug "Local Graph node is accessible"
-        return $EXIT_SUCCESS
+        return "$EXIT_SUCCESS"
     else
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 }
 
@@ -148,9 +149,9 @@ check_settlemint_auth() {
     
     if npx settlemint whoami &>/dev/null; then
         log_debug "SettleMint authentication valid"
-        return $EXIT_SUCCESS
+        return "$EXIT_SUCCESS"
     else
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 }
 
@@ -163,11 +164,11 @@ read_deployed_addresses() {
     log_info "Reading deployed contract addresses..."
     
     if ! validate_file "$DEPLOYED_ADDRESSES_FILE" "Deployed addresses file"; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     if ! validate_json "$DEPLOYED_ADDRESSES_FILE"; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     # Extract addresses using jq
@@ -177,7 +178,7 @@ read_deployed_addresses() {
     if [[ -z "$system_factory_address" ]] || [[ "$system_factory_address" == "null" ]]; then
         log_error "Could not extract SystemFactory address from deployment file"
         log_error "Please ensure the contracts have been deployed successfully"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     # Export for use in other functions
@@ -186,7 +187,7 @@ read_deployed_addresses() {
     log_success "Successfully read deployed addresses"
     log_info "  SystemFactory: $SYSTEM_FACTORY_ADDRESS"
     
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Update addresses in subgraph.yaml
@@ -199,11 +200,11 @@ update_subgraph_addresses() {
     # Update SystemFactory address
     if ! yq -i "(.dataSources[] | select(.name == \"SystemFactory\").source.address) = \"$SYSTEM_FACTORY_ADDRESS\"" "$SUBGRAPH_YAML"; then
         log_error "Failed to update SystemFactory address in subgraph.yaml"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     log_success "Successfully updated subgraph addresses"
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Restore default addresses
@@ -212,11 +213,11 @@ restore_default_addresses() {
     
     if ! yq -i "(.dataSources[] | select(.name == \"SystemFactory\").source.address) = \"$DEFAULT_SYSTEM_FACTORY_ADDRESS\"" "$SUBGRAPH_YAML"; then
         log_error "Failed to restore default addresses"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     log_debug "Default addresses restored"
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # ============================================================================
@@ -229,16 +230,16 @@ generate_subgraph_code() {
     
     if ! cd "$PROJECT_ROOT"; then
         log_error "Failed to change to project root directory"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     if ! npm run subgraph:codegen; then
         log_error "Failed to generate subgraph code"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     log_success "Subgraph code generated successfully"
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Create subgraph (local deployment)
@@ -258,13 +259,14 @@ create_local_subgraph() {
         log_success "Created subgraph: $graph_name"
     fi
     
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Deploy subgraph locally
 deploy_subgraph_local() {
     local graph_name="${1:-$GRAPH_NAME}"
-    local version_label="${GRAPH_VERSION_PREFIX}.$(date +%s)"
+    local version_label
+    version_label="${GRAPH_VERSION_PREFIX}.$(date +%s)"
     
     log_info "Deploying subgraph locally..."
     log_info "  Name: $graph_name"
@@ -279,13 +281,13 @@ deploy_subgraph_local() {
         "$graph_name" \
         "$SUBGRAPH_YAML"; then
         log_error "Failed to deploy subgraph locally"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     log_success "Subgraph deployed successfully!"
     log_info "  Access your subgraph at: ${LOCAL_GRAPH_NODE}/subgraphs/name/${graph_name}"
     
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Deploy subgraph remotely (via SettleMint)
@@ -294,17 +296,17 @@ deploy_subgraph_remote() {
     
     if ! cd "$PROJECT_ROOT"; then
         log_error "Failed to change to project root directory"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     if ! npx settlemint scs subgraph deploy; then
         log_error "Failed to deploy subgraph to SettleMint"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     log_success "Subgraph deployed to SettleMint successfully!"
     
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # ============================================================================
@@ -315,7 +317,8 @@ deploy_subgraph_remote() {
 print_deployment_summary() {
     local env="$1"
     local start_time="$2"
-    local end_time="$(date +%s)"
+    local end_time
+    end_time="$(date +%s)"
     local duration=$((end_time - start_time))
     
     print_separator
@@ -345,75 +348,77 @@ print_deployment_summary() {
 
 # Complete local deployment workflow
 deploy_local_workflow() {
-    local start_time="$(date +%s)"
+    local start_time
+    start_time="$(date +%s)"
     
     print_header "Deploying Subgraph Locally"
     
     # Validate environment
     if ! validate_deployment_environment "local"; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     # Read and update addresses
     if ! read_deployed_addresses; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     if ! update_subgraph_addresses; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     # Generate code
     if ! generate_subgraph_code; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     # Create and deploy
-    if ! create_local_subgraph; then
-        return $EXIT_ERROR
+    if ! create_local_subgraph "$GRAPH_NAME"; then
+        return "$EXIT_ERROR"
     fi
     
-    if ! deploy_subgraph_local; then
-        return $EXIT_ERROR
+    if ! deploy_subgraph_local "$GRAPH_NAME"; then
+        return "$EXIT_ERROR"
     fi
     
     # Print summary
     print_deployment_summary "local" "$start_time"
     
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Complete remote deployment workflow
 deploy_remote_workflow() {
-    local start_time="$(date +%s)"
+    local start_time
+    start_time="$(date +%s)"
     
     print_header "Deploying Subgraph to SettleMint"
     
     # Validate environment
     if ! validate_deployment_environment "remote"; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     # Read and update addresses
     if ! read_deployed_addresses; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     if ! update_subgraph_addresses; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     # Generate code and deploy
     if ! generate_subgraph_code; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     if ! deploy_subgraph_remote; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
     
     # Print summary
     print_deployment_summary "remote" "$start_time"
     
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }

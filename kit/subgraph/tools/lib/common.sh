@@ -42,12 +42,21 @@ DEBUG_MODE="${DEBUG:-false}"
 QUIET_MODE="${QUIET:-false}"
 VERBOSE_MODE="${VERBOSE:-false}"
 
+# Export LOG_LEVEL if set
+export LOG_LEVEL
+
+# Backup files array
+BACKUP_FILES=()
+
 # Exit codes
 readonly EXIT_SUCCESS=0
 readonly EXIT_ERROR=1
 readonly EXIT_INVALID_ARGS=2
 readonly EXIT_MISSING_DEPS=3
 readonly EXIT_CONFIG_ERROR=4
+
+# Export exit codes for use in other scripts
+export EXIT_SUCCESS EXIT_ERROR EXIT_INVALID_ARGS EXIT_MISSING_DEPS EXIT_CONFIG_ERROR
 
 # ============================================================================
 # INITIALIZATION
@@ -72,10 +81,13 @@ init_script_metadata() {
 
     if [[ -z "$PROJECT_ROOT" ]]; then
         echo "Error: Could not find project root directory" >&2
-        exit $EXIT_CONFIG_ERROR
+        exit "$EXIT_CONFIG_ERROR"
     fi
 
     SUBGRAPH_DIR="${PROJECT_ROOT}/subgraph"
+    
+    # Export for use in other scripts
+    export SCRIPT_NAME SCRIPT_DIR PROJECT_ROOT SUBGRAPH_DIR
 }
 
 # Main initialization function
@@ -163,7 +175,6 @@ print_separator() {
 handle_error() {
     local line_number="$1"
     local exit_code="$2"
-    local bash_lineno="${3:-$line_number}"
 
     log_error "Command failed with exit code $exit_code at line $line_number"
 
@@ -188,8 +199,8 @@ cleanup_on_exit() {
     log_debug "Cleaning up..."
 
     # Restore any modified files
-    if [[ -n "${BACKUP_FILES:-}" ]]; then
-        for file in $BACKUP_FILES; do
+    if [[ ${#BACKUP_FILES[@]} -gt 0 ]]; then
+        for file in "${BACKUP_FILES[@]}"; do
             if [[ -f "${file}.backup" ]]; then
                 log_debug "Restoring $file from backup"
                 mv -f "${file}.backup" "$file" 2>/dev/null || true
@@ -246,10 +257,10 @@ validate_commands() {
             esac
         done
 
-        return $EXIT_MISSING_DEPS
+        return "$EXIT_MISSING_DEPS"
     fi
 
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Validate file exists and is readable
@@ -259,15 +270,15 @@ validate_file() {
 
     if [[ ! -f "$file" ]]; then
         log_error "$description not found: $file"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     if [[ ! -r "$file" ]]; then
         log_error "$description is not readable: $file"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Validate directory exists and is accessible
@@ -277,15 +288,15 @@ validate_directory() {
 
     if [[ ! -d "$dir" ]]; then
         log_error "$description not found: $dir"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     if [[ ! -r "$dir" ]] || [[ ! -x "$dir" ]]; then
         log_error "$description is not accessible: $dir"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Validate JSON file
@@ -294,10 +305,10 @@ validate_json() {
 
     if ! jq empty "$file" 2>/dev/null; then
         log_error "Invalid JSON in file: $file"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # ============================================================================
@@ -314,7 +325,7 @@ backup_file() {
         log_debug "Backed up $file to ${file}${backup_suffix}"
 
         # Track backup for cleanup
-        BACKUP_FILES="${BACKUP_FILES:-} $file"
+        BACKUP_FILES+=("$file")
     fi
 }
 
@@ -328,14 +339,6 @@ ensure_directory() {
     fi
 }
 
-# Find files with specific pattern
-find_files() {
-    local directory="$1"
-    local pattern="$2"
-
-    find "$directory" -name "$pattern" -type f -print0 2>/dev/null
-}
-
 # ============================================================================
 # ARGUMENT PARSING
 # ============================================================================
@@ -346,7 +349,7 @@ parse_common_arguments() {
         case "$1" in
             -h|--help)
                 show_usage
-                exit $EXIT_SUCCESS
+                exit "$EXIT_SUCCESS"
                 ;;
             -v|--verbose)
                 VERBOSE_MODE="true"
@@ -357,6 +360,8 @@ parse_common_arguments() {
             -d|--debug)
                 DEBUG_MODE="true"
                 VERBOSE_MODE="true"
+                LOG_LEVEL="debug"
+                export LOG_LEVEL
                 ;;
             *)
                 # Let the main script handle other arguments
@@ -428,5 +433,5 @@ get_relative_path() {
 export -f log_info log_warn log_error log_success log_debug
 export -f print_header print_separator
 export -f command_exists validate_commands validate_file validate_directory validate_json
-export -f backup_file ensure_directory find_files
+export -f backup_file ensure_directory
 export -f confirm get_relative_path

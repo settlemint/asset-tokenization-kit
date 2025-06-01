@@ -89,6 +89,22 @@ jobs:
       - name: Turbo!
         run: bunx turbo dependencies lint build test genesis abi-output
 
+      - name: Run ShellCheck on contracts tools
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./kit/contracts/tools"
+          format: gcc
+          severity: warning
+          check_together: "yes"
+
+      - name: Run ShellCheck on subgraph tools
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./kit/subgraph/tools"
+          format: gcc
+          severity: warning
+          check_together: "yes"
+
       - name: Store predeployed output
         uses: actions/upload-artifact@v4
         with:
