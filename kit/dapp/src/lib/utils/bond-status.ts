@@ -15,8 +15,11 @@ export function getBondStatus(bond: BondDetails): BondStatus {
     return "matured";
   }
 
-  if (bond?.totalSupply !== undefined && bond?.cap !== undefined &&
-      Number(bond.totalSupply) < Number(bond.cap)) {
+  if (
+    bond?.totalSupply !== undefined &&
+    bond?.cap !== undefined &&
+    Number(bond.totalSupply) < Number(bond.cap)
+  ) {
     return "issuing";
   }
 

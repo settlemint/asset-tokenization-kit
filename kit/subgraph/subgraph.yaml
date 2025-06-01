@@ -20,12 +20,37 @@ dataSources:
         - Event
       abis:
         - name: SystemFactory
-          file: ../contracts/artifacts/contracts/ATKSystemFactory.sol/ATKSystemFactory.json
+          file: ../contracts/artifacts/contracts/system/ISMARTSystemFactory.sol/ISMARTSystemFactory.json
+        - name: System
+          file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
       eventHandlers:
         - event: SMARTSystemCreated(indexed address,indexed address)
           handler: handleSMARTSystemCreated
-      file: ./src/event-handlers/system-factory.ts
+      file: ./src/system-factory/system-factory.ts
 templates:
+  - kind: ethereum
+    name: AccessControl
+    network: settlemint
+    source:
+      abi: AccessControl
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: AccessControl
+          file: ../contracts/artifacts/@openzeppelin/contracts/access/AccessControl.sol/AccessControl.json
+      eventHandlers:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+      file: ./src/access-control/access-control.ts
   - kind: ethereum
     name: System
     network: settlemint
@@ -40,93 +65,39 @@ templates:
         - Event
       abis:
         - name: System
-          file: ../contracts/artifacts/smart-protocol/contracts/system/SMARTSystem.sol/SMARTSystem.json
+          file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
       eventHandlers:
-        - event:
-            Bootstrapped(indexed address,indexed address,indexed
-            address,address,address)
+        - event: Bootstrapped(indexed address,indexed address,indexed
+            address,address,address,address,address)
           handler: handleBootstrapped
-        - event: ComplianceImplementationUpdated(indexed address)
+        - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
-        - event: EtherWithdrawn(indexed address,uint256)
-          handler: handleEtherWithdrawn
-        - event: IdentityFactoryImplementationUpdated(indexed address)
+        - event: IdentityFactoryImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityFactoryImplementationUpdated
-        - event: IdentityImplementationUpdated(indexed address)
+        - event: IdentityImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityImplementationUpdated
-        - event: IdentityRegistryImplementationUpdated(indexed address)
+        - event: IdentityRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityRegistryImplementationUpdated
-        - event: IdentityRegistryStorageImplementationUpdated(indexed address)
-          handler: handleIdentityRegistryStorageImplementationUpdated
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event: TokenIdentityImplementationUpdated(indexed address)
-          handler: handleTokenIdentityImplementationUpdated
-        - event: TrustedIssuersRegistryImplementationUpdated(indexed address)
-          handler: handleTrustedIssuersRegistryImplementationUpdated
-      file: ./src/event-handlers/system.ts
-  - kind: ethereum
-    name: Compliance
-    network: settlemint
-    source:
-      abi: Compliance
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Address
-        - Event
-      abis:
-        - name: Compliance
-          file: ../contracts/artifacts/contracts/ATKComplianceImplementation.sol/ATKComplianceImplementation.json
-      eventHandlers:
-        - event: Initialized(uint64)
-          handler: handleInitialized
-      file: ./src/event-handlers/compliance.ts
-  - kind: ethereum
-    name: IdentityFactory
-    network: settlemint
-    source:
-      abi: IdentityFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Address
-        - Event
-      abis:
-        - name: IdentityFactory
-          file: ../contracts/artifacts/contracts/ATKIdentityFactoryImplementation.sol/ATKIdentityFactoryImplementation.json
-      eventHandlers:
-        - event:
-            IdentityCreated(indexed address,indexed address,indexed address)
-          handler: handleIdentityCreated
-        - event: Initialized(uint64)
-          handler: handleInitialized
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event:
-            TokenIdentityCreated(indexed address,indexed address,indexed
+        - event: IdentityRegistryStorageImplementationUpdated(indexed address,indexed
             address)
-          handler: handleTokenIdentityCreated
-      file: ./src/event-handlers/identity-factory.ts
+          handler: handleIdentityRegistryStorageImplementationUpdated
+        - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
+          handler: handleTokenAccessManagerImplementationUpdated
+        - event: TokenFactoryCreated(indexed address,string,address,address,uint256)
+          handler: handleTokenFactoryCreated
+        - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
+          handler: handleTokenIdentityImplementationUpdated
+        - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
+            address)
+          handler: handleTrustedIssuersRegistryImplementationUpdated
+        - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
+          handler: handleTopicSchemeRegistryImplementationUpdated
+      file: ./src/system/system.ts
   - kind: ethereum
-    name: IdentityRegistry
+    name: TokenFactory
     network: settlemint
     source:
-      abi: IdentityRegistry
+      abi: TokenFactory
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -135,39 +106,23 @@ templates:
         - Address
         - Event
       abis:
-        - name: IdentityRegistry
-          file: ../contracts/artifacts/contracts/ATKIdentityRegistryImplementation.sol/ATKIdentityRegistryImplementation.json
+        - name: TokenFactory
+          file: ../contracts/artifacts/contracts/system/token-factory/ISMARTTokenFactory.sol/ISMARTTokenFactory.json
+        - name: Token
+          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event: CountryUpdated(indexed address,indexed address,indexed uint16)
-          handler: handleCountryUpdated
-        - event:
-            IdentityRegistered(indexed address,indexed address,indexed address)
-          handler: handleIdentityRegistered
-        - event:
-            IdentityRemoved(indexed address,indexed address,indexed address)
-          handler: handleIdentityRemoved
-        - event: IdentityStorageSet(indexed address,indexed address)
-          handler: handleIdentityStorageSet
-        - event:
-            IdentityUpdated(indexed address,indexed address,indexed address)
-          handler: handleIdentityUpdated
-        - event: Initialized(uint64)
-          handler: handleInitialized
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event: TrustedIssuersRegistrySet(indexed address,indexed address)
-          handler: handleTrustedIssuersRegistrySet
-      file: ./src/event-handlers/identity-registry.ts
+        - event: TokenAssetCreated(indexed address,indexed address,indexed
+            address,address)
+          handler: handleTokenAssetCreated
+        - event: TokenImplementationUpdated(indexed address,indexed address,indexed
+            address)
+          handler: handleTokenImplementationUpdated
+      file: ./src/token-factory/token-factory.ts
   - kind: ethereum
-    name: IdentityRegistryStorage
+    name: Token
     network: settlemint
     source:
-      abi: IdentityRegistryStorage
+      abi: Token
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -176,36 +131,36 @@ templates:
         - Address
         - Event
       abis:
-        - name: IdentityRegistryStorage
-          file: ../contracts/artifacts/contracts/ATKIdentityRegistryStorageImplementation.sol/ATKIdentityRegistryStorageImplementation.json
+        - name: Token
+          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event: CountryModified(indexed address,uint16)
-          handler: handleCountryModified
-        - event: IdentityModified(indexed address,indexed address)
-          handler: handleIdentityModified
-        - event: IdentityRegistryBound(indexed address)
-          handler: handleIdentityRegistryBound
-        - event: IdentityRegistryUnbound(indexed address)
-          handler: handleIdentityRegistryUnbound
-        - event: IdentityStored(indexed address,indexed address)
-          handler: handleIdentityStored
-        - event: IdentityUnstored(indexed address,indexed address)
-          handler: handleIdentityUnstored
-        - event: Initialized(uint64)
-          handler: handleInitialized
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-      file: ./src/event-handlers/identity-registry-storage.ts
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: ComplianceAdded(indexed address,indexed address)
+          handler: handleComplianceAdded
+        - event: ComplianceModuleAdded(indexed address,indexed address,bytes)
+          handler: handleComplianceModuleAdded
+        - event: ComplianceModuleRemoved(indexed address,indexed address)
+          handler: handleComplianceModuleRemoved
+        - event: IdentityRegistryAdded(indexed address,indexed address)
+          handler: handleIdentityRegistryAdded
+        - event: MintCompleted(indexed address,indexed address,uint256)
+          handler: handleMintCompleted
+        - event: ModuleParametersUpdated(indexed address,indexed address,bytes)
+          handler: handleModuleParametersUpdated
+        - event: RequiredClaimTopicsUpdated(indexed address,uint256[])
+          handler: handleRequiredClaimTopicsUpdated
+        - event: TransferCompleted(indexed address,indexed address,indexed
+            address,uint256)
+          handler: handleTransferCompleted
+        - event: UpdatedTokenInformation(indexed address,uint8,indexed address)
+          handler: handleUpdatedTokenInformation
+      file: ./src/token/token.ts
   - kind: ethereum
-    name: TrustedIssuersRegistry
+    name: Pausable
     network: settlemint
     source:
-      abi: TrustedIssuersRegistry
+      abi: Pausable
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -214,25 +169,33 @@ templates:
         - Address
         - Event
       abis:
-        - name: TrustedIssuersRegistry
-          file: ../contracts/artifacts/contracts/ATKTrustedIssuersRegistryImplementation.sol/ATKTrustedIssuersRegistryImplementation.json
+        - name: Pausable
+          file: ../contracts/artifacts/contracts/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json
       eventHandlers:
-        - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[])
-          handler: handleClaimTopicsUpdated
-        - event: Initialized(uint64)
-          handler: handleInitialized
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event: TrustedIssuerAdded(indexed address,indexed address,uint256[])
-          handler: handleTrustedIssuerAdded
-        - event: TrustedIssuerRemoved(indexed address,indexed address)
-          handler: handleTrustedIssuerRemoved
-      file: ./src/event-handlers/trusted-issuers-registry.ts
+        - event: Paused(indexed address)
+          handler: handlePaused
+        - event: Unpaused(indexed address)
+          handler: handleUnpaused
+      file: ./src/pausable/pausable.ts
+  - kind: ethereum
+    name: Burnable
+    network: settlemint
+    source:
+      abi: Burnable
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: Burnable
+          file: ../contracts/artifacts/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json
+      eventHandlers:
+        - event: BurnCompleted(indexed address,indexed address,uint256)
+          handler: handleBurnCompleted
+      file: ./src/burnable/burnable.ts
   - kind: ethereum
     name: Identity
     network: settlemint
@@ -247,44 +210,35 @@ templates:
         - Event
       abis:
         - name: Identity
-          file: ../contracts/artifacts/contracts/ATKIdentityImplementation.sol/ATKIdentityImplementation.json
+          file: ../contracts/artifacts/@onchainid/contracts/interface/IIdentity.sol/IIdentity.json
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
-        - event:
-            ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimAdded
-        - event:
-            ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimChanged
-        - event:
-            ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimRemoved
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
-        - event:
-            ExecutionFailed(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionFailed
-        - event:
-            ExecutionRequested(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionRequested
-        - event: Initialized(uint64)
-          handler: handleInitialized
         - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleKeyAdded
         - event: KeyRemoved(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleKeyRemoved
-      file: ./src/event-handlers/identity.ts
+      file: ./src/identity/identity.ts
   - kind: ethereum
-    name: TokenIdentity
+    name: IdentityFactory
     network: settlemint
     source:
-      abi: TokenIdentity
+      abi: IdentityFactory
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -293,37 +247,95 @@ templates:
         - Address
         - Event
       abis:
-        - name: TokenIdentity
-          file: ../contracts/artifacts/contracts/ATKTokenIdentityImplementation.sol/ATKTokenIdentityImplementation.json
+        - name: IdentityFactory
+          file: ../contracts/artifacts/contracts/system/identity-factory/ISMARTIdentityFactory.sol/ISMARTIdentityFactory.json
+        - name: Token
+          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event: Approved(indexed uint256,bool)
-          handler: handleApproved
-        - event:
-            ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
-            address,bytes,bytes,string)
-          handler: handleClaimAdded
-        - event:
-            ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
-            address,bytes,bytes,string)
-          handler: handleClaimChanged
-        - event:
-            ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
-            address,bytes,bytes,string)
-          handler: handleClaimRemoved
-        - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
-          handler: handleExecuted
-        - event:
-            ExecutionFailed(indexed uint256,indexed address,indexed
-            uint256,bytes)
-          handler: handleExecutionFailed
-        - event:
-            ExecutionRequested(indexed uint256,indexed address,indexed
-            uint256,bytes)
-          handler: handleExecutionRequested
-        - event: Initialized(uint64)
-          handler: handleInitialized
-        - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
-          handler: handleKeyAdded
-        - event: KeyRemoved(indexed bytes32,indexed uint256,indexed uint256)
-          handler: handleKeyRemoved
-      file: ./src/event-handlers/token-identity.ts
+        - event: IdentityCreated(indexed address,indexed address,indexed address)
+          handler: handleIdentityCreated
+        - event: TokenIdentityCreated(indexed address,indexed address,indexed address)
+          handler: handleTokenIdentityCreated
+      file: ./src/identity-factory/identity-factory.ts
+  - kind: ethereum
+    name: TopicSchemeRegistry
+    network: settlemint
+    source:
+      abi: TopicSchemeRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: TopicSchemeRegistry
+          file: ../contracts/artifacts/contracts/system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol/ISMARTTopicSchemeRegistry.json
+      eventHandlers:
+        - event: TopicSchemeRegistered(indexed address,indexed uint256,string,string)
+          handler: handleTopicSchemeRegistered
+        - event: TopicSchemeRemoved(indexed address,indexed uint256,string)
+          handler: handleTopicSchemeRemoved
+        - event: TopicSchemeUpdated(indexed address,indexed uint256,string,string,string)
+          handler: handleTopicSchemeUpdated
+        - event: TopicSchemesBatchRegistered(indexed address,uint256[],string[],string[])
+          handler: handleTopicSchemesBatchRegistered
+      file: ./src/topic-scheme-registry/topic-scheme-registry.ts
+  - kind: ethereum
+    name: IdentityRegistry
+    network: settlemint
+    source:
+      abi: IdentityRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: IdentityRegistry
+          file: ../contracts/artifacts/contracts/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json
+      eventHandlers:
+        - event: CountryUpdated(indexed address,indexed address,indexed uint16)
+          handler: handleCountryUpdated
+        - event: IdentityRegistered(indexed address,indexed address,indexed
+            address,uint16)
+          handler: handleIdentityRegistered
+        - event: IdentityRemoved(indexed address,indexed address,indexed address)
+          handler: handleIdentityRemoved
+        - event: IdentityStorageSet(indexed address,indexed address)
+          handler: handleIdentityStorageSet
+        - event: IdentityUpdated(indexed address,indexed address,indexed address)
+          handler: handleIdentityUpdated
+        - event: TopicSchemeRegistrySet(indexed address,indexed address)
+          handler: handleTopicSchemeRegistrySet
+        - event: TrustedIssuersRegistrySet(indexed address,indexed address)
+          handler: handleTrustedIssuersRegistrySet
+      file: ./src/identity-registry/identity-registry.ts
+  - kind: ethereum
+    name: Custodian
+    network: settlemint
+    source:
+      abi: Custodian
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: Custodian
+          file: ../contracts/artifacts/contracts/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json
+      eventHandlers:
+        - event: AddressFrozen(indexed address,indexed address,indexed bool)
+          handler: handleAddressFrozen
+        - event: RecoverySuccess(indexed address,indexed address,indexed address,address)
+          handler: handleRecoverySuccess
+        - event: TokensFrozen(indexed address,indexed address,uint256)
+          handler: handleTokensFrozen
+        - event: TokensUnfrozen(indexed address,indexed address,uint256)
+          handler: handleTokensUnfrozen
+      file: ./src/custodian/custodian.ts

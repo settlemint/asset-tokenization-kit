@@ -3,9 +3,9 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { WithdrawInput } from "@/lib/mutations/withdraw/withdraw-schema";
-import { getBondDetail } from '@/lib/queries/bond/bond-detail';
-import { formatNumber } from '@/lib/utils/number';
-import { useLocale, useTranslations } from 'next-intl';
+import { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import { formatNumber } from "@/lib/utils/number";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 
 interface AmountProps {
@@ -22,13 +22,19 @@ export function Amount({ bondDetails }: AmountProps) {
   });
 
   const isYield = target === "yield";
-  const max = isYield ? Number(bondDetails.yieldSchedule?.underlyingBalance ?? 0) : Number(bondDetails.underlyingBalance);
+  const max = isYield
+    ? Number(bondDetails.yieldSchedule?.underlyingBalance ?? 0)
+    : Number(bondDetails.underlyingBalance);
   const noUnderlyingBalance = max === 0;
-  const decimals = isYield ? bondDetails.yieldSchedule?.underlyingAsset.decimals : bondDetails.underlyingAsset.decimals;
+  const decimals = isYield
+    ? bondDetails.yieldSchedule?.underlyingAsset.decimals
+    : bondDetails.underlyingAsset.decimals;
   const description = noUnderlyingBalance
     ? t("max-limit.withdraw-no-balance")
     : max
-      ? t("max-limit.withdraw", { limit: formatNumber(max, { locale, decimals }) })
+      ? t("max-limit.withdraw", {
+          limit: formatNumber(max, { locale, decimals }),
+        })
       : undefined;
 
   return (

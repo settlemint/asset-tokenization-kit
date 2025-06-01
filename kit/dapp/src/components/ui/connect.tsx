@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import type { Variants } from 'motion/react';
-import { motion, useAnimation } from 'motion/react';
-import type { HTMLAttributes } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
-import { cn } from '@/lib/utils';
+import type { Variants } from "motion/react";
+import { motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export interface ConnectIconHandle {
   startAnimation: () => void;
@@ -55,15 +55,15 @@ const ConnectIcon = forwardRef<ConnectIconHandle, ConnectIconProps>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start('animate'),
-        stopAnimation: () => controls.start('normal'),
+        startAnimation: () => controls.start("animate"),
+        stopAnimation: () => controls.start("normal"),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start("animate");
         } else {
           onMouseEnter?.(e);
         }
@@ -74,7 +74,7 @@ const ConnectIcon = forwardRef<ConnectIconHandle, ConnectIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start("normal");
         } else {
           onMouseLeave?.(e);
         }
@@ -104,53 +104,53 @@ const ConnectIcon = forwardRef<ConnectIconHandle, ConnectIconProps>(
             d="M19 5l3 -3"
             variants={{
               normal: {
-                d: 'M19 5l3 -3',
+                d: "M19 5l3 -3",
               },
               animate: {
-                d: 'M17 7l5 -5',
+                d: "M17 7l5 -5",
               },
             }}
             animate={controls}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
           <motion.path
             d="m2 22 3-3"
             variants={{
               normal: {
-                d: 'm2 22 3-3',
+                d: "m2 22 3-3",
               },
               animate: {
-                d: 'm2 22 6-6',
+                d: "m2 22 6-6",
               },
             }}
             animate={controls}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
           <motion.path
             d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z"
             variants={socketVariants}
             animate={controls}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
           <motion.path
             variants={pathVariants}
             custom={{ x: 7.5, y: 13.5 }}
             initial="normal"
             animate={controls}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
           <motion.path
             variants={pathVariants}
             custom={{ x: 10.5, y: 16.5 }}
             initial="normal"
             animate={controls}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
           <motion.path
             d="m12 6 6 6 2.3-2.3a2.4 2.4 0 0 0 0-3.4l-2.6-2.6a2.4 2.4 0 0 0-3.4 0Z"
             variants={plugVariants}
             animate={controls}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
         </svg>
       </div>
@@ -158,6 +158,6 @@ const ConnectIcon = forwardRef<ConnectIconHandle, ConnectIconProps>(
   }
 );
 
-ConnectIcon.displayName = 'ConnectIcon';
+ConnectIcon.displayName = "ConnectIcon";
 
 export { ConnectIcon };

@@ -1,0 +1,12 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "dependencies": {
+      "outputs": ["**/Chart.lock", "**/charts/**"],
+      "inputs": ["**/Chart.yaml"]
+    },
+    "compile": {
+      "outputs": ["dist/**"]
+    }
+  }
+}
